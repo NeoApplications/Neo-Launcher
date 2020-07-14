@@ -16,9 +16,6 @@
 
 package com.android.launcher3.graphics;
 
-import static com.android.launcher3.graphics.IconShape.getShapePath;
-import static com.android.launcher3.util.MainThreadInitializedObject.forOverride;
-
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -40,6 +37,9 @@ import com.android.launcher3.R;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.ResourceBasedOverride;
+
+import static com.android.launcher3.graphics.IconShape.getShapePath;
+import static com.android.launcher3.util.MainThreadInitializedObject.forOverride;
 
 /**
  * Factory for creating new drawables.
@@ -67,6 +67,10 @@ public class DrawableFactory implements ResourceBasedOverride {
         return info.isLowRes()
                 ? new PlaceHolderIconDrawable(info, getShapePath(), context)
                 : new FastBitmapDrawable(info);
+    }
+
+    public FastBitmapDrawable newIcon(BitmapInfo info, ActivityInfo target) {
+        return new FastBitmapDrawable(info);
     }
 
     /**

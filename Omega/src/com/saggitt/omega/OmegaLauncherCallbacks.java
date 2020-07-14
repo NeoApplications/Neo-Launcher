@@ -26,7 +26,6 @@ import android.os.Handler;
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.LauncherCallbacks;
-import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.appprediction.PredictionUiStateManager;
@@ -57,9 +56,9 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     private boolean mStarted;
     private boolean mResumed;
     private boolean mAlreadyOnHome;
-    PredictionUiStateManager predictionUiStateManager;
-    private Handler handler = new Handler(LauncherModel.getUiWorkerLooper());
+    //private Handler handler = new Handler(MODEL_EXECUTOR.getLooper());
     private final Runnable mUpdatePredictionsIfResumed = this::updatePredictionsIfResumed;
+    private PredictionUiStateManager predictionUiStateManager;
 
     public OmegaLauncherCallbacks(OmegaLauncher launcher) {
         mLauncher = launcher;
@@ -168,13 +167,13 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     }
 
     private void updatePredictionsIfResumed() {
-        if (mLauncher.hasBeenResumed()) {
+        /*if (mLauncher.hasBeenResumed()) {
             //ReflectionClient.getInstance(mLauncher).updatePredictionsNow(FeatureFlags.REFLECTION_FORCE_OVERVIEW_MODE ? Client.OVERVIEW.id : Client.HOME.id);
             handler.post(() -> {
                 mLauncher.getUserEventDispatcher().updatePredictions();
 
             });
-        }
+        }*/
     }
 
     @Override
