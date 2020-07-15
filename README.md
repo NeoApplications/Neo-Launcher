@@ -10,7 +10,7 @@ Free and Open Source Launcher. <br/>
 
 ## Features
 -   Sort apps in the drawer by Alphabetical asc, Alphabetical desc, Install date, and Most used.
--   Google Feed integrated.
+-   add Google feed.
 
 ## Donations
 Want to buy me a coffee? 

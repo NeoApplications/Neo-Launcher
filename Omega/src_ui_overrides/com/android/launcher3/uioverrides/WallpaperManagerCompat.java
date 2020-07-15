@@ -48,13 +48,13 @@ import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.WallpaperColorsCompat;
+import com.android.launcher3.icons.ColorExtractor;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.app.WallpaperManager.FLAG_SYSTEM;
 import static com.android.launcher3.Utilities.getDevicePrefs;
-import static com.android.launcher3.graphics.ColorExtractor.findDominantColorByHue;
 
 public class WallpaperManagerCompat {
 
@@ -311,7 +311,9 @@ public class WallpaperManagerCompat {
 
             if (bitmap != null) {
                 int hints = calculateDarkHints(bitmap);
-                int color = findDominantColorByHue(bitmap, MAX_WALLPAPER_EXTRACTION_AREA);
+                ColorExtractor colorExtractor = new ColorExtractor();
+                int color = colorExtractor.findDominantColorByHue(bitmap, MAX_WALLPAPER_EXTRACTION_AREA);
+
                 value += "," + hints + "," + color;
             }
 
