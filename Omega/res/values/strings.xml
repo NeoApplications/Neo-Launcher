@@ -66,7 +66,8 @@
     <string name="title_show_google_app">Show Google app</string>
     <string name="pref_show_google_now_summary">@string/msg_minus_one_on_left</string>
     <string name="google_app">Google app</string>
-    <string name="msg_minus_one_on_left">To the left of the main Home screen</string>
+    <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
+    <string name="smartspace_preferences" translatable="false">Preferences</string>
 
     <!-- PREFERENCES NOTIFICATION -->
     <string name="icon_badging_desc_on">On</string>
@@ -118,5 +119,9 @@
     <string name="enabled_icon_packs">Enabled</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+
+    <!-- QSB -->
+    <string name="label_search">Search</string>
+    <string name="label_voice_search">Voice search</string>
 
 </resources>

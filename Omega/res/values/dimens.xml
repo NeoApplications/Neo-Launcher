@@ -38,4 +38,13 @@
     <dimen name="dashboard_padding_bottom">0dp</dimen>
 
     <dimen name="icon_preview_size">48dp</dimen>
+
+    <!-- QSB -->
+    <dimen name="hotseat_qsb_bottom_margin">2dp</dimen>
+    <dimen name="hotseat_qsb_scroll_key_shadow_offset">2dp</dimen>
+    <dimen name="hotseat_qsb_scroll_shadow_blur_radius">1.5dp</dimen>
+    <dimen name="qsb_margin_top_adjusting">20dp</dimen>
+    <dimen name="qsb_mic_width">48dp</dimen>
+    <dimen name="qsb_shadow_margin">6dp</dimen>
+    <dimen name="qsb_widget_height">56dp</dimen>
 </resources>

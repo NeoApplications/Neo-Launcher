@@ -15,28 +15,6 @@
  */
 package com.android.quickstep;
 
-import static com.android.launcher3.BaseActivity.INVISIBLE_BY_STATE_HANDLER;
-import static com.android.launcher3.BaseActivity.STATE_HANDLER_INVISIBILITY_FLAGS;
-import static com.android.launcher3.anim.Interpolators.DEACCEL;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.anim.Interpolators.OVERSHOOT_1_2;
-import static com.android.launcher3.config.FeatureFlags.ENABLE_QUICKSTEP_LIVE_TILE;
-import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
-import static com.android.launcher3.util.DefaultDisplay.getSingleFrameMs;
-import static com.android.launcher3.util.RaceConditionTracker.ENTER;
-import static com.android.launcher3.util.RaceConditionTracker.EXIT;
-import static com.android.launcher3.util.SystemUiController.UI_STATE_OVERVIEW;
-import static com.android.quickstep.MultiStateCallback.DEBUG_STATES;
-import static com.android.quickstep.TouchInteractionService.TOUCH_INTERACTION_LOG;
-import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.HOME;
-import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.LAST_TASK;
-import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.NEW_TASK;
-import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.RECENTS;
-import static com.android.quickstep.util.ShelfPeekAnim.ShelfAnimState.HIDE;
-import static com.android.quickstep.util.ShelfPeekAnim.ShelfAnimState.PEEK;
-import static com.android.quickstep.views.RecentsView.UPDATE_SYSUI_FLAGS_THRESHOLD;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
@@ -91,6 +69,28 @@ import com.android.systemui.shared.system.InputConsumerController;
 import com.android.systemui.shared.system.LatencyTrackerCompat;
 import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 import com.android.systemui.shared.system.WindowCallbacksCompat;
+
+import static com.android.launcher3.BaseActivity.INVISIBLE_BY_STATE_HANDLER;
+import static com.android.launcher3.BaseActivity.STATE_HANDLER_INVISIBILITY_FLAGS;
+import static com.android.launcher3.anim.Interpolators.DEACCEL;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.anim.Interpolators.OVERSHOOT_1_2;
+import static com.android.launcher3.config.FeatureFlags.ENABLE_QUICKSTEP_LIVE_TILE;
+import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
+import static com.android.launcher3.util.DefaultDisplay.getSingleFrameMs;
+import static com.android.launcher3.util.RaceConditionTracker.ENTER;
+import static com.android.launcher3.util.RaceConditionTracker.EXIT;
+import static com.android.launcher3.util.SystemUiController.UI_STATE_OVERVIEW;
+import static com.android.quickstep.MultiStateCallback.DEBUG_STATES;
+import static com.android.quickstep.TouchInteractionService.TOUCH_INTERACTION_LOG;
+import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.HOME;
+import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.LAST_TASK;
+import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.NEW_TASK;
+import static com.android.quickstep.WindowTransformSwipeHandler.GestureEndTarget.RECENTS;
+import static com.android.quickstep.util.ShelfPeekAnim.ShelfAnimState.HIDE;
+import static com.android.quickstep.util.ShelfPeekAnim.ShelfAnimState.PEEK;
+import static com.android.quickstep.views.RecentsView.UPDATE_SYSUI_FLAGS_THRESHOLD;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
 
 @TargetApi(Build.VERSION_CODES.O)
 public class WindowTransformSwipeHandler<T extends BaseDraggingActivity>
@@ -189,7 +189,7 @@ public class WindowTransformSwipeHandler<T extends BaseDraggingActivity>
     public static final long MIN_OVERSHOOT_DURATION = 120;
 
     public static final float MIN_PROGRESS_FOR_OVERVIEW = 0.7f;
-    private static final float SWIPE_DURATION_MULTIPLIER =
+    public static final float SWIPE_DURATION_MULTIPLIER =
             Math.min(1 / MIN_PROGRESS_FOR_OVERVIEW, 1 / (1 - MIN_PROGRESS_FOR_OVERVIEW));
     private static final String SCREENSHOT_CAPTURED_EVT = "ScreenshotCaptured";
 

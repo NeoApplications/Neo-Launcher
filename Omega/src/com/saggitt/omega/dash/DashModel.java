@@ -115,10 +115,10 @@ public class DashModel implements Serializable {
             case "DeviceSettings":
                 context.startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                 break;
+
             case "LauncherSettings":
-                Launcher launcher = Launcher.getLauncher(context);
-                launcher.startActivity(new Intent(Intent.ACTION_APPLICATION_PREFERENCES)
-                        .setPackage(launcher.getPackageName())
+                context.startActivity(new Intent(Intent.ACTION_APPLICATION_PREFERENCES)
+                        .setPackage(context.getPackageName())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 break;
 
@@ -127,6 +127,7 @@ public class DashModel implements Serializable {
                     Launcher.getLauncher(context).getStateManager().goToState(ALL_APPS);
                 }
                 break;
+
             case "VolumeDialog":
                 try {
                     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);

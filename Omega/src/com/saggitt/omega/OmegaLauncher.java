@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherCallbacks;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
@@ -130,5 +131,9 @@ public class OmegaLauncher extends Launcher {
         if (sRestart) {
             OmegaAppKt.getOmegaApp(this).restart(false);
         }
+    }
+
+    public LauncherCallbacks getLauncherCallbacks() {
+        return mLauncherCallbacks;
     }
 }

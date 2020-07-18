@@ -1,4 +1,4 @@
-### v0.2.0 (Build 5)
+### v0.2.0 (Build 8)
 * **Add color accent preference**
 * **Add notification color and count**
 * **Add Google feed**

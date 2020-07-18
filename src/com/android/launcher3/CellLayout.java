@@ -16,8 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.anim.Interpolators.DEACCEL_1_5;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -78,6 +76,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Stack;
 
+import static com.android.launcher3.anim.Interpolators.DEACCEL_1_5;
+
 public class CellLayout extends ViewGroup implements Transposable {
     public static final int WORKSPACE_ACCESSIBILITY_DRAG = 2;
     public static final int FOLDER_ACCESSIBILITY_DRAG = 1;
@@ -87,11 +87,13 @@ public class CellLayout extends ViewGroup implements Transposable {
 
     protected final ActivityContext mActivity;
     @ViewDebug.ExportedProperty(category = "launcher")
-    @Thunk int mCellWidth;
+    @Thunk
+    public int mCellWidth;
     @ViewDebug.ExportedProperty(category = "launcher")
-    @Thunk int mCellHeight;
-    private int mFixedCellWidth;
-    private int mFixedCellHeight;
+    @Thunk
+    public int mCellHeight;
+    public int mFixedCellWidth;
+    public int mFixedCellHeight;
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private int mCountX;
@@ -113,21 +115,23 @@ public class CellLayout extends ViewGroup implements Transposable {
     private final ArrayList<PreviewBackground> mFolderBackgrounds = new ArrayList<>();
     final PreviewBackground mFolderLeaveBehind = new PreviewBackground();
 
-    private static final int[] BACKGROUND_STATE_ACTIVE = new int[] { android.R.attr.state_active };
+    private static final int[] BACKGROUND_STATE_ACTIVE = new int[]{android.R.attr.state_active};
     private static final int[] BACKGROUND_STATE_DEFAULT = EMPTY_STATE_SET;
     private final Drawable mBackground;
 
     // These values allow a fixed measurement to be set on the CellLayout.
-    private int mFixedWidth = -1;
-    private int mFixedHeight = -1;
+    public int mFixedWidth = -1;
+    public int mFixedHeight = -1;
 
     // If we're actively dragging something over this screen, mIsDragOverlapping is true
     private boolean mIsDragOverlapping = false;
 
     // These arrays are used to implement the drag visualization on x-large screens.
     // They are used as circular arrays, indexed by mDragOutlineCurrent.
-    @Thunk final Rect[] mDragOutlines = new Rect[4];
-    @Thunk final float[] mDragOutlineAlphas = new float[mDragOutlines.length];
+    @Thunk
+    final Rect[] mDragOutlines = new Rect[4];
+    @Thunk
+    final float[] mDragOutlineAlphas = new float[mDragOutlines.length];
     private final InterruptibleInOutAnimator[] mDragOutlineAnims =
             new InterruptibleInOutAnimator[mDragOutlines.length];
 

@@ -34,6 +34,7 @@ public class DashItemAdapter {
     private Context mContext;
 
     public DashItemAdapter(LayoutInflater inflater, ArrayList<DashModel> items, Context context) {
+        mContext = context;
         this.mItemViews = new ArrayList<>();
         this.mItems = items;
         this.mInflater = inflater;
@@ -42,11 +43,10 @@ public class DashItemAdapter {
             ImageView itemView = (ImageView) view.findViewById(R.id.bt_item);
             itemView.setImageDrawable(dashItem.getIcon());
             itemView.setOnClickListener((parent) -> {
-                dashItem.RunAction(dashItem.getAction(), parent.getContext());
+                dashItem.RunAction(dashItem.getAction(), mContext);
             });
             mItemViews.add(view);
         }
-        mContext = context;
     }
 
     public int getCount() {

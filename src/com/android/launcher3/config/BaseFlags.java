@@ -66,7 +66,7 @@ public abstract class BaseFlags {
                     "Adds a promise icon to the home screen for new install sessions.");
 
     // Enable moving the QSB on the 0th screen of the workspace
-    public static final boolean QSB_ON_FIRST_SCREEN = true;
+    public static final boolean QSB_ON_FIRST_SCREEN = false;
 
     public static final TogglableFlag EXAMPLE_FLAG = new TogglableFlag("EXAMPLE_FLAG", true,
             "An example flag that doesn't do anything. Useful for testing");
@@ -91,7 +91,7 @@ public abstract class BaseFlags {
             "APPLY_CONFIG_AT_RUNTIME", true, "Apply display changes dynamically");
 
     public static final TogglableFlag QUICKSTEP_SPRINGS = new TogglableFlag("QUICKSTEP_SPRINGS",
-            false, "Enable springs for quickstep animations");
+            true, "Enable springs for quickstep animations");
 
     public static final TogglableFlag ADAPTIVE_ICON_WINDOW_ANIM = new TogglableFlag(
             "ADAPTIVE_ICON_WINDOW_ANIM", true,

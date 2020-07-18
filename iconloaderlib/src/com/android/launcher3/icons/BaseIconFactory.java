@@ -1,10 +1,5 @@
 package com.android.launcher3.icons;
 
-import static android.graphics.Paint.DITHER_FLAG;
-import static android.graphics.Paint.FILTER_BITMAP_FLAG;
-
-import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,13 +12,16 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
 
 import androidx.annotation.NonNull;
+
+import static android.graphics.Paint.DITHER_FLAG;
+import static android.graphics.Paint.FILTER_BITMAP_FLAG;
+import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside
@@ -241,7 +239,6 @@ public class BaseIconFactory implements AutoCloseable {
         outScale[0] = scale;
         return icon;*/
         float scale = 1f;
-        Drawable mIcon = icon;
         if (ATLEAST_OREO) {
             boolean[] outShape = new boolean[1];
             if (mWrapperIcon == null) {
@@ -250,10 +247,10 @@ public class BaseIconFactory implements AutoCloseable {
             }
             AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
             dr.setBounds(0, 0, 1, 1);
-            scale = getNormalizer().getScale(mIcon, outIconBounds, dr.getIconMask(), outShape);
+            scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
         }
         outScale[0] = scale;
-        return mIcon;
+        return icon;
     }
 
     /**

@@ -23,7 +23,7 @@
     <string name="icon_provider_class" translatable="false">com.saggitt.omega.icons.CustomIconProvider</string>
     <string name="drawable_factory_class" translatable="false">com.saggitt.omega.icons.CustomDrawableFactory</string>
 
-    <bool name="config_default_enable_blur">false</bool>
+    <bool name="config_default_enable_blur">true</bool>
     <!-- Tag id used for view scrim -->
     <item name="view_scrim" type="id" />
 </resources>

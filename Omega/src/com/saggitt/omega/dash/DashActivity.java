@@ -21,6 +21,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 
 import java.util.ArrayList;
@@ -37,9 +38,8 @@ public class DashActivity extends AppCompatActivity {
 
         ArrayList<DashModel> itemTitles = items.getItemList();
 
-        // usage sample
         final DashListView circularListView = (DashListView) findViewById(R.id.my_circular_list);
-        adapter = new DashItemAdapter(getLayoutInflater(), itemTitles, circularListView.getContext());
+        adapter = new DashItemAdapter(getLayoutInflater(), itemTitles, Launcher.mContext);
         circularListView.setAdapter(adapter);
         circularListView.setRadius(150);
     }

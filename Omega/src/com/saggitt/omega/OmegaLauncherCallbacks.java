@@ -37,6 +37,7 @@ import com.android.launcher3.util.Themes;
 import com.google.android.libraries.gsa.launcherclient.ClientOptions;
 import com.google.android.libraries.gsa.launcherclient.ClientService;
 import com.google.android.libraries.gsa.launcherclient.LauncherClient;
+import com.saggitt.omega.qsb.QsbAnimationController;
 import com.saggitt.omega.settings.SettingsActivity;
 import com.saggitt.omega.util.Config;
 
@@ -51,7 +52,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     private final Bundle mUiInformation = new Bundle();
     private OverlayCallbackImpl mOverlayCallbacks;
     private LauncherClient mLauncherClient;
-    //private QsbAnimationController mQsbController;
+    private QsbAnimationController mQsbController;
     private SharedPreferences mPrefs;
     private boolean mStarted;
     private boolean mResumed;
@@ -81,7 +82,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         mPrefs = Utilities.getPrefs(mLauncher);
         mOverlayCallbacks = new OverlayCallbackImpl(mLauncher);
         mLauncherClient = new LauncherClient(mLauncher, mOverlayCallbacks, getClientOptions(mPrefs));
-        //mQsbController = new QsbAnimationController(mLauncher);
+        mQsbController = new QsbAnimationController(mLauncher);
         mOverlayCallbacks.setClient(mLauncherClient);
         mUiInformation.putInt("system_ui_visibility", mLauncher.getWindow().getDecorView().getSystemUiVisibility());
         WallpaperColorInfo instance = WallpaperColorInfo.getInstance(mLauncher);
@@ -228,10 +229,10 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         return false;
     }
 
-    /*@Override
+    @Override
     public QsbAnimationController getQsbController() {
         return mQsbController;
-    }*/
+    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
