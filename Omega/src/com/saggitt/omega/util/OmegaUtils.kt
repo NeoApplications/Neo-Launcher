@@ -250,6 +250,13 @@ fun android.app.AlertDialog.applyAccent() {
     }
 }
 
+fun String.toTitleCase(): String = splitToSequence(" ").map { it.capitalize() }.joinToString(" ")
+
+inline fun <T> listWhileNotNull(generator: () -> T?): List<T> = mutableListOf<T>().apply {
+    while (true) {
+        add(generator() ?: break)
+    }
+}
 
 fun BgDataModel.workspaceContains(packageName: String): Boolean {
     return this.workspaceItems.any { it.targetComponent?.packageName == packageName }

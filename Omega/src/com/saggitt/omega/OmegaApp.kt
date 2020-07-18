@@ -24,6 +24,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
+import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.theme.ThemeManager
 
 class OmegaApp : Application() {
@@ -32,7 +33,7 @@ class OmegaApp : Application() {
     fun onLauncherAppStateCreated() {
         registerActivityLifecycleCallbacks(activityHandler)
         BlurWallpaperProvider.getInstance(this)
-        //Flowerpot.Manager.getInstance(this)
+        Flowerpot.Manager.getInstance(this)
     }
 
     fun restart(recreateLauncher: Boolean = true) {
