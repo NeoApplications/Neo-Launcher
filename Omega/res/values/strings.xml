@@ -82,6 +82,8 @@
         <xliff:g name="second_item">%2$s</xliff:g>
     </string>
 
+    <string name="web_search_bing">Bing (web)</string>
+
     <!-- ADVANCED -->
     <string name="summary__advanced_setting_search">Display setting search in the action bar</string>
     <string name="title__advanced_setting_search">Show settings search</string>
