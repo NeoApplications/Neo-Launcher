@@ -22,14 +22,18 @@
     <!-- PREFERENCES GENERAL -->
     <string name="title__general_about">About</string>
     <string name="title__general_desktop">Desktop</string>
+    <string name="title__general_dock">Dock</string>
     <string name="title__general_drawer">Drawer</string>
     <string name="title__general_theme">Theme</string>
+    <string name="title__general_search">Searh</string>
     <string name="title__general_smartspace">Home Widget</string>
     <string name="title__general_advanced">Advanced</string>
     <string name="title__general_notifications">Gestures and Notifications</string>
     <string name="summary__general_desktop">Customize your desktop</string>
+    <string name="summary__general_dock">Hotsea icons, search bar</string>
     <string name="summary__general_drawer">Customize your Drawer</string>
     <string name="summary__general_theme">Change colors, icon pack, icon shape</string>
+    <string name="summary__general_search">Search Provider, style, icons</string>
     <string name="summary__general_smartspace">Date, time, home widget</string>
     <string name="summary__general_notifications">Notifications and Gestures</string>
     <string name="summary__general_advanced">Languaje, back up, setting search</string>
@@ -38,13 +42,15 @@
     <string name="pref_category__interfaces">Interfaces</string>
     <string name="pref_category__inputs">Gestures and Search</string>
     <string name="pref_category__others">Others</string>
+
     <!-- PREFERENCES DESKTOP -->
     <string name="allow_rotation_blocked_desc">Current Display setting doesn\'t permit rotation</string>
     <string name="title__desktop_full_width_widgets">Full width widgets</string>
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
 
-
     <!-- PREFERENCES DOCK -->
+    <string name="title__dock_search_bar">Show Search Bar</string>
+
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>

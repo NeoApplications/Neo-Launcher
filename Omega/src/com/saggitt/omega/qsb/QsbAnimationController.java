@@ -102,14 +102,14 @@ public class QsbAnimationController implements WindowStateListener, StateListene
         });
         Animator animator;
         if (checkHotseat) {
-            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, new float[]{0.0f}));
-            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, new float[]{(float) ((-mLauncher.getHotseat().getHeight()) / 2)});
+            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f));
+            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, (float) ((-mLauncher.getHotseat().getHeight()) / 2));
             animator.setInterpolator(Interpolators.ACCEL);
             mAnimatorSet.play(animator);
             mAnimatorSet.setDuration(200);
         } else {
-            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, new float[]{1.0f}));
-            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, new float[]{0.0f});
+            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f));
+            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0.0f);
             animator.setInterpolator(Interpolators.DEACCEL);
             mAnimatorSet.play(animator);
             mAnimatorSet.setDuration(200);

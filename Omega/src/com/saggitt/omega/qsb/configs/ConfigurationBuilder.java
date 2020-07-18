@@ -272,7 +272,6 @@ public class ConfigurationBuilder {
         if (bubbleTextViewArr.length == 0 || bubbleTextViewArr[0] == null) {
             Log.e("ConfigBuilder", "No icons rendered in all apps");
             setHotseatSearchView();
-            return;
         } else {
             mBubbleTextView = bubbleTextViewArr[0];
             mNano.allAppsCols = allAppsCols;

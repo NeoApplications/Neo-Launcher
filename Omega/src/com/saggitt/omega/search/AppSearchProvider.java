@@ -101,7 +101,7 @@ public class AppSearchProvider extends ContentProvider {
     }
 
     public static Uri buildUri(AppInfo appInfo, UserManagerCompat userManagerCompat) {
-        return new Builder().scheme("content").authority("com.aosp.launcher.appssearch").appendQueryParameter("component", appInfo.componentName.flattenToShortString()).appendQueryParameter("user", Long.toString(userManagerCompat.getSerialNumberForUser(appInfo.user))).build();
+        return new Builder().scheme("content").authority("com.saggitt.launcher.appssearch").appendQueryParameter("component", appInfo.componentName.flattenToShortString()).appendQueryParameter("user", Long.toString(userManagerCompat.getSerialNumberForUser(appInfo.user))).build();
     }
 
     public final Cursor listToCursor(List<AppInfo> list) {

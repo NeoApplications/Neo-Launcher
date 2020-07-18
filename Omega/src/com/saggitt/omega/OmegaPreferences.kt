@@ -72,6 +72,9 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)
 
+    /* --DOCK-- */
+    var dockSearchBar by BooleanPref("pref_dockSearchBar", false, recreate)
+
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)

@@ -53,12 +53,7 @@ public class SearchIcon extends View implements SharedPreferences.OnSharedPrefer
     public SearchIcon(Context context, AttributeSet attributeSet, int res) {
         super(context, attributeSet, res);
         updatePrefs(Utilities.getDevicePrefs(context));
-        setOnClickListener(new View.OnClickListener() {
-            @Override
-            public final void onClick(View view) {
-                startService(view);
-            }
-        });
+        setOnClickListener(view -> startService(view));
     }
 
     public void startService(View view) {

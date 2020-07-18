@@ -104,31 +104,21 @@ public class DefaultQsbContainer extends ExtendedEditText implements OnUpdateLis
     public void initialize(AllAppsContainerView appsView) {
     }
 
-    ;
-
     @Override
     public void resetSearch() {
     }
 
-    ;
-
     @Override
     public void preDispatchKeyEvent(KeyEvent event) {
     }
-
-    ;
 
     @Override
     public float getScrollRangeDelta(Rect insets) {
         return 0;
     }
 
-    ;
-
     @Override
     public void setContentVisibility(int visibleElements, PropertySetter setter,
                                      Interpolator interpolator) {
     }
-
-    ;
 }
