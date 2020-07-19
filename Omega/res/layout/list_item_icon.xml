@@ -20,21 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="60dp">
 
-    <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@android:id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:attr/selectableItemBackground"
-        android:drawableStart="?android:listChoiceIndicatorSingle"
-        android:drawablePadding="@dimen/select_dialog_drawable_padding_start_material"
-        android:ellipsize="marquee"
-        android:gravity="center_vertical"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
-        android:paddingStart="@dimen/select_dialog_padding_start_material"
-        android:paddingEnd="@dimen/select_dialog_padding_material"
-        android:text="Search Provider"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="?android:attr/textColorAlertDialogListItem"
+    <include
+        layout="@layout/item_check"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,4 +37,5 @@
         android:src="@drawable/ic_qsb_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
