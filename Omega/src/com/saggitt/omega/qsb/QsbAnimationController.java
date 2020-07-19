@@ -1,17 +1,18 @@
 /*
- * Copyright (C) 2019 Paranoid Android
+ *  Copyright (c) 2020 Omega Launcher
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 package com.saggitt.omega.qsb;
 
@@ -21,26 +22,25 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
-import com.android.launcher3.LauncherRootView.WindowStateListener;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherRootView;
 import com.android.launcher3.LauncherState;
-import com.android.launcher3.LauncherStateManager.StateListener;
+import com.android.launcher3.LauncherStateManager;
 import com.android.launcher3.anim.Interpolators;
-import com.saggitt.omega.OmegaLauncher;
 
-public class QsbAnimationController implements WindowStateListener, StateListener {
+public class QsbAnimationController implements LauncherRootView.WindowStateListener, LauncherStateManager.StateListener {
+    private final Launcher mLauncher;
+    public boolean mGoogleHasFocus;
+    AnimatorSet mAnimatorSet;
+    private boolean mSearchRequested;
 
-    public AnimatorSet mAnimatorSet;
-    public boolean mQsbHasFocus;
-    public OmegaLauncher mLauncher;
-    public boolean mSearchRequested;
-
-    public QsbAnimationController(OmegaLauncher launcher) {
+    public QsbAnimationController(Launcher launcher) {
         mLauncher = launcher;
         mLauncher.getStateManager().addStateListener(this);
         mLauncher.getRootView().setWindowStateListener(this);
     }
 
-    public void playQsbAnimation() {
+    public final void dZ() {
         if (mLauncher.hasWindowFocus()) {
             mSearchRequested = true;
         } else {
@@ -50,37 +50,35 @@ public class QsbAnimationController implements WindowStateListener, StateListene
 
     public AnimatorSet openQsb() {
         mSearchRequested = false;
-        mQsbHasFocus = true;
-        playAnimation(true, true);
+        playAnimation(mGoogleHasFocus = true, true);
         return mAnimatorSet;
     }
 
-    public void prepareAnimation(boolean hasFocus) {
+    public final void z(boolean z) {
         mSearchRequested = false;
-        if (mQsbHasFocus) {
-            mQsbHasFocus = false;
-            playAnimation(false, hasFocus);
+        if (mGoogleHasFocus) {
+            mGoogleHasFocus = false;
+            playAnimation(false, z);
         }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus) {
-            if (mSearchRequested) {
-                openQsb();
-                return;
+        if (hasFocus || !mSearchRequested) {
+            if (hasFocus) {
+                z(true);
             }
+            return;
         }
-        if (hasFocus) {
-            prepareAnimation(true);
-        }
+        openQsb();
     }
 
+    @Override
     public void onWindowVisibilityChanged(int visibility) {
-        prepareAnimation(false);
+        z(false);
     }
 
-    public void playAnimation(boolean checkHotseat, boolean hasFocus) {
+    private void playAnimation(boolean z, boolean z2) {
         if (mAnimatorSet != null) {
             mAnimatorSet.cancel();
             mAnimatorSet = null;
@@ -100,37 +98,34 @@ public class QsbAnimationController implements WindowStateListener, StateListene
                 }
             }
         });
-        Animator animator;
-        if (checkHotseat) {
-            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f));
-            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, (float) ((-mLauncher.getHotseat().getHeight()) / 2));
+        if (z) {
+            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 0f));
+            Animator animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, (float) ((-mLauncher.getHotseat().getHeight()) / 2));
             animator.setInterpolator(Interpolators.ACCEL);
             mAnimatorSet.play(animator);
             mAnimatorSet.setDuration(200);
         } else {
-            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f));
-            animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0.0f);
+            mAnimatorSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 1f));
+            Animator animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f);
             animator.setInterpolator(Interpolators.DEACCEL);
             mAnimatorSet.play(animator);
             mAnimatorSet.setDuration(200);
         }
         mAnimatorSet.start();
-        if (!hasFocus) {
+        if (!z2) {
             mAnimatorSet.end();
         }
     }
 
-    @Override
     public void onStateTransitionStart(LauncherState launcherState) {
     }
 
-    @Override
     public void onStateTransitionComplete(LauncherState launcherState) {
-        reattachFocus(launcherState);
+        a(launcherState);
     }
 
-    public void reattachFocus(LauncherState launcherState) {
-        if (mQsbHasFocus && launcherState != LauncherState.ALL_APPS && !mLauncher.hasWindowFocus()) {
+    private void a(LauncherState launcherState) {
+        if (mGoogleHasFocus && launcherState != LauncherState.ALL_APPS && !mLauncher.hasWindowFocus()) {
             playAnimation(true, false);
         }
     }
