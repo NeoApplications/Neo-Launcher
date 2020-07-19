@@ -24,26 +24,31 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.android.launcher3.AppInfo;
-import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.Launcher;
-import com.android.launcher3.R;
-import com.android.launcher3.allapps.AlphabeticalAppsList.AdapterItem;
-import com.android.launcher3.compat.UserManagerCompat;
-import com.android.launcher3.model.AppLaunchTracker;
-import com.android.launcher3.touch.ItemClickHandler;
-import com.android.launcher3.touch.ItemLongClickListener;
-import com.android.launcher3.util.PackageManagerHelper;
-
-import java.util.List;
 
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityRecordCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.launcher3.AppInfo;
+import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.AlphabeticalAppsList.AdapterItem;
+import com.android.launcher3.compat.UserManagerCompat;
+import com.android.launcher3.model.AppLaunchTracker;
+import com.android.launcher3.touch.ItemClickHandler;
+import com.android.launcher3.touch.ItemLongClickListener;
+import com.android.launcher3.util.PackageManagerHelper;
+import com.saggitt.omega.search.SearchProvider;
+import com.saggitt.omega.search.SearchProviderController;
+import com.saggitt.omega.search.webproviders.WebSearchProvider;
+
+import java.util.List;
 
 /**
  * The grid view adapter of all the apps.
@@ -65,6 +70,9 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
     // A divider that separates the apps list and the search market button
     public static final int VIEW_TYPE_ALL_APPS_DIVIDER = 1 << 4;
     public static final int VIEW_TYPE_WORK_TAB_FOOTER = 1 << 5;
+
+    // Web search suggestions
+    public static final int VIEW_TYPE_SEARCH_SUGGESTION = 1 << 7;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
@@ -277,6 +285,10 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
             case VIEW_TYPE_WORK_TAB_FOOTER:
                 View footer = mLayoutInflater.inflate(R.layout.work_tab_footer, parent, false);
                 return new ViewHolder(footer);
+
+            case VIEW_TYPE_SEARCH_SUGGESTION:
+                return new ViewHolder(mLayoutInflater.inflate(R.layout.all_apps_search_suggestion, parent, false));
+
             default:
                 throw new RuntimeException("Unexpected view type");
         }
@@ -317,6 +329,22 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                 managedByLabel.setText(anyProfileQuietModeEnabled
                         ? R.string.work_mode_off_label : R.string.work_mode_on_label);
                 break;
+
+            case VIEW_TYPE_SEARCH_SUGGESTION:
+                int color = getDrawerTextColor();
+                ViewGroup group = (ViewGroup) holder.itemView;
+                TextView textView = group.findViewById(R.id.suggestion);
+                String suggestion = mApps.getAdapterItems().get(position).suggestion;
+                textView.setText(suggestion);
+                textView.setTextColor(color);
+                ((ImageView) group.findViewById(android.R.id.icon)).getDrawable().setTint(color);
+                group.setOnClickListener(v -> {
+                    SearchProvider provider = getSearchProvider();
+                    if (provider instanceof WebSearchProvider) {
+                        ((WebSearchProvider) provider).openResults(suggestion);
+                    }
+                });
+                break;
         }
         if (mBindViewCallback != null) {
             mBindViewCallback.onBindView(holder);
@@ -338,6 +366,15 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
     public int getItemViewType(int position) {
         AlphabeticalAppsList.AdapterItem item = mApps.getAdapterItems().get(position);
         return item.viewType;
+    }
+
+    public int getDrawerTextColor() {
+        return Utilities.getOmegaPrefs(mLauncher.getApplicationContext()).getDrawerLabelColor();
+    }
+
+
+    private SearchProvider getSearchProvider() {
+        return SearchProviderController.INSTANCE.get(mLauncher).getSearchProvider();
     }
 
 }

@@ -29,7 +29,7 @@ public class BingWebSearchProvider extends WebSearchProvider {
         mContext = context;
         searchUrl = "https://www.bing.com/search?q=%s";
         suggestionsUrl = "https://www.bing.com/osjson.aspx?query=%s";
-        name = context.getString(R.string.web_search_bing);
+        providerName = context.getString(R.string.web_search_bing);
     }
 
     @Override

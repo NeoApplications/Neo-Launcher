@@ -157,4 +157,15 @@
         <item name="android:textSize">15sp</item>
         <item name="fontWeight">200</item>
     </style>
+
+    <!-- Pixel -->
+    <style name="HotseatQsbTheme">
+        <item name="gIcon">@drawable/ic_super_g_shadow</item>
+        <item name="micIcon">@drawable/ic_mic_shadow</item>
+    </style>
+
+    <style name="HotseatQsbTheme.Colored" parent="@style/HotseatQsbTheme">
+        <item name="gIcon">@drawable/ic_qsb_logo</item>
+        <item name="micIcon">@drawable/ic_qsb_mic</item>
+    </style>
 </resources>

@@ -15,19 +15,23 @@
  */
 package com.saggitt.omega.search;
 
-import com.android.launcher3.allapps.search.AllAppsSearchBarController.Callbacks;
+import com.android.launcher3.allapps.search.AllAppsSearchBarController;
 import com.android.launcher3.util.ComponentKey;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchResult {
 
-    public final ArrayList<ComponentKey> mApps = new ArrayList();
-    public final Callbacks mCallbacks;
-    public final String mQuery;
+    final AllAppsSearchBarController.Callbacks mCallbacks;
+    final String mQuery;
+    final ArrayList<ComponentKey> mApps;
+    final List<String> mSuggestions;
 
-    public SearchResult(String query, Callbacks callbacks) {
+    SearchResult(String query, AllAppsSearchBarController.Callbacks callbacks) {
+        mApps = new ArrayList<>();
         mQuery = query;
         mCallbacks = callbacks;
+        mSuggestions = new ArrayList<>();
     }
 }

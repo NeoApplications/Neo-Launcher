@@ -276,7 +276,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
     protected final Intent createSettingsBroadcast() {
         SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
-        if (provider.isBroadcast()) {
+        if (provider.isBroadCast()) {
             Intent intent = provider.getSettingsIntent();
             List queryBroadcastReceivers = getContext().getPackageManager()
                     .queryBroadcastReceivers(intent, 0);
@@ -291,7 +291,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
     protected final Intent createSettingsIntent() {
         SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
-        return provider.isBroadcast() ? null : provider.getSettingsIntent();
+        return provider.isBroadCast() ? null : provider.getSettingsIntent();
     }
 
     public final void l(String str) {

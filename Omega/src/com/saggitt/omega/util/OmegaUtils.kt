@@ -22,9 +22,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.util.Property
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -42,9 +44,11 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Themes
+import org.json.JSONArray
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.reflect.KMutableProperty0
 
 val Context.launcherAppState get() = LauncherAppState.getInstance(this)
@@ -125,7 +129,27 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
     }
 }
 
+@Suppress("UNCHECKED_CAST")
+fun <T> JSONArray.toArrayList(): ArrayList<T> {
+    val arrayList = ArrayList<T>()
+    for (i in (0 until length())) {
+        arrayList.add(get(i) as T)
+    }
+    return arrayList
+}
+
+
+fun Float.round() = roundToInt().toFloat()
+
 fun Float.ceilToInt() = ceil(this).toInt()
+
+fun dpToPx(size: Float): Float {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, Resources.getSystem().displayMetrics)
+}
+
+fun pxToDp(size: Float): Float {
+    return size / dpToPx(1f)
+}
 
 val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
@@ -155,8 +179,8 @@ inline fun ViewGroup.forEachChildReversedIndexed(action: (View, Int) -> Unit) {
 }
 
 fun Switch.applyColor(color: Int) {
-    val colorForeground = Themes.getAttrColor(context, android.R.attr.colorForeground)
-    val alphaDisabled = Themes.getAlpha(context, android.R.attr.disabledAlpha)
+    val colorForeground = Themes.getAttrColor(context, R.attr.colorForeground)
+    val alphaDisabled = Themes.getAlpha(context, R.attr.disabledAlpha)
     val switchThumbNormal = context.resources.getColor(androidx.preference.R.color.switch_thumb_normal_material_light)
     val switchThumbDisabled = context.resources.getColor(androidx.preference.R.color.switch_thumb_disabled_material_light)
     val thstateList = ColorStateList(arrayOf(
@@ -168,8 +192,8 @@ fun Switch.applyColor(color: Int) {
                     color,
                     switchThumbNormal))
     val trstateList = ColorStateList(arrayOf(
-            intArrayOf(-android.R.attr.state_enabled),
-            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-R.attr.state_enabled),
+            intArrayOf(R.attr.state_checked),
             intArrayOf()),
             intArrayOf(
                     ColorUtils.setAlphaComponent(colorForeground, alphaDisabled),
@@ -206,14 +230,6 @@ val Configuration.usingNightMode get() = uiMode and Configuration.UI_MODE_NIGHT_
 
 
 inline infix fun Int.hasFlag(flag: Int) = (this and flag) != 0
-
-fun Int.hasFlags(vararg flags: Int): Boolean {
-    return flags.all { hasFlag(it) }
-}
-
-fun Int.addFlag(flag: Int): Int {
-    return this or flag
-}
 
 fun Int.removeFlag(flag: Int): Int {
     return this and flag.inv()

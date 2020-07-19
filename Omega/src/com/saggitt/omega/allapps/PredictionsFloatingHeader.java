@@ -74,6 +74,10 @@ public class PredictionsFloatingHeader extends FloatingHeaderView implements Ins
         }
     }
 
+    public PredictionRowView getPredictionRowView() {
+        return mPredictionRowView;
+    }
+
     public boolean hasVisibleContent() {
         return mPredictionUiStateManager.getCurrentState().isEnabled;
     }

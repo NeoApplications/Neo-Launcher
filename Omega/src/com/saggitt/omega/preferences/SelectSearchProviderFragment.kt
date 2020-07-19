@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckedTextView
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -76,7 +77,7 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
         val Providers = searchProvider.getSearchProviders(context)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-            return Holder(LayoutInflater.from(context).inflate(R.layout.gesture_item, parent, false))
+            return Holder(LayoutInflater.from(context).inflate(R.layout.list_item_icon, parent, false))
         }
 
         override fun getItemCount() = Providers.size
@@ -84,10 +85,11 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
         override fun onBindViewHolder(holder: Holder, position: Int) {
             holder.text.text = Providers[position].providerName
             holder.text.isChecked = Providers[position]::class.java.name == value
+            holder.providerIcon.setImageDrawable((Providers[position].icon))
         }
 
         inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-
+            val providerIcon = itemView.findViewById<ImageView>(R.id.provider_icon);
             val text = itemView.findViewById<CheckedTextView>(android.R.id.text1)!!.apply {
                 setOnClickListener(this@Holder)
                 val tintList = ColorStateList.valueOf(context.omegaPrefs.accentColor)

@@ -17,6 +17,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.qsb.QsbWidgetHostView;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.OptionsPopupView;
+import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 
@@ -44,7 +45,7 @@ public class SmartSpaceHostView extends QsbWidgetHostView implements View.OnLong
 
     public static Intent createSettingsIntent() {
         return new Intent(SETTINGS_INTENT_ACTION)
-                .setPackage(SmartspaceQsbWidget.WIDGET_PACKAGE_NAME)
+                .setPackage(Config.GOOGLE_QSB)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_NO_HISTORY
                         | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);

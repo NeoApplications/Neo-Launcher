@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -45,7 +46,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Message;
@@ -63,6 +66,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.Interpolator;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -786,9 +790,22 @@ public final class Utilities {
         return false;
     }
 
-    public static SharedPreferences getReflectionPrefs(Context context) {
-        return context.getSharedPreferences(
-                LauncherFiles.REFLECTION_PREFERENCES_KEY, Context.MODE_PRIVATE);
+    public static void openURLinBrowser(Context context, String url) {
+        openURLinBrowser(context, url, null, null);
+    }
+
+    public static void openURLinBrowser(Context context, String url, Rect sourceBounds, Bundle options) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setSourceBounds(sourceBounds);
+            if (options == null) {
+                context.startActivity(intent);
+            } else {
+                context.startActivity(intent, options);
+            }
+        } catch (ActivityNotFoundException exc) {
+            Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*FIN CUSTOM*/

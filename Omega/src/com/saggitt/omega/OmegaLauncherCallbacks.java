@@ -167,13 +167,6 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     }
 
     private void updatePredictionsIfResumed() {
-        /*if (mLauncher.hasBeenResumed()) {
-            //ReflectionClient.getInstance(mLauncher).updatePredictionsNow(FeatureFlags.REFLECTION_FORCE_OVERVIEW_MODE ? Client.OVERVIEW.id : Client.HOME.id);
-            handler.post(() -> {
-                mLauncher.getUserEventDispatcher().updatePredictions();
-
-            });
-        }*/
     }
 
     @Override

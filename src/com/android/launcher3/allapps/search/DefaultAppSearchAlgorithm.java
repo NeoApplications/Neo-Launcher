@@ -15,26 +15,46 @@
  */
 package com.android.launcher3.allapps.search;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.LauncherActivityInfo;
 import android.os.Handler;
+import android.os.UserHandle;
 
+import com.android.launcher3.AppFilter;
 import com.android.launcher3.AppInfo;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.compat.LauncherAppsCompat;
+import com.android.launcher3.compat.UserManagerCompat;
+import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.util.ComponentKey;
+import com.saggitt.omega.OmegaAppFilter;
+import com.saggitt.omega.search.SearchProvider;
+import com.saggitt.omega.search.SearchProviderController;
+import com.saggitt.omega.search.webproviders.WebSearchProvider;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * The default search implementation.
  */
 public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
-
+    public final static String SEARCH_HIDDEN_APPS = "pref_search_hidden_apps";
     private final List<AppInfo> mApps;
     protected final Handler mResultHandler;
+    private final Context mContext;
 
-    public DefaultAppSearchAlgorithm(List<AppInfo> apps) {
+    private final AppFilter mBaseFilter;
+
+    public DefaultAppSearchAlgorithm(Context context, List<AppInfo> apps) {
+        mContext = context;
         mApps = apps;
         mResultHandler = new Handler();
+        mBaseFilter = new OmegaAppFilter(context);
     }
 
     @Override
@@ -44,17 +64,43 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
         }
     }
 
-    @Override
-    public void doSearch(final String query,
-            final AllAppsSearchBarController.Callbacks callback) {
-        final ArrayList<ComponentKey> result = getTitleMatchResult(query);
-        mResultHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                callback.onSearchResult(query, result);
+    public static List<AppInfo> getApps(Context context, List<AppInfo> defaultApps, AppFilter filter) {
+        if (!Utilities.getPrefs(context).getBoolean(SEARCH_HIDDEN_APPS, false)) {
+            return defaultApps;
+        }
+        final List<AppInfo> apps = new ArrayList<>();
+        final IconCache iconCache = LauncherAppState.getInstance(context).getIconCache();
+        for (UserHandle user : UserManagerCompat.getInstance(context).getUserProfiles()) {
+            final List<ComponentName> duplicatePreventionCache = new ArrayList<>();
+            for (LauncherActivityInfo info : LauncherAppsCompat.getInstance(context).getActivityList(null, user)) {
+                if (!filter.shouldShowApp(info.getComponentName(), user)) {
+                    continue;
+                }
+                if (!duplicatePreventionCache.contains(info.getComponentName())) {
+                    duplicatePreventionCache.add(info.getComponentName());
+                    final AppInfo appInfo = new AppInfo(context, info, user);
+                    iconCache.getTitleAndIcon(appInfo, false);
+                    apps.add(appInfo);
+                }
             }
-        });
+        }
+        return apps;
+    }
+
+    @Override
+    public void doSearch(final String query, final AllAppsSearchBarController.Callbacks callback) {
+        final ArrayList<ComponentKey> result = getTitleMatchResult(query);
+        final List<String> suggestions = getSuggestions(query);
+        mResultHandler.post(() -> callback.onSearchResult(query, result, suggestions));
+    }
+
+    private List<String> getSuggestions(String query) {
+        SearchProvider provider = SearchProviderController.INSTANCE
+                .get(mContext).getSearchProvider();
+        if (provider instanceof WebSearchProvider) {
+            return ((WebSearchProvider) provider).getSuggestions(query);
+        }
+        return Collections.emptyList();
     }
 
     private ArrayList<ComponentKey> getTitleMatchResult(String query) {
@@ -63,7 +109,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
         final String queryTextLower = query.toLowerCase();
         final ArrayList<ComponentKey> result = new ArrayList<>();
         StringMatcher matcher = StringMatcher.getInstance();
-        for (AppInfo info : mApps) {
+        for (AppInfo info : getApps(mContext, mApps, mBaseFilter)) {
             if (matches(info, queryTextLower, matcher)) {
                 result.add(info.toComponentKey());
             }

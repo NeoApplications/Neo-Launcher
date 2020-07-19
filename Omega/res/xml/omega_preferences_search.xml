@@ -20,7 +20,7 @@
     <com.saggitt.omega.preferences.SearchProviderPreference
         android:defaultValue="@string/config_default_search_provider"
         android:key="pref_globalSearchProvider"
-        android:title="@string/title__folder_search_provider"
+        android:title="@string/title__search_provider"
         app:iconSpaceReserved="false" />
 
 </PreferenceScreen>

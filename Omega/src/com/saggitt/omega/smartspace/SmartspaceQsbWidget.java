@@ -17,13 +17,13 @@ import android.view.ViewGroup;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.qsb.QsbContainerView;
+import com.saggitt.omega.util.Config;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_BIND;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_PROVIDER;
 
 public class SmartspaceQsbWidget extends QsbContainerView {
-    public static final String WIDGET_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
     private static final String WIDGET_CLASS_NAME = "com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider";
 
     public SmartspaceQsbWidget(Context context) {
@@ -64,9 +64,8 @@ public class SmartspaceQsbWidget extends QsbContainerView {
         @Override
         protected AppWidgetProviderInfo getSearchWidgetProvider() {
             for (AppWidgetProviderInfo next : AppWidgetManager.getInstance(getContext()).getInstalledProviders()) {
-                // .getInstalledProvidersForPackage(SmartspaceQsbWidget.WIDGET_PACKAGE_NAME, Process.myUserHandle())
                 if (next.getProfile().equals(Process.myUserHandle())
-                        && SmartspaceQsbWidget.WIDGET_PACKAGE_NAME.equals(next.provider.getPackageName())
+                        && Config.GOOGLE_QSB.equals(next.provider.getPackageName())
                         && SmartspaceQsbWidget.WIDGET_CLASS_NAME.equals(next.provider.getClassName())) {
                     return next;
                 }
