@@ -68,7 +68,6 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
-
     }
 
     inner class ProviderListAdapter(private val context: Context) : RecyclerView.Adapter<ProviderListAdapter.Holder>() {
@@ -94,7 +93,6 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
                 setOnClickListener(this@Holder)
                 val tintList = ColorStateList.valueOf(context.omegaPrefs.accentColor)
                 compoundDrawableTintList = tintList
-
                 backgroundTintList = tintList
             }
 
@@ -106,7 +104,6 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
     }
 
     companion object {
-
         fun newInstance(preference: SearchProviderPreference) = SelectSearchProviderFragment().apply {
             arguments = Bundle(2).apply {
                 putString("key", preference.key)

@@ -68,6 +68,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set", Collections.emptySet(), doNothing)
     val drawerLabelColor by IntPref("pref_key__drawer_label_color", R.color.qsb_drawer_text_color_normal, reloadApps)
     var allAppsGlobalSearch by BooleanPref("pref_allAppsGoogleSearch", false, doNothing)
+    val allAppsSearch by BooleanPref("pref_allAppsSearch", true, recreate)
+
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)

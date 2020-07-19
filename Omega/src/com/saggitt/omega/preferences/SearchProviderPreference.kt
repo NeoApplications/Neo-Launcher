@@ -18,32 +18,36 @@
 package com.saggitt.omega.preferences
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import androidx.preference.DialogPreference
 import com.android.launcher3.R
+import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.util.omegaPrefs
 
 class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs),
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        OmegaPreferences.OnPreferenceChangeListener {
 
     var value = ""
     var defaultValue = ""
 
+    init {
+        layoutResource = R.layout.pref_with_preview_icon
+        updatePreview()
+    }
+
     override fun onAttached() {
         super.onAttached()
-
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        context.omegaPrefs.addOnPreferenceChangeListener("pref_globalSearchProvider", this)
     }
 
     override fun onDetached() {
         super.onDetached()
-
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        context.omegaPrefs.removeOnPreferenceChangeListener("pref_globalSearchProvider", this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String) {
+    override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
         if (key == this.key) {
             value = getPersistedString(defaultValue)
             notifyChanged()
@@ -51,6 +55,13 @@ class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogP
     }
 
     override fun getSummary() = SearchProviderController.INSTANCE.get(context).searchProvider.providerName
+
+    private fun updatePreview() {
+        try {
+            icon = SearchProviderController.INSTANCE.get(context).searchProvider.icon
+        } catch (ignored: IllegalStateException) {
+        }
+    }
 
     override fun onSetInitialValue(restorePersistedValue: Boolean, defaultValue: Any?) {
         value = if (restorePersistedValue) {
@@ -66,4 +77,5 @@ class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogP
     }
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
+
 }

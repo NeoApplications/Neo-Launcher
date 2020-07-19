@@ -21,6 +21,6 @@
         android:defaultValue="@string/config_default_search_provider"
         android:key="pref_globalSearchProvider"
         android:title="@string/title__search_provider"
+        android:persistent="true"
         app:iconSpaceReserved="false" />
-
 </PreferenceScreen>

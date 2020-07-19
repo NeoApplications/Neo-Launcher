@@ -99,7 +99,7 @@ public class SearchProviderController {
     }
 
     public Boolean isGoogle() {
-        return false;
+        return getSearchProvider() instanceof GoogleSearchProvider;
     }
 
     public void addOnProviderChangeListener(OnProviderChangeListener listener) {
