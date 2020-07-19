@@ -46,7 +46,6 @@ import java.io.PrintWriter;
 
 public class OmegaLauncherCallbacks implements LauncherCallbacks,
         SharedPreferences.OnSharedPreferenceChangeListener, OnChangeListener {
-    public static final String SEARCH_PACKAGE = "com.google.android.googlequicksearchbox";
 
     private final OmegaLauncher mLauncher;
     private final Bundle mUiInformation = new Bundle();
@@ -57,7 +56,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     private boolean mStarted;
     private boolean mResumed;
     private boolean mAlreadyOnHome;
-    //private Handler handler = new Handler(MODEL_EXECUTOR.getLooper());
+    QsbAnimationController mQsbAnimationController;
     private final Runnable mUpdatePredictionsIfResumed = this::updatePredictionsIfResumed;
     private PredictionUiStateManager predictionUiStateManager;
 
@@ -89,7 +88,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
-
+        mQsbAnimationController = new QsbAnimationController(mLauncher);
         predictionUiStateManager = PredictionUiStateManager.INSTANCE.get(mLauncher);
         predictionUiStateManager.setTargetAppsView(mLauncher.getAppsView());
         if (FeatureFlags.REFLECTION_FORCE_OVERVIEW_MODE) {
@@ -262,7 +261,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     }
 
     private ClientOptions getClientOptions(SharedPreferences prefs) {
-        boolean hasPackage = Config.hasPackageInstalled(mLauncher, SEARCH_PACKAGE);
+        boolean hasPackage = Config.hasPackageInstalled(mLauncher, Config.GOOGLE_QSB);
         boolean isEnabled = prefs.getBoolean(SettingsActivity.ENABLE_MINUS_ONE_PREF, true);
         int canUse = hasPackage && isEnabled ? 1 : 0;
         return new ClientOptions(canUse | 2 | 4 | 8);
