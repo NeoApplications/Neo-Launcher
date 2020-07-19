@@ -82,13 +82,18 @@
     <string name="title__notification_background">Notification Background Color</string>
 
     <!-- SEARCH -->
+    <string name="title__search_provider">Search engine</string>
     <string name="search_no_results">No Results</string>
     <string name="search_breadcrumb_connector" translatable="false">
         <xliff:g name="first_item">%1$s</xliff:g> >
         <xliff:g name="second_item">%2$s</xliff:g>
     </string>
 
+    <string name="search_provider_appsearch">App search</string>
+    <string name="search_provider_bing">Bing</string>
     <string name="web_search_bing">Bing (web)</string>
+
+    <string name="error_no_browser">No activity found to handle URLs</string>
 
     <!-- ADVANCED -->
     <string name="summary__advanced_setting_search">Display setting search in the action bar</string>
@@ -131,5 +136,5 @@
     <!-- QSB -->
     <string name="label_search">Search</string>
     <string name="label_voice_search">Voice search</string>
-
+    <string name="customize">Customize</string>
 </resources>

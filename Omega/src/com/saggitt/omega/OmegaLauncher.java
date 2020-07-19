@@ -17,6 +17,7 @@
 
 package com.saggitt.omega;
 
+import android.animation.AnimatorSet;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -24,13 +25,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
-import com.android.launcher3.LauncherCallbacks;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.google.android.libraries.gsa.launcherclient.LauncherClient;
 
 import static com.saggitt.omega.util.Config.MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
@@ -42,6 +44,7 @@ public class OmegaLauncher extends Launcher {
     private boolean sRestart = false;
     private OmegaPreferences mOmegaPrefs;
     private OmegaPreferencesChangeCallback prefCallback = new OmegaPreferencesChangeCallback(this);
+    private OmegaLauncherCallbacks launcherCallbacks;
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -52,7 +55,8 @@ public class OmegaLauncher extends Launcher {
     }
 
     public OmegaLauncher() {
-        setLauncherCallbacks(new OmegaLauncherCallbacks(this));
+        launcherCallbacks = new OmegaLauncherCallbacks(this);
+        setLauncherCallbacks(launcherCallbacks);
     }
 
     @Override
@@ -133,7 +137,16 @@ public class OmegaLauncher extends Launcher {
         }
     }
 
-    public LauncherCallbacks getLauncherCallbacks() {
-        return mLauncherCallbacks;
+    @Nullable
+    public LauncherClient getGoogleNow() {
+        return launcherCallbacks.getClient();
+    }
+
+    public void playQsbAnimation() {
+        launcherCallbacks.mQsbAnimationController.dZ();
+    }
+
+    public AnimatorSet openQsb() {
+        return launcherCallbacks.mQsbAnimationController.openQsb();
     }
 }

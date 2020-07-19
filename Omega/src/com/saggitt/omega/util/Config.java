@@ -40,6 +40,8 @@ public class Config {
     public static final int REQUEST_PERMISSION_CALENDAR_READ_ACCESS = 668;
     public static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 669;
 
+    public final static String GOOGLE_QSB = "com.google.android.googlequicksearchbox";
+
     public Context mContext;
 
     public Config(Context context) {
@@ -48,6 +50,10 @@ public class Config {
 
     public boolean defaultEnableBlur() {
         return mContext.getResources().getBoolean(R.bool.config_default_enable_blur);
+    }
+
+    public String getDefaultSearchProvider() {
+        return mContext.getResources().getString(R.string.config_default_search_provider);
     }
 
     public float getDefaultBlurStrength() {

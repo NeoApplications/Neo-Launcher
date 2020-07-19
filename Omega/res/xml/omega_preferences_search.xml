@@ -15,7 +15,12 @@
   ~
   -->
 
-<PreferenceScreen>
-
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.saggitt.omega.preferences.SearchProviderPreference
+        android:defaultValue="@string/config_default_search_provider"
+        android:key="pref_globalSearchProvider"
+        android:title="@string/title__folder_search_provider"
+        app:iconSpaceReserved="false" />
 
 </PreferenceScreen>

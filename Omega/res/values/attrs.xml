@@ -90,4 +90,9 @@
     <attr name="settingsPopupBackground" format="color" />
     <attr name="bottomSheetNavBarColor" format="color" />
     <attr name="useLightSystemBars" format="boolean" />
+    <attr name="qsbEdgeRadius" format="dimension" />
+
+    <!-- Pixel -->
+    <attr name="gIcon" format="reference" />
+    <attr name="micIcon" format="reference" />
 </resources>

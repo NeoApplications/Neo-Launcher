@@ -23,10 +23,14 @@ import android.content.SharedPreferences
 import android.os.Looper
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
+import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.Executors
 import com.saggitt.omega.allapps.PredictionsFloatingHeader
+import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.dpToPx
+import com.saggitt.omega.util.pxToDp
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -62,6 +66,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     }
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set", Collections.emptySet(), doNothing)
+    val drawerLabelColor by IntPref("pref_key__drawer_label_color", R.color.qsb_drawer_text_color_normal, reloadApps)
+    var allAppsGlobalSearch by BooleanPref("pref_allAppsGoogleSearch", false, doNothing)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -74,6 +80,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     /* --DOCK-- */
     var dockSearchBar by BooleanPref("pref_dockSearchBar", false, recreate)
+    var dockHide by BooleanPref("pref_key__hide_hotseat", false, recreate)
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
@@ -90,11 +97,21 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var enableBlur by BooleanPref("pref_enableBlur", omegaConfig.defaultEnableBlur(), updateBlur)
     val blurRadius by FloatPref("pref_blurRadius", omegaConfig.defaultBlurStrength, updateBlur)
 
+    /* --SEARCH-- */
+    var searchBarRadius by DimensionPref("pref_searchbarRadius", -1f)
+    val dockColoredGoogle by BooleanPref("pref_dockColoredGoogle", true, doNothing)
+    var searchProvider by StringPref("pref_globalSearchProvider", omegaConfig.defaultSearchProvider) {
+        SearchProviderController.INSTANCE.get(context).onSearchProviderChanged()
+    }
+    val dualBubbleSearch by BooleanPref("pref_bubbleSearchStyle", false, recreate)
+    val searchHiddenApps by BooleanPref(DefaultAppSearchAlgorithm.SEARCH_HIDDEN_APPS, false)
+
     /* --DEV-- */
     var developerOptionsEnabled by BooleanPref("pref_showDevOptions", false, recreate)
     val showDebugInfo by BooleanPref("pref_showDebugInfo", false, doNothing)
     val lowPerformanceMode by BooleanPref("pref_lowPerformanceMode", false, recreate)
     val enablePhysics get() = !lowPerformanceMode
+    val debugOkHttp by BooleanPref("pref_debugOkhttp", onChange = restart)
 
     var restoreSuccess by BooleanPref("pref_restoreSuccess", false)
     var configVersion by IntPref("config_version", if (restoreSuccess) 0 else CURRENT_VERSION)
@@ -551,6 +568,16 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
         override fun onSetValue(value: Int) {
             edit { putString(getKey(), "$value") }
+        }
+    }
+
+    open inner class DimensionPref(key: String, defaultValue: Float = 0f, onChange: () -> Unit = doNothing) :
+            PrefDelegate<Float>(key, defaultValue, onChange) {
+
+        override fun onGetValue(): Float = dpToPx(sharedPrefs.getFloat(getKey(), defaultValue))
+
+        override fun onSetValue(value: Float) {
+            edit { putFloat(getKey(), pxToDp(value)) }
         }
     }
 

@@ -72,13 +72,14 @@ import com.android.launcher3.settings.PreferenceHighlighter;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
-import com.saggitt.omega.OmegaLauncherCallbacks;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.dash.DashActivity;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
 import com.saggitt.omega.preferences.ControlledPreference;
 import com.saggitt.omega.preferences.PreferenceController;
 import com.saggitt.omega.preferences.ResumablePreference;
+import com.saggitt.omega.preferences.SearchProviderPreference;
+import com.saggitt.omega.preferences.SelectSearchProviderFragment;
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
@@ -776,7 +777,7 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
 
                 case ENABLE_MINUS_ONE_PREF:
-                    if (Config.hasPackageInstalled(getActivity(), OmegaLauncherCallbacks.SEARCH_PACKAGE)) {
+                    if (Config.hasPackageInstalled(getActivity(), Config.GOOGLE_QSB)) {
                         return true;
                     }
                     break;
@@ -885,6 +886,9 @@ public class SettingsActivity extends SettingsBaseActivity
             } else if (preference instanceof PreferenceDialogPreference) {
                 f = PreferenceScreenDialogFragment.Companion
                         .newInstance((PreferenceDialogPreference) preference);
+            } else if (preference instanceof SearchProviderPreference) {
+                f = SelectSearchProviderFragment.Companion
+                        .newInstance((SearchProviderPreference) preference);
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;

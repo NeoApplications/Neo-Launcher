@@ -113,6 +113,14 @@
             android:name="com.samsung.android.non_immersive"
             android:value="true" />
 
+        <receiver
+            android:name="com.saggitt.omega.qsb.OPAStatusReceiver"
+            android:permission="android.permission.CAPTURE_AUDIO_HOTWORD">
+            <intent-filter>
+                <action android:name="com.google.android.systemui.OPA_ENABLED" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
