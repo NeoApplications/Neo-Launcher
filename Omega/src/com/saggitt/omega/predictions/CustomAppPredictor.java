@@ -37,7 +37,6 @@ import com.android.launcher3.appprediction.ComponentKeyMapper;
 import com.android.launcher3.appprediction.DynamicItemCache;
 import com.android.launcher3.logging.UserEventDispatcher;
 import com.android.launcher3.util.ComponentKey;
-import com.saggitt.omega.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -240,12 +239,13 @@ public class CustomAppPredictor extends UserEventDispatcher implements SharedPre
     }
 
     protected boolean isPredictorEnabled() {
-        return Utilities.getPrefs(mContext).getBoolean(SettingsActivity.SHOW_PREDICTIONS_PREF, true);
+        return false;
+        //return Utilities.getPrefs(mContext).getBoolean(SettingsActivity.SHOW_PREDICTIONS_PREF, true);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SettingsActivity.SHOW_PREDICTIONS_PREF)) {
+        /*if (key.equals(SettingsActivity.SHOW_PREDICTIONS_PREF)) {
             if (!isPredictorEnabled()) {
                 Set<String> predictionSet = getStringSetCopy();
 
@@ -260,7 +260,7 @@ public class CustomAppPredictor extends UserEventDispatcher implements SharedPre
             mUiManager.onPredictionsUpdated();
         } else if (key.equals(HIDDEN_PREDICTIONS_SET_PREF)) {
             mUiManager.onPredictionsUpdated();
-        }
+        }*/
     }
 
     protected ComponentKeyMapper<AppInfo> getComponentFromString(String str) {
