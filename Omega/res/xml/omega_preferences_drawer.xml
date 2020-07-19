@@ -28,17 +28,33 @@
         android:title="@string/title__drawer_sort"
         app:iconSpaceReserved="false" />
 
-    <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:defaultValue="false"
-        android:key="pref_show_predictions"
-        android:title="@string/title_app_suggestions"
-        app:iconSpaceReserved="false"
-        app:searchTitle="@string/title_app_suggestions" />
     <!--
         <com.saggitt.omega.preferences.StyledSwitchPreference
-            android:key="pref_showAllAppsLabel"
-            android:title="@string/title__drawer_all_apps"
             android:defaultValue="false"
-            android:persistent="true"
-            app:iconSpaceReserved="false"/> -->
+            android:key="pref_show_predictions"
+            android:title="@string/title_app_suggestions"
+            app:iconSpaceReserved="false"
+            app:searchTitle="@string/title_app_suggestions" />
+
+            <com.saggitt.omega.preferences.StyledSwitchPreference
+                android:key="pref_showAllAppsLabel"
+                android:title="@string/title__drawer_all_apps"
+                android:defaultValue="false"
+                android:persistent="true"
+                app:iconSpaceReserved="false"/> -->
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="true"
+        android:key="pref_allAppsSearch"
+        android:title="@string/title_all_apps_search"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="true"
+        android:dependency="pref_allAppsSearch"
+        android:disableDependentsState="true"
+        android:key="pref_allAppsGoogleSearch"
+        android:summary="@string/summary_all_apps_google_search"
+        android:title="@string/title_all_apps_google_search"
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>

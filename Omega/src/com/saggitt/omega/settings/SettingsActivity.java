@@ -57,7 +57,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
-import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
@@ -72,7 +71,6 @@ import com.android.launcher3.settings.PreferenceHighlighter;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
-import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.dash.DashActivity;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
 import com.saggitt.omega.preferences.ControlledPreference;
@@ -111,7 +109,7 @@ public class SettingsActivity extends SettingsBaseActivity
      */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
 
-    public final static String SHOW_PREDICTIONS_PREF = "pref_show_predictions";
+    //public final static String SHOW_PREDICTIONS_PREF = "pref_show_predictions";
     public final static String ENABLE_MINUS_ONE_PREF = "pref_enable_minus_one";
 
     public static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
@@ -218,10 +216,10 @@ public class SettingsActivity extends SettingsBaseActivity
         if (shouldShowSearch()) {
             Toolbar toolbar = findViewById(R.id.search_action_bar);
             toolbar.getMenu().clear();
-            OmegaPreferences prefs = Utilities.getOmegaPrefs(this);
+            //OmegaPreferences prefs = Utilities.getOmegaPrefs(this);
 
             toolbar.inflateMenu(R.menu.menu_settings);
-            ActionMenuView menuView = null;
+            ActionMenuView menuView;
             int count = toolbar.getChildCount();
             for (int i = 0; i < count; i++) {
                 View child = toolbar.getChildAt(i);
@@ -665,7 +663,7 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
 
                 case R.xml.omega_preferences_drawer:
-                    findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
+                    //findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     break;
                 case R.xml.omega_preferences_notification:
                     if (getResources().getBoolean(R.bool.notification_dots_enabled)) {
@@ -767,14 +765,14 @@ public class SettingsActivity extends SettingsBaseActivity
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             switch (preference.getKey()) {
-                case SHOW_PREDICTIONS_PREF:
+                /*case SHOW_PREDICTIONS_PREF:
                     if ((boolean) newValue) {
                         return true;
                     }
                     SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
                     confirmationFragment.setTargetFragment(this, 0);
                     confirmationFragment.show(getFragmentManager(), preference.getKey());
-                    break;
+                    break;*/
 
                 case ENABLE_MINUS_ONE_PREF:
                     if (Config.hasPackageInstalled(getActivity(), Config.GOOGLE_QSB)) {
@@ -978,13 +976,13 @@ public class SettingsActivity extends SettingsBaseActivity
     public static class SuggestionConfirmationFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
         public void onClick(final DialogInterface dialogInterface, final int n) {
-            if (getTargetFragment() instanceof PreferenceFragmentCompat) {
+            /*if (getTargetFragment() instanceof PreferenceFragmentCompat) {
                 Preference preference = ((PreferenceFragmentCompat) getTargetFragment())
                         .findPreference(SHOW_PREDICTIONS_PREF);
                 if (preference instanceof TwoStatePreference) {
                     ((TwoStatePreference) preference).setChecked(false);
                 }
-            }
+            }*/
         }
 
         public Dialog onCreateDialog(final Bundle bundle) {

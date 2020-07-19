@@ -61,6 +61,10 @@
     <string name="title__sort_most_used">Most Used</string>
     <string name="title__sort_by_color">By Color</string>
 
+    <string name="title_all_apps_search">Drawer search bar</string>
+    <string name="title_all_apps_google_search">Global search</string>
+    <string name="summary_all_apps_google_search">Find web results and apps</string>
+
     <string name="title_disable_suggestions_prompt">Disable App Suggestions</string>
     <string name="msg_disable_suggestions_prompt">"Usage data will be deleted."</string>
     <string name="label_turn_off_suggestions">Disable</string>
