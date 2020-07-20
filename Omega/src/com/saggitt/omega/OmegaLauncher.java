@@ -32,7 +32,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.google.android.libraries.gsa.launcherclient.LauncherClient;
+import com.saggitt.omega.util.CustomLauncherClient;
 
 import static com.saggitt.omega.util.Config.MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
@@ -138,7 +138,7 @@ public class OmegaLauncher extends Launcher {
     }
 
     @Nullable
-    public LauncherClient getGoogleNow() {
+    public CustomLauncherClient getGoogleNow() {
         return launcherCallbacks.getClient();
     }
 
