@@ -116,7 +116,7 @@ public abstract class WebSearchProvider extends SearchProvider {
         return searchUrl;
     }
 
-    public String setSuggestionsUrl() {
+    public String getSuggestionsUrl() {
         return suggestionsUrl;
     }
 
