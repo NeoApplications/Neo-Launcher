@@ -48,7 +48,7 @@
                 android:theme="@style/Toolbar"
                 app:contentInsetEnd="64dp"
                 app:contentInsetStartWithNavigation="64dp"
-                app:navigationIcon="@drawable/ic_settings_search">
+                app:navigationIcon="@drawable/ic_allapps_search">
                 <!-- TODO: Figure out proper way to align text to preference titles -->
                 <TextView
                     android:id="@+id/search_action_bar_title"
