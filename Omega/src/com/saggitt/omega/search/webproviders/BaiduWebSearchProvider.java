@@ -27,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
 public class BaiduWebSearchProvider extends WebSearchProvider {
     public BaiduWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://m.baidu.com/s?word=%s";
-        suggestionsUrl = "https://m.baidu.com/su?action=opensearch&ie=UTF-8&wd=%s";
+        searchUrl = "https://www.baidu.com/s?wd=%s";
+        suggestionsUrl = "http://suggestion.baidu.com/su?action=opensearch&ie=UTF-8&wd=%s";
         name = mContext.getResources().getString(R.string.web_search_baidu);
     }
 
