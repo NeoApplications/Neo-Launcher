@@ -170,7 +170,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         super.onAttachedToWindow();
         dy().registerOnSharedPreferenceChangeListener(this);
         mTouchDelegate.setDelegateView(mMicIconView);
-        SearchProviderController.INSTANCE.get(getContext()).addOnProviderChangeListener(this);
+        SearchProviderController.Companion.getInstance(getContext()).addOnProviderChangeListener(this);
         WallpaperColorInfo instance = WallpaperColorInfo.getInstance(getContext());
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
@@ -230,7 +230,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
 
     protected void onDetachedFromWindow() {
         Utilities.getPrefs(getContext()).unregisterOnSharedPreferenceChangeListener(this);
-        SearchProviderController.INSTANCE.get(getContext()).removeOnProviderChangeListener(this);
+        SearchProviderController.Companion.getInstance(getContext()).removeOnProviderChangeListener(this);
         WallpaperColorInfo.getInstance(getContext()).removeOnChangeListener(this);
         super.onDetachedFromWindow();
     }
@@ -283,7 +283,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             }
         }
     }
-
 
     //SEARCH BAR WIDTH
     public int getMeasuredWidth(int width, @NotNull DeviceProfile dp) {
@@ -490,10 +489,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         return mUseTwoBubbles ? getMicWidth() + twoBubbleGap : 0;
     }
 
-    /*public int getMicWidth() {
-        return mSearchIconWidth;
-    }*/
-
     protected final int getMicWidth() {
         if (!mUseTwoBubbles || TextUtils.isEmpty(this.Dg)) {
             return mSearchIconWidth;
@@ -565,7 +560,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     public void onClick(View view) {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
         if (view == mMicIconView) {
             if (controller.isGoogle()) {
@@ -640,7 +635,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     protected Drawable getIcon(boolean colored) {
-        SearchProvider provider = SearchProviderController.INSTANCE.get(getContext()).getSearchProvider();
+        SearchProvider provider = SearchProviderController.Companion.getInstance(getContext()).getSearchProvider();
         return provider.getIcon(colored);
     }
 
@@ -649,7 +644,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     protected Drawable getMicIcon(boolean colored) {
-        SearchProvider provider = SearchProviderController.INSTANCE.get(getContext()).getSearchProvider();
+        SearchProvider provider = SearchProviderController.Companion.getInstance(getContext()).getSearchProvider();
         if (mShowAssistant && provider.getSupportsAssistant()) {
             return provider.getAssistantIcon(colored);
         } else if (provider.getSupportsVoiceSearch()) {

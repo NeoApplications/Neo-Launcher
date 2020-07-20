@@ -95,8 +95,8 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
     }
 
     private List<String> getSuggestions(String query) {
-        SearchProvider provider = SearchProviderController.INSTANCE
-                .get(mContext).getSearchProvider();
+        SearchProvider provider = SearchProviderController.Companion
+                .getInstance(mContext).getSearchProvider();
         if (provider instanceof WebSearchProvider) {
             return ((WebSearchProvider) provider).getSuggestions(query);
         }

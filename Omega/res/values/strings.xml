@@ -92,10 +92,30 @@
         <xliff:g name="first_item">%1$s</xliff:g> >
         <xliff:g name="second_item">%2$s</xliff:g>
     </string>
-
+    <string name="search_provider_yandex">Yandex</string>
+    <string name="search_provider_ddg">DuckDuckGo</string>
+    <string name="search_provider_baidu">Baidu</string>
+    <string name="search_provider_s_finder">S Finder</string>
+    <string name="search_pref_title">Search</string>
+    <string name="google">Google</string>
+    <string name="search_provider_google_go">Google Go</string>
+    <string name="search_provider_firefox">Firefox</string>
+    <string name="search_provider_search_lite">Search Lite</string>
+    <string name="search_provider_cool_search">Cool Search</string>
     <string name="search_provider_appsearch">App search</string>
     <string name="search_provider_bing">Bing</string>
+    <string name="search_provider_edge">Edge</string>
+    <string name="search_provider_qwant">Qwant</string>
+    <string name="web_search_google">Google (web)</string>
+    <string name="web_search_ddg">DuckDuckGo (web)</string>
+    <string name="web_search_startpage">Startpage.com (web)</string>
     <string name="web_search_bing">Bing (web)</string>
+    <string name="web_search_qwant">Qwant (web)</string>
+    <string name="web_search_ecosia">Ecosia (web)</string>
+    <string name="web_search_yandex">Yandex (web)</string>
+    <string name="web_search_naver">Naver (web)</string>
+    <string name="web_search_baidu">Baidu (web)</string>
+    <string name="web_search_yahoo">Yahoo (web)</string>
 
     <string name="error_no_browser">No activity found to handle URLs</string>
 

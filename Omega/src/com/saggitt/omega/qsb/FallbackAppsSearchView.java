@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdateListener, Callbacks {
-    final AllAppsSearchBarController DI;
+    AllAppsSearchBarController mSearchBarController;
     AllAppsQsbLayout DJ;
     AlphabeticalAppsList mApps;
     AllAppsContainerView mAppsView;
@@ -49,7 +49,7 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
 
     public FallbackAppsSearchView(Context context, AttributeSet attributeSet, int i) {
         super(context, attributeSet, i);
-        DI = new AllAppsSearchBarController();
+        mSearchBarController = new AllAppsSearchBarController();
     }
 
     protected void onAttachedToWindow() {
@@ -63,35 +63,6 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
     }
 
     @Override
-    public void onSearchResult(String query, ArrayList<ComponentKey> apps, List<String> suggestions) {
-        if (getParent() != null) {
-            if (apps != null) {
-                mApps.setOrderedFilter(apps);
-            }
-            if (suggestions != null) {
-                mApps.setSearchSuggestions(suggestions);
-            }
-            if (apps != null || suggestions != null) {
-                dV();
-                x(true);
-                mAppsView.setLastSearchQuery(query);
-            }
-        }
-    }
-
-    @Override
-    public final void clearSearchResult() {
-        if (getParent() != null) {
-            if (mApps.setOrderedFilter(null) || mApps.setSearchSuggestions(null)) {
-                dV();
-            }
-            x(false);
-            DJ.mDoNotRemoveFallback = true;
-            mAppsView.onClearSearchResult();
-            DJ.mDoNotRemoveFallback = false;
-        }
-    }
-
     public boolean onSubmitSearch() {
         if (mApps.hasNoFilteredResults()) {
             return false;
@@ -101,16 +72,46 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
         return true;
     }
 
-    public void onAppsUpdated() {
-        this.DI.refreshSearchResult();
+    @Override
+    public void onSearchResult(String query, ArrayList<ComponentKey> apps, List<String> suggestions) {
+        if (getParent() != null) {
+            if (apps != null) {
+                mApps.setOrderedFilter(apps);
+            }
+            if (suggestions != null) {
+                mApps.setSearchSuggestions(suggestions);
+            }
+            if (apps != null || suggestions != null) {
+                notifyResultChanged();
+                hidePredictionRowView(true);
+                mAppsView.setLastSearchQuery(query);
+            }
+        }
     }
 
-    private void x(boolean z) {
+    @Override
+    public final void clearSearchResult() {
+        if (getParent() != null) {
+            if (mApps.setOrderedFilter(null) || mApps.setSearchSuggestions(null)) {
+                notifyResultChanged();
+            }
+            hidePredictionRowView(false);
+            DJ.mDoNotRemoveFallback = true;
+            mAppsView.onClearSearchResult();
+            DJ.mDoNotRemoveFallback = false;
+        }
+    }
+
+    public void onAppsUpdated() {
+        mSearchBarController.refreshSearchResult();
+    }
+
+    private void hidePredictionRowView(boolean z) {
         PredictionsFloatingHeader predictionsFloatingHeader = mAppsView.getFloatingHeaderView();
         predictionsFloatingHeader.setCollapsed(z);
     }
 
-    private void dV() {
+    private void notifyResultChanged() {
         DJ.setShadowAlpha(0);
         mAppsView.onSearchResultsChanged();
     }

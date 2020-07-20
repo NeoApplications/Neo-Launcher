@@ -45,8 +45,10 @@ import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Themes
 import org.json.JSONArray
+import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
+import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.reflect.KMutableProperty0
@@ -239,6 +241,15 @@ fun Context.checkLocationAccess(): Boolean {
     return Utilities.hasPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
             Utilities.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 }
+
+val Context.locale: Locale
+    get() {
+        return if (Utilities.ATLEAST_NOUGAT) {
+            this.resources.configuration.locales[0] ?: this.resources.configuration.locale
+        } else {
+            this.resources.configuration.locale
+        }
+    }
 
 
 fun AlertDialog.applyAccent() {

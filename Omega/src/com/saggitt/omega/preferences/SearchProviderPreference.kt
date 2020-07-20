@@ -34,7 +34,7 @@ class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogP
 
     init {
         layoutResource = R.layout.pref_with_preview_icon
-        updatePreview()
+        updateIcon()
     }
 
     override fun onAttached() {
@@ -54,12 +54,15 @@ class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogP
         }
     }
 
-    override fun getSummary() = SearchProviderController.INSTANCE.get(context).searchProvider.providerName
+    override fun getSummary(): CharSequence {
+        updateIcon()
+        return SearchProviderController.getInstance(context).searchProvider.name
+    }
 
-    private fun updatePreview() {
+    private fun updateIcon() {
         try {
-            icon = SearchProviderController.INSTANCE.get(context).searchProvider.icon
-        } catch (ignored: IllegalStateException) {
+            icon = SearchProviderController.getInstance(context).searchProvider.getIcon()
+        } catch (ex: Exception) {
         }
     }
 

@@ -174,7 +174,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
     }
 
     private void doOnClick() {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         if (controller.isGoogle()) {
             startGoogleSearch();
         } else {
@@ -274,9 +274,9 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
     }
 
     protected final Intent createSettingsBroadcast() {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
-        if (provider.isBroadCast()) {
+        if (provider.isBroadcast()) {
             Intent intent = provider.getSettingsIntent();
             List queryBroadcastReceivers = getContext().getPackageManager()
                     .queryBroadcastReceivers(intent, 0);
@@ -289,9 +289,9 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
 
     @Override
     protected final Intent createSettingsIntent() {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
-        return provider.isBroadCast() ? null : provider.getSettingsIntent();
+        return provider.isBroadcast() ? null : provider.getSettingsIntent();
     }
 
     public final void l(String str) {

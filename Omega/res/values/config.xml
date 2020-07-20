@@ -24,6 +24,7 @@
     <string name="drawable_factory_class" translatable="false">com.saggitt.omega.icons.CustomDrawableFactory</string>
     <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.providers.GoogleSearchProvider</string>
     <string name="default_live_wallpaper" translatable="false">com.breel.wallpapers/com.breel.wallpapers.dioramas.lagos.LagosWallpaperService</string>
+    <string name="app_filter_class" translatable="false">com.saggitt.omega.allapps.CustomAppFilter</string>
 
     <bool name="config_default_enable_blur">true</bool>
     <!-- Tag id used for view scrim -->

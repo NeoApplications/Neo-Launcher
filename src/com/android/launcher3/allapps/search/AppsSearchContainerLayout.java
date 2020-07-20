@@ -57,7 +57,6 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         implements SearchUiManager, AllAppsSearchBarController.Callbacks,
         AllAppsStore.OnUpdateListener, Insettable {
 
-
     private final Launcher mLauncher;
     private final AllAppsSearchBarController mSearchBarController;
     private final SpannableStringBuilder mSearchQueryBuilder;
@@ -174,13 +173,10 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void onSearchResult(String query, ArrayList<ComponentKey> apps, List<String> suggestions) {
         if (apps != null) {
             mApps.setOrderedFilter(apps);
-            notifyResultChanged();
-            mAppsView.setLastSearchQuery(query);
         }
         if (suggestions != null) {
             mApps.setSearchSuggestions(suggestions);
         }
-
         if (apps != null || suggestions != null) {
             notifyResultChanged();
             mAppsView.setLastSearchQuery(query);

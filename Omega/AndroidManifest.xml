@@ -102,6 +102,21 @@
             </intent-filter>
         </activity>
 
+        <!-- Pixel -->
+        <activity
+            android:name="com.saggitt.omega.search.AppLaunchActivity"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter android:priority="1">
+                <action android:name="com.saggitt.omega.search.APP_LAUNCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="vnd.android.cursor.dir/vnd.android.search.suggest"
+                    android:scheme="content" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name="com.saggitt.omega.dash.DashActivity"
             android:theme="@style/DashTheme" />
@@ -113,6 +128,7 @@
             android:name="com.samsung.android.non_immersive"
             android:value="true" />
 
+        <receiver android:name="com.saggitt.omega.qsb.LongClickReceiver" />
         <receiver
             android:name="com.saggitt.omega.qsb.OPAStatusReceiver"
             android:permission="android.permission.CAPTURE_AUDIO_HOTWORD">
@@ -133,7 +149,7 @@
 
         <provider
             android:name="com.saggitt.omega.search.AppSearchProvider"
-            android:authorities="com.saggitt.launcher.appssearch"
+            android:authorities="${applicationId}.appssearch"
             android:exported="true" />
     </application>
 </manifest>

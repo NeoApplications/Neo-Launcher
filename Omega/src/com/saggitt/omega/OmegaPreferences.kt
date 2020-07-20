@@ -103,7 +103,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var searchBarRadius by DimensionPref("pref_searchbarRadius", -1f)
     val dockColoredGoogle by BooleanPref("pref_dockColoredGoogle", true, doNothing)
     var searchProvider by StringPref("pref_globalSearchProvider", omegaConfig.defaultSearchProvider) {
-        SearchProviderController.INSTANCE.get(context).onSearchProviderChanged()
+        SearchProviderController.getInstance(context).onSearchProviderChanged()
     }
     val dualBubbleSearch by BooleanPref("pref_bubbleSearchStyle", false, recreate)
     val searchHiddenApps by BooleanPref(DefaultAppSearchAlgorithm.SEARCH_HIDDEN_APPS, false)
@@ -158,6 +158,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putBoolean("pref_add_icon_to_home", prefs.getBoolean("pref_autoAddShortcuts", true))
         putString("pref_iconShape", "")
         putInt("pref_notification_background", R.color.notification_background)
+        putBoolean("pref_allAppsGoogleSearch", false)
 
     }
 

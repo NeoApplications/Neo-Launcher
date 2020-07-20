@@ -71,10 +71,8 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
     }
 
     inner class ProviderListAdapter(private val context: Context) : RecyclerView.Adapter<ProviderListAdapter.Holder>() {
-        val searchProvider = SearchProviderController.INSTANCE.get(context)
 
-        val Providers = searchProvider.getSearchProviders(context)
-
+        val Providers = SearchProviderController.getSearchProviders(context)
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return Holder(LayoutInflater.from(context).inflate(R.layout.list_item_icon, parent, false))
         }
@@ -82,9 +80,9 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
         override fun getItemCount() = Providers.size
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.text.text = Providers[position].providerName
+            holder.text.text = Providers[position].name
             holder.text.isChecked = Providers[position]::class.java.name == value
-            holder.providerIcon.setImageDrawable((Providers[position].icon))
+            holder.providerIcon.setImageDrawable((Providers[position].getIcon()))
         }
 
         inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

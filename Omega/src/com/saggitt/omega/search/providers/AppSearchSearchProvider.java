@@ -27,43 +27,52 @@ import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
 import com.saggitt.omega.search.SearchProvider;
 
+import org.jetbrains.annotations.NotNull;
+
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 public class AppSearchSearchProvider extends SearchProvider {
-
+    private Context mContext;
     public AppSearchSearchProvider(Context context) {
         super(context);
         mContext = context;
-
-        providerName = mContext.getString(R.string.search_provider_appsearch);
-        supportsAssistant = false;
-        supportsFeed = false;
-        supportsVoiceSearch = false;
     }
 
     @Override
-    public Drawable getIcon() {
-        return mContext.getDrawable(R.drawable.ic_search).mutate();
-    }
-
-    @Override
-    public Drawable getVoiceIcon() {
-        return null;
-    }
-
-    @Override
-    public Drawable getAssistantIcon() {
-        return null;
-    }
-
-    @Override
-    public void startSearch(Function1<Intent, Unit> callback) {
+    public void startSearch(@NotNull Function1<? super Intent, Unit> callback) {
         Launcher launcher = LauncherAppState.getInstanceNoCreate().getLauncher();
         launcher.getStateManager().goToState(LauncherState.ALL_APPS, true, (Runnable) (new Runnable() {
             public final void run() {
                 launcher.getAppsView().getSearchUiManager().startSearch();
             }
         }));
+    }
+
+    @NotNull
+    @Override
+    public Drawable getIcon() {
+        return mContext.getDrawable(R.drawable.ic_search).mutate();
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return mContext.getString(R.string.search_provider_appsearch);
+    }
+
+    @Override
+    public boolean getSupportsAssistant() {
+        return false;
+    }
+
+    @Override
+    public boolean getSupportsFeed() {
+        return false;
+    }
+
+    @Override
+    public boolean getSupportsVoiceSearch() {
+        return false;
     }
 }

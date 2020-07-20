@@ -374,7 +374,7 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
 
 
     private SearchProvider getSearchProvider() {
-        return SearchProviderController.INSTANCE.get(mLauncher).getSearchProvider();
+        return SearchProviderController.Companion.getInstance(mLauncher).getSearchProvider();
     }
 
 }

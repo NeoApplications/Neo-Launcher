@@ -216,7 +216,6 @@ public class SettingsActivity extends SettingsBaseActivity
         if (shouldShowSearch()) {
             Toolbar toolbar = findViewById(R.id.search_action_bar);
             toolbar.getMenu().clear();
-            //OmegaPreferences prefs = Utilities.getOmegaPrefs(this);
 
             toolbar.inflateMenu(R.menu.menu_settings);
             ActionMenuView menuView;

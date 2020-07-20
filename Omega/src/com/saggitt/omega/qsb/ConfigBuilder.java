@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +35,9 @@ import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.launcher3.AppInfo;
 import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsRecyclerView;
@@ -44,9 +47,10 @@ import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.Themes;
 import com.saggitt.omega.OmegaLauncher;
-import com.saggitt.omega.search.nano.SearchProto;
+import com.saggitt.omega.search.AppSearchProvider;
 import com.saggitt.omega.search.nano.SearchProto.AppIndex;
 import com.saggitt.omega.search.nano.SearchProto.Columns;
+import com.saggitt.omega.search.nano.SearchProto.SearchBase;
 import com.saggitt.omega.search.nano.SearchProto.SearchView;
 import com.saggitt.omega.util.Config;
 
@@ -55,7 +59,7 @@ import java.util.List;
 
 
 public class ConfigBuilder {
-    private final SearchProto.SearchBase mNano;
+    private final SearchBase mNano;
     private final OmegaLauncher mActivity;
     private final Bundle mBundle;
     private final AbstractQsbLayout mQsbLayout;
@@ -66,7 +70,7 @@ public class ConfigBuilder {
 
     public ConfigBuilder(AbstractQsbLayout qsbLayout, boolean isAllApps) {
         mBundle = new Bundle();
-        mNano = new SearchProto.SearchBase();
+        mNano = new SearchBase();
         mQsbLayout = qsbLayout;
         mActivity = qsbLayout.mLauncher;
         mIsAllApps = isAllApps;
@@ -128,6 +132,22 @@ public class ConfigBuilder {
     private int getBackgroundColor() {
         return ColorUtils.compositeColors(Themes.getAttrColor(mActivity, R.attr.allAppsScrimColor),
                 ColorUtils.setAlphaComponent(WallpaperColorInfo.getInstance(mActivity).getMainColor(), 255));
+    }
+
+    private AppIndex bZ(final AppInfo appInfo, final int n) {
+        if (appInfo == null) {
+            return null;
+        }
+        final AppIndex b = new AppIndex();
+        b.label = appInfo.title.toString();
+        b.iconBitmap = "icon_bitmap_" + n;
+        mBundle.putParcelable(b.iconBitmap, appInfo.iconBitmap);
+        Uri uri = AppSearchProvider.buildUri(appInfo, mUserManager);
+        b.searchUri = uri.toString();
+        b.predictionRank = new Intent("com.saggitt.omega.search.APP_LAUNCH",
+                uri.buildUpon().appendQueryParameter("predictionRank", Integer.toString(n)).build())
+                .toUri(0);
+        return b;
     }
 
     private RemoteViews searchIconTemplate() {
@@ -292,7 +312,15 @@ public class ConfigBuilder {
             mNano.appsView = viewBounds3;
         }
         bW();
+        List<ItemInfoWithIcon> predictedApps = mActivity.getAppsView().getFloatingHeaderView().getPredictionRowView().getPredictedApps();
         List<AppIndex> bSearches = new ArrayList<>();
+        final int count = Math.min(predictedApps.size(), allAppsCols);
+        for (int i = 0; i < count; i++) {
+            /*AppIndex bSearch = bZ(mActivity.getAppsView().getAppsStore().getApp(predictedApps.get(i).getTargetComponent()), i);
+            if (bSearch != null) {
+                bSearches.add(bSearch);
+            }*/
+        }
         mNano.index = new AppIndex[bSearches.size()];
         bSearches.toArray(mNano.index);
     }

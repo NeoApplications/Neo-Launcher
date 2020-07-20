@@ -23,7 +23,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Interpolator;
@@ -206,10 +205,9 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     @Override
     public final void startSearch(String str, int i) {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
         if (shouldUseFallbackSearch(provider)) {
-            Log.d(TAG, "Using fallbacksearch provider " + provider);
             searchFallback(str);
         } else if (controller.isGoogle()) {
             final ConfigBuilder f = new ConfigBuilder(this, true);
@@ -228,7 +226,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     }
 
     private boolean shouldUseFallbackSearch() {
-        SearchProviderController controller = SearchProviderController.INSTANCE.get(mLauncher);
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
         return shouldUseFallbackSearch(provider);
     }
@@ -265,9 +263,9 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
             mFallback.DJ = this;
             mFallback.mApps = allAppsContainerView.getApps();
             mFallback.mAppsView = allAppsContainerView;
-            mFallback.DI.initialize(new SearchThread(mFallback.getContext()), mFallback,
+            mFallback.mSearchBarController.initialize(new SearchThread(mFallback.getContext()), mFallback,
                     Launcher.getLauncher(mFallback.getContext()), mFallback);
-            addView(this.mFallback);
+            addView(mFallback);
         }
     }
 
