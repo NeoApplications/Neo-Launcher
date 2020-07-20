@@ -65,7 +65,9 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BottomUserEducationView;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 import com.android.launcher3.views.SpringRelativeLayout;
+import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.allapps.PredictionsFloatingHeader;
+import com.saggitt.omega.qsb.AllAppsQsbLayout;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -328,6 +330,10 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
             mlp.rightMargin = insets.right;
             setPadding(grid.workspacePadding.left, 0, grid.workspacePadding.right, 0);
         } else {
+            if (!OmegaPreferences.Companion.getInstance(getContext()).getAllAppsSearch()) {
+                AllAppsQsbLayout qsb = (AllAppsQsbLayout) mSearchContainer;
+                mlp.topMargin = -(qsb.getTopMargin(insets) + qsb.getLayoutParams().height);
+            }
             mlp.leftMargin = mlp.rightMargin = 0;
             setPadding(0, 0, 0, 0);
         }
