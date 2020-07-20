@@ -24,17 +24,17 @@ import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BingWebSearchProvider extends WebSearchProvider {
-    public BingWebSearchProvider(@NotNull Context context) {
+public class GoogleWebSearchProvider extends WebSearchProvider {
+    public GoogleWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.bing.com/search?q=%s";
-        suggestionsUrl = "https://www.bing.com/osjson.aspx?query=%s";
-        name = context.getString(R.string.web_search_bing);
+        searchUrl = "https://www.google.com/search?q=%s";
+        suggestionsUrl = "https://www.google.com/complete/search?client=chrome&q=%s&hl=${context.locale.language}";
+        name = mContext.getResources().getString(R.string.web_search_google);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_bing);
+        return mContext.getResources().getDrawable(R.drawable.ic_qsb_logo);
     }
 }

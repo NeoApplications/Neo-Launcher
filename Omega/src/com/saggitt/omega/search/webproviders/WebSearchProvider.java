@@ -28,6 +28,7 @@ import com.android.launcher3.Utilities;
 import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.util.OkHttpClientBuilder;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -44,17 +45,27 @@ import static com.saggitt.omega.util.OmegaUtilsKt.toArrayList;
 import static java.util.Collections.emptyList;
 
 public abstract class WebSearchProvider extends SearchProvider {
-    protected String searchUrl = "";
-    protected String suggestionsUrl = "";
+    public Context mContext;
+    public String searchUrl = "";
+    public String suggestionsUrl = "";
+    public String name = "";
     protected OkHttpClient client;
     protected int MAX_SUGGESTIONS = 5;
 
-    public WebSearchProvider(Context context) {
+    public WebSearchProvider(@NotNull Context context) {
         super(context);
+        mContext = context;
         client = new OkHttpClientBuilder().build(context);
-        supportsVoiceSearch = false;
-        supportsAssistant = false;
-        supportsFeed = false;
+    }
+
+    @Override
+    public void startSearch(@NotNull Function1<? super Intent, Unit> callback) {
+        Launcher launcher = LauncherAppState.getInstanceNoCreate().getLauncher();
+        launcher.getStateManager().goToState(LauncherState.ALL_APPS, true, (Runnable) (new Runnable() {
+            public final void run() {
+                launcher.getAppsView().getSearchUiManager().startSearch();
+            }
+        }));
     }
 
     public List<String> getSuggestions(String query) {
@@ -78,32 +89,37 @@ public abstract class WebSearchProvider extends SearchProvider {
         Utilities.openURLinBrowser(mContext, getResultUrl(query));
     }
 
-    protected String getResultUrl(String query) {
+    public String getResultUrl(String query) {
         return searchUrl.format(query);
     }
 
-
-    public void startSearch(Function1<Intent, Unit> callback) {
-        Launcher launcher = LauncherAppState.getInstanceNoCreate().getLauncher();
-        launcher.getStateManager().goToState(LauncherState.ALL_APPS, true, (Runnable) (new Runnable() {
-            public final void run() {
-                launcher.getAppsView().getSearchUiManager().startSearch();
-            }
-        }));
+    @Override
+    public boolean getSupportsFeed() {
+        return false;
     }
 
     @Override
-    public Drawable getIcon() {
-        return null;
+    public boolean getSupportsAssistant() {
+        return false;
     }
 
     @Override
-    public Drawable getVoiceIcon() {
-        return null;
+    public boolean getSupportsVoiceSearch() {
+        return false;
     }
 
-    @Override
-    public Drawable getAssistantIcon() {
-        return null;
+    public String getName() {
+        return name;
     }
+
+    public String getSearchUrl() {
+        return searchUrl;
+    }
+
+    public String setSuggestionsUrl() {
+        return suggestionsUrl;
+    }
+
+    @NotNull
+    public abstract Drawable getIcon();
 }

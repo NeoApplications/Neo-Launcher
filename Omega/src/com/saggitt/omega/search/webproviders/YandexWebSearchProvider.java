@@ -24,17 +24,17 @@ import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BingWebSearchProvider extends WebSearchProvider {
-    public BingWebSearchProvider(@NotNull Context context) {
+public class YandexWebSearchProvider extends WebSearchProvider {
+    public YandexWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.bing.com/search?q=%s";
-        suggestionsUrl = "https://www.bing.com/osjson.aspx?query=%s";
-        name = context.getString(R.string.web_search_bing);
+        searchUrl = "https://yandex.com/search/?text=%s";
+        suggestionsUrl = "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=${context.locale.language}";
+        name = context.getString(R.string.web_search_yandex);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_bing);
+        return mContext.getResources().getDrawable(R.drawable.ic_yandex);
     }
 }
