@@ -29,7 +29,7 @@
             app:content="@xml/omega_preferences_desktop" />
 
         <com.saggitt.omega.preferences.SubPreference
-            android:icon="@drawable/ic_desktop"
+            android:icon="@drawable/ic_dock"
             android:layout="@layout/home_preference"
             android:summary="@string/summary__general_dock"
             android:title="@string/title__general_dock"
