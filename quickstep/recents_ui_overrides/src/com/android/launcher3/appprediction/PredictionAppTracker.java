@@ -80,8 +80,9 @@ public class PredictionAppTracker extends AppLaunchTracker
         mMessageHandler.sendEmptyMessage(MSG_INIT);
 
         mAppLaunchEventsPluginsList = new ArrayList<>();
-        PluginManagerWrapper.INSTANCE.get(context)
-                .addPluginListener(this, AppLaunchEventsPlugin.class, true);
+        if (Utilities.ATLEAST_R)
+            PluginManagerWrapper.INSTANCE.get(context)
+                    .addPluginListener(this, AppLaunchEventsPlugin.class, true);
     }
 
     @UiThread

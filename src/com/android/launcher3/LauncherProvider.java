@@ -16,9 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.provider.LauncherDbUtils.dropTable;
-import static com.android.launcher3.provider.LauncherDbUtils.tableExists;
-
 import android.annotation.TargetApi;
 import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetHost;
@@ -83,6 +80,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+
+import static com.android.launcher3.provider.LauncherDbUtils.dropTable;
+import static com.android.launcher3.provider.LauncherDbUtils.tableExists;
 
 public class LauncherProvider extends ContentProvider {
     private static final String TAG = "LauncherProvider";
@@ -780,6 +780,10 @@ public class LauncherProvider extends ContentProvider {
                 case 28:
                     // DB Upgraded successfully
                     return;
+                case 29:
+                    // No-op
+                case 30:
+                    // No-op
             }
 
             // DB was not upgraded

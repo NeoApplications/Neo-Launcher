@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
@@ -33,6 +34,7 @@ public class BaseIconFactory implements AutoCloseable {
     private static final int DEFAULT_WRAPPER_BACKGROUND = Color.WHITE;
     static final boolean ATLEAST_OREO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     static final boolean ATLEAST_P = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    static final boolean ATLEAST_Q = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
     private static final float ICON_BADGE_SCALE = 0.444f;
 
@@ -211,46 +213,48 @@ public class BaseIconFactory implements AutoCloseable {
         if (icon == null) {
             return null;
         }
-        //TODO REVISAR ADAPTIVE ICONS
-        /*float scale = 1f;
+        if (ATLEAST_Q) {
+            float scale = 1f;
 
-        if (shrinkNonAdaptiveIcons && ATLEAST_OREO) {
-            if (mWrapperIcon == null) {
-                mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
-                        .mutate();
-            }
-            AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
-            dr.setBounds(0, 0, 1, 1);
-            boolean[] outShape = new boolean[1];
-            scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
-            if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
-                FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
-                fsd.setDrawable(icon);
-                fsd.setScale(scale);
-                icon = dr;
+            if (shrinkNonAdaptiveIcons && ATLEAST_OREO) {
+                if (mWrapperIcon == null) {
+                    mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
+                            .mutate();
+                }
+                AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
+                dr.setBounds(0, 0, 1, 1);
+                boolean[] outShape = new boolean[1];
+                scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
+                if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+                    FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
+                    fsd.setDrawable(icon);
+                    fsd.setScale(scale);
+                    icon = dr;
+                    scale = getNormalizer().getScale(icon, outIconBounds, null, null);
+
+                    ((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
+                }
+            } else {
                 scale = getNormalizer().getScale(icon, outIconBounds, null, null);
-
-                ((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
             }
+
+            outScale[0] = scale;
+            return icon;
         } else {
-            scale = getNormalizer().getScale(icon, outIconBounds, null, null);
-        }
-
-        outScale[0] = scale;
-        return icon;*/
-        float scale = 1f;
-        if (ATLEAST_OREO) {
-            boolean[] outShape = new boolean[1];
-            if (mWrapperIcon == null) {
-                mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
-                        .mutate();
+            float scale = 1f;
+            if (ATLEAST_OREO) {
+                boolean[] outShape = new boolean[1];
+                if (mWrapperIcon == null) {
+                    mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
+                            .mutate();
+                }
+                AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
+                dr.setBounds(0, 0, 1, 1);
+                scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
             }
-            AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
-            dr.setBounds(0, 0, 1, 1);
-            scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
+            outScale[0] = scale;
+            return icon;
         }
-        outScale[0] = scale;
-        return icon;
     }
 
     /**
