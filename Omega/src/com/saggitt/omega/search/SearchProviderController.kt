@@ -122,8 +122,10 @@ class SearchProviderController(private val context: Context) {
                 BaiduWebSearchProvider(context),
                 BingWebSearchProvider(context),
                 DDGWebSearchProvider(context),
+                EcosiaWebSearchProvider(context),
                 GoogleWebSearchProvider(context),
                 QwantWebSearchProvider(context),
+                StartpageWebSearchProvider(context),
                 YahooWebSearchProvider(context),
                 YandexWebSearchProvider(context)
         ).filter { it.isAvailable }
