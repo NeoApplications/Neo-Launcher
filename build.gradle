@@ -39,7 +39,7 @@ if (enable_plugin_kotlin) {
     apply plugin: 'kotlin-kapt'
 }
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion BUILD_TOOLS_VERSION
 
     def name = "0.2.0"
@@ -47,7 +47,7 @@ android {
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 29
         applicationId "com.saggitt.omega"
         versionName name
         versionCode code

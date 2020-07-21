@@ -193,11 +193,7 @@ class TwilightManager(private val context: Context) : Handler.Callback, Location
         }
     }
 
-    override fun onLocationChanged(p0: Location) {
-        TODO("Not yet implemented")
-    }
-
-    /*override fun onLocationChanged(location: Location?) {
+    override fun onLocationChanged(location: Location?) {
         // Location providers may erroneously return (0.0, 0.0) when they fail to determine the
         // device's location. These location updates can be safely ignored since the chance of a
         // user actually being at these coordinates is quite low.
@@ -209,9 +205,17 @@ class TwilightManager(private val context: Context) : Handler.Callback, Location
             lastLocation = location
             updateTwilightState()
         }
-    }*/
+    }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+    }
+
+    override fun onProviderEnabled(provider: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onProviderDisabled(provider: String?) {
+        TODO("Not yet implemented")
     }
 
     companion object : SingletonHolder<TwilightManager, Context>(
