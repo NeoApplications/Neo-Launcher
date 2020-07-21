@@ -1,7 +1,8 @@
-### v0.2.0 (Build 8)
+### v0.2.0 (Build 10)
 * **Add color accent preference**
 * **Add notification color and count**
 * **Add Google feed**
+* **Add Search providers**
 
 ### v0.1.0 (Build 1)
 * Based on Launcher3 10 r35.
