@@ -218,7 +218,7 @@ dependencies {
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.github.LawnchairLauncher:hoko-lite:0e21db9ae5'
     implementation 'com.luckycatlabs:SunriseSunsetCalculator:1.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.0.0-RC1'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.0.0-RC1'
 
     implementation 'me.xdrop:fuzzywuzzy:1.2.0'
