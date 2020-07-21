@@ -42,6 +42,8 @@ import static com.saggitt.omega.util.Config.GOOGLE_QSB;
 public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
         OmegaPreferences.OnPreferenceChangeListener {
     public static final String KEY_DOCK_HIDE = "pref_hideHotseat";
+    public static final String KEY_DOCK_COLORED_GOOGLE = "pref_dockColoredGoogle";
+    public static final String KEY_DOCK_SEARCHBAR = "pref_dockSearchBar";
     private final k Ds;
     private boolean mIsGoogleColored;
     private boolean widgetMode;
@@ -110,14 +112,6 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
         setOnFocusChangeListener(mLauncher.mFocusHandler);
     }
 
-    protected void loadIcons() {
-        mLogoIconView = findViewById(R.id.g_icon);
-        mMicIconView = findViewById(R.id.mic_icon);
-
-        mMicIconView.setOnClickListener(this);
-        mLogoIconView.setOnClickListener(this);
-    }
-
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         Ds.removeListener(this);
@@ -125,6 +119,13 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements k.o,
 
     @Override
     public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
+        if (key.equals(KEY_DOCK_COLORED_GOOGLE)) {
+            mIsGoogleColored = isGoogleColored();
+            onChangeListener();
+        } else if (!widgetMode && (key.equals(KEY_DOCK_SEARCHBAR) || key.equals(KEY_DOCK_HIDE))) {
+            boolean visible = prefs.getDockSearchBar() && !prefs.getDockHide();
+            setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override

@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EcosiaWebSearchProvider extends WebSearchProvider {
     public EcosiaWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.ecosia.org/search?q=%s";
-        suggestionsUrl = "https://ac.ecosia.org/autocomplete?q=%s&type=list&mkt=${context.locale.language}";
-        name = context.getString(R.string.web_search_ecosia);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_ecosia);
+        return getContext().getResources().getDrawable(R.drawable.ic_ecosia);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://www.ecosia.org/search?q=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://ac.ecosia.org/autocomplete?q=%s&type=list&mkt=${context.locale.language}";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_ecosia);
     }
 }

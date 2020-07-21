@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class YandexWebSearchProvider extends WebSearchProvider {
     public YandexWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://yandex.com/search/?text=%s";
-        suggestionsUrl = "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=${context.locale.language}";
-        name = context.getString(R.string.web_search_yandex);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_yandex);
+        return getContext().getResources().getDrawable(R.drawable.ic_yandex);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://yandex.com/search/?text=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=${context.locale.language}";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_yandex);
     }
 }

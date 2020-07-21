@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StartpageWebSearchProvider extends WebSearchProvider {
     public StartpageWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.startpage.com/rvd/search?query=%s&language=auto";
-        suggestionsUrl = "https://www.startpage.com/cgi-bin/csuggest?query=%s&limit=$MAX_SUGGESTIONS&format=json";
-        name = context.getString(R.string.web_search_startpage);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_startpage_search);
+        return getContext().getResources().getDrawable(R.drawable.ic_startpage_search);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://www.startpage.com/rvd/search?query=%s&language=auto";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://www.startpage.com/cgi-bin/csuggest?query=%s&limit=$MAX_SUGGESTIONS&format=json";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_startpage);
     }
 }

@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GoogleWebSearchProvider extends WebSearchProvider {
     public GoogleWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.google.com/search?q=%s";
-        suggestionsUrl = "https://www.google.com/complete/search?client=chrome&q=%s&hl=${context.locale.language}";
-        name = mContext.getResources().getString(R.string.web_search_google);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_qsb_logo);
+        return getContext().getResources().getDrawable(R.drawable.ic_qsb_logo);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://www.google.com/search?q=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://www.google.com/complete/search?client=chrome&q=%s&hl=${context.locale.language}";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getResources().getString(R.string.web_search_google);
     }
 }

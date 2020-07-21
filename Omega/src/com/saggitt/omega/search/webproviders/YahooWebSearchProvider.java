@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class YahooWebSearchProvider extends WebSearchProvider {
     public YahooWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://search.yahoo.com/search?q=%s";
-        suggestionsUrl = "https://ff.search.yahoo.com/gossip?output=fxjson&command=%s";
-        name = context.getString(R.string.web_search_yahoo);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_yahoo);
+        return getContext().getResources().getDrawable(R.drawable.ic_yahoo);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://search.yahoo.com/search?q=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://ff.search.yahoo.com/gossip?output=fxjson&command=%s";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_yahoo);
     }
 }

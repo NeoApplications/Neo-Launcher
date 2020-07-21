@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DDGWebSearchProvider extends WebSearchProvider {
     public DDGWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://duckduckgo.com/?q=%s";
-        suggestionsUrl = "https://ac.duckduckgo.com/ac/?q=%s&type=list";
-        name = context.getString(R.string.web_search_ddg);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_ddg);
+        return getContext().getResources().getDrawable(R.drawable.ic_ddg);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://duckduckgo.com/?q=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://ac.duckduckgo.com/ac/?q=%s&type=list";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_ddg);
     }
 }

@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BaiduWebSearchProvider extends WebSearchProvider {
     public BaiduWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.baidu.com/s?wd=%s";
-        suggestionsUrl = "http://suggestion.baidu.com/su?action=opensearch&ie=UTF-8&wd=%s";
-        name = mContext.getResources().getString(R.string.web_search_baidu);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_baidu);
+        return getContext().getResources().getDrawable(R.drawable.ic_baidu);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://www.baidu.com/s?wd=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "http://suggestion.baidu.com/su?action=opensearch&ie=UTF-8&wd=%s";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getResources().getString(R.string.web_search_baidu);
     }
 }

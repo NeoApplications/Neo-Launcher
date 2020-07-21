@@ -52,7 +52,7 @@ public class AppSearchSearchProvider extends SearchProvider {
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getDrawable(R.drawable.ic_search).mutate();
+        return mContext.getDrawable(R.drawable.ic_allapps_search).mutate();
     }
 
     @NotNull

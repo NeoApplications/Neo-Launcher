@@ -23,18 +23,34 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BingWebSearchProvider extends WebSearchProvider {
     public BingWebSearchProvider(@NotNull Context context) {
         super(context);
-        searchUrl = "https://www.bing.com/search?q=%s";
-        suggestionsUrl = "https://www.bing.com/osjson.aspx?query=%s";
-        name = context.getString(R.string.web_search_bing);
     }
 
     @NotNull
     @Override
     public Drawable getIcon() {
-        return mContext.getResources().getDrawable(R.drawable.ic_bing);
+        return getContext().getResources().getDrawable(R.drawable.ic_bing);
+    }
+
+    @NotNull
+    @Override
+    protected String getSearchUrl() {
+        return "https://www.bing.com/search?q=%s";
+    }
+
+    @Nullable
+    @Override
+    protected String getSuggestionsUrl() {
+        return "https://www.bing.com/osjson.aspx?query=%s";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return getContext().getString(R.string.web_search_bing);
     }
 }
