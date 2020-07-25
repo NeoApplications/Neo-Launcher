@@ -523,6 +523,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         allAppsCellHeightPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx + textHeight
                 + additionalPadding;
 
+        allAppsCellWidthPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx;
         if (isVerticalBarLayout()) {
             // Always hide the Workspace text with vertical bar layout.
             adjustToHideWorkspaceLabels();
