@@ -23,17 +23,18 @@ import android.content.Context;
 import java.util.ArrayList;
 
 @TargetApi(26)
-public class k {
-    private static k INSTANCE;
-    private final ArrayList<o> mListeners = new ArrayList<>(2);
+public class QsbConfiguration {
 
-    private k(Context context) {
+    private static QsbConfiguration INSTANCE;
+    private final ArrayList<QsbChangeListener> mListeners = new ArrayList<>(2);
+
+    private QsbConfiguration(Context context) {
 
     }
 
-    public static k getInstance(Context context) {
+    public static QsbConfiguration getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new k(context.getApplicationContext());
+            INSTANCE = new QsbConfiguration(context.getApplicationContext());
         }
         return INSTANCE;
     }
@@ -49,18 +50,15 @@ public class k {
     }
 
     public final boolean hintIsForAssistant() {
+        // pixel_2018_qsb_hint_is_for_assistant
         return false;
     }
 
-    public final void addListener(o listener) {
-        mListeners.add(listener);
+    public final void addListener(QsbChangeListener qsbChangeListener) {
+        this.mListeners.add(qsbChangeListener);
     }
 
-    public final void removeListener(o listener) {
-        mListeners.remove(listener);
-    }
-
-    public interface o {
-        void onChangeListener();
+    public final void removeListener(QsbChangeListener qsbChangeListener) {
+        this.mListeners.remove(qsbChangeListener);
     }
 }
