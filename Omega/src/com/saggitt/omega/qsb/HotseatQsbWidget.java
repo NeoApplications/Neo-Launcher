@@ -65,7 +65,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
     static void a(HotseatQsbWidget hotseatQsbWidget) {
         if (hotseatQsbWidget.mIsGoogleColored != hotseatQsbWidget.isGoogleColored()) {
             hotseatQsbWidget.mIsGoogleColored = !hotseatQsbWidget.mIsGoogleColored;
-            hotseatQsbWidget.onChangeListener();
+            hotseatQsbWidget.onChange();
         }
     }
 
@@ -105,6 +105,9 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
     }
 
     protected void onAttachedToWindow() {
+        Utilities.getOmegaPrefs(getContext())
+                .addOnPreferenceChangeListener(this, KEY_DOCK_COLORED_GOOGLE, KEY_DOCK_SEARCHBAR);
+
         dW();
         super.onAttachedToWindow();
         Ds.addListener(this);
@@ -114,6 +117,9 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
 
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        Utilities.getOmegaPrefs(getContext())
+                .removeOnPreferenceChangeListener(this, KEY_DOCK_COLORED_GOOGLE,
+                        KEY_DOCK_SEARCHBAR);
         Ds.removeListener(this);
     }
 
@@ -121,10 +127,10 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
     public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
         if (key.equals(KEY_DOCK_COLORED_GOOGLE)) {
             mIsGoogleColored = isGoogleColored();
-            onChangeListener();
+            onChange();
         } else if (!widgetMode && (key.equals(KEY_DOCK_SEARCHBAR) || key.equals(KEY_DOCK_HIDE))) {
-            //boolean visible = prefs.getDockSearchBar() && !prefs.getDockHide();
-            //setVisibility(visible ? View.VISIBLE : View.GONE);
+            boolean visible = prefs.getDockSearchBar() && !prefs.getDockHide();
+            setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -138,7 +144,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
         return getMicIcon(mIsGoogleColored);
     }
 
-    public final void onChangeListener() {
+    public final void onChange() {
         removeAllViews();
         setColors();
         dW();
@@ -323,10 +329,5 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
     public void setAlpha(float alpha) {
         super.setAlpha(alpha);
         mLauncher.findViewById(R.id.scrim_view).invalidate();
-    }
-
-    @Override
-    public void onChange() {
-
     }
 }

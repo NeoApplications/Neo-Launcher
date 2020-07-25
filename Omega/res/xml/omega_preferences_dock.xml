@@ -18,8 +18,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:defaultValue="true"
-        android:key="pref_key__hide_hotseat"
+        android:defaultValue="false"
+        android:key="pref_hideHotseat"
         android:persistent="true"
         android:title="@string/title__dock_hide"
         app:iconSpaceReserved="false" />
@@ -30,4 +30,18 @@
         android:persistent="true"
         android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
+    <!--
+        <com.saggitt.omega.preferences.StyledSwitchPreference
+            android:key="pref_dockSearchBar"
+            android:title="@string/title__dock_search_bar"
+            android:defaultValue="false"
+            android:persistent="true"
+            app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:key="pref_dockColoredGoogle"
+        android:title="@string/title__dock_colored_icons"
+        android:dependency="pref_dockSearchBar"
+        android:defaultValue="true"
+        android:persistent="true" /> -->
 </PreferenceScreen>

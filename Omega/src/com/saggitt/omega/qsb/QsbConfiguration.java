@@ -32,6 +32,12 @@ public class QsbConfiguration {
 
     }
 
+    private void notifyListeners() {
+        for (QsbChangeListener listener : mListeners) {
+            listener.onChange();
+        }
+    }
+
     public static QsbConfiguration getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new QsbConfiguration(context.getApplicationContext());

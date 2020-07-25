@@ -51,6 +51,7 @@
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_hide">Dock Hide</string>
     <string name="title__dock_hide_labels">Hide Labels</string>
+    <string name="title__dock_colored_icons">Colored icons</string>
     <string name="title__dock_search_bar">Show Search Bar</string>
 
     <!-- PREFERENCES DRAWER -->

@@ -31,6 +31,7 @@ import com.android.launcher3.logging.StatsLogUtils.LogContainerProvider;
 import com.android.launcher3.userevent.nano.LauncherLogProto;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.views.Transposable;
+import com.saggitt.omega.OmegaPreferences;
 
 public class Hotseat extends CellLayout implements LogContainerProvider, Insettable, Transposable {
 
@@ -56,6 +57,23 @@ public class Hotseat extends CellLayout implements LogContainerProvider, Insetta
 
     int getCellYFromOrder(int rank) {
         return mHasVerticalHotseat ? (getCountY() - (rank + 1)) : 0;
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(getContext());
+        if (prefs.getDockHide()) {
+            setVisibility(GONE);
+        } else if (prefs.getDockSearchBar()) {
+            inflate(getContext(), R.layout.search_container_hotseat, this);
+        } else {
+            View v = this.findViewById(R.id.search_container_hotseat);
+            if (v != null) {
+                removeView(v);
+            }
+        }
     }
 
     public void resetLayout(boolean hasVerticalHotseat) {

@@ -73,8 +73,8 @@ public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
         return "WidgetProviderInfo(" + provider + ")";
     }
 
-    protected CustomAppWidgetProviderInfo(Parcel parcel, boolean readSelf,
-                                          int providerId, boolean noPadding) {
+    public CustomAppWidgetProviderInfo(Parcel parcel, boolean readSelf,
+                                       int providerId, boolean noPadding) {
         super(parcel);
         if (readSelf) {
             this.providerId = parcel.readInt();

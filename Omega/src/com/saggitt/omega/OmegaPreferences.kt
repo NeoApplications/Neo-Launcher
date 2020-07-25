@@ -88,12 +88,14 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
 
     /* --DOCK-- */
-    var dockHide by BooleanPref("pref_key__hide_hotseat", false, recreate)
+    var dockHide by BooleanPref("pref_hideHotseat", false, recreate)
     val dockTextScale by FloatPref("pref_dockTextScale", -1f, restart)
     private val dockMultilineLabel by BooleanPref("pref_dockIconLabelsInTwoLines", false, recreate)
     val dockLabelRows get() = if (dockMultilineLabel) 2 else 1
     val hideDockLabels by BooleanPref("pref_hideDockLabels", true, restart)
     var dockScale by FloatPref("pref_dockScale", -1f, recreate)
+    var dockSearchBarPref by BooleanPref("pref_dockSearchBar", false, recreate)
+    inline val dockSearchBar get() = !dockHide && dockSearchBarPref
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
