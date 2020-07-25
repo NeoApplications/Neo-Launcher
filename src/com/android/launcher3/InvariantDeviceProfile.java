@@ -16,12 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.Utilities.getDevicePrefs;
-import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
-import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
-import static com.android.launcher3.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
-import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
-
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetHostView;
 import android.content.BroadcastReceiver;
@@ -60,6 +54,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static com.android.launcher3.Utilities.getDevicePrefs;
+import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
+import static com.android.launcher3.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+
 public class InvariantDeviceProfile {
 
     public static final String TAG = "IDP";
@@ -91,7 +91,17 @@ public class InvariantDeviceProfile {
      * Number of icons per row and column in the workspace.
      */
     public int numRows;
+    public int numRowsOriginal;
     public int numColumns;
+    public int numColumnsOriginal;
+
+    /**
+     * Number of icons per row in the drawer
+     */
+    public int numColsDrawer;
+    public int numColsDrawerOriginal;
+    public int numPredictions;
+    public int numPredictionsOriginal;
 
     /**
      * Number of icons per row and column in the folder.
@@ -99,13 +109,22 @@ public class InvariantDeviceProfile {
     public int numFolderRows;
     public int numFolderColumns;
     public float iconSize;
-    public String iconShapePath;
+    public float iconSizeOriginal;
+    public float hotseatIconSize;
+    public float hotseatIconSizeOriginal;
     public float landscapeIconSize;
+    public float landscapeIconSizeOriginal;
+    public float landscapeHotseatIconSize;
+    public float landscapeHotseatIconSizeOriginal;
+    public float allAppsIconSize;
+    public float allAppsIconSizeOriginal;
+    public float landscapeAllAppsIconSize;
+    public float landscapeAllAppsIconSizeOriginal;
     public int iconBitmapSize;
     public int fillResIconDpi;
     public float iconTextSize;
-    public float allAppsIconSize;
     public float allAppsIconTextSize;
+    public String iconShapePath;
 
     private SparseArray<TypedValue> mExtraAttrs;
 
@@ -113,6 +132,7 @@ public class InvariantDeviceProfile {
      * Number of icons inside the hotseat area.
      */
     public int numHotseatIcons;
+    public int numHotseatIconsOriginal;
 
     /**
      * Number of columns in the all apps list.
@@ -144,9 +164,10 @@ public class InvariantDeviceProfile {
         iconShapePath = p.iconShapePath;
         landscapeIconSize = p.landscapeIconSize;
         iconTextSize = p.iconTextSize;
+        allAppsIconSize = p.allAppsIconSize;
+        hotseatIconSize = p.hotseatIconSize;
         numHotseatIcons = p.numHotseatIcons;
         numAllAppsColumns = p.numAllAppsColumns;
-        allAppsIconSize = p.allAppsIconSize;
         allAppsIconTextSize = p.allAppsIconTextSize;
         defaultLayoutId = p.defaultLayoutId;
         demoModeLayoutId = p.demoModeLayoutId;
@@ -282,9 +303,15 @@ public class InvariantDeviceProfile {
     private void initGridOption(Context context, ArrayList<DisplayOption> options,
             DisplayOption displayOption, DisplayMetrics metrics) {
         GridOption closestProfile = options.get(0).grid;
+
         numRows = closestProfile.numRows;
+        numRowsOriginal = numRows;
         numColumns = closestProfile.numColumns;
+        numColumnsOriginal = numColumns;
+        numColsDrawer = numColumns;
+        numColsDrawerOriginal = numColumns;
         numHotseatIcons = closestProfile.numHotseatIcons;
+        numHotseatIconsOriginal = numHotseatIcons;
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
         numFolderRows = closestProfile.numFolderRows;
@@ -294,8 +321,20 @@ public class InvariantDeviceProfile {
         mExtraAttrs = closestProfile.extraAttrs;
 
         iconSize = displayOption.iconSize;
+        iconSizeOriginal = displayOption.iconSize;
         iconShapePath = getIconShapePath(context);
         landscapeIconSize = displayOption.landscapeIconSize;
+        landscapeIconSizeOriginal = displayOption.landscapeIconSize;
+        hotseatIconSize = displayOption.iconSize;
+        hotseatIconSizeOriginal = displayOption.iconSize;
+        landscapeHotseatIconSize = displayOption.landscapeIconSize;
+        landscapeHotseatIconSizeOriginal = displayOption.landscapeIconSize;
+        allAppsIconSize = displayOption.iconSize;
+        allAppsIconSizeOriginal = displayOption.iconSize;
+        landscapeAllAppsIconSize = displayOption.landscapeIconSize;
+        landscapeAllAppsIconSizeOriginal = displayOption.landscapeIconSize;
+
+
         iconBitmapSize = ResourceUtils.pxFromDp(iconSize, metrics);
         iconTextSize = displayOption.iconTextSize;
         fillResIconDpi = getLauncherIconDensity(iconBitmapSize);

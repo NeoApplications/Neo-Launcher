@@ -451,7 +451,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         return (getHeight() - getPaddingTop()) - getPaddingBottom();
     }
 
-    protected final int dD() {
+    protected final int getIconWidth() {
         return mUseTwoBubbles ? mSearchIconWidth : mSearchIconWidth + qsbTextSpacing;
     }
 
@@ -468,9 +468,9 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         if (dE()) {
             i = 8388629;
             if (mIsRtl) {
-                textView.setPadding(dD(), 0, 0, 0);
+                textView.setPadding(getIconWidth(), 0, 0, 0);
             } else {
-                textView.setPadding(0, 0, dD() + 75, 0);
+                textView.setPadding(0, 0, getIconWidth() + 75, 0);
             }
         }
         textView.setGravity(i);

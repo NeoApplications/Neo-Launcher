@@ -235,6 +235,9 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     @Thunk
     Hotseat mHotseat;
 
+    @Nullable
+    private View mHotseatSearchBox;
+
     private DropTargetBar mDropTargetBar;
 
     // Main container view for the all apps screen.
@@ -1108,6 +1111,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mWorkspace.initParentViews(mDragLayer);
         mOverviewPanel = findViewById(R.id.overview_panel);
         mHotseat = findViewById(R.id.hotseat);
+        mHotseatSearchBox = findViewById(R.id.search_container_hotseat);
 
         mLauncherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -1348,6 +1352,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     public Hotseat getHotseat() {
         return mHotseat;
+    }
+
+    public View getHotseatSearchBox() {
+        return mHotseatSearchBox;
     }
 
     public <T extends View> T getOverviewPanel() {
@@ -1959,7 +1967,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mAppWidgetHost.clearViews();
 
         if (mHotseat != null) {
-            mHotseat.resetLayout(getWallpaperDeviceProfile().isVerticalBarLayout());
+            mHotseat.resetLayout(getDeviceProfile().isVerticalBarLayout());
         }
         TraceHelper.endSection("startBinding");
     }

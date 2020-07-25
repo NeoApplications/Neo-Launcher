@@ -583,7 +583,12 @@ public class CellLayout extends ViewGroup implements Transposable {
         // Hotseat icons - remove text
         if (child instanceof BubbleTextView) {
             BubbleTextView bubbleChild = (BubbleTextView) child;
-            bubbleChild.setTextVisibility(mContainerType != HOTSEAT);
+            //bubbleChild.setTextVisibility(mContainerType!=HOTSEAT);
+            if (mContainerType == HOTSEAT) {
+                bubbleChild.setTextVisibility(!Utilities.getOmegaPrefs(getContext()).getHideDockLabels());
+                bubbleChild.setLines(Utilities.getOmegaPrefs(getContext()).getDockLabelRows());
+
+            }
         }
 
         child.setScaleX(mChildScale);

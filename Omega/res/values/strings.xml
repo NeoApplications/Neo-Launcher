@@ -49,6 +49,8 @@
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
 
     <!-- PREFERENCES DOCK -->
+    <string name="title__dock_hide">Dock Hide</string>
+    <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_search_bar">Show Search Bar</string>
 
     <!-- PREFERENCES DRAWER -->
@@ -87,6 +89,7 @@
 
     <!-- SEARCH -->
     <string name="title__search_provider">Search engine</string>
+    <string name="cat_search_bar">Search Bar</string>
     <string name="search_no_results">No Results</string>
     <string name="search_breadcrumb_connector" translatable="false">
         <xliff:g name="first_item">%1$s</xliff:g> >

@@ -48,6 +48,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val doNothing = { }
     val restart = { restart() }
     val reloadApps = { reloadApps() }
+    val reloadAll = { reloadAll() }
     val updateBlur = { updateBlur() }
     val recreate = { recreate() }
     val omegaConfig = Config(context)
@@ -67,9 +68,12 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set", Collections.emptySet(), doNothing)
     val drawerLabelColor by IntPref("pref_key__drawer_label_color", R.color.qsb_drawer_text_color_normal, reloadApps)
-    var allAppsGlobalSearch by BooleanPref("pref_allAppsGoogleSearch", false, doNothing)
+    var allAppsGlobalSearch by BooleanPref("pref_allAppsGoogleSearch", true, doNothing)
     val allAppsSearch by BooleanPref("pref_allAppsSearch", true, recreate)
-
+    val drawerTextScale by FloatPref("pref_allAppsIconTextScale", 1f, recreate)
+    val drawerPaddingScale by FloatPref("pref_allAppsPaddingScale", 1.0f, recreate)
+    private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
+    val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -79,10 +83,17 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     }
 
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)
+    val desktopTextScale by FloatPref("pref_iconTextScale", 1f, reloadAll)
+    private val homeMultilineLabel by BooleanPref("pref_homeIconLabelsInTwoLines", false, recreate)
+    val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
 
     /* --DOCK-- */
-    var dockSearchBar by BooleanPref("pref_dockSearchBar", false, recreate)
     var dockHide by BooleanPref("pref_key__hide_hotseat", false, recreate)
+    val dockTextScale by FloatPref("pref_dockTextScale", -1f, restart)
+    private val dockMultilineLabel by BooleanPref("pref_dockIconLabelsInTwoLines", false, recreate)
+    val dockLabelRows get() = if (dockMultilineLabel) 2 else 1
+    val hideDockLabels by BooleanPref("pref_hideDockLabels", true, restart)
+    var dockScale by FloatPref("pref_dockScale", -1f, recreate)
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }

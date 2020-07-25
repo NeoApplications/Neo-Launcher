@@ -49,9 +49,9 @@ import com.saggitt.omega.search.webproviders.WebSearchProvider;
 
 import java.util.Objects;
 
-public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager, k.o {
+public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager, QsbChangeListener {
 
-    private final k Ds;
+    private final QsbConfiguration Ds;
     private final int marginTop;
     public float appsVerticalOffset;
     boolean mDoNotRemoveFallback;
@@ -76,9 +76,9 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         super(context, attributeSet, i);
         this.mShadowAlpha = 0;
         setOnClickListener(this);
-        this.Ds = k.getInstance(context);
+        this.Ds = QsbConfiguration.getInstance(context);
         this.marginTop = getResources().getDimensionPixelSize(R.dimen.qsb_margin_top_adjusting);
-        this.appsVerticalOffset = getResources().getDimensionPixelSize(R.dimen.all_apps_search_vertical_offset);
+        appsVerticalOffset = getResources().getDimensionPixelSize(R.dimen.all_apps_search_vertical_offset);
         setClipToPadding(false);
         prefs = OmegaPreferences.Companion.getInstanceNoCreate();
 
@@ -98,6 +98,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         if (mLauncher.getDeviceProfile().isVerticalBarLayout()) {
             mLauncher.getAllAppsController().setScrollRangeDelta(0);
         } else {
+            //TODO: CHECK BOTTOM MARGING
             float delta = HotseatQsbWidget.getBottomMargin(mLauncher, false) + appsVerticalOffset;
             if (!prefs.getDockHide()) {
                 delta += mlp.height + mlp.topMargin;
@@ -173,7 +174,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         mAppsView.setRecyclerViewVerticalFadingEdgeEnabled(!mLowPerformanceMode);
     }
 
-    public final void onChangeListener() {
+    public final void onChange() {
         updateConfiguration();
         invalidate();
     }

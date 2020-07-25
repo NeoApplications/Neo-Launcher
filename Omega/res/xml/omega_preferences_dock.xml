@@ -17,11 +17,17 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="true"
+        android:key="pref_key__hide_hotseat"
+        android:persistent="true"
+        android:title="@string/title__dock_hide"
+        app:iconSpaceReserved="false" />
 
     <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="true"
-        android:key="pref_dockSearchBar"
+        android:key="pref_hideDockLabels"
         android:persistent="true"
-        android:title="@string/title__dock_search_bar"
+        android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
 </PreferenceScreen>

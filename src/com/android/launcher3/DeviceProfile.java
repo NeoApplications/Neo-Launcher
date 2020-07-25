@@ -37,9 +37,7 @@ import com.saggitt.omega.OmegaPreferences;
 public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListener {
 
     public final InvariantDeviceProfile inv;
-    // IDP with no grid override values.
-    @Nullable
-    private final InvariantDeviceProfile originalIdp;
+    public final int defaultPageSpacingPx;
 
     // Device properties
     public final boolean isTablet;
@@ -69,22 +67,27 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
 
     // To evenly space the icons, increase the left/right margins for tablets in portrait mode.
     private static final int PORTRAIT_TABLET_LEFT_RIGHT_PADDING_MULTIPLIER = 4;
-
-    // Workspace
-    public final int desiredWorkspaceLeftRightMarginPx;
-    private final OmegaPreferences prefs;
+    // IDP with no grid override values.
+    @Nullable
+    private final InvariantDeviceProfile originalIdp;
+    private final int topWorkspacePadding;
     public final int cellLayoutBottomPaddingPx;
     public final int edgeMarginPx;
     public float workspaceSpringLoadShrinkFactor;
     public final int workspaceSpringLoadedBottomSpace;
-
+    private final OmegaPreferences prefs;
+    // Workspace
+    public int desiredWorkspaceLeftRightMarginPx;
+    public int cellLayoutPaddingLeftRightPx;
+    public float workspaceOptionsShrinkFactor;
     // Drag handle
-    public final int verticalDragHandleSizePx;
-    private final int verticalDragHandleOverlapWorkspace;
+    public int verticalDragHandleSizePx;
 
     // Workspace icons
     public int iconSizePx;
+    public int iconSizeOriginalPx;
     public int iconTextSizePx;
+    public int iconTextSizeOriginalPx;
     public int iconDrawablePaddingPx;
     public int iconDrawablePaddingOriginalPx;
 
@@ -92,9 +95,16 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
     public int cellHeightPx;
     public int workspaceCellPaddingXPx;
 
+    public int hotseatIconSizePx;
+    public int hotseatIconSizeOriginalPx;
+
     // Folder
     public int folderIconSizePx;
     public int folderIconOffsetYPx;
+
+    // Drawer folder
+    public int allAppsFolderIconSizePx;
+    public int allAppsFolderIconOffsetYPx;
 
     // Folder cell
     public int folderCellWidthPx;
@@ -107,13 +117,16 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
 
     // Hotseat
     public int hotseatCellHeightPx;
+    public int hotseatIconTextSizePx;
+    public int hotseatIconTextSizeOriginalPx;
+
     // In portrait: size = height, in landscape: size = width
     public int hotseatBarSizePx;
-    public final int hotseatBarTopPaddingPx;
+    public int hotseatBarTopPaddingPx;
     public int hotseatBarBottomPaddingPx;
     // Start is the side next to the nav bar, end is the side next to the workspace
-    public final int hotseatBarSidePaddingStartPx;
-    public final int hotseatBarSidePaddingEndPx;
+    public int hotseatBarSidePaddingStartPx;
+    public int hotseatBarSidePaddingEndPx;
 
     // All apps
     public int allAppsCellHeightPx;
@@ -121,6 +134,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
     public int allAppsIconSizePx;
     public int allAppsIconDrawablePaddingPx;
     public float allAppsIconTextSizePx;
+    public float allAppsIconTextSizeOriginalPx;
 
     // Widgets
     public final PointF appWidgetScale = new PointF(1.0f, 1.0f);
@@ -138,12 +152,13 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
     // Notification dots
     public DotRenderer mDotRendererWorkSpace;
     public DotRenderer mDotRendererAllApps;
-    public int cellLayoutPaddingLeftRightPx;
+    private int verticalDragHandleOverlapWorkspace;
     public Context mContext;
 
     public DeviceProfile(Context context, InvariantDeviceProfile inv,
                          InvariantDeviceProfile originalIDP, Point minSize, Point maxSize,
                          int width, int height, boolean isLandscape, boolean isMultiWindowMode) {
+
         mContext = context;
         prefs = Utilities.getOmegaPrefs(context);
 
@@ -185,7 +200,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         edgeMarginPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_edge_margin);
         desiredWorkspaceLeftRightMarginPx = isVerticalBarLayout() ? 0 : edgeMarginPx;
 
-        int cellLayoutPaddingLeftRightMultiplier = !isVerticalBarLayout() && isTablet
+        /*int cellLayoutPaddingLeftRightMultiplier = !isVerticalBarLayout() && isTablet
                 ? PORTRAIT_TABLET_LEFT_RIGHT_PADDING_MULTIPLIER : 1;
         int cellLayoutPadding = res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_padding);
         if (isLandscape) {
@@ -194,7 +209,9 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         } else {
             cellLayoutPaddingLeftRightPx = cellLayoutPaddingLeftRightMultiplier * cellLayoutPadding;
             cellLayoutBottomPaddingPx = 0;
-        }
+        }*/
+        cellLayoutBottomPaddingPx =
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_bottom_padding);
 
         verticalDragHandleSizePx = res.getDimensionPixelSize(
                 R.dimen.vertical_drag_handle_size);
@@ -218,11 +235,11 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_side_padding);
         // Add a bit of space between nav bar and hotseat in vertical bar layout.
         hotseatBarSidePaddingStartPx = isVerticalBarLayout() ? verticalDragHandleSizePx : 0;
-        hotseatBarSizePx = ResourceUtils.pxFromDp(inv.iconSize, dm) + (isVerticalBarLayout()
+        /*hotseatBarSizePx = ResourceUtils.pxFromDp(inv.iconSize, dm) + (isVerticalBarLayout()
                 ? (hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx)
                 : (res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_extra_vertical_size)
                 + hotseatBarTopPaddingPx + hotseatBarBottomPaddingPx));
-
+        */
         // Calculate all of the remaining variables.
         updateAvailableDimensions(dm, res);
 
@@ -261,23 +278,125 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
             dotSize = 0.228f;
         }
 
-        //mDotRendererWorkSpace = new DotRenderer(iconSizePx, IconShape.getShapePath(), IconShape.DEFAULT_PATH_SIZE);
+        // This is done last, after iconSizePx is calculated above.
         mDotRendererWorkSpace = new DotRenderer(iconSizePx, IconShape.getShapePath(), IconShape.DEFAULT_PATH_SIZE, dotSize);
         mDotRendererAllApps = iconSizePx == allAppsIconSizePx ? mDotRendererWorkSpace :
                 new DotRenderer(allAppsIconSizePx, IconShape.getShapePath(), IconShape.DEFAULT_PATH_SIZE, dotSize);
-        //new DotRenderer(allAppsIconSizePx, IconShape.getShapePath(), IconShape.DEFAULT_PATH_SIZE);
+
+        defaultPageSpacingPx =
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_workspace_page_spacing);
+        topWorkspacePadding =
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_workspace_top_padding);
 
         prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets");
     }
 
     @Override
     public void onValueChanged(String key, OmegaPreferences prefs, boolean force) {
+        updateDimensions();
+    }
+
+    public void updateDimensions() {
         Resources res = mContext.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
 
         boolean fullWidthWidgets = Utilities.getOmegaPrefs(mContext).getAllowFullWidthWidgets();
+        boolean dockHidden = prefs.getDockHide();
+        float dockScale = prefs.getDockScale();
 
         cellLayoutPaddingLeftRightPx = (!isVerticalBarLayout() && fullWidthWidgets) ? 0
                 : res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_padding);
+
+        hotseatBarTopPaddingPx =
+                res.getDimensionPixelSize(R.dimen.v1_dynamic_grid_hotseat_top_padding);
+        int extraHotseatBottomPadding = res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding);
+        hotseatBarBottomPaddingPx = extraHotseatBottomPadding
+                + res.getDimensionPixelSize(
+                R.dimen.v1_dynamic_grid_hotseat_bottom_padding);
+        hotseatBarSidePaddingEndPx =
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_side_padding);
+        // Add a bit of space between nav bar and hotseat.
+        hotseatBarSidePaddingStartPx = res.getDimensionPixelSize(R.dimen.hotseat_navbar_padding);
+        hotseatBarSizePx = isVerticalBarLayout()
+                ? hotseatIconSizePx + hotseatBarSidePaddingStartPx
+                + hotseatBarSidePaddingEndPx
+                : res.getDimensionPixelSize(
+                R.dimen.dynamic_grid_hotseat_size)
+                + hotseatBarTopPaddingPx + hotseatBarBottomPaddingPx;
+        verticalDragHandleSizePx = res.getDimensionPixelSize(
+                R.dimen.vertical_drag_handle_size);
+        // Calculate all of the remaining variables.
+        updateAvailableDimensions(dm, res);
+
+        iconTextSizePx = (int) (iconTextSizeOriginalPx * prefs.getDesktopTextScale());
+        allAppsIconTextSizePx = (int) (allAppsIconTextSizeOriginalPx * prefs.getDrawerTextScale());
+        float dockTextScale = prefs.getDockTextScale();
+        if (dockTextScale < 0) {
+            hotseatIconTextSizePx = iconTextSizePx;
+        } else {
+            hotseatIconTextSizePx = (int) (hotseatIconTextSizeOriginalPx * dockTextScale);
+        }
+
+        // Calculate again to apply text size
+        updateAvailableDimensions(dm, res);
+
+        int extraSpaceFromY = Math.max(0, getCellSizeOriginal().y - iconSizeOriginalPx
+                - iconDrawablePaddingOriginalPx * 2 - verticalDragHandleSizePx
+                - extraHotseatBottomPadding);
+        int extraSpaceFromScale;
+        if (dockScale < 0f) {
+            extraSpaceFromScale = extraSpaceFromY;
+        } else {
+            extraSpaceFromScale = (int) (hotseatBarSizePx * (dockScale - 1));
+        }
+        // Now that we have all of the variables calculated, we can tune certain sizes.
+        if (!isVerticalBarLayout() && isPhone && isTablet) {
+            // We increase the hotseat size when there is extra space.
+            // ie. For a display with a large aspect ratio, we can keep the icons on the workspace
+            // in portrait mode closer together by adding more height to the hotseat.
+            // Note: This calculation was created after noticing a pattern in the design spec.
+            int extraSpace = Utilities.boundToRange(extraSpaceFromScale, 0, extraSpaceFromY);
+            hotseatBarSizePx += extraSpace;
+
+            hotseatBarBottomPaddingPx += extraSpace / 2;
+            hotseatBarTopPaddingPx += extraSpace / 2;
+
+            // Recalculate the available dimensions using the new hotseat size.
+            updateAvailableDimensions(dm, res);
+            extraSpaceFromScale -= extraSpace;
+        }
+
+        if (dockHidden) {
+            hotseatBarSizePx = 0;
+            verticalDragHandleSizePx = 0;
+
+            updateAvailableDimensions(dm, res);
+        } else if (!isVerticalBarLayout()) {
+            float adjustedDockScale = (float) extraSpaceFromScale / hotseatBarSizePx + 1;
+            verticalDragHandleSizePx *= adjustedDockScale;
+            int bottomPaddingNew = Math.max((int) (hotseatBarBottomPaddingPx * adjustedDockScale), 0);
+
+            int difference = hotseatBarBottomPaddingPx - bottomPaddingNew;
+            hotseatBarTopPaddingPx -= difference;
+            hotseatBarBottomPaddingPx = bottomPaddingNew;
+
+            int minHeight = hotseatCellHeightPx + hotseatBarBottomPaddingPx + hotseatBarTopPaddingPx;
+            hotseatBarSizePx = Math.max(minHeight, (int) (hotseatBarSizePx * adjustedDockScale));
+        }
+
+        updateWorkspacePadding();
+    }
+
+    public Point getCellSizeOriginal() {
+        Point result = new Point();
+        // Since we are only concerned with the overall padding, layout direction does
+        // not matter.
+        Point padding = getTotalWorkspacePadding();
+        result.x = calculateCellWidth(availableWidthPx - padding.x
+                - cellLayoutPaddingLeftRightPx * 2, inv.numColumnsOriginal);
+        result.y = calculateCellHeight(availableHeightPx - padding.y
+                - cellLayoutBottomPaddingPx, inv.numRowsOriginal);
+        return result;
     }
 
     public DeviceProfile copy(Context context) {
@@ -359,15 +478,25 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
      * hotseat sizes, workspaceSpringLoadedShrinkFactor, folderIconSizePx, and folderIconOffsetYPx.
      */
     private void updateIconSize(float scale, Resources res, DisplayMetrics dm) {
+        boolean dockVisible = !prefs.getDockHide();
+        int labelRowCount = prefs.getHomeLabelRows();
+        int drawerLabelRowCount = prefs.getDrawerLabelRows();
+        int dockLabelRowCount = prefs.getDockLabelRows();
+
         // Workspace
         final boolean isVerticalLayout = isVerticalBarLayout();
-        float invIconSizeDp = isVerticalLayout ? inv.landscapeIconSize : inv.iconSize;
-        iconSizePx = Math.max(1, (int) (ResourceUtils.pxFromDp(invIconSizeDp, dm) * scale));
-        iconTextSizePx = (int) (Utilities.pxFromSp(inv.iconTextSize, dm) * scale);
-        iconDrawablePaddingPx = (int) (iconDrawablePaddingOriginalPx * scale);
+        float invIconSizePx = isVerticalLayout ? inv.landscapeIconSize : inv.iconSize;
+        iconSizeOriginalPx = Utilities.pxFromDp(invIconSizePx, dm);
+        iconSizePx = (int) (iconSizeOriginalPx * scale);
+        iconTextSizeOriginalPx = (int) (Utilities.pxFromSp(inv.iconTextSize, dm) * scale);
+        iconTextSizePx = (int) (iconTextSizePx * scale);
+        iconDrawablePaddingPx =
+                (int) (iconDrawablePaddingOriginalPx * scale) -
+                        (iconTextSizeOriginalPx - iconTextSizePx);
 
-        cellHeightPx = iconSizePx + iconDrawablePaddingPx
-                + Utilities.calculateTextHeight(iconTextSizePx);
+        int textHeight = Utilities.calculateTextHeight(iconTextSizePx) * labelRowCount;
+        cellHeightPx = iconSizePx + iconDrawablePaddingPx + textHeight;
+
         int cellYPadding = (getCellSize().y - cellHeightPx) / 2;
         if (iconDrawablePaddingPx > cellYPadding && !isVerticalLayout
                 && !isMultiWindowMode) {
@@ -379,11 +508,20 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         }
         cellWidthPx = iconSizePx + iconDrawablePaddingPx;
 
-        allAppsIconSizePx = iconSizePx;
-        allAppsIconTextSizePx = iconTextSizePx;
-        allAppsIconDrawablePaddingPx = iconDrawablePaddingPx;
-        allAppsCellHeightPx = getCellSize().y;
-        allAppsCellWidthPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx;
+        // All apps
+        float invAllAppsIconSizePx = isVerticalLayout ? inv.landscapeAllAppsIconSize : inv.allAppsIconSize;
+        allAppsIconTextSizeOriginalPx = (int) (Utilities.pxFromSp(inv.iconTextSize, dm) * scale);
+        allAppsIconTextSizePx = (int) (allAppsIconTextSizePx * scale);
+        textHeight = Utilities.calculateTextHeight(allAppsIconTextSizePx) * drawerLabelRowCount;
+        allAppsIconSizePx = (int) (Utilities.pxFromDp(invAllAppsIconSizePx, dm) * scale);
+        allAppsIconDrawablePaddingPx = (int) (iconDrawablePaddingOriginalPx * scale) -
+                (int) (allAppsIconTextSizeOriginalPx - allAppsIconTextSizePx);
+
+        int additionalPadding = (int) (
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_drawer_additional_padding) * prefs
+                        .getDrawerPaddingScale());
+        allAppsCellHeightPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx + textHeight
+                + additionalPadding;
 
         if (isVerticalBarLayout()) {
             // Always hide the Workspace text with vertical bar layout.
@@ -391,15 +529,26 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         }
 
         // Hotseat
+        float invHotseatIconSizePx = isVerticalLayout ? inv.landscapeHotseatIconSize : inv.hotseatIconSize;
+        hotseatIconTextSizeOriginalPx = (int) (Utilities.pxFromSp(inv.iconTextSize, dm) * scale);
+        hotseatIconTextSizePx = (int) (hotseatIconTextSizeOriginalPx * scale);
+        textHeight = Utilities.calculateTextHeight(hotseatIconTextSizePx) * dockLabelRowCount;
+        hotseatIconSizeOriginalPx = Utilities.pxFromDp(invHotseatIconSizePx, dm);
+        hotseatIconSizePx = (int) (hotseatIconSizeOriginalPx * scale);
+
         if (isVerticalLayout) {
-            hotseatBarSizePx = iconSizePx + hotseatBarSidePaddingStartPx
-                    + hotseatBarSidePaddingEndPx;
+            hotseatBarSizePx =
+                    hotseatIconSizePx
+                            + hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx;
         }
-        hotseatCellHeightPx = iconSizePx;
+        int additionalHeight =
+                prefs.getHideDockLabels() ? 0 : (int) (textHeight + (iconDrawablePaddingOriginalPx
+                        * scale));
+        hotseatCellHeightPx = hotseatIconSizePx + additionalHeight;
 
         if (!isVerticalLayout) {
-            int expectedWorkspaceHeight = availableHeightPx - hotseatBarSizePx
-                    - verticalDragHandleSizePx - edgeMarginPx;
+            int expectedWorkspaceHeight = availableHeightPx - (dockVisible ? hotseatBarSizePx : 0)
+                    - verticalDragHandleSizePx - topWorkspacePadding;
             float minRequiredHeight = dropTargetBarSizePx + workspaceSpringLoadedBottomSpace;
             workspaceSpringLoadShrinkFactor = Math.min(
                     res.getInteger(R.integer.config_workspaceSpringLoadShrinkPercentage) / 100.0f,
@@ -408,10 +557,14 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
             workspaceSpringLoadShrinkFactor =
                     res.getInteger(R.integer.config_workspaceSpringLoadShrinkPercentage) / 100.0f;
         }
+        workspaceOptionsShrinkFactor =
+                res.getInteger(R.integer.config_workspaceOptionsShrinkPercentage) / 100.0f;
 
         // Folder icon
         folderIconSizePx = IconNormalizer.getNormalizedCircleSize(iconSizePx);
         folderIconOffsetYPx = (iconSizePx - folderIconSizePx) / 2;
+        allAppsFolderIconSizePx = IconNormalizer.getNormalizedCircleSize(allAppsIconSizePx);
+        allAppsFolderIconOffsetYPx = (allAppsIconSizePx - allAppsFolderIconSizePx) / 2;
     }
 
     private void updateAvailableFolderCellDimensions(DisplayMetrics dm, Resources res) {
@@ -519,17 +672,20 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
                         ((inv.numColumns - 1) * cellWidthPx)));
                 availablePaddingX = (int) Math.min(availablePaddingX,
                         widthPx * MAX_HORIZONTAL_PADDING_PERCENT);
-                int availablePaddingY = Math.max(0, heightPx - edgeMarginPx - paddingBottom
+                int availablePaddingY = Math.max(0, heightPx - topWorkspacePadding - paddingBottom
                         - (2 * inv.numRows * cellHeightPx) - hotseatBarTopPaddingPx
                         - hotseatBarBottomPaddingPx);
-                padding.set(availablePaddingX / 2, edgeMarginPx + availablePaddingY / 2,
+                padding.set(availablePaddingX / 2, topWorkspacePadding + availablePaddingY / 2,
                         availablePaddingX / 2, paddingBottom + availablePaddingY / 2);
             } else {
                 int horizontalPadding = Utilities.getOmegaPrefs(mContext)
                         .getAllowFullWidthWidgets() ? 0 : desiredWorkspaceLeftRightMarginPx;
 
                 // Pad the top and bottom of the workspace with search/hotseat bar sizes
-                padding.set(horizontalPadding, edgeMarginPx, horizontalPadding, paddingBottom);
+                padding.set(horizontalPadding,
+                        topWorkspacePadding,
+                        horizontalPadding,
+                        paddingBottom);
             }
         }
     }

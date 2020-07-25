@@ -30,4 +30,7 @@
     <!-- Tag id used for view scrim -->
     <item name="view_scrim" type="id" />
 
+    <!-- Out of 100, the percent to shrink the workspace during options mode. -->
+    <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
+
 </resources>

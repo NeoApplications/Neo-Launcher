@@ -36,7 +36,6 @@ public class Hotseat extends CellLayout implements LogContainerProvider, Insetta
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mHasVerticalHotseat;
-    private CellLayout mContent;
 
     public Hotseat(Context context) {
         this(context, null);
@@ -49,25 +48,6 @@ public class Hotseat extends CellLayout implements LogContainerProvider, Insetta
     public Hotseat(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
-
-    /*@Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        OmegaPreferences prefs = Utilities.getOmegaPrefs(getContext());
-        if (prefs.getDockHide()) {
-            setVisibility(GONE);
-        } else if (prefs.getDockSearchBar()) {
-            inflate(getContext(), R.layout.search_container_hotseat, this);
-        } else {
-            View v = this.findViewById(R.id.search_container_hotseat);
-            if (v != null) {
-                removeView(v);
-            }
-        }
-
-        mContent = findViewById(R.id.layout);
-    }*/
 
     /* Get the orientation specific coordinates given an invariant order in the hotseat. */
     int getCellXFromOrder(int rank) {
@@ -133,3 +113,4 @@ public class Hotseat extends CellLayout implements LogContainerProvider, Insetta
         return Launcher.getLauncher(getContext()).getRotationMode();
     }
 }
+
