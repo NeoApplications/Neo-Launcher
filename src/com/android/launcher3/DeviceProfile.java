@@ -110,10 +110,19 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
     public int folderCellWidthPx;
     public int folderCellHeightPx;
 
+    // Drawer folder cell
+    public int allAppsFolderCellWidthPx;
+
     // Folder child
     public int folderChildIconSizePx;
     public int folderChildTextSizePx;
     public int folderChildDrawablePaddingPx;
+    public int allAppsFolderCellHeightPx;
+
+    // Drawer folder child
+    public int allAppsFolderChildIconSizePx;
+    public int allAppsFolderChildTextSizePx;
+    public int allAppsFolderChildDrawablePaddingPx;
 
     // Hotseat
     public int hotseatCellHeightPx;
@@ -461,12 +470,14 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         iconDrawablePaddingPx = 0;
         cellHeightPx = iconSizePx;
 
+        int labelRows = prefs.getDrawerLabelRows();
+
         // In normal cases, All Apps cell height should equal the Workspace cell height.
         // Since we are removing labels from the Workspace, we need to manually compute the
         // All Apps cell height.
         int topBottomPadding = allAppsIconDrawablePaddingPx * (isVerticalBarLayout() ? 2 : 1);
         allAppsCellHeightPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx
-                + Utilities.calculateTextHeight(allAppsIconTextSizePx)
+                + Utilities.calculateTextHeight(allAppsIconTextSizePx) * labelRows
                 + topBottomPadding * 2;
     }
 
@@ -591,19 +602,22 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         Point totalWorkspacePadding = getTotalWorkspacePadding();
 
         // Check if the icons fit within the available height.
-        float contentUsedHeight = folderCellHeightPx * inv.numFolderRows;
+        float contentUsedHeight = allAppsFolderCellHeightPx * inv.numFolderRows + folderBottomPanelSize;
         int contentMaxHeight = availableHeightPx - totalWorkspacePadding.y - folderBottomPanelSize
                 - folderMargin;
         float scaleY = contentMaxHeight / contentUsedHeight;
 
+        // Drawer Folders
+        updateDrawerFolderCellSize(1f, dm, res);
+
         // Check if the icons fit within the available width.
-        float contentUsedWidth = folderCellWidthPx * inv.numFolderColumns;
+        float contentUsedWidth = allAppsFolderCellHeightPx * inv.numFolderColumns;
         int contentMaxWidth = availableWidthPx - totalWorkspacePadding.x - folderMargin;
         float scaleX = contentMaxWidth / contentUsedWidth;
 
         float scale = Math.min(scaleX, scaleY);
         if (scale < 1f) {
-            updateFolderCellSize(scale, dm, res);
+            updateDrawerFolderCellSize(scale, dm, res);
         }
     }
 
@@ -620,6 +634,25 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         folderCellHeightPx = folderChildIconSizePx + 2 * cellPaddingY + textHeight;
         folderChildDrawablePaddingPx = Math.max(0,
                 (folderCellHeightPx - folderChildIconSizePx - textHeight) / 3);
+    }
+
+    private void updateDrawerFolderCellSize(float scale, DisplayMetrics dm, Resources res) {
+        // Drawer folders
+        int folderLabelRowCount = Utilities.getOmegaPrefs(mContext).getHomeLabelRows();
+
+        allAppsFolderChildIconSizePx = (int) (Utilities.pxFromDp(inv.allAppsIconSize, dm) * scale);
+        allAppsFolderChildTextSizePx =
+                (int) (res.getDimensionPixelSize(R.dimen.folder_child_text_size) * scale);
+
+        int textHeight =
+                Utilities.calculateTextHeight(allAppsFolderChildTextSizePx) * folderLabelRowCount;
+        int cellPaddingX = (int) (res.getDimensionPixelSize(R.dimen.folder_cell_x_padding) * scale);
+        int cellPaddingY = (int) (res.getDimensionPixelSize(R.dimen.folder_cell_y_padding) * scale);
+
+        allAppsFolderCellWidthPx = allAppsFolderChildIconSizePx + 2 * cellPaddingX;
+        allAppsFolderCellHeightPx = allAppsFolderChildIconSizePx + 2 * cellPaddingY + textHeight;
+        allAppsFolderChildDrawablePaddingPx = Math.max(0,
+                (allAppsFolderCellHeightPx - allAppsFolderChildIconSizePx - textHeight) / 3);
     }
 
     public void updateInsets(Rect insets) {

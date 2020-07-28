@@ -57,13 +57,15 @@
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
+    <string name="title__drawer_mutliline_labels">Multiline app names</string>
+    <string name="title__drawer_hide_icon_labels">Hide app names</string>
+
     <string name="title__sort_mode">App Sort</string>
     <string name="title__sort_alphabetical_az">Alphabetical AZ</string>
     <string name="title__sort_alphabetical_za">Alphabetical ZA</string>
     <string name="title__sort_last_installed">Last Installed</string>
     <string name="title__sort_most_used">Most Used</string>
     <string name="title__sort_by_color">By Color</string>
-
     <string name="title_all_apps_search">Drawer search bar</string>
     <string name="title_all_apps_google_search">Global search</string>
     <string name="summary_all_apps_google_search">Find web results and apps</string>

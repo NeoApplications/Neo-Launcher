@@ -28,6 +28,22 @@
         android:title="@string/title__drawer_sort"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:disableDependentsState="true"
+        android:key="pref_hideAllAppsAppLabels"
+        android:persistent="true"
+        android:title="@string/title__drawer_hide_icon_labels"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:dependency="pref_hideAllAppsAppLabels"
+        android:key="pref_iconLabelsInTwoLines"
+        android:persistent="true"
+        android:title="@string/title__drawer_mutliline_labels"
+        app:iconSpaceReserved="false" />
+
     <!--
         <com.saggitt.omega.preferences.StyledSwitchPreference
             android:defaultValue="false"
