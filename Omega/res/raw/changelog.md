@@ -1,3 +1,5 @@
+### v0.3.0 (Build 11)
+
 ### v0.2.0 (Build 10)
 * **Add color accent preference**
 * **Add notification color and count**
