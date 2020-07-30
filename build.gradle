@@ -42,7 +42,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion BUILD_TOOLS_VERSION
 
-    def name = "0.2.0"
+    def name = "0.3.0"
     def code = 11
 
     defaultConfig {
