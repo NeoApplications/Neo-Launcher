@@ -1,4 +1,5 @@
 # Project exclude paths
+/aospWithQuickstepOmega
 /buildSrc/.gradle/
 /buildSrc/build/
 /buildSrc/build/classes/java/main/
