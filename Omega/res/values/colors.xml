@@ -20,6 +20,7 @@
     <color name="colorPrimary">#0788EF</color>
     <color name="colorPrimaryDark">#03419F</color>
     <color name="colorAccent">#E80142</color>
+    <color name="colorAccentDark">#ff8AB4f8</color>
     <color name="textColorPrimary">#ffffffff</color>
     <color name="textColorSecondary">#ffffffff</color>
     <color name="textColorPrimaryInverse">#de000000</color>
@@ -34,5 +35,10 @@
     <color name="qsb_dark_icon_tint">#ff757575</color>
 
     <color name="qsb_drawer_text_color_normal">#ff212121</color>
+
+    <color name="settings_background_dark">#ff303030</color>
+    <color name="settings_background_dark_2dp">#ff252628</color>
+    <color name="settings_background_dark_8dp">#ff303133</color>
+
 </resources>
 

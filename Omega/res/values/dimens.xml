@@ -22,10 +22,16 @@
 
     <dimen name="all_apps_search_vertical_offset">30dp</dimen>
 
+    <!-- Dashboard tile image margin start / end -->
     <dimen name="dashboard_tile_minimum_height">72dp</dimen>
     <dimen name="dashboard_tile_image_size">38dp</dimen>
     <dimen name="dashboard_tile_image_margin_start">16dp</dimen>
     <dimen name="dashboard_tile_image_margin_end">20dp</dimen>
+    <dimen name="margin_normal">16dp</dimen>
+    <dimen name="button_corner_radius">4dp</dimen>
+    <dimen name="dialog_horizontal_padding">24dp</dimen>
+    <dimen name="shelf_surface_radius">16dp</dimen>
+
     <!-- The default blur strength -->
     <item name="config_default_blur_strength" format="float" type="dimen">75</item>
     <dimen name="large_title_height">16dp</dimen>
