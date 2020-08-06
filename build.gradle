@@ -131,6 +131,7 @@ android {
         main {
             res.srcDirs = ['res']
             java.srcDirs = ['src', 'src_plugins']
+            assets.srcDirs = ['assets']
             manifest.srcFile 'AndroidManifest-common.xml'
             proto {
                 srcDir 'protos/'
@@ -210,10 +211,11 @@ dependencies {
     implementation "androidx.dynamicanimation:dynamicanimation:${ANDROID_X_VERSION}"
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "androidx.recyclerview:recyclerview:${ANDROID_X_VERSION}"
+    //TODO REWORK StyleSwitchPreference for new andriodx versions
     implementation "androidx.preference:preference:${ANDROID_X_VERSION}"
 
     implementation "com.google.android.material:material:1.1.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta7'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation 'com.github.LawnchairLauncher:hoko-lite:0e21db9ae5'
@@ -245,9 +247,9 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:1.9.5"
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.0'
-    androidTestImplementation 'com.android.support.test:rules:1.0.0'
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
     androidTestImplementation "androidx.annotation:annotation:${ANDROID_X_VERSION}"
 }
 
