@@ -103,7 +103,10 @@
             android:label="@string/derived_app_name"
             android:parentActivityName="com.saggitt.omega.settings.SettingsActivity"
             android:theme="@style/SettingsTheme_Light" />
-
+        <activity
+            android:name="com.saggitt.omega.views.SelectableAppsActivity"
+            android:autoRemoveFromRecents="true"
+            android:theme="@style/SettingsTheme_Light" />
         <activity
             android:name="com.saggitt.omega.FakeLauncher"
             android:enabled="false">
