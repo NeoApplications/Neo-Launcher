@@ -17,19 +17,23 @@
 
 package com.saggitt.omega.util
 
-import android.R
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.RippleDrawable
 import android.os.Handler
 import android.os.Looper
+import android.text.TextUtils
 import android.util.Property
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.Switch
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
@@ -45,12 +49,14 @@ import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Themes
 import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
 
 val Context.launcherAppState get() = LauncherAppState.getInstance(this)
@@ -180,31 +186,6 @@ inline fun ViewGroup.forEachChildReversedIndexed(action: (View, Int) -> Unit) {
     }
 }
 
-fun Switch.applyColor(color: Int) {
-    val colorForeground = Themes.getAttrColor(context, R.attr.colorForeground)
-    val alphaDisabled = Themes.getAlpha(context, R.attr.disabledAlpha)
-    val switchThumbNormal = context.resources.getColor(androidx.preference.R.color.switch_thumb_normal_material_light)
-    val switchThumbDisabled = context.resources.getColor(androidx.preference.R.color.switch_thumb_disabled_material_light)
-    val thstateList = ColorStateList(arrayOf(
-            intArrayOf(-R.attr.state_enabled),
-            intArrayOf(R.attr.state_checked),
-            intArrayOf()),
-            intArrayOf(
-                    switchThumbDisabled,
-                    color,
-                    switchThumbNormal))
-    val trstateList = ColorStateList(arrayOf(
-            intArrayOf(-R.attr.state_enabled),
-            intArrayOf(R.attr.state_checked),
-            intArrayOf()),
-            intArrayOf(
-                    ColorUtils.setAlphaComponent(colorForeground, alphaDisabled),
-                    color,
-                    colorForeground))
-    DrawableCompat.setTintList(thumbDrawable, thstateList)
-    DrawableCompat.setTintList(trackDrawable, trstateList)
-}
-
 operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
 inline fun PreferenceGroup.forEachIndexed(action: (i: Int, pref: Preference) -> Unit) {
     for (i in 0 until preferenceCount) action(i, this[i])
@@ -240,6 +221,25 @@ fun Int.removeFlag(flag: Int): Int {
 fun Context.checkLocationAccess(): Boolean {
     return Utilities.hasPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
             Utilities.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+}
+
+fun View.runOnAttached(runnable: Runnable) {
+    if (isAttachedToWindow) {
+        runnable.run()
+    } else {
+        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+
+            override fun onViewAttachedToWindow(v: View?) {
+                runnable.run()
+                removeOnAttachStateChangeListener(this)
+            }
+
+            override fun onViewDetachedFromWindow(v: View?) {
+                removeOnAttachStateChangeListener(this)
+            }
+        })
+
+    }
 }
 
 val Context.locale: Locale
@@ -287,4 +287,109 @@ inline fun <T> listWhileNotNull(generator: () -> T?): List<T> = mutableListOf<T>
 
 fun BgDataModel.workspaceContains(packageName: String): Boolean {
     return this.workspaceItems.any { it.targetComponent?.packageName == packageName }
+}
+
+
+fun Switch.applyColor(color: Int) {
+    val colorForeground = Themes.getAttrColor(context, android.R.attr.colorForeground)
+    val alphaDisabled = Themes.getAlpha(context, android.R.attr.disabledAlpha)
+    val switchThumbNormal = context.resources.getColor(androidx.preference.R.color.switch_thumb_normal_material_light)
+    val switchThumbDisabled = context.resources.getColor(androidx.preference.R.color.switch_thumb_disabled_material_light)
+    val thstateList = ColorStateList(arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf()),
+            intArrayOf(
+                    switchThumbDisabled,
+                    color,
+                    switchThumbNormal))
+    val trstateList = ColorStateList(arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf()),
+            intArrayOf(
+                    ColorUtils.setAlphaComponent(colorForeground, alphaDisabled),
+                    color,
+                    colorForeground))
+    DrawableCompat.setTintList(thumbDrawable, thstateList)
+    DrawableCompat.setTintList(trackDrawable, trstateList)
+}
+
+fun Button.applyColor(color: Int) {
+    val rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(color, 31))
+    (background as RippleDrawable).setColor(rippleColor)
+    DrawableCompat.setTint(background, color)
+    val tintList = ColorStateList.valueOf(color)
+    if (this is RadioButton) {
+        buttonTintList = tintList
+    }
+}
+
+fun Context.createDisabledColor(color: Int): ColorStateList {
+    return ColorStateList(arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf()),
+            intArrayOf(
+                    getDisabled(getColorAttr(android.R.attr.colorForeground)),
+                    color))
+}
+
+@ColorInt
+fun Context.getDisabled(inputColor: Int): Int {
+    return applyAlphaAttr(android.R.attr.disabledAlpha, inputColor)
+}
+
+@ColorInt
+fun Context.applyAlphaAttr(attr: Int, inputColor: Int): Int {
+    val ta = obtainStyledAttributes(intArrayOf(attr))
+    val alpha = ta.getFloat(0, 0f)
+    ta.recycle()
+    return applyAlpha(alpha, inputColor)
+}
+
+@ColorInt
+fun applyAlpha(a: Float, inputColor: Int): Int {
+    var alpha = a
+    alpha *= Color.alpha(inputColor)
+    return Color.argb(alpha.toInt(), Color.red(inputColor), Color.green(inputColor),
+            Color.blue(inputColor))
+}
+
+fun JSONObject.asMap() = JSONMap(this)
+fun JSONObject.getNullable(key: String): Any? {
+    return opt(key)
+}
+
+fun String.asNonEmpty(): String? {
+    if (TextUtils.isEmpty(this)) return null
+    return this
+}
+
+inline fun ViewGroup.forEachChildIndexed(action: (View, Int) -> Unit) {
+    val count = childCount
+    for (i in (0 until count)) {
+        action(getChildAt(i), i)
+    }
+}
+
+fun getTabRipple(context: Context, accent: Int): ColorStateList {
+    return ColorStateList(arrayOf(
+            intArrayOf(android.R.attr.state_selected),
+            intArrayOf()),
+            intArrayOf(
+                    ColorUtils.setAlphaComponent(accent, 31),
+                    context.getColorAttr(android.R.attr.colorControlHighlight)))
+}
+
+val Long.Companion.random get() = Random.nextLong()
+
+fun <T, U : Comparable<U>> comparing(extractKey: (T) -> U): Comparator<T> {
+    return Comparator { o1, o2 -> extractKey(o1).compareTo(extractKey(o2)) }
+}
+
+fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<T> {
+    return kotlin.Comparator { o1, o2 ->
+        val res = compare(o1, o2)
+        if (res != 0) res else extractKey(o1).compareTo(extractKey(o2))
+    }
 }
