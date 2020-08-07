@@ -26,6 +26,8 @@ import com.android.launcher3.R
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.Executors
 import com.saggitt.omega.allapps.PredictionsFloatingHeader
+import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.groups.DrawerTabs
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
@@ -75,6 +77,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
     val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
     val hideAllAppsAppLabels by BooleanPref("pref_hideAllAppsAppLabels", false, recreate)
+    var drawerMode by StringIntPref("pref_key__drawer_mode", Config.DRAWER_VERTICAL, recreate)
+
+    val currentTabsModel
+        get() = appGroupsManager.getEnabledModel() as? DrawerTabs ?: appGroupsManager.drawerTabs
+    val drawerTabs get() = appGroupsManager.drawerTabs
+    val appGroupsManager by lazy { AppGroupsManager(this) }
+    val separateWorkApps by BooleanPref("pref_separateWorkApps", true, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -540,6 +549,32 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
         override fun onSetValue(value: Int) {
             edit { putInt(getKey(), value) }
+        }
+    }
+
+    inline fun <reified T : Enum<T>> EnumPref(key: String, defaultValue: T,
+                                              noinline onChange: () -> Unit = doNothing): PrefDelegate<T> {
+        return IntBasedPref(key, defaultValue, onChange, { value ->
+            enumValues<T>().firstOrNull { item -> item.ordinal == value } ?: defaultValue
+        }, { it.ordinal }, { })
+    }
+
+    open inner class IntBasedPref<T : Any>(key: String, defaultValue: T, onChange: () -> Unit = doNothing,
+                                           private val fromInt: (Int) -> T,
+                                           private val toInt: (T) -> Int,
+                                           private val dispose: (T) -> Unit) : PrefDelegate<T>(key, defaultValue, onChange) {
+        override fun onGetValue(): T {
+            return if (sharedPrefs.contains(key)) {
+                fromInt(sharedPrefs.getInt(getKey(), toInt(defaultValue)))
+            } else defaultValue
+        }
+
+        override fun onSetValue(value: T) {
+            edit { putInt(getKey(), toInt(value)) }
+        }
+
+        override fun disposeOldValue(oldValue: T) {
+            dispose(oldValue)
         }
     }
 

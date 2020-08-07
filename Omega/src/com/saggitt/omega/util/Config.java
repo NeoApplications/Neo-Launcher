@@ -27,6 +27,10 @@ import com.android.launcher3.R;
 public class Config {
     //private static final String TAG = "Config";
 
+    //APP DRAWER TYPE
+    public static final int DRAWER_VERTICAL = 0;
+    public static final int DRAWER_HORIZONTAL = 1;
+
     //APP DRAWER SORT MODE
     public static final int SORT_AZ = 0;
     public static final int SORT_ZA = 1;

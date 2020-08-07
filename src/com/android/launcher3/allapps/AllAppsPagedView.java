@@ -17,9 +17,11 @@ package com.android.launcher3.allapps;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 
 import com.android.launcher3.PagedView;
+import com.android.launcher3.R;
 
 public class AllAppsPagedView extends PagedView<PersonalWorkSlidingTabStrip> {
 
@@ -27,7 +29,7 @@ public class AllAppsPagedView extends PagedView<PersonalWorkSlidingTabStrip> {
   final static float MAX_SWIPE_ANGLE = (float) Math.PI / 3;
   final static float TOUCH_SLOP_DAMPING_FACTOR = 4;
 
-  public AllAppsPagedView(Context context) {
+    public AllAppsPagedView(Context context) {
         this(context, null);
     }
 
@@ -85,5 +87,16 @@ public class AllAppsPagedView extends PagedView<PersonalWorkSlidingTabStrip> {
     @Override
     protected boolean isVerticalScrollable() {
         return false;
+    }
+
+    public void addTabs(int count) {
+        int childCount = getChildCount();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        for (int i = childCount; i < count; i++) {
+            inflater.inflate(R.layout.all_apps_rv_layout, this);
+        }
+        while (getChildCount() > count) {
+            removeViewAt(0);
+        }
     }
 }

@@ -18,8 +18,34 @@
 package com.saggitt.omega.allapps;
 
 import android.content.Context;
+import android.os.Process;
+
+import com.android.launcher3.DeviceProfile;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.util.ItemInfoMatcher;
 
 public class AllAppsPages {
+    private final ItemInfoMatcher allAppMatcher;
+    private final Context mContext;
+    private int mNumRows = 0;
+    private int mNumCols = 0;
+    private int mAppsPerPage = 0;
+    private int mPagesCount = 0;
+
     public AllAppsPages(Context context) {
+        mContext = context;
+        allAppMatcher = ItemInfoMatcher.ofUser(Process.myUserHandle());
+        DeviceProfile grid = Launcher.getLauncher(context).getDeviceProfile();
+        mNumCols = grid.inv.numColumns;
+        mNumRows = grid.inv.numRows;
+        mAppsPerPage = mNumCols * mNumRows;
+    }
+
+    public ItemInfoMatcher getMatcher() {
+        return allAppMatcher;
+    }
+
+    public int getPageCount() {
+        return mPagesCount;
     }
 }

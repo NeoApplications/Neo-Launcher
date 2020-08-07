@@ -93,6 +93,22 @@ public class FolderInfo extends ItemInfo {
         itemsChanged(animate);
     }
 
+    public void setTitle(CharSequence title) {
+        this.title = title;
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onTitleChanged(title);
+        }
+    }
+
+    /**
+     * DO NOT USE OUTSIDE CUSTOM INFO PROVIDER
+     */
+    public void onIconChanged() {
+        for (FolderListener listener : mListeners) {
+            listener.onIconChanged();
+        }
+    }
+
     @Override
     public void onAddToDatabase(ContentWriter writer) {
         super.onAddToDatabase(writer);
@@ -116,8 +132,16 @@ public class FolderInfo extends ItemInfo {
 
     public interface FolderListener {
         public void onAdd(WorkspaceItemInfo item, int rank);
+
         public void onRemove(WorkspaceItemInfo item);
+
         public void onItemsChanged(boolean animate);
+
+        void onTitleChanged(CharSequence title);
+
+        default void onIconChanged() {
+            // do nothing
+        }
     }
 
     public boolean hasOption(int optionFlag) {

@@ -59,7 +59,8 @@
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
     <string name="title__drawer_mutliline_labels">Multiline app names</string>
     <string name="title__drawer_hide_icon_labels">Hide app names</string>
-
+    <string name="title__drawer_hide_apps">Hidden App Shortcuts</string>
+    <string name="title__drawer_categorization">Categories</string>
     <string name="title__sort_mode">App Sort</string>
     <string name="title__sort_alphabetical_az">Alphabetical AZ</string>
     <string name="title__sort_alphabetical_za">Alphabetical ZA</string>
@@ -74,6 +75,31 @@
     <string name="msg_disable_suggestions_prompt">"Usage data will be deleted."</string>
     <string name="label_turn_off_suggestions">Disable</string>
 
+    <string name="pref_appcategorization_flowerpot_title">App Category</string>
+    <string name="pref_appcategorization_enable_title">Categorize Apps</string>
+    <string name="pref_appcategorization_enable_summary">Fix my messy drawer.</string>
+    <string name="pref_appcategorization_style_text">Style</string>
+    <string name="pref_app_groups_create">Create</string>
+    <string name="pref_appcategorization_folders_title">Folders</string>
+    <string name="pref_appcategorization_folders_summary">Tap to open pop-up.</string>
+    <string name="pref_appcategorization_tabs_title">Tabs</string>
+    <string name="pref_appcategorization_tabs_summary">Swipe between groups.</string>
+    <string name="pref_app_groups_edit_tip">Tap to edit, drag to reorder.</string>
+    <string name="default_folder_name">New folder</string>
+    <string name="tab_type_custom">Custom</string>
+    <string name="tab_type_custom_desc">Pick shortcuts manually.</string>
+    <string name="tab_type_smart">Automatic</string>
+    <string name="pref_appcategorization_flowerpot_summary">Pick shortcuts automatically.</string>
+    <string name="drawer_folders">Folders</string>
+    <string name="drawer_tabs">Tabs</string>
+    <string name="selected_count">%1$d selected</string>
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+    <plurals name="hidden_apps_count">
+        <item quantity="other">%1$d Hidden</item>
+    </plurals>
     <!-- PREFERENCES THEME -->
     <string name="title__theme_accent_color">Accent Color</string>
 
@@ -167,4 +193,24 @@
     <string name="label_search">Search</string>
     <string name="label_voice_search">Voice search</string>
     <string name="customize">Customize</string>
+
+    <!-- TABS -->
+    <string name="tab_bottom_sheet_save">Save</string>
+    <string name="tab_hide_from_main">Hide from main tab</string>
+    <string name="tab_color">Tab color</string>
+    <string name="tab_manage_apps">Manage apps</string>
+    <string name="delete">Delete</string>
+    <string name="select_tab_type">New Tab</string>
+    <string name="none">None</string>
+    <string name="undo">Undo</string>
+    <string name="name">Name</string>
+    <string name="apps_label">Apps</string>
+    <string name="custom">Custom</string>
+    <string name="default_tab_name">New tab</string>
+    <string name="show_in_tabs">Tabs</string>
+    <string name="tabs_manage">Manage</string>
+    <string name="dismiss_drop_target_label">"Don\’t show"</string>
+
+    <string name="loading">Loading…</string>
+
 </resources>

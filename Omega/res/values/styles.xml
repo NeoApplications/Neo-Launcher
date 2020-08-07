@@ -57,6 +57,32 @@
         <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
     </style>
 
+    <!-- Theme for the widget container. Overridden on API 26. -->
+    <style name="WidgetContainerTheme" parent="@android:style/Theme.Material.Settings">
+        <item name="android:colorEdgeEffect">?android:attr/textColorSecondaryInverse</item>
+        <item name="android:textColorPrimary">?android:attr/textColorPrimaryInverse</item>
+        <item name="android:textColorSecondary">?android:attr/textColorSecondaryInverse</item>
+        <item name="bottomSheetNavBarColor">@color/all_apps_navbar_color</item>
+
+        <!-- Backports -->
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <item name="android:textColorSecondaryInverse">@color/secondary_text_material_light</item>
+
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="WidgetContainerTheme.Dark" parent="AppTheme.Dark">
+        <item name="android:colorPrimaryDark">#616161</item> <!-- Gray 700 -->
+        <item name="bottomSheetNavBarColor">#00000000</item>
+    </style>
+
+    <style name="WidgetContainerTheme.Black" parent="AppTheme.Black">
+        <item name="android:colorPrimaryDark">#000000</item>
+        <item name="bottomSheetNavBarColor">#00000000</item>
+    </style>
+
     <style name="DashTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="background">@android:color/transparent</item>
     </style>

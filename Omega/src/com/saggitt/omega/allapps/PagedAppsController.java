@@ -26,14 +26,15 @@ import com.android.launcher3.allapps.AllAppsStore;
 import java.util.ArrayList;
 
 public class PagedAppsController {
-
-    private ArrayList holders = new ArrayList<AllAppsContainerView.AdapterHolder>();
+    private ArrayList<AllAppsContainerView.AdapterHolder> holders = new ArrayList<>();
     private AllAppsContainerView mContainer;
+    private AllAppsPages mPages;
     private int horizontalPadding = 0;
     private int bottomPadding = 0;
 
     public PagedAppsController(AllAppsPages pages, AllAppsContainerView container) {
         mContainer = container;
+        mPages = pages;
     }
 
     public AllAppsContainerView.AdapterHolder[] createHolders() {
@@ -45,12 +46,19 @@ public class PagedAppsController {
 
             holders.add(holder);
         }
-        Object[] ret = holders.toArray(new Object[0]);
-        return (AllAppsContainerView.AdapterHolder[]) ret;
+        return holders.toArray(new AllAppsContainerView.AdapterHolder[0]);
 
     }
 
     public void setPadding(int leftRightPadding, int bottom) {
+        horizontalPadding = leftRightPadding;
+        bottomPadding = bottom;
+        for (AllAppsContainerView.AdapterHolder holder : holders) {
+            holder.padding.bottom = bottomPadding;
+            holder.padding.left = horizontalPadding;
+            holder.padding.right = horizontalPadding;
+            holder.applyPadding();
+        }
     }
 
     public void reloadPages() {
@@ -61,18 +69,32 @@ public class PagedAppsController {
     }
 
     public void registerIconContainers(AllAppsStore mAllAppsStore) {
+        for (AllAppsContainerView.AdapterHolder holder : holders) {
+            mAllAppsStore.registerIconContainer(holder.recyclerView);
+        }
     }
 
     public void unregisterIconContainers(AllAppsStore mAllAppsStore) {
+        for (AllAppsContainerView.AdapterHolder holder : holders) {
+            mAllAppsStore.unregisterIconContainer(holder.recyclerView);
+        }
     }
 
-    public void setup(View viewById) {
+    public void setup(View view) {
+        for (AllAppsContainerView.AdapterHolder holder : holders) {
+            holder.recyclerView = null;
+        }
+        holders.get(0).setup(view, null);
     }
 
-    public void setup(AllAppsPagedView mViewPager) {
+    public void setup(AllAppsPagedView pagedView) {
+        for (AllAppsContainerView.AdapterHolder holder : holders) {
+            holder.setIsWork(false);
+            holder.setup(pagedView.getChildAt(holders.lastIndexOf(holder)), mPages.getMatcher());
+        }
     }
 
     public int getPagesCount() {
-        return 1;
+        return mPages.getPageCount();
     }
 }

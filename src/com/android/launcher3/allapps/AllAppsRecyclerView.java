@@ -15,11 +15,10 @@
  */
 package com.android.launcher3.allapps;
 
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
@@ -35,13 +34,14 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.AllAppsGridAdapter.AppsGridLayoutManager;
-import com.android.launcher3.compat.AccessibilityManagerCompat;
 import com.android.launcher3.logging.StatsLogUtils.LogContainerProvider;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 
 import java.util.List;
+
+import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 /**
  * A RecyclerView with custom fast scroll support for the all apps view.
@@ -426,5 +426,9 @@ public class AllAppsRecyclerView extends BaseRecyclerView implements LogContaine
     @Override
     public boolean hasOverlappingRendering() {
         return false;
+    }
+
+    public void setScrollbarColor(int color) {
+        mScrollbar.setColor(color, Color.WHITE);
     }
 }
