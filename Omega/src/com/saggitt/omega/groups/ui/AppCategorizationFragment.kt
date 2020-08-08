@@ -30,12 +30,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
-import com.saggitt.groups.groups.ui.AppGroupsAdapter
 import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.groups.groups.DrawerFoldersAdapter
-import com.saggitt.omega.groups.groups.DrawerTabsAdapter
-import com.saggitt.omega.groups.groups.FlowerpotTabsAdapter
+import com.saggitt.omega.groups.DrawerFoldersAdapter
+import com.saggitt.omega.groups.DrawerTabsAdapter
+import com.saggitt.omega.groups.FlowerpotTabsAdapter
 import com.saggitt.omega.util.*
 import kotlinx.android.synthetic.omega.fragment_app_categorization.*
 
@@ -98,9 +97,9 @@ class AppCategorizationFragment : Fragment(), OmegaPreferences.OnPreferenceChang
 
     private fun updateGroupAdapter() {
         groupAdapter = when (manager.getEnabledType()) {
-            AppGroupsManager.CategorizationType.Flowerpot -> flowerpotTabsAdapter
             AppGroupsManager.CategorizationType.Tabs -> drawerTabsAdapter
             AppGroupsManager.CategorizationType.Folders -> drawerFoldersAdapter
+            AppGroupsManager.CategorizationType.Flowerpot -> flowerpotTabsAdapter
             else -> null
         }
     }

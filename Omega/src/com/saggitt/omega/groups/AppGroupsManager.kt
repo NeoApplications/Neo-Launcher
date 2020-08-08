@@ -18,8 +18,6 @@
 package com.saggitt.omega.groups
 
 import com.saggitt.omega.OmegaPreferences
-import com.saggitt.omega.groups.groups.DrawerFolders
-import com.saggitt.omega.groups.groups.FlowerpotTabs
 
 class AppGroupsManager(val prefs: OmegaPreferences) {
 

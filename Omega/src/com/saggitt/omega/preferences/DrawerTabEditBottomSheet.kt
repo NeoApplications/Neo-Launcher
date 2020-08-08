@@ -27,8 +27,8 @@ import android.widget.TextView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.saggitt.omega.groups.AppGroups
-import com.saggitt.omega.groups.groups.DrawerFolders
-import com.saggitt.omega.groups.groups.DrawerTabs
+import com.saggitt.omega.groups.DrawerFolders
+import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsBottomSheet
 import com.saggitt.omega.util.applyColor
 import com.saggitt.omega.util.getColorAccent

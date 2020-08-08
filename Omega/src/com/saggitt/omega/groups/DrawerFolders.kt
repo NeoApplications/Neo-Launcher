@@ -15,7 +15,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.groups.groups
+package com.saggitt.omega.groups
 
 import android.content.Context
 import com.android.launcher3.AppInfo
@@ -23,10 +23,6 @@ import com.android.launcher3.R
 import com.android.launcher3.allapps.AlphabeticalAppsList
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
-import com.saggitt.omega.groups.AppGroups
-import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.groups.DrawerFolderInfo
-import com.saggitt.omega.groups.GroupCreator
 import com.saggitt.omega.util.random
 
 class DrawerFolders(private val manager: AppGroupsManager) : AppGroups<DrawerFolders.Folder>(manager, AppGroupsManager.CategorizationType.Folders) {

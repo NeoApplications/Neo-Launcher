@@ -15,14 +15,14 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.groups.groups
+package com.saggitt.omega.groups
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.android.launcher3.R
-import com.saggitt.groups.groups.ui.AppGroupsAdapter
+import com.saggitt.omega.groups.ui.AppGroupsAdapter
 
 class DrawerFoldersAdapter(context: Context) : AppGroupsAdapter<DrawerFoldersAdapter.FolderHolder, DrawerFolders.Folder>(context) {
 

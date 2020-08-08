@@ -15,7 +15,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.groups.groups
+package com.saggitt.omega.groups
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -26,9 +26,6 @@ import androidx.appcompat.app.AlertDialog
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.flowerpot.Flowerpot
-import com.saggitt.omega.groups.AppGroups
-import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.groups.GroupCreator
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.theme.ThemedContextProvider
 import com.saggitt.omega.util.applyAccent

@@ -20,7 +20,6 @@ package com.saggitt.omega.groups
 import com.android.launcher3.FolderInfo
 import com.android.launcher3.Launcher
 import com.android.launcher3.allapps.AllAppsStore
-import com.saggitt.omega.groups.groups.DrawerFolders
 import com.saggitt.omega.preferences.DrawerTabEditBottomSheet
 import com.saggitt.omega.util.omegaPrefs
 

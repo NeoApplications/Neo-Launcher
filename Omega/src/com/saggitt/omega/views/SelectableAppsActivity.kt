@@ -29,7 +29,7 @@ import com.android.launcher3.AppFilter
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaAppFilter
-import com.saggitt.omega.groups.groups.DrawerTabs
+import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.preferences.SelectableAppsAdapter
 import com.saggitt.omega.settings.SettingsActivity
 

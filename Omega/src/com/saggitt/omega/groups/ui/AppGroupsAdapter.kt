@@ -15,7 +15,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.groups.groups.ui
+package com.saggitt.omega.groups.ui
 
 import android.content.Context
 import android.text.TextUtils

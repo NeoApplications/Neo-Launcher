@@ -15,7 +15,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.groups.groups
+package com.saggitt.omega.groups
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -23,8 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.android.launcher3.R
 import com.android.launcher3.compat.UserManagerCompat
-import com.saggitt.groups.groups.ui.AppGroupsAdapter
-import com.saggitt.omega.groups.AppGroups
+import com.saggitt.omega.groups.ui.AppGroupsAdapter
 import com.saggitt.omega.preferences.DrawerTabTypeSelectionBottomSheet
 import com.saggitt.omega.util.isVisible
 import com.saggitt.omega.util.omegaPrefs

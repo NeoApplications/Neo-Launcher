@@ -17,6 +17,4 @@
 
 package com.saggitt.omega.groups
 
-import com.saggitt.omega.groups.groups.DrawerTabs
-
 class CustomTabs(manager: AppGroupsManager) : DrawerTabs(manager, AppGroupsManager.CategorizationType.Tabs)

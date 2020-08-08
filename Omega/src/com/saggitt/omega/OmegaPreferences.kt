@@ -27,7 +27,7 @@ import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.Executors
 import com.saggitt.omega.allapps.PredictionsFloatingHeader
 import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.groups.groups.DrawerTabs
+import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
