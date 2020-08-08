@@ -58,6 +58,7 @@
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
     <string name="title__drawer_mutliline_labels">Multiline app names</string>
+    <string name="title__drawer_paged_apps">Paged Apps view</string>
     <string name="title__drawer_hide_icon_labels">Hide app names</string>
     <string name="title__drawer_hide_apps">Hidden App Shortcuts</string>
     <string name="title__drawer_categorization">Categories</string>
@@ -77,7 +78,7 @@
 
     <string name="pref_appcategorization_flowerpot_title">App Category</string>
     <string name="pref_appcategorization_enable_title">Categorize Apps</string>
-    <string name="pref_appcategorization_enable_summary">Fix my messy drawer.</string>
+    <string name="pref_appcategorization_enable_summary">Choose the drawer layout mode</string>
     <string name="pref_appcategorization_style_text">Style</string>
     <string name="pref_app_groups_create">Create</string>
     <string name="pref_appcategorization_folders_title">Folders</string>

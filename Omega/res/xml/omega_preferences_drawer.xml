@@ -14,9 +14,10 @@
   ~  limitations under the License.
   ~
   -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="Drawer">
+
     <ListPreference
         android:defaultValue="3"
         android:disableDependentsState="false"
@@ -59,9 +60,19 @@
                 android:persistent="true"
                 app:iconSpaceReserved="false"/> -->
 
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:dependency="pref_hideAllAppsAppLabels"
+        android:disableDependentsState="true"
+        android:key="pref_key__paged_drawer"
+        android:persistent="true"
+        android:title="@string/title__drawer_paged_apps"
+        app:iconSpaceReserved="false" />
+
     <androidx.preference.Preference
         android:fragment="com.saggitt.omega.groups.ui.AppCategorizationFragment"
         android:key="pref_categorization"
+        android:dependency="pref_key__paged_drawer"
         android:title="@string/title__drawer_categorization"
         app:iconSpaceReserved="false" />
 
@@ -79,4 +90,4 @@
         android:summary="@string/summary_all_apps_google_search"
         android:title="@string/title_all_apps_google_search"
         app:iconSpaceReserved="false" />
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>
