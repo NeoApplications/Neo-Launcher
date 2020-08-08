@@ -48,6 +48,7 @@ import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.graphics.PreloadIconDrawable;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.icons.IconCache.IconLoadRequest;
 import com.android.launcher3.icons.IconCache.ItemInfoUpdateReceiver;
@@ -700,8 +701,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
 
     /**
      * Applies the item info if it is same as what the view is pointing to currently.
+     *
+     * @param info
      */
-    @Override
     public void reapplyItemInfo(ItemInfoWithIcon info) {
         if (getTag() == info) {
             mIconLoadRequest = null;
@@ -727,6 +729,10 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
      * Verifies that the current icon is high-res otherwise posts a request to load the icon.
      */
     public void verifyHighRes() {
+        verifyHighRes(BubbleTextView.this);
+    }
+
+    public void verifyHighRes(ItemInfoUpdateReceiver callback) {
         if (mIconLoadRequest != null) {
             mIconLoadRequest.cancel();
             mIconLoadRequest = null;
@@ -735,7 +741,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
             ItemInfoWithIcon info = (ItemInfoWithIcon) getTag();
             if (info.usingLowResIcon()) {
                 mIconLoadRequest = LauncherAppState.getInstance(getContext()).getIconCache()
-                        .updateIconInBackground(BubbleTextView.this, info);
+                        .updateIconInBackground(callback, info);
             }
         }
     }
@@ -746,5 +752,25 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
 
     protected boolean isTextHidden() {
         return mHideText;
+    }
+
+    public void applyIcon(ItemInfoWithIcon info) {
+        FastBitmapDrawable iconDrawable = DrawableFactory.INSTANCE.get(getContext()).newIcon(getContext(), info);
+        mDotParams.color = IconPalette.getMutedColor(info.iconColor, 0.54f);
+
+
+        setIcon(iconDrawable);
+    }
+
+    public void applyIcon(BitmapInfo info) {
+        FastBitmapDrawable iconDrawable = new FastBitmapDrawable(info);
+        mDotParams.color = IconPalette.getMutedColor(info.color, 0.54f);
+
+        setIcon(iconDrawable);
+    }
+
+    public void clearIcon() {
+        mIcon = null;
+        setCompoundDrawables(null, null, null, null);
     }
 }

@@ -27,7 +27,6 @@ import android.widget.TextView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.saggitt.omega.groups.AppGroups
-import com.saggitt.omega.groups.DrawerFolders
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsBottomSheet
 import com.saggitt.omega.util.applyColor
@@ -106,13 +105,6 @@ class DrawerTabEditBottomSheet(context: Context, config: AppGroups.Group.Customi
             val config = AppGroups.Group.CustomizationMap(group.customizations)
             edit(launcher, config, group, true) {
                 launcher.omegaPrefs.drawerTabs.saveToJson()
-            }
-        }
-
-        fun editFolder(launcher: Launcher, group: DrawerFolders.Folder) {
-            val config = AppGroups.Group.CustomizationMap(group.customizations)
-            edit(launcher, config, group, true) {
-                launcher.omegaPrefs.appGroupsManager.drawerFolders.saveToJson()
             }
         }
 

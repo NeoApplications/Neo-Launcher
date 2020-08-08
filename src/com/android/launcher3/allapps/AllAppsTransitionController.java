@@ -13,10 +13,8 @@ import com.android.launcher3.LauncherState;
 import com.android.launcher3.LauncherStateManager.AnimationConfig;
 import com.android.launcher3.LauncherStateManager.StateHandler;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.AnimationSuccessListener;
 import com.android.launcher3.anim.AnimatorSetBuilder;
-import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.anim.SpringObjectAnimator;
 import com.android.launcher3.util.Themes;
@@ -141,30 +139,6 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
 
     public float getProgress() {
         return mProgress;
-    }
-
-    private float getShiftApps(float progress, boolean inverted) {
-        float normalShift = progress * mShiftRange;
-        OmegaPreferences prefs = OmegaPreferences.Companion.getInstanceNoCreate();
-        if (mAppsView.getFloatingHeaderView().hasVisibleContent()
-                && prefs.getAllAppsSearch()) {
-            float overviewProgress = OVERVIEW.getVerticalProgress(mLauncher);
-            float overviewShift = getQsbHeight();
-            if (prefs.getAllAppsSearch()) {
-                overviewShift = -overviewShift;
-            }
-            if (progress < overviewProgress) {
-                overviewShift = Utilities.mapToRange(progress, 0, overviewProgress,
-                        inverted ? 0 : 0,
-                        inverted ? 0 : overviewShift,
-                        Interpolators.LINEAR);
-            } else if (inverted) {
-                overviewShift = 0;
-            }
-            return normalShift + overviewShift;
-        } else {
-            return normalShift;
-        }
     }
 
     private int getQsbHeight() {

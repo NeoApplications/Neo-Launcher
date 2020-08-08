@@ -22,6 +22,7 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHostView;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -181,20 +182,28 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     // Folder scrolling
     private int mScrollAreaOffset;
 
-    @Thunk int mScrollHintDir = SCROLL_NONE;
-    @Thunk int mCurrentScrollDir = SCROLL_NONE;
+    @Thunk
+    int mScrollHintDir = SCROLL_NONE;
+    @Thunk
+    int mCurrentScrollDir = SCROLL_NONE;
+
+    private static String sDefaultFolderName;
 
     /**
      * Used to inflate the Workspace from XML.
      *
      * @param context The application's context.
-     * @param attrs The attributes set containing the Workspace's customization values.
+     * @param attrs   The attributes set containing the Workspace's customization values.
      */
     public Folder(Context context, AttributeSet attrs) {
         super(context, attrs);
         setAlwaysDrawnWithCacheEnabled(false);
 
         mLauncher = Launcher.getLauncher(context);
+        Resources res = getResources();
+        if (sDefaultFolderName == null) {
+            sDefaultFolderName = res.getString(R.string.default_folder_name);
+        }
         // We need this view to be focusable in touch mode so that when text editing of the folder
         // name is complete, we have something to focus on, thus hiding the cursor and giving
         // reliable behavior when clicking the text field (since it will always gain focus on click).
@@ -267,7 +276,6 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (dragObject.dragSource != this) {
             return;
         }
-
         mContent.removeItem(mCurrentDragView);
         if (dragObject.dragInfo instanceof WorkspaceItemInfo) {
             mItemsInvalidated = true;
@@ -404,12 +412,6 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mFolderName.setText("");
             mFolderName.setHint(R.string.folder_hint_text);
         }
-        // In case any children didn't come across during loading, clean up the folder accordingly
-        mFolderIcon.post(() -> {
-            if (getItemCount() <= 1) {
-                replaceFolderWithFinalItem();
-            }
-        });
     }
 
 
@@ -694,9 +696,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mRearrangeOnClose = false;
         }
         if (getItemCount() <= 1) {
-            if (!mDragInProgress && !mSuppressFolderDeletion) {
-                replaceFolderWithFinalItem();
-            } else if (mDragInProgress) {
+            if (mDragInProgress) {
                 mDeleteFolderOnDropCompleted = true;
             }
         } else if (!mDragInProgress) {

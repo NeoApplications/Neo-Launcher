@@ -16,11 +16,6 @@
 
 package com.android.launcher3.folder;
 
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ENTER_INDEX;
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.EXIT_INDEX;
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
-import static com.android.launcher3.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -35,6 +30,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.WorkspaceItemInfo;
@@ -44,6 +40,11 @@ import com.android.launcher3.graphics.PreloadIconDrawable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ENTER_INDEX;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.EXIT_INDEX;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
+import static com.android.launcher3.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
 
 /**
  * Manages the drawing and animations of {@link PreviewItemDrawingParams} for a {@link FolderIcon}.
@@ -153,8 +154,8 @@ public class PreviewItemManager {
     }
 
     private PreviewItemDrawingParams getFinalIconParams(PreviewItemDrawingParams params) {
-        float iconSize = mIcon.mLauncher.getDeviceProfile().iconSizePx;
-
+        DeviceProfile dp = mIcon.mLauncher.getDeviceProfile();
+        float iconSize = dp.iconSizePx;
         final float scale = iconSize / mReferenceDrawable.getIntrinsicWidth();
         final float trans = (mIcon.mBackground.previewSize - iconSize) / 2;
 
@@ -334,7 +335,7 @@ public class PreviewItemManager {
      * @param dropped The item that was dropped onto the FolderIcon.
      */
     public void onDrop(List<WorkspaceItemInfo> oldItems, List<WorkspaceItemInfo> newItems,
-            WorkspaceItemInfo dropped) {
+                       WorkspaceItemInfo dropped) {
         int numItems = newItems.size();
         final ArrayList<PreviewItemDrawingParams> params = mFirstPageParams;
         buildParamsForPage(0, params, false);
@@ -382,7 +383,7 @@ public class PreviewItemManager {
     }
 
     private void updateTransitionParam(final PreviewItemDrawingParams p, WorkspaceItemInfo item,
-            int prevIndex, int newIndex, int numItems) {
+                                       int prevIndex, int newIndex, int numItems) {
         setDrawable(p, item);
 
         FolderPreviewItemAnim anim = new FolderPreviewItemAnim(this, p, prevIndex, numItems,

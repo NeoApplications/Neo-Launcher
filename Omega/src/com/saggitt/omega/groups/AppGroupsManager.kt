@@ -26,13 +26,11 @@ class AppGroupsManager(val prefs: OmegaPreferences) {
 
     val drawerTabs by lazy { CustomTabs(this) }
     val flowerpotTabs by lazy { FlowerpotTabs(this) }
-    val drawerFolders by lazy { DrawerFolders(this) }
 
     private fun onPrefsChanged() {
         prefs.getOnChangeCallback()?.let {
             drawerTabs.checkIsEnabled(it)
             flowerpotTabs.checkIsEnabled(it)
-            drawerFolders.checkIsEnabled(it)
         }
     }
 
@@ -48,14 +46,11 @@ class AppGroupsManager(val prefs: OmegaPreferences) {
         return when (type) {
             CategorizationType.Flowerpot -> flowerpotTabs
             CategorizationType.Tabs -> drawerTabs
-            CategorizationType.Folders -> drawerFolders
         }
     }
 
     enum class CategorizationType(val prefsKey: String) {
-
         Tabs("pref_drawerTabs"),
-        Folders("pref_drawerFolders"),
         Flowerpot("pref_drawerFlowerpot")
     }
 }

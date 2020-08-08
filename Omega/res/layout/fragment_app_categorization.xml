@@ -36,11 +36,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp" />
-
-        <include
-            android:id="@+id/folderTypeItem"
-            layout="@layout/app_categorization_type_item" />
-
         <include
             android:id="@+id/tabTypeItem"
             layout="@layout/app_categorization_type_item" />

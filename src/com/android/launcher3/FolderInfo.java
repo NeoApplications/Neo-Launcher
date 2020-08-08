@@ -16,10 +16,18 @@
 
 package com.android.launcher3;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Process;
+import android.widget.FrameLayout;
 
+import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.util.ContentWriter;
+import com.saggitt.omega.OmegaLauncher;
 
 import java.util.ArrayList;
 
@@ -44,6 +52,8 @@ public class FolderInfo extends ItemInfo {
      * The multi-page animation has run for this folder
      */
     public static final int FLAG_MULTI_PAGE_ANIMATION = 0x00000004;
+
+    public static final int FLAG_COVER_MODE = 0x00000008;
 
     public int options;
 
@@ -163,5 +173,30 @@ public class FolderInfo extends ItemInfo {
         if (writer != null && oldOptions != options) {
             writer.updateItemInDatabase(this);
         }
+    }
+
+    public boolean useIconMode(Context context) {
+        return false;
+    }
+
+    public Drawable getIcon(Context context) {
+        Launcher launcher = OmegaLauncher.getLauncher(context);
+        return getFolderIcon(launcher);
+    }
+
+    public Drawable getFolderIcon(Launcher launcher) {
+        int iconSize = launcher.mDeviceProfile.iconSizePx;
+        FrameLayout dummy = new FrameLayout(launcher, null);
+        FolderIcon icon = FolderIcon.fromXml(R.layout.folder_icon, launcher, dummy, this);
+        icon.isCustomIcon = false;
+        icon.getFolderBackground().setStartOpacity(1f);
+        Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
+            out.translate(iconSize / 2f, 0);
+            // TODO: make folder icons more visible in front of the bottom sheet
+            // out.drawColor(Color.RED);
+            icon.draw(out);
+        });
+        icon.unbind();
+        return new BitmapDrawable(launcher.getResources(), b);
     }
 }

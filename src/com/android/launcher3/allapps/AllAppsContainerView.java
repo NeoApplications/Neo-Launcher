@@ -129,9 +129,6 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
         mSearchQueryBuilder = new SpannableStringBuilder();
         Selection.setSelection(mSearchQueryBuilder, 0);
 
-        drawerMode = Utilities.getOmegaPrefs(getContext()).getDrawerMode();
-
-
         AllAppsTabs allAppsTabs = new AllAppsTabs(context);
         mTabsController = new AllAppsTabsController(allAppsTabs, this);
         createHolders();

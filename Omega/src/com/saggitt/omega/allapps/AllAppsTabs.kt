@@ -23,8 +23,8 @@ import android.os.Process
 import com.android.launcher3.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.ItemInfoMatcher
-import com.saggitt.omega.groups.groups.DrawerTabs
-import com.saggitt.omega.groups.groups.FlowerpotTabs
+import com.saggitt.omega.groups.DrawerTabs
+import com.saggitt.omega.groups.FlowerpotTabs
 import com.saggitt.omega.util.omegaPrefs
 
 class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
@@ -68,14 +68,6 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
                     Tab(it.getTitle(), it.getFilter(context).matcher, drawerTab = it)
                 }
                 else -> null
-            }
-        }
-    }
-
-    private fun createTabMatcher(components: Set<ComponentKey>): ItemInfoMatcher {
-        return object : ItemInfoMatcher {
-            override fun matches(info: ItemInfo, cn: ComponentName?): Boolean {
-                return components.contains(ComponentKey(info.targetComponent, info.user))
             }
         }
     }

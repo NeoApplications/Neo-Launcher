@@ -197,8 +197,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> {
         if (item == null) {
             return null;
         }
-        final BubbleTextView textView = mViewCache.getView(
-                R.layout.folder_application, getContext(), null);
+        final BubbleTextView textView = mViewCache.getView(R.layout.folder_application, getContext(), null);
         textView.applyFromWorkspaceItem(item);
         textView.setOnClickListener(ItemClickHandler.INSTANCE);
         textView.setOnLongClickListener(mFolder);
@@ -227,7 +226,9 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> {
     private CellLayout createAndAddNewPage() {
         DeviceProfile grid = Launcher.getLauncher(getContext()).getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
+
         page.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
+
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         page.setInvertIfRtl(true);
         page.setGridSize(mGridCountX, mGridCountY);

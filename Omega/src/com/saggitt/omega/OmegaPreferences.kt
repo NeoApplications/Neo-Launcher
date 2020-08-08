@@ -77,7 +77,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
     val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
     val hideAllAppsAppLabels by BooleanPref("pref_hideAllAppsAppLabels", false, recreate)
-    var drawerMode by StringIntPref("pref_key__drawer_mode", Config.DRAWER_VERTICAL, recreate)
+    var pagedDrawer by BooleanPref("pref_key__paged_drawer", false, recreate)
 
     val currentTabsModel
         get() = appGroupsManager.getEnabledModel() as? DrawerTabs ?: appGroupsManager.drawerTabs
