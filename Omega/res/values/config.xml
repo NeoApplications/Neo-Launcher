@@ -33,4 +33,7 @@
     <!-- Out of 100, the percent to shrink the workspace during options mode. -->
     <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
 
+    <string name="action_do_nothing_class" translatable="false">com.saggitt.omega.gestures.BlankGestureHandler</string>
+
+
 </resources>

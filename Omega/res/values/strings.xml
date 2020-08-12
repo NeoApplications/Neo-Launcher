@@ -117,6 +117,8 @@
     <string name="title__notification_count">Show Notification Count</string>
     <string name="title__notification_background">Notification Background Color</string>
 
+    <string name="pref_category__notifications">Notifications</string>
+    <string name="pref_category__gestures">Gestures</string>
     <!-- SEARCH -->
     <string name="title__search_provider">Search engine</string>
     <string name="cat_search_bar">Search Bar</string>
@@ -214,4 +216,8 @@
 
     <string name="loading">Loading…</string>
 
+    <string name="action_none">Do Nothing</string>
+    <string name="action_open_settings">Open Launcher Settings</string>
+    <string name="action_open_dash">Open Dash</string>
+    <string name="gesture_double_tap">Double tap</string>
 </resources>

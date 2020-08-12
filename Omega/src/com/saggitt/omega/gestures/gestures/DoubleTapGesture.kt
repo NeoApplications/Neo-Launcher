@@ -15,32 +15,29 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.groups
+package com.saggitt.omega.gestures.gestures
 
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.android.launcher3.R
+import android.view.GestureDetector
+import android.view.MotionEvent
+import com.saggitt.omega.gestures.Gesture
+import com.saggitt.omega.gestures.GestureController
 
-class LegacyDrawerTabsAdapter(context: Context) : DrawerTabsAdapter(context) {
+class DoubleTapGesture(controller: GestureController) : Gesture(controller) {
 
-    override fun createGroupHolder(parent: ViewGroup): TabHolder {
-        return LegacyTabHolder(LayoutInflater.from(parent.context).inflate(R.layout.legacy_tab_item, parent, false))
+    private val handler by controller.createHandlerPref("pref_gesture_double_tap")
+
+    override fun getIsEnabled(): Boolean {
+        return true;
     }
 
-    override fun createHeaderItem(): Item? {
-        return null
-    }
-
-    override fun createAddItem(): Item? {
-        return null
-    }
-
-    inner class LegacyTabHolder(itemView: View) : TabHolder(itemView) {
-
-        override fun formatSummary(summary: String?): String? {
-            return summary
+    private val detector = GestureDetector(controller.launcher, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            handler.onGestureTrigger(controller)
+            return true
         }
+    })
+
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        return detector.onTouchEvent(ev)
     }
 }

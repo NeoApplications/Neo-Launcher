@@ -29,6 +29,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.util.CustomLauncherClient;
 
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
@@ -41,6 +42,7 @@ public class OmegaLauncher extends Launcher {
     private OmegaPreferences mOmegaPrefs;
     private OmegaPreferencesChangeCallback prefCallback = new OmegaPreferencesChangeCallback(this);
     private OmegaLauncherCallbacks launcherCallbacks;
+    private GestureController mGestureController;
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -61,17 +63,19 @@ public class OmegaLauncher extends Launcher {
             Utilities.requestStoragePermission(this);
         }
         super.onCreate(savedInstanceState);
-        /*if (Utilities.ATLEAST_Q) {
-            AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-            int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), getPackageName());
-            if (mode != AppOpsManager.MODE_ALLOWED)
-                startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
-        }*/
         mContext = this;
 
         mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);
     }
+
+    public GestureController getGestureController() {
+        if (mGestureController == null)
+            mGestureController = new GestureController(this);
+
+        return mGestureController;
+    }
+
 
     @Override
     public void onResume() {

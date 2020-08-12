@@ -47,7 +47,7 @@ import kotlin.reflect.KProperty
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     val mContext = context;
 
-    val doNothing = { }
+    open val doNothing = { }
     val restart = { restart() }
     val reloadApps = { reloadApps() }
     val reloadAll = { reloadAll() }
@@ -84,6 +84,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val drawerTabs get() = appGroupsManager.drawerTabs
     val appGroupsManager by lazy { AppGroupsManager(this) }
     val separateWorkApps by BooleanPref("pref_separateWorkApps", true, recreate)
+    val saveScrollPosition by BooleanPref("pref_keepScrollState", false, doNothing)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -591,6 +592,23 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
         override fun onSetValue(value: Float) {
             edit { putFloat(getKey(), value) }
+        }
+    }
+
+    open inner class StringBasedPref<T : Any>(key: String, defaultValue: T, onChange: () -> Unit = doNothing,
+                                              private val fromString: (String) -> T,
+                                              private val toString: (T) -> String,
+                                              private val dispose: (T) -> Unit) :
+            PrefDelegate<T>(key, defaultValue, onChange) {
+        override fun onGetValue(): T = sharedPrefs.getString(getKey(), null)?.run(fromString)
+                ?: defaultValue
+
+        override fun onSetValue(value: T) {
+            edit { putString(getKey(), toString(value)) }
+        }
+
+        override fun disposeOldValue(oldValue: T) {
+            dispose(oldValue)
         }
     }
 

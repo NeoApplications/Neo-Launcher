@@ -31,10 +31,7 @@ import android.util.Property
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.Switch
+import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -43,6 +40,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
+import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.BgDataModel
@@ -94,6 +92,12 @@ fun Context.getDimenAttr(attr: Int): Int {
     val size = ta.getDimensionPixelSize(0, 0)
     ta.recycle()
     return size
+}
+
+fun CheckedTextView.applyAccent() {
+    val tintList = ColorStateList.valueOf(context.getColorAccent())
+    compoundDrawableTintList = tintList
+    backgroundTintList = tintList
 }
 
 fun ImageView.tintDrawable(color: Int) {
@@ -391,5 +395,13 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
     return kotlin.Comparator { o1, o2 ->
         val res = compare(o1, o2)
         if (res != 0) res else extractKey(o1).compareTo(extractKey(o2))
+    }
+}
+
+fun Context.getLauncherOrNull(): Launcher? {
+    return try {
+        Launcher.getLauncher(this)
+    } catch (e: ClassCastException) {
+        null
     }
 }

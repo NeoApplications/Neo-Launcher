@@ -72,6 +72,8 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
 import com.saggitt.omega.dash.DashActivity;
+import com.saggitt.omega.gestures.ui.GesturePreference;
+import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
 import com.saggitt.omega.preferences.ControlledPreference;
 import com.saggitt.omega.preferences.PreferenceController;
@@ -159,7 +161,6 @@ public class SettingsActivity extends SettingsBaseActivity
         if (hasPreview) {
             overrideOpenAnim();
         }
-
         //Utilities.getDevicePrefs(this).edit().putBoolean(OnboardingProvider.PREF_HAS_OPENED_SETTINGS, true).apply();
         defaultHome = resolveDefaultHome();
     }
@@ -880,6 +881,9 @@ public class SettingsActivity extends SettingsBaseActivity
             if (preference instanceof ListPreference) {
                 Log.d("success", "onDisplayPreferenceDialog: yay");
                 f = ThemedListPreferenceDialogFragment.Companion.newInstance(preference.getKey());
+            } else if (preference instanceof GesturePreference) {
+                f = SelectGestureHandlerFragment.Companion
+                        .newInstance((GesturePreference) preference);
             } else if (preference instanceof PreferenceDialogPreference) {
                 f = PreferenceScreenDialogFragment.Companion
                         .newInstance((PreferenceDialogPreference) preference);

@@ -84,6 +84,10 @@
         <attr name="numMinColumns" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="GesturePreference">
+        <attr name="gestureClass" format="string" />
+    </declare-styleable>
+
     <attr name="settingsBackground" format="color" />
     <attr name="bottomSheetScrimColor" format="color" />
     <attr name="settingsSearchBackground" format="color" />
