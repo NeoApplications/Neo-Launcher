@@ -25,12 +25,6 @@ import android.util.TypedValue;
 import com.android.launcher3.R;
 
 public class Config {
-    //private static final String TAG = "Config";
-
-    //APP DRAWER TYPE
-    public static final int DRAWER_VERTICAL = 0;
-    public static final int DRAWER_HORIZONTAL = 1;
-
     //APP DRAWER SORT MODE
     public static final int SORT_AZ = 0;
     public static final int SORT_ZA = 1;
@@ -41,8 +35,6 @@ public class Config {
     //PERMISION FLAGS
     public static final int REQUEST_PERMISSION_STORAGE_ACCESS = 666;
     public static final int REQUEST_PERMISSION_LOCATION_ACCESS = 667;
-    public static final int REQUEST_PERMISSION_CALENDAR_READ_ACCESS = 668;
-    public static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 669;
 
     public final static String GOOGLE_QSB = "com.google.android.googlequicksearchbox";
 
