@@ -31,10 +31,6 @@ class ColoredButton(context: Context, attrs: AttributeSet) : Button(context, att
 
     private var defaultColor = currentTextColor
 
-    init {
-        //CustomFontManager.getInstance(context).loadCustomFont(this, attrs)
-    }
-
     fun reset() {
         color = Utilities.getOmegaPrefs(context).accentColor
         setTextColor()
