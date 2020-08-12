@@ -45,7 +45,6 @@ import static com.android.launcher3.states.RotationHelper.REQUEST_NONE;
 import static com.android.launcher3.testing.TestProtocol.ALL_APPS_STATE_ORDINAL;
 import static com.android.launcher3.testing.TestProtocol.BACKGROUND_APP_STATE_ORDINAL;
 import static com.android.launcher3.testing.TestProtocol.NORMAL_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.OPTIONS_STATE_ORDINAL;
 import static com.android.launcher3.testing.TestProtocol.OVERVIEW_PEEK_STATE_ORDINAL;
 import static com.android.launcher3.testing.TestProtocol.OVERVIEW_STATE_ORDINAL;
 import static com.android.launcher3.testing.TestProtocol.QUICK_SWITCH_STATE_ORDINAL;
@@ -91,7 +90,8 @@ public class LauncherState {
                     return 1;
                 }
             };
-    public static final LauncherState OPTIONS = new OptionsState(OPTIONS_STATE_ORDINAL);
+
+    public static final LauncherState OPTIONS = new OptionsState(5);
 
     /**
      * TODO: Create a separate class for NORMAL state.
@@ -99,7 +99,7 @@ public class LauncherState {
     public static final LauncherState NORMAL = new LauncherState(NORMAL_STATE_ORDINAL,
             ContainerType.WORKSPACE, 0,
             FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED | FLAG_HIDE_BACK_BUTTON |
-            FLAG_HAS_SYS_UI_SCRIM);
+                    FLAG_HAS_SYS_UI_SCRIM);
 
     /**
      * Various Launcher states arranged in the increasing order of UI layers

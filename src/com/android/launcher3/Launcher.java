@@ -132,6 +132,7 @@ import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
+import com.saggitt.omega.OmegaLauncher;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -1402,6 +1403,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         boolean internalStateHandled = InternalStateHandler
                 .handleNewIntent(this, intent, isStarted());
 
+        boolean handled = false;
         if (isActionMain) {
             if (!internalStateHandled) {
                 // In all these cases, only animate if we're already on home
@@ -1416,10 +1418,16 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                 // Reset the apps view
                 if (!alreadyOnHome) {
                     mAppsView.reset(isStarted() /* animate */);
+                    handled = true;
                 }
 
                 if (shouldMoveToDefaultScreen && !mWorkspace.isHandlingTouch()) {
                     mWorkspace.post(mWorkspace::moveToDefaultScreen);
+                    handled = true;
+                }
+
+                if (!handled && this instanceof OmegaLauncher) {
+                    ((OmegaLauncher) this).getGestureController().onPressHome();
                 }
             }
 

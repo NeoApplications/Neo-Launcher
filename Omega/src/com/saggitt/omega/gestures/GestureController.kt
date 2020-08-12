@@ -25,6 +25,9 @@ import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
+import com.saggitt.omega.gestures.gestures.LongPressGesture
+import com.saggitt.omega.gestures.gestures.PressBackGesture
+import com.saggitt.omega.gestures.gestures.PressHomeGesture
 import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.util.omegaPrefs
@@ -36,6 +39,9 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val prefs = launcher.omegaPrefs
     private val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
+    private val pressHomeGesture by lazy { PressHomeGesture(this) }
+    private val pressBackGesture by lazy { PressBackGesture(this) }
+    private val longPressGesture by lazy { LongPressGesture(this) }
 
     var touchDownPoint = PointF()
 
@@ -51,6 +57,18 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
     fun onBlankAreaTouch(ev: MotionEvent): Boolean {
         return doubleTapGesture.isEnabled && doubleTapGesture.onTouchEvent(ev)
+    }
+
+    fun onLongPress() {
+        longPressGesture.isEnabled && longPressGesture.onEvent()
+    }
+
+    fun onPressHome() {
+        pressHomeGesture.isEnabled && pressHomeGesture.onEvent()
+    }
+
+    fun onPressBack() {
+        pressBackGesture.isEnabled && pressBackGesture.onEvent()
     }
 
     fun setSwipeUpOverride(handler: GestureHandler, downTime: Long) {

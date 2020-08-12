@@ -143,6 +143,13 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
 
     private int[] mTmpIntPair = new int[2];
 
+    protected final static int TOUCH_STATE_REST = 0;
+    protected final static int TOUCH_STATE_SCROLLING = 1;
+    protected final static int TOUCH_STATE_PREV_PAGE = 2;
+    protected final static int TOUCH_STATE_NEXT_PAGE = 3;
+
+    protected int mTouchState = TOUCH_STATE_REST;
+
     public PagedView(Context context) {
         this(context, null);
     }

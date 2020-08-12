@@ -21,8 +21,9 @@ import android.view.MotionEvent;
 
 public abstract class Gesture {
     private boolean mIsEnabled;
-
+    public GestureController mController;
     public Gesture(GestureController controller) {
+        mController = controller;
     }
 
     public boolean getIsEnabled() {

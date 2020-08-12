@@ -18,9 +18,12 @@ package com.saggitt.omega.touch
 
 import android.content.Context
 import android.graphics.PointF
+import android.graphics.RectF
 import android.view.MotionEvent
 import android.view.View
 import com.android.launcher3.LauncherState
+import com.android.launcher3.R
+import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.OmegaLauncher
 
 open class GestureTouchListener(context: Context) : View.OnTouchListener {
@@ -68,7 +71,7 @@ open class GestureTouchListener(context: Context) : View.OnTouchListener {
         return (disX * disX) + (disY * disY)
     }
 
-    /*
+
         fun onLongPress() {
             val rectF = RectF()
             rectF.left = touchDownX
@@ -84,12 +87,12 @@ open class GestureTouchListener(context: Context) : View.OnTouchListener {
                         R.string.remove_drop_target_label,
                         R.drawable.ic_remove_no_shadow,
                         -1) {
-                    launcher.workspace.removeScreen(launcher.currentWorkspaceScreen, true)
+                    //launcher.workspace.removeScreen(launcher.currentWorkspaceScreen, true)
                     true
                 }))
             }
         }
-    */
+
     fun setTouchDownPoint(touchDownPoint: PointF) {
         gestureController.touchDownPoint = touchDownPoint
     }
