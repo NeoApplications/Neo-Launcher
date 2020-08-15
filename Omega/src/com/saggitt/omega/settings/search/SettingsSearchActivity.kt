@@ -114,14 +114,14 @@ class SettingsSearchActivity : SettingsBaseActivity(), SearchView.OnQueryTextLis
         if (query == currentQuery) return
         currentQuery = query
         // Find any matching debug command and invoke it
-        if (query.startsWith("..")) {
+        /*if (query.startsWith("..")) {
             val debugCommand = query.substring(2)
-            /*if (debugCommand.hash("SHA-1").endsWith(BuildConfig.DEBUG_MENU_CODE_HASH)) {
+            if (debugCommand.hash("SHA-1").endsWith(BuildConfig.DEBUG_MENU_CODE_HASH)) {
                 startActivity(Intent(this, SettingsActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 onBackPressed()
-            }*/
-        }
+            }
+        }*/
         val matches = if (query.isEmpty())
             emptyList()
         else

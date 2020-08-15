@@ -29,9 +29,9 @@ import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
 import com.saggitt.omega.groups.FlowerpotTabs.FlowerpotTab
+import com.saggitt.omega.preferences.SelectableAppsActivity
 import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.tintDrawable
-import com.saggitt.omega.views.SelectableAppsActivity
 
 abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.CategorizationType)
     : AppGroups<DrawerTabs.Tab>(manager, type) {

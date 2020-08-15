@@ -23,6 +23,8 @@ import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
+import com.saggitt.omega.states.DashState;
+import com.saggitt.omega.states.HomeState;
 import com.saggitt.omega.states.OptionsState;
 
 import java.util.Arrays;
@@ -91,31 +93,25 @@ public class LauncherState {
                 }
             };
 
-    public static final LauncherState OPTIONS = new OptionsState(5);
-
     /**
      * TODO: Create a separate class for NORMAL state.
      */
-    public static final LauncherState NORMAL = new LauncherState(NORMAL_STATE_ORDINAL,
+    public static final LauncherState NORMAL = new HomeState(NORMAL_STATE_ORDINAL,
             ContainerType.WORKSPACE, 0,
             FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED | FLAG_HIDE_BACK_BUTTON |
                     FLAG_HAS_SYS_UI_SCRIM);
-
     /**
      * Various Launcher states arranged in the increasing order of UI layers
      */
-    public static final LauncherState SPRING_LOADED = new SpringLoadedState(
-            SPRING_LOADED_STATE_ORDINAL);
+    public static final LauncherState SPRING_LOADED = new SpringLoadedState(SPRING_LOADED_STATE_ORDINAL);
+    public static final LauncherState OPTIONS = new OptionsState(7);
     public static final LauncherState ALL_APPS = new AllAppsState(ALL_APPS_STATE_ORDINAL);
-
+    public static final LauncherState DASH = new DashState(9);
+    public static final LauncherState OVERVIEW_PEEK = OverviewState.newPeekState(OVERVIEW_PEEK_STATE_ORDINAL);
     public static final LauncherState OVERVIEW = new OverviewState(OVERVIEW_STATE_ORDINAL);
-    public static final LauncherState OVERVIEW_PEEK =
-            OverviewState.newPeekState(OVERVIEW_PEEK_STATE_ORDINAL);
-    public static final LauncherState QUICK_SWITCH =
-            OverviewState.newSwitchState(QUICK_SWITCH_STATE_ORDINAL);
-    public static final LauncherState BACKGROUND_APP =
-            OverviewState.newBackgroundState(BACKGROUND_APP_STATE_ORDINAL);
-    private static final LauncherState[] sAllStates = new LauncherState[9];
+    public static final LauncherState QUICK_SWITCH = OverviewState.newSwitchState(QUICK_SWITCH_STATE_ORDINAL);
+    public static final LauncherState BACKGROUND_APP = OverviewState.newBackgroundState(BACKGROUND_APP_STATE_ORDINAL);
+    private static final LauncherState[] sAllStates = new LauncherState[10];
 
     public final int ordinal;
 

@@ -29,10 +29,8 @@ open class StyledIconPreference : Preference {
     var count = 1
     var index = 0
 
-    @JvmOverloads
     constructor (context: Context) : super(context)
 
-    @JvmOverloads
     constructor (context: Context, attrs: AttributeSet) : super(context, attrs)
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {

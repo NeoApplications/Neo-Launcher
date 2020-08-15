@@ -97,6 +97,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val desktopTextScale by FloatPref("pref_iconTextScale", 1f, reloadAll)
     private val homeMultilineLabel by BooleanPref("pref_homeIconLabelsInTwoLines", false, recreate)
     val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
+    val usePopupMenuView by BooleanPref("pref_desktopUsePopupMenuView", true, doNothing)
 
     /* --DOCK-- */
     var dockHide by BooleanPref("pref_hideHotseat", false, recreate)

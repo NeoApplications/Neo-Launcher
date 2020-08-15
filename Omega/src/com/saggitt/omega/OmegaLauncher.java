@@ -32,7 +32,6 @@ import com.android.launcher3.Utilities;
 import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.util.CustomLauncherClient;
 
-import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
 public class OmegaLauncher extends Launcher {
@@ -76,7 +75,6 @@ public class OmegaLauncher extends Launcher {
         return mGestureController;
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -113,9 +111,9 @@ public class OmegaLauncher extends Launcher {
                         .show();
             }
         }
-        if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
+        /*if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
             //OmegaAppKt.getOmegaApp(this).getSmartspace().updateWeatherData();
-        }
+        }*/
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 

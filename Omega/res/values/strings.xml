@@ -218,6 +218,7 @@
 
     <string name="action_none">Do Nothing</string>
     <string name="action_open_settings">Open Launcher Settings</string>
+    <string name="action_open_overview">Show Desktop Bubble</string>
     <string name="action_open_dash">Open Dash</string>
     <string name="gesture_double_tap">Double tap</string>
 </resources>

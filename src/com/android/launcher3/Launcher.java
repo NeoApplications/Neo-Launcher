@@ -252,6 +252,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     // UI and state for the overview panel
     private View mOverviewPanel;
+    private View mDashView;
 
     @Thunk
     boolean mWorkspaceLoading = true;
@@ -423,7 +424,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     @Override
     public void onEnterAnimationComplete() {
         super.onEnterAnimationComplete();
-        UiFactory.onEnterAnimationComplete(this);
+        //UiFactory.onEnterAnimationComplete(this);
         mAllAppsController.highlightWorkTabIfNecessary();
         mRotationHelper.setCurrentTransitionRequest(REQUEST_NONE);
     }
@@ -1111,6 +1112,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mWorkspace = mDragLayer.findViewById(R.id.workspace);
         mWorkspace.initParentViews(mDragLayer);
         mOverviewPanel = findViewById(R.id.overview_panel);
+        mDashView = findViewById(R.id.dash_view);
         mHotseat = findViewById(R.id.hotseat);
         mHotseatSearchBox = findViewById(R.id.search_container_hotseat);
 
