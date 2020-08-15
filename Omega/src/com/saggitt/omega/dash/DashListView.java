@@ -41,7 +41,6 @@ public class DashListView extends RelativeLayout implements DashItemAdapter.Dash
     private double intervalAngle = Math.PI / 4;
     private double pre_IntervalAngle = Math.PI / 4;
     private DashItemAdapter dashAdapter;
-    private Context mContext;
 
     public DashListView(Context context) {
         this(context, null, 0);
@@ -53,7 +52,6 @@ public class DashListView extends RelativeLayout implements DashItemAdapter.Dash
 
     public DashListView(Context context, AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
-        mContext = context;
         init();
     }
 

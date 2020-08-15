@@ -64,8 +64,8 @@ public class RecentsModel extends TaskStackChangeListener {
     private ISystemUiProxy mSystemUiProxy;
 
     private final RecentTasksList mTaskList;
-    private final TaskIconCache mIconCache;
-    private final TaskThumbnailCache mThumbnailCache;
+    private TaskIconCache mIconCache;
+    private TaskThumbnailCache mThumbnailCache;
 
     private RecentsModel(Context context) {
         mContext = context;

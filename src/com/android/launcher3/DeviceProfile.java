@@ -297,19 +297,19 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         topWorkspacePadding =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_workspace_top_padding);
 
-        prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets", "pref_dockSearchBar");
+        prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets");
     }
 
     @Override
     public void onValueChanged(String key, OmegaPreferences prefs, boolean force) {
-        updateDimensions();
+        updateDimensions(prefs);
     }
 
-    public void updateDimensions() {
+    public void updateDimensions(OmegaPreferences prefs) {
         Resources res = mContext.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
 
-        boolean fullWidthWidgets = Utilities.getOmegaPrefs(mContext).getAllowFullWidthWidgets();
+        boolean fullWidthWidgets = prefs.getAllowFullWidthWidgets();
         boolean dockSearchBar = prefs.getDockSearchBar();
         boolean dockHidden = prefs.getDockHide();
         float dockScale = prefs.getDockScale();

@@ -16,16 +16,14 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_main"
-    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
 
     <com.saggitt.omega.dash.DashListView
         android:id="@+id/my_circular_list"
-        android:gravity="center"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_centerInParent="true"
-        android:background="@android:color/transparent" />
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>

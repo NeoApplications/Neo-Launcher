@@ -24,6 +24,7 @@ import androidx.annotation.Keep
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.views.OptionsPopupView
+import com.saggitt.omega.dash.DashBottomSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.util.omegaPrefs
@@ -33,7 +34,7 @@ import org.json.JSONObject
 class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
         GestureHandler(context, config) {
 
-    override val displayName = context.getString(R.string.action_open_settings)!!
+    override val displayName = context.getString(R.string.action_open_settings)
     override val iconResource: Intent.ShortcutIconResource by lazy {
         Intent.ShortcutIconResource.fromContext(context, R.drawable.ic_setting)
     }
@@ -49,12 +50,12 @@ class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
 class OpenDashGestureHandler(context: Context, config: JSONObject?) :
         GestureHandler(context, config) {
 
-    override val displayName = context.getString(R.string.action_open_dash)!!
+    override val displayName = context.getString(R.string.action_open_dash)
     override fun onGestureTrigger(controller: GestureController, view: View?) {
         //TODO: INFLAR DASH VIEW
+        DashBottomSheet.show(controller.launcher, true)
     }
 }
-
 
 @Keep
 class OpenOverviewGestureHandler(context: Context, config: JSONObject?) : GestureHandler(context, config) {

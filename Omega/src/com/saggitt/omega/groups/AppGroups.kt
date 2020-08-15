@@ -31,8 +31,8 @@ import android.widget.TextView
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
+import com.saggitt.omega.preferences.SelectableAppsActivity
 import com.saggitt.omega.util.*
-import com.saggitt.omega.views.SelectableAppsActivity
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
