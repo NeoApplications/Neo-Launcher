@@ -193,11 +193,11 @@ class TwilightManager(private val context: Context) : Handler.Callback, Location
         }
     }
 
-    override fun onLocationChanged(location: Location?) {
+    override fun onLocationChanged(location: Location) {
         // Location providers may erroneously return (0.0, 0.0) when they fail to determine the
         // device's location. These location updates can be safely ignored since the chance of a
         // user actually being at these coordinates is quite low.
-        if (location != null && !(location.longitude == 0.0 && location.latitude == 0.0)) {
+        if (!(location.longitude == 0.0 && location.latitude == 0.0)) {
             Log.d(TAG, "onLocationChanged:"
                     + " provider=" + location.provider
                     + " accuracy=" + location.accuracy
@@ -210,11 +210,11 @@ class TwilightManager(private val context: Context) : Handler.Callback, Location
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
     }
 
-    override fun onProviderEnabled(provider: String?) {
+    override fun onProviderEnabled(provider: String) {
         TODO("Not yet implemented")
     }
 
-    override fun onProviderDisabled(provider: String?) {
+    override fun onProviderDisabled(provider: String) {
         TODO("Not yet implemented")
     }
 
