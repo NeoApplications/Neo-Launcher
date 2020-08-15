@@ -848,11 +848,6 @@ public class SettingsActivity extends SettingsBaseActivity
         public boolean onPreferenceClick(Preference preference) {
             if (preference.getKey().equals("kill"))
                 Utilities.killLauncher();
-            if (preference.getKey().equals("dash_activity")) {
-                Intent intent = new Intent(getContext(), DashActivity.class);
-                preference.getContext().startActivity(intent);
-            }
-
             return false;
         }
 
