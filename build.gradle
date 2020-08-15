@@ -46,7 +46,7 @@ android {
     def code = 12
 
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion 25
         targetSdkVersion 29
         applicationId "com.saggitt.omega"
         versionName name
