@@ -39,8 +39,8 @@ if (enable_plugin_kotlin) {
     apply plugin: 'kotlin-kapt'
 }
 android {
-    compileSdkVersion 29
-    buildToolsVersion BUILD_TOOLS_VERSION
+    compileSdkVersion 30
+    buildToolsVersion "30.0.1"
 
     def name = "0.3.0"
     def code = 15
