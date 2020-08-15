@@ -83,15 +83,8 @@ android {
             testApplicationId 'com.android.launcher3.tests'
         }
 
-        l3go {
-            dimension "app"
-            applicationId 'com.android.launcher3'
-            testApplicationId 'com.android.launcher3.tests'
-        }
-
         withQuickstep {
             dimension "recents"
-
             minSdkVersion 25
         }
 
@@ -117,7 +110,7 @@ android {
         }*/
 
         // Icon recents is Go only
-        if (name.contains("WithQuickstepIconRecents") && !name.contains("l3go")) {
+        if (name.contains("WithQuickstepIconRecents")) {
             variant.setIgnore(true)
         }
     }
@@ -156,12 +149,6 @@ android {
         aosp {
             java.srcDirs = ['src_flags', 'src_shortcuts_overrides']
             manifest.srcFile "AndroidManifest.xml"
-        }
-
-        l3go {
-            res.srcDirs = ['go/res']
-            java.srcDirs = ['go/src']
-            manifest.srcFile "go/AndroidManifest.xml"
         }
 
         withoutQuickstep {
