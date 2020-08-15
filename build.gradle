@@ -43,7 +43,7 @@ android {
     buildToolsVersion BUILD_TOOLS_VERSION
 
     def name = "0.3.0"
-    def code = 15
+    def code = 16
 
     defaultConfig {
         minSdkVersion 24
@@ -199,7 +199,6 @@ afterEvaluate {
     }
 }
 
-apply from: 'Omega/smali.gradle'
 repositories {
     jcenter()
     mavenCentral()
