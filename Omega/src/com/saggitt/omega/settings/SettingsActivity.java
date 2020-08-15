@@ -71,7 +71,6 @@ import com.android.launcher3.settings.PreferenceHighlighter;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
-import com.saggitt.omega.dash.DashActivity;
 import com.saggitt.omega.gestures.ui.GesturePreference;
 import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
@@ -849,11 +848,6 @@ public class SettingsActivity extends SettingsBaseActivity
         public boolean onPreferenceClick(Preference preference) {
             if (preference.getKey().equals("kill"))
                 Utilities.killLauncher();
-            if (preference.getKey().equals("dash_activity")) {
-                Intent intent = new Intent(getContext(), DashActivity.class);
-                preference.getContext().startActivity(intent);
-            }
-
             return false;
         }
 
