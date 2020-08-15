@@ -104,7 +104,7 @@
             android:parentActivityName="com.saggitt.omega.settings.SettingsActivity"
             android:theme="@style/SettingsTheme_Light" />
         <activity
-            android:name="com.saggitt.omega.views.SelectableAppsActivity"
+            android:name="com.saggitt.omega.preferences.SelectableAppsActivity"
             android:autoRemoveFromRecents="true"
             android:theme="@style/SettingsTheme_Light" />
         <activity
@@ -133,10 +133,6 @@
                     android:scheme="content" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.saggitt.omega.dash.DashActivity"
-            android:theme="@style/DashTheme" />
 
         <meta-data
             android:name="android.max_aspect"
