@@ -90,6 +90,7 @@ public class LauncherState {
                     return 1;
                 }
             };
+    private static final LauncherState[] sAllStates = new LauncherState[9];
 
     /**
      * TODO: Create a separate class for NORMAL state.
@@ -108,7 +109,6 @@ public class LauncherState {
     public static final LauncherState OVERVIEW = new OverviewState(OVERVIEW_STATE_ORDINAL);
     public static final LauncherState QUICK_SWITCH = OverviewState.newSwitchState(QUICK_SWITCH_STATE_ORDINAL);
     public static final LauncherState BACKGROUND_APP = OverviewState.newBackgroundState(BACKGROUND_APP_STATE_ORDINAL);
-    private static final LauncherState[] sAllStates = new LauncherState[9];
 
     public final int ordinal;
 

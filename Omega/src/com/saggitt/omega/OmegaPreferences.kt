@@ -118,7 +118,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val notificationBackground by IntPref("pref_notification_background", R.color.notification_background, recreate)
 
     /* --ADVANCED-- */
-    var settingsSearch by BooleanPref("pref_settings_search", true, recreate)
+    var settingsSearch by BooleanPref("pref_settings_search", true, restart)
 
     /* --BLUR--*/
     var enableBlur by BooleanPref("pref_enableBlur", omegaConfig.defaultEnableBlur(), updateBlur)
