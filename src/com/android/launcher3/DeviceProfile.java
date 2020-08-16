@@ -297,7 +297,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         topWorkspacePadding =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_workspace_top_padding);
 
-        prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets");
+        prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets", "pref_dockScale");
     }
 
     @Override

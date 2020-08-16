@@ -1,6 +1,7 @@
 ### v0.3.0 (Build 20)
 * **Add gestures preference**
 * **Add dash view to the main screen**
+* **Add dock scale preference**
 
 ### v0.2.0 (Build 10)
 * **Add color accent preference**

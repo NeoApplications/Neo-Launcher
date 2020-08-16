@@ -184,7 +184,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putString("pref_iconShape", "")
         putInt("pref_notification_background", R.color.notification_background)
         putBoolean("pref_allAppsGoogleSearch", false)
-
+        putFloat("pref_dockScale", 0.90f)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {

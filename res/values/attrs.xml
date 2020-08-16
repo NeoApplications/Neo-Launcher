@@ -144,11 +144,20 @@
         <attr name="android:src" />
         <attr name="android:shadowColor" />
         <attr name="android:elevation" />
-        <attr name="darkTintColor" format="color"/>
+        <attr name="darkTintColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="RecyclerViewFastScroller">
         <attr name="canThumbDetach" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SeekbarPreference">
+        <attr name="minValue" format="float" />
+        <attr name="maxValue" format="float" />
+        <attr name="summaryFormat" format="string" />
+        <attr name="summaryMultiplier" format="integer" />
+        <attr name="defaultSeekbarValue" format="float" />
+        <attr name="steps" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="PreviewFragment">

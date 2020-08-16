@@ -49,6 +49,7 @@
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
 
     <!-- PREFERENCES DOCK -->
+    <string name="title__dock_scale">Dock scale</string>
     <string name="title__dock_hide">Dock Hide</string>
     <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_colored_icons">Colored icons</string>
@@ -119,6 +120,7 @@
 
     <string name="pref_category__notifications">Notifications</string>
     <string name="pref_category__gestures">Gestures</string>
+
     <!-- SEARCH -->
     <string name="title__search_provider">Search engine</string>
     <string name="cat_search_bar">Search Bar</string>
@@ -191,6 +193,10 @@
     <string name="enabled_icon_packs">Enabled</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+
+    <!-- SEEKBAR PREFERENCE -->
+    <string name="reset_to_default">Reset to default</string>
+    <string name="automatic_short">Auto</string>
 
     <!-- QSB -->
     <string name="label_search">Search</string>
