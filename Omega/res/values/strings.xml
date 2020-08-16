@@ -121,6 +121,14 @@
     <string name="pref_category__notifications">Notifications</string>
     <string name="pref_category__gestures">Gestures</string>
 
+    <string name="action_none">Do Nothing</string>
+    <string name="action_open_drawer">Open app drawer</string>
+    <string name="action_open_settings">Open Launcher Settings</string>
+    <string name="action_open_overview">Show Desktop Bubble</string>
+    <string name="action_open_dash">Open Dash</string>
+    <string name="gesture_double_tap">Double tap</string>
+    <string name="gesture_long_press">Touch &amp; Hold</string>
+
     <!-- SEARCH -->
     <string name="title__search_provider">Search engine</string>
     <string name="cat_search_bar">Search Bar</string>
@@ -222,9 +230,4 @@
 
     <string name="loading">Loading…</string>
 
-    <string name="action_none">Do Nothing</string>
-    <string name="action_open_settings">Open Launcher Settings</string>
-    <string name="action_open_overview">Show Desktop Bubble</string>
-    <string name="action_open_dash">Open Dash</string>
-    <string name="gesture_double_tap">Double tap</string>
 </resources>

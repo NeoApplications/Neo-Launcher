@@ -58,5 +58,13 @@
             android:title="@string/gesture_double_tap"
             app:gestureClass="com.saggitt.omega.gestures.DoubleTapGesture"
             app:iconSpaceReserved="false" />
+
+        <com.saggitt.omega.gestures.ui.GesturePreference
+            android:defaultValue="@string/action_do_nothing_class"
+            android:key="pref_gesture_long_press"
+            android:persistent="true"
+            android:title="@string/gesture_long_press"
+            app:gestureClass="com.saggitt.omega.gestures.LongPressGesture"
+            app:iconSpaceReserved="false" />
     </com.saggitt.omega.preferences.ThemedPreferenceCategory>
 </PreferenceScreen>
