@@ -96,6 +96,9 @@
     <attr name="useLightSystemBars" format="boolean" />
     <attr name="qsbEdgeRadius" format="dimension" />
 
+    <attr name="dashIconTint" format="color" />
+    <attr name="dashIconBackground" format="color" />
+
     <!-- Pixel -->
     <attr name="gIcon" format="reference" />
     <attr name="micIcon" format="reference" />

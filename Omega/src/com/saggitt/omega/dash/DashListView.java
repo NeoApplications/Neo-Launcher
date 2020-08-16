@@ -57,7 +57,7 @@ public class DashListView extends RelativeLayout implements DashItemAdapter.Dash
 
     private void init() {
         post(() -> {
-            Log.e("CircularListView", "get layout width and height");
+            Log.d("CircularListView", "get layout width and height");
             layoutWidth = getWidth();
             layoutHeight = getHeight();
             layoutCenter_x = layoutWidth / 2;

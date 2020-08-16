@@ -23,7 +23,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
-import com.saggitt.omega.views.BaseBottomSheet
+import com.saggitt.omega.views.CenterFloatingView
 
 class DashBottomSheet(context: Context) : RelativeLayout(context) {
     private var adapter: DashItemAdapter? = null
@@ -42,7 +42,7 @@ class DashBottomSheet(context: Context) : RelativeLayout(context) {
 
     companion object {
         fun show(launcher: Launcher, animate: Boolean) {
-            val sheet = BaseBottomSheet.inflate(launcher)
+            val sheet = CenterFloatingView.inflate(launcher)
             val view = DashBottomSheet(launcher)
             sheet.show(view, animate)
         }
