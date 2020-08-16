@@ -38,10 +38,11 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.launcher3.compat.LauncherAppsCompat;
-import com.android.launcher3.util.Executors;
 import com.android.launcher3.compat.PackageInstallerCompat;
+import com.android.launcher3.util.Executors;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.android.launcher3.compat.PackageInstallerCompat.getUserHandle;
 
@@ -50,9 +51,6 @@ import static com.android.launcher3.compat.PackageInstallerCompat.getUserHandle;
  */
 @TargetApi(Build.VERSION_CODES.O)
 public class SessionCommitReceiver extends BroadcastReceiver {
-    private UserHandle lastuser = null;
-    private SessionInfo lastinfo = null;
-
     private static final String TAG = "SessionCommitReceiver";
 
     // The content provider for the add to home screen setting. It should be of the format:
@@ -64,9 +62,13 @@ public class SessionCommitReceiver extends BroadcastReceiver {
     public static final String ADD_ICON_PREFERENCE_INITIALIZED_KEY =
             "pref_add_icon_to_home_initialized";
 
+
+    private UserHandle lastUser = null;
+    private SessionInfo lastInfo = null;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (lastinfo.equals(intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION)) && lastuser.equals(intent.getParcelableExtra(Intent.EXTRA_USER))) {
+        if (lastInfo.equals(intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION)) && lastUser.equals(intent.getParcelableExtra(Intent.EXTRA_USER))) {
             // nothing has changed; we can safely return
             return;
         }
@@ -77,20 +79,20 @@ public class SessionCommitReceiver extends BroadcastReceiver {
         }
 
         if (!PackageInstaller.ACTION_SESSION_COMMITTED.equals(intent.getAction())
-                || lastinfo == null || lastuser == null) {
+                || lastInfo == null || lastUser == null) {
             // Invalid intent.
             return;
         }
 
         PackageInstallerCompat packageInstallerCompat = PackageInstallerCompat.getInstance(context);
-        if (TextUtils.isEmpty(lastinfo.getAppPackageName())
-                || lastinfo.getInstallReason() != PackageManager.INSTALL_REASON_USER
-                || packageInstallerCompat.promiseIconAddedForId(lastinfo.getSessionId())) {
-            packageInstallerCompat.removePromiseIconId(lastinfo.getSessionId());
+        if (TextUtils.isEmpty(lastInfo.getAppPackageName())
+                || lastInfo.getInstallReason() != PackageManager.INSTALL_REASON_USER
+                || packageInstallerCompat.promiseIconAddedForId(lastInfo.getSessionId())) {
+            packageInstallerCompat.removePromiseIconId(lastInfo.getSessionId());
             return;
         }
 
-        queueAppIconAddition(context, lastinfo.getAppPackageName(), lastuser);
+        queueAppIconAddition(context, lastInfo.getAppPackageName(), lastUser);
     }
 
     public static void queuePromiseAppIconAddition(Context context, SessionInfo sessionInfo) {
@@ -148,8 +150,8 @@ public class SessionCommitReceiver extends BroadcastReceiver {
     }
 
     private void updateValues(Intent intent) {
-        lastinfo = intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION);
-        lastuser = intent.getParcelableExtra(Intent.EXTRA_USER);
+        lastInfo = intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION);
+        lastUser = intent.getParcelableExtra(Intent.EXTRA_USER);
     }
 
     private static class PrefInitTask extends AsyncTask<Void, Void, Void> {
@@ -178,21 +180,15 @@ public class SessionCommitReceiver extends BroadcastReceiver {
                 return true;
             }
 
-            Cursor c = null;
-            try {
-                c = mContext.getContentResolver().query(
-                        Uri.parse("content://" + ri.activityInfo.packageName
-                                + MARKER_PROVIDER_PREFIX),
-                        null, null, null, null);
-                if (c.moveToNext()) {
+            try (Cursor c = mContext.getContentResolver().query(
+                    Uri.parse("content://" + ri.activityInfo.packageName
+                            + MARKER_PROVIDER_PREFIX),
+                    null, null, null, null)) {
+                if (Objects.requireNonNull(c).moveToNext()) {
                     return c.getInt(c.getColumnIndexOrThrow(Settings.NameValueTable.VALUE)) != 0;
                 }
             } catch (Exception e) {
                 Log.d(TAG, "Error reading add to homescreen preference", e);
-            } finally {
-                if (c != null) {
-                    c.close();
-                }
             }
             return true;
         }
