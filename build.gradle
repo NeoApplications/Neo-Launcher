@@ -71,7 +71,7 @@ android {
     buildToolsVersion "30.0.1"
 
     def name = "0.3.0"
-    def code = 19
+    def code = 20
 
     defaultConfig {
         minSdkVersion 25
@@ -80,6 +80,7 @@ android {
         versionName name
         versionCode code
 
+        buildConfigField "String[]", "DETECTED_ANDROID_LOCALES", "${findAndroidLocales()}"
         buildConfigField "boolean", "FEATURE_SETTINGS_SEARCH", "true"
         buildConfigField "String", "BUILD_DATE", "\"${getBuildDate()}\""
         buildConfigField "String", "GITHASH", "\"${getGitHash()}\""
@@ -288,6 +289,23 @@ protobuf {
             }
         }
     }
+}
+
+@SuppressWarnings(["UnnecessaryQualifiedReference", "SpellCheckingInspection", "GroovyUnusedDeclaration"])
+// Returns used android languages as a buildConfig array: {'de', 'it', ..}"
+static String findAndroidLocales() {
+    Set<String> langs = new HashSet<>()
+    new File('.').eachFileRecurse(groovy.io.FileType.DIRECTORIES) {
+        final foldername = it.name
+        if (foldername.startsWith('values-') && !it.canonicalPath.contains("build" + File.separator + "intermediates")) {
+            new File(it.toString()).eachFileRecurse(groovy.io.FileType.FILES) {
+                if (it.name.toLowerCase().endsWith(".xml") && it.getCanonicalFile().getText('UTF-8').contains("<string")) {
+                    langs.add(foldername.replace("values-", ""))
+                }
+            }
+        }
+    }
+    return '{' + langs.collect { "\"${it}\"" }.join(",") + '}'
 }
 
 @SuppressWarnings(["UnnecessaryQualifiedReference", "SpellCheckingInspection", "GroovyUnusedDeclaration"])

@@ -15,14 +15,20 @@
   ~
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-<com.saggitt.omega.preferences.StyledSwitchPreference
+    <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="true"
+        android:icon="@drawable/ic_allapps_search"
         android:key="pref_settings_search"
         android:persistent="true"
         android:summary="@string/summary__advanced_setting_search"
-        android:title="@string/title__advanced_setting_search"
-        app:iconSpaceReserved="false" />
+        android:title="@string/title__advanced_setting_search" />
+
+    <net.gsantner.opoc.preference.LanguagePreferenceCompat
+        android:defaultValue=""
+        android:icon="@drawable/ic_language"
+        android:key="pref_key__language"
+        android:summary="@string/summary__advanced_language"
+        android:title="@string/title__advanced_language" />
 </PreferenceScreen>

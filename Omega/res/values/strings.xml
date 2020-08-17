@@ -193,7 +193,9 @@
 
     <!-- ADVANCED -->
     <string name="summary__advanced_setting_search">Display setting search in the action bar</string>
+    <string name="summary__advanced_language">Change language of this app</string>
     <string name="title__advanced_setting_search">Show settings search</string>
+    <string name="title__advanced_language">Language</string>
 
     <!-- DEVELOPER -->
     <string name="developer_options_enabled">Developer options enabled</string>
