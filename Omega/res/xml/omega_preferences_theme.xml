@@ -36,8 +36,8 @@
         android:defaultValue="@bool/config_default_enable_blur"
         android:key="pref_enableBlur"
         android:persistent="true"
-        android:summary="@string/title__theme_blur"
-        android:title="@string/summary__theme_blur"
+        android:summary="@string/summary__theme_blur"
+        android:title="@string/title__theme_blur"
         app:iconSpaceReserved="false" />
 
     <com.saggitt.omega.preferences.SeekbarPreference
