@@ -65,6 +65,7 @@
         android:dependency="pref_hideAllAppsAppLabels"
         android:disableDependentsState="true"
         android:key="pref_key__paged_drawer"
+        android:summary="Feature under development. Not working yet"
         android:persistent="true"
         android:title="@string/title__drawer_paged_apps"
         app:iconSpaceReserved="false" />

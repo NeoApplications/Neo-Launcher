@@ -20,6 +20,7 @@ package com.saggitt.omega.theme
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
+import com.android.launcher3.R
 import com.android.launcher3.uioverrides.WallpaperColorInfo
 import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.omegaApp
@@ -37,8 +38,22 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
     private val prefs = context.omegaPrefs
     private var themeFlags = 0
     private var usingNightMode = context.resources.configuration.usingNightMode
+        set(value) {
+            if (field != value) {
+                field = value
+                updateTheme()
+            }
+        }
+
     val isDark get() = themeFlags and THEME_DARK != 0
     val supportsDarkText get() = themeFlags and THEME_DARK_TEXT != 0
+    val displayName: String
+        get() {
+            val values = context.resources.getIntArray(R.array.themeValues)
+            val strings = context.resources.getStringArray(R.array.themes)
+            val index = values.indexOf(themeFlags)
+            return strings.getOrNull(index) ?: context.resources.getString(R.string.theme_auto)
+        }
     private val twilightManager by lazy { TwilightManager.getInstance(context) }
     private val handler = Handler()
     private var listenToTwilight = false

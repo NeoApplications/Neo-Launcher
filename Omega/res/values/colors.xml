@@ -39,6 +39,9 @@
     <color name="settings_background_dark">#ff303030</color>
     <color name="settings_background_dark_2dp">#ff252628</color>
     <color name="settings_background_dark_8dp">#ff303133</color>
+    <color name="settings_background_black">#ff000000</color>
+    <color name="settings_background_black_2dp">#ff121212</color>
+    <color name="settings_background_black_8dp">#ff1e1e1e</color>
 
 </resources>
 

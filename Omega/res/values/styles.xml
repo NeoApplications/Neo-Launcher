@@ -113,12 +113,6 @@
         <item name="bottomSheetScrimColor">@android:color/black</item>
         <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
         <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
-
-        <item name="workspaceTextColor">#FF212121</item>
-        <item name="workspaceShadowColor">@android:color/transparent</item>
-        <item name="workspaceAmbientShadowColor">@android:color/transparent</item>
-        <item name="workspaceKeyShadowColor">@android:color/transparent</item>
-        <item name="isWorkspaceDarkText">true</item>
     </style>
 
     <style name="SettingsTheme_Dark.Dialog" parent="Theme.AppCompat.Dialog.Alert">
@@ -132,6 +126,10 @@
         <item name="titleTextAppearance">@style/SettingsTheme_Light.ActionBar.Title</item>
     </style>
 
+    <style name="SettingsTheme_Black.ActionBar" parent="SettingsTheme_Black">
+        <item name="titleTextAppearance">@style/SettingsTheme_Light.ActionBar.Title</item>
+    </style>
+
     <style name="SettingsTheme.BottomSheetDialog" parent="Theme.Design.BottomSheetDialog">
         <item name="android:colorPrimary">@color/settings_background_dark</item>
         <item name="android:colorPrimaryDark">@color/settings_background_dark</item>
@@ -141,7 +139,67 @@
         <item name="bottomSheetStyle">@style/SettingsTheme.BottomSheet</item>
     </style>
 
-    <style name="SettingsTheme_Black"></style>
+    <style name="SettingsTheme_Black" parent="@style/SettingsTheme_Dark">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="settingsBackground">@android:color/black</item>
+        <item name="settingsSearchBackground">@color/settings_background_black_2dp</item>
+        <item name="settingsPopupBackground">@color/settings_background_black_8dp</item>
+        <item name="actionBarTheme">@style/SettingsTheme_Black.ActionBar</item>
+
+        <item name="workspaceTextColor">#FF212121</item>
+        <item name="workspaceShadowColor">@android:color/transparent</item>
+        <item name="workspaceAmbientShadowColor">@android:color/transparent</item>
+        <item name="workspaceKeyShadowColor">@android:color/transparent</item>
+        <item name="isWorkspaceDarkText">true</item>
+    </style>
+
+    <style name="SettingsTheme_Light.Transparent" parent="SettingsTheme_Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="workspaceTextColor">@android:color/white</item>
+        <item name="workspaceShadowColor">#B0000000</item>
+        <item name="workspaceAmbientShadowColor">#33000000</item>
+        <item name="workspaceKeyShadowColor">#44000000</item>
+    </style>
+
+    <style name="SettingsTheme_Black.Transparent" parent="SettingsTheme_Black">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="workspaceTextColor">@android:color/white</item>
+        <item name="workspaceShadowColor">#B0000000</item>
+        <item name="workspaceAmbientShadowColor">#33000000</item>
+        <item name="workspaceKeyShadowColor">#44000000</item>
+    </style>
+
+    <style name="SettingsTheme_DarkText.Transparent" parent="SettingsTheme_Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="workspaceTextColor">#FF212121</item>
+        <item name="workspaceShadowColor">@android:color/transparent</item>
+        <item name="workspaceAmbientShadowColor">@android:color/transparent</item>
+        <item name="workspaceKeyShadowColor">@android:color/transparent</item>
+    </style>
+
+    <style name="SettingsTheme_Dark.Transparent" parent="SettingsTheme_Dark">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="workspaceTextColor">@android:color/white</item>
+        <item name="workspaceShadowColor">#B0000000</item>
+        <item name="workspaceAmbientShadowColor">#33000000</item>
+        <item name="workspaceKeyShadowColor">#44000000</item>
+    </style>
+
+    <style name="Theme.Transparent" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="alertDialogTheme">@style/SettingsTheme_Light.Dialog</item>
+    </style>
 
     <style name="SettingsTheme_Light.ActionBar" parent="SettingsTheme_Light">
         <item name="titleTextAppearance">@style/SettingsTheme_Light.ActionBar.Title</item>

@@ -196,11 +196,11 @@ public class SettingsActivity extends SettingsBaseActivity
     @NotNull
     @Override
     protected ThemeOverride.ThemeSet getThemeSet() {
-        //if (hasPreview) {
-        //    return new ThemeOverride.SettingsTransparent();
-        //} else {
-        return super.getThemeSet();
-        //}
+        if (hasPreview) {
+            return new ThemeOverride.SettingsTransparent();
+        } else {
+            return super.getThemeSet();
+        }
     }
 
     @Override

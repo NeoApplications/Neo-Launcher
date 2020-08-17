@@ -111,9 +111,9 @@ public class OmegaLauncher extends Launcher {
                         .show();
             }
         }
-        /*if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
-            //OmegaAppKt.getOmegaApp(this).getSmartspace().updateWeatherData();
-        }*/
+        //if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
+        //OmegaAppKt.getOmegaApp(this).getSmartspace().updateWeatherData();
+        //}
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 

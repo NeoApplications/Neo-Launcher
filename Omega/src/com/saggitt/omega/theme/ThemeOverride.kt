@@ -65,6 +65,16 @@ class ThemeOverride (private val themeSet: ThemeSet, val listener: ThemeOverride
         override val blackDarkTextTheme = R.style.SettingsTheme_Black
     }
 
+    class SettingsTransparent : ThemeSet {
+
+        override val lightTheme = R.style.SettingsTheme_Light_Transparent
+        override val darkTextTheme = R.style.SettingsTheme_DarkText_Transparent
+        override val darkTheme = R.style.SettingsTheme_Dark_Transparent
+        override val darkDarkTextTheme = R.style.SettingsTheme_Dark_Transparent
+        override val blackTheme = R.style.SettingsTheme_Black_Transparent
+        override val blackDarkTextTheme = R.style.SettingsTheme_Black_Transparent
+    }
+
     class AlertDialog : ThemeSet {
 
         override val lightTheme = R.style.SettingsTheme_Light_Dialog
