@@ -98,6 +98,9 @@
         <item name="colorPrimary">?android:windowBackground</item>
         <item name="colorPrimaryDark">?android:windowBackground</item>
         <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="android:textColorPrimary">#D5D2D2</item>
+        <item name="android:textColorSecondary">#A8A7A7</item>
+        <item name="android:textColorTertiary">#7C7C7C</item>
         <item name="actionBarTheme">@style/SettingsTheme_Dark.ActionBar</item>
         <item name="android:colorEdgeEffect">?colorAccent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

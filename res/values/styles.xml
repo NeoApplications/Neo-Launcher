@@ -107,6 +107,7 @@
         <item name="folderTextColor">@android:color/white</item>
         <item name="isMainColorDark">true</item>
         <item name="loadingIconColor">#99FFFFFF</item>
+        <item name="android:alertDialogTheme">@style/SettingsTheme_Dark.Dialog</item>
 
         <item name="dashIconTint">@color/white</item>
     </style>
