@@ -25,7 +25,6 @@ import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.Executors
-import com.saggitt.omega.allapps.PredictionsFloatingHeader
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.search.SearchProviderController
@@ -64,7 +63,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var sortMode by StringIntPref("pref_key__sort_mode", 0, recreate)
     val showPredictions by BooleanPref("pref_show_predictions", false, doNothing)
     val showAllAppsLabel by BooleanPref("pref_showAllAppsLabel", false) {
-        val header = onChangeCallback?.launcher?.appsView?.floatingHeaderView as? PredictionsFloatingHeader
+        val header = onChangeCallback?.launcher?.appsView?.floatingHeaderView
         header?.updateShowAllAppsLabel()
     }
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
@@ -114,7 +113,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)
 
     /* --NOTIFICATION-- */
-    val notificationCount: Boolean by BooleanPref("pref_notification_count", true, restart)
+    val notificationCount by BooleanPref("pref_notification_count", true, restart)
+    val folderBadgeCount by BooleanPref("pref_folder_badge_count", true, recreate)
     val notificationBackground by IntPref("pref_notification_background", R.color.notification_background, recreate)
 
     /* --ADVANCED-- */

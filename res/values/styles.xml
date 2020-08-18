@@ -62,8 +62,8 @@
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:navigationBarColor">#00000000</item>
 
-        <item name="dashIconTint">#FFFFFFFF</item>
-        <item name="dashIconBackground">#0A8DFF</item>
+        <item name="dashIconTint">#0A8DFF</item>
+        <item name="dashIconBackground">#ffffffff</item>
     </style>
 
     <style name="LauncherTheme.DarkMainColor" parent="@style/LauncherTheme">

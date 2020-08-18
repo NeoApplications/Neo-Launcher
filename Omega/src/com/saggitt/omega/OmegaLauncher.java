@@ -42,6 +42,7 @@ public class OmegaLauncher extends Launcher {
     private OmegaPreferencesChangeCallback prefCallback = new OmegaPreferencesChangeCallback(this);
     private OmegaLauncherCallbacks launcherCallbacks;
     private GestureController mGestureController;
+    public static boolean showFolderNotificationCount;
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -66,6 +67,7 @@ public class OmegaLauncher extends Launcher {
 
         mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);
+        showFolderNotificationCount = mOmegaPrefs.getFolderBadgeCount();
     }
 
     public GestureController getGestureController() {

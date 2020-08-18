@@ -17,12 +17,14 @@
 package com.saggitt.omega.preferences
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.android.launcher3.R
+import com.android.launcher3.util.Themes
 import com.saggitt.omega.util.forEachIndexed
 
 open class StyledIconPreference : Preference {
@@ -35,9 +37,12 @@ open class StyledIconPreference : Preference {
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
+        val iconColor = ColorStateList.valueOf(Themes.getAttrColor(context, R.color.setting_icon_color))
         holder.findViewById(androidx.appcompat.R.id.icon)?.let { it as? ImageView }?.apply {
             val size = resources.getDimensionPixelSize(R.dimen.dashboard_tile_image_size)
             layoutParams = ViewGroup.LayoutParams(size, size)
+            imageTintList = iconColor
+            backgroundTintList = iconColor
         }
     }
 
