@@ -67,6 +67,7 @@ import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.groups.DrawerFolderInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +178,13 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         icon.mFolderName.setText(folderInfo.title);
         icon.mFolderName.setCompoundDrawablePadding(0);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
-        lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        if (folderInfo instanceof DrawerFolderInfo) {
+            lp.topMargin = grid.allAppsIconSizePx + grid.allAppsIconDrawablePaddingPx;
+            icon.mBackground = new PreviewBackground(true);
+            ((DrawerFolderInfo) folderInfo).getAppsStore().registerFolderIcon(icon);
+        } else {
+            lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        }
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(ItemClickHandler.INSTANCE);
@@ -319,7 +326,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
             Rect from = new Rect();
             dragLayer.getViewRectRelativeToSelf(animateView, from);
             Rect to = finalRect;
-            if (to == null) {
+            if (to == null && !isInAppDrawer()) {
                 to = new Rect();
                 Workspace workspace = mLauncher.getWorkspace();
                 // Set cellLayout and this to it's final state to compute final animation locations
@@ -361,6 +368,10 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
             if (!itemAdded) {
                 mInfo.add(item, index, true);
+            }
+
+            if (isInAppDrawer()) {
+                return;
             }
 
             int[] center = new int[2];
@@ -606,7 +617,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (!mInfo.useIconMode(mLauncher)) {
+        if (!mInfo.useIconMode(mLauncher) && isInAppDrawer()) {
             DeviceProfile grid = mLauncher.getDeviceProfile();
             int drawablePadding = grid.allAppsIconDrawablePaddingPx;
 
@@ -706,6 +717,9 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
     }
 
     public void clearLeaveBehindIfExists() {
+        if (isInAppDrawer()) {
+            return;
+        }
         ((CellLayout.LayoutParams) getLayoutParams()).canReorder = true;
         if (mInfo.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
             CellLayout cl = (CellLayout) getParent().getParent();
@@ -714,6 +728,9 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
     }
 
     public void drawLeaveBehindIfExists() {
+        if (isInAppDrawer()) {
+            return;
+        }
         CellLayout.LayoutParams lp = (CellLayout.LayoutParams) getLayoutParams();
         // While the folder is open, the position of the icon cannot change.
         lp.canReorder = false;
@@ -725,5 +742,9 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onFolderClose(int currentPage) {
         mPreviewItemManager.onFolderClose(currentPage);
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo instanceof DrawerFolderInfo;
     }
 }

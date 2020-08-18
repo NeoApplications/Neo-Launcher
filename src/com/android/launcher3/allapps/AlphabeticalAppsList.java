@@ -17,6 +17,7 @@ package com.android.launcher3.allapps;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 
 import androidx.core.graphics.ColorUtils;
 
@@ -32,6 +33,8 @@ import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.allapps.AppColorComparator;
 import com.saggitt.omega.allapps.InstallTimeComparator;
 import com.saggitt.omega.allapps.MostUsedComparator;
+import com.saggitt.omega.groups.DrawerFolderInfo;
+import com.saggitt.omega.groups.DrawerFolderItem;
 import com.saggitt.omega.model.AppCountInfo;
 import com.saggitt.omega.util.DbHelper;
 
@@ -42,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static com.saggitt.omega.util.Config.SORT_AZ;
@@ -131,11 +135,39 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
             }
         }
 
+        // Drawer folders are arranged before all the apps
+        if (!hasFilter()) {
+            for (DrawerFolderInfo info : getFolderInfos()) {
+                String sectionName = "#";
+
+                // Create a new section if the section names do not match
+                if (!sectionName.equals(lastSectionName)) {
+                    lastSectionName = sectionName;
+                    lastFastScrollerSectionInfo = new FastScrollSectionInfo(sectionName,
+                            Color.WHITE);
+                    mFastScrollerSections.add(lastFastScrollerSectionInfo);
+                }
+
+                info.setAppsStore(mAllAppsStore);
+                // Create an folder item
+                AdapterItem appItem = AdapterItem
+                        .asFolder(position++, sectionName, info, folderIndex++);
+                if (lastFastScrollerSectionInfo.fastScrollToItem == null) {
+                    lastFastScrollerSectionInfo.fastScrollToItem = appItem;
+                }
+                mAdapterItems.add(appItem);
+            }
+        }
+
+        Set<ComponentKey> folderFilters = getFolderFilteredApps();
 
         // Recreate the filtered and sectioned apps (for convenience for the grid layout) from the
         // ordered set of sections
         for (AppInfo info : getFiltersAppInfos()) {
-            String sectionName = info.sectionName;
+            if (!hasFilter() && folderFilters.contains(info.toComponentKey())) {
+                continue;
+            }
+            String sectionName = getAndUpdateCachedSectionName(info);
 
             // Create a new section if the section names do not match
             if (!sectionName.equals(lastSectionName)) {
@@ -424,6 +456,20 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         return sectionName;
     }
 
+    private List<DrawerFolderInfo> getFolderInfos() {
+        return Utilities.getOmegaPrefs(mLauncher)
+                .getAppGroupsManager()
+                .getDrawerFolders()
+                .getFolderInfos(this);
+    }
+
+    private Set<ComponentKey> getFolderFilteredApps() {
+        return Utilities.getOmegaPrefs(mLauncher)
+                .getAppGroupsManager()
+                .getDrawerFolders()
+                .getHiddenComponents();
+    }
+
     /**
      * Updates the set of filtered apps with the current filter.  At this point, we expect
      * mCachedSectionNames to have been calculated for the set of all apps in mApps.
@@ -467,6 +513,12 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         public int appIndex = -1;
 
         /**
+         * Folder-only properties
+         */
+        // The associated folder for the folder
+        public DrawerFolderItem folderItem = null;
+
+        /**
          * Search suggestion-only properties
          */
         public String suggestion;
@@ -507,6 +559,16 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
             AdapterItem item = new AdapterItem();
             item.viewType = AllAppsGridAdapter.VIEW_TYPE_WORK_TAB_FOOTER;
             item.position = pos;
+            return item;
+        }
+
+        public static AdapterItem asFolder(int pos, String sectionName,
+                                           DrawerFolderInfo folderInfo, int folderIndex) {
+            AdapterItem item = new AdapterItem();
+            item.viewType = AllAppsGridAdapter.VIEW_TYPE_FOLDER;
+            item.position = pos;
+            item.sectionName = sectionName;
+            item.folderItem = new DrawerFolderItem(folderInfo, folderIndex);
             return item;
         }
 

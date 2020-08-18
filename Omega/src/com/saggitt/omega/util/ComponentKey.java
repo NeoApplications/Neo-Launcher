@@ -26,6 +26,8 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.util.Preconditions;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 
 public class ComponentKey {
@@ -53,7 +55,7 @@ public class ComponentKey {
         int userDelimiterIndex = componentKeyStr.indexOf("#");
         if (userDelimiterIndex != -1) {
             String componentStr = componentKeyStr.substring(0, userDelimiterIndex);
-            Long componentUser = Long.valueOf(componentKeyStr.substring(userDelimiterIndex + 1));
+            long componentUser = Long.parseLong(componentKeyStr.substring(userDelimiterIndex + 1));
             componentName = ComponentName.unflattenFromString(componentStr);
             user = Utilities.notNullOrDefault(UserManagerCompat.getInstance(context)
                     .getUserForSerialNumber(componentUser), Process.myUserHandle());
@@ -62,6 +64,8 @@ public class ComponentKey {
             componentName = ComponentName.unflattenFromString(componentKeyStr);
             user = Process.myUserHandle();
         }
+
+
         Preconditions.assertNotNull(componentName);
         Preconditions.assertNotNull(user);
         mHashCode = Arrays.hashCode(new Object[]{componentName, user});
@@ -81,6 +85,7 @@ public class ComponentKey {
     /**
      * Encodes a component key as a string of the form [flattenedComponentString#userId].
      */
+    @NotNull
     @Override
     public String toString() {
         return componentName.flattenToString() + "#" + user.toString().replaceAll("\\D+", "");

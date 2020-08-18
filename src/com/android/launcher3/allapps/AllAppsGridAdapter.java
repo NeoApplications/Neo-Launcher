@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AlphabeticalAppsList.AdapterItem;
 import com.android.launcher3.compat.UserManagerCompat;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.AppLaunchTracker;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.touch.ItemLongClickListener;
@@ -71,12 +73,15 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
     public static final int VIEW_TYPE_ALL_APPS_DIVIDER = 1 << 4;
     public static final int VIEW_TYPE_WORK_TAB_FOOTER = 1 << 5;
 
+    // Drawer folders
+    public static final int VIEW_TYPE_FOLDER = 1 << 6;
+
     // Web search suggestions
     public static final int VIEW_TYPE_SEARCH_SUGGESTION = 1 << 7;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
-    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON;
+    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_FOLDER;
 
 
     public interface BindViewCallback {
@@ -286,6 +291,15 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                 View footer = mLayoutInflater.inflate(R.layout.work_tab_footer, parent, false);
                 return new ViewHolder(footer);
 
+            case VIEW_TYPE_FOLDER:
+                FrameLayout layout = new FrameLayout(mLauncher);
+
+                ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        mLauncher.getDeviceProfile().allAppsCellHeightPx);
+                layout.setLayoutParams(lp);
+                return new ViewHolder(layout);
+
             case VIEW_TYPE_SEARCH_SUGGESTION:
                 return new ViewHolder(mLayoutInflater.inflate(R.layout.all_apps_search_suggestion, parent, false));
 
@@ -328,6 +342,17 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                         managedByLabel.getContext()).isAnyProfileQuietModeEnabled();
                 managedByLabel.setText(anyProfileQuietModeEnabled
                         ? R.string.work_mode_off_label : R.string.work_mode_on_label);
+                break;
+
+            case VIEW_TYPE_FOLDER:
+                ViewGroup container = (ViewGroup) holder.itemView;
+                FolderIcon folderIcon = mApps.getAdapterItems().get(position)
+                        .folderItem.getFolderIcon(mLauncher, container);
+
+                container.removeAllViews();
+                container.addView(folderIcon);
+
+                folderIcon.verifyHighRes();
                 break;
 
             case VIEW_TYPE_SEARCH_SUGGESTION:

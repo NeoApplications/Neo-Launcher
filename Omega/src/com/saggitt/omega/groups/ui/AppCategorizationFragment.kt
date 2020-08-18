@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
 import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.DrawerFoldersAdapter
 import com.saggitt.omega.groups.DrawerTabsAdapter
 import com.saggitt.omega.groups.FlowerpotTabsAdapter
 import com.saggitt.omega.util.*
@@ -61,6 +62,7 @@ class AppCategorizationFragment : Fragment(), OmegaPreferences.OnPreferenceChang
         }
     private val drawerTabsAdapter by lazy { DrawerTabsAdapter(ourContext) }
     private val flowerpotTabsAdapter by lazy { FlowerpotTabsAdapter(ourContext) }
+    private val drawerFoldersAdapter by lazy { DrawerFoldersAdapter(ourContext) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_app_categorization, container, false)
@@ -97,6 +99,7 @@ class AppCategorizationFragment : Fragment(), OmegaPreferences.OnPreferenceChang
         groupAdapter = when (manager.getEnabledType()) {
             AppGroupsManager.CategorizationType.Tabs -> drawerTabsAdapter
             AppGroupsManager.CategorizationType.Flowerpot -> flowerpotTabsAdapter
+            AppGroupsManager.CategorizationType.Folders -> drawerFoldersAdapter
             else -> null
         }
     }
@@ -123,6 +126,11 @@ class AppCategorizationFragment : Fragment(), OmegaPreferences.OnPreferenceChang
         val title = styleHeader.findViewById<TextView>(android.R.id.title)
         title.setText(R.string.pref_appcategorization_style_text)
         title.setTextColor(ourContext.createDisabledColor(accent))
+
+        (folderTypeItem as AppCategorizationTypeItem)
+                .setup(AppGroupsManager.CategorizationType.Folders,
+                        R.string.pref_appcategorization_folders_title,
+                        R.string.pref_appcategorization_folders_summary)
 
         (tabTypeItem as AppCategorizationTypeItem)
                 .setup(AppGroupsManager.CategorizationType.Tabs,

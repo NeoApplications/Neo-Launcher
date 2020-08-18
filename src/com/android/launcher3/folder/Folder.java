@@ -79,6 +79,7 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.groups.DrawerFolderInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -276,6 +277,11 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (dragObject.dragSource != this) {
             return;
         }
+
+        if (isInAppDrawer()) {
+            close(true);
+        }
+
         mContent.removeItem(mCurrentDragView);
         if (dragObject.dragInfo instanceof WorkspaceItemInfo) {
             mItemsInvalidated = true;
@@ -412,6 +418,15 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mFolderName.setText("");
             mFolderName.setHint(R.string.folder_hint_text);
         }
+
+        // In case any children didn't come across during loading, clean up the folder accordingly
+        mFolderIcon.post(new Runnable() {
+            public void run() {
+                if (getItemCount() <= 1 && !isInAppDrawer()) {
+                    replaceFolderWithFinalItem();
+                }
+            }
+        });
     }
 
 
@@ -696,16 +711,19 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             mRearrangeOnClose = false;
         }
         if (getItemCount() <= 1) {
-            if (mDragInProgress) {
+            if (!mDragInProgress && !mSuppressFolderDeletion && !isInAppDrawer()) {
+                replaceFolderWithFinalItem();
+            } else if (mDragInProgress) {
                 mDeleteFolderOnDropCompleted = true;
             }
-        } else if (!mDragInProgress) {
-            mContent.unbindItems();
         }
         mSuppressFolderDeletion = false;
         clearDragInfo();
         mState = STATE_SMALL;
         mContent.setCurrentPage(0);
+        if (mInfo instanceof DrawerFolderInfo) {
+            ((DrawerFolderInfo) mInfo).onCloseComplete();
+        }
     }
 
     @Override
@@ -810,6 +828,12 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     };
 
     public void completeDragExit() {
+        if (isInAppDrawer()) {
+            // This is faster and more straightforward than trying to get the dragged app reliably
+            // back into the folder in any other way
+            mLauncher.getAppsView().getApps().reset();
+            return;
+        }
         if (mIsOpen) {
             close(true);
             mRearrangeOnClose = true;
@@ -1271,6 +1295,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     }
 
     public void onRemove(WorkspaceItemInfo item) {
+        if (isInAppDrawer()) {
+            return;
+        }
         mItemsInvalidated = true;
         View v = getViewForInfo(item);
         mContent.removeItem(v);
@@ -1519,5 +1546,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         } else {
             super.draw(canvas);
         }
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo.container == ItemInfo.NO_ID;
     }
 }

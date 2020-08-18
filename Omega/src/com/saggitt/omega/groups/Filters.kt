@@ -17,9 +17,7 @@
 
 package com.saggitt.omega.groups
 
-import android.content.ComponentName
 import android.content.Context
-import com.android.launcher3.ItemInfo
 import com.android.launcher3.util.ItemInfoMatcher
 import com.saggitt.omega.util.ComponentKey
 
@@ -35,11 +33,7 @@ abstract class Filter<T>(val context: Context) {
 class CustomFilter(context: Context, override val matches: Set<ComponentKey>) : Filter<ComponentKey>(context) {
 
     override val matcher
-        get() = object : ItemInfoMatcher {
-            override fun matches(info: ItemInfo, cn: ComponentName?): Boolean {
-                return matches.contains(ComponentKey(info.targetComponent, info.user))
-            }
-        }
+        get() = ItemInfoMatcher { info, cn -> matches.contains(ComponentKey(info.targetComponent, info.user)) }
 }
 
 /*
