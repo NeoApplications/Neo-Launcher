@@ -23,8 +23,8 @@ import android.content.pm.PackageManager
 import android.os.Process
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.allapps.PredictionsFloatingHeader
+import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.util.runOnMainThread
 
 open class OmegaEventPredictor(private val context: Context) : CustomAppPredictor(context) {

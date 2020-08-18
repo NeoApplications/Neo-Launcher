@@ -23,10 +23,10 @@ import android.content.pm.ShortcutInfo
 import android.os.UserHandle
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
-import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.PackageUserKey
 import com.saggitt.omega.flowerpot.rules.CodeRule
 import com.saggitt.omega.flowerpot.rules.Rule
+import com.saggitt.omega.util.ComponentKey
 
 class FlowerpotApps(private val context: Context, private val pot: Flowerpot) : LauncherAppsCompat.OnAppsChangedCallbackCompat {
 

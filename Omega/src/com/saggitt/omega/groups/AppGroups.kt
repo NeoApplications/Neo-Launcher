@@ -17,9 +17,7 @@
 
 package com.saggitt.omega.groups
 
-import android.content.ComponentName
 import android.content.Context
-import android.os.Process
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -29,7 +27,6 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.android.launcher3.R
-import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
 import com.saggitt.omega.preferences.SelectableAppsActivity
 import com.saggitt.omega.util.*
@@ -450,7 +447,7 @@ abstract class AppGroups<T : AppGroups.Group>(private val manager: AppGroupsMana
             }
 
             override fun unflatten(context: Context, value: String): ComponentKey {
-                return ComponentKey(ComponentName(context, value), Process.myUserHandle())
+                return ComponentKey(context, value)
             }
 
             override fun flatten(value: ComponentKey): String {

@@ -24,10 +24,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.android.launcher3.R
-import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.theme.ThemedContextProvider
+import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.util.applyAccent
 
 class FlowerpotTabs(manager: AppGroupsManager) : DrawerTabs(manager, AppGroupsManager.CategorizationType.Flowerpot) {

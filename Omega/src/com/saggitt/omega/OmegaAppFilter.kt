@@ -24,25 +24,25 @@ import com.android.launcher3.AppFilter
 
 open class OmegaAppFilter(context: Context) : AppFilter() {
 
-    private val hideList = HashSet<ComponentName>()
+    private val mHideList = HashSet<ComponentName>()
 
     init {
-        hideList.add(ComponentName(context, "com.saggitt.omega/.OmegaLauncher"))
+        mHideList.add(ComponentName(context, "com.saggitt.omega/.OmegaLauncher"))
 
         //Voice Search
-        hideList.add(ComponentName(context, "com.google.android.googlequicksearchbox/.VoiceSearchActivity"))
+        mHideList.add(ComponentName(context, "com.google.android.googlequicksearchbox/.VoiceSearchActivity"))
 
         //Wallpapers
-        hideList.add(ComponentName(context, "com.google.android.apps.wallpaper/.picker.CategoryPickerActivity"))
+        mHideList.add(ComponentName(context, "com.google.android.apps.wallpaper/.picker.CategoryPickerActivity"))
 
         //Google Now Launcher
-        hideList.add(ComponentName(context, "com.google.android.launcher/.StubApp"))
+        mHideList.add(ComponentName(context, "com.google.android.launcher/.StubApp"))
 
         //Actions Services
-        hideList.add(ComponentName(context, "com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity"))
+        mHideList.add(ComponentName(context, "com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity"))
     }
 
     override fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
-        return !hideList.contains(componentName)
+        return !mHideList.contains(componentName)
     }
 }
