@@ -68,7 +68,7 @@ if (enable_plugin_kotlin) {
 }
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
+    buildToolsVersion "30.0.2"
 
     def name = "0.3.0"
     def code = 20
