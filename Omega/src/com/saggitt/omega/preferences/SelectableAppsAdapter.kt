@@ -17,18 +17,15 @@
 
 package com.saggitt.omega.preferences
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.res.ColorStateList
-import android.os.Process
 import android.view.View
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.util.comparing
 import com.saggitt.omega.util.then
 import kotlin.reflect.KMutableProperty0
-
 
 abstract class SelectableAppsAdapter(context: Context, private val callback: Callback? = null, filter: AppFilter? = null)
     : AppsAdapter(context, null, filter) {
@@ -111,7 +108,7 @@ abstract class SelectableAppsAdapter(context: Context, private val callback: Cal
         fun ofProperty(context: Context, property: KMutableProperty0<Set<String>>,
                        callback: Callback? = null, filter: AppFilter? = null) = object : SelectableAppsAdapter(context, callback, filter) {
 
-            override fun getInitialSelections() = HashSet(property.get().map { ComponentKey(ComponentName(context, it), Process.myUserHandle()) })
+            override fun getInitialSelections() = HashSet(property.get().map { ComponentKey(context, it) })
 
             override fun setSelections(selections: Set<ComponentKey>) {
                 property.set(HashSet(selections.map { it.toString() }))

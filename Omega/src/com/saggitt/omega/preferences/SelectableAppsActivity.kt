@@ -27,10 +27,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.AppFilter
 import com.android.launcher3.R
-import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaAppFilter
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsActivity
+import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.views.RecyclerViewFragment
 
 class SelectableAppsActivity : SettingsActivity() {
@@ -56,7 +56,7 @@ class SelectableAppsActivity : SettingsActivity() {
         private var changed = false
 
         override fun onRecyclerViewCreated(recyclerView: RecyclerView) {
-            val arguments = arguments!!
+            val arguments = requireArguments()
             val isWork = if (arguments.containsKey(KEY_FILTER_IS_WORK))
                 arguments.getBoolean(KEY_FILTER_IS_WORK) else null
             selection = HashSet(arguments.getStringArrayList(KEY_SELECTION))
@@ -64,7 +64,7 @@ class SelectableAppsActivity : SettingsActivity() {
             val context = recyclerView.context
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = LinearLayoutManager(context)
-            recyclerView.adapter = SelectableAppsAdapter.ofProperty(activity!!,
+            recyclerView.adapter = SelectableAppsAdapter.ofProperty(requireActivity(),
                     ::selection, this, createAppFilter(context, DrawerTabs.getWorkFilter(isWork)))
         }
 
@@ -112,7 +112,7 @@ class SelectableAppsActivity : SettingsActivity() {
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         if (resultCode == Activity.RESULT_OK) {
                             callback(resultData!!.getStringArrayList(KEY_SELECTION)!!.map {
-                                ComponentKey(ComponentName(context, it), Process.myUserHandle())
+                                ComponentKey(context, it)
                             })
                         } else {
                             callback(null)
