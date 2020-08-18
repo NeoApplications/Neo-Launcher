@@ -2,6 +2,10 @@
 * **Add gestures preference**
 * **Add dash view to the main screen**
 * **Add dock scale preference**
+* **Add drawer tabs support**
+* **Add drawer folder support**
+* **Add themes support**
+* **Add search voice and assistant preference**
 
 ### v0.2.0 (Build 10)
 * **Add color accent preference**
