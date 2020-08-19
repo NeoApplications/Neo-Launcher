@@ -34,8 +34,8 @@ buildscript {
                 junit                  : "1.1.1",
                 mockito                : "1.9.5",
                 dexmaker               : "1.2",
-                testrunner             : "1.0.2",
-                testrules              : "1.0.2",
+                testjunit              : "1.1.1",
+                testrules              : "1.2.0",
                 uiautomator            : "2.2.0",
                 annotation             : "1.1.0",
 
@@ -68,7 +68,7 @@ if (enable_plugin_kotlin) {
 }
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
+    buildToolsVersion "30.0.2"
 
     def name = "0.3.0"
     def code = 20
@@ -126,7 +126,7 @@ android {
             dimension "recents"
         }
 
-        omega{
+        omega {
             applicationId 'com.saggitt.omega'
             dimension "custom"
         }
@@ -196,9 +196,9 @@ android {
             manifest.srcFile "quickstep/AndroidManifest.xml"
         }
 
-        omega{
+        omega {
             res.srcDirs = ['Omega/res']
-            java.srcDirs=['Omega/src','Omega/src_ui_overrides']
+            java.srcDirs = ['Omega/src', 'Omega/src_ui_overrides']
             manifest.srcFile 'Omega/AndroidManifest.xml'
         }
     }
@@ -218,9 +218,10 @@ afterEvaluate {
 apply from: 'Omega/smali.gradle'
 repositories {
     jcenter()
-    mavenCentral()
-    maven { url "https://maven.google.com" }
-    maven { url 'https://jitpack.io' }
+    google()
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -263,8 +264,8 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:${versions.mockito}"
     androidTestImplementation "com.google.dexmaker:dexmaker:${versions.dexmaker}"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:${versions.dexmaker}"
-    androidTestImplementation "com.android.support.test:runner:${versions.testrunner}"
-    androidTestImplementation "com.android.support.test:rules:${versions.testrules}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.testjunit}"
+    androidTestImplementation "androidx.test:rules:${versions.testrules}"
     androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiautomator}"
     androidTestImplementation "androidx.annotation:annotation:${versions.annotation}"
 }
