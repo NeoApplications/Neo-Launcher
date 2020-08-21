@@ -30,6 +30,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
 
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
@@ -67,6 +68,8 @@ public class OmegaLauncher extends Launcher {
         mContext = this;
         mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);
+        ContextUtils contextUtils = new ContextUtils(this);
+        contextUtils.setAppLanguage(mOmegaPrefs.getLanguage());
         showFolderNotificationCount = mOmegaPrefs.getFolderBadgeCount();
     }
 
