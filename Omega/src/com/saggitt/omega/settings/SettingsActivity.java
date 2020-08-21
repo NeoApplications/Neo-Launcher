@@ -83,8 +83,8 @@ import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
 import com.saggitt.omega.theme.ThemeOverride;
-import com.saggitt.omega.util.AboutUtils;
 import com.saggitt.omega.util.Config;
+import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.SettingsObserver;
 import com.saggitt.omega.views.SpringRecyclerView;
 import com.saggitt.omega.views.ThemedListPreferenceDialogFragment;
@@ -675,7 +675,7 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
 
                 case R.xml.omega_preferences_about:
-                    AboutUtils au = new AboutUtils(getContext());
+                    ContextUtils au = new ContextUtils(getContext());
                     Preference appInfo = findPreference("pref_key__copy_build_information");
                     au.getAppInfoSummary(appInfo);
                     updateProjectTeam(au);
@@ -683,7 +683,7 @@ public class SettingsActivity extends SettingsBaseActivity
             }
         }
 
-        private void updateProjectTeam(AboutUtils au) {
+        private void updateProjectTeam(ContextUtils au) {
             Preference pref;
             if ((pref = findPreference("pref_key__project_team")) != null && ((PreferenceGroup) pref).getPreferenceCount() == 0) {
                 String[] data = (au.readTextfileFromRawRes(R.raw.team, "", "").trim() + "\n\n").split("\n");
@@ -779,7 +779,7 @@ public class SettingsActivity extends SettingsBaseActivity
 
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {
-            AboutUtils au = new AboutUtils(getContext());
+            ContextUtils au = new ContextUtils(getContext());
             if (preference.getKey() != null) {
                 switch (preference.getKey()) {
                     case "pref_key__donate":

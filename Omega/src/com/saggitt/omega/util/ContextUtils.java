@@ -46,10 +46,10 @@ import java.util.Locale;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-public class AboutUtils {
+public class ContextUtils {
     public Context mContext;
 
-    public AboutUtils(Context context) {
+    public ContextUtils(Context context) {
         mContext = context;
     }
 

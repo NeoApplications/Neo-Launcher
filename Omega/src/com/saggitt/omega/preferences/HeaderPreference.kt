@@ -24,10 +24,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.android.launcher3.R
 import com.android.launcher3.R.id.app_build
-import com.saggitt.omega.util.AboutUtils
+import com.saggitt.omega.util.ContextUtils
 
 class HeaderPreference(context: Context, attrs: AttributeSet? = null) : Preference(context, attrs) {
-    val aboutUtils by lazy { AboutUtils(context) }
+    val aboutUtils by lazy { ContextUtils(context) }
 
     init {
         layoutResource = R.layout.activity_about
