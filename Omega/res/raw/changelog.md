@@ -1,3 +1,6 @@
+### v0.4.0 (Build 30)
+* **Add hide apps preference**
+
 ### v0.3.0 (Build 20)
 * **Add gestures preference**
 * **Add dash view to the main screen**
