@@ -40,18 +40,4 @@
         app:minValue="0.70"
         app:summaryFormat="%.0f%%"
         app:summaryMultiplier="100" />
-
-    <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:key="pref_dockSearchBar"
-        android:title="@string/title__dock_search_bar"
-        android:defaultValue="false"
-        android:persistent="true"
-        app:iconSpaceReserved="false" />
-    <!--
-       <com.saggitt.omega.preferences.StyledSwitchPreference
-           android:key="pref_dockColoredGoogle"
-           android:title="@string/title__dock_colored_icons"
-           android:dependency="pref_dockSearchBar"
-           android:defaultValue="true"
-           android:persistent="true" /> -->
 </PreferenceScreen>
