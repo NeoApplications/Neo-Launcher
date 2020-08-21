@@ -119,6 +119,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     /* --ADVANCED-- */
     var settingsSearch by BooleanPref("pref_settings_search", true, restart)
+    var language by StringPref("pref_key__language", "", recreate)
 
     /* --BLUR--*/
     var enableBlur by BooleanPref("pref_enableBlur", omegaConfig.defaultEnableBlur(), updateBlur)
