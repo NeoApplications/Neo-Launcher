@@ -62,9 +62,9 @@ public class OmegaLauncher extends Launcher {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !Utilities.hasStoragePermission(this)) {
             Utilities.requestStoragePermission(this);
         }
+
         super.onCreate(savedInstanceState);
         mContext = this;
-
         mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);
         showFolderNotificationCount = mOmegaPrefs.getFolderBadgeCount();

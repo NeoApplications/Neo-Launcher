@@ -85,7 +85,6 @@ import com.saggitt.omega.settings.search.SettingsSearchActivity;
 import com.saggitt.omega.theme.ThemeOverride;
 import com.saggitt.omega.util.AboutUtils;
 import com.saggitt.omega.util.Config;
-import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.util.SettingsObserver;
 import com.saggitt.omega.views.SpringRecyclerView;
 import com.saggitt.omega.views.ThemedListPreferenceDialogFragment;
@@ -302,10 +301,6 @@ public class SettingsActivity extends SettingsBaseActivity
         startFragment(context, fragment, null, context.getString(title));
     }
 
-    public static void startFragment(Context context, String fragment, @Nullable Bundle args) {
-        startFragment(context, fragment, args, null);
-    }
-
     public static void startFragment(Context context, String fragment, @Nullable Bundle args, @Nullable CharSequence title) {
         context.startActivity(createFragmentIntent(context, fragment, args, title));
     }
@@ -392,7 +387,7 @@ public class SettingsActivity extends SettingsBaseActivity
                 return;
             }
             if (mAdapter != null) {
-                mAdapter.requestHighlight(Objects.requireNonNull(getView()), getListView());
+                mAdapter.requestHighlight(requireView(), getListView());
             }
         }
 
@@ -568,8 +563,8 @@ public class SettingsActivity extends SettingsBaseActivity
         @Override
         public void onResume() {
             super.onResume();
-            Objects.requireNonNull(getActivity()).setTitle(R.string.settings_button_text);
-            getActivity().setTitleColor(R.color.colorAccent);
+            requireActivity().setTitle(R.string.settings_button_text);
+            requireActivity().setTitleColor(R.color.colorAccent);
             boolean dev = Utilities.getOmegaPrefs(getActivity()).getDeveloperOptionsEnabled();
             if (dev != mShowDevOptions) {
                 getActivity().recreate();
@@ -660,10 +655,11 @@ public class SettingsActivity extends SettingsBaseActivity
                         rotationPref.setDefaultValue(Utilities.getAllowRotationDefaultValue(getActivity()));
                     }
                     break;
-
+/*
                 case R.xml.omega_preferences_drawer:
-                    //findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
+                    findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     break;
+*/
                 case R.xml.omega_preferences_notification:
                     if (getResources().getBoolean(R.bool.notification_dots_enabled)) {
                         NotificationDotsPreference iconBadgingPref = (NotificationDotsPreference) findPreference(NOTIFICATION_DOTS_PREFERENCE_KEY);
@@ -763,15 +759,15 @@ public class SettingsActivity extends SettingsBaseActivity
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             switch (preference.getKey()) {
-                /*case SHOW_PREDICTIONS_PREF:
+/*                case SHOW_PREDICTIONS_PREF:
                     if ((boolean) newValue) {
                         return true;
                     }
                     SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
                     confirmationFragment.setTargetFragment(this, 0);
                     confirmationFragment.show(getFragmentManager(), preference.getKey());
-                    break;*/
-
+                    break;
+*/
                 case ENABLE_MINUS_ONE_PREF:
                     if (Config.hasPackageInstalled(getActivity(), Config.GOOGLE_QSB)) {
                         return true;
@@ -969,34 +965,54 @@ public class SettingsActivity extends SettingsBaseActivity
         }
     }
 
+/*
     public static class SuggestionConfirmationFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-        public void onClick(final DialogInterface dialogInterface, final int n) {
-            /*if (getTargetFragment() instanceof PreferenceFragmentCompat) {
-                Preference preference = ((PreferenceFragmentCompat) getTargetFragment())
-                        .findPreference(SHOW_PREDICTIONS_PREF);
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            if (getTargetFragment() instanceof PreferenceFragmentCompat) {
+                Preference preference = ((PreferenceFragmentCompat) getTargetFragment()).findPreference(SHOW_PREDICTIONS_PREF);
                 if (preference instanceof TwoStatePreference) {
                     ((TwoStatePreference) preference).setChecked(false);
                 }
-            }*/
+            }
         }
 
+        @NotNull
         public Dialog onCreateDialog(final Bundle bundle) {
-            return new AlertDialog.Builder(getActivity())
+            return new  AlertDialog.Builder(requireActivity())
                     .setTitle(R.string.title_disable_suggestions_prompt)
                     .setMessage(R.string.msg_disable_suggestions_prompt)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.label_turn_off_suggestions, this).create();
         }
 
-
         @Override
         public void onStart() {
             super.onStart();
-            OmegaUtilsKt.applyAccent(((AlertDialog) getDialog()));
+            OmegaUtilsKt.applyAccent(((AlertDialog) Objects.requireNonNull(getDialog())));
+        }
+
+        private static void openSetting(Context context) {
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            context.startActivity(intent);
+        }
+
+        private boolean isAccessGranted() {
+            try {
+                Context context = getContext();
+                PackageManager pm = context.getPackageManager();
+                ApplicationInfo applicationInfo = pm.getApplicationInfo(BuildConfig.APPLICATION_ID, 0);
+                AppOpsManager appOpsManager = context.getSystemService(AppOpsManager.class);
+                int mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        applicationInfo.uid, applicationInfo.packageName);
+                return mode == AppOpsManager.MODE_ALLOWED;
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
         }
     }
-
+*/
     /**
      * Content observer which listens for system badging setting changes, and updates the launcher
      * badging setting subtext accordingly.

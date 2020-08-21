@@ -102,6 +102,7 @@
     <plurals name="hidden_apps_count">
         <item quantity="other">%1$d Hidden</item>
     </plurals>
+
     <!-- PREFERENCES THEME -->
     <string name="title__theme_accent_color">Accent Color</string>
     <string name="title__theme_theme">Theme</string>

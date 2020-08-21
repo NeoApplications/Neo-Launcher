@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.AppFilter
 import com.android.launcher3.R
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.OmegaAppFilter
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsActivity
@@ -107,7 +108,7 @@ class SelectableAppsActivity : SettingsActivity() {
                   callback: (Collection<ComponentKey>?) -> Unit, filterIsWork: Boolean? = null) {
             val intent = Intent(context, SelectableAppsActivity::class.java).apply {
                 putStringArrayListExtra(KEY_SELECTION, ArrayList(selection.map { it.toString() }))
-                putExtra(KEY_CALLBACK, object : ResultReceiver(Handler()) {
+                putExtra(KEY_CALLBACK, object : ResultReceiver(MAIN_EXECUTOR.handler) {
 
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         if (resultCode == Activity.RESULT_OK) {

@@ -19,9 +19,9 @@ package com.saggitt.omega.theme
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Handler
 import com.android.launcher3.R
 import com.android.launcher3.uioverrides.WallpaperColorInfo
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.twilight.TwilightListener
@@ -55,7 +55,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
             return strings.getOrNull(index) ?: context.resources.getString(R.string.theme_auto)
         }
     private val twilightManager by lazy { TwilightManager.getInstance(context) }
-    private val handler = Handler()
+    private val handler = MAIN_EXECUTOR.handler
     private var listenToTwilight = false
         set(value) {
             if (field != value) {

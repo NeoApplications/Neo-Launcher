@@ -38,7 +38,6 @@ import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +51,7 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.saggitt.omega.util.ComponentKey
 import java.util.Comparator.comparing
@@ -68,7 +68,7 @@ open class AppsAdapter(
     var isLoaded = false
     val apps = ArrayList<App>()
 
-    val handler = Handler()
+    val handler = MAIN_EXECUTOR.handler
 
     open val comparator = defaultComparator
 

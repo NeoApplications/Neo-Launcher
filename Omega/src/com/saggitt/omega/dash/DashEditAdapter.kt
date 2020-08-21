@@ -20,7 +20,6 @@ package com.saggitt.omega.dash
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -31,15 +30,15 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.CompoundButtonCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.util.isVisible
 
 class DashEditAdapter(context: Context) : RecyclerView.Adapter<DashEditAdapter.Holder>() {
     private val prefs = Utilities.getOmegaPrefs(context)
     private val allItems = ArrayList<CustomDashItem>()
-    private val handler = Handler()
+    private val handler = MAIN_EXECUTOR.handler
 
     private var dividerIndex = 0
     private val adapterItems = ArrayList<Item>()
@@ -211,7 +210,7 @@ class DashEditAdapter(context: Context) : RecyclerView.Adapter<DashEditAdapter.H
         @SuppressLint("PrivateResource")
         override fun bind(item: Item) {
             super.bind(item)
-            val context = Launcher.mContext
+            //val context = Launcher.mContext
             val states = arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf(android.R.attr.state_checked), intArrayOf())
             val colors = intArrayOf(androidx.preference.R.color.switch_thumb_normal_material_light, //Normal
                     prefs.accentColor, //checked
