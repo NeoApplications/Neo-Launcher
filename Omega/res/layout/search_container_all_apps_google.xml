@@ -19,7 +19,7 @@
     android:layout_centerHorizontal="true"
     android:layout_gravity="center|top"
     android:background="@drawable/bg_qsb_click_feedback"
-    android:contentDescription="@string/label_search"
+    android:contentDescription="@string/title__general_search"
     android:translationY="30.0dip">
 
     <ImageView

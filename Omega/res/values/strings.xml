@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~
-  ~  Copyright (c) 2020 Omega Launcher
-  ~
-  ~  Licensed under the Apache License, Version 2.0 (the "License");
-  ~  you may not use this file except in compliance with the License.
-  ~  You may obtain a copy of the License at
-  ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~  Unless required by applicable law or agreed to in writing, software
-  ~  distributed under the License is distributed on an "AS IS" BASIS,
-  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~  See the License for the specific language governing permissions and
-  ~  limitations under the License.
-  ~
+
+  Copyright (c) 2020 Omega Launcher
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
   -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="derived_app_name" translatable="false">Omega Launcher</string>
-    <string name="app_version">Version</string>
-    <string name="app_build">Build</string>
+    <string name="app_version" translatable="false">Version</string>
+    <string name="app_build" translatable="false">Build</string>
     <!-- PREFERENCES GENERAL -->
     <string name="title__general_about">About</string>
     <string name="title__general_desktop">Desktop</string>
@@ -105,7 +105,6 @@
 
     <!-- PREFERENCES THEME -->
     <string name="title__theme_accent_color">Accent Color</string>
-    <string name="title__theme_theme">Theme</string>
     <string name="title__theme_blur">Blur</string>
     <string name="title__theme_blur_radius">Blur Intensity</string>
 
@@ -133,9 +132,9 @@
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>
     <string name="pref_show_google_now_summary">@string/msg_minus_one_on_left</string>
-    <string name="google_app">Google app</string>
+    <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
-    <string name="smartspace_preferences" translatable="false">Preferences</string>
+    <string name="smartspace_preferences">Preferences</string>
 
     <!-- PREFERENCES NOTIFICATION -->
     <string name="icon_badging_desc_on">On</string>
@@ -167,30 +166,29 @@
         <xliff:g name="first_item">%1$s</xliff:g> >
         <xliff:g name="second_item">%2$s</xliff:g>
     </string>
-    <string name="search_provider_yandex">Yandex</string>
-    <string name="search_provider_ddg">DuckDuckGo</string>
-    <string name="search_provider_baidu">Baidu</string>
-    <string name="search_provider_s_finder">S Finder</string>
-    <string name="search_pref_title">Search</string>
-    <string name="google">Google</string>
-    <string name="search_provider_google_go">Google Go</string>
-    <string name="search_provider_firefox">Firefox</string>
-    <string name="search_provider_search_lite">Search Lite</string>
-    <string name="search_provider_cool_search">Cool Search</string>
+    <string name="search_provider_yandex" translatable="false">Yandex</string>
+    <string name="search_provider_ddg" translatable="false">DuckDuckGo</string>
+    <string name="search_provider_baidu" translatable="false">Baidu</string>
+    <string name="search_provider_s_finder" translatable="false">S Finder</string>
+    <string name="google" translatable="false">Google</string>
+    <string name="search_provider_google_go" translatable="false">Google Go</string>
+    <string name="search_provider_firefox" translatable="false">Firefox</string>
+    <string name="search_provider_search_lite" translatable="false">Search Lite</string>
+    <string name="search_provider_cool_search" translatable="false">Cool Search</string>
     <string name="search_provider_appsearch">App search</string>
-    <string name="search_provider_bing">Bing</string>
-    <string name="search_provider_edge">Edge</string>
-    <string name="search_provider_qwant">Qwant</string>
-    <string name="web_search_google">Google (web)</string>
-    <string name="web_search_ddg">DuckDuckGo (web)</string>
-    <string name="web_search_startpage">Startpage.com (web)</string>
-    <string name="web_search_bing">Bing (web)</string>
-    <string name="web_search_qwant">Qwant (web)</string>
-    <string name="web_search_ecosia">Ecosia (web)</string>
-    <string name="web_search_yandex">Yandex (web)</string>
-    <string name="web_search_naver">Naver (web)</string>
-    <string name="web_search_baidu">Baidu (web)</string>
-    <string name="web_search_yahoo">Yahoo (web)</string>
+    <string name="search_provider_bing" translatable="false">Bing</string>
+    <string name="search_provider_edge" translatable="false">Edge</string>
+    <string name="search_provider_qwant" translatable="false">Qwant</string>
+    <string name="web_search_google" translatable="false">Google (web)</string>
+    <string name="web_search_ddg" translatable="false">DuckDuckGo (web)</string>
+    <string name="web_search_startpage" translatable="false">Startpage.com (web)</string>
+    <string name="web_search_bing" translatable="false">Bing (web)</string>
+    <string name="web_search_qwant" translatable="false">Qwant (web)</string>
+    <string name="web_search_ecosia" translatable="false">Ecosia (web)</string>
+    <string name="web_search_yandex" translatable="false">Yandex (web)</string>
+    <string name="web_search_naver" translatable="false">Naver (web)</string>
+    <string name="web_search_baidu" translatable="false">Baidu (web)</string>
+    <string name="web_search_yahoo" translatable="false">Yahoo (web)</string>
     <string name="error_no_browser">No activity found to handle URLs</string>
 
     <!-- ADVANCED -->
@@ -238,7 +236,6 @@
     <string name="automatic_short">Auto</string>
 
     <!-- QSB -->
-    <string name="label_search">Search</string>
     <string name="label_voice_search">Voice search</string>
     <string name="customize">Customize</string>
 
@@ -250,7 +247,6 @@
     <string name="delete">Delete</string>
     <string name="select_tab_type">New Tab</string>
     <string name="none">None</string>
-    <string name="undo">Undo</string>
     <string name="name">Name</string>
     <string name="apps_label">Apps</string>
     <string name="custom">Custom</string>
