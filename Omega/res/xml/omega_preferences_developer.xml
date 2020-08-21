@@ -38,7 +38,6 @@
 
     <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="false"
-        android:dependency="pref_hideAllAppsAppLabels"
         android:key="pref_key__paged_drawer"
         android:persistent="true"
         android:summary="Feature under development. Not working yet"
