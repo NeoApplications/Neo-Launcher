@@ -14,7 +14,7 @@
   ~  limitations under the License.
   ~
   -->
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="Drawer">
 
@@ -44,36 +44,24 @@
         android:persistent="true"
         android:title="@string/title__drawer_mutliline_labels"
         app:iconSpaceReserved="false" />
-
     <!--
-        <com.saggitt.omega.preferences.StyledSwitchPreference
-            android:defaultValue="false"
-            android:key="pref_show_predictions"
-            android:title="@string/title_app_suggestions"
-            app:iconSpaceReserved="false"
-            app:searchTitle="@string/title_app_suggestions" />
+       <com.saggitt.omega.preferences.StyledSwitchPreference
+           android:defaultValue="false"
+           android:key="pref_show_predictions"
+           android:title="@string/title_app_suggestions"
+           app:iconSpaceReserved="false" />
 
-            <com.saggitt.omega.preferences.StyledSwitchPreference
-                android:key="pref_showAllAppsLabel"
-                android:title="@string/title__drawer_all_apps"
-                android:defaultValue="false"
-                android:persistent="true"
-                app:iconSpaceReserved="false"/> -->
 
-    <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:defaultValue="false"
-        android:dependency="pref_hideAllAppsAppLabels"
-        android:disableDependentsState="true"
-        android:key="pref_key__paged_drawer"
-        android:summary="Feature under development. Not working yet"
-        android:persistent="true"
-        android:title="@string/title__drawer_paged_apps"
-        app:iconSpaceReserved="false" />
+               <com.saggitt.omega.preferences.StyledSwitchPreference
+                   android:key="pref_showAllAppsLabel"
+                   android:title="@string/title__drawer_all_apps"
+                   android:defaultValue="false"
+                   android:persistent="true"
+                   app:iconSpaceReserved="false"/> -->
 
     <androidx.preference.Preference
         android:fragment="com.saggitt.omega.groups.ui.AppCategorizationFragment"
         android:key="pref_categorization"
-        android:dependency="pref_key__paged_drawer"
         android:title="@string/title__drawer_categorization"
         app:iconSpaceReserved="false" />
 
@@ -91,4 +79,4 @@
         android:summary="@string/summary_all_apps_google_search"
         android:title="@string/title_all_apps_google_search"
         app:iconSpaceReserved="false" />
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>

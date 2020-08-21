@@ -34,6 +34,11 @@
     <!-- For weather / sunset/-rise -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- App prediction -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
     <application
         android:name="com.saggitt.omega.OmegaApp"
         android:networkSecurityConfig="@xml/network_security_config"
