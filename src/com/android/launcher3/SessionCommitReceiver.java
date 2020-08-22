@@ -51,49 +51,14 @@ import static com.android.launcher3.compat.PackageInstallerCompat.getUserHandle;
  */
 @TargetApi(Build.VERSION_CODES.O)
 public class SessionCommitReceiver extends BroadcastReceiver {
-    private static final String TAG = "SessionCommitReceiver";
-
-    // The content provider for the add to home screen setting. It should be of the format:
-    // <package name>.addtohomescreen
-    private static final String MARKER_PROVIDER_PREFIX = ".addtohomescreen";
-
     // Preference key for automatically adding icon to homescreen.
     public static final String ADD_ICON_PREFERENCE_KEY = "pref_add_icon_to_home";
     public static final String ADD_ICON_PREFERENCE_INITIALIZED_KEY =
             "pref_add_icon_to_home_initialized";
-
-
-    private UserHandle lastUser = null;
-    private SessionInfo lastInfo = null;
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (lastInfo.equals(intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION)) && lastUser.equals(intent.getParcelableExtra(Intent.EXTRA_USER))) {
-            // nothing has changed; we can safely return
-            return;
-        }
-        updateValues(intent);
-        if (!isEnabled(context) || !Utilities.ATLEAST_OREO) {
-            // User has decided to not add icons on homescreen.
-            return;
-        }
-
-        if (!PackageInstaller.ACTION_SESSION_COMMITTED.equals(intent.getAction())
-                || lastInfo == null || lastUser == null) {
-            // Invalid intent.
-            return;
-        }
-
-        PackageInstallerCompat packageInstallerCompat = PackageInstallerCompat.getInstance(context);
-        if (TextUtils.isEmpty(lastInfo.getAppPackageName())
-                || lastInfo.getInstallReason() != PackageManager.INSTALL_REASON_USER
-                || packageInstallerCompat.promiseIconAddedForId(lastInfo.getSessionId())) {
-            packageInstallerCompat.removePromiseIconId(lastInfo.getSessionId());
-            return;
-        }
-
-        queueAppIconAddition(context, lastInfo.getAppPackageName(), lastUser);
-    }
+    private static final String TAG = "SessionCommitReceiver";
+    // The content provider for the add to home screen setting. It should be of the format:
+    // <package name>.addtohomescreen
+    private static final String MARKER_PROVIDER_PREFIX = ".addtohomescreen";
 
     public static void queuePromiseAppIconAddition(Context context, SessionInfo sessionInfo) {
         String packageName = sessionInfo.getAppPackageName();
@@ -117,7 +82,7 @@ public class SessionCommitReceiver extends BroadcastReceiver {
     }
 
     private static void queueAppIconAddition(Context context, String packageName,
-            CharSequence label, Bitmap icon, UserHandle user) {
+                                             CharSequence label, Bitmap icon, UserHandle user) {
         Intent data = new Intent();
         data.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent().setComponent(
                 new ComponentName(packageName, "")).setPackage(packageName));
@@ -149,9 +114,30 @@ public class SessionCommitReceiver extends BroadcastReceiver {
         }
     }
 
-    private void updateValues(Intent intent) {
-        lastInfo = intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION);
-        lastUser = intent.getParcelableExtra(Intent.EXTRA_USER);
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (!isEnabled(context) || !Utilities.ATLEAST_OREO) {
+            // User has decided to not add icons on homescreen.
+            return;
+        }
+
+        SessionInfo info = intent.getParcelableExtra(PackageInstaller.EXTRA_SESSION);
+        UserHandle user = intent.getParcelableExtra(Intent.EXTRA_USER);
+        if (!PackageInstaller.ACTION_SESSION_COMMITTED.equals(intent.getAction())
+                || info == null || user == null) {
+            // Invalid intent.
+            return;
+        }
+
+        PackageInstallerCompat packageInstallerCompat = PackageInstallerCompat.getInstance(context);
+        if (TextUtils.isEmpty(info.getAppPackageName())
+                || info.getInstallReason() != PackageManager.INSTALL_REASON_USER
+                || packageInstallerCompat.promiseIconAddedForId(info.getSessionId())) {
+            packageInstallerCompat.removePromiseIconId(info.getSessionId());
+            return;
+        }
+
+        queueAppIconAddition(context, info.getAppPackageName(), user);
     }
 
     private static class PrefInitTask extends AsyncTask<Void, Void, Void> {
