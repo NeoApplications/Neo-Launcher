@@ -87,8 +87,11 @@ import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.OmegaPreferences;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -838,6 +841,72 @@ public final class Utilities {
     public static <T> T notNullOrDefault(T value, T defValue) {
         return (value == null) ? defValue : value;
     }
+
+    private static List<Runnable> onStart = new ArrayList<>();
+
+    /**
+     * Compresses the bitmap to a byte array for serialization.
+     */
+    public static byte[] flattenBitmap(Bitmap bitmap) {
+        // Try go guesstimate how much space the icon will take when serialized
+        // to avoid unnecessary allocations/copies during the write.
+        int size = bitmap.getWidth() * bitmap.getHeight() * 4;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(size);
+        try {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+            return out.toByteArray();
+        } catch (IOException e) {
+            Log.w(TAG, "Could not write bitmap");
+            return null;
+        }
+    }
+
+    /**
+     * ATTENTION: Only ever call this from within LawnchairLauncher.kt
+     */
+    public /* private */ static void onLauncherStart() {
+        Log.d(TAG, "onLauncherStart: " + onStart.size());
+        for (Runnable r : onStart)
+            r.run();
+        onStart.clear();
+    }
+
+    /**
+     * Cues a runnable to be executed after binding all launcher elements the next time
+     */
+    public static void cueAfterNextStart(Runnable runnable) {
+        Log.d(TAG, "cueAfterNextStart: " + runnable);
+        onStart.add(runnable);
+    }
+
+
+    public static void goToHome(Context context, Runnable onStart) {
+        cueAfterNextStart(onStart);
+        goToHome(context);
+    }
+
+    public static void goToHome(Context context) {
+        PackageManager pm = context.getPackageManager();
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        ComponentName componentName = intent.resolveActivity(pm);
+        if (!context.getPackageName().equals(componentName.getPackageName())) {
+            intent = pm.getLaunchIntentForPackage(context.getPackageName());
+        }
+        context.startActivity(intent);
+    }
+
+    public static int parseResourceIdentifier(Resources res, String identifier, String packageName) {
+        try {
+            return Integer.parseInt(identifier.substring(1));
+        } catch (NumberFormatException e) {
+            return res.getIdentifier(identifier.substring(1), null, packageName);
+        }
+    }
+
     /*FIN CUSTOM*/
 
     private static class FixedSizeEmptyDrawable extends ColorDrawable {

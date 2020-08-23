@@ -26,10 +26,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.android.launcher3.R
+import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
 import com.saggitt.omega.groups.FlowerpotTabs.FlowerpotTab
 import com.saggitt.omega.preferences.SelectableAppsActivity
-import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.tintDrawable
 

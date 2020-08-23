@@ -1324,6 +1324,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         updateTextViewFocus();
     }
 
+    public static String getDefaultFolderName() {
+        return sDefaultFolderName;
+    }
+
     public void onTitleChanged(CharSequence title) {
     }
 
@@ -1546,6 +1550,11 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         } else {
             super.draw(canvas);
         }
+    }
+
+    @Override
+    public void prepareAutoUpdate() {
+        close(false);
     }
 
     public boolean isInAppDrawer() {

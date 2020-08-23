@@ -22,8 +22,8 @@ import android.content.Context;
 import android.os.UserHandle;
 
 import com.android.launcher3.Utilities;
+import com.android.launcher3.util.ComponentKey;
 import com.saggitt.omega.OmegaAppFilter;
-import com.saggitt.omega.util.ComponentKey;
 
 import java.util.HashSet;
 import java.util.Set;

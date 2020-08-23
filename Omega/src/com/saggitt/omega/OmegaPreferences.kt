@@ -18,20 +18,27 @@
 package com.saggitt.omega
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
+import android.os.Process
+import android.text.TextUtils
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerTabs
+import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.dpToPx
 import com.saggitt.omega.util.pxToDp
+import com.saggitt.omega.util.runOnMainThread
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -51,8 +58,10 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val reloadApps = { reloadApps() }
     val reloadAll = { reloadAll() }
     val updateBlur = { updateBlur() }
+    private val reloadIcons = { reloadIcons() }
+    private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
     val recreate = { recreate() }
-    val omegaConfig = Config(context)
+    private val omegaConfig = Config(context)
 
     private val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
     val onChangeListeners: MutableMap<String, MutableSet<OnPreferenceChangeListener>> = HashMap()
@@ -112,6 +121,19 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)
 
+    private var iconPack by StringPref("pref_icon_pack", "", reloadIconPacks)
+    val iconPacks = object : MutableListPref<String>("pref_iconPacks", reloadIconPacks,
+            if (!TextUtils.isEmpty(iconPack)) listOf(iconPack) else omegaConfig.defaultIconPacks.asList()) {
+
+        override fun unflattenValue(value: String) = value
+    }
+    val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, reloadIcons)
+    val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, reloadIcons)
+    val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, reloadIcons)
+    val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
+    val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
+
+
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
     val folderBadgeCount by BooleanPref("pref_folder_badge_count", true, recreate)
@@ -143,6 +165,20 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     var restoreSuccess by BooleanPref("pref_restoreSuccess", false)
     var configVersion by IntPref("config_version", if (restoreSuccess) 0 else CURRENT_VERSION)
+
+    val customAppName = object : MutableMapPref<ComponentKey, String>("pref_appNameMap", reloadAll) {
+        override fun flattenKey(key: ComponentKey) = key.toString()
+        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun flattenValue(value: String) = value
+        override fun unflattenValue(value: String) = value
+    }
+
+    val customAppIcon = object : MutableMapPref<ComponentKey, IconPackManager.CustomIconEntry>("pref_appIconMap", reloadAll) {
+        override fun flattenKey(key: ComponentKey) = key.toString()
+        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun flattenValue(value: IconPackManager.CustomIconEntry) = value.toString()
+        override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(value)
+    }
 
     private fun migratePrefs(): SharedPreferences {
         val dir = mContext.cacheDir.parent
@@ -231,6 +267,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     private fun updateBlur() {
         onChangeCallback?.updateBlur()
+    }
+
+    fun reloadIcons() {
+        LauncherAppState.getInstance(context).reloadIconCache()
+        runOnMainThread {
+            onChangeCallback?.recreate()
+        }
     }
 
     fun updateSortApps() {

@@ -21,7 +21,7 @@ Version 2.0, January 2004<br/>
 ~° Copyright (c) Gregor Santner<br/>
 ~° ![https://github.com/gsantner/opoc/](https://github.com/gsantner/opoc/)<br/>
 
-`---------------`
+`---------------`<br/>
 <small>Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.</small>
+limitations under the License.</small><br/>
 `---------------`
 <br/>
 ## GPL v3
@@ -40,7 +40,7 @@ limitations under the License.</small>
 ~° Copyright (c) Till Kottmann<br/>
 ~° ![https://github.com/LawnchairLauncher/Lawnchair](https://github.com/LawnchairLauncher/Lawnchair)<br/>
 
-`---------------`
+`---------------`<br/>
 <small>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -57,14 +57,14 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</small>
+SOFTWARE.</small><br/>
 `---------------`
 <br/>
 ## BSD 2-Clause
 * **Protocol Buffer JavaNano API**
 ~° Copyright (c) Google<br/>
 ~° ![https://developers.google.com/protocol-buffers](https://developers.google.com/protocol-buffers)<br/>
-
+`---------------`<br/>
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
@@ -84,8 +84,9 @@ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-<br/>
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`
+---------------`<br/>
+
 ## SIL Open Font License, Version 1.1.
 * **"Kaushan Script" Font**
 opyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com),

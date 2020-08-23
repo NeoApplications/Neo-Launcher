@@ -18,8 +18,8 @@
 package com.saggitt.omega.groups
 
 import android.content.Context
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.ItemInfoMatcher
-import com.saggitt.omega.util.ComponentKey
 
 abstract class Filter<T>(val context: Context) {
 

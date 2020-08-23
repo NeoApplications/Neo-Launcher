@@ -49,6 +49,7 @@
     <dimen name="dashboard_padding_bottom">0dp</dimen>
 
     <dimen name="icon_preview_size">48dp</dimen>
+    <dimen name="icon_preview_padding">16dp</dimen>
 
     <!-- Hotseat -->
     <dimen name="v1_dynamic_grid_hotseat_top_padding">4dp</dimen>
@@ -73,6 +74,9 @@
     <dimen name="qsb_hint_text_size">13sp</dimen>
     <dimen name="qsb_two_bubble_gap">8dp</dimen>
     <dimen name="qsb_max_hint_length">130dp</dimen>
+
+    <dimen name="qsb_radius_square">8dp</dimen>
+    <dimen name="qsb_radius_squircle">16dp</dimen>
 
     <dimen name="select_dialog_padding_start_material">20dp</dimen>
     <dimen name="select_dialog_padding_material">24dp</dimen>

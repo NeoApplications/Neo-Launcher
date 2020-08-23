@@ -18,7 +18,18 @@
 package com.saggitt.omega.icons
 
 import android.content.Context
+import com.android.launcher3.FastBitmapDrawable
+import com.android.launcher3.ItemInfoWithIcon
+import com.android.launcher3.WorkspaceItemInfo
+import com.saggitt.omega.iconpack.IconPackManager
+import com.saggitt.omega.icons.clock.CustomClock
 
 class CustomDrawableFactory(context: Context) : DynamicDrawableFactory(context) {
+    private val iconPackManager = IconPackManager.getInstance(context)
+    val customClockDrawer by lazy { CustomClock(context) }
 
+    override fun newIcon(info: ItemInfoWithIcon): FastBitmapDrawable {
+        return iconPackManager.newIcon((info as? WorkspaceItemInfo)?.customIcon ?: info.iconBitmap,
+                info, this).also { it.setIsDisabled(info.isDisabled) }
+    }
 }

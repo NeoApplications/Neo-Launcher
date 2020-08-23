@@ -18,6 +18,7 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -40,14 +41,18 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
-import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
+import com.android.launcher3.LauncherModel
 import com.android.launcher3.Utilities
+import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.model.BgDataModel
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Themes
 import org.json.JSONArray
 import org.json.JSONObject
+import org.xmlpull.v1.XmlPullParser
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -123,11 +128,22 @@ fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
     }
 }
 
+fun ComponentKey.getLauncherActivityInfo(context: Context): LauncherActivityInfo? {
+    return LauncherAppsCompat.getInstance(context).getActivityList(componentName.packageName, user)
+            .firstOrNull { it.componentName == componentName }
+}
+
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }
 }
 
 val mainHandler by lazy { Handler(Looper.getMainLooper()) }
+
+val iconPackUiHandler by lazy { Handler(LauncherModel.getIconPackUiLooper()) }
+val uiWorkerHandler by lazy { Handler(MAIN_EXECUTOR.looper) }
+fun runOnUiWorkerThread(r: () -> Unit) {
+    runOnThread(uiWorkerHandler, r)
+}
 
 fun runOnMainThread(r: () -> Unit) {
     runOnThread(mainHandler, r)
@@ -271,6 +287,10 @@ val Context.locale: Locale
     }
 
 
+operator fun XmlPullParser.get(index: Int): String? = getAttributeValue(index)
+operator fun XmlPullParser.get(namespace: String?, key: String): String? = getAttributeValue(namespace, key)
+operator fun XmlPullParser.get(key: String): String? = this[null, key]
+
 fun AlertDialog.applyAccent() {
     val color = Utilities.getOmegaPrefs(context).accentColor
 
@@ -413,10 +433,48 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
     }
 }
 
-fun Context.getLauncherOrNull(): Launcher? {
-    return try {
-        Launcher.getLauncher(this)
-    } catch (e: ClassCastException) {
-        null
+val ViewGroup.childs get() = ViewGroupChildList(this)
+
+class ViewGroupChildList(private val viewGroup: ViewGroup) : List<View> {
+
+    override val size get() = viewGroup.childCount
+
+    override fun isEmpty() = size == 0
+
+    override fun contains(element: View): Boolean {
+        return any { it === element }
     }
+
+    override fun containsAll(elements: Collection<View>): Boolean {
+        return elements.all { contains(it) }
+    }
+
+    override fun get(index: Int) = viewGroup.getChildAt(index)!!
+
+    override fun indexOf(element: View) = indexOfFirst { it === element }
+
+    override fun lastIndexOf(element: View) = indexOfLast { it === element }
+
+    override fun iterator() = listIterator()
+
+    override fun listIterator() = listIterator(0)
+
+    override fun listIterator(index: Int) = ViewGroupChildIterator(viewGroup, index)
+
+    override fun subList(fromIndex: Int, toIndex: Int) = ArrayList(this).subList(fromIndex, toIndex)
+}
+
+class ViewGroupChildIterator(private val viewGroup: ViewGroup, private var current: Int) : ListIterator<View> {
+
+    override fun hasNext() = current < viewGroup.childCount
+
+    override fun next() = viewGroup.getChildAt(current++)!!
+
+    override fun nextIndex() = current
+
+    override fun hasPrevious() = current > 0
+
+    override fun previous() = viewGroup.getChildAt(current--)!!
+
+    override fun previousIndex() = current - 1
 }

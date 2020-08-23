@@ -37,15 +37,12 @@ abstract class GestureHandler(val context: Context, val config: JSONObject?) {
     abstract fun onGestureTrigger(controller: GestureController, view: View? = null)
 
     protected open fun saveConfig(config: JSONObject) {
-
     }
 
     open fun onConfigResult(data: Intent?) {
-
     }
 
     open fun onDestroy() {
-
     }
 
     open fun isAvailableForSwipeUp(isSwipeUp: Boolean) = isAvailable
@@ -63,18 +60,13 @@ abstract class GestureHandler(val context: Context, val config: JSONObject?) {
 }
 
 class BlankGestureHandler(context: Context, config: JSONObject?) : GestureHandler(context, config) {
-
     override val displayName: String = context.getString(R.string.action_none)
-
     override fun onGestureTrigger(controller: GestureController, view: View?) {
     }
 }
 
-class RunnableGestureHandler(context: Context,
-                             private val onTrigger: Runnable) : GestureHandler(context, null) {
-
+class RunnableGestureHandler(context: Context, private val onTrigger: Runnable) : GestureHandler(context, null) {
     override val displayName: String = context.getString(R.string.action_none)
-
     override fun onGestureTrigger(controller: GestureController, view: View?) {
         onTrigger.run()
     }

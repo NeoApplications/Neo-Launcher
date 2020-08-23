@@ -22,7 +22,7 @@ import android.content.res.ColorStateList
 import android.view.View
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Utilities
-import com.saggitt.omega.util.ComponentKey
+import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.util.comparing
 import com.saggitt.omega.util.then
 import kotlin.reflect.KMutableProperty0

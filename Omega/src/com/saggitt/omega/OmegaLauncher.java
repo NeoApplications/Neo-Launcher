@@ -18,20 +18,37 @@
 package com.saggitt.omega;
 
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import com.android.launcher3.AppInfo;
+import com.android.launcher3.FolderInfo;
+import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.WorkspaceItemInfo;
+import com.android.launcher3.util.ComponentKey;
 import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.iconpack.EditIconActivity;
+import com.saggitt.omega.iconpack.IconPackManager;
+import com.saggitt.omega.override.CustomInfoProvider;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
@@ -44,6 +61,9 @@ public class OmegaLauncher extends Launcher {
     private OmegaLauncherCallbacks launcherCallbacks;
     private GestureController mGestureController;
     public static boolean showFolderNotificationCount;
+    public static Drawable currentEditIcon = null;
+    public static ItemInfo currentEditInfo = null;
+    public final int CODE_EDIT_ICON = 100;
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -100,6 +120,52 @@ public class OmegaLauncher extends Launcher {
         if (sRestart) {
             sRestart = false;
             OmegaPreferences.Companion.destroyInstance();
+        }
+    }
+
+    public void startEditIcon(ItemInfo itemInfo, CustomInfoProvider<ItemInfo> infoProvider) {
+        ComponentKey component;
+
+        currentEditInfo = itemInfo;
+
+        if (itemInfo instanceof AppInfo) {
+            component = ((AppInfo) itemInfo).toComponentKey();
+            currentEditIcon = Objects.requireNonNull(IconPackManager.Companion.getInstance(this).getEntryForComponent(component)).getDrawable();
+        } else if (itemInfo instanceof WorkspaceItemInfo) {
+            component = new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user);
+            currentEditIcon = new BitmapDrawable(mContext.getResources(), ((WorkspaceItemInfo) itemInfo).iconBitmap);
+        } else if (itemInfo instanceof FolderInfo) {
+            component = ((FolderInfo) itemInfo).toComponentKey();
+            currentEditIcon = ((FolderInfo) itemInfo).getDefaultIcon(this);
+        } else {
+            component = null;
+            currentEditIcon = null;
+        }
+
+        boolean folderInfo = itemInfo instanceof FolderInfo;
+        int flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK;
+        Intent intent = EditIconActivity.Companion.newIntent(this, infoProvider.getTitle(itemInfo), folderInfo, component);
+
+        BlankActivity.Companion
+                .startActivityForResult(this, intent, CODE_EDIT_ICON, flags, (resultCode, data) -> {
+                    handleEditIconResult(resultCode, data);
+                    return null;
+                });
+
+    }
+
+    private void handleEditIconResult(int resultCode, @NotNull Bundle data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (currentEditInfo == null) {
+                return;
+            }
+            ItemInfo itemInfo = currentEditInfo;
+
+            String entryString = Objects.requireNonNull(data).getString(EditIconActivity.EXTRA_ENTRY);
+
+            IconPackManager.CustomIconEntry customIconEntry = IconPackManager.CustomIconEntry.Companion.fromString(entryString);
+            Log.d(TAG, "Entry Icon:  Item: " + itemInfo + " Entry: " + customIconEntry);
+            (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
         }
     }
 

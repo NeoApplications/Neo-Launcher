@@ -55,6 +55,12 @@ public class DrawableFactory implements ResourceBasedOverride {
     /**
      * Returns a FastBitmapDrawable with the icon.
      */
+    public FastBitmapDrawable newIcon(ItemInfoWithIcon info) {
+        FastBitmapDrawable drawable = new FastBitmapDrawable(info);
+        drawable.setIsDisabled(info.isDisabled());
+        return drawable;
+    }
+
     public FastBitmapDrawable newIcon(Context context, ItemInfoWithIcon info) {
         FastBitmapDrawable drawable = info.usingLowResIcon()
                 ? new PlaceHolderIconDrawable(info, getShapePath(), context)

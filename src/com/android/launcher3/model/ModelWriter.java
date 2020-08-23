@@ -16,12 +16,11 @@
 
 package com.android.launcher3.model;
 
-import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
-
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -44,6 +43,7 @@ import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ItemInfoMatcher;
+import com.saggitt.omega.iconpack.IconPackManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +52,9 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
 /**
  * Class for handling model updates.
@@ -205,6 +208,29 @@ public class ModelWriter {
                         .put(Favorites.SPANX, item.spanX)
                         .put(Favorites.SPANY, item.spanY)
                         .put(Favorites.SCREEN, item.screenId)));
+    }
+
+    public static void modifyItemInDatabase(Context context, final ItemInfo item, String alias,
+                                            String swipeUpAction, boolean badgeVisible,
+                                            IconPackManager.CustomIconEntry iconEntry, Bitmap icon,
+                                            boolean updateIcon, boolean reload) {
+        final ContentWriter writer = new ContentWriter(context);
+        writer.put(Favorites.TITLE_ALIAS, alias);
+        writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
+        writer.put(Favorites.BADGE_VISIBLE, badgeVisible ? 1 : 0);
+        if (updateIcon) {
+            writer.put(Favorites.CUSTOM_ICON, icon != null ? Utilities.flattenBitmap(icon) : null);
+            writer.put(Favorites.CUSTOM_ICON_ENTRY, iconEntry != null ? iconEntry.toString() : null);
+        }
+
+        if (reload) {
+            LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, writer);
+            LauncherAppState.getInstance(context).getModel().forceReload();
+        }
+    }
+
+    private void executeUpdateItem(ItemInfo item, ContentWriter writer) {
+        MAIN_EXECUTOR.execute(new UpdateItemRunnable(item, () -> writer));
     }
 
     /**

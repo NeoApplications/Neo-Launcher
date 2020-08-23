@@ -20,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -110,6 +112,19 @@ public class LauncherModel extends BroadcastReceiver
      * on this object when accessing any data from this model.
      */
     static final BgDataModel sBgDataModel = new BgDataModel();
+
+    static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
+
+    static {
+        sIconPackUiThread.start();
+    }
+
+    /**
+     * @return the looper for the icon pack ui thread which can be used to load icon pickers.
+     */
+    public static Looper getIconPackUiLooper() {
+        return sIconPackUiThread.getLooper();
+    }
 
     // Runnable to check if the shortcuts permission has changed.
     private final Runnable mShortcutPermissionCheckRunnable = new Runnable() {
@@ -207,7 +222,7 @@ public class LauncherModel extends BroadcastReceiver
 
     public void onPackagesRemoved(UserHandle user, String... packages) {
         int op = PackageUpdatedTask.OP_REMOVE;
-        FileLog.d(TAG, "package removed received " + String.join("," + packages));
+        FileLog.d(TAG, "package removed received " + packages);
         enqueueModelUpdateTask(new PackageUpdatedTask(op, user, packages));
     }
 
@@ -299,6 +314,13 @@ public class LauncherModel extends BroadcastReceiver
         }
     }
 
+    public void forceReloadOnNextLaunch() {
+        synchronized (this.mLock) {
+            stopLoader();
+            mModelLoaded = false;
+        }
+    }
+
     public void forceReload() {
         forceReload(-1);
     }
@@ -306,6 +328,7 @@ public class LauncherModel extends BroadcastReceiver
     /**
      * Reloads the workspace items from the DB and re-binds the workspace. This should generally
      * not be called as DB updates are automatically followed by UI update
+     *
      * @param synchronousBindPage The page to bind first. Can pass -1 to use the current page.
      */
     public void forceReload(int synchronousBindPage) {

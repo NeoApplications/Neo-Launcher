@@ -644,6 +644,10 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         mCurrentPreviewItems.addAll(getPreviewItemsOnPage(0));
     }
 
+    @Override
+    public void prepareAutoUpdate() {
+    }
+
     /**
      * Updates the preview items which match the provided condition
      */

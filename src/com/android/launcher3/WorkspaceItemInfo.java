@@ -16,22 +16,24 @@
 
 package com.android.launcher3;
 
-import android.app.Person;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.icons.IconCache;
+import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.shortcuts.ShortcutKey;
-import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.util.ContentWriter;
+import com.saggitt.omega.iconpack.IconPackManager;
 
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a launchable icon on the workspaces and in folders.
@@ -94,12 +96,18 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
      * A set of person's Id associated with the WorkspaceItemInfo, this is only used if the item
      * represents a deep shortcut.
      */
-    @NonNull private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
+    @NonNull
+    private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
 
+    public String swipeUpAction;
+    public CharSequence customTitle;
+    public Bitmap customIcon;
+    public IconPackManager.CustomIconEntry customIconEntry;
     /**
      * The installation progress [0-100] of the package that this shortcut represents.
      */
     private int mInstallProgress;
+    private boolean badgeVisible = true;
 
 
     public WorkspaceItemInfo() {
@@ -213,7 +221,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     public ComponentName getTargetComponent() {
         ComponentName cn = super.getTargetComponent();
         if (cn == null && (itemType == Favorites.ITEM_TYPE_SHORTCUT
-                || hasStatusFlag(FLAG_SUPPORTS_WEB_UI|FLAG_AUTOINSTALL_ICON|FLAG_RESTORED_ICON))) {
+                || hasStatusFlag(FLAG_SUPPORTS_WEB_UI | FLAG_AUTOINSTALL_ICON | FLAG_RESTORED_ICON))) {
             // Legacy shortcuts and promise icons with web UI may not have a componentName but just
             // a packageName. In that case create a dummy componentName instead of adding additional
             // check everywhere.
@@ -221,6 +229,49 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
             return pkg == null ? null : new ComponentName(pkg, IconCache.EMPTY_CLASS_NAME);
         }
         return cn;
+    }
+
+    private void updateDatabase(Context context, boolean updateIcon, boolean reload) {
+        if (updateIcon)
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
+                    , badgeVisible, customIconEntry, customIcon, true, reload);
+        else
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
+                    , badgeVisible, null, null, false, reload);
+    }
+
+    public void onLoadCustomizations(String titleAlias, String swipeUpAction, boolean badgeVisible,
+                                     IconPackManager.CustomIconEntry customEntry, Bitmap icon) {
+        customTitle = titleAlias;
+        customIconEntry = customEntry;
+        this.customIcon = icon;
+        this.swipeUpAction = swipeUpAction;
+        this.badgeVisible = badgeVisible;
+    }
+
+    public void setTitle(@NotNull Context context, @Nullable String title) {
+        customTitle = title;
+        updateDatabase(context, false, true);
+    }
+
+    public void setIconEntry(@NotNull Context context, @Nullable IconPackManager.CustomIconEntry iconEntry) {
+        customIconEntry = iconEntry;
+        updateDatabase(context, true, false);
+    }
+
+    public void setIcon(@NotNull Context context, @Nullable Bitmap icon) {
+        customIcon = icon;
+        updateDatabase(context, true, true);
+    }
+
+    public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
+        swipeUpAction = action;
+        updateDatabase(context, false, true);
+    }
+
+    public void setBadgeVisible(@NonNull Context context, @NonNull Boolean visible) {
+        badgeVisible = visible;
+        updateDatabase(context, false, true);
     }
 
     @Override

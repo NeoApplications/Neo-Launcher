@@ -15,7 +15,7 @@
  *
  */
 
-package com.saggitt.omega.util;
+package com.android.launcher3.util;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,7 +24,6 @@ import android.os.UserHandle;
 
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.UserManagerCompat;
-import com.android.launcher3.util.Preconditions;
 
 import org.jetbrains.annotations.NotNull;
 

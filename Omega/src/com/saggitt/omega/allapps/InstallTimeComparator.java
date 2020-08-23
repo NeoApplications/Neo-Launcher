@@ -35,13 +35,7 @@ public class InstallTimeComparator implements Comparator<AppInfo> {
         try {
             long app1InstallTime = mPackageManager.getPackageInfo(app1.componentName.getPackageName(), 0).firstInstallTime;
             long app2InstallTime = mPackageManager.getPackageInfo(app2.componentName.getPackageName(), 0).firstInstallTime;
-            if (app1InstallTime < app2InstallTime) {
-                return 1;
-            } else if (app2InstallTime < app1InstallTime) {
-                return -1;
-            } else {
-                return 0;
-            }
+            return Long.compare(app2InstallTime, app1InstallTime);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             return 0;

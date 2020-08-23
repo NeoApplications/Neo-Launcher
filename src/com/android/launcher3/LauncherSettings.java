@@ -26,22 +26,23 @@ import android.provider.BaseColumns;
  * Settings related utilities.
  */
 public class LauncherSettings {
-
     /**
-     * Favorites.
+     * Columns required on table staht will be subject to backup and restore.
      */
-    public static final class Favorites implements BaseColumns {
+    interface ChangeLogColumns extends BaseColumns {
         /**
          * The time of the last update to this row.
          * <P>Type: INTEGER</P>
          */
-        public static final String MODIFIED = "modified";
+        String MODIFIED = "modified";
+    }
 
+    public interface BaseLauncherColumns extends ChangeLogColumns {
         /**
          * Descriptive name of the gesture that can be displayed to the user.
          * <P>Type: TEXT</P>
          */
-        public static final String TITLE = "title";
+        String TITLE = "title";
 
         /**
          * The Intent URL of the gesture, describing what it points to. This
@@ -49,46 +50,62 @@ public class LauncherSettings {
          * an Intent that can be launched.
          * <P>Type: TEXT</P>
          */
-        public static final String INTENT = "intent";
+        String INTENT = "intent";
 
         /**
          * The type of the gesture
          *
          * <P>Type: INTEGER</P>
          */
-        public static final String ITEM_TYPE = "itemType";
+        String ITEM_TYPE = "itemType";
 
-        /**
-         * The gesture is a package
-         */
-        public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
         /**
          * The gesture is an application
          */
-        public static final int ITEM_TYPE_APPLICATION = 0;
+        int ITEM_TYPE_APPLICATION = 0;
 
         /**
          * The gesture is an application created shortcut
          */
-        public static final int ITEM_TYPE_SHORTCUT = 1;
+        int ITEM_TYPE_SHORTCUT = 1;
 
         /**
          * The icon package name in Intent.ShortcutIconResource
          * <P>Type: TEXT</P>
          */
-        public static final String ICON_PACKAGE = "iconPackage";
+        String ICON_PACKAGE = "iconPackage";
 
         /**
          * The icon resource name in Intent.ShortcutIconResource
          * <P>Type: TEXT</P>
          */
-        public static final String ICON_RESOURCE = "iconResource";
+        String ICON_RESOURCE = "iconResource";
 
         /**
          * The custom icon bitmap.
          * <P>Type: BLOB</P>
          */
-        public static final String ICON = "icon";
+        String ICON = "icon";
+
+        String CUSTOM_ICON = "customIcon";
+
+        String CUSTOM_ICON_ENTRY = "customIconEntry";
+    }
+
+    /**
+     * Favorites.
+     */
+    public static final class Favorites implements BaseLauncherColumns {
+        /**
+         * The time of the last update to this row.
+         * <P>Type: INTEGER</P>
+         */
+        public static final String MODIFIED = "modified";
+
+        /**
+         * The gesture is a package
+         */
+        public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
 
         public static final String TABLE_NAME = "favorites";
 
@@ -239,14 +256,20 @@ public class LauncherSettings {
          * Stores general flag based options for {@link ItemInfo}s.
          * <p>Type: INTEGER</p>
          */
+
         public static final String OPTIONS = "options";
+        public static final String TITLE_ALIAS = "titleAlias";
+
+        public static final String SWIPE_UP_ACTION = "swipeUpAction";
+
+        public static final String BADGE_VISIBLE = "badgeVisible";
 
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional) {
             addTableToDb(db, myProfileId, optional, TABLE_NAME);
         }
 
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional,
-                String tableName) {
+                                        String tableName) {
             String ifNotExists = optional ? " IF NOT EXISTS " : "";
             db.execSQL("CREATE TABLE " + ifNotExists + tableName + " (" +
                     "_id INTEGER PRIMARY KEY," +

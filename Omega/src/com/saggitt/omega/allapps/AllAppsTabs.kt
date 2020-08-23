@@ -21,10 +21,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Process
 import com.android.launcher3.ItemInfo
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.ItemInfoMatcher
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.groups.FlowerpotTabs
-import com.saggitt.omega.util.ComponentKey
 import com.saggitt.omega.util.omegaPrefs
 
 class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {

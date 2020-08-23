@@ -52,6 +52,11 @@ public class Config {
         return mContext.getResources().getString(R.string.config_default_search_provider);
     }
 
+    public String[] getDefaultIconPacks() {
+
+        return mContext.getResources().getStringArray(R.array.config_default_icon_packs);
+    }
+
     public float getDefaultBlurStrength() {
         TypedValue typedValue = new TypedValue();
         mContext.getResources().getValue(R.dimen.config_default_blur_strength, typedValue, true);
