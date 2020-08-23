@@ -2,23 +2,23 @@
 Version 2.0, January 2004<br/>
 
 * **Android AOSP**
-~° Copyright (c) The Android Open Source Project
+~° Copyright (c) The Android Open Source Project<br/>
 ~° ![https://android.googlesource.com/platform/packages/apps/Launcher3](https://android.googlesource.com/platform/packages/apps/Launcher3)<br/>
 
 * **Android Support Library**
-~° Copyright (c) The Android Open Source Project
+~° Copyright (c) The Android Open Source Project<br/>
 ~° ![https://developer.android.com/topic/libraries/support-library](https://developer.android.com/topic/libraries/support-library)<br/>
 
 * **CustomActivityOnCrash**
-~° Copyright (c) Eduard Ereza Martínez
+~° Copyright (c) Eduard Ereza Martínez<br/>
 ~° ![https://github.com/Ereza/CustomActivityOnCrash](https://github.com/Ereza/CustomActivityOnCrash)<br/>
 
 * **jaredrummler colorpicker**
-~° Copyright (c) jaredrummler
+~° Copyright (c) jaredrummler<br/>
 ~° ![https://github.com/jaredrummler/ColorPicker](https://github.com/jaredrummler/ColorPicker)<br/>
 
 * **Simple Markdown Parser**
-~° Copyright (c) Gregor Santner
+~° Copyright (c) Gregor Santner<br/>
 ~° ![https://github.com/gsantner/opoc/](https://github.com/gsantner/opoc/)<br/>
 
 `---------------`
@@ -37,7 +37,7 @@ limitations under the License.</small>
 <br/>
 ## GPL v3
 * **Lawnchair Launcher**
-~° Copyright (c) Till Kottmann
+~° Copyright (c) Till Kottmann<br/>
 ~° ![https://github.com/LawnchairLauncher/Lawnchair](https://github.com/LawnchairLauncher/Lawnchair)<br/>
 
 `---------------`
@@ -62,7 +62,7 @@ SOFTWARE.</small>
 <br/>
 ## BSD 2-Clause
 * **Protocol Buffer JavaNano API**
-~° Copyright (c) Google
+~° Copyright (c) Google<br/>
 ~° ![https://developers.google.com/protocol-buffers](https://developers.google.com/protocol-buffers)<br/>
 
 Redistribution and use in source and binary forms, with or without
