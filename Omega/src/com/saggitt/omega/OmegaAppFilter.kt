@@ -27,7 +27,7 @@ open class OmegaAppFilter(context: Context) : AppFilter() {
     private val mHideList = HashSet<ComponentName>()
 
     init {
-        mHideList.add(ComponentName(context, "com.saggitt.omega/.OmegaLauncher"))
+        mHideList.add(ComponentName(context, OmegaLauncher::class.java.name))
 
         //Voice Search
         mHideList.add(ComponentName(context, "com.google.android.googlequicksearchbox/.VoiceSearchActivity"))
@@ -43,6 +43,6 @@ open class OmegaAppFilter(context: Context) : AppFilter() {
     }
 
     override fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
-        return !mHideList.contains(componentName)
+        return !mHideList.contains(componentName) && super.shouldShowApp(componentName, user)
     }
 }

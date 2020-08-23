@@ -152,7 +152,6 @@ open class AppsAdapter(
 
         fun bind(position: Int) {
             val app = apps[position]
-
             label.text = app.info.label
             icon.setImageDrawable(app.iconDrawable)
 

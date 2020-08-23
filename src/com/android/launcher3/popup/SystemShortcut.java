@@ -126,6 +126,18 @@ public abstract class SystemShortcut<T extends BaseDraggingActivity>
 
     public abstract View.OnClickListener getOnClickListener(T activity, ItemInfo itemInfo);
 
+    public static class Custom extends SystemShortcut<Launcher> {
+
+        public Custom() {
+            super(R.drawable.ic_edit_no_shadow, R.string.action_preferences);
+        }
+
+        @Override
+        public View.OnClickListener getOnClickListener(Launcher launcher, ItemInfo itemInfo) {
+            return null;
+        }
+    }
+
     public static class Widgets extends SystemShortcut<Launcher> {
 
         public Widgets() {
@@ -134,7 +146,7 @@ public abstract class SystemShortcut<T extends BaseDraggingActivity>
 
         @Override
         public View.OnClickListener getOnClickListener(final Launcher launcher,
-                final ItemInfo itemInfo) {
+                                                       final ItemInfo itemInfo) {
             if (itemInfo.getTargetComponent() == null) return null;
             final List<WidgetItem> widgets =
                     launcher.getPopupDataProvider().getWidgetsForPackageUser(new PackageUserKey(

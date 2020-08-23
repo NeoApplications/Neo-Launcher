@@ -63,6 +63,7 @@
     <string name="title__drawer_hide_icon_labels">Hide app names</string>
     <string name="title__drawer_hide_apps">Hidden App Shortcuts</string>
     <string name="title__drawer_categorization">Categories</string>
+    <string name="title__drawer_icon_popup_menu">Shortcut Bubble</string>
     <string name="title__sort_mode">App Sort</string>
     <string name="title__sort_alphabetical_az">Alphabetical AZ</string>
     <string name="title__sort_alphabetical_za">Alphabetical ZA</string>
@@ -98,6 +99,8 @@
 
     <string name="hide_app_selected">&#160; hidden</string>
     <string name="hide_app_reset">Reset</string>
+    <string name="action_preferences">@string/customize</string>
+
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d App</item>
         <item quantity="other">%1$d Apps</item>
@@ -131,6 +134,9 @@
     <string name="theme_dark_theme_mode_follow_daylight">Follow daylight</string>
     <string name="theme_use_black">Use pure black</string>
     <string name="theme_use_dark_text">Use dark text</string>
+
+    <string name="icon_pack">Icon pack</string>
+    <string name="get_more_icon_packs">Get more</string>
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>

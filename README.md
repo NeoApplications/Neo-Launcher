@@ -11,10 +11,14 @@ Free and Open Source Launcher. <br/>
 ## Features
 -   Sort apps in the drawer by Alphabetical asc, Alphabetical desc, Install date, and Most used.
 -   add Google feed.
+-   Themes Support.
+-   Custom Search engine.
+-   Support Gestures.
+-   Notifications configuration.
 
 ## Donations
 Want to buy me a coffee? 
-**[Paypal](https://paypal.me/saulhenriquez)**
+**[Paypal](https://paypal.me/saulhenriquez)**   
 **[Liberapay](https://liberapay.com/otakuhqz/donate)**
 
 
