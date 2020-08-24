@@ -21,7 +21,6 @@ package com.saggitt.omega.adaptive
 
 import android.graphics.Path
 import android.graphics.PointF
-import android.util.Log
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
@@ -152,19 +151,14 @@ open class IconShape(val topLeft: Corner,
     override fun toString(): String {
         return "v1|$topLeft|$topRight|$bottomLeft|$bottomRight"
     }
-
     data class Corner(val shape: IconCornerShape, val scale: PointF) {
-
         constructor(shape: IconCornerShape, scale: Float) : this(shape, PointF(scale, scale))
-
         override fun toString(): String {
             return "$shape,${scale.x},${scale.y}"
         }
 
         companion object {
-
             val fullArc = Corner(IconCornerShape.arc, 1f)
-
             fun fromString(value: String): Corner {
                 val parts = value.split(",")
                 val scaleX = parts[1].toFloat()
@@ -181,6 +175,10 @@ open class IconShape(val topLeft: Corner,
             IconCornerShape.arc,
             IconCornerShape.arc,
             1f, 1f, 1f, 1f) {
+
+        override fun addShape(path: Path, x: Float, y: Float, radius: Float) {
+            path.addCircle(x + radius, y + radius, radius, Path.Direction.CW)
+        }
 
         override fun toString(): String {
             return "circle"
@@ -231,6 +229,7 @@ open class IconShape(val topLeft: Corner,
             IconCornerShape.arc,
             IconCornerShape.arc,
             1f, 1f, 1f, .3f) {
+
         override fun toString(): String {
             return "teardrop"
         }
@@ -251,6 +250,7 @@ open class IconShape(val topLeft: Corner,
     }
 
     companion object {
+
         fun fromString(value: String): IconShape? {
             return when (value) {
                 "circle" -> Circle
@@ -263,7 +263,6 @@ open class IconShape(val topLeft: Corner,
                 else -> try {
                     parseCustomShape(value)
                 } catch (ex: Exception) {
-                    Log.e("IconShape", "Error creating shape " + ex)
                     null
                 }
             }

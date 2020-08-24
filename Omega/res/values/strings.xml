@@ -125,6 +125,7 @@
     <string name="icon_shape_corner_round">Round</string>
     <string name="icon_shape_corner_squircle">Squircle</string>
     <string name="icon_shape_corner_cut">Cut</string>
+    <string name="title__theme_icon_shape">Change icon shape</string>
     <string name="color_presets">Presets</string>
 
     <string name="icon_pack_applied_toast">%s applied</string>

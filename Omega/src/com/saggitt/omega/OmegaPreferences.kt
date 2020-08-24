@@ -92,7 +92,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val drawerTabs get() = appGroupsManager.drawerTabs
     val appGroupsManager by lazy { AppGroupsManager(this) }
     val separateWorkApps by BooleanPref("pref_separateWorkApps", true, recreate)
-    val saveScrollPosition by BooleanPref("pref_keepScrollState", false, doNothing)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -180,6 +179,21 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(value)
     }
 
+    init {
+        migrateConfig()
+    }
+
+    private fun migrateConfig() {
+        if (configVersion != CURRENT_VERSION) {
+            blockingEdit {
+                bulkEdit {
+                    // Migration codes here
+                    configVersion = CURRENT_VERSION
+                }
+            }
+        }
+    }
+
     private fun migratePrefs(): SharedPreferences {
         val dir = mContext.cacheDir.parent
         val oldFile = File(dir, "shared_prefs/" + LauncherFiles.OLD_SHARED_PREFERENCES_KEY + ".xml")
@@ -215,6 +229,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         // Set flags
         putBoolean("pref_legacyUpgrade", true)
         putBoolean("pref_restoreSuccess", false)
+
+        putString("pref_iconShape", "")
 
         // misc
         putBoolean("pref_add_icon_to_home", prefs.getBoolean("pref_autoAddShortcuts", true))

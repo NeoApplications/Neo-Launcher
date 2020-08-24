@@ -71,6 +71,7 @@ import com.android.launcher3.settings.PreferenceHighlighter;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
+import com.saggitt.omega.adaptive.IconShapePreference;
 import com.saggitt.omega.gestures.ui.GesturePreference;
 import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
@@ -873,6 +874,8 @@ public class SettingsActivity extends SettingsBaseActivity
             } else if (preference instanceof GesturePreference) {
                 f = SelectGestureHandlerFragment.Companion
                         .newInstance((GesturePreference) preference);
+            } else if (preference instanceof IconShapePreference) {
+                f = ((IconShapePreference) preference).createDialogFragment();
             } else if (preference instanceof PreferenceDialogPreference) {
                 f = PreferenceScreenDialogFragment.Companion
                         .newInstance((PreferenceDialogPreference) preference);

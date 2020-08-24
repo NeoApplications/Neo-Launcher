@@ -30,7 +30,7 @@ import android.text.TextUtils
 import androidx.core.graphics.PathParser
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.Executors.MODEL_EXECUTOR
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.iconpack.AdaptiveIconCompat
 import com.saggitt.omega.icons.IconShapeOverride
 import com.saggitt.omega.util.OmegaSingletonHolder
@@ -45,7 +45,7 @@ class IconShapeManager(private val context: Context) {
             "pref_iconShape", systemIconShape, ::onShapeChanged,
             {
                 IconShape.fromString(it) ?: systemIconShape
-            }, IconShape::toString) { /* no dispose */ }
+            }, IconShape::toString) {}
 
     init {
         migratePref()
@@ -111,7 +111,7 @@ class IconShapeManager(private val context: Context) {
     }
 
     private fun onShapeChanged() {
-        MODEL_EXECUTOR.handler.post {
+        MAIN_EXECUTOR.handler.post {
             LauncherAppState.getInstance(context).reloadIconCache()
 
             runOnMainThread {

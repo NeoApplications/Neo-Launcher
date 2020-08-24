@@ -167,7 +167,6 @@ class IconShapePreference(context: Context, attrs: AttributeSet?) :
         }
 
         companion object {
-
             fun newInstance(key: String) = CustomizeDialogFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(ARG_KEY, key)
