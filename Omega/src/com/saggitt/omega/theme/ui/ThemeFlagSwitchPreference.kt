@@ -19,10 +19,14 @@ package com.saggitt.omega.theme.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
+import android.widget.Switch
 import androidx.annotation.Keep
+import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreference
 import com.android.launcher3.R
 import com.saggitt.omega.OmegaPreferences
+import com.saggitt.omega.util.applyColor
 import com.saggitt.omega.util.hasFlag
 import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.setFlag
@@ -33,6 +37,7 @@ open class ThemeFlagSwitchPreference(context: Context, attrs: AttributeSet) : Sw
 
     protected val prefs = context.omegaPrefs
     private var switchFlag = 0
+    private var checkableView: View? = null
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ThemeFlagSwitchPreference)
@@ -40,15 +45,19 @@ open class ThemeFlagSwitchPreference(context: Context, attrs: AttributeSet) : Sw
         a.recycle()
     }
 
+    override fun onBindViewHolder(holder: PreferenceViewHolder?) {
+        super.onBindViewHolder(holder)
+        checkableView = holder?.findViewById(android.R.id.switch_widget)
+        (checkableView as Switch).applyColor(prefs.accentColor)
+    }
+
     override fun onAttached() {
         super.onAttached()
-
         prefs.addOnPreferenceChangeListener("pref_launcherTheme", this)
     }
 
     override fun onDetached() {
         super.onDetached()
-
         prefs.removeOnPreferenceChangeListener("pref_launcherTheme", this)
     }
 
