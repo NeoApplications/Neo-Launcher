@@ -1433,7 +1433,10 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             // IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS.
             return null;
         }
-        return super.createAccessibilityNodeInfo();
+        if (Utilities.ATLEAST_Q)
+            return super.createAccessibilityNodeInfo();
+        else
+            return null;
     }
 
     private void updateAccessibilityFlags(int accessibilityFlag, CellLayout page) {
