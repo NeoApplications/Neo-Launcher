@@ -172,6 +172,7 @@
 
     <string name="icon_pack">Icon pack</string>
     <string name="get_more_icon_packs">Get more</string>
+    <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>

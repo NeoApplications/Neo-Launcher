@@ -137,8 +137,7 @@ public class DynamicClock extends BroadcastReceiver {
 
     private void updateMainThread() {
         MAIN_EXECUTOR.execute(() -> updateWrapper(getClockLayers(mContext,
-                LauncherAppState.getIDP(mContext).fillResIconDpi,
-                true)));
+                LauncherAppState.getIDP(mContext).fillResIconDpi, true)));
     }
 
     private void updateWrapper(ClockLayers wrapper) {

@@ -19,7 +19,6 @@ package com.saggitt.omega.icons
 
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
-import android.content.pm.ShortcutInfo
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -27,6 +26,7 @@ import androidx.annotation.RequiresApi
 import com.android.launcher3.ItemInfo
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.shortcuts.ShortcutInfoCompat
 import com.saggitt.omega.iconpack.AdaptiveIconCompat
 import com.saggitt.omega.iconpack.IconPackManager
 
@@ -39,16 +39,12 @@ class CustomIconProvider(context: Context) : DynamicIconProvider(context) {
     }
 
     fun getIcon(launcherActivityInfo: LauncherActivityInfo, itemInfo: ItemInfo, iconDpi: Int, flattenDrawable: Boolean): Drawable {
-        return iconPackManager.getIcon(launcherActivityInfo, iconDpi, flattenDrawable, itemInfo, this)//.assertNotAdaptiveIconDrawable(launcherActivityInfo)
+        return iconPackManager.getIcon(launcherActivityInfo, iconDpi, flattenDrawable, itemInfo, this).assertNotAdaptiveIconDrawable(launcherActivityInfo)
     }
 
-    fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int, flattenDrawable: Boolean): Drawable? {
+    fun getIcon(shortcutInfo: ShortcutInfoCompat, iconDpi: Int): Drawable? {
         return iconPackManager.getIcon(shortcutInfo, iconDpi).assertNotAdaptiveIconDrawable(shortcutInfo)
     }
-
-    /*fun getIcon(shortcutInfo: ShortcutInfoCompat, iconDpi: Int): Drawable? {
-        return iconPackManager.getIcon(shortcutInfo, iconDpi).assertNotAdaptiveIconDrawable(shortcutInfo)
-    }*/
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getDynamicIcon(launcherActivityInfo: LauncherActivityInfo?, iconDpi: Int, flattenDrawable: Boolean): Drawable {

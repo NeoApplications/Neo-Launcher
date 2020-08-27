@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
@@ -31,10 +30,10 @@ import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
 public class BaseIconFactory implements AutoCloseable {
 
     private static final String TAG = "BaseIconFactory";
+
     private static final int DEFAULT_WRAPPER_BACKGROUND = Color.WHITE;
     static final boolean ATLEAST_OREO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     static final boolean ATLEAST_P = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
-    static final boolean ATLEAST_Q = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
     private static final float ICON_BADGE_SCALE = 0.444f;
 
@@ -70,7 +69,7 @@ public class BaseIconFactory implements AutoCloseable {
         clear();
     }
 
-    protected BaseIconFactory(Context context, int fillResIconDpi, int iconBitmapSize) {
+    public BaseIconFactory(Context context, int fillResIconDpi, int iconBitmapSize) {
         this(context, fillResIconDpi, iconBitmapSize, false);
     }
 
@@ -224,16 +223,23 @@ public class BaseIconFactory implements AutoCloseable {
             dr.setBounds(0, 0, 1, 1);
             boolean[] outShape = new boolean[1];
             scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
-            if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+            /*if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+            //if ((icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+                // If there is an alpha on the icon, apply it to the wrapper instead.
+                dr.setAlpha(icon.getAlpha());
+                icon.setAlpha(0xFF);
+
                 FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
                 fsd.setDrawable(icon);
-
                 fsd.setScale(scale);
                 icon = dr;
                 scale = getNormalizer().getScale(icon, outIconBounds, null, null);
 
-                ((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
+                //((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
+                ((ColorDrawable) dr.getBackground()).setColor(Color.GREEN);
             }
+            Log.d(TAG, "Icon "+(icon instanceof  AdaptiveIconDrawable));
+            */
         } else {
             scale = getNormalizer().getScale(icon, outIconBounds, null, null);
         }

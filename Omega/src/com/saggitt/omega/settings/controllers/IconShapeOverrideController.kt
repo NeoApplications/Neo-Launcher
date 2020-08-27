@@ -25,6 +25,6 @@ import com.saggitt.omega.preferences.PreferenceController
 @Keep
 class IconShapeOverrideController(context: Context) : PreferenceController(context) {
 
-    override val isVisible = IconShapeOverride.isSupported(context)
+    override val isVisible = IconShapeOverride.isSupported()
 
 }

@@ -22,6 +22,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ResourceBasedOverride;
+import com.saggitt.omega.adaptive.IconShapeManager;
 
 /**
  * Utility class to handle one time initializations of the main process
@@ -39,5 +40,6 @@ public class MainProcessInitializer implements ResourceBasedOverride {
         FeatureFlags.initialize(context);
         SessionCommitReceiver.applyDefaultUserPrefs(context);
         IconShape.init(context);
+        IconShapeManager.Companion.getInstance(context);
     }
 }

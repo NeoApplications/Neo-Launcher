@@ -20,6 +20,7 @@ package com.saggitt.omega.icons;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.RequiresApi;
 
@@ -30,11 +31,11 @@ import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.util.ComponentKey;
 import com.saggitt.omega.icons.calendar.DateChangeReceiver;
-import com.saggitt.omega.icons.calendar.DynamicCalendar;
 import com.saggitt.omega.icons.clock.CustomClock;
 import com.saggitt.omega.icons.clock.DynamicClock;
 
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+import static com.saggitt.omega.icons.calendar.DynamicCalendar.GOOGLE_CALENDAR;
 
 public class DynamicDrawableFactory extends DrawableFactory {
     private final DynamicClock mDynamicClockDrawer;
@@ -54,12 +55,24 @@ public class DynamicDrawableFactory extends DrawableFactory {
         mCalendars = new DateChangeReceiver(context);
     }
 
+    @Override
+    public FastBitmapDrawable newIcon(ItemInfoWithIcon info) {
+        if (info == null || info.itemType != 0 ||
+                !DynamicClock.DESK_CLOCK.equals(info.getTargetComponent()) ||
+                !info.user.equals(Process.myUserHandle())) {
+            return super.newIcon(info);
+        }
+        FastBitmapDrawable dVar = mDynamicClockDrawer.drawIcon(info);
+        dVar.setIsDisabled(info.isDisabled());
+        return dVar;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public FastBitmapDrawable newIcon(Context context, ItemInfoWithIcon info) {
         if (info != null && info.getTargetComponent() != null && info.itemType == ITEM_TYPE_APPLICATION) {
             ComponentKey key = new ComponentKey(info.getTargetComponent(), info.user);
-            mCalendars.setIsDynamic(key, info.getTargetComponent().getPackageName().equals(DynamicCalendar.CALENDAR));
+            mCalendars.setIsDynamic(key, info.getTargetComponent().getPackageName().equals(GOOGLE_CALENDAR));
             if (Utilities.ATLEAST_OREO) {
                 if (info.getTargetComponent().equals(DynamicClock.DESK_CLOCK)) {
                     return mDynamicClockDrawer.drawIcon(info);

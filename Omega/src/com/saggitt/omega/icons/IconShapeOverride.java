@@ -17,30 +17,22 @@
 
 package com.saggitt.omega.icons;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
 
-import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.graphics.IconShape;
-import com.saggitt.omega.iconpack.AdaptiveIconCompat;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.Utilities.getPrefs;
-import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 /**
  * Utility class to override shape of {@link android.graphics.drawable.AdaptiveIconDrawable}.
@@ -50,13 +42,8 @@ public class IconShapeOverride {
 
     public static final String KEY_PREFERENCE = "pref_override_icon_shape";
     private static final String TAG = "IconShapeOverride";
-    // Time to wait before killing the process this ensures that the progress bar is visible for
-    // sufficient time so that there is no flicker.
-    private static final long PROCESS_KILL_DELAY_MS = 1000;
 
-    private static final int RESTART_REQUEST_CODE = 42; // the answer to everything
-
-    public static boolean isSupported(Context context) {
+    public static boolean isSupported() {
         if (!Utilities.ATLEAST_OREO) {
             return false;
         }
@@ -82,7 +69,7 @@ public class IconShapeOverride {
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        if (!isSupported(context)) {
+        if (!isSupported()) {
             return;
         }
 
@@ -128,12 +115,6 @@ public class IconShapeOverride {
         return getPrefs(context).getString(KEY_PREFERENCE, "");
     }
 
-    public static void handlePreferenceUi(ListPreference preference) {
-        Context context = preference.getContext();
-        preference.setValue(getAppliedValue(context));
-        preference.setOnPreferenceChangeListener(new PreferenceChangeHandler(context));
-    }
-
     private static class ResourcesOverride extends Resources {
 
         private final int mOverrideId;
@@ -171,66 +152,6 @@ public class IconShapeOverride {
                 return arr;
             }
             return super.getStringArray(id);
-        }
-    }
-
-    private static class PreferenceChangeHandler implements Preference.OnPreferenceChangeListener {
-
-        private final Context mContext;
-
-        private PreferenceChangeHandler(Context context) {
-            mContext = context;
-        }
-
-        @SuppressLint("ApplySharedPref")
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object o) {
-            String newValue = (String) o;
-            if (!getAppliedValue(mContext).equals(newValue)) {
-                // Value has changed
-//                ProgressDialog.show(mContext,
-//                        null /* title */,
-//                        mContext.getString(R.string.icon_shape_override_progress),
-//                        true /* indeterminate */,
-//                        false /* cancelable */);
-
-                if (preference instanceof ListPreference) {
-                    ((ListPreference) preference).setValue(newValue);
-                }
-
-
-                MAIN_EXECUTOR.execute(
-                        new OverrideApplyHandler(mContext, newValue, new Handler()));
-            }
-            return false;
-        }
-    }
-
-    private static class OverrideApplyHandler implements Runnable {
-
-        private final Context mContext;
-        private final String mValue;
-        private final Handler mHandler;
-
-        private OverrideApplyHandler(Context context, String value, Handler handler) {
-            mContext = context;
-            mValue = value;
-            mHandler = handler;
-        }
-
-        @SuppressLint("ApplySharedPref")
-        @Override
-        public void run() {
-            // Synchronously write the preference.
-            getPrefs(mContext).edit().putString(KEY_PREFERENCE, mValue).commit();
-            // Clear the icon cache.
-            LauncherAppState.getInstance(mContext).reloadIconCache();
-
-            mHandler.post(() -> {
-                AdaptiveIconCompat.resetMask();
-                IconShape.init(mContext);
-                Utilities.getOmegaPrefs(mContext).getRecreate().invoke();
-            });
         }
     }
 }

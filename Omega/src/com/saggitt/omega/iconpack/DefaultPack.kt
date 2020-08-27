@@ -36,7 +36,7 @@ import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.adaptive.AdaptiveIconGenerator
 import com.saggitt.omega.icons.CustomDrawableFactory
 import com.saggitt.omega.icons.CustomIconProvider
-import com.saggitt.omega.icons.DynamicIconProvider
+import com.saggitt.omega.icons.calendar.DynamicCalendar.GOOGLE_CALENDAR
 import com.saggitt.omega.icons.clock.DynamicClock
 import com.saggitt.omega.util.getLauncherActivityInfo
 import org.xmlpull.v1.XmlPullParser
@@ -65,10 +65,11 @@ class DefaultPack(context: Context) : IconPack(context, "") {
     override fun onDateChanged() {
         val model = LauncherAppState.getInstance(context).model
         UserManagerCompat.getInstance(context).userProfiles.forEach { user ->
-            model.onPackageChanged(DynamicIconProvider.GOOGLE_CALENDAR, user)
-            val shortcuts = DeepShortcutManager.getInstance(context).queryForPinnedShortcuts(DynamicIconProvider.GOOGLE_CALENDAR, user)
+            model.onPackageChanged(GOOGLE_CALENDAR, user)
+            val shortcuts = DeepShortcutManager
+                    .getInstance(context).queryForPinnedShortcuts(GOOGLE_CALENDAR, user)
             if (!shortcuts.isEmpty()) {
-                model.updatePinnedShortcuts(DynamicIconProvider.GOOGLE_CALENDAR, shortcuts, user)
+                model.updatePinnedShortcuts(GOOGLE_CALENDAR, shortcuts, user)
             }
         }
     }
@@ -115,7 +116,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         val component = key.componentName
         val packageName = component.packageName
         val originalIcon = info.getIcon(iconDpi).apply { mutate() }
-        if (iconProvider == null || (DynamicIconProvider.GOOGLE_CALENDAR != packageName && DynamicClock.DESK_CLOCK != component)) {
+        if (iconProvider == null || (GOOGLE_CALENDAR != packageName && DynamicClock.DESK_CLOCK != component)) {
             var roundIcon: Drawable? = null
             getRoundIcon(component, iconDpi)?.let {
                 roundIcon = it.apply { mutate() }
@@ -126,7 +127,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             iconProvider.getDynamicIcon(info, iconDpi, flattenDrawable)
         } else {
-            TODO("VERSION.SDK_INT < O")
+            return originalIcon
         }
     }
 

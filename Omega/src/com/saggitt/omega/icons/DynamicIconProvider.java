@@ -41,15 +41,16 @@ import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
+import com.saggitt.omega.iconpack.AdaptiveIconCompat;
 import com.saggitt.omega.icons.clock.DynamicClock;
 
 import java.util.Calendar;
 import java.util.List;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
+import static com.saggitt.omega.icons.calendar.DynamicCalendar.GOOGLE_CALENDAR;
 
 public class DynamicIconProvider extends IconProvider {
-    public static final String GOOGLE_CALENDAR = "com.google.android.calendar";
     private final BroadcastReceiver mDateChangeReceiver;
     private final Context mContext;
     private final PackageManager mPackageManager;
@@ -102,6 +103,7 @@ public class DynamicIconProvider extends IconProvider {
                     dateIds.recycle();
                     return dateId;
                 } catch (Resources.NotFoundException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
@@ -122,9 +124,9 @@ public class DynamicIconProvider extends IconProvider {
                 Bundle metaData = mPackageManager.getActivityInfo(launcherActivityInfo.getComponentName(), PackageManager.GET_META_DATA | PackageManager.GET_UNINSTALLED_PACKAGES).metaData;
                 Resources resourcesForApplication = mPackageManager.getResourcesForApplication(packageName);
                 int dayResId = getDayResId(metaData, resourcesForApplication);
-                /*if (dayResId != 0) {
+                if (dayResId != 0) {
                     drawable = AdaptiveIconCompat.wrapNullable(resourcesForApplication.getDrawableForDensity(dayResId, iconDpi));
-                }*/
+                }
             } catch (PackageManager.NameNotFoundException ignored) {
             }
         } else if (!flattenDrawable &&

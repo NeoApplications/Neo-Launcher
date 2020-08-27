@@ -36,6 +36,7 @@ import com.android.launcher3.FastBitmapDrawable
 import com.android.launcher3.ItemInfo
 import com.android.launcher3.ItemInfoWithIcon
 import com.android.launcher3.Utilities
+import com.android.launcher3.shortcuts.ShortcutInfoCompat
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.icons.CustomDrawableFactory
@@ -123,19 +124,19 @@ class IconPackManager(private val context: Context) {
         return defaultPack.getIcon(launcherActivityInfo, iconDpi, flattenDrawable, null, iconProvider)
     }
 
-    fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable? {
+    fun getIcon(shortcutInfo: ShortcutInfoCompat, iconDpi: Int): Drawable? {
         packList.iterator().forEach { pack ->
             pack.getIcon(shortcutInfo, iconDpi)?.let { return it }
         }
         return defaultPack.getIcon(shortcutInfo, iconDpi)
     }
 
-    /*fun getIcon(shortcutInfo: ShortcutInfoCompat, iconDpi: Int): Drawable? {
+    fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable? {
         packList.iterator().forEach { pack ->
             pack.getIcon(shortcutInfo, iconDpi)?.let { return it }
         }
         return defaultPack.getIcon(shortcutInfo, iconDpi)
-    }*/
+    }
 
     fun newIcon(icon: Bitmap, itemInfo: ItemInfoWithIcon, drawableFactory: CustomDrawableFactory): FastBitmapDrawable {
         val key = itemInfo.targetComponent?.let { ComponentKey(it, itemInfo.user) }
