@@ -17,6 +17,7 @@
 
 package com.saggitt.omega.preferences
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -58,6 +59,7 @@ open class StyledSwitchPreferenceCompat(context: Context, attrs: AttributeSet? =
         }
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     class SwitchSliceView(
             context: Context,
             private val key: String,

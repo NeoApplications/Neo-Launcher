@@ -16,6 +16,16 @@
   -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="AppTheme" parent="@style/LauncherTheme">
+        <item name="omegaColorSearchBar">?popupColorPrimary</item>
+        <item name="omegaColorAllAppsOverlay">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor">
+        <item name="omegaColorSearchBar">?popupColorPrimary</item>
+        <item name="omegaColorAllAppsOverlay">@android:color/transparent</item>
+    </style>
+
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:textSize">16sp</item>
         <item name="titleTextColor">@color/white</item>

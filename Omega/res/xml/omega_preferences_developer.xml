@@ -43,11 +43,4 @@
         android:summary="Feature under development. Not working yet"
         android:title="@string/title__drawer_paged_apps"
         app:iconSpaceReserved="false" />
-
-    <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:defaultValue="false"
-        android:key="pref_dockSearchBar"
-        android:persistent="true"
-        android:title="@string/title__dock_search_bar"
-        app:iconSpaceReserved="false" />
 </PreferenceScreen>

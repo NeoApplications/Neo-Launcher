@@ -55,6 +55,10 @@
     <string name="title__dock_colored_icons">Colored icons</string>
     <string name="title__dock_search_bar">Show Search Bar</string>
 
+    <string name="pref_value_disabled">"Disabled"</string>
+    <string name="dock_search_value" translatable="false">%1$s %2$s</string>
+
+
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>

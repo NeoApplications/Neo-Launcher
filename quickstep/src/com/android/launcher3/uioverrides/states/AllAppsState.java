@@ -15,15 +15,15 @@
  */
 package com.android.launcher3.uioverrides.states;
 
-import static com.android.launcher3.LauncherAnimUtils.ALL_APPS_TRANSITION_MS;
-import static com.android.launcher3.anim.Interpolators.DEACCEL_2;
-
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.quickstep.SysUINavigationMode;
+
+import static com.android.launcher3.LauncherAnimUtils.ALL_APPS_TRANSITION_MS;
+import static com.android.launcher3.anim.Interpolators.DEACCEL_2;
 
 /**
  * Definition for AllApps state
@@ -81,7 +81,11 @@ public class AllAppsState extends LauncherState {
 
     @Override
     public int getVisibleElements(Launcher launcher) {
-        return ALL_APPS_HEADER | ALL_APPS_HEADER_EXTRA | ALL_APPS_CONTENT;
+        //return ALL_APPS_HEADER | ALL_APPS_HEADER_EXTRA | ALL_APPS_CONTENT;
+        boolean hasAllAppsHeaderExtra = launcher.getAppsView() != null
+                && launcher.getAppsView().getFloatingHeaderView().hasVisibleContent();
+        return ALL_APPS_HEADER | ALL_APPS_CONTENT |
+                (hasAllAppsHeaderExtra ? ALL_APPS_HEADER_EXTRA : 0);
     }
 
     @Override

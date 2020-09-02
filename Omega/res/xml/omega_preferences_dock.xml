@@ -24,6 +24,21 @@
         android:title="@string/title__dock_hide"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.qsb.ReloadingListPreference
+        android:defaultValue=""
+        android:key="pref_dock_search"
+        android:persistent="true"
+        android:summary="%s"
+        android:title="@string/title__dock_search_bar" />
+
+    <!--
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:key="pref_dock_search"
+        android:title="@string/title__dock_search_bar"
+        android:defaultValue="true"
+        android:persistent="true"
+        app:iconSpaceReserved="false" /> -->
+
     <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="true"
         android:key="pref_hideDockLabels"

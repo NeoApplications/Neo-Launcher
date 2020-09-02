@@ -16,6 +16,7 @@
  */
 package com.saggitt.omega.qsb;
 
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.TextView;
 
@@ -33,12 +35,16 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BaseRecyclerView;
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.allapps.SearchUiManager;
+import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.anim.PropertySetter;
+import com.android.launcher3.qsb.QsbContainerView;
+import com.android.launcher3.qsb.QsbWidgetHostView;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.search.SearchProviderController;
@@ -48,6 +54,12 @@ import com.saggitt.omega.search.providers.GoogleSearchProvider;
 import com.saggitt.omega.search.webproviders.WebSearchProvider;
 
 import java.util.Objects;
+
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.getSize;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
+import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 
 public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager, QsbChangeListener {
 
@@ -63,6 +75,13 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     private TextView mHint;
     private AllAppsContainerView mAppsView;
     private OmegaPreferences prefs;
+
+    // This value was used to position the QSB. We store it here for translationY animations.
+    private final float mFixedTranslationY;
+    private final float mMarginTopAdjusting;
+    private final int[] currentPadding = new int[2];
+    // Delegate views.
+    private View mSearchWrapperView;
 
     public AllAppsQsbLayout(Context context) {
         this(context, null);
@@ -83,40 +102,28 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         prefs = OmegaPreferences.Companion.getInstanceNoCreate();
 
         mLowPerformanceMode = prefs.getLowPerformanceMode();
+
+        mFixedTranslationY = getTranslationY();
+        mMarginTopAdjusting = mFixedTranslationY - getPaddingTop();
     }
 
     protected void onFinishInflate() {
         super.onFinishInflate();
         mHint = findViewById(R.id.qsb_hint);
+        mSearchWrapperView = findViewById(R.id.search_wrapper_view);
+        mSearchWrapperView.setVisibility(shouldHideDockSearch()
+                ? View.GONE
+                : View.VISIBLE);
     }
 
-    public void setInsets(Rect rect) {
-        c(Utilities.getDevicePrefs(getContext()));
+    private boolean shouldHideDockSearch() {
+        return Utilities.getOmegaPrefs(getContext()).getDockSearchBar();
+    }
+
+    public void setInsets(Rect insets) {
         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
-        mlp.topMargin = getTopMargin(rect);
+        mlp.topMargin = Math.round(Math.max(-mFixedTranslationY, insets.top - mMarginTopAdjusting));
         requestLayout();
-        if (mLauncher.getDeviceProfile().isVerticalBarLayout()) {
-            mLauncher.getAllAppsController().setScrollRangeDelta(0);
-        } else {
-            //TODO: CHECK BOTTOM MARGING
-            float delta = HotseatQsbWidget.getBottomMargin(mLauncher, false) + appsVerticalOffset;
-            if (!prefs.getDockHide()) {
-                delta += mlp.height + mlp.topMargin;
-
-                delta -= mlp.height;
-                delta -= mlp.topMargin;
-                delta -= mlp.bottomMargin;
-                delta += appsVerticalOffset;
-
-            } else {
-                delta -= mLauncher.getResources().getDimensionPixelSize(R.dimen.vertical_drag_handle_size);
-            }
-            mLauncher.getAllAppsController().setScrollRangeDelta(Math.round(delta));
-        }
-    }
-
-    public int getTopMargin(Rect rect) {
-        return Math.max(Math.round(-this.appsVerticalOffset), rect.top - this.marginTop);
     }
 
     protected void onAttachedToWindow() {
@@ -286,12 +293,65 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         }
     }
 
-    protected void onLayout(boolean z, int i, int i2, int i3, int i4) {
-        super.onLayout(z, i, i2, i3, i4);
-        View view = (View) getParent();
-        setTranslationX((float) ((view.getPaddingLeft() + (
-                (((view.getWidth() - view.getPaddingLeft()) - view.getPaddingRight()) - (i3 - i))
-                        / 2)) - i));
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // Update the width to match the grid padding
+        int myRequestedWidth = getSize(widthMeasureSpec);
+        int myRequestedHeight = getSize(heightMeasureSpec);
+
+        DeviceProfile dp = mLauncher.getDeviceProfile();
+        int rowWidth = myRequestedWidth - mAppsView.getActiveRecyclerView().getPaddingLeft()
+                - mAppsView.getActiveRecyclerView().getPaddingRight();
+
+        int cellWidth = DeviceProfile.calculateCellWidth(rowWidth, dp.inv.numHotseatIcons);
+        int iconVisibleSize = Math.round(ICON_VISIBLE_AREA_FACTOR * dp.iconSizePx);
+        int iconPadding = cellWidth - iconVisibleSize;
+
+        int myWidth = rowWidth - iconPadding + getPaddingLeft() + getPaddingRight();
+
+        int widgetPad = getResources().getDimensionPixelSize(R.dimen.qsb_widget_padding);
+
+        if (mFallback != null) {
+            mFallback.measure(makeMeasureSpec(myWidth, EXACTLY),
+                    makeMeasureSpec(myRequestedHeight - widgetPad, EXACTLY));
+        }
+
+        currentPadding[0] = 0;
+        currentPadding[1] = 0;
+        calcPaddingRecursive(mSearchWrapperView, 2);
+
+        mSearchWrapperView.setPadding(
+                mSearchWrapperView.getPaddingLeft() + widgetPad - currentPadding[0],
+                mSearchWrapperView.getPaddingTop(),
+                mSearchWrapperView.getPaddingRight() + widgetPad - currentPadding[1],
+                mSearchWrapperView.getPaddingBottom());
+
+        mSearchWrapperView.measure(makeMeasureSpec(myWidth + 2 * widgetPad, EXACTLY),
+                makeMeasureSpec(myRequestedHeight, EXACTLY));
+
+    }
+
+    private void calcPaddingRecursive(View view, int lvl) {
+        currentPadding[0] += view.getPaddingLeft();
+        currentPadding[1] += view.getPaddingRight();
+        if (view instanceof ViewGroup && lvl > 0) {
+            ViewGroup group = (ViewGroup) view;
+            if (group.getChildCount() == 1) {
+                calcPaddingRecursive(group.getChildAt(0), lvl - 1);
+            }
+        }
+    }
+
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        View parent = (View) getParent();
+        int availableWidth = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+        int myWidth = right - left;
+        int expectedLeft = parent.getPaddingLeft() + (availableWidth - myWidth) / 2;
+        int shift = expectedLeft - left;
+        setTranslationX(shift);
     }
 
     public void draw(Canvas canvas) {
@@ -302,9 +362,9 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
                         getResources().getDimension(R.dimen.hotseat_qsb_scroll_key_shadow_offset),
                         0, true);
             }
-            this.mShadowHelper.paint.setAlpha(this.mShadowAlpha);
+            mShadowHelper.paint.setAlpha(this.mShadowAlpha);
             drawShadow(Dv, canvas);
-            this.mShadowHelper.paint.setAlpha(255);
+            mShadowHelper.paint.setAlpha(255);
         }
         super.draw(canvas);
     }
@@ -318,7 +378,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     }
 
     protected final boolean dK() {
-        if (this.mFallback != null) {
+        if (mFallback != null) {
             return false;
         }
         return super.dK();
@@ -339,13 +399,37 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     public void preDispatchKeyEvent(KeyEvent keyEvent) {
     }
 
+    //Used when search bar is disabled
+    public int getTopMargin(Rect rect) {
+        return Math.max(Math.round(-this.appsVerticalOffset), rect.top - this.marginTop);
+    }
+
     @Override
     public float getScrollRangeDelta(Rect insets) {
-        return 0;
+        if (mLauncher.getDeviceProfile().isVerticalBarLayout() || shouldHideDockSearch()) {
+            return 0;
+        } else {
+            int topMargin = Math.round(Math.max(
+                    -mFixedTranslationY, insets.top - mMarginTopAdjusting));
+
+            DeviceProfile dp = mLauncher.getWallpaperDeviceProfile();
+            int searchPadding = getLayoutParams().height;
+            int hotseatPadding = dp.hotseatBarBottomPaddingPx - searchPadding;
+
+            return insets.bottom + topMargin + mFixedTranslationY + searchPadding
+                    + hotseatPadding * 0.65f;
+        }
     }
 
     @Override
     public void setContentVisibility(int visibleElements, PropertySetter setter, Interpolator interpolator) {
+        boolean showAllApps = (visibleElements & ALL_APPS_CONTENT) != 0;
+
+        if (showAllApps)
+            setter.setViewAlpha(mSearchWrapperView, showAllApps ? 0f : (shouldHideDockSearch() ? 0f : 1f), Interpolators.LINEAR);
+        else
+            setter.setViewAlpha(mSearchWrapperView, !showAllApps ? 0f : (!shouldHideDockSearch() ? 1f : 0f), Interpolators.LINEAR);
+        //setter.setViewAlpha(mFallback, showAllApps ? 1f : 0f, Interpolators.LINEAR);
     }
 
     @Nullable
@@ -365,6 +449,24 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     protected void clearPillBg(Canvas canvas, int left, int top, int right) {
         if (!mLowPerformanceMode && mClearBitmap != null) {
             mClearShadowHelper.draw(mClearBitmap, canvas, left, top, right);
+        }
+    }
+
+    public static class HotseatQsbFragment extends QsbContainerView.QsbFragment {
+        @Override
+        public boolean isQsbEnabled() {
+            return true;
+        }
+
+        @Override
+        protected QsbContainerView.QsbWidgetHost createHost() {
+            return new QsbContainerView.QsbWidgetHost(getContext(), QSB_WIDGET_HOST_ID,
+                    (c) -> new QsbWidgetHostView(c));
+        }
+
+        @Override
+        protected AppWidgetProviderInfo getSearchWidgetProvider() {
+            return DockSearch.getWidgetInfo(getContext());
         }
     }
 }

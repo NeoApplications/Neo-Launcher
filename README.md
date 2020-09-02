@@ -27,6 +27,8 @@ Free and Open Source Launcher. <br/>
 ##  New Features and TODOs
 -   [ ] Icon pack support.
 -   [ ] Dock search.
+-   [ ] Drawer grid preference.
+-   [ ] Desktop grid preference.
 -   [ ] Back up and restore.
 -   [ ] Customize app icon.
 -   [ ] Apps Predictions.

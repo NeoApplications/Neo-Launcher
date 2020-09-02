@@ -20,7 +20,15 @@
     android:layout_gravity="center|top"
     android:background="@drawable/bg_qsb_click_feedback"
     android:contentDescription="@string/title__general_search"
-    android:translationY="30.0dip">
+    android:translationY="24dp">
+
+    <fragment
+        android:id="@+id/search_wrapper_view"
+        android:name="com.saggitt.omega.qsb.AllAppsQsbLayout$HotseatQsbFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:tag="qsb_view" />
 
     <ImageView
         android:id="@id/g_icon"

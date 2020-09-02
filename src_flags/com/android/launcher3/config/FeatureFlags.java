@@ -23,6 +23,9 @@ public final class FeatureFlags extends BaseFlags {
 
     public static boolean REFLECTION_FORCE_OVERVIEW_MODE = true;
 
+    // When enabled add space for a search widget in the dock.
+    public static boolean HOTSEAT_WIDGET = true;
+
     private FeatureFlags() {
         // Prevent instantiation
     }

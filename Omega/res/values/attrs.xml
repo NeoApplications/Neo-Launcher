@@ -100,6 +100,10 @@
     <attr name="useLightSystemBars" format="boolean" />
     <attr name="qsbEdgeRadius" format="dimension" />
 
+
+    <attr name="omegaColorAllAppsOverlay" format="color" />
+    <attr name="omegaColorSearchBar" format="color" />
+
     <attr name="dashIconTint" format="color" />
     <attr name="dashIconBackground" format="color" />
 

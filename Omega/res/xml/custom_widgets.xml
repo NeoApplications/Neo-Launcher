@@ -15,21 +15,6 @@
   ~
   -->
 
-<widgets xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto">
+<widgets>
 
-    <widget
-        android:icon="@mipmap/ic_launcher_home"
-        android:initialLayout="@layout/search_widget"
-        android:label="@string/cat_search_bar"
-        android:resizeMode="horizontal|vertical"
-        launcher:customizeHasPreview="false"
-        launcher:customizeScreen="@xml/omega_preferences_search"
-        launcher:customizeTitle="@string/cat_search_bar"
-        launcher:noPadding="true"
-        launcher:numColumns="5"
-        launcher:numMinColumns="3"
-        launcher:numMinRows="1"
-        launcher:numRows="1"
-        launcher:providerId="2" />
 </widgets>

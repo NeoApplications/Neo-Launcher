@@ -71,7 +71,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.4.0"
-    def code = 22
+    def code = 23
 
     defaultConfig {
         minSdkVersion 25
@@ -228,7 +228,6 @@ dependencies {
     implementation "androidx.dynamicanimation:dynamicanimation:${versions.dynamicanimation}"
     implementation "androidx.appcompat:appcompat:${versions.appcompat}"
     implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
-    //TODO REWORK StyleSwitchPreference for new andriodx versions
     implementation "androidx.preference:preference-ktx:${versions.preference}"
 
     implementation "com.google.android.material:material:${versions.material}"

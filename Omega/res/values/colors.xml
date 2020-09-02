@@ -45,5 +45,6 @@
     <color name="settings_background_black_2dp">#ff121212</color>
     <color name="settings_background_black_8dp">#ff1e1e1e</color>
 
+    <color name="search_ripple">#0D888888</color>
 </resources>
 

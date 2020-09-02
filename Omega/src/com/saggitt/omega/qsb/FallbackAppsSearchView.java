@@ -102,6 +102,7 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
         }
     }
 
+
     public void onAppsUpdated() {
         mSearchBarController.refreshSearchResult();
     }

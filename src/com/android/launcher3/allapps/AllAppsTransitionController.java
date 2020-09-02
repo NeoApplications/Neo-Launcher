@@ -22,8 +22,9 @@ import com.android.launcher3.views.ScrimView;
 import com.saggitt.omega.OmegaPreferences;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
-import static com.android.launcher3.LauncherState.ALL_APPS_HEADER;
 import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
+import static com.android.launcher3.LauncherState.BACKGROUND_APP;
+import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
 import static com.android.launcher3.LauncherState.OVERVIEW;
 import static com.android.launcher3.LauncherState.VERTICAL_SWIPE_INDICATOR;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
@@ -135,6 +136,15 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
         } else {
             mLauncher.getSystemUiController().updateUiState(UI_STATE_ALL_APPS, 0);
         }
+
+        if ((OVERVIEW.getVisibleElements(mLauncher) & HOTSEAT_ICONS) != 0) {
+            // Translate hotseat with the shelf until reaching overview.
+            float overviewProgress = OVERVIEW.getVerticalProgress(mLauncher);
+            if (progress >= overviewProgress || mLauncher.isInState(BACKGROUND_APP)) {
+                float hotseatShift = (progress - overviewProgress) * mShiftRange;
+                mLauncher.getHotseat().setTranslationY(hotseatShift);
+            }
+        }
     }
 
     public float getProgress() {
@@ -205,19 +215,16 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
                 : config.getPropertySetter(builder);
         OmegaPreferences prefs = OmegaPreferences.Companion.getInstanceNoCreate();
 
-        boolean hasHeader = (visibleElements & ALL_APPS_HEADER) != 0 && prefs.getAllAppsSearch();
         boolean hasHeaderExtra = (visibleElements & ALL_APPS_HEADER_EXTRA) != 0;
         boolean hasAllAppsContent = (visibleElements & ALL_APPS_CONTENT) != 0;
 
         Interpolator allAppsFade = builder.getInterpolator(ANIM_ALL_APPS_FADE, LINEAR);
         Interpolator headerFade = builder.getInterpolator(ANIM_ALL_APPS_HEADER_FADE, allAppsFade);
-        setter.setViewAlpha(mAppsView.getSearchView(), hasHeader ? 1 : 0, allAppsFade);
         setter.setViewAlpha(mAppsView.getContentView(), hasAllAppsContent ? 1 : 0, allAppsFade);
         setter.setViewAlpha(mAppsView.getScrollBar(), hasAllAppsContent ? 1 : 0, allAppsFade);
         mAppsView.getFloatingHeaderView().setContentVisibility(hasHeaderExtra, hasAllAppsContent,
                 setter, headerFade, allAppsFade);
         mAppsView.getSearchUiManager().setContentVisibility(visibleElements, setter, allAppsFade);
-
         setter.setInt(mScrimView, ScrimView.DRAG_HANDLE_ALPHA,
                 (visibleElements & VERTICAL_SWIPE_INDICATOR) != 0 ? 255 : 0, allAppsFade);
     }

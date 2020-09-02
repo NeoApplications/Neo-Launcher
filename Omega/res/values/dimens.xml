@@ -19,7 +19,6 @@
 <resources>
 
     <dimen name="dynamic_grid_drawer_additional_padding">36dp</dimen>
-
     <dimen name="all_apps_search_vertical_offset">30dp</dimen>
 
     <!-- Dashboard tile image margin start / end -->
@@ -60,6 +59,16 @@
     <dimen name="dynamic_grid_workspace_page_spacing">4dp</dimen>
     <dimen name="dynamic_grid_workspace_top_padding">4dp</dimen>
 
+
+    <dimen name="dynamic_grid_hotseat_top_padding">8dp</dimen>
+    <dimen name="dynamic_grid_hotseat_bottom_padding">0dp</dimen>
+    <dimen name="dynamic_grid_hotseat_bottom_non_tall_padding">16dp</dimen>
+    <dimen name="dynamic_grid_hotseat_extra_vertical_size">22dp</dimen>
+    <dimen name="dynamic_grid_hotseat_bottom_padding_widget">62dp</dimen>
+    <dimen name="dynamic_grid_hotseat_bottom_non_tall_padding_widget">15dp</dimen>
+    <dimen name="dynamic_grid_hotseat_extra_vertical_size_widget">24dp</dimen>
+    <dimen name="all_apps_search_bar_bottom_padding">36dp</dimen>
+
     <!-- QSB -->
     <dimen name="hotseat_qsb_bottom_margin">5dp</dimen>
     <dimen name="hotseat_qsb_scroll_key_shadow_offset">2dp</dimen>
@@ -69,6 +78,7 @@
     <dimen name="qsb_mic_width">48dp</dimen>
     <dimen name="qsb_shadow_margin">6dp</dimen>
     <dimen name="qsb_widget_height">56dp</dimen>
+    <dimen name="qsb_widget_padding">8dp</dimen>
     <dimen name="qsb_doodle_tap_target_logo_width">106dp</dimen>
     <dimen name="qsb_text_spacing">20dp</dimen>
     <dimen name="qsb_hint_text_size">13sp</dimen>
@@ -81,4 +91,5 @@
     <dimen name="select_dialog_padding_start_material">20dp</dimen>
     <dimen name="select_dialog_padding_material">24dp</dimen>
     <dimen name="select_dialog_drawable_padding_start_material">20dp</dimen>
+
 </resources>

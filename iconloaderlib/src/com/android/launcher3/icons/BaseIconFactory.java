@@ -223,12 +223,8 @@ public class BaseIconFactory implements AutoCloseable {
             dr.setBounds(0, 0, 1, 1);
             boolean[] outShape = new boolean[1];
             scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
-            /*if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
-            //if ((icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
-                // If there is an alpha on the icon, apply it to the wrapper instead.
-                dr.setAlpha(icon.getAlpha());
-                icon.setAlpha(0xFF);
-
+            //if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+            /*if (!(icon instanceof AdaptiveIconDrawable)) {
                 FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
                 fsd.setDrawable(icon);
                 fsd.setScale(scale);
@@ -237,9 +233,8 @@ public class BaseIconFactory implements AutoCloseable {
 
                 //((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
                 ((ColorDrawable) dr.getBackground()).setColor(Color.GREEN);
-            }
-            Log.d(TAG, "Icon "+(icon instanceof  AdaptiveIconDrawable));
-            */
+            }*/
+
         } else {
             scale = getNormalizer().getScale(icon, outIconBounds, null, null);
         }

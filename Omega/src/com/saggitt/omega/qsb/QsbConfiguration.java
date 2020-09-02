@@ -24,18 +24,11 @@ import java.util.ArrayList;
 
 @TargetApi(26)
 public class QsbConfiguration {
-
     private static QsbConfiguration INSTANCE;
+
     private final ArrayList<QsbChangeListener> mListeners = new ArrayList<>(2);
 
     private QsbConfiguration(Context context) {
-
-    }
-
-    private void notifyListeners() {
-        for (QsbChangeListener listener : mListeners) {
-            listener.onChange();
-        }
     }
 
     public static QsbConfiguration getInstance(Context context) {
@@ -61,10 +54,10 @@ public class QsbConfiguration {
     }
 
     public final void addListener(QsbChangeListener qsbChangeListener) {
-        this.mListeners.add(qsbChangeListener);
+        mListeners.add(qsbChangeListener);
     }
 
     public final void removeListener(QsbChangeListener qsbChangeListener) {
-        this.mListeners.remove(qsbChangeListener);
+        mListeners.remove(qsbChangeListener);
     }
 }

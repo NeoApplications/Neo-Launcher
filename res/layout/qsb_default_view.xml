@@ -15,8 +15,9 @@
      limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,7 +47,7 @@
             android:visibility="gone"
             android:layout_height="match_parent"
             android:src="@drawable/ic_setting"
-            android:tint="?android:attr/textColorSecondary"
+            app:tint="?android:attr/textColorSecondary"
             android:contentDescription="@string/gadget_setup_text"
             android:padding="8dp"
             android:background="?android:attr/selectableItemBackground" />

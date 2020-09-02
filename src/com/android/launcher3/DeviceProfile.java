@@ -28,6 +28,7 @@ import android.view.Surface;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.CellLayout.ContainerType;
+import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.icons.IconNormalizer;
@@ -209,7 +210,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         edgeMarginPx = res.getDimensionPixelSize(R.dimen.dynamic_grid_edge_margin);
         desiredWorkspaceLeftRightMarginPx = isVerticalBarLayout() ? 0 : edgeMarginPx;
 
-        /*int cellLayoutPaddingLeftRightMultiplier = !isVerticalBarLayout() && isTablet
+        int cellLayoutPaddingLeftRightMultiplier = !isVerticalBarLayout() && isTablet
                 ? PORTRAIT_TABLET_LEFT_RIGHT_PADDING_MULTIPLIER : 1;
         int cellLayoutPadding = res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_padding);
         if (isLandscape) {
@@ -218,9 +219,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         } else {
             cellLayoutPaddingLeftRightPx = cellLayoutPaddingLeftRightMultiplier * cellLayoutPadding;
             cellLayoutBottomPaddingPx = 0;
-        }*/
-        cellLayoutBottomPaddingPx =
-                res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_bottom_padding);
+        }
 
         verticalDragHandleSizePx = res.getDimensionPixelSize(
                 R.dimen.vertical_drag_handle_size);
@@ -238,17 +237,24 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         hotseatBarTopPaddingPx =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_top_padding);
         hotseatBarBottomPaddingPx = (isTallDevice ? 0
-                : res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding))
-                + res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_bottom_padding);
+                : res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding_widget
+                : R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding))
+                + res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_bottom_padding_widget
+                : R.dimen.dynamic_grid_hotseat_bottom_padding);
+
         hotseatBarSidePaddingEndPx =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_side_padding);
         // Add a bit of space between nav bar and hotseat in vertical bar layout.
         hotseatBarSidePaddingStartPx = isVerticalBarLayout() ? verticalDragHandleSizePx : 0;
-        /*hotseatBarSizePx = ResourceUtils.pxFromDp(inv.iconSize, dm) + (isVerticalBarLayout()
+        hotseatBarSizePx = ResourceUtils.pxFromDp(inv.iconSize, dm) + (isVerticalBarLayout()
                 ? (hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx)
-                : (res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_extra_vertical_size)
+                : (res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_extra_vertical_size_widget
+                : R.dimen.dynamic_grid_hotseat_extra_vertical_size)
                 + hotseatBarTopPaddingPx + hotseatBarBottomPaddingPx));
-        */
+
         // Calculate all of the remaining variables.
         updateAvailableDimensions(dm, res);
 
@@ -310,7 +316,6 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         DisplayMetrics dm = res.getDisplayMetrics();
 
         boolean fullWidthWidgets = prefs.getAllowFullWidthWidgets();
-        boolean dockSearchBar = prefs.getDockSearchBar();
         boolean dockHidden = prefs.getDockHide();
         float dockScale = prefs.getDockScale();
 
@@ -318,30 +323,30 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
                 : res.getDimensionPixelSize(R.dimen.dynamic_grid_cell_layout_padding);
 
         hotseatBarTopPaddingPx =
-                res.getDimensionPixelSize(dockSearchBar ?
-                        R.dimen.dynamic_grid_hotseat_top_padding :
-                        R.dimen.v1_dynamic_grid_hotseat_top_padding);
+                res.getDimensionPixelSize(
+                        R.dimen.dynamic_grid_hotseat_top_padding);
 
-        int extraHotseatBottomPadding = 0; //!prefs.getDockGradientStyle() ? 0
-        //        : res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding);
-        hotseatBarBottomPaddingPx = extraHotseatBottomPadding
-                + res.getDimensionPixelSize(dockSearchBar ?
-                R.dimen.dynamic_grid_hotseat_bottom_padding :
-                R.dimen.v1_dynamic_grid_hotseat_bottom_padding);
-        hotseatBarBottomPaddingPx = extraHotseatBottomPadding
-                + res.getDimensionPixelSize(
-                R.dimen.v1_dynamic_grid_hotseat_bottom_padding);
+        int extraHotseatBottomPadding = 0;
+        hotseatBarBottomPaddingPx = (isTablet ? 0
+                : res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding_widget
+                : R.dimen.dynamic_grid_hotseat_bottom_non_tall_padding))
+                + res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_bottom_padding_widget
+                : R.dimen.dynamic_grid_hotseat_bottom_padding);
+
         hotseatBarSidePaddingEndPx =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_hotseat_side_padding);
         // Add a bit of space between nav bar and hotseat.
-        hotseatBarSidePaddingStartPx = res.getDimensionPixelSize(R.dimen.hotseat_navbar_padding);
-        hotseatBarSizePx = isVerticalBarLayout()
-                ? hotseatIconSizePx + hotseatBarSidePaddingStartPx
-                + hotseatBarSidePaddingEndPx
-                : res.getDimensionPixelSize(dockSearchBar ?
-                R.dimen.dynamic_grid_hotseat_size :
-                R.dimen.v1_dynamic_grid_hotseat_size)
-                + hotseatBarTopPaddingPx + hotseatBarBottomPaddingPx;
+        hotseatBarSidePaddingStartPx = isVerticalBarLayout() ? verticalDragHandleSizePx : 0;
+
+        hotseatBarSizePx = ResourceUtils.pxFromDp(inv.iconSize, dm) + (isVerticalBarLayout()
+                ? (hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx)
+                : (res.getDimensionPixelSize(FeatureFlags.HOTSEAT_WIDGET
+                ? R.dimen.dynamic_grid_hotseat_extra_vertical_size_widget
+                : R.dimen.dynamic_grid_hotseat_extra_vertical_size)
+                + hotseatBarTopPaddingPx + hotseatBarBottomPaddingPx));
+
         verticalDragHandleSizePx = res.getDimensionPixelSize(
                 R.dimen.vertical_drag_handle_size);
         // Calculate all of the remaining variables.
@@ -393,8 +398,7 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         } else if (!isVerticalBarLayout()) {
             float adjustedDockScale = (float) extraSpaceFromScale / hotseatBarSizePx + 1;
             verticalDragHandleSizePx *= adjustedDockScale;
-            int qsbHeight = res.getDimensionPixelSize(R.dimen.qsb_widget_height);
-            int bottomPaddingNew = Math.max((int) (hotseatBarBottomPaddingPx * adjustedDockScale), dockSearchBar ? qsbHeight : 0);
+            int bottomPaddingNew = Math.max((int) (hotseatBarBottomPaddingPx * adjustedDockScale), 0);
 
             int difference = hotseatBarBottomPaddingPx - bottomPaddingNew;
             hotseatBarTopPaddingPx -= difference;

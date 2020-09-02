@@ -393,9 +393,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         ShadowGenerator.Builder builder = new ShadowGenerator.Builder(color);
         builder.shadowBlur = shadowBlur;
         builder.keyShadowDistance = keyShadowDistance;
-        if (workspaceDarkText && this instanceof HotseatQsbWidget) {
-            builder.ambientShadowAlpha *= 2;
-        }
         if (!withShadow) {
             builder.ambientShadowAlpha = 0;
         }
