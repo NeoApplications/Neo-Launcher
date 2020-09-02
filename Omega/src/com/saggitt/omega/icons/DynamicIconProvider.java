@@ -35,13 +35,13 @@ import android.os.UserHandle;
 
 import androidx.annotation.RequiresApi;
 
+import com.android.launcher3.AdaptiveIconCompat;
 import com.android.launcher3.IconProvider;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
-import com.saggitt.omega.iconpack.AdaptiveIconCompat;
 import com.saggitt.omega.icons.clock.DynamicClock;
 
 import java.util.Calendar;

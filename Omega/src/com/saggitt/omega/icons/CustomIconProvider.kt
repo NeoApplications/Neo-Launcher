@@ -23,11 +23,11 @@ import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.android.launcher3.AdaptiveIconCompat
 import com.android.launcher3.ItemInfo
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutInfoCompat
-import com.saggitt.omega.iconpack.AdaptiveIconCompat
 import com.saggitt.omega.iconpack.IconPackManager
 
 class CustomIconProvider(context: Context) : DynamicIconProvider(context) {

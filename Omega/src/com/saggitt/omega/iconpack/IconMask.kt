@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmap
+import com.android.launcher3.AdaptiveIconCompat
 import com.android.launcher3.FastBitmapDrawable
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities

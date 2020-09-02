@@ -64,6 +64,7 @@ open class IconShape(val topLeft: Corner,
 
     private val tmpPoint = PointF()
     open val qsbEdgeRadius = 0
+    open val windowTransitionRadius = 1f
 
     open fun getMaskPath(): Path {
         return Path().also { addToPath(it, 0f, 0f, 100f, 100f, 50f) }
@@ -192,6 +193,7 @@ open class IconShape(val topLeft: Corner,
             .16f, .16f, .16f, .16f) {
 
         override val qsbEdgeRadius = R.dimen.qsb_radius_square
+        override val windowTransitionRadius = .16f
 
         override fun toString(): String {
             return "square"
@@ -205,6 +207,7 @@ open class IconShape(val topLeft: Corner,
             .6f, .6f, .6f, .6f) {
 
         override val qsbEdgeRadius = R.dimen.qsb_radius_square
+        override val windowTransitionRadius = .6f
 
         override fun toString(): String {
             return "roundedSquare"

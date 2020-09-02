@@ -29,13 +29,13 @@ import android.util.SparseIntArray;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
+import com.android.launcher3.AdaptiveIconCompat;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.ColorExtractor;
 import com.android.launcher3.icons.FixedScaleDrawable;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.icons.LauncherIcons;
 import com.saggitt.omega.OmegaPreferences;
-import com.saggitt.omega.iconpack.AdaptiveIconCompat;
 import com.saggitt.omega.icons.CustomIconProvider;
 
 import java.util.HashSet;

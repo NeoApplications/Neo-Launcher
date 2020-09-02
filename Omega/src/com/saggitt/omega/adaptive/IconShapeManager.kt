@@ -27,22 +27,19 @@ import android.graphics.Region
 import android.graphics.RegionIterator
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.text.TextUtils
+import androidx.annotation.Keep
 import androidx.core.graphics.PathParser
-import com.android.launcher3.LauncherAppState
+import com.android.launcher3.AdaptiveIconCompat
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.saggitt.omega.iconpack.AdaptiveIconCompat
 import com.saggitt.omega.icons.IconShapeOverride
 import com.saggitt.omega.util.OmegaSingletonHolder
 import com.saggitt.omega.util.omegaPrefs
-import com.saggitt.omega.util.runOnMainThread
-import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class IconShapeManager(private val context: Context) {
 
     private val systemIconShape = getSystemShape()
     var iconShape by context.omegaPrefs.StringBasedPref(
-            "pref_iconShape", systemIconShape, ::onShapeChanged,
+            "pref_iconShape", systemIconShape, AdaptiveIconCompat::onShapeChanged,
             {
                 IconShape.fromString(it) ?: systemIconShape
             }, IconShape::toString) {}
@@ -110,21 +107,19 @@ class IconShapeManager(private val context: Context) {
         }!!
     }
 
-    private fun onShapeChanged() {
-        MAIN_EXECUTOR.handler.post {
-            LauncherAppState.getInstance(context).reloadIconCache()
-
-            runOnMainThread {
-                AdaptiveIconCompat.resetMask()
-                L3IconShape.init(context)
-                context.omegaPrefs.recreate()
-            }
-        }
-    }
-
     companion object : OmegaSingletonHolder<IconShapeManager>(::IconShapeManager) {
 
+        private const val KEY_LEGACY_PREFERENCE = "pref_override_icon_shape"
+
         @JvmStatic
-        fun getInstanceNoCreate() = dangerousGetInstance()
+        fun getWindowTransitionRadius(context: Context): Float {
+            return getInstance(context).iconShape.windowTransitionRadius
+        }
+
+        @Keep
+        @JvmStatic
+        @Suppress("unused")
+                /** Used in AdaptiveIconCompat to get the mask path **/
+        fun getAdaptiveIconMaskPath() = dangerousGetInstance()!!.iconShape.getMaskPath()
     }
 }
