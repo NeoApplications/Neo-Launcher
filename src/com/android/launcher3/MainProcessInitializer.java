@@ -17,14 +17,12 @@
 package com.android.launcher3;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ResourceBasedOverride;
 import com.saggitt.omega.adaptive.IconShapeManager;
-import com.saggitt.omega.qsb.DockSearch;
 
 /**
  * Utility class to handle one time initializations of the main process
@@ -42,9 +40,6 @@ public class MainProcessInitializer implements ResourceBasedOverride {
         FeatureFlags.initialize(context);
         SessionCommitReceiver.applyDefaultUserPrefs(context);
         IconShape.init(context);
-        FeatureFlags.HOTSEAT_WIDGET =
-                !TextUtils.isEmpty(Utilities.getPrefs(context)
-                        .getString(DockSearch.KEY_DOCK_SEARCH, ""));
         IconShapeManager.Companion.getInstance(context);
     }
 }

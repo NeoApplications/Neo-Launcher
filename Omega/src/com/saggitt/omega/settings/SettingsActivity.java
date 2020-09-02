@@ -82,8 +82,6 @@ import com.saggitt.omega.preferences.SearchProviderPreference;
 import com.saggitt.omega.preferences.SelectSearchProviderFragment;
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
-import com.saggitt.omega.qsb.DockSearchPrefSetter;
-import com.saggitt.omega.qsb.ReloadingListPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
 import com.saggitt.omega.theme.ThemeOverride;
 import com.saggitt.omega.util.Config;
@@ -100,7 +98,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
-import static com.saggitt.omega.qsb.DockSearch.KEY_DOCK_SEARCH;
 
 public class SettingsActivity extends SettingsBaseActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, OnPreferenceDisplayDialogCallback,
@@ -609,7 +606,6 @@ public class SettingsActivity extends SettingsBaseActivity
                 default:
                     return false;
             }
-
             return true;
         }
 
@@ -638,12 +634,6 @@ public class SettingsActivity extends SettingsBaseActivity
             int preference = getContent();
             ContentResolver resolver = mContext.getContentResolver();
             switch (preference) {
-                case R.xml.omega_preferences_dock:
-                    ReloadingListPreference search =
-                            (ReloadingListPreference) findPreference(KEY_DOCK_SEARCH);
-                    search.setOnReloadListener(new DockSearchPrefSetter(getContext()));
-
-                    break;
                 case R.xml.omega_preferences_desktop:
                     if (!Utilities.ATLEAST_OREO) {
                         getPreferenceScreen().removePreference(

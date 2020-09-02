@@ -16,7 +16,6 @@
  */
 package com.saggitt.omega.qsb;
 
-import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -58,12 +57,13 @@ import java.util.Objects;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.getSize;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
 import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 
 public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager, QsbChangeListener {
 
-    private final QsbConfiguration Ds;
+    private final QsbConfiguration configuration;
     private final int marginTop;
     public float appsVerticalOffset;
     boolean mDoNotRemoveFallback;
@@ -93,10 +93,10 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     public AllAppsQsbLayout(Context context, AttributeSet attributeSet, int i) {
         super(context, attributeSet, i);
-        this.mShadowAlpha = 0;
+        mShadowAlpha = 0;
         setOnClickListener(this);
-        this.Ds = QsbConfiguration.getInstance(context);
-        this.marginTop = getResources().getDimensionPixelSize(R.dimen.qsb_margin_top_adjusting);
+        configuration = QsbConfiguration.getInstance(context);
+        marginTop = getResources().getDimensionPixelSize(R.dimen.qsb_margin_top_adjusting);
         appsVerticalOffset = getResources().getDimensionPixelSize(R.dimen.all_apps_search_vertical_offset);
         setClipToPadding(false);
         prefs = OmegaPreferences.Companion.getInstanceNoCreate();
@@ -117,7 +117,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     }
 
     private boolean shouldHideDockSearch() {
-        return Utilities.getOmegaPrefs(getContext()).getDockSearchBar();
+        return !Utilities.getOmegaPrefs(getContext()).getDockSearchBar();
     }
 
     public void setInsets(Rect insets) {
@@ -129,7 +129,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         updateConfiguration();
-        Ds.addListener(this);
+        configuration.addListener(this);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Ds.removeListener(this);
+        configuration.removeListener(this);
     }
 
     public final void initialize(AllAppsContainerView allAppsContainerView) {
@@ -188,18 +188,16 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     private void updateConfiguration() {
         az(mColor);
-        addOrUpdateSearchPaint(Ds.micStrokeWidth());
-        Dh = Ds.hintIsForAssistant();
+        addOrUpdateSearchPaint(configuration.micStrokeWidth());
+        Dh = configuration.hintIsForAssistant();
         mUseTwoBubbles = useTwoBubbles();
-        setHintText(Ds.hintTextValue(), mHint);
+        setHintText(configuration.hintTextValue(), mHint);
         addOrUpdateSearchRipple();
     }
 
     public void onClick(View view) {
         super.onClick(view);
-        if (view == this) {
-            startSearch("", this.mResult);
-        }
+        startSearch("", mResult);
     }
 
     public final void l(String str) {
@@ -215,6 +213,11 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     public final void startSearch(String str, int i) {
         SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
         SearchProvider provider = controller.getSearchProvider();
+
+        if (Launcher.getLauncher(getContext()).getStateManager().getState() != ALL_APPS) {
+            Launcher.getLauncher(getContext()).getStateManager().goToState(ALL_APPS);
+        }
+
         if (shouldUseFallbackSearch(provider)) {
             searchFallback(str);
         } else if (controller.isGoogle()) {
@@ -260,6 +263,10 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         } else if (!mDoNotRemoveFallback) {
             removeFallbackView();
         }
+    }
+
+    @Override
+    public void preDispatchKeyEvent(KeyEvent event) {
     }
 
     private void ensureFallbackView() {
@@ -395,10 +402,6 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         return false;
     }
 
-    @Override
-    public void preDispatchKeyEvent(KeyEvent keyEvent) {
-    }
-
     //Used when search bar is disabled
     public int getTopMargin(Rect rect) {
         return Math.max(Math.round(-this.appsVerticalOffset), rect.top - this.marginTop);
@@ -424,12 +427,10 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     @Override
     public void setContentVisibility(int visibleElements, PropertySetter setter, Interpolator interpolator) {
         boolean showAllApps = (visibleElements & ALL_APPS_CONTENT) != 0;
-
         if (showAllApps)
             setter.setViewAlpha(mSearchWrapperView, showAllApps ? 0f : (shouldHideDockSearch() ? 0f : 1f), Interpolators.LINEAR);
         else
             setter.setViewAlpha(mSearchWrapperView, !showAllApps ? 0f : (!shouldHideDockSearch() ? 1f : 0f), Interpolators.LINEAR);
-        //setter.setViewAlpha(mFallback, showAllApps ? 1f : 0f, Interpolators.LINEAR);
     }
 
     @Nullable
@@ -462,11 +463,6 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         protected QsbContainerView.QsbWidgetHost createHost() {
             return new QsbContainerView.QsbWidgetHost(getContext(), QSB_WIDGET_HOST_ID,
                     (c) -> new QsbWidgetHostView(c));
-        }
-
-        @Override
-        protected AppWidgetProviderInfo getSearchWidgetProvider() {
-            return DockSearch.getWidgetInfo(getContext());
         }
     }
 }

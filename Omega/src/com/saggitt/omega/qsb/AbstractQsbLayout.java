@@ -365,7 +365,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
                 canvas.drawRoundRect(i + i3, paddingTop2 + i3, paddingLeft3 - i3, (paddingBottom - i3) + 1, f, f, CV);
             }
             canvas.drawRoundRect(i + i2, paddingTop2 + i2, paddingLeft3 - i2, (paddingBottom - i2) + 1, f, f, mMicStrokePaint);
-
         }
         super.draw(canvas);
     }
@@ -647,6 +646,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         } else if (provider.getSupportsVoiceSearch()) {
             return provider.getVoiceIcon(colored);
         } else {
+            mUseTwoBubbles = false;
             mMicIconView.setVisibility(GONE);
             return new ColorDrawable(Color.TRANSPARENT);
         }

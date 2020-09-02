@@ -113,7 +113,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val dockLabelRows get() = if (dockMultilineLabel) 2 else 1
     val hideDockLabels by BooleanPref("pref_hideDockLabels", true, restart)
     var dockScale by FloatPref("pref_dockScale", -1f, recreate)
-    var dockSearchBarPref by BooleanPref("pref_dock_searchbar", false, recreate)
+    var dockSearchBarPref by BooleanPref("pref_dock_search", true, restart)
     inline val dockSearchBar get() = !dockHide && dockSearchBarPref
 
     /* --THEME-- */
