@@ -166,7 +166,6 @@ fun <T> JSONArray.toArrayList(): ArrayList<T> {
     return arrayList
 }
 
-
 fun Float.round() = roundToInt().toFloat()
 
 fun Float.ceilToInt() = ceil(this).toInt()

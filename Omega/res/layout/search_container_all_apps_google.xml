@@ -20,15 +20,7 @@
     android:layout_gravity="center|top"
     android:background="@drawable/bg_qsb_click_feedback"
     android:contentDescription="@string/title__general_search"
-    android:translationY="24dp">
-
-    <fragment
-        android:id="@+id/search_wrapper_view"
-        android:name="com.saggitt.omega.qsb.AllAppsQsbLayout$HotseatQsbFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:tag="qsb_view" />
+    android:translationY="30dp">
 
     <ImageView
         android:id="@id/g_icon"
@@ -41,18 +33,36 @@
         android:src="@drawable/ic_qsb_logo" />
 
     <ImageView
-        android:id="@id/mic_icon"
+        android:id="@+id/g_icon_hotseat"
         android:layout_width="@dimen/qsb_mic_width"
-        android:layout_height="fill_parent"
-        android:layout_gravity="end|center"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center"
         android:layout_marginTop="-6.0dip"
         android:layout_marginBottom="-6.0dip"
-        android:background="?android:selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:contentDescription="@string/label_voice_search"
-        android:focusable="false"
         android:scaleType="center"
-        android:src="@drawable/ic_qsb_mic" />
+        android:src="@drawable/ic_qsb_logo" />
 
-    <include layout="@layout/qsb_hint" />
+    <FrameLayout
+        android:id="@+id/mic_frame"
+        android:layout_width="@dimen/qsb_mic_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|center">
+
+        <ImageView
+            android:id="@id/mic_icon"
+            android:layout_width="@dimen/qsb_mic_width"
+            android:layout_height="fill_parent"
+            android:layout_gravity="end|center"
+            android:layout_marginTop="-6.0dip"
+            android:layout_marginBottom="-6.0dip"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/label_voice_search"
+            android:focusable="false"
+            android:scaleType="center"
+            android:src="@drawable/ic_qsb_mic" />
+
+        <include layout="@layout/qsb_hint" />
+
+    </FrameLayout>
 </com.saggitt.omega.qsb.AllAppsQsbLayout>

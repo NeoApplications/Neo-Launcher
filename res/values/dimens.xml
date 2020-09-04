@@ -29,22 +29,13 @@
     <dimen name="dynamic_grid_cell_padding_x">8dp</dimen>
 
     <!-- Hotseat -->
-    <dimen name="dynamic_grid_hotseat_top_padding">8dp</dimen>
+    <dimen name="dynamic_grid_hotseat_top_padding">0dp</dimen>
     <dimen name="dynamic_grid_hotseat_bottom_padding">62dp</dimen>
     <!-- Extra bottom padding for non-tall devices. -->
 
-    <!-- Override padding with a hotseat widget. -->
-    <dimen name="dynamic_grid_hotseat_bottom_padding_widget">
-        @dimen/dynamic_grid_hotseat_bottom_padding
-    </dimen>
-    <dimen name="dynamic_grid_hotseat_bottom_non_tall_padding_widget">
-        @dimen/dynamic_grid_hotseat_bottom_non_tall_padding
-    </dimen>
-    <dimen name="dynamic_grid_hotseat_bottom_non_tall_padding">0dp</dimen>
-    <dimen name="dynamic_grid_hotseat_extra_vertical_size_widget">
-        @dimen/dynamic_grid_hotseat_extra_vertical_size
-    </dimen>
-    <dimen name="dynamic_grid_hotseat_extra_vertical_size">34dp</dimen>
+    <dimen name="dynamic_grid_hotseat_bottom_non_tall_padding">15dp</dimen>
+
+    <dimen name="dynamic_grid_hotseat_extra_vertical_size">24dp</dimen>
     <dimen name="dynamic_grid_hotseat_side_padding">0dp</dimen>
 
     <!-- Hotseat/all-apps scrim -->

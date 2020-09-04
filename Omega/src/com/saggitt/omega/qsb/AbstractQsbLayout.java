@@ -44,6 +44,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.util.FloatProperty;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -83,8 +84,10 @@ import static com.saggitt.omega.util.Config.GOOGLE_QSB;
 import static com.saggitt.omega.util.OmegaUtilsKt.round;
 
 public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedPreferenceChangeListener,
-        OnClickListener, OnLongClickListener, Insettable, SearchProviderController.OnProviderChangeListener, WallpaperColorInfo.OnChangeListener {
+        OnClickListener, OnLongClickListener, Insettable, SearchProviderController.OnProviderChangeListener,
+        WallpaperColorInfo.OnChangeListener {
     protected final static String TAG = "AbstractQsbLayout";
+
     private static final Rect mSrcRect = new Rect();
     protected final TextPaint qsbTextHintSize;
     protected final Paint mMicStrokePaint;
@@ -95,25 +98,46 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     protected final int qsbTextSpacing;
     protected final int twoBubbleGap;
     protected final int mSearchIconWidth;
-    protected final boolean mIsRtl;
     private final int qsbDoodle;
     private final int mShadowMargin;
     private final int qsbHintLenght;
+    public static FloatProperty HOTSEAT_PROGRESS = new FloatProperty<AbstractQsbLayout>("hotseatProgress") {
+        @Override
+        public void setValue(AbstractQsbLayout qsb, float v) {
+            if (qsb.mHotseatProgress != v) {
+                qsb.mHotseatProgress = v;
+                qsb.invalidate();
+            }
+        }
+
+        @Override
+        public Float get(AbstractQsbLayout qsb) {
+            return qsb.mHotseatProgress;
+        }
+    };
+    protected int mResult;
     private final TransformingTouchDelegate mTouchDelegate;
     private final boolean workspaceDarkText;
+    protected int mColor;
+    protected boolean mIsRtl;
+    protected boolean mUseTwoBubbles;
+    protected boolean mShowAssistant;
     public float micStrokeWidth;
-    protected Bitmap Db;
-    protected int Dd;
     protected ImageView mMicIconView;
     protected ImageView mLogoIconView;
-    protected String Dg;
     protected boolean Dh;
-    protected int mResult;
-    protected boolean mUseTwoBubbles;
-    protected Bitmap mShadowBitmap;
+    protected ImageView mHotseatLogoIconView;
+    protected String Dg;
+    protected FrameLayout mMicFrame;
+    protected float mHotseatProgress = 1f;
+    protected Bitmap mAllAppsShadowBitmap;
+    protected Bitmap mHotseatShadowBitmap;
+    protected Bitmap mBubbleShadowBitmap;
     protected Bitmap mClearBitmap;
-    protected int mColor;
-    protected boolean mShowAssistant;
+
+    protected int mAllAppsBgColor;
+    protected int mHotseatBgColor;
+    protected int mBubbleBgColor;
     private float mRadius = -1.0f;
 
     public AbstractQsbLayout(Context context) {
@@ -169,11 +193,12 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         dy().registerOnSharedPreferenceChangeListener(this);
-        mTouchDelegate.setDelegateView(mMicIconView);
+        mTouchDelegate.setDelegateView(mMicFrame);
         SearchProviderController.Companion.getInstance(getContext()).addOnProviderChangeListener(this);
         WallpaperColorInfo instance = WallpaperColorInfo.getInstance(getContext());
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
+
         updateConfiguration();
     }
 
@@ -194,7 +219,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             if (i == 0) {
                 i2 = 2;
             }
-            this.mResult = i2;
+            mResult = i2;
         }
         return super.onTouchEvent(motionEvent);
     }
@@ -209,23 +234,20 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     protected void loadIcons() {
         mLogoIconView = findViewById(R.id.g_icon);
         mMicIconView = findViewById(R.id.mic_icon);
-
+        mHotseatLogoIconView = findViewById(R.id.g_icon_hotseat);
+        mMicFrame = findViewById(R.id.mic_frame);
         mMicIconView.setOnClickListener(this);
         mLogoIconView.setOnClickListener(this);
     }
 
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        mMicIconView.getHitRect(mSrcRect);
         if (mIsRtl) {
             mSrcRect.left -= mShadowMargin;
         } else {
             mSrcRect.right += mShadowMargin;
         }
         mTouchDelegate.setBounds(mSrcRect.left, mSrcRect.top, mSrcRect.right, mSrcRect.bottom);
-
-        View view = (View) getParent();
-        setTranslationX((float) ((view.getPaddingLeft() + ((((view.getWidth() - view.getPaddingLeft()) - view.getPaddingRight()) - (right - left)) / 2)) - left));
     }
 
     protected void onDetachedFromWindow() {
@@ -242,10 +264,36 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
                         ? -650362813 : -855638017, Themes.getAttrColor(mLauncher, R.attr.allAppsScrimColor)), wallpaperColorInfo.getMainColor()));
     }
 
+    private void setColor(int color) {
+        if (mColor != color) {
+            mColor = color;
+            mAllAppsShadowBitmap = null;
+            setHotseatBgColor(color);
+            setAllAppsBgColor(color);
+            invalidate();
+        }
+    }
+
+    public final void setAllAppsBgColor(int color) {
+        if (mAllAppsBgColor != color) {
+            mAllAppsBgColor = color;
+            mAllAppsShadowBitmap = null;
+            invalidate();
+        }
+    }
+
+    public final void setHotseatBgColor(int color) {
+        if (mHotseatBgColor != color) {
+            mHotseatBgColor = color;
+            mHotseatShadowBitmap = null;
+            invalidate();
+        }
+    }
+
     public final void az(int i) {
-        Dd = i;
-        if (Dd != mColor || Db != mShadowBitmap) {
-            Db = null;
+        mBubbleBgColor = i;
+        if (mBubbleBgColor != mAllAppsBgColor || mBubbleShadowBitmap != mAllAppsShadowBitmap) {
+            mBubbleShadowBitmap = null;
             invalidate();
         }
     }
@@ -275,9 +323,9 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         for (int childCount = getChildCount() - 1; childCount >= 0; childCount--) {
             View childAt = getChildAt(childCount);
             measureChildWithMargins(childAt, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            if (childAt.getWidth() <= round) {
+            if (childAt.getMeasuredWidth() <= round) {
                 LayoutParams layoutParams = (LayoutParams) childAt.getLayoutParams();
-                int measuredWidth = (round - childAt.getWidth()) / 2;
+                int measuredWidth = (round - childAt.getMeasuredWidth()) / 2;
                 layoutParams.rightMargin = measuredWidth;
                 layoutParams.leftMargin = measuredWidth;
             }
@@ -297,15 +345,18 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         return getPaddingRight() + getPaddingLeft() + calculateCellWidth;
     }
 
-    final void loadBitmap() {
-        if (mShadowBitmap == null) {
-            mShadowBitmap = createBitmap(mColor);
+    final void drawMainPill(Canvas canvas) {
+        if (mAllAppsBgColor == mHotseatBgColor || mHotseatProgress == 0f) {
+            drawShadow(mAllAppsShadowBitmap, canvas);
+        } else if (mHotseatProgress == 1f) {
+            drawShadow(mHotseatShadowBitmap, canvas);
+        } else {
+            mShadowHelper.paint.setAlpha(Math.round(255 * (1 - mHotseatProgress)));
+            drawShadow(mAllAppsShadowBitmap, canvas);
+            mShadowHelper.paint.setAlpha(Math.round(255 * mHotseatProgress));
+            drawShadow(mHotseatShadowBitmap, canvas);
+            mShadowHelper.paint.setAlpha(255);
         }
-    }
-
-    private Bitmap createBitmap(int color) {
-        float iconBitmapSize = (float) LauncherAppState.getInstance(getContext()).getInvariantDeviceProfile().iconBitmapSize;
-        return createBitmap(iconBitmapSize / 96f, iconBitmapSize / 48f, color);
     }
 
     protected void clearMainPillBg(Canvas canvas) {
@@ -315,28 +366,26 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     public void draw(Canvas canvas) {
-        int i;
-        loadBitmap();
+        ensureHotseatShadowBitmap();
         clearMainPillBg(canvas);
-        drawShadow(mShadowBitmap, canvas);
+        drawQsb(canvas);
+        super.draw(canvas);
+    }
+
+    public void drawQsb(Canvas canvas) {
+        int i;
+        drawMainPill(canvas);
         if (mUseTwoBubbles) {
             int paddingLeft;
             int paddingLeft2;
-            if (Db == null) {
-                Bitmap bitmap;
-                if (mColor == Dd) {
-                    i = 1;
+            if (mBubbleShadowBitmap == null) {
+                if (mAllAppsBgColor == mBubbleBgColor) {
+                    mBubbleShadowBitmap = mAllAppsShadowBitmap;
                 } else {
-                    i = 0;
+                    mBubbleShadowBitmap = createShadowBitmap(mBubbleBgColor, true);
                 }
-                if (i != 0) {
-                    bitmap = mShadowBitmap;
-                } else {
-                    bitmap = createBitmap(Dd);
-                }
-                Db = bitmap;
             }
-            Bitmap bitmap2 = Db;
+            Bitmap bitmap2 = mBubbleShadowBitmap;
             i = getShadowDimens(bitmap2);
             int paddingTop = getPaddingTop() - ((bitmap2.getHeight() - getHeightWithoutPadding()) / 2);
             if (mIsRtl) {
@@ -350,7 +399,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             clearPillBg(canvas, paddingLeft, paddingTop, paddingLeft2 + i);
             mShadowHelper.draw(bitmap2, canvas, (float) paddingLeft, (float) paddingTop, (float) (paddingLeft2 + i));
         }
-        if (micStrokeWidth > 0.0f && mMicIconView.getVisibility() == View.VISIBLE) {
+        if (micStrokeWidth > 0.0f && mMicFrame.getVisibility() == View.VISIBLE) {
             float i2;
             i = mIsRtl ? getPaddingLeft() : (getWidth() - getPaddingRight()) - getMicWidth();
             int paddingTop2 = getPaddingTop();
@@ -366,7 +415,60 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             }
             canvas.drawRoundRect(i + i2, paddingTop2 + i2, paddingLeft3 - i2, (paddingBottom - i2) + 1, f, f, mMicStrokePaint);
         }
-        super.draw(canvas);
+    }
+
+    final void ensureAllAppsShadowBitmap() {
+        if (mAllAppsShadowBitmap == null) {
+            mAllAppsShadowBitmap = createShadowBitmap(mAllAppsBgColor, true);
+            mClearBitmap = null;
+            if (Color.alpha(mAllAppsBgColor) != 255) {
+                mClearBitmap = createShadowBitmap(0xFF000000, false);
+            }
+        }
+    }
+
+    final void ensureHotseatShadowBitmap() {
+        ensureAllAppsShadowBitmap();
+        if (mHotseatShadowBitmap == null) {
+            if (mHotseatBgColor == mAllAppsBgColor) {
+                mHotseatShadowBitmap = mAllAppsShadowBitmap;
+            } else {
+                mHotseatShadowBitmap = createShadowBitmap(mHotseatBgColor, true);
+            }
+        }
+    }
+
+    private Bitmap createShadowBitmap(int bgColor, boolean withShadow) {
+        float f = (float) LauncherAppState.getInstance(getContext()).getInvariantDeviceProfile().iconBitmapSize;
+        return createShadowBitmap(0.010416667f * f, f * 0.020833334f, bgColor, withShadow);
+    }
+
+    protected final Bitmap createShadowBitmap(float f, float f2, int i, boolean withShadow) {
+        int dC = getHeightWithoutPadding();
+        int i2 = dC + 20;
+        ShadowGenerator.Builder builder = new ShadowGenerator.Builder(i);
+        builder.shadowBlur = f;
+        builder.keyShadowDistance = f2;
+        if (!withShadow) {
+            builder.ambientShadowAlpha = 0;
+        }
+        builder.keyShadowAlpha = builder.ambientShadowAlpha;
+        Bitmap pill;
+        if (mRadius < 0) {
+            TypedValue edgeRadius = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius);
+            if (edgeRadius != null) {
+                pill = builder.createPill(i2, dC,
+                        edgeRadius.getDimension(getResources().getDisplayMetrics()));
+            } else {
+                pill = builder.createPill(i2, dC);
+            }
+        } else {
+            pill = builder.createPill(i2, dC, mRadius);
+        }
+        if (Utilities.ATLEAST_P) {
+            return pill.copy(Config.HARDWARE, false);
+        }
+        return pill;
     }
 
     protected final void drawShadow(Bitmap bitmap, Canvas canvas) {
@@ -407,30 +509,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             }
         } else {
             pill = builder.createPill(heightSpec, height, mRadius);
-        }
-        if (Utilities.ATLEAST_OREO) {
-            return pill.copy(Config.HARDWARE, false);
-        }
-        return pill;
-    }
-
-    private Bitmap createBitmap(float shadowBlur, float keyShadowDistance, int color) {
-        int height = getHeightWithoutPadding();
-        int heightSpec = height + 20;
-        ShadowGenerator.Builder builder = new ShadowGenerator.Builder(color);
-        builder.shadowBlur = shadowBlur;
-        builder.keyShadowDistance = keyShadowDistance;
-        builder.keyShadowAlpha = builder.ambientShadowAlpha;
-        Bitmap pill = builder.createPill(heightSpec, height);
-        if (Color.alpha(color) < 255) {
-            Canvas canvas = new Canvas(pill);
-            Paint paint = new Paint();
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            canvas.drawRoundRect(builder.bounds, (float) (height / 2), (float) (height / 2), paint);
-            paint.setXfermode(null);
-            paint.setColor(color);
-            canvas.drawRoundRect(builder.bounds, (float) (height / 2), (float) (height / 2), paint);
-            canvas.setBitmap(null);
         }
         if (Utilities.ATLEAST_OREO) {
             return pill.copy(Config.HARDWARE, false);
@@ -492,14 +570,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         return (Math.round(qsbTextHintSize.measureText(this.Dg)) + qsbTextSpacing) + mSearchIconWidth;
     }
 
-    private void setColor(int color) {
-        if (mColor != color) {
-            mColor = color;
-            mShadowBitmap = null;
-            invalidate();
-        }
-    }
-
     protected final void addOrUpdateSearchRipple() {
         int width;
         int height;
@@ -519,7 +589,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         RippleDrawable newRipple = (RippleDrawable) oldRipple.getConstantState().newDrawable().mutate();
         newRipple.setLayerInset(0, 0, mShadowMargin, 0, mShadowMargin);
         mMicIconView.setBackground(newRipple);
-        mMicIconView.getLayoutParams().width = getMicWidth();
+        mMicFrame.getLayoutParams().width = getMicWidth();
         if (mIsRtl) {
             micWidth = 0;
         } else {
@@ -604,7 +674,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
                 loadPreferences(sharedPreferences);
         }
         if (key.equals("pref_searchbarRadius")) {
-            mShadowBitmap = null;
             loadPreferences(sharedPreferences);
         }
     }
@@ -616,14 +685,31 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
 
     protected void loadPreferences(SharedPreferences sharedPreferences) {
         post(() -> {
+            SearchProvider provider = SearchProviderController.Companion.getInstance(getContext()).getSearchProvider();
+            boolean providerSupported = provider.getSupportsAssistant() || provider.getSupportsVoiceSearch();
+            boolean showMic = sharedPreferences.getBoolean("opa_enabled", true) && providerSupported;
             mShowAssistant = sharedPreferences.getBoolean("opa_assistant", true);
             mLogoIconView.setImageDrawable(getIcon());
+            mHotseatLogoIconView.setImageDrawable(getHotseatIcon(true));
+            mMicFrame.setVisibility(showMic ? View.VISIBLE : View.GONE);
+            mMicIconView.setVisibility(View.VISIBLE);
             mMicIconView.setImageDrawable(getMicIcon());
-            mMicIconView.setVisibility(sharedPreferences.getBoolean("opa_enabled", true) ? View.VISIBLE : View.GONE);
             mUseTwoBubbles = useTwoBubbles();
             mRadius = Utilities.getOmegaPrefs(getContext()).getSearchBarRadius();
+            clearBitmaps();
+            addOrUpdateSearchRipple();
             invalidate();
         });
+    }
+
+    private void clearBitmaps() {
+        mAllAppsShadowBitmap = null;
+        mHotseatShadowBitmap = null;
+        mClearBitmap = null;
+    }
+
+    protected Drawable getHotseatIcon(boolean colored) {
+        return getIcon(colored);
     }
 
     protected Drawable getIcon() {

@@ -34,7 +34,7 @@ class BlankActivity : Activity() {
 
     private val requestCode by lazy { intent.getIntExtra("requestCode", 0) }
     private val permissionRequestCode by lazy { intent.getIntExtra("permissionRequestCode", 0) }
-    private val resultReceiver by lazy { intent.getParcelableArrayExtra("callback")!! as ResultReceiver }
+    private val resultReceiver by lazy { intent.getParcelableArrayExtra("callback") as ResultReceiver }
     private var resultSent = false
     private var firstResume = true
     private var targetStarted = false
