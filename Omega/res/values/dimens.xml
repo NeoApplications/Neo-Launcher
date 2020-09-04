@@ -18,7 +18,7 @@
 
 <resources>
 
-    <dimen name="dynamic_grid_drawer_additional_padding">36dp</dimen>
+    <dimen name="dynamic_grid_drawer_additional_padding">30dp</dimen>
     <dimen name="all_apps_search_vertical_offset">30dp</dimen>
 
     <!-- Dashboard tile image margin start / end -->

@@ -545,8 +545,8 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
                 (int) (allAppsIconTextSizeOriginalPx - allAppsIconTextSizePx);
 
         int additionalPadding = (int) (
-                res.getDimensionPixelSize(R.dimen.dynamic_grid_drawer_additional_padding) * prefs
-                        .getDrawerPaddingScale());
+                res.getDimensionPixelSize(R.dimen.dynamic_grid_drawer_additional_padding) *
+                        prefs.getDrawerPaddingScale());
         allAppsCellHeightPx = allAppsIconSizePx + allAppsIconDrawablePaddingPx + textHeight
                 + additionalPadding;
 

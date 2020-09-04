@@ -16,7 +16,9 @@
  */
 package com.saggitt.omega.qsb;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BaseRecyclerView;
@@ -40,6 +43,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.allapps.SearchUiManager;
 import com.android.launcher3.anim.PropertySetter;
+import com.android.launcher3.util.PackageManagerHelper;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.search.SearchProviderController;
@@ -47,8 +51,6 @@ import com.saggitt.omega.search.SearchThread;
 import com.saggitt.omega.search.providers.AppSearchSearchProvider;
 import com.saggitt.omega.search.providers.GoogleSearchProvider;
 import com.saggitt.omega.search.webproviders.WebSearchProvider;
-
-import java.util.Objects;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
 import static com.android.launcher3.LauncherState.ALL_APPS_HEADER;
@@ -203,14 +205,22 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     @Override
     public final void startSearch(String str, int i) {
-        SearchProviderController controller = SearchProviderController.Companion.getInstance(mLauncher);
-        SearchProvider provider = controller.getSearchProvider();
+        if (mHotseatProgress < 0.5) {
+            startDrawerSearch(str, i);
+        } else {
+            startHotseatSearch();
+        }
+    }
 
+    private void startDrawerSearch(String str, int i) {
+        SearchProviderController controller = SearchProviderController.Companion
+                .getInstance(getContext());
+        SearchProvider provider = controller.getSearchProvider();
         if (shouldUseFallbackSearch(provider)) {
             searchFallback(str);
         } else if (controller.isGoogle()) {
             final ConfigBuilder f = new ConfigBuilder(this, true);
-            if (!Objects.requireNonNull(mLauncher.getGoogleNow()).startSearch(f.build(), f.getExtras())) {
+            if (!mLauncher.getGoogleNow().startSearch(f.build(), f.getExtras())) {
                 searchFallback(str);
                 if (mFallback != null) {
                     mFallback.setHint(null);
@@ -222,6 +232,58 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
                 return null;
             });
         }
+    }
+
+    private void startHotseatSearch() {
+        SearchProviderController controller = SearchProviderController.Companion.getInstance(getContext());
+        if (controller.isGoogle()) {
+            startGoogleSearch();
+        } else {
+            controller.getSearchProvider().startSearch(intent -> {
+                mLauncher.openQsb();
+                getContext().startActivity(intent, ActivityOptionsCompat
+                        .makeClipRevealAnimation(this, 0, 0, getWidth(), getHeight()).toBundle());
+                return null;
+            });
+        }
+    }
+
+    private void startGoogleSearch() {
+        final ConfigBuilder f = new ConfigBuilder(this, false);
+        if (!forceFallbackSearch() && mLauncher.getGoogleNow()
+                .startSearch(f.build(), f.getExtras())) {
+            SharedPreferences devicePrefs = Utilities.getDevicePrefs(getContext());
+            devicePrefs.edit().putInt("key_hotseat_qsb_tap_count",
+                    devicePrefs.getInt("key_hotseat_qsb_tap_count", 0) + 1).apply();
+            mLauncher.playQsbAnimation();
+        } else {
+            getContext().sendOrderedBroadcast(getSearchIntent(), null,
+                    new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            if (getResultCode() == 0) {
+                                fallbackSearch(
+                                        "com.google.android.googlequicksearchbox.TEXT_ASSIST");
+                            } else {
+                                mLauncher.playQsbAnimation();
+                            }
+                        }
+                    }, null, 0, null, null);
+        }
+    }
+
+    private boolean forceFallbackSearch() {
+        return !PackageManagerHelper.isAppEnabled(getContext().getPackageManager(),
+                "com.google.android.apps.nexuslauncher", 0);
+    }
+
+    private Intent getSearchIntent() {
+        int[] array = new int[2];
+        getLocationInWindow(array);
+        Rect rect = new Rect(0, 0, getWidth(), getHeight());
+        rect.offset(array[0], array[1]);
+        rect.inset(getPaddingLeft(), getPaddingTop());
+        return ConfigBuilder.getSearchIntent(rect, findViewById(R.id.g_icon), mMicIconView);
     }
 
     private boolean shouldUseFallbackSearch() {
