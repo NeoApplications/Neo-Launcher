@@ -1,6 +1,7 @@
 ### v0.4.0 (Build 30)
 * **Add: Hide apps preference**
 * **Add: Icon Shape preference**
+* **Add: Dock search**
 
 ### v0.3.0 (Build 20)
 * **Add gestures preference**

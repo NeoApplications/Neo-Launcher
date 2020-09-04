@@ -23,10 +23,10 @@ Free and Open Source Launcher. <br/>
 -   [X] Icon Shape support.
 -   [X] Quick Action shortcuts (Dash).
 -   [X] Hide apps (Dash).
+-   [X] Dock search.
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
--   [ ] Dock search.
 -   [ ] Drawer grid preference.
 -   [ ] Desktop grid preference.
 -   [ ] Back up and restore.
