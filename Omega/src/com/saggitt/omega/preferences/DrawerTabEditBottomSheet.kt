@@ -26,12 +26,12 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.DrawerFolders
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsBottomSheet
 import com.saggitt.omega.util.applyColor
-import com.saggitt.omega.util.getColorAccent
 import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.views.BaseBottomSheet
 
@@ -42,7 +42,7 @@ class DrawerTabEditBottomSheet(context: Context, config: AppGroups.Group.Customi
     init {
         View.inflate(context, R.layout.drawer_tab_edit_bottom_sheet, this)
 
-        val accent = context.getColorAccent()
+        val accent = Utilities.getOmegaPrefs(context).accentColor
         val container = findViewById<ViewGroup>(R.id.customization_container)
         config.sortedEntries.reversed().forEach { entry ->
             entry.createRow(context, container, accent)?.let { container.addView(it, 0) }
