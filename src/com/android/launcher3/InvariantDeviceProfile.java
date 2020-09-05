@@ -45,6 +45,7 @@ import com.android.launcher3.util.DefaultDisplay;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Themes;
+import com.saggitt.omega.adaptive.IconShapeManager;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -199,7 +200,17 @@ public class InvariantDeviceProfile {
     /**
      * Retrieve system defined or RRO overriden icon shape.
      */
-    private static String getIconShapePath(Context context) {
+    private static String getIconShapePath(Context context) {/*
+        if (CONFIG_ICON_MASK_RES_ID == 0) {
+            Log.e(TAG, "Icon mask res identifier failed to retrieve.");
+            return "";
+        }
+        return context.getResources().getString(CONFIG_ICON_MASK_RES_ID);*/
+
+        return IconShapeManager.Companion.getInstance(context).getIconShape().getHashString();
+    }
+
+    public static String getSystemIconShapePath(Context context) {
         if (CONFIG_ICON_MASK_RES_ID == 0) {
             Log.e(TAG, "Icon mask res identifier failed to retrieve.");
             return "";

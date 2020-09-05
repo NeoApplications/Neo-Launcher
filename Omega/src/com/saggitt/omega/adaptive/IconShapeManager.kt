@@ -30,6 +30,7 @@ import android.text.TextUtils
 import androidx.annotation.Keep
 import androidx.core.graphics.PathParser
 import com.android.launcher3.AdaptiveIconCompat
+import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
 import com.saggitt.omega.icons.IconShapeOverride
 import com.saggitt.omega.util.OmegaSingletonHolder
@@ -74,6 +75,10 @@ class IconShapeManager(private val context: Context) {
             }
 
             override fun toString() = ""
+
+            override fun getHashString(): String {
+                return InvariantDeviceProfile.getSystemIconShapePath(context)
+            }
         }
     }
 

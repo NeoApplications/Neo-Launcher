@@ -143,7 +143,7 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
 
     static {
         try {
-            Class classIconShapeManager = Class.forName("ch.deletescape.lawnchair.adaptive.IconShapeManager");
+            Class classIconShapeManager = Class.forName("com.saggitt.omega.adaptive.IconShapeManager");
             methodGetAdaptiveIconMaskPath = classIconShapeManager.getMethod("getAdaptiveIconMaskPath");
             methodExtractThemeAttrs = TypedArray.class.getDeclaredMethod("extractThemeAttrs");
             methodCreateFromXmlInnerForDensity = Drawable.class.getDeclaredMethod(
@@ -208,6 +208,7 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
      * @param backgroundDrawable drawable that should be rendered in the background
      * @param foregroundDrawable drawable that should be rendered in the foreground
      */
+    @RequiresApi(api = VERSION_CODES.O)
     public AdaptiveIconCompat(Drawable backgroundDrawable,
                               Drawable foregroundDrawable) {
         this((LayerState) null, null);

@@ -152,8 +152,12 @@ open class IconShape(val topLeft: Corner,
     override fun toString(): String {
         return "v1|$topLeft|$topRight|$bottomLeft|$bottomRight"
     }
+
+    open fun getHashString() = toString()
+
     data class Corner(val shape: IconCornerShape, val scale: PointF) {
         constructor(shape: IconCornerShape, scale: Float) : this(shape, PointF(scale, scale))
+
         override fun toString(): String {
             return "$shape,${scale.x},${scale.y}"
         }
