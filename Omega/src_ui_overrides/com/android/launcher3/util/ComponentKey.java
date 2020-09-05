@@ -64,7 +64,6 @@ public class ComponentKey {
             user = Process.myUserHandle();
         }
 
-
         Preconditions.assertNotNull(componentName);
         Preconditions.assertNotNull(user);
         mHashCode = Arrays.hashCode(new Object[]{componentName, user});

@@ -68,8 +68,6 @@ open class AppsAdapter(
     var isLoaded = false
     val apps = ArrayList<App>()
 
-    val handler = MAIN_EXECUTOR.handler
-
     open val comparator = defaultComparator
 
     fun postLoadApps() {
@@ -101,7 +99,7 @@ open class AppsAdapter(
         apps.addAll(getAppsList(context)
                 .map { App(context, it) }
                 .sortedWith(comparator))
-        handler.postAtFrontOfQueue(::onAppsListLoaded)
+        MAIN_EXECUTOR.handler.postAtFrontOfQueue(::onAppsListLoaded)
     }
 
     protected open fun onAppsListLoaded() {

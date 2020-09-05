@@ -17,7 +17,6 @@
 
 package com.saggitt.omega.groups
 
-import android.content.ComponentName
 import android.content.Context
 import android.os.Process
 import android.view.LayoutInflater
@@ -161,14 +160,14 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
         private fun filteredValue(context: Context): Collection<ComponentKey> {
             return context.omegaPrefs.hiddenAppSet
-                    .map { ComponentKey(ComponentName(context, it), Process.myUserHandle()) }
+                    .map { ComponentKey(context, it) }
                     .filter(predicate)
         }
 
         private fun setHiddenApps(context: Context, hidden: Collection<ComponentKey>) {
             val prefs = context.omegaPrefs
             val hiddenSet = ArrayList(prefs.hiddenAppSet
-                    .map { ComponentKey(ComponentName(context, it), Process.myUserHandle()) }
+                    .map { ComponentKey(context, it) }
                     .filter { !predicate(it) })
             hiddenSet.addAll(hidden)
             prefs.hiddenAppSet = hiddenSet.map(ComponentKey::toString).toSet()

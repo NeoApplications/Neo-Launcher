@@ -881,12 +881,6 @@ public final class Utilities {
         onStart.add(runnable);
     }
 
-
-    public static void goToHome(Context context, Runnable onStart) {
-        cueAfterNextStart(onStart);
-        goToHome(context);
-    }
-
     public static void goToHome(Context context) {
         PackageManager pm = context.getPackageManager();
 
