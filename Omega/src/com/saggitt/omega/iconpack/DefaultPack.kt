@@ -81,7 +81,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
     override fun getEntryForComponent(key: ComponentKey) = appMap[key]
 
     override fun getIcon(entry: IconPackManager.CustomIconEntry, iconDpi: Int): Drawable? {
-        return getIcon(ComponentKey(context, entry.icon), iconDpi)
+        return getIcon(Utilities.makeComponentKey(context, entry.icon), iconDpi)
     }
 
     fun getIcon(key: ComponentKey, iconDpi: Int): Drawable? {
@@ -107,7 +107,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         val key: ComponentKey
         val info: LauncherActivityInfo
         if (customIconEntry != null && !TextUtils.isEmpty(customIconEntry.icon)) {
-            key = ComponentKey(context, customIconEntry.icon)
+            key = Utilities.makeComponentKey(context, customIconEntry.icon)
             info = key.getLauncherActivityInfo(context) ?: launcherActivityInfo
         } else {
             key = ComponentKey(launcherActivityInfo.componentName, launcherActivityInfo.user)
@@ -154,7 +154,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
 
         if (Utilities.ATLEAST_OREO && itemInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
             val component = if (customIconEntry?.icon != null) {
-                ComponentKey(context, customIconEntry.icon).componentName
+                Utilities.makeComponentKey(context, customIconEntry.icon).componentName
             } else {
                 itemInfo.targetComponent
             }

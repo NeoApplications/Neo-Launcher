@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.AppFilter
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.OmegaAppFilter
@@ -113,7 +114,7 @@ class SelectableAppsActivity : SettingsActivity() {
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         if (resultCode == Activity.RESULT_OK) {
                             callback(resultData!!.getStringArrayList(KEY_SELECTION)!!.map {
-                                ComponentKey(context, it)
+                                Utilities.makeComponentKey(context, it)
                             })
                         } else {
                             callback(null)

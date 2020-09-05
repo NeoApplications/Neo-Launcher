@@ -27,6 +27,7 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
 import com.saggitt.omega.preferences.SelectableAppsActivity
@@ -448,7 +449,7 @@ abstract class AppGroups<T : AppGroups.Group>(private val manager: AppGroupsMana
             }
 
             override fun unflatten(context: Context, value: String): ComponentKey {
-                return ComponentKey(context, value)
+                return Utilities.makeComponentKey(context, value)
             }
 
             override fun flatten(value: ComponentKey): String {

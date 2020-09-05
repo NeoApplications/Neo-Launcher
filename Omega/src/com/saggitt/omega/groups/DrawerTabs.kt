@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.OmegaPreferencesChangeCallback
 import com.saggitt.omega.groups.FlowerpotTabs.FlowerpotTab
@@ -102,7 +103,7 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
         override fun getSummary(context: Context): String? {
             val hidden = context.omegaPrefs.hiddenAppSet
-                    .map { ComponentKey(context, it) }
+                    .map { Utilities.makeComponentKey(context, it) }
                     .filter(getWorkFilter(filterIsWork))
             val size = hidden.size
             if (size == 0) {
@@ -160,14 +161,14 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
         private fun filteredValue(context: Context): Collection<ComponentKey> {
             return context.omegaPrefs.hiddenAppSet
-                    .map { ComponentKey(context, it) }
+                    .map { Utilities.makeComponentKey(context, it) }
                     .filter(predicate)
         }
 
         private fun setHiddenApps(context: Context, hidden: Collection<ComponentKey>) {
             val prefs = context.omegaPrefs
             val hiddenSet = ArrayList(prefs.hiddenAppSet
-                    .map { ComponentKey(context, it) }
+                    .map { Utilities.makeComponentKey(context, it) }
                     .filter { !predicate(it) })
             hiddenSet.addAll(hidden)
             prefs.hiddenAppSet = hiddenSet.map(ComponentKey::toString).toSet()

@@ -55,7 +55,9 @@ import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.os.Process;
 import android.os.TransactionTooLargeException;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -75,12 +77,14 @@ import androidx.core.content.ContextCompat;
 
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
+import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.RotationMode;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.ShortcutKey;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.Transposable;
@@ -898,6 +902,33 @@ public final class Utilities {
             return Integer.parseInt(identifier.substring(1));
         } catch (NumberFormatException e) {
             return res.getIdentifier(identifier.substring(1), null, packageName);
+        }
+    }
+
+    /**
+     * Creates a new component key from an encoded component key string in the form of
+     * [flattenedComponentString#userId].  If the userId is not present, then it defaults
+     * to the current user.
+     */
+    public static ComponentKey makeComponentKey(Context context, String componentKeyStr) {
+        ComponentName componentName;
+        UserHandle user;
+        int userDelimiterIndex = componentKeyStr.indexOf("#");
+        if (userDelimiterIndex != -1) {
+            String componentStr = componentKeyStr.substring(0, userDelimiterIndex);
+            long componentUser = Long.parseLong(componentKeyStr.substring(userDelimiterIndex + 12, componentKeyStr.length() - 1));
+            componentName = ComponentName.unflattenFromString(componentStr);
+            user = Utilities.notNullOrDefault(UserManagerCompat.getInstance(context)
+                    .getUserForSerialNumber(componentUser), Process.myUserHandle());
+        } else {
+            // No user provided, default to the current user
+            componentName = ComponentName.unflattenFromString(componentKeyStr);
+            user = Process.myUserHandle();
+        }
+        try {
+            return new ComponentKey(componentName, user);
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Trying to create invalid component key: " + componentKeyStr);
         }
     }
 
