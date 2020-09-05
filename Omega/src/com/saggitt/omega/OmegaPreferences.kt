@@ -70,7 +70,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     /* --APP DRAWER-- */
     var sortMode by StringIntPref("pref_key__sort_mode", 0, recreate)
-    //val showPredictions by BooleanPref("pref_show_predictions", false, doNothing)
+    val showPredictions by BooleanPref("pref_show_predictions", false, doNothing)
     val showAllAppsLabel by BooleanPref("pref_showAllAppsLabel", false) {
         val header = onChangeCallback?.launcher?.appsView?.floatingHeaderView
         header?.updateShowAllAppsLabel()

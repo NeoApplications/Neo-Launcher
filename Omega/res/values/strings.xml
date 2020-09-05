@@ -202,6 +202,7 @@
     <string name="action_open_dash">Open Dash</string>
     <string name="gesture_double_tap">Double tap</string>
     <string name="gesture_long_press">Touch &amp; Hold</string>
+    <string name="gesture_swipe_up">Swipe Up</string>
 
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
@@ -306,6 +307,9 @@
 
     <string name="debug_component_name">Component Name</string>
     <string name="debug_component_name_copied">Copied to clipboard.</string>
+    <string name="hide_app">Hide Shortcut</string>
+    <string name="folder_cover_mode">Use Cover Mode</string>
+    <string name="folder_cover_mode_desc">Tap to open first app, swipe up to view all.</string>
 
     <string name="loading">Loading…</string>
 

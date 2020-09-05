@@ -88,6 +88,14 @@ public class PackageManagerHelper {
         }
     }
 
+    public String getPackageVersion(final String packageName) {
+        try {
+            PackageInfo info = mPm.getPackageInfo(packageName, 0);
+            return info.versionName;
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
+        return "";
+    }
 
     /**
      * Returns whether the target app is suspended for a given user as per
