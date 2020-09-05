@@ -202,7 +202,7 @@
         <item name="workspaceKeyShadowColor">#44000000</item>
     </style>
 
-    <style name="Theme.Transparent" parent="android:Theme">
+    <style name="Theme.Transparent" parent="Theme.AppCompat.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
