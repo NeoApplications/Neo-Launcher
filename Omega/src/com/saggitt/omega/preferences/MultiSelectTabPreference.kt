@@ -36,7 +36,6 @@ import com.saggitt.omega.util.addOrRemove
 import com.saggitt.omega.util.applyAccent
 import com.saggitt.omega.util.omegaPrefs
 
-
 class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : LauncherRecyclerViewPreference(context, attrs) {
 
     lateinit var componentKey: ComponentKey

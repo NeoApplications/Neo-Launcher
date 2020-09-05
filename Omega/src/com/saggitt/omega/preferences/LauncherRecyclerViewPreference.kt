@@ -22,6 +22,7 @@ import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
 import com.saggitt.omega.theme.ThemeOverride
 
@@ -39,5 +40,5 @@ abstract class LauncherRecyclerViewPreference(context: Context, attrs: Attribute
         onBindRecyclerView(view.findViewById(R.id.list))
     }
 
-    abstract fun onBindRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView)
+    abstract fun onBindRecyclerView(recyclerView: RecyclerView)
 }

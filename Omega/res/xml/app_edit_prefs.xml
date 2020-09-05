@@ -13,9 +13,9 @@
      limitations under the License.
 -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.saggitt.omega.preferences.StyledSwitchPreference
+    <SwitchPreference
         android:defaultValue="false"
         android:key="pref_app_hide"
         android:persistent="false"
@@ -30,7 +30,7 @@
         android:key="pref_swipe_up_gesture"
         android:title="@string/gesture_swipe_up" />
 
-    <com.saggitt.omega.preferences.StyledSwitchPreference
+    <SwitchPreference
         android:defaultValue="false"
         android:disableDependentsState="true"
         android:key="pref_cover_mode"
@@ -38,7 +38,7 @@
         android:summary="@string/folder_cover_mode_desc"
         android:title="@string/folder_cover_mode" />
 
-    <com.saggitt.omega.preferences.LauncherStyledPreferenceCategory
+    <PreferenceCategory
         android:key="debug"
         android:layout="@layout/settings_category_material"
         android:title="@string/developer_options_title">
@@ -50,6 +50,6 @@
         <Preference
             android:key="versionName"
             android:title="Version" />
-    </com.saggitt.omega.preferences.LauncherStyledPreferenceCategory>
+    </PreferenceCategory>
 
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>

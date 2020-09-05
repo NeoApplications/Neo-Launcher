@@ -30,7 +30,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.ItemInfo;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.WorkspaceItemInfo;
+import com.saggitt.omega.override.CustomInfoProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,14 +64,25 @@ public class DeepShortcutManager {
         mLauncherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
     }
 
+    public static boolean supportsShortcuts(ItemInfo info) {
+        boolean isItemPromise = info instanceof WorkspaceItemInfo
+                && ((WorkspaceItemInfo) info).hasPromiseIconUi();
+        return info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
+                && !info.isDisabled() && !isItemPromise;
+    }
+
+    public static boolean supportsEdit(ItemInfo info) {
+        return CustomInfoProvider.Companion.isEditable(info) || supportsShortcuts(info);
+    }
+
     /**
      * Queries for the shortcuts with the package name and provided ids.
-     *
+     * <p>
      * This method is intended to get the full details for shortcuts when they are added or updated,
      * because we only get "key" fields in onShortcutsChanged().
      */
     public QueryResult queryForFullDetails(String packageName,
-            List<String> shortcutIds, UserHandle user) {
+                                           List<String> shortcutIds, UserHandle user) {
         return query(FLAG_GET_ALL, packageName, null, shortcutIds, user);
     }
 

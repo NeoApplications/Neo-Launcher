@@ -203,6 +203,7 @@
     <string name="gesture_double_tap">Double tap</string>
     <string name="gesture_long_press">Touch &amp; Hold</string>
     <string name="gesture_swipe_up">Swipe Up</string>
+    <string name="omega_actions">Actions</string>
 
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
