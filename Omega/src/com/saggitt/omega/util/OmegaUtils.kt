@@ -410,6 +410,15 @@ inline fun ViewGroup.forEachChildIndexed(action: (View, Int) -> Unit) {
     }
 }
 
+fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
+    if (contains(obj) != exists) {
+        if (exists) add(obj)
+        else remove(obj)
+        return true
+    }
+    return false
+}
+
 fun getTabRipple(context: Context, accent: Int): ColorStateList {
     return ColorStateList(arrayOf(
             intArrayOf(android.R.attr.state_selected),

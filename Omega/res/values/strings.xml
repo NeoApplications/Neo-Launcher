@@ -304,6 +304,9 @@
     <string name="tabs_manage">Manage</string>
     <string name="dismiss_drop_target_label">"Don\’t show"</string>
 
+    <string name="debug_component_name">Component Name</string>
+    <string name="debug_component_name_copied">Copied to clipboard.</string>
+
     <string name="loading">Loading…</string>
 
 </resources>
