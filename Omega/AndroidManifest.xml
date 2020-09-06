@@ -116,6 +116,15 @@
             android:autoRemoveFromRecents="true"
             android:theme="@style/SettingsTheme_Light" />
 
+        <!-- Icon picker -->
+        <activity
+            android:name="com.saggitt.omega.iconpack.EditIconActivity"
+            android:taskAffinity="${applicationId}.tasks.EDIT_ICON"
+            android:theme="@style/SettingsTheme_Light" />
+        <activity
+            android:name="com.saggitt.omega.iconpack.IconPickerActivity"
+            android:theme="@style/SettingsTheme_Light" />
+
         <!-- Actions -->
         <activity
             android:name="com.saggitt.omega.gestures.OmegaShortcutActivity"
