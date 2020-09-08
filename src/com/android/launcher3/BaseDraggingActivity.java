@@ -206,7 +206,8 @@ public abstract class BaseDraggingActivity extends BaseActivity
             } finally {
                 StrictMode.setVmPolicy(oldPolicy);
             }
-        } catch (SecurityException e) {
+        } catch (ActivityNotFoundException | SecurityException e) {
+            Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
             if (!onErrorStartingShortcut(intent, info)) {
                 throw e;
             }

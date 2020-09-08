@@ -18,11 +18,13 @@
 package com.saggitt.omega.dash;
 
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -109,7 +111,13 @@ public class DashModel implements Serializable {
                 break;
 
             case "SetWallpaper":
-                context.startActivity(Intent.createChooser(new Intent(Intent.ACTION_SET_WALLPAPER), context.getString(R.string.wallpaper_pick)));
+                try {
+                    context.startActivity(
+                            Intent.createChooser(new Intent(Intent.ACTION_SET_WALLPAPER),
+                                    context.getString(R.string.wallpaper_pick)));
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(context, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case "DeviceSettings":
