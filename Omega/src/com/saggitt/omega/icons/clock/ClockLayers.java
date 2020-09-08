@@ -79,4 +79,5 @@ class ClockLayers {
     void setTimeZone(TimeZone timeZone) {
         mCurrentTime.setTimeZone(timeZone);
     }
+
 }

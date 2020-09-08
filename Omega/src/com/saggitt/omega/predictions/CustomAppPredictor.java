@@ -290,6 +290,10 @@ public class CustomAppPredictor extends UserEventDispatcher implements SharedPre
         return new HashSet<>(mPrefs.getStringSet(PREDICTION_SET, EMPTY_SET));
     }
 
+    public UiManager getUiManager() {
+        return mUiManager;
+    }
+
     public static class UiManager {
 
         private final CustomAppPredictor mPredictor;

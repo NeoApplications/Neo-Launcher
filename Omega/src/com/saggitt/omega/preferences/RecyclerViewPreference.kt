@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
 import com.saggitt.omega.theme.ThemeOverride
 
-abstract class LauncherRecyclerViewPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs) {
+abstract class RecyclerViewPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs) {
 
     private val themeRes = ThemeOverride.LauncherDialog().getTheme(context)
     protected val themedContext = ContextThemeWrapper(context, themeRes)

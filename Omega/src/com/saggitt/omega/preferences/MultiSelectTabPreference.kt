@@ -36,7 +36,7 @@ import com.saggitt.omega.util.addOrRemove
 import com.saggitt.omega.util.applyAccent
 import com.saggitt.omega.util.omegaPrefs
 
-class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : LauncherRecyclerViewPreference(context, attrs) {
+class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : RecyclerViewPreference(context, attrs) {
 
     lateinit var componentKey: ComponentKey
     private val selections = mutableMapOf<DrawerTabs.CustomTab, Boolean>()

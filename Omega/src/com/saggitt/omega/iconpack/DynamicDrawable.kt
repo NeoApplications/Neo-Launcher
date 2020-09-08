@@ -157,7 +157,7 @@ class DynamicDrawable {
                 }
             }
             val layerDrawable = LayerDrawable(drawables.toTypedArray())
-            this.clockMetadata = ClockMetadata(
+            clockMetadata = ClockMetadata(
                     layerDrawable,
                     CustomClock.Metadata(
                             1,

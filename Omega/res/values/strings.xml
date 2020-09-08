@@ -313,5 +313,8 @@
     <string name="folder_cover_mode_desc">Tap to open first app, swipe up to view all.</string>
 
     <string name="loading">Loading…</string>
+    <string name="reset_custom_icons">Reset custom icons</string>
+    <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
+
 
 </resources>

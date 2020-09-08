@@ -45,11 +45,16 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherModel
 import com.android.launcher3.Utilities
 import com.android.launcher3.compat.LauncherAppsCompat
+import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.model.BgDataModel
+import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
+import com.saggitt.omega.iconpack.CustomIconUtils
+import com.saggitt.omega.predictions.CustomAppPredictor
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
@@ -360,6 +365,33 @@ fun Button.applyColor(color: Int) {
     val tintList = ColorStateList.valueOf(color)
     if (this is RadioButton) {
         buttonTintList = tintList
+    }
+}
+
+fun reloadIconsFromComponents(context: Context, components: Collection<ComponentKey>) {
+    reloadIcons(context, components.map { PackageUserKey(it.componentName.packageName, it.user) })
+}
+
+fun reloadIcons(context: Context, packages: Collection<PackageUserKey>) {
+    MAIN_EXECUTOR.execute {
+        val userManagerCompat = UserManagerCompat.getInstance(context)
+        val las = LauncherAppState.getInstance(context)
+        val model = las.model
+        val launcher = las.launcher
+
+        for (user in userManagerCompat.userProfiles) {
+            model.onPackagesReload(user)
+        }
+
+        val shortcutManager = DeepShortcutManager.getInstance(context)
+        packages.forEach {
+            CustomIconUtils.reloadIcon(shortcutManager, model, it.mUser, it.mPackageName)
+        }
+        if (launcher != null) {
+            runOnMainThread {
+                (launcher.userEventDispatcher as CustomAppPredictor).uiManager.onPredictionsUpdated()
+            }
+        }
     }
 }
 

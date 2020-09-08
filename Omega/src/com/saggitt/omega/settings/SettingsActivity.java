@@ -62,15 +62,20 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.LauncherFiles;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.SessionCommitReceiver;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.settings.NotificationDotsPreference;
 import com.android.launcher3.settings.PreferenceHighlighter;
+import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.ContentWriter;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
+import com.saggitt.omega.OmegaPreferences;
+import com.saggitt.omega.OmegaPreferencesChangeCallback;
 import com.saggitt.omega.adaptive.IconShapePreference;
 import com.saggitt.omega.gestures.ui.GesturePreference;
 import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
@@ -86,6 +91,7 @@ import com.saggitt.omega.settings.search.SettingsSearchActivity;
 import com.saggitt.omega.theme.ThemeOverride;
 import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
+import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.util.SettingsObserver;
 import com.saggitt.omega.views.SpringRecyclerView;
 import com.saggitt.omega.views.ThemedListPreferenceDialogFragment;
@@ -96,6 +102,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Set;
 
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -1074,4 +1081,50 @@ public class SettingsActivity extends SettingsBaseActivity
             return true;
         }
     }
+
+    public static class ResetIconsConfirmation extends DialogFragment implements DialogInterface.OnClickListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Context context = getActivity();
+            return new AlertDialog.Builder(context)
+                    .setTitle(R.string.reset_custom_icons)
+                    .setMessage(R.string.reset_custom_icons_confirmation)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok, this)
+                    .create();
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            OmegaUtilsKt.applyAccent(((AlertDialog) getDialog()));
+        }
+
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            Context context = getContext();
+
+            // Clear custom app icons
+            OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
+            Set<ComponentKey> toUpdateSet = prefs.getCustomAppIcon().toMap().keySet();
+            prefs.beginBlockingEdit();
+            prefs.getCustomAppIcon().clear();
+            prefs.endBlockingEdit();
+
+            // Clear custom shortcut icons
+            ContentWriter writer = new ContentWriter(context, new ContentWriter.CommitParams(null, null));
+            writer.put(LauncherSettings.Favorites.CUSTOM_ICON, (byte[]) null);
+            writer.put(LauncherSettings.Favorites.CUSTOM_ICON_ENTRY, (String) null);
+            writer.commit();
+
+            // Reload changes
+            OmegaUtilsKt.reloadIconsFromComponents(context, toUpdateSet);
+            OmegaPreferencesChangeCallback prefsCallback = prefs.getOnChangeCallback();
+            if (prefsCallback != null) {
+                prefsCallback.reloadAll();
+            }
+        }
+    }
+
 }

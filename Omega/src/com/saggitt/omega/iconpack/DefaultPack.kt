@@ -159,7 +159,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
                 itemInfo.targetComponent
             }
             if (DynamicClock.DESK_CLOCK == component) {
-                return dynamicClockDrawer.drawIcon(itemInfo)
+                return dynamicClockDrawer.drawIcon(itemInfo.iconBitmap)
             }
         }
 

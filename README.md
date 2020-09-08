@@ -34,6 +34,7 @@ Free and Open Source Launcher. <br/>
 -   [ ] Apps Predictions.
 -   [ ] Horizontal drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
+-   [ ] Animations.
 
 ##  Screenshots
 <table>

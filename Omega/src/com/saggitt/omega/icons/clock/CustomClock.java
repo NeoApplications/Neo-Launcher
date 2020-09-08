@@ -95,7 +95,7 @@ public class CustomClock {
 
     public FastBitmapDrawable drawIcon(ItemInfoWithIcon info, Drawable drawableForDensity,
                                        Metadata metadata) {
-        final AutoUpdateClock updater = new AutoUpdateClock(info,
+        final AutoUpdateClock updater = new AutoUpdateClock(info.iconBitmap,
                 getClockLayers(mContext, drawableForDensity, metadata, true).clone()
         );
         mUpdaters.add(updater);

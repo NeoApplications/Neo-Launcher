@@ -23,20 +23,20 @@ import android.util.AttributeSet
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.preferences.LauncherRecyclerViewPreference
+import com.saggitt.omega.preferences.RecyclerViewPreference
 
-class LauncherGesturePreference(context: Context, attrs: AttributeSet?) : LauncherRecyclerViewPreference(context, attrs) {
+class LauncherGesturePreference(context: Context, attrs: AttributeSet?) : RecyclerViewPreference(context, attrs) {
 
     var value: String? = null
         set(value) {
             field = value
             notifyChanged()
         }
-    var defaultValue = BlankGestureHandler::class.java.name
+    var defaultValue = BlankGestureHandler::class.java.name!!
     lateinit var onSelectHandler: (GestureHandler) -> Unit
-
-    private val blankGestureHandler = BlankGestureHandler(context, null)
-    private val handler get() = GestureController.createGestureHandler(context, value!!, blankGestureHandler)
+    private val mContext = context;
+    private val blankGestureHandler = BlankGestureHandler(mContext, null)
+    private val handler get() = GestureController.createGestureHandler(mContext, value.toString(), blankGestureHandler)
 
     override fun getSummary() = handler.displayName
 
