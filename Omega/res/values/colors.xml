@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Copyright (c) 2020 Omega Launcher
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  -->
+<resources>
+    <color name="white">#FFFFFF</color>
+
+    <color name="colorPrimary">#0788EF</color>
+    <color name="colorPrimaryDark">#03419F</color>
+    <color name="colorAccent">#E80142</color>
+    <color name="colorAccentDark">#ff8AB4f8</color>
+    <color name="textColorPrimary">#ffffffff</color>
+    <color name="textColorSecondary">#ffffffff</color>
+    <color name="textColorPrimaryInverse">#de000000</color>
+    <color name="textColorSecondaryInverse">#8a000000</color>
+
+    <color name="all_apps_navbar_color">#28000000</color>
+
+    <color name="notification_background">#EB0854</color>
+    <color name="transparentish">#B0101010</color>
+
+    <color name="setting_icon_color">#8705B6</color>
+
+    <color name="qsb_icon_shadow_color">#20000000</color>
+    <color name="qsb_dark_icon_tint">#ff757575</color>
+
+    <color name="qsb_drawer_text_color_normal">#ff212121</color>
+
+    <color name="settings_background_dark">#ff303030</color>
+    <color name="settings_background_dark_2dp">#ff252628</color>
+    <color name="settings_background_dark_8dp">#ff303133</color>
+    <color name="settings_background_black">#ff000000</color>
+    <color name="settings_background_black_2dp">#ff121212</color>
+    <color name="settings_background_black_8dp">#ff1e1e1e</color>
+
+    <color name="search_ripple">#0D888888</color>
+</resources>
+

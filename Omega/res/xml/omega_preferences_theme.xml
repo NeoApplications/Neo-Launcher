@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Copyright (c) 2020 Omega Launcher
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.saggitt.omega.adaptive.IconShapePreference
+        android:defaultValue="@string/icon_shape_system_default"
+        android:entries="@array/icon_shape_names"
+        android:entryValues="@array/icon_shape_values"
+        android:key="pref_iconShape"
+        android:persistent="true"
+        android:summary="%s"
+        android:title="@string/title__theme_icon_shape"
+        app:controllerClass="com.saggitt.omega.settings.controllers.IconShapeOverrideController"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.ColorPreferenceCompat
+        android:defaultValue="@color/colorAccent"
+        android:key="pref_key__accent_color"
+        android:title="@string/title__theme_accent_color"
+        app:cpv_dialogTitle="@string/title__theme_accent_color"
+        app:cpv_showAlphaSlider="true"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.theme.ui.ThemePreference
+        android:key="pref_launcherTheme"
+        android:title="@string/title__general_theme"
+        app:content="@xml/omega_preferences_theme_dialog"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
+        android:defaultValue="@bool/config_default_enable_blur"
+        android:key="pref_enableBlur"
+        android:persistent="true"
+        android:summary="@string/summary__theme_blur"
+        android:title="@string/title__theme_blur"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.SeekbarPreference
+        android:dependency="pref_enableBlur"
+        android:key="pref_blurRadius"
+        android:persistent="true"
+        android:title="@string/title__theme_blur_radius"
+        app:defaultSeekbarValue="@dimen/config_default_blur_strength"
+        app:iconSpaceReserved="false"
+        app:maxValue="150"
+        app:minValue="10"
+        app:steps="140"
+        app:summaryFormat="%.0f" />
+
+</PreferenceScreen>

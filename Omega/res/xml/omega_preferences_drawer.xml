@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Copyright (c) 2020 Omega Launcher
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="Drawer">
+
+    <com.saggitt.omega.preferences.IconSizePreference
+        android:key="all_app_icon_scale"
+        android:title="@string/title__drawer_icon_size"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:defaultValue="3"
+        android:disableDependentsState="false"
+        android:entries="@array/entries__sort_mode"
+        android:entryValues="@array/values__zero_to_four"
+        android:key="pref_key__sort_mode"
+        android:persistent="true"
+        android:summary="%s"
+        android:title="@string/title__drawer_sort"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:disableDependentsState="true"
+        android:key="pref_hideAllAppsAppLabels"
+        android:persistent="true"
+        android:title="@string/title__drawer_hide_icon_labels"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:dependency="pref_hideAllAppsAppLabels"
+        android:key="pref_iconLabelsInTwoLines"
+        android:persistent="true"
+        android:title="@string/title__drawer_mutliline_labels"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.settings.PreferenceDialogPreference
+        android:key="pref_iconPopupMenu"
+        android:title="@string/title__drawer_icon_popup_menu"
+        app:content="@xml/omega_drawer_icon_popup_menu_preferences"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.DrawerGridSizePreference
+        android:key="pref_drawer_grid_size"
+        android:title="@string/title__drawer_columns"
+        app:iconSpaceReserved="false" />
+
+    <!--
+       <com.saggitt.omega.preferences.StyledSwitchPreference
+           android:defaultValue="false"
+           android:key="pref_show_predictions"
+           android:title="@string/title_app_suggestions"
+           app:iconSpaceReserved="false" />
+
+
+               <com.saggitt.omega.preferences.StyledSwitchPreference
+                   android:key="pref_showAllAppsLabel"
+                   android:title="@string/title__drawer_all_apps"
+                   android:defaultValue="false"
+                   android:persistent="true"
+                   app:iconSpaceReserved="false"/> -->
+
+    <androidx.preference.Preference
+        android:fragment="com.saggitt.omega.groups.ui.AppCategorizationFragment"
+        android:key="pref_categorization"
+        android:title="@string/title__drawer_categorization"
+        app:iconSpaceReserved="false" />
+
+    <androidx.preference.Preference
+        android:fragment="com.saggitt.omega.preferences.HiddenAppsFragment"
+        android:key="pref_hiddenApps"
+        android:summary="@string/summary__drawer_hide_apps"
+        android:title="@string/title__drawer_hide_apps"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="true"
+        android:key="pref_allAppsSearch"
+        android:title="@string/title_all_apps_search"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="true"
+        android:dependency="pref_allAppsSearch"
+        android:disableDependentsState="true"
+        android:key="pref_allAppsGoogleSearch"
+        android:summary="@string/summary_all_apps_google_search"
+        android:title="@string/title_all_apps_google_search"
+        app:iconSpaceReserved="false" />
+</PreferenceScreen>
