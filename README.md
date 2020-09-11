@@ -73,3 +73,6 @@ Want to buy me a coffee?
 ## Want to contribute?
 If you have knowledge in Java or Kotlin you can work on additional features!
 I will be happy to work on features you would like to include, just open an issue.
+
+## Translation?
+[![Translation Status](https://hosted.weblate.org/widgets/omegalauncher/-/omegalauncher/svg-badge.svg)](https://hosted.weblate.org/engage/omegalauncher/)
