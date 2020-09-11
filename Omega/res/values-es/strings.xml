@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~  Copyright (c) 2020 Omega Launcher
   ~
   ~  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,7 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   ~
-  -->
-<resources>
+  --><resources>
     <string name="title__general_about">Acerca de</string>
     <string name="title__general_desktop">Escritorio</string>
     <string name="title__general_dock">Dock</string>
@@ -66,4 +66,5 @@
     <string name="summary__general_desktop">Personaliza tu escritorio</string>
     <string name="title__general_notifications">Gestos y Notificaciones</string>
     <string name="summary__general_search">Proveedores de búsqueda, estilos, íconos</string>
+    <string name="title__search_show_assistant">Mostrar el botón de búsqueda por voz</string>
 </resources>
