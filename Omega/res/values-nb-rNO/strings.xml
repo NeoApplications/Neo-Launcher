@@ -61,4 +61,7 @@
     <string name="pref_appcategorization_tabs_summary">Dra mellom grupper.</string>
     <string name="pref_appcategorization_tabs_title">Faner</string>
     <string name="pref_appcategorization_folders_summary">Fane for åpning av oppsprettsvindu.</string>
+    <string name="pref_appcategorization_flowerpot_summary">Velg snarveier automatisk.</string>
+    <string name="tab_type_smart">Automatisk</string>
+    <string name="tab_type_custom_desc">Velg snarveier manuelt.</string>
 </resources>
