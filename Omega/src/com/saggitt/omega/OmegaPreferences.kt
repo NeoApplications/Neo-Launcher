@@ -98,6 +98,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val predictionGridSizeDelegate = ResettableLazy { GridSize(this, "numPredictions", LauncherAppState.getIDP(context), recreate) }
     val predictionGridSize by predictionGridSizeDelegate
 
+    val allAppsIconScale by FloatPref("all_app_icon_scale", 1f, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -138,7 +139,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, reloadIcons)
     val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
-
 
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)

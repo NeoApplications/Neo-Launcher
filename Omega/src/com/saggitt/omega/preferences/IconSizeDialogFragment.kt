@@ -27,6 +27,7 @@ import com.android.launcher3.R
 import com.saggitt.omega.util.applyAccent
 
 class IconSizeDialogFragment : PreferenceDialogFragmentCompat(), SeekBar.OnSeekBarChangeListener {
+
     private val minValue = 30
     private val maxValue = 200
 
@@ -39,10 +40,10 @@ class IconSizeDialogFragment : PreferenceDialogFragmentCompat(), SeekBar.OnSeekB
         super.onBindDialogView(view)
 
         iconScalePicker = view.findViewById(R.id.iconSize)
-        iconScaleLabel = view.findViewById(R.id.numRowsLabel)
+        iconScaleLabel = view.findViewById(R.id.iconSizeLabel)
 
-        iconScalePicker.max = maxValue - minValue
-        iconScalePicker.progress = iconScale - minValue
+        //iconScalePicker.max = maxValue - minValue
+        //iconScalePicker.progress = iconScale - minValue
         iconScalePicker.setOnSeekBarChangeListener(this)
 
         iconScaleLabel.text = "${iconScalePicker.progress + minValue}"

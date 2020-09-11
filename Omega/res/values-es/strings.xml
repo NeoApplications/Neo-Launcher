@@ -63,14 +63,6 @@
     <string name="default_folder_name">Nueva carpeta</string>
     <string name="title__about_project_license">Licencia del Proyecto</string>
     <string name="cat_search_bar">Barra de busqueda</string>
-    <string name="loading">Cargando…</string>
-    <string name="title__drawer_hide_icon_labels">Ocultar nombres de aplicaciones</string>
-    <string name="smartspace_preferences">Preferencias</string>
     <string name="summary__general_desktop">Personaliza tu escritorio</string>
     <string name="title__general_notifications">Gestos y Notificaciones</string>
-    <string name="summary__advanced_language">Cambiar el idioma de esta aplicación</string>
-    <string name="pref_appcategorization_enable_title">Categorizar aplicaciones</string>
-    <string name="debug_component_name">Nombre del Componente</string>
-    <string name="import_icon">Importar icono</string>
-    <string name="enabled_icon_packs">Habilitados</string>
 </resources>

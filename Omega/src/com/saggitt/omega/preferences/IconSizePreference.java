@@ -25,7 +25,7 @@ import androidx.preference.DialogPreference;
 import com.android.launcher3.R;
 
 public class IconSizePreference extends DialogPreference {
-
+    private Context mContext;
     public IconSizePreference(Context context) {
         this(context, null, 0);
     }
@@ -37,6 +37,7 @@ public class IconSizePreference extends DialogPreference {
     public IconSizePreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         updateSummary();
+        mContext = context;
     }
 
     private void updateSummary() {
