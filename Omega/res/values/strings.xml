@@ -105,7 +105,7 @@
 
     <string name="hide_app_selected">&#160; hidden</string>
     <string name="hide_app_reset">Reset</string>
-    <string name="action_preferences">@string/customize</string>
+    <string name="action_preferences" translatable="false">@string/customize</string>
 
     <!-- Developer setting to change the shape of icons on home screen. [CHAR LIMIT=50] -->
     <string name="icon_shape_override_label">Change icon shape</string>
