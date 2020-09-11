@@ -24,4 +24,5 @@
     <string name="pref_category__interfaces">Grensesnitt</string>
     <string name="summary__general_about">Mer info om Omega-oppstarteren</string>
     <string name="summary__general_advanced">Språk, sikkerhetskopi, innstillingssøk</string>
+    <string name="title__dock_colored_icons">Fargede ikoner</string>
 </resources>
