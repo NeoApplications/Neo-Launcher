@@ -13,4 +13,15 @@
     <string name="title__general_dock">Dokk</string>
     <string name="title__general_desktop">Skrivebord</string>
     <string name="title__general_about">Om</string>
+    <string name="title__dock_hide">Dokk-skjuling</string>
+    <string name="title__dock_hide_labels">Skjul etiketter</string>
+    <string name="title__dock_scale">Dokk-skala</string>
+    <string name="summary__full_width_widgets">Tillat miniprogrammer å dekke hele bredden uten kanter</string>
+    <string name="title__desktop_full_width_widgets">Fullskjerms-miniporgrammer</string>
+    <string name="allow_rotation_blocked_desc">Nåværende skjerminnstillinger tillater ikke rotasjon</string>
+    <string name="pref_category__others">Annet</string>
+    <string name="pref_category__inputs">Grensesnitt og søk</string>
+    <string name="pref_category__interfaces">Grensesnitt</string>
+    <string name="summary__general_about">Mer info om Omega-oppstarteren</string>
+    <string name="summary__general_advanced">Språk, sikkerhetskopi, innstillingssøk</string>
 </resources>
