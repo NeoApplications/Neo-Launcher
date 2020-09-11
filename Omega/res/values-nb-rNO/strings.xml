@@ -55,4 +55,10 @@
     <string name="title__drawer_categorization">Kategorier</string>
     <string name="title__drawer_hide_apps">Skjulte programsnarveier</string>
     <string name="title__drawer_icon_size">Ikonstørrelse for alle programmer</string>
+    <string name="tab_type_custom">Tilpasset</string>
+    <string name="default_folder_name">Ny mappe</string>
+    <string name="pref_app_groups_edit_tip">Trykk for å redigere, dra for å omorganisere.</string>
+    <string name="pref_appcategorization_tabs_summary">Dra mellom grupper.</string>
+    <string name="pref_appcategorization_tabs_title">Faner</string>
+    <string name="pref_appcategorization_folders_summary">Fane for åpning av oppsprettsvindu.</string>
 </resources>
