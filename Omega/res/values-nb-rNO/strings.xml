@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="summary__general_search">Søketilbyder, stil, ikoner</string>
+    <string name="summary__general_theme">Endre farger, ikonpakke og -form</string>
+    <string name="summary__general_drawer">Tilpass din skuff</string>
+    <string name="summary__general_desktop">Tilpass skrivebordet ditt</string>
+    <string name="title__general_notifications">Håndvendinger og merknader</string>
+    <string name="title__general_advanced">Avansert</string>
+    <string name="title__general_smartspace">Hjemmeskjerms-miniprogram</string>
+    <string name="title__general_search">Søk</string>
+    <string name="title__general_theme">Drakt</string>
+    <string name="title__general_drawer">Skuff</string>
+    <string name="title__general_dock">Dokk</string>
+    <string name="title__general_desktop">Skrivebord</string>
+    <string name="title__general_about">Om</string>
+</resources>
