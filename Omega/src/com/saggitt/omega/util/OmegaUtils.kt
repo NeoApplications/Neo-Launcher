@@ -49,7 +49,6 @@ import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
@@ -74,7 +73,8 @@ val Context.omegaPrefs get() = Utilities.getOmegaPrefs(this)
 
 @ColorInt
 fun Context.getColorAccent(): Int {
-    return getColorAttr(android.R.attr.colorAccent)
+    //return getColorAttr(android.R.attr.colorAccent)
+    return omegaPrefs.accentColor
 }
 
 @ColorInt
@@ -124,7 +124,7 @@ fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
             creator(it)
         } else {
             try {
-                Executors.MAIN_EXECUTOR.submit(Callable { creator(it) }).get()
+                MAIN_EXECUTOR.submit(Callable { creator(it) }).get()
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
             } catch (e: ExecutionException) {
@@ -298,7 +298,7 @@ operator fun XmlPullParser.get(namespace: String?, key: String): String? = getAt
 operator fun XmlPullParser.get(key: String): String? = this[null, key]
 
 fun AlertDialog.applyAccent() {
-    val color = Utilities.getOmegaPrefs(context).accentColor
+    val color = context.getColorAccent()
 
     getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
         setTextColor(color)
