@@ -14,7 +14,6 @@
  *  limitations under the License.
  *
  */
-
 package com.saggitt.omega.preferences;
 
 import android.content.Context;
@@ -23,9 +22,13 @@ import android.util.AttributeSet;
 import androidx.preference.DialogPreference;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.saggitt.omega.OmegaPreferences;
 
 public class IconSizePreference extends DialogPreference {
-    private Context mContext;
+    private OmegaPreferences prefs;
+
+
     public IconSizePreference(Context context) {
         this(context, null, 0);
     }
@@ -36,12 +39,12 @@ public class IconSizePreference extends DialogPreference {
 
     public IconSizePreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        prefs = Utilities.getOmegaPrefs(context);
         updateSummary();
-        mContext = context;
     }
 
     private void updateSummary() {
-        setSummary("Icon Size: ");
+        setSummary("Icon Scale " + (prefs.getAllAppsIconScale() * 100) + "%");
     }
 
     @Override

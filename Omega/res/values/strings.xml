@@ -58,7 +58,6 @@
     <string name="pref_value_disabled">"Disabled"</string>
     <string name="dock_search_value" translatable="false">%1$s %2$s</string>
 
-
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
@@ -181,6 +180,10 @@
     <string name="icon_pack">Icon pack</string>
     <string name="get_more_icon_packs">Get more</string>
     <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
+
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_default">Default</string>
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>

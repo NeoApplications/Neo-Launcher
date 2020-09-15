@@ -23,6 +23,17 @@
         android:title="@string/title__drawer_icon_size"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.preferences.SeekbarPreference
+        android:key="all_app_icon_scale"
+        android:persistent="true"
+        android:title="@string/title__drawer_icon_size"
+        app:defaultSeekbarValue="1.0"
+        app:maxValue="2.0"
+        app:minValue="0.5"
+        app:steps="150"
+        app:summaryFormat="%.0f%%"
+        app:summaryMultiplier="100" />
+
     <ListPreference
         android:defaultValue="3"
         android:disableDependentsState="false"
