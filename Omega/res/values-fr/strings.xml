@@ -119,7 +119,7 @@
     <string name="title__theme_accent_color">Couleur d\'accentuation</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d masqué</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d application</item>
@@ -217,4 +217,7 @@
     <string name="title__general_dock">Dock</string>
     <string name="title__general_desktop">Bureau</string>
     <string name="title__general_about">À propos</string>
+    <string name="dialog_default">Par défaut</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Annuler</string>
 </resources>
