@@ -24,10 +24,11 @@ Free and Open Source Launcher. <br/>
 -   [X] Quick Action shortcuts (Dash).
 -   [X] Hide apps (Dash).
 -   [X] Dock search.
+-   [X] Drawer grid preference.
+-   [X] All Apps Icon Scale.
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
--   [ ] Drawer grid preference.
 -   [ ] Desktop grid preference.
 -   [ ] Back up and restore.
 -   [ ] Customize app icon.
