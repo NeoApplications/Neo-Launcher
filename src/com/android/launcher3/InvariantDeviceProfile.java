@@ -35,6 +35,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.util.Xml;
+import android.view.Display;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -45,7 +47,9 @@ import com.android.launcher3.util.DefaultDisplay;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Themes;
+import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.adaptive.IconShapeManager;
+import com.saggitt.omega.settings.IconScale;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -54,12 +58,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
 import static com.android.launcher3.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+import static java.lang.Math.max;
 
 public class InvariantDeviceProfile {
 
@@ -234,7 +240,7 @@ public class InvariantDeviceProfile {
         // The real size never changes. smallSide and largeSide will remain the
         // same in any orientation.
         int smallSide = Math.min(realSize.x, realSize.y);
-        int largeSide = Math.max(realSize.x, realSize.y);
+        int largeSide = max(realSize.x, realSize.y);
 
         // We want a list of all options as well as the list of filtered options. This allows us
         // to have a consistent UI for areas that the grid size change should not affect
@@ -302,7 +308,7 @@ public class InvariantDeviceProfile {
                     (int) (largeSide * wallpaperTravelToScreenWidthRatio(largeSide, smallSide)),
                     largeSide);
         } else {
-            defaultWallpaperSize = new Point(Math.max(smallSide * 2, largeSide), largeSide);
+            defaultWallpaperSize = new Point(max(smallSide * 2, largeSide), largeSide);
         }
 
         ComponentName cn = new ComponentName(context.getPackageName(), getClass().getName());
@@ -346,13 +352,38 @@ public class InvariantDeviceProfile {
         landscapeAllAppsIconSizeOriginal = displayOption.landscapeIconSize;
 
 
-        iconBitmapSize = ResourceUtils.pxFromDp(iconSize, metrics);
+        new IconScale(Utilities.getOmegaPrefs(context), "allAppsIconSize", this);
+
+        //iconBitmapSize = ResourceUtils.pxFromDp(iconSize, metrics);
+        iconBitmapSize = Utilities.pxFromDp(max(max(iconSize, allAppsIconSize), hotseatIconSize), metrics);
         iconTextSize = displayOption.iconTextSize;
         fillResIconDpi = getLauncherIconDensity(iconBitmapSize);
 
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
+
+        customizationHook(context);
+    }
+
+    private void customizationHook(Context context) {
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = Objects.requireNonNull(wm).getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+        /*if (prefs.getDesktopIconScale() != 1f) {
+            float iconScale = prefs.getDesktopIconScale();
+            iconSize *= iconScale;
+        }*/
+        if (prefs.getAllAppsIconScale() != 1f) {
+            float iconScale = prefs.getAllAppsIconScale();
+            allAppsIconSize *= iconScale;
+        }/*
+        if (prefs.getDockIconScale() != 1f) {
+            float iconScale = prefs.getDockIconScale();
+            hotseatIconSize *= iconScale;
+        }*/
     }
 
 

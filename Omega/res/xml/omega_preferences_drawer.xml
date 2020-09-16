@@ -18,13 +18,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="Drawer">
 
-    <com.saggitt.omega.preferences.IconSizePreference
-        android:key="all_app_icon_scale"
-        android:title="@string/title__drawer_icon_size"
-        app:iconSpaceReserved="false" />
-
     <com.saggitt.omega.preferences.SeekbarPreference
-        android:key="all_app_icon_scale"
+        android:key="allAppsIconSize"
         android:persistent="true"
         android:title="@string/title__drawer_icon_size"
         app:defaultSeekbarValue="1.0"

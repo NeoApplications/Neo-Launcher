@@ -38,7 +38,7 @@ public class DashItemAdapter {
         this.mItemViews = new ArrayList<>();
         for (DashModel dashItem : items) {
             View view = inflater.inflate(R.layout.dash_item, null);
-            ImageView itemView = (ImageView) view.findViewById(R.id.bt_item);
+            ImageView itemView = view.findViewById(R.id.bt_item);
             ColorStateList backgroundColor = ColorStateList.valueOf(Themes.getAttrColor(mContext, R.attr.dashIconBackground));
             itemView.setBackgroundTintList(backgroundColor);
             itemView.setImageDrawable(dashItem.getIcon());

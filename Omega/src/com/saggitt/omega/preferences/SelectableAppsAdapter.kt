@@ -99,7 +99,9 @@ abstract class SelectableAppsAdapter(context: Context, private val callback: Cal
 
     abstract fun setSelections(selections: Set<ComponentKey>)
 
-    interface Callback {
+    interface
+
+    Callback {
 
         fun onSelectionsChanged(newSize: Int)
     }
