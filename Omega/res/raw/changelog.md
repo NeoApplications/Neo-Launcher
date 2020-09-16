@@ -2,6 +2,7 @@
 * **Add: Hide apps preference**
 * **Add: Icon Shape preference**
 * **Add: Dock search**
+* **Add: AllApps Icon Scale**
 
 ### v0.3.0 (Build 20)
 * **Add gestures preference**
