@@ -43,6 +43,7 @@ import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.iconpack.EditIconActivity;
 import com.saggitt.omega.iconpack.IconPackManager;
 import com.saggitt.omega.override.CustomInfoProvider;
+import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
 
@@ -63,7 +64,6 @@ public class OmegaLauncher extends Launcher {
     public static boolean showFolderNotificationCount;
     public static Drawable currentEditIcon = null;
     public static ItemInfo currentEditInfo = null;
-    public final int CODE_EDIT_ICON = 100;
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -147,7 +147,7 @@ public class OmegaLauncher extends Launcher {
         Intent intent = EditIconActivity.Companion.newIntent(this, infoProvider.getTitle(itemInfo), folderInfo, component);
 
         BlankActivity.Companion
-                .startActivityForResult(this, intent, CODE_EDIT_ICON, flags, (resultCode, data) -> {
+                .startActivityForResult(this, intent, Config.CODE_EDIT_ICON, flags, (resultCode, data) -> {
                     handleEditIconResult(resultCode, data);
                     return null;
                 });

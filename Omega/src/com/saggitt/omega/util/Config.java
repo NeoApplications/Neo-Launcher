@@ -35,6 +35,7 @@ public class Config {
     //PERMISION FLAGS
     public static final int REQUEST_PERMISSION_STORAGE_ACCESS = 666;
     public static final int REQUEST_PERMISSION_LOCATION_ACCESS = 667;
+    public static final int CODE_EDIT_ICON = 100;
 
     public final static String GOOGLE_QSB = "com.google.android.googlequicksearchbox";
 
