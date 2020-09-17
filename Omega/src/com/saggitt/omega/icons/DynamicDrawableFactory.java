@@ -18,38 +18,23 @@
 package com.saggitt.omega.icons;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.os.Build;
-import android.os.Process;
-import android.os.UserHandle;
 
-import androidx.annotation.RequiresApi;
-
-import com.android.launcher3.FastBitmapDrawable;
-import com.android.launcher3.ItemInfoWithIcon;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.DrawableFactory;
-import com.android.launcher3.icons.BitmapInfo;
-import com.saggitt.omega.icons.calendar.DateChangeReceiver;
-import com.saggitt.omega.icons.clock.CustomClock;
-import com.saggitt.omega.icons.clock.DynamicClock;
 
 public class DynamicDrawableFactory extends DrawableFactory {
-    private final DynamicClock mDynamicClockDrawer;
-    private final CustomClock mCustomClockDrawer;
-    private final DateChangeReceiver mCalendars;
+    public DynamicDrawableFactory(Context context) {
+    }
+    /*private final DynamicClock mDynamicClockDrawer;
     private Context mContext;
 
     public DynamicDrawableFactory(Context context) {
         mContext = context;
         if (Utilities.ATLEAST_OREO) {
             mDynamicClockDrawer = new DynamicClock(context);
-            mCustomClockDrawer = new CustomClock(context);
         } else {
             mDynamicClockDrawer = null;
-            mCustomClockDrawer = null;
         }
-        mCalendars = new DateChangeReceiver(context);
+        DateChangeReceiver mCalendars = new DateChangeReceiver(context);
     }
 
     @Override
@@ -72,5 +57,5 @@ public class DynamicDrawableFactory extends DrawableFactory {
             return mDynamicClockDrawer.drawIcon(icon.icon);
         }
         return super.newIcon(mContext, icon, info);
-    }
+    }*/
 }

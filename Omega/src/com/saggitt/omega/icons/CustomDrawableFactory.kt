@@ -23,10 +23,11 @@ import androidx.annotation.RequiresApi
 import com.android.launcher3.FastBitmapDrawable
 import com.android.launcher3.ItemInfoWithIcon
 import com.android.launcher3.WorkspaceItemInfo
+import com.android.launcher3.graphics.DrawableFactory
 import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.icons.clock.CustomClock
 
-class CustomDrawableFactory(context: Context) : DynamicDrawableFactory(context) {
+class CustomDrawableFactory(context: Context) : DrawableFactory() {
     private val iconPackManager = IconPackManager.getInstance(context)
     val customClockDrawer by lazy { CustomClock(context) }
 
