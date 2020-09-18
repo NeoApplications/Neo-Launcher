@@ -154,14 +154,19 @@ public class CellLayout extends ViewGroup implements Transposable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({WORKSPACE, HOTSEAT, FOLDER})
-    public @interface ContainerType{}
+    public @interface ContainerType {
+    }
+
     public static final int WORKSPACE = 0;
     public static final int HOTSEAT = 1;
     public static final int FOLDER = 2;
 
-    @ContainerType private final int mContainerType;
+    @ContainerType
+    private final int mContainerType;
 
     private final float mChildScale = 1f;
+
+    private final int mDockIconSize;
 
     public static final int MODE_SHOW_REORDER_HINT = 0;
     public static final int MODE_DRAG_OVER = 1;
@@ -215,9 +220,11 @@ public class CellLayout extends ViewGroup implements Transposable {
         mCellWidth = mCellHeight = -1;
         mFixedCellWidth = mFixedCellHeight = -1;
 
+        mDockIconSize = grid.hotseatIconSizePx;
+
         mCountX = grid.inv.numColumns;
         mCountY = grid.inv.numRows;
-        mOccupied =  new GridOccupancy(mCountX, mCountY);
+        mOccupied = new GridOccupancy(mCountX, mCountY);
         mTmpOccupied = new GridOccupancy(mCountX, mCountY);
 
         mPreviousReorderDirection[0] = INVALID_DIRECTION;
@@ -586,8 +593,8 @@ public class CellLayout extends ViewGroup implements Transposable {
             //bubbleChild.setTextVisibility(mContainerType!=HOTSEAT);
             if (mContainerType == HOTSEAT) {
                 bubbleChild.setTextVisibility(!Utilities.getOmegaPrefs(getContext()).getHideDockLabels());
+                bubbleChild.setIconSize(mDockIconSize);
                 bubbleChild.setLines(Utilities.getOmegaPrefs(getContext()).getDockLabelRows());
-
             }
         }
 

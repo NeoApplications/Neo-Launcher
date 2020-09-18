@@ -35,8 +35,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.util.Xml;
-import android.view.Display;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -49,7 +47,6 @@ import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Themes;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.adaptive.IconShapeManager;
-import com.saggitt.omega.settings.IconScale;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -58,7 +55,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
@@ -320,6 +316,7 @@ public class InvariantDeviceProfile {
     private void initGridOption(Context context, ArrayList<DisplayOption> options,
             DisplayOption displayOption, DisplayMetrics metrics) {
         GridOption closestProfile = options.get(0).grid;
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
 
         numRows = closestProfile.numRows;
         numRowsOriginal = numRows;
@@ -337,24 +334,29 @@ public class InvariantDeviceProfile {
 
         mExtraAttrs = closestProfile.extraAttrs;
 
-        iconSize = displayOption.iconSize;
+        iconSize = displayOption.iconSize * prefs.getDesktopIconScale();
         iconSizeOriginal = displayOption.iconSize;
         iconShapePath = getIconShapePath(context);
         landscapeIconSize = displayOption.landscapeIconSize;
         landscapeIconSizeOriginal = displayOption.landscapeIconSize;
-        hotseatIconSize = displayOption.iconSize;
+
+        if (prefs.getDockIconScale() > 0) {
+            hotseatIconSize = displayOption.iconSize * prefs.getDockIconScale();
+        } else {
+            hotseatIconSize = iconSize;
+        }
         hotseatIconSizeOriginal = displayOption.iconSize;
-        landscapeHotseatIconSize = displayOption.landscapeIconSize;
+        if (prefs.getDockIconScale() > 0) {
+            landscapeHotseatIconSize = displayOption.landscapeIconSize * prefs.getDockIconScale();
+        } else {
+            landscapeHotseatIconSize = landscapeIconSize;
+        }
         landscapeHotseatIconSizeOriginal = displayOption.landscapeIconSize;
-        allAppsIconSize = displayOption.iconSize;
+        allAppsIconSize = displayOption.iconSize * prefs.getAllAppsIconScale();
         allAppsIconSizeOriginal = displayOption.iconSize;
         landscapeAllAppsIconSize = displayOption.landscapeIconSize;
         landscapeAllAppsIconSizeOriginal = displayOption.landscapeIconSize;
 
-
-        new IconScale(Utilities.getOmegaPrefs(context), "allAppsIconSize", this);
-
-        //iconBitmapSize = ResourceUtils.pxFromDp(iconSize, metrics);
         iconBitmapSize = Utilities.pxFromDp(max(max(iconSize, allAppsIconSize), hotseatIconSize), metrics);
         iconTextSize = displayOption.iconTextSize;
         fillResIconDpi = getLauncherIconDensity(iconBitmapSize);
@@ -362,30 +364,7 @@ public class InvariantDeviceProfile {
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
-
-        customizationHook(context);
     }
-
-    private void customizationHook(Context context) {
-        OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = Objects.requireNonNull(wm).getDefaultDisplay();
-        DisplayMetrics dm = new DisplayMetrics();
-        display.getMetrics(dm);
-        /*if (prefs.getDesktopIconScale() != 1f) {
-            float iconScale = prefs.getDesktopIconScale();
-            iconSize *= iconScale;
-        }*/
-        if (prefs.getAllAppsIconScale() != 1f) {
-            float iconScale = prefs.getAllAppsIconScale();
-            allAppsIconSize *= iconScale;
-        }/*
-        if (prefs.getDockIconScale() != 1f) {
-            float iconScale = prefs.getDockIconScale();
-            hotseatIconSize *= iconScale;
-        }*/
-    }
-
 
     @Nullable
     public TypedValue getAttrValue(int attr) {
@@ -443,8 +422,11 @@ public class InvariantDeviceProfile {
             changeFlags |= CHANGE_FLAG_GRID;
         }
 
-        if (iconSize != oldProfile.iconSize || iconBitmapSize != oldProfile.iconBitmapSize ||
-                !iconShapePath.equals(oldProfile.iconShapePath)) {
+        if (iconSize != oldProfile.iconSize
+                || allAppsIconSize != oldProfile.allAppsIconSize
+                || hotseatIconSize != oldProfile.hotseatIconSize
+                || iconBitmapSize != oldProfile.iconBitmapSize
+                || !iconShapePath.equals(oldProfile.iconShapePath)) {
             changeFlags |= CHANGE_FLAG_ICON_PARAMS;
         }
         if (!iconShapePath.equals(oldProfile.iconShapePath)) {
