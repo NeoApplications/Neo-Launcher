@@ -71,7 +71,7 @@ Free and Open Source Launcher. <br/>
 Want to buy me a coffee? <br/>
 <a href="https://www.buymeacoffee.com/2ulp4f5" target="_blank">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
-    alt="Buy Me A Coffee" style="max-width:25%;" >
+    alt="Buy Me A Coffee" width="60" >
 </a>
 
 
