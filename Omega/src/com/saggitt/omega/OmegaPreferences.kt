@@ -54,7 +54,7 @@ import kotlin.reflect.KProperty
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     val mContext = context;
 
-    open val doNothing = { }
+    val doNothing = { }
     val restart = { restart() }
     val reloadApps = { reloadApps() }
     val reloadAll = { reloadAll() }
@@ -98,7 +98,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val predictionGridSizeDelegate = ResettableLazy { GridSize(this, "numPredictions", LauncherAppState.getIDP(context), recreate) }
     val predictionGridSize by predictionGridSizeDelegate
 
-    var allAppsIconScale by FloatPref("allAppsIconSize", 1f, recreate)
+    var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
+    val forceShapeless by BooleanPref("pref_forceShapeless", false)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -113,6 +114,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
     val usePopupMenuView by BooleanPref("pref_desktopUsePopupMenuView", true, doNothing)
     val lockDesktop by BooleanPref("pref_lockDesktop", false, reloadAll)
+    val desktopIconScale by FloatPref("pref_iconSize", 1f, recreate)
 
     /* --DOCK-- */
     var dockHide by BooleanPref("pref_hideHotseat", false, recreate)
@@ -123,6 +125,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var dockScale by FloatPref("pref_dockScale", -1f, recreate)
     var dockSearchBarPref by BooleanPref("pref_dock_search", true, restart)
     inline val dockSearchBar get() = !dockHide && dockSearchBarPref
+    val dockIconScale by FloatPref("pref_hotseatIconSize", 1f, recreate)
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
@@ -754,6 +757,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             INSTANCE?.apply {
                 onChangeListeners.clear()
                 onChangeCallback = null
+                drawerGridSizeDelegate.resetValue()
+                predictionGridSizeDelegate.resetValue()
             }
         }
     }

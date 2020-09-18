@@ -41,4 +41,15 @@
         android:summary="@string/summary__full_width_widgets"
         android:title="@string/title__desktop_full_width_widgets"
         app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.AutoModeScalePreference
+        android:key="pref_iconSize"
+        android:persistent="true"
+        android:title="@string/title__desktop_icon_size"
+        app:defaultSeekbarValue="1.0"
+        app:maxValue="2.0"
+        app:minValue="0.5"
+        app:steps="150"
+        app:summaryFormat="%.0f%%"
+        app:summaryMultiplier="100" />
 </PreferenceScreen>
