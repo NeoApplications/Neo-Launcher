@@ -25,13 +25,15 @@ Free and Open Source Launcher. <br/>
 -   [X] Hide apps (Dash).
 -   [X] Dock search.
 -   [X] Drawer grid preference.
+-   [X] Customize app icon.
 -   [X] All Apps Icon Scale.
+-   [X] Dock Icon Scale.
+-   [X] Workspace Icon Scale.
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
 -   [ ] Desktop grid preference.
 -   [ ] Back up and restore.
--   [ ] Customize app icon.
 -   [ ] Apps Predictions.
 -   [ ] Horizontal drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
@@ -67,8 +69,10 @@ Free and Open Source Launcher. <br/>
 
 ## Donations
 Want to buy me a coffee? 
-**[Paypal](https://paypal.me/saulhenriquez)**   
-**[Liberapay](https://liberapay.com/otakuhqz/donate)**
+<a href="https://www.buymeacoffee.com/2ulp4f5" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
+    alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
+</a>
 
 
 ## Want to contribute?
