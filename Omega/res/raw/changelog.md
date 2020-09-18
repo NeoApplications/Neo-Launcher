@@ -3,6 +3,8 @@
 * **Add: Icon Shape preference**
 * **Add: Dock search**
 * **Add: AllApps Icon Scale**
+* **Add: Dock Icon Scale**
+* **Add: Workspace Icon Scale**
 
 ### v0.3.0 (Build 20)
 * **Add gestures preference**

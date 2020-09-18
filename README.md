@@ -68,10 +68,10 @@ Free and Open Source Launcher. <br/>
 </table>
 
 ## Donations
-Want to buy me a coffee? 
+Want to buy me a coffee? <br/>
 <a href="https://www.buymeacoffee.com/2ulp4f5" target="_blank">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
-    alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
+    alt="Buy Me A Coffee" style="max-width:25%;" >
 </a>
 
 
