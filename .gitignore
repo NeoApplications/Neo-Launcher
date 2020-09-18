@@ -9,6 +9,7 @@ db_files
 .classpath
 .project.properties
 gen/
+google-services.json
 tests/stress/gen/
 WallpaperPicker/gen/
 WallpaperPicker/.project.properties

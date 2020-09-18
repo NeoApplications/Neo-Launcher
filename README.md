@@ -22,7 +22,7 @@ Free and Open Source Launcher. <br/>
 -   [X] Categorize apps in the drawer.
 -   [X] Icon Shape support.
 -   [X] Quick Action shortcuts (Dash).
--   [X] Hide apps (Dash).
+-   [X] Hide apps
 -   [X] Dock search.
 -   [X] Drawer grid preference.
 -   [X] Customize app icon.
@@ -67,11 +67,10 @@ Free and Open Source Launcher. <br/>
     </tr>
 </table>
 
-## Buy me a cofffe
-Want to buy me a coffee? <br/>
+## Want to buy me a coffee? <br/>
 <a href="https://www.buymeacoffee.com/2ulp4f5" target="_blank">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
-    alt="Buy Me A Coffee" width="140" >
+    alt="Buy Me A Coffee" width="150" >
 </a>
 
 

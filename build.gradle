@@ -54,6 +54,12 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+
+
+        classpath 'com.google.gms:google-services:4.3.3'
+
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+
     }
 }
 
@@ -61,6 +67,11 @@ String FRAMEWORK_PREBUILTS_DIR = "prebuilts"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
+
+apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'com.google.firebase.crashlytics'
+
 if (enable_plugin_kotlin) {
     apply plugin: 'kotlin-android'
     apply plugin: 'kotlin-android-extensions'
@@ -258,6 +269,9 @@ dependencies {
     if (enable_plugin_kotlin) {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     }
+
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
     implementation "androidx.test.ext:junit:${versions.junit}"
     androidTestImplementation "org.mockito:mockito-core:${versions.mockito}"
