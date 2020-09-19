@@ -25,7 +25,7 @@ import android.net.Uri
 import android.view.View
 import com.android.launcher3.*
 import com.android.launcher3.ItemInfoWithIcon.FLAG_SYSTEM_YES
-import com.android.launcher3.LauncherSettings.BaseLauncherColumns.ITEM_TYPE_APPLICATION
+import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.popup.SystemShortcut
 import com.saggitt.omega.override.CustomInfoProvider

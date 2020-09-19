@@ -26,86 +26,73 @@ import android.provider.BaseColumns;
  * Settings related utilities.
  */
 public class LauncherSettings {
-    /**
-     * Columns required on table staht will be subject to backup and restore.
-     */
-    interface ChangeLogColumns extends BaseColumns {
-        /**
-         * The time of the last update to this row.
-         * <P>Type: INTEGER</P>
-         */
-        String MODIFIED = "modified";
-    }
+     /**
+      * Favorites.
+      */
+     public static final class Favorites implements BaseColumns {
 
-    public interface BaseLauncherColumns extends ChangeLogColumns {
-        /**
-         * Descriptive name of the gesture that can be displayed to the user.
-         * <P>Type: TEXT</P>
-         */
-        String TITLE = "title";
+         /**
+          * Descriptive name of the gesture that can be displayed to the user.
+          * <P>Type: TEXT</P>
+          */
+         public static final String TITLE = "title";
 
-        /**
-         * The Intent URL of the gesture, describing what it points to. This
-         * value is given to {@link android.content.Intent#parseUri(String, int)} to create
-         * an Intent that can be launched.
-         * <P>Type: TEXT</P>
-         */
-        String INTENT = "intent";
+         /**
+          * The Intent URL of the gesture, describing what it points to. This
+          * value is given to {@link android.content.Intent#parseUri(String, int)} to create
+          * an Intent that can be launched.
+          * <P>Type: TEXT</P>
+          */
+         public static final String INTENT = "intent";
 
-        /**
-         * The type of the gesture
-         *
-         * <P>Type: INTEGER</P>
-         */
-        String ITEM_TYPE = "itemType";
+         /**
+          * The type of the gesture
+          *
+          * <P>Type: INTEGER</P>
+          */
+         public static final String ITEM_TYPE = "itemType";
 
-        /**
-         * The gesture is an application
-         */
-        int ITEM_TYPE_APPLICATION = 0;
+         /**
+          * The gesture is an application
+          */
+         public static final int ITEM_TYPE_APPLICATION = 0;
 
-        /**
-         * The gesture is an application created shortcut
-         */
-        int ITEM_TYPE_SHORTCUT = 1;
+         /**
+          * The gesture is an application created shortcut
+          */
+         public static final int ITEM_TYPE_SHORTCUT = 1;
 
-        /**
-         * The icon package name in Intent.ShortcutIconResource
-         * <P>Type: TEXT</P>
-         */
-        String ICON_PACKAGE = "iconPackage";
+         /**
+          * The icon package name in Intent.ShortcutIconResource
+          * <P>Type: TEXT</P>
+          */
+         public static final String ICON_PACKAGE = "iconPackage";
 
-        /**
-         * The icon resource name in Intent.ShortcutIconResource
-         * <P>Type: TEXT</P>
-         */
-        String ICON_RESOURCE = "iconResource";
+         /**
+          * The icon resource name in Intent.ShortcutIconResource
+          * <P>Type: TEXT</P>
+          */
+         public static final String ICON_RESOURCE = "iconResource";
 
-        /**
-         * The custom icon bitmap.
-         * <P>Type: BLOB</P>
-         */
-        String ICON = "icon";
+         /**
+          * The custom icon bitmap.
+          * <P>Type: BLOB</P>
+          */
+         public static final String ICON = "icon";
 
-        String CUSTOM_ICON = "customIcon";
+         public static final String CUSTOM_ICON = "customIcon";
 
-        String CUSTOM_ICON_ENTRY = "customIconEntry";
-    }
+         public static final String CUSTOM_ICON_ENTRY = "customIconEntry";
+         /**
+          * The time of the last update to this row.
+          * <P>Type: INTEGER</P>
+          */
+         public static final String MODIFIED = "modified";
 
-    /**
-     * Favorites.
-     */
-    public static final class Favorites implements BaseLauncherColumns {
-        /**
-         * The time of the last update to this row.
-         * <P>Type: INTEGER</P>
-         */
-        public static final String MODIFIED = "modified";
-
-        /**
-         * The gesture is a package
-         */
-        public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
+         /**
+          * The gesture is a package
+          */
+         public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
 
         public static final String TABLE_NAME = "favorites";
 
