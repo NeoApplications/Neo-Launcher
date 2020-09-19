@@ -94,7 +94,7 @@ public class LauncherProvider extends ContentProvider {
      * Represents the schema of the database. Changes in scheme need not be backwards compatible.
      * When increasing the scheme version, ensure that downgrade_schema.json is updated
      */
-    public static final int SCHEMA_VERSION = 28;
+    public static final int SCHEMA_VERSION = 32;
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".settings";
 

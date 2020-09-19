@@ -67,9 +67,7 @@ String FRAMEWORK_PREBUILTS_DIR = "prebuilts"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
-
 apply plugin: 'com.google.gms.google-services'
-
 apply plugin: 'com.google.firebase.crashlytics'
 
 if (enable_plugin_kotlin) {
@@ -82,7 +80,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.4.0"
-    def code = 30
+    def code = 31
 
     defaultConfig {
         minSdkVersion 25
