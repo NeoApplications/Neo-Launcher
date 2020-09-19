@@ -145,7 +145,7 @@
             android:taskAffinity="${applicationId}.tasks.RUN_HANDLER"
             android:theme="@style/SettingsTheme_Light.Transparent">
             <intent-filter>
-                <action android:name="ch.deletescape.lawnchair.START_ACTION" />
+                <action android:name="com.saggitt.omega.START_ACTION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -214,5 +214,6 @@
             android:name="com.saggitt.omega.search.AppSearchProvider"
             android:authorities="${applicationId}.appssearch"
             android:exported="true" />
+
     </application>
 </manifest>

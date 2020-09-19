@@ -85,7 +85,6 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
 
     override fun loadPack() {
         try {
-            val startTime = System.currentTimeMillis()
             val res = packResources
             val compStart = "ComponentInfo{"
             val compStartlength = compStart.length

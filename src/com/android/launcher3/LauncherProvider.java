@@ -754,7 +754,20 @@ public class LauncherProvider extends ContentProvider {
                             !LauncherDbUtils.prepareScreenZeroToHostQsb(mContext, db)) {
                         break;
                     }
-                case 27: {
+
+                case 27:
+                    db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.TITLE_ALIAS + " TEXT;");
+                    db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.CUSTOM_ICON + " BLOB;");
+                case 28:
+                    // DB Upgraded successfully
+                    return;
+
+                case 29:
+                    db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.CUSTOM_ICON_ENTRY + " TEXT;");
+                case 30:
+                    db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.SWIPE_UP_ACTION + " TEXT;");
+
+                case 31: {
                     // Update the favorites table so that the screen ids are ordered based on
                     // workspace page rank.
                     IntArray finalScreens = LauncherDbUtils.queryIntArray(db, "workspaceScreens",
@@ -777,12 +790,8 @@ public class LauncherProvider extends ContentProvider {
                     }
                     dropTable(db, "workspaceScreens");
                 }
-                case 28:
-                    // DB Upgraded successfully
-                    return;
-                case 29:
-                    // No-op
-                case 30:
+
+                case 32:
                     // No-op
             }
 

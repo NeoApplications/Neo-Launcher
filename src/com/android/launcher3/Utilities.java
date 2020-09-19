@@ -91,6 +91,7 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.OmegaPreferences;
+import com.saggitt.omega.iconpack.IconPackManager;
 import com.saggitt.omega.util.Config;
 
 import java.io.ByteArrayOutputStream;
@@ -564,7 +565,9 @@ public final class Utilities {
     public static Drawable getFullDrawable(Launcher launcher, ItemInfo info, int width, int height,
             boolean flattenDrawable, Object[] outObj) {
         LauncherAppState appState = LauncherAppState.getInstance(launcher);
-        if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
+        IconPackManager.CustomIconEntry customIconEntry = (info instanceof WorkspaceItemInfo) ?
+                ((WorkspaceItemInfo) info).customIconEntry : null;
+        if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION || customIconEntry != null) {
             LauncherActivityInfo activityInfo = LauncherAppsCompat.getInstance(launcher)
                     .resolveActivity(info.getIntent(), info.user);
             outObj[0] = activityInfo;

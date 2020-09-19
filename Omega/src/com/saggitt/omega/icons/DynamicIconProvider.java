@@ -137,4 +137,10 @@ public class DynamicIconProvider extends IconProvider {
         }
         return drawable == null ? super.getIcon(launcherActivityInfo, iconDpi, flattenDrawable) : drawable;
     }
+
+    @Override
+    public String getSystemStateForPackage(String systemState, String packageName) {
+        String suffix = isCalendar(packageName) ? " " + getDayOfMonth() : "";
+        return super.getSystemStateForPackage(systemState, packageName) + suffix;
+    }
 }

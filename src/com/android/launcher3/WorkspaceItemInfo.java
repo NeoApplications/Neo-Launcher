@@ -107,8 +107,6 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
      * The installation progress [0-100] of the package that this shortcut represents.
      */
     private int mInstallProgress;
-    private boolean badgeVisible = true;
-
 
     public WorkspaceItemInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
@@ -233,20 +231,19 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
     private void updateDatabase(Context context, boolean updateIcon, boolean reload) {
         if (updateIcon)
-            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
-                    , badgeVisible, customIconEntry, customIcon, true, reload);
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction,
+                    customIconEntry, customIcon, true, reload);
         else
-            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
-                    , badgeVisible, null, null, false, reload);
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction,
+                    null, null, false, reload);
     }
 
-    public void onLoadCustomizations(String titleAlias, String swipeUpAction, boolean badgeVisible,
+    public void onLoadCustomizations(String titleAlias, String swipeUpAction,
                                      IconPackManager.CustomIconEntry customEntry, Bitmap icon) {
         customTitle = titleAlias;
         customIconEntry = customEntry;
         this.customIcon = icon;
         this.swipeUpAction = swipeUpAction;
-        this.badgeVisible = badgeVisible;
     }
 
     public void setTitle(@NotNull Context context, @Nullable String title) {
@@ -270,7 +267,6 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     public void setBadgeVisible(@NonNull Context context, @NonNull Boolean visible) {
-        badgeVisible = visible;
         updateDatabase(context, false, true);
     }
 

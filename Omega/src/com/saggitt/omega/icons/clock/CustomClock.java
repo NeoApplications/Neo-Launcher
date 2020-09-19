@@ -43,11 +43,8 @@ public class CustomClock {
 
     public static Drawable getClock(Context context, Drawable drawable, Metadata metadata) {
         ClockLayers clone = getClockLayers(context, drawable, metadata, false).clone();
-        if (clone != null) {
-            clone.updateAngles();
-            return clone.mDrawable;
-        }
-        return null;
+        clone.updateAngles();
+        return clone.mDrawable;
     }
 
     private static ClockLayers getClockLayers(Context context, Drawable drawableForDensity,

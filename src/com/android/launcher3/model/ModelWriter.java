@@ -210,21 +210,25 @@ public class ModelWriter {
                         .put(Favorites.SCREEN, item.screenId)));
     }
 
+    private void executeUpdateItem(ItemInfo item, Supplier<ContentWriter> writer) {
+        ((Executor) MODEL_EXECUTOR).execute(new UpdateItemRunnable(item, writer));
+    }
+
     public static void modifyItemInDatabase(Context context, final ItemInfo item, String alias,
-                                            String swipeUpAction, boolean badgeVisible,
+                                            String swipeUpAction,
                                             IconPackManager.CustomIconEntry iconEntry, Bitmap icon,
                                             boolean updateIcon, boolean reload) {
-        final ContentWriter writer = new ContentWriter(context);
-        writer.put(Favorites.TITLE_ALIAS, alias);
-        writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
-        writer.put(Favorites.BADGE_VISIBLE, badgeVisible ? 1 : 0);
-        if (updateIcon) {
-            writer.put(Favorites.CUSTOM_ICON, icon != null ? Utilities.flattenBitmap(icon) : null);
-            writer.put(Favorites.CUSTOM_ICON_ENTRY, iconEntry != null ? iconEntry.toString() : null);
-        }
-
+        LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, () -> {
+            final ContentWriter writer = new ContentWriter(context);
+            writer.put(Favorites.TITLE_ALIAS, alias);
+            writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
+            if (updateIcon) {
+                writer.put(Favorites.CUSTOM_ICON, icon != null ? Utilities.flattenBitmap(icon) : null);
+                writer.put(Favorites.CUSTOM_ICON_ENTRY, iconEntry != null ? iconEntry.toString() : null);
+            }
+            return writer;
+        });
         if (reload) {
-            LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, writer);
             LauncherAppState.getInstance(context).getModel().forceReload();
         }
     }

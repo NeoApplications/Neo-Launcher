@@ -262,8 +262,6 @@ public class LauncherSettings {
 
         public static final String SWIPE_UP_ACTION = "swipeUpAction";
 
-        public static final String BADGE_VISIBLE = "badgeVisible";
-
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional) {
             addTableToDb(db, myProfileId, optional, TABLE_NAME);
         }
@@ -286,6 +284,10 @@ public class LauncherSettings {
                     "iconPackage TEXT," +
                     "iconResource TEXT," +
                     "icon BLOB," +
+                    "customIcon BLOB," +
+                    "customIconEntry TEXT," +
+                    "titleAlias TEXT," +
+                    "swipeUpAction TEXT," +
                     "appWidgetProvider TEXT," +
                     "modified INTEGER NOT NULL DEFAULT 0," +
                     "restored INTEGER NOT NULL DEFAULT 0," +

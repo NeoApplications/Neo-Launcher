@@ -75,12 +75,12 @@ public class IconShapeOverride {
 
         // magic
         try {
-            Resources override =
+            ResourcesOverride override =
                     new ResourcesOverride(Resources.getSystem(), getConfigResId(), path);
             getSystemResField().set(null, override);
             int masks = getOverrideMasksResId();
             if (masks != 0) {
-                ((ResourcesOverride) override).setArrayOverrideId(masks);
+                override.setArrayOverrideId(masks);
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to override icon shape", e);
