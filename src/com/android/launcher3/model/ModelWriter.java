@@ -439,17 +439,17 @@ public class ModelWriter {
         }
     }
 
-    private abstract class UpdateItemBaseRunnable implements Runnable {
-        private final StackTraceElement[] mStackTrace;
-        private final ModelVerifier mVerifier = new ModelVerifier();
+        private abstract class UpdateItemBaseRunnable implements Runnable {
+            private final StackTraceElement[] mStackTrace;
+            private final ModelVerifier mVerifier = new ModelVerifier();
 
-        UpdateItemBaseRunnable() {
-            mStackTrace = new Throwable().getStackTrace();
-        }
+            UpdateItemBaseRunnable() {
+                mStackTrace = new Throwable().getStackTrace();
+            }
 
-        protected void updateItemArrays(ItemInfo item, int itemId) {
-            // Lock on mBgLock *after* the db operation
-            synchronized (mBgDataModel) {
+            protected void updateItemArrays(ItemInfo item, int itemId) {
+                // Lock on mBgLock *after* the db operation
+                synchronized (mBgDataModel) {
                 checkItemInfoLocked(itemId, item, mStackTrace);
 
                 if (item.container != Favorites.CONTAINER_DESKTOP &&

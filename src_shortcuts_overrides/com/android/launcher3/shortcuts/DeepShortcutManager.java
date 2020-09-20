@@ -71,10 +71,6 @@ public class DeepShortcutManager {
                 && !info.isDisabled() && !isItemPromise;
     }
 
-    public static boolean supportsEdit(ItemInfo info) {
-        return CustomInfoProvider.Companion.isEditable(info) || supportsShortcuts(info);
-    }
-
     /**
      * Queries for the shortcuts with the package name and provided ids.
      * <p>
@@ -168,6 +164,10 @@ public class DeepShortcutManager {
             return DeepShortcutManagerBackport.getShortcutIconDrawable(shortcutInfo, density);
         }
         return null;
+    }
+
+    public static boolean supportsEdit(ItemInfo info) {
+        return CustomInfoProvider.Companion.isEditable(info) || supportsShortcuts(info);
     }
 
     public boolean wasLastCallSuccess() {

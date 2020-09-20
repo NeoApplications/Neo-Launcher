@@ -30,6 +30,7 @@ public class LauncherFiles {
 
     public static final List<String> ALL_FILES = Collections.unmodifiableList(Arrays.asList(
             LAUNCHER_DB,
+            LAUNCHER_DB2,
             SHARED_PREFERENCES_KEY + XML,
             WIDGET_PREVIEWS_DB,
             MANAGED_USER_PREFERENCES_KEY + XML,

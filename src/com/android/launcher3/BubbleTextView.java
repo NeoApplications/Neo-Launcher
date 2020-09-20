@@ -56,6 +56,7 @@ import com.android.launcher3.model.PackageItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.saggitt.omega.OmegaPreferences;
+import com.saggitt.omega.override.CustomInfoProvider;
 
 import java.text.NumberFormat;
 
@@ -326,11 +327,20 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         }
         setIcon(iconDrawable);
         if (!isTextHidden())
-            setText(info.title);
+            setText(getTitle(info));
         if (info.contentDescription != null) {
             setContentDescription(info.isDisabled()
                     ? getContext().getString(R.string.disabled_app_label, info.contentDescription)
                     : info.contentDescription);
+        }
+    }
+
+    private CharSequence getTitle(ItemInfo info) {
+        CustomInfoProvider<ItemInfo> customInfoProvider = CustomInfoProvider.Companion.forItem(getContext(), info);
+        if (customInfoProvider != null) {
+            return customInfoProvider.getTitle(info);
+        } else {
+            return info.title;
         }
     }
 

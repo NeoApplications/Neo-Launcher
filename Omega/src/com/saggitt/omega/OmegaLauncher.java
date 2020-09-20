@@ -45,7 +45,7 @@ import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 import static com.saggitt.omega.iconpack.IconPackManager.Companion;
 import static com.saggitt.omega.iconpack.IconPackManager.CustomIconEntry;
@@ -150,14 +150,14 @@ public class OmegaLauncher extends Launcher {
 
     }
 
-    private void handleEditIconResult(int resultCode, @NotNull Bundle data) {
+    private void handleEditIconResult(int resultCode, Bundle data) {
         if (resultCode == Activity.RESULT_OK) {
             if (currentEditInfo == null) {
                 return;
             }
             ItemInfo itemInfo = currentEditInfo;
             String entryString = data.getString(EditIconActivity.EXTRA_ENTRY);
-            CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(entryString);
+            CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(Objects.requireNonNull(entryString));
             (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
         }
     }

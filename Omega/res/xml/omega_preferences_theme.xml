@@ -31,7 +31,8 @@
 
     <Preference
         android:key="pref_reset_custom_icon"
-        android:title="@string/reset_custom_icons" />
+        android:title="@string/reset_custom_icons"
+        app:iconSpaceReserved="false" />
 
     <com.saggitt.omega.preferences.ColorPreferenceCompat
         android:defaultValue="@color/colorAccent"
