@@ -1,10 +1,11 @@
-### v0.4.0 (Build 30)
+### v0.4.0 (Build 31)
 * **Add: Hide apps preference**
 * **Add: Icon Shape preference**
 * **Add: Dock search**
 * **Add: AllApps Icon Scale**
 * **Add: Dock Icon Scale**
 * **Add: Workspace Icon Scale**
+* **Fixed: Wallpaper chooser crash**
 
 ### v0.3.0 (Build 20)
 * **Add gestures preference**
