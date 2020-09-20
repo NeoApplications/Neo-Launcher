@@ -58,9 +58,9 @@ import java.util.Comparator;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
-import static com.android.launcher3.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+import static com.saggitt.omega.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
 import static java.lang.Math.max;
 
 public class InvariantDeviceProfile {

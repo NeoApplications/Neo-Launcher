@@ -103,11 +103,47 @@
     <string name="drawer_folders">Folders</string>
     <string name="drawer_tabs">Tabs</string>
     <string name="selected_count">%1$d selected</string>
-
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+    <plurals name="hidden_apps_count">
+        <item quantity="other">%1$d Hidden</item>
+    </plurals>
     <string name="hide_app_selected">&#160; hidden</string>
     <string name="hide_app_reset">Reset</string>
     <string name="action_preferences" translatable="false">@string/customize</string>
 
+    <!-- PREFERENCES THEME -->
+    <string name="title__theme_accent_color">Accent Color</string>
+    <string name="title__theme_blur">Blur</string>
+    <string name="title__theme_blur_radius">Blur Intensity</string>
+    <string name="title__theme_icon_shape">Change icon shape</string>
+
+    <string name="summary__theme_blur">Blur page backgrounds</string>
+
+    <string name="theme_auto">Follow wallpaper</string>
+    <string name="theme_auto_night_mode">Follow system theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_with_dark_text">dark text</string>
+    <string name="theme_black">Black</string>
+    <string name="theme_black_dark_text">Black with dark text</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_dark_text">Light with dark text</string>
+    <string name="theme_dark_dark_text">Dark with dark text</string>
+    <string name="theme_dark_theme_mode">Dark theme</string>
+    <string name="theme_dark_theme_mode_on">On</string>
+    <string name="theme_dark_theme_mode_off">Off</string>
+    <string name="theme_dark_theme_mode_follow_wallpaper">@string/theme_auto</string>
+    <string name="theme_dark_theme_mode_follow_system">@string/theme_auto_night_mode</string>
+    <string name="theme_dark_theme_mode_follow_daylight">Follow daylight</string>
+    <string name="theme_use_black">Use pure black</string>
+    <string name="theme_use_dark_text">Use dark text</string>
+    <string name="theme_default">Default</string>
+
+    <string name="icon_pack">Icon pack</string>
+    <string name="get_more_icon_packs">Get more</string>
+    <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
     <!-- Developer setting to change the shape of icons on home screen. [CHAR LIMIT=50] -->
     <string name="icon_shape_override_label">Change icon shape</string>
     <!-- Subtext explaining that the icons will only be affected on the home screen. This text follows the actual icon action: Change icon shape, on Home screen [CHAR LIMIT=100] -->
@@ -132,60 +168,22 @@
     <string name="icon_shape_corner_round">Round</string>
     <string name="icon_shape_corner_squircle">Squircle</string>
     <string name="icon_shape_corner_cut">Cut</string>
-    <string name="title__theme_icon_shape">Change icon shape</string>
-    <string name="color_presets">Presets</string>
 
     <string name="icon_pack_applied_toast">%s applied</string>
     <string name="icon_pack_default">System icons</string>
+    <string name="icon_pack_external_picker">Open external picker</string>
     <string name="open_image_picker">Open image picker</string>
     <string name="import_icon">Import icon</string>
     <string name="import_as_adaptive">As adaptive icon</string>
-    <string name="icon_pack_external_picker">Open external picker</string>
     <string name="playstore_query_icon_pack">Icon pack</string>
-
-    <plurals name="tab_apps_count">
-        <item quantity="one">%1$d App</item>
-        <item quantity="other">%1$d Apps</item>
-    </plurals>
-    <plurals name="hidden_apps_count">
-        <item quantity="other">%1$d Hidden</item>
-    </plurals>
-
-    <!-- PREFERENCES THEME -->
-    <string name="title__theme_accent_color">Accent Color</string>
-    <string name="title__theme_blur">Blur</string>
-    <string name="title__theme_blur_radius">Blur Intensity</string>
-
-    <string name="summary__theme_blur">Blur page backgrounds</string>
-
-    <string name="theme_auto">Follow wallpaper</string>
-    <string name="theme_auto_night_mode">Follow system theme</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark_text">Light with dark text</string>
-    <string name="theme_with_dark_text">dark text</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_dark_dark_text">Dark with dark text</string>
-    <string name="theme_black">Black</string>
-    <string name="theme_black_dark_text">Black with dark text</string>
-
-    <string name="theme_dark_theme_mode">Dark theme</string>
-    <string name="theme_dark_theme_mode_on">On</string>
-    <string name="theme_dark_theme_mode_off">Off</string>
-    <string name="theme_dark_theme_mode_follow_wallpaper">@string/theme_auto</string>
-    <string name="theme_dark_theme_mode_follow_system">@string/theme_auto_night_mode</string>
-    <string name="theme_dark_theme_mode_follow_daylight">Follow daylight</string>
-    <string name="theme_use_black">Use pure black</string>
-    <string name="theme_use_dark_text">Use dark text</string>
-
-    <string name="theme_default">Default</string>
-
-    <string name="icon_pack">Icon pack</string>
-    <string name="get_more_icon_packs">Get more</string>
-    <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
 
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_default">Default</string>
+    <string name="reset_custom_icons">Remove Custom Icons</string>
+    <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
+
+    <string name="color_presets">Presets</string>
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>
@@ -322,8 +320,4 @@
     <string name="folder_cover_mode_desc">Tap to open first app, swipe up to view all.</string>
 
     <string name="loading">Loading…</string>
-    <string name="reset_custom_icons">Reset custom icons</string>
-    <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
-
-
 </resources>
