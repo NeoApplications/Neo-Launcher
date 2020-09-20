@@ -94,8 +94,6 @@ import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.iconpack.IconPackManager;
 import com.saggitt.omega.util.Config;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -856,25 +854,6 @@ public final class Utilities {
     }
 
     private static List<Runnable> onStart = new ArrayList<>();
-
-    /**
-     * Compresses the bitmap to a byte array for serialization.
-     */
-    public static byte[] flattenBitmap(Bitmap bitmap) {
-        // Try go guesstimate how much space the icon will take when serialized
-        // to avoid unnecessary allocations/copies during the write.
-        int size = bitmap.getWidth() * bitmap.getHeight() * 4;
-        ByteArrayOutputStream out = new ByteArrayOutputStream(size);
-        try {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-            return out.toByteArray();
-        } catch (IOException e) {
-            Log.w(TAG, "Could not write bitmap");
-            return null;
-        }
-    }
 
     /**
      * ATTENTION: Only ever call this from within LawnchairLauncher.kt

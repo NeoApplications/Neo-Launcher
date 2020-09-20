@@ -39,6 +39,7 @@ import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.WorkspaceItemInfo;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.util.ContentWriter;
@@ -223,7 +224,7 @@ public class ModelWriter {
             writer.put(Favorites.TITLE_ALIAS, alias);
             writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
             if (updateIcon) {
-                writer.put(Favorites.CUSTOM_ICON, icon != null ? Utilities.flattenBitmap(icon) : null);
+                writer.put(Favorites.CUSTOM_ICON, icon != null ? GraphicsUtils.flattenBitmap(icon) : null);
                 writer.put(Favorites.CUSTOM_ICON_ENTRY, iconEntry != null ? iconEntry.toString() : null);
             }
             return writer;
