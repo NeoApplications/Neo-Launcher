@@ -1,4 +1,4 @@
-### v0.4.0 (Build 31)
+### v0.4.0 (Build 32)
 * **Add: Hide apps preference**
 * **Add: Icon Shape preference**
 * **Add: Dock search**
