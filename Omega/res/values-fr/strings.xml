@@ -12,7 +12,7 @@
     <string name="tab_type_custom_desc">Sélectionner les raccourcis manuellement.</string>
     <string name="pref_appcategorization_enable_title">Catégoriser les applications</string>
     <string name="reset_custom_icons_confirmation">Réinitialiser les icônes de ce pack \? Cela ne peut pas être annulé.</string>
-    <string name="reset_custom_icons">Réinitialiser les icônes personnalisées</string>
+    <string name="reset_custom_icons">Supprimer les icônes personnalisées</string>
     <string name="loading">Chargement…</string>
     <string name="folder_cover_mode_desc">Appuyer pour ouvrir la première application, défiler vers le haut pour tout voir.</string>
     <string name="hide_app">Masquer le raccourci</string>
@@ -220,4 +220,6 @@
     <string name="dialog_default">Par défaut</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Annuler</string>
+    <string name="title__dock_icon_size">Taille d\'icône</string>
+    <string name="title__desktop_icon_size">Taille d\'icône</string>
 </resources>
