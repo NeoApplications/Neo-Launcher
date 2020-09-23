@@ -3339,6 +3339,23 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
     }
 
+    public void refreshChildren() {
+        final int screenCount = getChildCount();
+        int x = mLauncher.getDeviceProfile().inv.numColumns;
+        int y = mLauncher.getDeviceProfile().inv.numRows;
+        for (int i = 0; i < screenCount; i++) {
+            final CellLayout layout = (CellLayout) getChildAt(i);
+            layout.setGridSize(x, y);
+        }
+
+        View qsb = findViewById(R.id.search_container_workspace);
+        if (qsb != null && qsb.getLayoutParams() instanceof CellLayout.LayoutParams) {
+            ((CellLayout.LayoutParams) qsb.getLayoutParams()).cellHSpan = x;
+        }
+
+        requestLayout();
+    }
+
     /**
      * Used as a workaround to ensure that the AppWidgetService receives the
      * PACKAGE_ADDED broadcast before updating widgets.

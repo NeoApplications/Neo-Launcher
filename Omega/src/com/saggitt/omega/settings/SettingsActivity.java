@@ -81,6 +81,8 @@ import com.saggitt.omega.gestures.ui.GesturePreference;
 import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
 import com.saggitt.omega.preferences.ControlledPreference;
+import com.saggitt.omega.preferences.GridSizeDialogFragmentCompat;
+import com.saggitt.omega.preferences.GridSizePreference;
 import com.saggitt.omega.preferences.PreferenceController;
 import com.saggitt.omega.preferences.ResumablePreference;
 import com.saggitt.omega.preferences.SearchProviderPreference;
@@ -886,7 +888,9 @@ public class SettingsActivity extends SettingsBaseActivity
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
             final DialogFragment f;
-            if (preference instanceof ListPreference) {
+            if (preference instanceof GridSizePreference) {
+                f = GridSizeDialogFragmentCompat.newInstance(preference.getKey());
+            } else if (preference instanceof ListPreference) {
                 Log.d("success", "onDisplayPreferenceDialog: yay");
                 f = ThemedListPreferenceDialogFragment.Companion.newInstance(preference.getKey());
             } else if (preference instanceof SingleDimensionGridSizePreference) {

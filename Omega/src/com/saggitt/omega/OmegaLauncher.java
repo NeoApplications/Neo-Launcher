@@ -110,6 +110,16 @@ public class OmegaLauncher extends Launcher {
         paused = true;
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Utilities.onLauncherStart();
+    }
+
+    public void refreshGrid() {
+        mWorkspace.refreshChildren();
+    }
+
     public void onDestroy() {
         super.onDestroy();
         Utilities.getOmegaPrefs(this).unregisterCallback();

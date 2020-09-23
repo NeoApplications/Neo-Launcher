@@ -29,10 +29,10 @@ Free and Open Source Launcher. <br/>
 -   [X] All Apps Icon Scale.
 -   [X] Dock Icon Scale.
 -   [X] Workspace Icon Scale.
+-   [X] Desktop grid preference.
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
--   [ ] Desktop grid preference.
 -   [ ] Back up and restore.
 -   [ ] Apps Predictions.
 -   [ ] Horizontal drawer.

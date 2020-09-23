@@ -34,6 +34,7 @@ import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.preferences.GridSize
+import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
@@ -58,6 +59,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val restart = { restart() }
     val reloadApps = { reloadApps() }
     val reloadAll = { reloadAll() }
+    private val refreshGrid = { refreshGrid() }
     val updateBlur = { updateBlur() }
     private val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
@@ -115,6 +117,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val usePopupMenuView by BooleanPref("pref_desktopUsePopupMenuView", true, doNothing)
     val lockDesktop by BooleanPref("pref_lockDesktop", false, reloadAll)
     val desktopIconScale by FloatPref("pref_iconSize", 1f, recreate)
+    private var gridSizeDelegate = ResettableLazy { GridSize2D(this, "numRows", "numColumns", LauncherAppState.getIDP(context), refreshGrid) }
+    val gridSize by gridSizeDelegate
 
     /* --DOCK-- */
     var dockHide by BooleanPref("pref_hideHotseat", false, recreate)
@@ -289,6 +293,10 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     fun restart() {
         onChangeCallback?.restart()
+    }
+
+    fun refreshGrid() {
+        onChangeCallback?.refreshGrid()
     }
 
     private fun updateBlur() {

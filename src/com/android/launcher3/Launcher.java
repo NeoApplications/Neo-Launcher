@@ -223,7 +223,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     private Configuration mOldConfig;
 
     @Thunk
-    Workspace mWorkspace;
+    public Workspace mWorkspace;
     private View mLauncherView;
     @Thunk
     DragLayer mDragLayer;
@@ -327,6 +327,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         OmegaPreferences prefs = Utilities.getOmegaPrefs(this);
         prefs.getDrawerGridSize();
+        prefs.getGridSize();
 
         mOldConfig = new Configuration(getResources().getConfiguration());
         mModel = app.setLauncher(this);

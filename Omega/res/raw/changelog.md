@@ -1,7 +1,9 @@
+### v0.5.0 (Build 40)
+
 ### v0.4.0 (Build 32)
 * **Add: Hide apps preference**
 * **Add: Icon Shape preference**
-* **Add: Dock search**
+* **Add: Dock search** 
 * **Add: AllApps Icon Scale**
 * **Add: Dock Icon Scale**
 * **Add: Workspace Icon Scale**
