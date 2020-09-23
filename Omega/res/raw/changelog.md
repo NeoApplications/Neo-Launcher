@@ -3,6 +3,7 @@
 * **Add: Desktop Hide Labels preference**
 * **Add: Desktop Multiline labels preference**
 * **Add: Dock icons count preference**
+* **Add: Swipe down gesture**
 
 ### v0.4.0 (Build 32)
 * **Add: Hide apps preference**

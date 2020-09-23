@@ -141,7 +141,7 @@ class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(
 
     override fun onDragStart(start: Boolean) {}
 
-    override fun onDrag(displacement: Float, velocity: Float): Boolean {
+    override fun onDrag(displacement: Float): Boolean {
         val range = content.height.toFloat()
         val bounded = Utilities.boundToRange(displacement, 0f, range)
         translationShift = bounded / range

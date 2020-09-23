@@ -46,6 +46,7 @@
     <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
 
     <string name="action_do_nothing_class" translatable="false">com.saggitt.omega.gestures.BlankGestureHandler</string>
+    <string name="action_open_notifications_class" translatable="false">com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler</string>
 
 
 </resources>

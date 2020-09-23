@@ -30,6 +30,10 @@ import com.android.launcher3.R
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
+import com.saggitt.omega.gestures.BlankGestureHandler
+import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.StartAppSearchGestureHandler
+import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackManager
@@ -255,6 +259,15 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putInt("pref_notification_background", R.color.notification_background)
         putBoolean("pref_allAppsGoogleSearch", false)
         putFloat("pref_dockScale", 0.90f)
+
+        // Gestures
+        putString("pref_gesture_swipe_down",
+                when (Integer.parseInt(prefs.getString("pref_pulldownAction", "1"))) {
+                    1 -> NotificationsOpenGestureHandler(context, null)
+                    2 -> StartGlobalSearchGestureHandler(context, null)
+                    3 -> StartAppSearchGestureHandler(context, null)
+                    else -> BlankGestureHandler(context, null)
+                }.toString())
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {

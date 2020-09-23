@@ -14,20 +14,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.saggitt.omega.gestures
 
-package com.saggitt.omega.gestures.gestures
+import android.view.MotionEvent
 
-import com.saggitt.omega.gestures.Gesture
-import com.saggitt.omega.gestures.GestureController
+abstract class Gesture(val controller: GestureController) {
 
-class PressHomeGesture(controller: GestureController) : Gesture(controller) {
+    abstract val isEnabled: Boolean
 
-    private val handler by controller.createHandlerPref("pref_gesture_press_home")
-    override val isEnabled = true
+    open fun onTouchEvent(ev: MotionEvent): Boolean {
+        return false
+    }
 
-
-    override fun onEvent(): Boolean {
-        handler.onGestureTrigger(controller)
-        return true
+    open fun onEvent(): Boolean {
+        return false
     }
 }

@@ -35,7 +35,7 @@
     <string name="summary__general_theme">Change colors, icon pack, icon shape</string>
     <string name="summary__general_search">Search Provider, style, icons</string>
     <string name="summary__general_smartspace">Date, time, home widget</string>
-    <string name="summary__general_notifications">Notifications and Gestures</string>
+    <string name="summary__general_notifications">Badge count ,badge color, gestures</string>
     <string name="summary__general_advanced">Language, back up, setting search</string>
     <string name="summary__general_about">More information about Omega Launcher</string>
 
@@ -204,6 +204,7 @@
     <string name="title__notification_count">Show Notification Count</string>
     <string name="title__folder_badge_count">Show folder badge Count</string>
     <string name="title__notification_background">Notification Background Color</string>
+    <string name="title__gesture_swipe_down">Swipe down</string>
 
     <string name="pref_category__notifications">Notifications</string>
     <string name="pref_category__gestures">Gestures</string>
@@ -217,6 +218,10 @@
     <string name="gesture_long_press">Touch &amp; Hold</string>
     <string name="gesture_swipe_up">Swipe Up</string>
     <string name="omega_actions">Actions</string>
+    <string name="action_app_search">Open app search</string>
+    <string name="action_open_notifications">Open notifications</string>
+    <string name="action_close_notifications">Close notifications</string>
+    <string name="action_global_search">Launch Global Search</string>
 
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>

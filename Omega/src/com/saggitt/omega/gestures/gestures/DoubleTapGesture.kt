@@ -25,10 +25,7 @@ import com.saggitt.omega.gestures.GestureController
 class DoubleTapGesture(controller: GestureController) : Gesture(controller) {
 
     private val handler by controller.createHandlerPref("pref_gesture_double_tap")
-
-    override fun getIsEnabled(): Boolean {
-        return true;
-    }
+    override val isEnabled = true
 
     private val detector = GestureDetector(controller.launcher, object : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(e: MotionEvent): Boolean {
