@@ -18,6 +18,30 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <com.saggitt.omega.preferences.GridSizePreference
+        android:key="pref_desktop_grid_size"
+        android:title="@string/title__desktop_grid_size"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.AutoModeScalePreference
+        android:key="pref_iconSize"
+        android:persistent="true"
+        android:title="@string/title__desktop_icon_size"
+        app:defaultSeekbarValue="1.0"
+        app:maxValue="2.0"
+        app:minValue="0.5"
+        app:steps="150"
+        app:summaryFormat="%.0f%%"
+        app:summaryMultiplier="100" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:defaultValue="false"
+        android:disableDependentsState="true"
+        android:key="pref_hideAppLabels"
+        android:persistent="true"
+        android:title="@string/title__desktop_hide_icon_labels"
+        app:iconSpaceReserved="false" />
+
     <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="true"
         android:key="pref_add_icon_to_home"
@@ -40,21 +64,5 @@
         android:persistent="true"
         android:summary="@string/summary__full_width_widgets"
         android:title="@string/title__desktop_full_width_widgets"
-        app:iconSpaceReserved="false" />
-
-    <com.saggitt.omega.preferences.AutoModeScalePreference
-        android:key="pref_iconSize"
-        android:persistent="true"
-        android:title="@string/title__desktop_icon_size"
-        app:defaultSeekbarValue="1.0"
-        app:maxValue="2.0"
-        app:minValue="0.5"
-        app:steps="150"
-        app:summaryFormat="%.0f%%"
-        app:summaryMultiplier="100" />
-
-    <com.saggitt.omega.preferences.GridSizePreference
-        android:key="pref_desktop_grid_size"
-        android:title="@string/title__desktop_grid_size"
         app:iconSpaceReserved="false" />
 </PreferenceScreen>

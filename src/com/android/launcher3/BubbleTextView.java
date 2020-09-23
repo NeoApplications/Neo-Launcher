@@ -169,13 +169,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
         if (mDisplay == DISPLAY_WORKSPACE) {
             DeviceProfile grid = mActivity.getWallpaperDeviceProfile();
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.iconTextSizePx);
+            mHideText = prefs.getHideAppLabels();
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.iconTextSizePx);
             setCompoundDrawablePadding(grid.iconDrawablePaddingPx);
             defaultIconSize = grid.iconSizePx;
             mIgnorePaddingTouch = true;
         } else if (mDisplay == DISPLAY_ALL_APPS) {
-            mHideText = prefs.getHideAllAppsAppLabels();
             DeviceProfile grid = mActivity.getDeviceProfile();
+            mHideText = prefs.getHideAllAppsAppLabels();
             setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.allAppsIconTextSizePx);
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
             setCompoundDrawablePadding(grid.allAppsIconDrawablePaddingPx);
@@ -184,8 +185,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
             setLineCount(lines);
             mIgnorePaddingTouch = true;
         } else if (mDisplay == DISPLAY_FOLDER) {
+            mHideText = prefs.getHideAppLabels();
             DeviceProfile grid = mActivity.getDeviceProfile();
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.folderChildTextSizePx);
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.folderChildTextSizePx);
             setCompoundDrawablePadding(grid.folderChildDrawablePaddingPx);
             defaultIconSize = grid.folderChildIconSizePx;
             mIgnorePaddingTouch = true;
