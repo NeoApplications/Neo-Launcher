@@ -1,6 +1,7 @@
 ### v0.5.0 (Build 40)
 * **Add: Desktop grid preference**
 * **Add: Desktop Hide Labels preference**
+* **Add: Desktop Multiline labels preference**
 
 ### v0.4.0 (Build 32)
 * **Add: Hide apps preference**
