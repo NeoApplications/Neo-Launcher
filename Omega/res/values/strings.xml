@@ -61,6 +61,7 @@
     <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_colored_icons">Colored icons</string>
     <string name="title__dock_search_bar">Show Search Bar</string>
+    <string name="title__dock_hotseat_icons">Icon Count</string>
 
     <string name="pref_value_disabled">"Disabled"</string>
     <string name="dock_search_value" translatable="false">%1$s %2$s</string>

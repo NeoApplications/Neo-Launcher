@@ -131,6 +131,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var dockSearchBarPref by BooleanPref("pref_dock_search", true, restart)
     inline val dockSearchBar get() = !dockHide && dockSearchBarPref
     val dockIconScale by FloatPref("pref_hotseatIconSize", 1f, recreate)
+    private val dockGridSizeDelegate = ResettableLazy { GridSize(this, "numHotseatIcons", LauncherAppState.getIDP(context), restart) }
+    val dockGridSize by dockGridSizeDelegate
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
@@ -766,6 +768,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             INSTANCE?.apply {
                 onChangeListeners.clear()
                 onChangeCallback = null
+                gridSizeDelegate.resetValue()
+                dockGridSizeDelegate.resetValue()
                 drawerGridSizeDelegate.resetValue()
                 predictionGridSizeDelegate.resetValue()
             }

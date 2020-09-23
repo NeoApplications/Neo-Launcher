@@ -38,6 +38,11 @@
         android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.preferences.DockGridSizePreference
+        android:key="pref_dock_grid_size"
+        android:title="@string/title__dock_hotseat_icons"
+        app:iconSpaceReserved="false" />
+
     <com.saggitt.omega.preferences.AutoModeScalePreference
         android:key="pref_hotseatIconSize"
         android:persistent="true"
