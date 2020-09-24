@@ -29,6 +29,10 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.ModelWriter;
+<<<<<<< HEAD
+=======
+import com.android.launcher3.shortcuts.ShortcutInfoCompat;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.ContentWriter;
 import com.saggitt.omega.iconpack.IconPackManager;
@@ -103,12 +107,20 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     public CharSequence customTitle;
     public Bitmap customIcon;
     public IconPackManager.CustomIconEntry customIconEntry;
+<<<<<<< HEAD
+=======
+
+    public ShortcutInfoCompat shortcutInfo;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * The installation progress [0-100] of the package that this shortcut represents.
      */
     private int mInstallProgress;
+<<<<<<< HEAD
     private boolean badgeVisible = true;
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     public WorkspaceItemInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
@@ -233,6 +245,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
     private void updateDatabase(Context context, boolean updateIcon, boolean reload) {
         if (updateIcon)
+<<<<<<< HEAD
             ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
                     , badgeVisible, customIconEntry, customIcon, true, reload);
         else
@@ -241,12 +254,25 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     public void onLoadCustomizations(String titleAlias, String swipeUpAction, boolean badgeVisible,
+=======
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction,
+                    customIconEntry, customIcon, true, reload);
+        else
+            ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction,
+                    null, null, false, reload);
+    }
+
+    public void onLoadCustomizations(String titleAlias, String swipeUpAction,
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                                      IconPackManager.CustomIconEntry customEntry, Bitmap icon) {
         customTitle = titleAlias;
         customIconEntry = customEntry;
         this.customIcon = icon;
         this.swipeUpAction = swipeUpAction;
+<<<<<<< HEAD
         this.badgeVisible = badgeVisible;
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     }
 
     public void setTitle(@NotNull Context context, @Nullable String title) {
@@ -269,11 +295,14 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         updateDatabase(context, false, true);
     }
 
+<<<<<<< HEAD
     public void setBadgeVisible(@NonNull Context context, @NonNull Boolean visible) {
         badgeVisible = visible;
         updateDatabase(context, false, true);
     }
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     @Override
     public ItemInfoWithIcon clone() {
         return new WorkspaceItemInfo(this);

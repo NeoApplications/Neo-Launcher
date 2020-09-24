@@ -54,6 +54,15 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+<<<<<<< HEAD
+=======
+
+
+        classpath 'com.google.gms:google-services:4.3.3'
+
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     }
 }
 
@@ -61,6 +70,12 @@ String FRAMEWORK_PREBUILTS_DIR = "prebuilts"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.protobuf'
+<<<<<<< HEAD
+=======
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 if (enable_plugin_kotlin) {
     apply plugin: 'kotlin-android'
     apply plugin: 'kotlin-android-extensions'
@@ -70,8 +85,13 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+<<<<<<< HEAD
     def name = "0.4.0"
     def code = 26
+=======
+    def name = "0.4.1"
+    def code = 34
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     defaultConfig {
         minSdkVersion 25
@@ -259,6 +279,12 @@ dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     }
 
+<<<<<<< HEAD
+=======
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     implementation "androidx.test.ext:junit:${versions.junit}"
     androidTestImplementation "org.mockito:mockito-core:${versions.mockito}"
     androidTestImplementation "com.google.dexmaker:dexmaker:${versions.dexmaker}"

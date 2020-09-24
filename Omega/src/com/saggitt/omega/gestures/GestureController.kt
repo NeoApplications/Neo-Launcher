@@ -24,11 +24,18 @@ import android.util.Log
 import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
+<<<<<<< HEAD
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
 import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
+=======
+import com.saggitt.omega.gestures.gestures.*
+import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.util.omegaPrefs
 import org.json.JSONException
@@ -43,6 +50,11 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val pressBackGesture by lazy { PressBackGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
 
+<<<<<<< HEAD
+=======
+    val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     var touchDownPoint = PointF()
 
     private var swipeUpOverride: Pair<GestureHandler, Long>? = null
@@ -129,6 +141,11 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
         fun getGestureHandlers(context: Context, isSwipeUp: Boolean, hasBlank: Boolean) = mutableListOf(
                 OpenDashGestureHandler(context, null),
+<<<<<<< HEAD
+=======
+                OpenDrawerGestureHandler(context, null),
+                NotificationsOpenGestureHandler(context, null),
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                 OpenSettingsGestureHandler(context, null)
         ).apply {
             if (hasBlank) {

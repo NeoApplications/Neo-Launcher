@@ -35,7 +35,11 @@
     <string name="summary__general_theme">Change colors, icon pack, icon shape</string>
     <string name="summary__general_search">Search Provider, style, icons</string>
     <string name="summary__general_smartspace">Date, time, home widget</string>
+<<<<<<< HEAD
     <string name="summary__general_notifications">Notifications and Gestures</string>
+=======
+    <string name="summary__general_notifications">Badge count ,badge color, gestures</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <string name="summary__general_advanced">Language, back up, setting search</string>
     <string name="summary__general_about">More information about Omega Launcher</string>
 
@@ -46,19 +50,39 @@
     <!-- PREFERENCES DESKTOP -->
     <string name="allow_rotation_blocked_desc">Current Display setting doesn\'t permit rotation</string>
     <string name="title__desktop_full_width_widgets">Full width widgets</string>
+<<<<<<< HEAD
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
 
     <!-- PREFERENCES DOCK -->
+=======
+    <string name="title__desktop_icon_size">Icon size</string>
+    <string name="title__desktop_grid_size">Grid size</string>
+    <string name="title__desktop_hide_icon_labels">Hide icon labels on home screen</string>
+    <string name="title__desktop_multiline_labels">Multiline app names</string>
+    <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
+    <string name="grid_size_height">Height</string>
+    <string name="grid_size_width">Width</string>
+
+    <!-- PREFERENCES DOCK -->
+    <string name="title__dock_icon_size">Icon size</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <string name="title__dock_scale">Dock scale</string>
     <string name="title__dock_hide">Dock Hide</string>
     <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_colored_icons">Colored icons</string>
     <string name="title__dock_search_bar">Show Search Bar</string>
+<<<<<<< HEAD
+=======
+    <string name="title__dock_hotseat_icons">Icon Count</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     <string name="pref_value_disabled">"Disabled"</string>
     <string name="dock_search_value" translatable="false">%1$s %2$s</string>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
@@ -66,8 +90,15 @@
     <string name="title__drawer_paged_apps">Paged Apps view</string>
     <string name="title__drawer_hide_icon_labels">Hide app names</string>
     <string name="title__drawer_hide_apps">Hidden App Shortcuts</string>
+<<<<<<< HEAD
     <string name="title__drawer_categorization">Categories</string>
     <string name="title__drawer_icon_popup_menu">Shortcut Bubble</string>
+=======
+    <string name="title__drawer_icon_size">All Apps Icon Size</string>
+    <string name="title__drawer_categorization">Categories</string>
+    <string name="title__drawer_icon_popup_menu">Shortcut Bubble</string>
+    <string name="title__drawer_columns">Number of columns</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <string name="title__sort_mode">App Sort</string>
     <string name="title__sort_alphabetical_az">Alphabetical AZ</string>
     <string name="title__sort_alphabetical_za">Alphabetical ZA</string>
@@ -100,11 +131,55 @@
     <string name="drawer_folders">Folders</string>
     <string name="drawer_tabs">Tabs</string>
     <string name="selected_count">%1$d selected</string>
+<<<<<<< HEAD
 
     <string name="hide_app_selected">&#160; hidden</string>
     <string name="hide_app_reset">Reset</string>
     <string name="action_preferences">@string/customize</string>
 
+=======
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+    <plurals name="hidden_apps_count">
+        <item quantity="other">%1$d Hidden</item>
+    </plurals>
+    <string name="hide_app_selected">&#160; hidden</string>
+    <string name="hide_app_reset">Reset</string>
+    <string name="action_preferences" translatable="false">@string/customize</string>
+
+    <!-- PREFERENCES THEME -->
+    <string name="title__theme_accent_color">Accent Color</string>
+    <string name="title__theme_blur">Blur</string>
+    <string name="title__theme_blur_radius">Blur Intensity</string>
+    <string name="title__theme_icon_shape">Change icon shape</string>
+
+    <string name="summary__theme_blur">Blur page backgrounds</string>
+
+    <string name="theme_auto">Follow wallpaper</string>
+    <string name="theme_auto_night_mode">Follow system theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_with_dark_text">dark text</string>
+    <string name="theme_black">Black</string>
+    <string name="theme_black_dark_text">Black with dark text</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_dark_text">Light with dark text</string>
+    <string name="theme_dark_dark_text">Dark with dark text</string>
+    <string name="theme_dark_theme_mode">Dark theme</string>
+    <string name="theme_dark_theme_mode_on">On</string>
+    <string name="theme_dark_theme_mode_off">Off</string>
+    <string name="theme_dark_theme_mode_follow_wallpaper">@string/theme_auto</string>
+    <string name="theme_dark_theme_mode_follow_system">@string/theme_auto_night_mode</string>
+    <string name="theme_dark_theme_mode_follow_daylight">Follow daylight</string>
+    <string name="theme_use_black">Use pure black</string>
+    <string name="theme_use_dark_text">Use dark text</string>
+    <string name="theme_default">Default</string>
+
+    <string name="icon_pack">Icon pack</string>
+    <string name="get_more_icon_packs">Get more</string>
+    <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <!-- Developer setting to change the shape of icons on home screen. [CHAR LIMIT=50] -->
     <string name="icon_shape_override_label">Change icon shape</string>
     <!-- Subtext explaining that the icons will only be affected on the home screen. This text follows the actual icon action: Change icon shape, on Home screen [CHAR LIMIT=100] -->
@@ -129,6 +204,7 @@
     <string name="icon_shape_corner_round">Round</string>
     <string name="icon_shape_corner_squircle">Squircle</string>
     <string name="icon_shape_corner_cut">Cut</string>
+<<<<<<< HEAD
     <string name="title__theme_icon_shape">Change icon shape</string>
     <string name="color_presets">Presets</string>
 
@@ -177,6 +253,24 @@
     <string name="icon_pack">Icon pack</string>
     <string name="get_more_icon_packs">Get more</string>
     <string name="icon_shape_override_progress">"Applying icon shape changes"</string>
+=======
+
+    <string name="icon_pack_applied_toast">%s applied</string>
+    <string name="icon_pack_default">System icons</string>
+    <string name="icon_pack_external_picker">Open external picker</string>
+    <string name="open_image_picker">Open image picker</string>
+    <string name="import_icon">Import icon</string>
+    <string name="import_as_adaptive">As adaptive icon</string>
+    <string name="playstore_query_icon_pack">Icon pack</string>
+
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_default">Default</string>
+    <string name="reset_custom_icons">Remove Custom Icons</string>
+    <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
+
+    <string name="color_presets">Presets</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>
@@ -191,6 +285,10 @@
     <string name="title__notification_count">Show Notification Count</string>
     <string name="title__folder_badge_count">Show folder badge Count</string>
     <string name="title__notification_background">Notification Background Color</string>
+<<<<<<< HEAD
+=======
+    <string name="title__gesture_swipe_down">Swipe down</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     <string name="pref_category__notifications">Notifications</string>
     <string name="pref_category__gestures">Gestures</string>
@@ -204,6 +302,13 @@
     <string name="gesture_long_press">Touch &amp; Hold</string>
     <string name="gesture_swipe_up">Swipe Up</string>
     <string name="omega_actions">Actions</string>
+<<<<<<< HEAD
+=======
+    <string name="action_app_search">Open app search</string>
+    <string name="action_open_notifications">Open notifications</string>
+    <string name="action_close_notifications">Close notifications</string>
+    <string name="action_global_search">Launch Global Search</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
@@ -313,8 +418,11 @@
     <string name="folder_cover_mode_desc">Tap to open first app, swipe up to view all.</string>
 
     <string name="loading">Loading…</string>
+<<<<<<< HEAD
     <string name="reset_custom_icons">Reset custom icons</string>
     <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
 
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 </resources>

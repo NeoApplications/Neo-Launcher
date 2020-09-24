@@ -103,7 +103,11 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         mAppNameComparator = new AppInfoComparator(context);
         mAppColorComparator = new AppColorComparator(context);
         mIsWork = isWork;
+<<<<<<< HEAD
         mNumAppsPerRow = mLauncher.getDeviceProfile().inv.numColumns;
+=======
+        mNumAppsPerRow = mLauncher.getDeviceProfile().inv.numColsDrawer;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         mAllAppsStore.addUpdateListener(this);
 
         prefs = Utilities.getOmegaPrefs(context);

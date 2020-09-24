@@ -86,6 +86,7 @@ class ShortcutInfoProvider private constructor(context: Context) : CustomInfoPro
         else -> false
     }
 
+<<<<<<< HEAD
     override fun setBadgeVisible(info: WorkspaceItemInfo, visible: Boolean) {
         info.setBadgeVisible(context, visible)
     }
@@ -94,6 +95,8 @@ class ShortcutInfoProvider private constructor(context: Context) : CustomInfoPro
         return info.isBadgeVisible
     }
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private fun getLauncherActivityInfo(info: WorkspaceItemInfo): LauncherActivityInfo? {
         return launcherApps.resolveActivity(info.getIntent(), info.user)
     }

@@ -25,6 +25,7 @@ class LongPressGesture(controller: GestureController) : Gesture(controller) {
 
     private val handler by controller.createHandlerPref("pref_gesture_long_press",
             OpenOverviewGestureHandler(controller.launcher, null))
+<<<<<<< HEAD
 
     override fun getIsEnabled(): Boolean {
         return true;
@@ -32,6 +33,12 @@ class LongPressGesture(controller: GestureController) : Gesture(controller) {
 
     override fun onEvent(): Boolean {
         handler.onGestureTrigger(mController)
+=======
+    override val isEnabled = true
+
+    override fun onEvent(): Boolean {
+        handler.onGestureTrigger(controller)
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         return true
     }
 }

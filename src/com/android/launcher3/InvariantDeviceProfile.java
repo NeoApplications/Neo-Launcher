@@ -45,6 +45,10 @@ import com.android.launcher3.util.DefaultDisplay;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Themes;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.OmegaPreferences;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.saggitt.omega.adaptive.IconShapeManager;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -57,9 +61,16 @@ import java.util.Comparator;
 
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
+<<<<<<< HEAD
 import static com.android.launcher3.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+=======
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
+import static com.saggitt.omega.settings.SettingsActivity.GRID_OPTIONS_PREFERENCE_KEY;
+import static java.lang.Math.max;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 public class InvariantDeviceProfile {
 
@@ -234,7 +245,11 @@ public class InvariantDeviceProfile {
         // The real size never changes. smallSide and largeSide will remain the
         // same in any orientation.
         int smallSide = Math.min(realSize.x, realSize.y);
+<<<<<<< HEAD
         int largeSide = Math.max(realSize.x, realSize.y);
+=======
+        int largeSide = max(realSize.x, realSize.y);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
         // We want a list of all options as well as the list of filtered options. This allows us
         // to have a consistent UI for areas that the grid size change should not affect
@@ -302,7 +317,11 @@ public class InvariantDeviceProfile {
                     (int) (largeSide * wallpaperTravelToScreenWidthRatio(largeSide, smallSide)),
                     largeSide);
         } else {
+<<<<<<< HEAD
             defaultWallpaperSize = new Point(Math.max(smallSide * 2, largeSide), largeSide);
+=======
+            defaultWallpaperSize = new Point(max(smallSide * 2, largeSide), largeSide);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         }
 
         ComponentName cn = new ComponentName(context.getPackageName(), getClass().getName());
@@ -314,6 +333,10 @@ public class InvariantDeviceProfile {
     private void initGridOption(Context context, ArrayList<DisplayOption> options,
             DisplayOption displayOption, DisplayMetrics metrics) {
         GridOption closestProfile = options.get(0).grid;
+<<<<<<< HEAD
+=======
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
         numRows = closestProfile.numRows;
         numRowsOriginal = numRows;
@@ -331,22 +354,47 @@ public class InvariantDeviceProfile {
 
         mExtraAttrs = closestProfile.extraAttrs;
 
+<<<<<<< HEAD
         iconSize = displayOption.iconSize;
+=======
+        iconSize = displayOption.iconSize * prefs.getDesktopIconScale();
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         iconSizeOriginal = displayOption.iconSize;
         iconShapePath = getIconShapePath(context);
         landscapeIconSize = displayOption.landscapeIconSize;
         landscapeIconSizeOriginal = displayOption.landscapeIconSize;
+<<<<<<< HEAD
         hotseatIconSize = displayOption.iconSize;
         hotseatIconSizeOriginal = displayOption.iconSize;
         landscapeHotseatIconSize = displayOption.landscapeIconSize;
         landscapeHotseatIconSizeOriginal = displayOption.landscapeIconSize;
         allAppsIconSize = displayOption.iconSize;
+=======
+
+        if (prefs.getDockIconScale() > 0) {
+            hotseatIconSize = displayOption.iconSize * prefs.getDockIconScale();
+        } else {
+            hotseatIconSize = iconSize;
+        }
+        hotseatIconSizeOriginal = displayOption.iconSize;
+        if (prefs.getDockIconScale() > 0) {
+            landscapeHotseatIconSize = displayOption.landscapeIconSize * prefs.getDockIconScale();
+        } else {
+            landscapeHotseatIconSize = landscapeIconSize;
+        }
+        landscapeHotseatIconSizeOriginal = displayOption.landscapeIconSize;
+        allAppsIconSize = displayOption.iconSize * prefs.getAllAppsIconScale();
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         allAppsIconSizeOriginal = displayOption.iconSize;
         landscapeAllAppsIconSize = displayOption.landscapeIconSize;
         landscapeAllAppsIconSizeOriginal = displayOption.landscapeIconSize;
 
+<<<<<<< HEAD
 
         iconBitmapSize = ResourceUtils.pxFromDp(iconSize, metrics);
+=======
+        iconBitmapSize = Utilities.pxFromDp(max(max(iconSize, allAppsIconSize), hotseatIconSize), metrics);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         iconTextSize = displayOption.iconTextSize;
         fillResIconDpi = getLauncherIconDensity(iconBitmapSize);
 
@@ -355,7 +403,10 @@ public class InvariantDeviceProfile {
         applyPartnerDeviceProfileOverrides(context, metrics);
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     @Nullable
     public TypedValue getAttrValue(int attr) {
         return mExtraAttrs == null ? null : mExtraAttrs.get(attr);
@@ -412,8 +463,16 @@ public class InvariantDeviceProfile {
             changeFlags |= CHANGE_FLAG_GRID;
         }
 
+<<<<<<< HEAD
         if (iconSize != oldProfile.iconSize || iconBitmapSize != oldProfile.iconBitmapSize ||
                 !iconShapePath.equals(oldProfile.iconShapePath)) {
+=======
+        if (iconSize != oldProfile.iconSize
+                || allAppsIconSize != oldProfile.allAppsIconSize
+                || hotseatIconSize != oldProfile.hotseatIconSize
+                || iconBitmapSize != oldProfile.iconBitmapSize
+                || !iconShapePath.equals(oldProfile.iconShapePath)) {
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             changeFlags |= CHANGE_FLAG_ICON_PARAMS;
         }
         if (!iconShapePath.equals(oldProfile.iconShapePath)) {

@@ -153,7 +153,11 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
 
         BlankActivity.requestPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 REQUEST_PERMISSION_LOCATION_ACCESS) { granted ->
+<<<<<<< HEAD
             if (granted) {
+=======
+            if (granted as Boolean) {
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                 listenToTwilight = true
             } else {
                 prefs.launcherTheme = theme.removeFlag(THEME_DARK_MASK)

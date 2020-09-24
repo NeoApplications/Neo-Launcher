@@ -39,6 +39,10 @@ import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.WorkspaceItemInfo;
 import com.android.launcher3.config.FeatureFlags;
+<<<<<<< HEAD
+=======
+import com.android.launcher3.icons.GraphicsUtils;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.util.ContentWriter;
@@ -210,6 +214,7 @@ public class ModelWriter {
                         .put(Favorites.SCREEN, item.screenId)));
     }
 
+<<<<<<< HEAD
     public static void modifyItemInDatabase(Context context, final ItemInfo item, String alias,
                                             String swipeUpAction, boolean badgeVisible,
                                             IconPackManager.CustomIconEntry iconEntry, Bitmap icon,
@@ -225,6 +230,27 @@ public class ModelWriter {
 
         if (reload) {
             LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, writer);
+=======
+    private void executeUpdateItem(ItemInfo item, Supplier<ContentWriter> writer) {
+        ((Executor) MODEL_EXECUTOR).execute(new UpdateItemRunnable(item, writer));
+    }
+
+    public static void modifyItemInDatabase(Context context, final ItemInfo item, String alias,
+                                            String swipeUpAction,
+                                            IconPackManager.CustomIconEntry iconEntry, Bitmap icon,
+                                            boolean updateIcon, boolean reload) {
+        LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, () -> {
+            final ContentWriter writer = new ContentWriter(context);
+            writer.put(Favorites.TITLE_ALIAS, alias);
+            writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
+            if (updateIcon) {
+                writer.put(Favorites.CUSTOM_ICON, icon != null ? GraphicsUtils.flattenBitmap(icon) : null);
+                writer.put(Favorites.CUSTOM_ICON_ENTRY, iconEntry != null ? iconEntry.toString() : null);
+            }
+            return writer;
+        });
+        if (reload) {
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             LauncherAppState.getInstance(context).getModel().forceReload();
         }
     }
@@ -434,6 +460,7 @@ public class ModelWriter {
         }
     }
 
+<<<<<<< HEAD
     private abstract class UpdateItemBaseRunnable implements Runnable {
         private final StackTraceElement[] mStackTrace;
         private final ModelVerifier mVerifier = new ModelVerifier();
@@ -445,6 +472,19 @@ public class ModelWriter {
         protected void updateItemArrays(ItemInfo item, int itemId) {
             // Lock on mBgLock *after* the db operation
             synchronized (mBgDataModel) {
+=======
+        private abstract class UpdateItemBaseRunnable implements Runnable {
+            private final StackTraceElement[] mStackTrace;
+            private final ModelVerifier mVerifier = new ModelVerifier();
+
+            UpdateItemBaseRunnable() {
+                mStackTrace = new Throwable().getStackTrace();
+            }
+
+            protected void updateItemArrays(ItemInfo item, int itemId) {
+                // Lock on mBgLock *after* the db operation
+                synchronized (mBgDataModel) {
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                 checkItemInfoLocked(itemId, item, mStackTrace);
 
                 if (item.container != Favorites.CONTAINER_DESKTOP &&

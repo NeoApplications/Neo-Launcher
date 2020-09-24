@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.uioverrides.touchcontrollers;
 
+<<<<<<< HEAD
 import static com.android.launcher3.AbstractFloatingView.TYPE_ACCESSIBLE;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
@@ -28,6 +29,8 @@ import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
 import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.view.MotionEvent;
@@ -51,6 +54,23 @@ import com.android.quickstep.OverviewInteractionState;
 import com.android.quickstep.RecentsModel;
 import com.android.quickstep.TouchInteractionService;
 import com.android.quickstep.util.LayoutUtils;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.OmegaLauncher;
+
+import static com.android.launcher3.AbstractFloatingView.TYPE_ACCESSIBLE;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_OVERVIEW_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
+import static com.android.launcher3.anim.Interpolators.ACCEL;
+import static com.android.launcher3.anim.Interpolators.DEACCEL;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 /**
  * Touch controller for handling various state transitions in portrait UI.
@@ -77,6 +97,10 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
 
     // If true, we will finish the current animation instantly on second touch.
     private boolean mFinishFastOnSecondTouch;
+<<<<<<< HEAD
+=======
+    private boolean mStartedFromHotseat;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     public PortraitStatesTouchController(Launcher l, boolean allowDragToOverview) {
         super(l, SingleAxisSwipeDetector.VERTICAL);
@@ -86,6 +110,10 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
 
     @Override
     protected boolean canInterceptTouch(MotionEvent ev) {
+<<<<<<< HEAD
+=======
+        mStartedFromHotseat = isTouchOverHotseat(mLauncher, ev);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         if (mCurrentAnimation != null) {
             if (mFinishFastOnSecondTouch) {
                 // TODO: Animate to finish instead.
@@ -143,6 +171,13 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
                     && (stateFlags & SYSUI_STATE_OVERVIEW_DISABLED) == 0
                     ? OVERVIEW : ALL_APPS;
         }
+<<<<<<< HEAD
+=======
+        if (mLauncher instanceof OmegaLauncher) {
+            return ((OmegaLauncher) mLauncher).getGestureController()
+                    .getVerticalSwipeGesture().getTargetState(mStartedFromHotseat);
+        }
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         return fromState;
     }
 

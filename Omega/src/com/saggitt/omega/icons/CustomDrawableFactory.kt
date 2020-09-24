@@ -18,11 +18,19 @@
 package com.saggitt.omega.icons
 
 import android.content.Context
+<<<<<<< HEAD
 import android.os.Build
+=======
+import android.content.pm.ActivityInfo
+import android.os.Build
+import android.os.Process
+import android.os.UserHandle
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import androidx.annotation.RequiresApi
 import com.android.launcher3.FastBitmapDrawable
 import com.android.launcher3.ItemInfoWithIcon
 import com.android.launcher3.WorkspaceItemInfo
+<<<<<<< HEAD
 import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.icons.clock.CustomClock
 
@@ -32,10 +40,37 @@ class CustomDrawableFactory(context: Context) : DynamicDrawableFactory(context) 
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun newIcon(context: Context, info: ItemInfoWithIcon): FastBitmapDrawable {
+=======
+import com.android.launcher3.graphics.DrawableFactory
+import com.android.launcher3.icons.BitmapInfo
+import com.saggitt.omega.iconpack.IconPackManager
+import com.saggitt.omega.icons.clock.CustomClock
+import com.saggitt.omega.icons.clock.DynamicClock
+
+
+class CustomDrawableFactory(context: Context) : DrawableFactory() {
+    private val iconPackManager = IconPackManager.getInstance(context)
+    val customClockDrawer by lazy { CustomClock(context) }
+    private val mDynamicClockDrawer by lazy { DynamicClock(context) }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun newIcon(context: Context, info: ItemInfoWithIcon): FastBitmapDrawable {
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         if (info.usingLowResIcon()) {
             return super.newIcon(context, info)
         }
         return iconPackManager.newIcon((info as? WorkspaceItemInfo)?.customIcon ?: info.iconBitmap,
                 info, this).also { it.setIsDisabled(info.isDisabled) }
     }
+<<<<<<< HEAD
+=======
+
+    override fun newIcon(context: Context?, icon: BitmapInfo, info: ActivityInfo): FastBitmapDrawable? {
+        return if (DynamicClock.DESK_CLOCK.packageName == info.packageName &&
+                UserHandle.getUserHandleForUid(info.applicationInfo.uid) == Process.myUserHandle()) {
+            mDynamicClockDrawer.drawIcon(icon.icon)
+        } else super.newIcon(context, icon, info)
+    }
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 }

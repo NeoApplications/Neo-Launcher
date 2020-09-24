@@ -78,7 +78,11 @@ public class AllAppsRecyclerView extends BaseRecyclerView implements LogContaine
         Resources res = getResources();
         mEmptySearchBackgroundTopOffset = res.getDimensionPixelSize(
                 R.dimen.all_apps_empty_search_bg_top_offset);
+<<<<<<< HEAD
         mNumAppsPerRow = LauncherAppState.getIDP(context).numColumns;
+=======
+        mNumAppsPerRow = LauncherAppState.getIDP(context).numColsDrawer;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     }
 
     /**

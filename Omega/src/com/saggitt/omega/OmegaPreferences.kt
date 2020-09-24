@@ -30,9 +30,21 @@ import com.android.launcher3.R
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
+<<<<<<< HEAD
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackManager
+=======
+import com.saggitt.omega.gestures.BlankGestureHandler
+import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.StartAppSearchGestureHandler
+import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
+import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.DrawerTabs
+import com.saggitt.omega.iconpack.IconPackManager
+import com.saggitt.omega.preferences.GridSize
+import com.saggitt.omega.preferences.GridSize2D
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.Config
@@ -53,10 +65,18 @@ import kotlin.reflect.KProperty
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     val mContext = context;
 
+<<<<<<< HEAD
     open val doNothing = { }
     val restart = { restart() }
     val reloadApps = { reloadApps() }
     val reloadAll = { reloadAll() }
+=======
+    val doNothing = { }
+    val restart = { restart() }
+    val reloadApps = { reloadApps() }
+    val reloadAll = { reloadAll() }
+    private val refreshGrid = { refreshGrid() }
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     val updateBlur = { updateBlur() }
     private val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
@@ -92,6 +112,16 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val drawerTabs get() = appGroupsManager.drawerTabs
     val appGroupsManager by lazy { AppGroupsManager(this) }
     val separateWorkApps by BooleanPref("pref_separateWorkApps", true, recreate)
+<<<<<<< HEAD
+=======
+    private val drawerGridSizeDelegate = ResettableLazy { GridSize(this, "numColsDrawer", LauncherAppState.getIDP(context), recreate) }
+    val drawerGridSize by drawerGridSizeDelegate
+    private val predictionGridSizeDelegate = ResettableLazy { GridSize(this, "numPredictions", LauncherAppState.getIDP(context), recreate) }
+    val predictionGridSize by predictionGridSizeDelegate
+
+    var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
+    val forceShapeless by BooleanPref("pref_forceShapeless", false)
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -106,6 +136,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
     val usePopupMenuView by BooleanPref("pref_desktopUsePopupMenuView", true, doNothing)
     val lockDesktop by BooleanPref("pref_lockDesktop", false, reloadAll)
+<<<<<<< HEAD
+=======
+    val desktopIconScale by FloatPref("pref_iconSize", 1f, recreate)
+    private var gridSizeDelegate = ResettableLazy { GridSize2D(this, "numRows", "numColumns", LauncherAppState.getIDP(context), refreshGrid) }
+    val gridSize by gridSizeDelegate
+    val hideAppLabels by BooleanPref("pref_hideAppLabels", false, recreate)
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     /* --DOCK-- */
     var dockHide by BooleanPref("pref_hideHotseat", false, recreate)
@@ -116,6 +153,12 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var dockScale by FloatPref("pref_dockScale", -1f, recreate)
     var dockSearchBarPref by BooleanPref("pref_dock_search", true, restart)
     inline val dockSearchBar get() = !dockHide && dockSearchBarPref
+<<<<<<< HEAD
+=======
+    val dockIconScale by FloatPref("pref_hotseatIconSize", 1f, recreate)
+    private val dockGridSizeDelegate = ResettableLazy { GridSize(this, "numHotseatIcons", LauncherAppState.getIDP(context), restart) }
+    val dockGridSize by dockGridSizeDelegate
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
@@ -133,7 +176,10 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
     val folderBadgeCount by BooleanPref("pref_folder_badge_count", true, recreate)
@@ -239,6 +285,18 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putInt("pref_notification_background", R.color.notification_background)
         putBoolean("pref_allAppsGoogleSearch", false)
         putFloat("pref_dockScale", 0.90f)
+<<<<<<< HEAD
+=======
+
+        // Gestures
+        putString("pref_gesture_swipe_down",
+                when (Integer.parseInt(prefs.getString("pref_pulldownAction", "1"))) {
+                    1 -> NotificationsOpenGestureHandler(context, null)
+                    2 -> StartGlobalSearchGestureHandler(context, null)
+                    3 -> StartAppSearchGestureHandler(context, null)
+                    else -> BlankGestureHandler(context, null)
+                }.toString())
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -282,6 +340,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         onChangeCallback?.restart()
     }
 
+<<<<<<< HEAD
+=======
+    fun refreshGrid() {
+        onChangeCallback?.refreshGrid()
+    }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private fun updateBlur() {
         onChangeCallback?.updateBlur()
     }
@@ -748,6 +813,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             INSTANCE?.apply {
                 onChangeListeners.clear()
                 onChangeCallback = null
+<<<<<<< HEAD
+=======
+                gridSizeDelegate.resetValue()
+                dockGridSizeDelegate.resetValue()
+                drawerGridSizeDelegate.resetValue()
+                predictionGridSizeDelegate.resetValue()
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             }
         }
     }

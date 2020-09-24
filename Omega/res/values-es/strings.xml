@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?><!--
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
   ~  Copyright (c) 2020 Omega Launcher
   ~
   ~  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +18,13 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   ~
+<<<<<<< HEAD
   -->
 
 <resources>
+=======
+  --><resources>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <string name="title__general_about">Acerca de</string>
     <string name="title__general_desktop">Escritorio</string>
     <string name="title__general_dock">Dock</string>
@@ -64,4 +73,11 @@
     <string name="default_folder_name">Nueva carpeta</string>
     <string name="title__about_project_license">Licencia del Proyecto</string>
     <string name="cat_search_bar">Barra de busqueda</string>
+<<<<<<< HEAD
+=======
+    <string name="summary__general_desktop">Personaliza tu escritorio</string>
+    <string name="title__general_notifications">Gestos y Notificaciones</string>
+    <string name="summary__general_search">Proveedores de búsqueda, estilos, íconos</string>
+    <string name="title__search_show_assistant">Mostrar el botón de búsqueda por voz</string>
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 </resources>

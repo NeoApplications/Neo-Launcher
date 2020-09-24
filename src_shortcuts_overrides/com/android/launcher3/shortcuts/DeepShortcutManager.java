@@ -71,10 +71,13 @@ public class DeepShortcutManager {
                 && !info.isDisabled() && !isItemPromise;
     }
 
+<<<<<<< HEAD
     public static boolean supportsEdit(ItemInfo info) {
         return CustomInfoProvider.Companion.isEditable(info) || supportsShortcuts(info);
     }
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * Queries for the shortcuts with the package name and provided ids.
      * <p>
@@ -170,6 +173,13 @@ public class DeepShortcutManager {
         return null;
     }
 
+<<<<<<< HEAD
+=======
+    public static boolean supportsEdit(ItemInfo info) {
+        return CustomInfoProvider.Companion.isEditable(info) || supportsShortcuts(info);
+    }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     public boolean wasLastCallSuccess() {
         return mWasLastCallSuccess;
     }

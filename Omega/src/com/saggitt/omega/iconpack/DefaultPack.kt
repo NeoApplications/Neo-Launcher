@@ -39,12 +39,20 @@ import com.saggitt.omega.icons.CustomIconProvider
 import com.saggitt.omega.icons.calendar.DynamicCalendar.GOOGLE_CALENDAR
 import com.saggitt.omega.icons.clock.DynamicClock
 import com.saggitt.omega.util.getLauncherActivityInfo
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.util.omegaPrefs
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
 class DefaultPack(context: Context) : IconPack(context, "") {
 
+<<<<<<< HEAD
+=======
+    private val prefs = context.omegaPrefs
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private val dynamicClockDrawer by lazy { DynamicClock(context) }
     private val appMap = HashMap<ComponentKey, Entry>().apply {
         val launcherApps = LauncherAppsCompat.getInstance(context)
@@ -124,6 +132,10 @@ class DefaultPack(context: Context) : IconPack(context, "") {
             val gen = AdaptiveIconGenerator(context, roundIcon ?: originalIcon)
             return gen.result
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             iconProvider.getDynamicIcon(info, iconDpi, flattenDrawable)
         } else {
@@ -159,7 +171,11 @@ class DefaultPack(context: Context) : IconPack(context, "") {
                 itemInfo.targetComponent
             }
             if (DynamicClock.DESK_CLOCK == component) {
+<<<<<<< HEAD
                 return dynamicClockDrawer.drawIcon(itemInfo.iconBitmap)
+=======
+                return dynamicClockDrawer.drawIcon(icon)
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             }
         }
 

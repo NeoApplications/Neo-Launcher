@@ -10,7 +10,11 @@ import com.android.launcher3.Utilities;
 
 import java.util.TimeZone;
 
+<<<<<<< HEAD
 class AutoUpdateClock extends FastBitmapDrawable implements Runnable {
+=======
+public class AutoUpdateClock extends FastBitmapDrawable implements Runnable {
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private ClockLayers mLayers;
 
     AutoUpdateClock(Bitmap bitmap, ClockLayers layers) {

@@ -62,7 +62,11 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.LauncherFiles;
+<<<<<<< HEAD
 import com.android.launcher3.LauncherSettings;
+=======
+import com.android.launcher3.LauncherSettings.Favorites;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.R;
 import com.android.launcher3.SessionCommitReceiver;
 import com.android.launcher3.Utilities;
@@ -81,10 +85,20 @@ import com.saggitt.omega.gestures.ui.GesturePreference;
 import com.saggitt.omega.gestures.ui.SelectGestureHandlerFragment;
 import com.saggitt.omega.preferences.ColorPreferenceCompat;
 import com.saggitt.omega.preferences.ControlledPreference;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.preferences.GridSizeDialogFragmentCompat;
+import com.saggitt.omega.preferences.GridSizePreference;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.saggitt.omega.preferences.PreferenceController;
 import com.saggitt.omega.preferences.ResumablePreference;
 import com.saggitt.omega.preferences.SearchProviderPreference;
 import com.saggitt.omega.preferences.SelectSearchProviderFragment;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.preferences.SingleDimensionGridSizeDialogFragmentCompat;
+import com.saggitt.omega.preferences.SingleDimensionGridSizePreference;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
@@ -121,7 +135,13 @@ public class SettingsActivity extends SettingsBaseActivity
     public final static String ENABLE_MINUS_ONE_PREF = "pref_enable_minus_one";
 
     public static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
+<<<<<<< HEAD
     private static final int DELAY_HIGHLIGHT_DURATION_MILLIS = 600;
+=======
+    public static final String EXTRA_SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args";
+    private static final int DELAY_HIGHLIGHT_DURATION_MILLIS = 600;
+    public static final String GRID_OPTIONS_PREFERENCE_KEY = "pref_grid_options";
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     public final static String EXTRA_TITLE = "title";
     public final static String EXTRA_FRAGMENT = "fragment";
@@ -596,7 +616,11 @@ public class SettingsActivity extends SettingsBaseActivity
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_change_default_home:
+<<<<<<< HEAD
                     FakeLauncherKt.changeDefaultHome(getContext());
+=======
+                    FakeLauncherKt.changeDefaultHome(requireContext());
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                     break;
                 case R.id.action_restart_launcher:
                     Utilities.killLauncher();
@@ -639,7 +663,11 @@ public class SettingsActivity extends SettingsBaseActivity
             Context mContext = getActivity();
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
             int preference = getContent();
+<<<<<<< HEAD
             ContentResolver resolver = mContext.getContentResolver();
+=======
+            ContentResolver resolver = Objects.requireNonNull(mContext).getContentResolver();
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             switch (preference) {
                 case R.xml.omega_preferences_desktop:
                     if (!Utilities.ATLEAST_OREO) {
@@ -662,11 +690,27 @@ public class SettingsActivity extends SettingsBaseActivity
                         rotationPref.setDefaultValue(Utilities.getAllowRotationDefaultValue(getActivity()));
                     }
                     break;
+<<<<<<< HEAD
 /*
                 case R.xml.omega_preferences_drawer:
                     findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     break;
 */
+=======
+                /*
+                case R.xml.omega_preferences_drawer:
+                    findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
+                    break;
+                */
+                case R.xml.omega_preferences_theme:
+                    Preference resetIconsPreference = findPreference("pref_reset_custom_icon");
+                    resetIconsPreference.setOnPreferenceClickListener(pref -> {
+                        new SettingsActivity.ResetIconsConfirmation()
+                                .show(getFragmentManager(), "reset_icons");
+                        return true;
+                    });
+                    break;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                 case R.xml.omega_preferences_notification:
                     if (getResources().getBoolean(R.bool.notification_dots_enabled)) {
                         NotificationDotsPreference iconBadgingPref = (NotificationDotsPreference) findPreference(NOTIFICATION_DOTS_PREFERENCE_KEY);
@@ -874,9 +918,20 @@ public class SettingsActivity extends SettingsBaseActivity
         @Override
         public void onDisplayPreferenceDialog(Preference preference) {
             final DialogFragment f;
+<<<<<<< HEAD
             if (preference instanceof ListPreference) {
                 Log.d("success", "onDisplayPreferenceDialog: yay");
                 f = ThemedListPreferenceDialogFragment.Companion.newInstance(preference.getKey());
+=======
+            if (preference instanceof GridSizePreference) {
+                f = GridSizeDialogFragmentCompat.newInstance(preference.getKey());
+            } else if (preference instanceof ListPreference) {
+                Log.d("success", "onDisplayPreferenceDialog: yay");
+                f = ThemedListPreferenceDialogFragment.Companion.newInstance(preference.getKey());
+            } else if (preference instanceof SingleDimensionGridSizePreference) {
+                f = SingleDimensionGridSizeDialogFragmentCompat.Companion
+                        .newInstance(preference.getKey());
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             } else if (preference instanceof GesturePreference) {
                 f = SelectGestureHandlerFragment.Companion
                         .newInstance((GesturePreference) preference);
@@ -922,6 +977,56 @@ public class SettingsActivity extends SettingsBaseActivity
         }
     }
 
+<<<<<<< HEAD
+=======
+    public static class ResetIconsConfirmation
+            extends DialogFragment implements DialogInterface.OnClickListener {
+
+        @NotNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Context context = getActivity();
+            return new AlertDialog.Builder(context)
+                    .setTitle(R.string.reset_custom_icons)
+                    .setMessage(R.string.reset_custom_icons_confirmation)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok, this)
+                    .create();
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            OmegaUtilsKt.applyAccent(((AlertDialog) getDialog()));
+        }
+
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            Context context = getContext();
+
+            // Clear custom app icons
+            OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
+            Set<ComponentKey> toUpdateSet = prefs.getCustomAppIcon().toMap().keySet();
+            prefs.beginBlockingEdit();
+            prefs.getCustomAppIcon().clear();
+            prefs.endBlockingEdit();
+
+            // Clear custom shortcut icons
+            ContentWriter writer = new ContentWriter(context, new ContentWriter.CommitParams(null, null));
+            writer.put(Favorites.CUSTOM_ICON, (byte[]) null);
+            writer.put(Favorites.CUSTOM_ICON_ENTRY, (String) null);
+            writer.commit();
+
+            // Reload changes
+            OmegaUtilsKt.reloadIconsFromComponents(context, toUpdateSet);
+            OmegaPreferencesChangeCallback prefsCallback = prefs.getOnChangeCallback();
+            if (prefsCallback != null) {
+                prefsCallback.reloadAll();
+            }
+        }
+    }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     public static class NotificationAccessConfirmation extends DialogFragment implements DialogInterface.OnClickListener {
 
         @Override
@@ -974,6 +1079,7 @@ public class SettingsActivity extends SettingsBaseActivity
         }
     }
 
+<<<<<<< HEAD
 /*
     public static class SuggestionConfirmationFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -1022,6 +1128,8 @@ public class SettingsActivity extends SettingsBaseActivity
         }
     }
 */
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * Content observer which listens for system badging setting changes, and updates the launcher
      * badging setting subtext accordingly.
@@ -1081,6 +1189,7 @@ public class SettingsActivity extends SettingsBaseActivity
             return true;
         }
     }
+<<<<<<< HEAD
 
     public static class ResetIconsConfirmation extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -1127,4 +1236,6 @@ public class SettingsActivity extends SettingsBaseActivity
         }
     }
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 }

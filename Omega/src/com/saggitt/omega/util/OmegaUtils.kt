@@ -49,7 +49,10 @@ import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
+<<<<<<< HEAD
 import com.android.launcher3.util.Executors
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
@@ -58,6 +61,10 @@ import com.saggitt.omega.predictions.CustomAppPredictor
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
+<<<<<<< HEAD
+=======
+import java.lang.reflect.Field
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -66,13 +73,22 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
+<<<<<<< HEAD
+=======
+import kotlin.reflect.KProperty
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 val Context.launcherAppState get() = LauncherAppState.getInstance(this)
 val Context.omegaPrefs get() = Utilities.getOmegaPrefs(this)
 
 @ColorInt
 fun Context.getColorAccent(): Int {
+<<<<<<< HEAD
     return getColorAttr(android.R.attr.colorAccent)
+=======
+    //return getColorAttr(android.R.attr.colorAccent)
+    return omegaPrefs.accentColor
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 }
 
 @ColorInt
@@ -122,7 +138,11 @@ fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
             creator(it)
         } else {
             try {
+<<<<<<< HEAD
                 Executors.MAIN_EXECUTOR.submit(Callable { creator(it) }).get()
+=======
+                MAIN_EXECUTOR.submit(Callable { creator(it) }).get()
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
             } catch (e: ExecutionException) {
@@ -296,7 +316,11 @@ operator fun XmlPullParser.get(namespace: String?, key: String): String? = getAt
 operator fun XmlPullParser.get(key: String): String? = this[null, key]
 
 fun AlertDialog.applyAccent() {
+<<<<<<< HEAD
     val color = Utilities.getOmegaPrefs(context).accentColor
+=======
+    val color = context.getColorAccent()
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
         setTextColor(color)
@@ -517,4 +541,22 @@ class ViewGroupChildIterator(private val viewGroup: ViewGroup, private var curre
     override fun previous() = viewGroup.getChildAt(current--)!!
 
     override fun previousIndex() = current - 1
+<<<<<<< HEAD
+=======
+}
+
+
+@Suppress("UNCHECKED_CAST")
+class JavaField<T>(private val targetObject: Any, fieldName: String, targetClass: Class<*> = targetObject::class.java) {
+
+    private val field: Field = targetClass.getDeclaredField(fieldName).apply { isAccessible = true }
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return field.get(targetObject) as T
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        field.set(targetObject, value)
+    }
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 }

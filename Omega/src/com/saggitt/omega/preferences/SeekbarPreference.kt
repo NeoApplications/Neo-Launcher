@@ -20,8 +20,11 @@ package com.saggitt.omega.preferences
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+<<<<<<< HEAD
 import android.os.Handler
 import android.os.HandlerThread
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.MenuItem
@@ -57,9 +60,12 @@ open class SeekbarPreference
 
     open val allowResetToDefault = true
 
+<<<<<<< HEAD
     private val handlerThread = HandlerThread("debounce").apply { start() }
     private val persistHandler = Handler(handlerThread.looper)
 
+=======
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     init {
         layoutResource = R.layout.preference_seekbar
         init(context, attrs!!)

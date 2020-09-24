@@ -46,6 +46,10 @@ import com.android.quickstep.SysUINavigationMode.Mode;
 import com.android.quickstep.TouchInteractionService;
 import com.android.quickstep.views.RecentsView;
 import com.android.systemui.shared.system.WindowManagerWrapper;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.gestures.VerticalSwipeGestureController;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 import java.util.ArrayList;
 
@@ -153,8 +157,15 @@ public abstract class RecentsUiFactory {
         if (mode == NO_BUTTON) {
             list.add(new NoButtonQuickSwitchTouchController(launcher));
             list.add(new NavBarToHomeTouchController(launcher));
+<<<<<<< HEAD
             list.add(new FlingAndHoldTouchController(launcher));
         } else {
+=======
+            list.add(new VerticalSwipeGestureController(launcher));
+            list.add(new FlingAndHoldTouchController(launcher));
+        } else {
+            list.add(new VerticalSwipeGestureController(launcher));
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             if (launcher.getDeviceProfile().isVerticalBarLayout()) {
                 list.add(new OverviewToAllAppsTouchController(launcher));
                 list.add(new LandscapeEdgeSwipeController(launcher));

@@ -56,6 +56,10 @@ import com.android.launcher3.model.PackageItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.saggitt.omega.OmegaPreferences;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.override.CustomInfoProvider;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 import java.text.NumberFormat;
 
@@ -115,7 +119,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     private final float mSlop;
 
     private final boolean mLayoutHorizontal;
+<<<<<<< HEAD
     private final int mIconSize;
+=======
+    private int mIconSize;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mIsIconVisible = true;
@@ -168,6 +176,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
         if (mDisplay == DISPLAY_WORKSPACE) {
             DeviceProfile grid = mActivity.getWallpaperDeviceProfile();
+<<<<<<< HEAD
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.iconTextSizePx);
             setCompoundDrawablePadding(grid.iconDrawablePaddingPx);
             defaultIconSize = grid.iconSizePx;
@@ -175,6 +184,18 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         } else if (mDisplay == DISPLAY_ALL_APPS) {
             mHideText = prefs.getHideAllAppsAppLabels();
             DeviceProfile grid = mActivity.getDeviceProfile();
+=======
+            mHideText = prefs.getHideAppLabels();
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.iconTextSizePx);
+            setCompoundDrawablePadding(grid.iconDrawablePaddingPx);
+            defaultIconSize = grid.iconSizePx;
+            int lines = prefs.getHomeLabelRows();
+            setLineCount(lines);
+            mIgnorePaddingTouch = true;
+        } else if (mDisplay == DISPLAY_ALL_APPS) {
+            DeviceProfile grid = mActivity.getDeviceProfile();
+            mHideText = prefs.getHideAllAppsAppLabels();
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.allAppsIconTextSizePx);
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
             setCompoundDrawablePadding(grid.allAppsIconDrawablePaddingPx);
@@ -183,10 +204,20 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
             setLineCount(lines);
             mIgnorePaddingTouch = true;
         } else if (mDisplay == DISPLAY_FOLDER) {
+<<<<<<< HEAD
             DeviceProfile grid = mActivity.getDeviceProfile();
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.folderChildTextSizePx);
             setCompoundDrawablePadding(grid.folderChildDrawablePaddingPx);
             defaultIconSize = grid.folderChildIconSizePx;
+=======
+            mHideText = prefs.getHideAppLabels();
+            DeviceProfile grid = mActivity.getDeviceProfile();
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, isTextHidden() ? 0 : grid.folderChildTextSizePx);
+            setCompoundDrawablePadding(grid.folderChildDrawablePaddingPx);
+            defaultIconSize = grid.folderChildIconSizePx;
+            int lines = prefs.getHomeLabelRows();
+            setLineCount(lines);
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             mIgnorePaddingTouch = true;
         } else if (mDisplay == DISPLAY_DRAWER_FOLDER) {
             mHideText = prefs.getHideAllAppsAppLabels();
@@ -326,7 +357,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         }
         setIcon(iconDrawable);
         if (!isTextHidden())
+<<<<<<< HEAD
             setText(info.title);
+=======
+            setText(getTitle(info));
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         if (info.contentDescription != null) {
             setContentDescription(info.isDisabled()
                     ? getContext().getString(R.string.disabled_app_label, info.contentDescription)
@@ -334,6 +369,18 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         }
     }
 
+<<<<<<< HEAD
+=======
+    private CharSequence getTitle(ItemInfo info) {
+        CustomInfoProvider<ItemInfo> customInfoProvider = CustomInfoProvider.Companion.forItem(getContext(), info);
+        if (customInfoProvider != null) {
+            return customInfoProvider.getTitle(info);
+        } else {
+            return info.title;
+        }
+    }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * Overrides the default long press timeout.
      */
@@ -750,6 +797,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         return mIconSize;
     }
 
+<<<<<<< HEAD
+=======
+    public void setIconSize(int iconSize) {
+        mIconSize = iconSize;
+        setIcon(mIcon);
+    }
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     protected boolean isTextHidden() {
         return mHideText;
     }

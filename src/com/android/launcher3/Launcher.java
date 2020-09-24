@@ -133,6 +133,10 @@ import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.saggitt.omega.OmegaLauncher;
+<<<<<<< HEAD
+=======
+import com.saggitt.omega.OmegaPreferences;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -222,7 +226,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     private Configuration mOldConfig;
 
     @Thunk
+<<<<<<< HEAD
     Workspace mWorkspace;
+=======
+    public Workspace mWorkspace;
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private View mLauncherView;
     @Thunk
     DragLayer mDragLayer;
@@ -323,6 +331,15 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mContext = this;
 
         LauncherAppState app = LauncherAppState.getInstance(this);
+<<<<<<< HEAD
+=======
+
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(this);
+        prefs.getDrawerGridSize();
+        prefs.getGridSize();
+        prefs.getDockGridSize();
+
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         mOldConfig = new Configuration(getResources().getConfiguration());
         mModel = app.setLauncher(this);
         mRotationHelper = new RotationHelper(this);

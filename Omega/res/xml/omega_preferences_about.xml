@@ -26,7 +26,11 @@
         android:summary="@string/summary__about_donate"
         android:title="@string/title__about_donate" />
 
+<<<<<<< HEAD
     <PreferenceCategory
+=======
+    <com.saggitt.omega.preferences.ThemedPreferenceCategory
+>>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         android:key="pref_key__project_team"
         android:title="@string/title__about_project_team" />
 
