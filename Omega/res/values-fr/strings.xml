@@ -203,7 +203,7 @@
     <string name="pref_category__interfaces">Interfaces</string>
     <string name="summary__general_about">Plus d’informations sur Omega Launcher</string>
     <string name="summary__general_advanced">Langue, sauvegarde, configuration de la recherche</string>
-    <string name="summary__general_notifications">Notifications et gestes</string>
+    <string name="summary__general_notifications">Compteur du badge, couleur du badge, gestes</string>
     <string name="summary__general_smartspace">Date, heure, widget d\'accueil</string>
     <string name="summary__general_search">Fournisseur de recherche, style, icônes</string>
     <string name="summary__general_theme">Modifiez les couleurs, le pack d’icônes, le style d’icône</string>
@@ -222,4 +222,15 @@
     <string name="dialog_cancel">Annuler</string>
     <string name="title__dock_icon_size">Taille d\'icône</string>
     <string name="title__desktop_icon_size">Taille d\'icône</string>
+    <string name="action_app_search">Ouvrir la recherche d\'applications</string>
+    <string name="action_global_search">Lancer la recherche globale</string>
+    <string name="action_close_notifications">Fermer les notifications</string>
+    <string name="action_open_notifications">Ouvrir les notifications</string>
+    <string name="title__gesture_swipe_down">Glisser vers le bas</string>
+    <string name="title__dock_hotseat_icons">Compteur de l\'icône</string>
+    <string name="grid_size_width">Largeur</string>
+    <string name="grid_size_height">Hauteur</string>
+    <string name="title__desktop_multiline_labels">Nom des applications sur plusieurs lignes</string>
+    <string name="title__desktop_hide_icon_labels">Masquer l\'étiquette des icônes sur l\'écran d\'accueil</string>
+    <string name="title__desktop_grid_size">Taille de la grille</string>
 </resources>
