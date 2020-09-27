@@ -91,16 +91,9 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.OmegaPreferences;
-<<<<<<< HEAD
-import com.saggitt.omega.util.Config;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-=======
 import com.saggitt.omega.iconpack.IconPackManager;
 import com.saggitt.omega.util.Config;
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -570,13 +563,9 @@ public final class Utilities {
     public static Drawable getFullDrawable(Launcher launcher, ItemInfo info, int width, int height,
             boolean flattenDrawable, Object[] outObj) {
         LauncherAppState appState = LauncherAppState.getInstance(launcher);
-<<<<<<< HEAD
-        if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
-=======
         IconPackManager.CustomIconEntry customIconEntry = (info instanceof WorkspaceItemInfo) ?
                 ((WorkspaceItemInfo) info).customIconEntry : null;
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION || customIconEntry != null) {
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             LauncherActivityInfo activityInfo = LauncherAppsCompat.getInstance(launcher)
                     .resolveActivity(info.getIntent(), info.user);
             outObj[0] = activityInfo;
@@ -867,28 +856,6 @@ public final class Utilities {
     private static List<Runnable> onStart = new ArrayList<>();
 
     /**
-<<<<<<< HEAD
-     * Compresses the bitmap to a byte array for serialization.
-     */
-    public static byte[] flattenBitmap(Bitmap bitmap) {
-        // Try go guesstimate how much space the icon will take when serialized
-        // to avoid unnecessary allocations/copies during the write.
-        int size = bitmap.getWidth() * bitmap.getHeight() * 4;
-        ByteArrayOutputStream out = new ByteArrayOutputStream(size);
-        try {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-            return out.toByteArray();
-        } catch (IOException e) {
-            Log.w(TAG, "Could not write bitmap");
-            return null;
-        }
-    }
-
-    /**
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
      * ATTENTION: Only ever call this from within LawnchairLauncher.kt
      */
     public /* private */ static void onLauncherStart() {
@@ -953,8 +920,6 @@ public final class Utilities {
         }
     }
 
-<<<<<<< HEAD
-=======
     public static String upperCaseFirstLetter(String str) {
         if (TextUtils.isEmpty(str)) {
             return str;
@@ -962,7 +927,6 @@ public final class Utilities {
         return str.substring(0, 1).toUpperCase(Locale.US) + str.substring(1);
     }
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /*FIN CUSTOM*/
 
     private static class FixedSizeEmptyDrawable extends ColorDrawable {

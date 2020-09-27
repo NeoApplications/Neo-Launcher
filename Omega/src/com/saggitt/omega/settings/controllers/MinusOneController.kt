@@ -22,10 +22,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.text.TextUtils
 import androidx.annotation.Keep
-<<<<<<< HEAD
-=======
 import androidx.preference.Preference
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.PreferenceController
 
@@ -34,15 +31,9 @@ class MinusOneController(context: Context) : PreferenceController(context) {
 
     override val title get() = getDisplayGoogleTitle()
 
-<<<<<<< HEAD
-    /*override val onChange = Preference.OnPreferenceChangeListener { pref, newValue ->
-        newValue != true
-    }*/
-=======
     override val onChange = Preference.OnPreferenceChangeListener { pref, newValue ->
         newValue != true
     }
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     @SuppressLint("StringFormatInvalid")
     private fun getDisplayGoogleTitle(): String {

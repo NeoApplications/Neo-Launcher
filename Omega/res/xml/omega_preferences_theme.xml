@@ -29,14 +29,11 @@
         app:controllerClass="com.saggitt.omega.settings.controllers.IconShapeOverrideController"
         app:iconSpaceReserved="false" />
 
-<<<<<<< HEAD
-=======
     <Preference
         android:key="pref_reset_custom_icon"
         android:title="@string/reset_custom_icons"
         app:iconSpaceReserved="false" />
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <com.saggitt.omega.preferences.ColorPreferenceCompat
         android:defaultValue="@color/colorAccent"
         android:key="pref_key__accent_color"

@@ -213,11 +213,7 @@ public class FolderInfo extends ItemInfo {
 
     public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
         swipeUpAction = action;
-<<<<<<< HEAD
-        ModelWriter.modifyItemInDatabase(context, this, null, swipeUpAction, false, null, null, false, true);
-=======
         ModelWriter.modifyItemInDatabase(context, this, null, swipeUpAction, null, null, false, true);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     }
 
     public boolean useIconMode(Context context) {

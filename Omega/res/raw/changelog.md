@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-### v0.4.0 (Build 30)
-* **Add: Hide apps preference**
-* **Add: Icon Shape preference**
-* **Add: Dock search**
-=======
 ### v0.5.0 (Build 40)
 * **Add: Desktop grid preference**
 * **Add: Desktop Hide Labels preference**
@@ -19,7 +13,6 @@
 * **Add: Dock Icon Scale**
 * **Add: Workspace Icon Scale**
 * **Fixed: Wallpaper chooser crash**
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 ### v0.3.0 (Build 20)
 * **Add gestures preference**

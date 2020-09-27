@@ -22,17 +22,6 @@ Free and Open Source Launcher. <br/>
 -   [X] Categorize apps in the drawer.
 -   [X] Icon Shape support.
 -   [X] Quick Action shortcuts (Dash).
-<<<<<<< HEAD
--   [X] Hide apps (Dash).
--   [X] Dock search.
-
-##  New Features and TODOs
--   [ ] Icon pack support.
--   [ ] Drawer grid preference.
--   [ ] Desktop grid preference.
--   [ ] Back up and restore.
--   [ ] Customize app icon.
-=======
 -   [X] Hide apps
 -   [X] Dock search.
 -   [X] Drawer grid preference.
@@ -45,7 +34,6 @@ Free and Open Source Launcher. <br/>
 ##  New Features and TODOs
 -   [ ] Icon pack support.
 -   [ ] Back up and restore.
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 -   [ ] Apps Predictions.
 -   [ ] Horizontal drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
@@ -79,27 +67,16 @@ Free and Open Source Launcher. <br/>
     </tr>
 </table>
 
-<<<<<<< HEAD
-## Donations
-Want to buy me a coffee? 
-**[Paypal](https://paypal.me/saulhenriquez)**   
-**[Liberapay](https://liberapay.com/otakuhqz/donate)**
-=======
 ## Want to buy me a coffee? <br/>
 <a href="https://www.buymeacoffee.com/2ulp4f5" target="_blank">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
     alt="Buy Me A Coffee" width="150" >
 </a>
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 
 ## Want to contribute?
 If you have knowledge in Java or Kotlin you can work on additional features!
-<<<<<<< HEAD
-I will be happy to work on features you would like to include, just open an issue.
-=======
 I will be happy to work on features you would like to include, just open an issue.
 
 ## Translation?
 [![Translation Status](https://hosted.weblate.org/widgets/omegalauncher/-/omegalauncher/svg-badge.svg)](https://hosted.weblate.org/engage/omegalauncher/)
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc

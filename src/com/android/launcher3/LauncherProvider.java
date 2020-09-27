@@ -94,11 +94,7 @@ public class LauncherProvider extends ContentProvider {
      * Represents the schema of the database. Changes in scheme need not be backwards compatible.
      * When increasing the scheme version, ensure that downgrade_schema.json is updated
      */
-<<<<<<< HEAD
-    public static final int SCHEMA_VERSION = 28;
-=======
     public static final int SCHEMA_VERSION = 32;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".settings";
 
@@ -758,9 +754,6 @@ public class LauncherProvider extends ContentProvider {
                             !LauncherDbUtils.prepareScreenZeroToHostQsb(mContext, db)) {
                         break;
                     }
-<<<<<<< HEAD
-                case 27: {
-=======
 
                 case 27:
                     db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.TITLE_ALIAS + " TEXT;");
@@ -775,7 +768,6 @@ public class LauncherProvider extends ContentProvider {
                     db.execSQL("ALTER TABLE " + Favorites.TABLE_NAME + " ADD COLUMN " + Favorites.SWIPE_UP_ACTION + " TEXT;");
 
                 case 31: {
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                     // Update the favorites table so that the screen ids are ordered based on
                     // workspace page rank.
                     IntArray finalScreens = LauncherDbUtils.queryIntArray(db, "workspaceScreens",
@@ -798,17 +790,8 @@ public class LauncherProvider extends ContentProvider {
                     }
                     dropTable(db, "workspaceScreens");
                 }
-<<<<<<< HEAD
-                case 28:
-                    // DB Upgraded successfully
-                    return;
-                case 29:
-                    // No-op
-                case 30:
-=======
 
                 case 32:
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                     // No-op
             }
 

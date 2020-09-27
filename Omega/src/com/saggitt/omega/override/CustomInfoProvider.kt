@@ -52,17 +52,6 @@ abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
 
     open fun supportsBadgeVisible(info: T) = false
 
-<<<<<<< HEAD
-    open fun setBadgeVisible(info: T, visible: Boolean) {
-        TODO("not implemented")
-    }
-
-    open fun getBadgeVisible(info: T): Boolean {
-        TODO("not implemented")
-    }
-
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     companion object {
 
         @Suppress("UNCHECKED_CAST")

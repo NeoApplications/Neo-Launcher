@@ -41,11 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
-<<<<<<< HEAD
-import static com.android.launcher3.settings.SettingsActivity.EXTRA_FRAGMENT_ARG_KEY;
-=======
 import static com.saggitt.omega.settings.SettingsActivity.EXTRA_FRAGMENT_ARG_KEY;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter {
 

@@ -33,11 +33,7 @@ class SearchProviderPreference(context: Context, attrs: AttributeSet?) : DialogP
     var defaultValue = ""
 
     init {
-<<<<<<< HEAD
-        layoutResource = R.layout.pref_with_preview_icon
-=======
         layoutResource = R.layout.preference_preview_icon
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         updateIcon()
     }
 

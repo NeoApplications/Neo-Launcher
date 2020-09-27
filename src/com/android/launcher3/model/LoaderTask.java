@@ -16,16 +16,6 @@
 
 package com.android.launcher3.model;
 
-<<<<<<< HEAD
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
-import static com.android.launcher3.model.LoaderResults.filterCurrentWorkspaceItems;
-import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
-import static com.android.launcher3.util.PackageManagerHelper.isSystemApp;
-
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -79,10 +69,7 @@ import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.TraceHelper;
-<<<<<<< HEAD
-=======
 import com.saggitt.omega.iconpack.IconPackManager;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,14 +80,6 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.function.Supplier;
 
-<<<<<<< HEAD
-/**
- * Runnable for the thread that loads the contents of the launcher:
- *   - workspace icons
- *   - widgets
- *   - all apps icons
- *   - deep shortcuts within apps
-=======
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
@@ -114,7 +93,6 @@ import static com.android.launcher3.util.PackageManagerHelper.isSystemApp;
  * - widgets
  * - all apps icons
  * - deep shortcuts within apps
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
  */
 public class LoaderTask implements Runnable {
     private static final String TAG = "LoaderTask";
@@ -332,15 +310,12 @@ public class LoaderTask implements Runnable {
                         LauncherSettings.Favorites.RANK);
                 final int optionsIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.OPTIONS);
-<<<<<<< HEAD
-=======
                 final int titleAliasIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.TITLE_ALIAS);
                 final int customIconEntryIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.CUSTOM_ICON_ENTRY);
                 final int swipeUpActionEntryIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.SWIPE_UP_ACTION);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
                 final LongSparseArray<UserHandle> allUsers = c.allUsers;
                 final LongSparseArray<Boolean> quietMode = new LongSparseArray<>();
@@ -375,12 +350,9 @@ public class LoaderTask implements Runnable {
                 LauncherAppWidgetInfo appWidgetInfo;
                 Intent intent;
                 String targetPkg;
-<<<<<<< HEAD
-=======
                 String titleAlias;
                 String customIconEntry;
                 String swipeUpAction;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
                 while (!mStopped && c.moveToNext()) {
                     try {
@@ -405,12 +377,9 @@ public class LoaderTask implements Runnable {
                                     WorkspaceItemInfo.FLAG_DISABLED_QUIET_USER : 0;
                             ComponentName cn = intent.getComponent();
                             targetPkg = cn == null ? intent.getPackage() : cn.getPackageName();
-<<<<<<< HEAD
-=======
                             titleAlias = c.getString(titleAliasIndex);
                             customIconEntry = c.getString(customIconEntryIndex);
                             swipeUpAction = c.getString(swipeUpActionEntryIndex);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
                             if (allUsers.indexOfValue(c.user) < 0) {
                                 if (c.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
@@ -577,14 +546,10 @@ public class LoaderTask implements Runnable {
 
                             if (info != null) {
                                 c.applyCommonProperties(info);
-<<<<<<< HEAD
-
-=======
                                 info.onLoadCustomizations(titleAlias, swipeUpAction,
                                         IconPackManager.CustomIconEntry.Companion
                                                 .fromNullableString(customIconEntry),
                                         c.loadCustomIcon(info));
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                                 info.intent = intent;
                                 info.rank = c.getInt(rankIndex);
                                 info.spanX = 1;

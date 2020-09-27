@@ -24,11 +24,7 @@ import androidx.appcompat.widget.AppCompatImageView
 
 class FadingImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
 
-<<<<<<< HEAD
-    private val transparentDrawable = resources.getDrawable(android.R.color.transparent)
-=======
     private val transparentDrawable = resources.getDrawable(android.R.color.transparent, null)
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     var image: Drawable? = null
         set(value) {

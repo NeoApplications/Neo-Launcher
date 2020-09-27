@@ -3339,8 +3339,6 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
     }
 
-<<<<<<< HEAD
-=======
     public void refreshChildren() {
         final int screenCount = getChildCount();
         int x = mLauncher.getDeviceProfile().inv.numColumns;
@@ -3358,7 +3356,6 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         requestLayout();
     }
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * Used as a workaround to ensure that the AppWidgetService receives the
      * PACKAGE_ADDED broadcast before updating widgets.

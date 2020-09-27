@@ -29,11 +29,7 @@ public class ColorExtractor {
     private final int NUM_SAMPLES = 20;
     private final float[] mTmpHsv = new float[3];
     private final float[] mTmpHueScoreHistogram = new float[360];
-<<<<<<< HEAD
-    private final int[] mTmpPixels = new int[NUM_SAMPLES];
-=======
     private final int[] mTmpPixels = new int[112 * 112];
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private final SparseArray<Float> mTmpRgbScores = new SparseArray<>();
 
     /**

@@ -25,10 +25,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.CursorWrapper;
-<<<<<<< HEAD
-=======
 import android.graphics.Bitmap;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import android.graphics.BitmapFactory;
 import android.os.UserHandle;
 import android.provider.BaseColumns;
@@ -37,28 +34,17 @@ import android.util.Log;
 import android.util.LongSparseArray;
 
 import com.android.launcher3.AppInfo;
-<<<<<<< HEAD
-import com.android.launcher3.WorkspaceItemInfo;
-import com.android.launcher3.icons.IconCache;
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
-<<<<<<< HEAD
-import com.android.launcher3.compat.LauncherAppsCompat;
-import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.icons.BitmapInfo;
-=======
 import com.android.launcher3.WorkspaceItemInfo;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.IconCache;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ContentWriter;
@@ -91,10 +77,7 @@ public class LoaderCursor extends CursorWrapper {
     private final int iconResourceIndex;
     private final int iconIndex;
     public final int titleIndex;
-<<<<<<< HEAD
-=======
     private final int customIconIndex;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     private final int idIndex;
     private final int containerIndex;
@@ -123,10 +106,7 @@ public class LoaderCursor extends CursorWrapper {
 
         // Init column indices
         iconIndex = getColumnIndexOrThrow(LauncherSettings.Favorites.ICON);
-<<<<<<< HEAD
-=======
         customIconIndex = getColumnIndexOrThrow(LauncherSettings.Favorites.CUSTOM_ICON);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         iconPackageIndex = getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PACKAGE);
         iconResourceIndex = getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
         titleIndex = getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
@@ -223,8 +203,6 @@ public class LoaderCursor extends CursorWrapper {
         }
     }
 
-<<<<<<< HEAD
-=======
     public Bitmap loadCustomIcon(WorkspaceItemInfo info) {
         byte[] data = getBlob(customIconIndex);
         try {
@@ -240,7 +218,6 @@ public class LoaderCursor extends CursorWrapper {
         }
     }
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     /**
      * Returns the title or empty string
      */

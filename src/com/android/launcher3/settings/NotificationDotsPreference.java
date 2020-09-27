@@ -34,13 +34,8 @@ import com.android.launcher3.R;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.SecureSettingsObserver;
 
-<<<<<<< HEAD
-import static com.android.launcher3.settings.SettingsActivity.EXTRA_FRAGMENT_ARG_KEY;
-import static com.android.launcher3.settings.SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGS;
-=======
 import static com.saggitt.omega.settings.SettingsActivity.EXTRA_FRAGMENT_ARG_KEY;
 import static com.saggitt.omega.settings.SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGS;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 /**
  * A {@link Preference} for indicating notification dots status.

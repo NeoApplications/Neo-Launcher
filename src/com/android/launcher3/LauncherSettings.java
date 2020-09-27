@@ -26,88 +26,6 @@ import android.provider.BaseColumns;
  * Settings related utilities.
  */
 public class LauncherSettings {
-<<<<<<< HEAD
-    /**
-     * Columns required on table staht will be subject to backup and restore.
-     */
-    interface ChangeLogColumns extends BaseColumns {
-        /**
-         * The time of the last update to this row.
-         * <P>Type: INTEGER</P>
-         */
-        String MODIFIED = "modified";
-    }
-
-    public interface BaseLauncherColumns extends ChangeLogColumns {
-        /**
-         * Descriptive name of the gesture that can be displayed to the user.
-         * <P>Type: TEXT</P>
-         */
-        String TITLE = "title";
-
-        /**
-         * The Intent URL of the gesture, describing what it points to. This
-         * value is given to {@link android.content.Intent#parseUri(String, int)} to create
-         * an Intent that can be launched.
-         * <P>Type: TEXT</P>
-         */
-        String INTENT = "intent";
-
-        /**
-         * The type of the gesture
-         *
-         * <P>Type: INTEGER</P>
-         */
-        String ITEM_TYPE = "itemType";
-
-        /**
-         * The gesture is an application
-         */
-        int ITEM_TYPE_APPLICATION = 0;
-
-        /**
-         * The gesture is an application created shortcut
-         */
-        int ITEM_TYPE_SHORTCUT = 1;
-
-        /**
-         * The icon package name in Intent.ShortcutIconResource
-         * <P>Type: TEXT</P>
-         */
-        String ICON_PACKAGE = "iconPackage";
-
-        /**
-         * The icon resource name in Intent.ShortcutIconResource
-         * <P>Type: TEXT</P>
-         */
-        String ICON_RESOURCE = "iconResource";
-
-        /**
-         * The custom icon bitmap.
-         * <P>Type: BLOB</P>
-         */
-        String ICON = "icon";
-
-        String CUSTOM_ICON = "customIcon";
-
-        String CUSTOM_ICON_ENTRY = "customIconEntry";
-    }
-
-    /**
-     * Favorites.
-     */
-    public static final class Favorites implements BaseLauncherColumns {
-        /**
-         * The time of the last update to this row.
-         * <P>Type: INTEGER</P>
-         */
-        public static final String MODIFIED = "modified";
-
-        /**
-         * The gesture is a package
-         */
-        public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
-=======
      /**
       * Favorites.
       */
@@ -175,7 +93,6 @@ public class LauncherSettings {
           * The gesture is a package
           */
          public static final int ITEM_TYPE_NON_ACTIONABLE = -1;
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
         public static final String TABLE_NAME = "favorites";
 
@@ -332,11 +249,6 @@ public class LauncherSettings {
 
         public static final String SWIPE_UP_ACTION = "swipeUpAction";
 
-<<<<<<< HEAD
-        public static final String BADGE_VISIBLE = "badgeVisible";
-
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional) {
             addTableToDb(db, myProfileId, optional, TABLE_NAME);
         }
@@ -359,13 +271,10 @@ public class LauncherSettings {
                     "iconPackage TEXT," +
                     "iconResource TEXT," +
                     "icon BLOB," +
-<<<<<<< HEAD
-=======
                     "customIcon BLOB," +
                     "customIconEntry TEXT," +
                     "titleAlias TEXT," +
                     "swipeUpAction TEXT," +
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                     "appWidgetProvider TEXT," +
                     "modified INTEGER NOT NULL DEFAULT 0," +
                     "restored INTEGER NOT NULL DEFAULT 0," +

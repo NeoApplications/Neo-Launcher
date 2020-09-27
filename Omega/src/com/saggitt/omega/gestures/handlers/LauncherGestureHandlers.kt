@@ -17,16 +17,11 @@
 
 package com.saggitt.omega.gestures.handlers
 
-<<<<<<< HEAD
-import android.content.Context
-import android.content.Intent
-=======
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.util.Log
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 import android.view.View
 import androidx.annotation.Keep
 import com.android.launcher3.LauncherState
@@ -35,11 +30,6 @@ import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.dash.DashBottomSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-<<<<<<< HEAD
-import com.saggitt.omega.util.omegaPrefs
-import org.json.JSONObject
-
-=======
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.util.omegaPrefs
 import org.json.JSONObject
@@ -99,7 +89,6 @@ class StartAppSearchGestureHandler(context: Context, config: JSONObject?) : Open
 }
 
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 @Keep
 class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
         GestureHandler(context, config) {
@@ -143,8 +132,6 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) : Gestur
         }
     }
 }
-<<<<<<< HEAD
-=======
 
 
 interface VerticalSwipeGestureHandler {
@@ -160,4 +147,3 @@ interface StateChangeGestureHandler {
 
     fun getTargetState(): LauncherState
 }
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc

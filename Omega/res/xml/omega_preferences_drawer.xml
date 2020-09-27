@@ -18,8 +18,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="Drawer">
 
-<<<<<<< HEAD
-=======
     <com.saggitt.omega.preferences.SeekbarPreference
         android:key="allAppsIconSize"
         android:persistent="true"
@@ -31,7 +29,6 @@
         app:summaryFormat="%.0f%%"
         app:summaryMultiplier="100" />
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <ListPreference
         android:defaultValue="3"
         android:disableDependentsState="false"
@@ -65,14 +62,11 @@
         app:content="@xml/omega_drawer_icon_popup_menu_preferences"
         app:iconSpaceReserved="false" />
 
-<<<<<<< HEAD
-=======
     <com.saggitt.omega.preferences.DrawerGridSizePreference
         android:key="pref_drawer_grid_size"
         android:title="@string/title__drawer_columns"
         app:iconSpaceReserved="false" />
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <!--
        <com.saggitt.omega.preferences.StyledSwitchPreference
            android:defaultValue="false"

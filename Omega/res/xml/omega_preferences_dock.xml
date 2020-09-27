@@ -38,8 +38,6 @@
         android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
 
-<<<<<<< HEAD
-=======
     <com.saggitt.omega.preferences.DockGridSizePreference
         android:key="pref_dock_grid_size"
         android:title="@string/title__dock_hotseat_icons"
@@ -57,7 +55,6 @@
         app:summaryFormat="%.0f%%"
         app:summaryMultiplier="100" />
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     <com.saggitt.omega.preferences.AutoModeScalePreference
         android:key="pref_dockScale"
         android:persistent="true"

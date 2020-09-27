@@ -32,15 +32,9 @@ import com.saggitt.omega.util.applyAccent
 
 class BlankActivity : AppCompatActivity() {
 
-<<<<<<< HEAD
-    private val requestCode by lazy { intent.getIntExtra("requestCode", 0) }
-    private val permissionRequestCode by lazy { intent.getIntExtra("permissionRequestCode", 0) }
-    private val resultReceiver by lazy { intent.getParcelableArrayExtra("callback")!! as ResultReceiver }
-=======
    private val requestCode by lazy { intent.getIntExtra("requestCode", 0) }
     private val permissionRequestCode by lazy { intent.getIntExtra("permissionRequestCode", 0) }
     private val resultReceiver by lazy { intent.getParcelableExtra("callback") as ResultReceiver? }
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     private var resultSent = false
     private var firstResume = true
     private var targetStarted = false
@@ -92,11 +86,7 @@ class BlankActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == permissionRequestCode) {
-<<<<<<< HEAD
-            resultReceiver.send(RESULT_OK, Bundle(2).apply {
-=======
             resultReceiver?.send(RESULT_OK, Bundle(2).apply {
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
                 putStringArray("permissions", permissions)
                 putIntArray("grantResults", grantResults)
             })
@@ -109,20 +99,12 @@ class BlankActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == this.requestCode) {
-<<<<<<< HEAD
-            resultReceiver.send(resultCode, data?.extras)
-            resultSent = true
-            finish()
-        }
-
-=======
             if (data != null) {
                 resultReceiver?.send(resultCode, data.extras)
             }
             resultSent = true
             finish()
         }
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -131,11 +113,7 @@ class BlankActivity : AppCompatActivity() {
 
         if (!resultSent && intent.hasExtra("callback")) {
             resultSent = true
-<<<<<<< HEAD
-            resultReceiver.send(RESULT_CANCELED, null)
-=======
             resultReceiver?.send(RESULT_CANCELED, null)
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         }
     }
 

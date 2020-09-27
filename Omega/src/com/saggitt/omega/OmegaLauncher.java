@@ -25,10 +25,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-<<<<<<< HEAD
-import android.util.Log;
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -44,31 +40,6 @@ import com.android.launcher3.WorkspaceItemInfo;
 import com.android.launcher3.util.ComponentKey;
 import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.iconpack.EditIconActivity;
-<<<<<<< HEAD
-import com.saggitt.omega.iconpack.IconPackManager;
-import com.saggitt.omega.override.CustomInfoProvider;
-import com.saggitt.omega.util.ContextUtils;
-import com.saggitt.omega.util.CustomLauncherClient;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
-import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
-
-public class OmegaLauncher extends Launcher {
-    public Context mContext;
-    private boolean paused = false;
-    private boolean sRestart = false;
-    private OmegaPreferences mOmegaPrefs;
-    private OmegaPreferencesChangeCallback prefCallback = new OmegaPreferencesChangeCallback(this);
-    private OmegaLauncherCallbacks launcherCallbacks;
-    private GestureController mGestureController;
-    public static boolean showFolderNotificationCount;
-    public static Drawable currentEditIcon = null;
-    public static ItemInfo currentEditInfo = null;
-    public final int CODE_EDIT_ICON = 100;
-=======
 import com.saggitt.omega.override.CustomInfoProvider;
 import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
@@ -95,7 +66,6 @@ public class OmegaLauncher extends Launcher {
         launcherCallbacks = new OmegaLauncherCallbacks(this);
         setLauncherCallbacks(launcherCallbacks);
     }
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
 
     public static OmegaLauncher getLauncher(Context context) {
         if (context instanceof OmegaLauncher) {
@@ -105,14 +75,6 @@ public class OmegaLauncher extends Launcher {
         }
     }
 
-<<<<<<< HEAD
-    public OmegaLauncher() {
-        launcherCallbacks = new OmegaLauncherCallbacks(this);
-        setLauncherCallbacks(launcherCallbacks);
-    }
-
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !Utilities.hasStoragePermission(this)) {
@@ -121,11 +83,7 @@ public class OmegaLauncher extends Launcher {
 
         super.onCreate(savedInstanceState);
         mContext = this;
-<<<<<<< HEAD
-        mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
-=======
         OmegaPreferences mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         mOmegaPrefs.registerCallback(prefCallback);
         ContextUtils contextUtils = new ContextUtils(this);
         contextUtils.setAppLanguage(mOmegaPrefs.getLanguage());
@@ -152,8 +110,6 @@ public class OmegaLauncher extends Launcher {
         paused = true;
     }
 
-<<<<<<< HEAD
-=======
     @Override
     public void onRestart() {
         super.onRestart();
@@ -164,7 +120,6 @@ public class OmegaLauncher extends Launcher {
         mWorkspace.refreshChildren();
     }
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     public void onDestroy() {
         super.onDestroy();
         Utilities.getOmegaPrefs(this).unregisterCallback();
@@ -177,20 +132,12 @@ public class OmegaLauncher extends Launcher {
 
     public void startEditIcon(ItemInfo itemInfo, CustomInfoProvider<ItemInfo> infoProvider) {
         ComponentKey component;
-<<<<<<< HEAD
-
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         currentEditInfo = itemInfo;
 
         if (itemInfo instanceof AppInfo) {
             component = ((AppInfo) itemInfo).toComponentKey();
-<<<<<<< HEAD
-            currentEditIcon = Objects.requireNonNull(IconPackManager.Companion.getInstance(this).getEntryForComponent(component)).getDrawable();
-=======
             currentEditIcon = Companion.getInstance(this)
                     .getEntryForComponent(component).getDrawable();
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         } else if (itemInfo instanceof WorkspaceItemInfo) {
             component = new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user);
             currentEditIcon = new BitmapDrawable(mContext.getResources(), ((WorkspaceItemInfo) itemInfo).iconBitmap);
@@ -206,17 +153,6 @@ public class OmegaLauncher extends Launcher {
         int flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK;
         Intent intent = EditIconActivity.Companion.newIntent(this, infoProvider.getTitle(itemInfo), folderInfo, component);
 
-<<<<<<< HEAD
-        BlankActivity.Companion
-                .startActivityForResult(this, intent, CODE_EDIT_ICON, flags, (resultCode, data) -> {
-                    handleEditIconResult(resultCode, data);
-                    return null;
-                });
-
-    }
-
-    private void handleEditIconResult(int resultCode, @NotNull Bundle data) {
-=======
         BlankActivity.Companion.startActivityForResult(this, intent, Config.CODE_EDIT_ICON, flags, (resultCode, data) -> {
             handleEditIconResult(resultCode, data);
             return null;
@@ -225,22 +161,13 @@ public class OmegaLauncher extends Launcher {
     }
 
     private void handleEditIconResult(int resultCode, Bundle data) {
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         if (resultCode == Activity.RESULT_OK) {
             if (currentEditInfo == null) {
                 return;
             }
             ItemInfo itemInfo = currentEditInfo;
-<<<<<<< HEAD
-
-            String entryString = Objects.requireNonNull(data).getString(EditIconActivity.EXTRA_ENTRY);
-
-            IconPackManager.CustomIconEntry customIconEntry = IconPackManager.CustomIconEntry.Companion.fromString(entryString);
-            Log.d(TAG, "Entry Icon:  Item: " + itemInfo + " Entry: " + customIconEntry);
-=======
             String entryString = data.getString(EditIconActivity.EXTRA_ENTRY);
             CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(Objects.requireNonNull(entryString));
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
         }
     }
@@ -258,12 +185,6 @@ public class OmegaLauncher extends Launcher {
                         .show();
             }
         }
-<<<<<<< HEAD
-        //if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
-        //OmegaAppKt.getOmegaApp(this).getSmartspace().updateWeatherData();
-        //}
-=======
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 

@@ -154,23 +154,13 @@ public class CellLayout extends ViewGroup implements Transposable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({WORKSPACE, HOTSEAT, FOLDER})
-<<<<<<< HEAD
-    public @interface ContainerType{}
-=======
     public @interface ContainerType {
     }
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     public static final int WORKSPACE = 0;
     public static final int HOTSEAT = 1;
     public static final int FOLDER = 2;
 
-<<<<<<< HEAD
-    @ContainerType private final int mContainerType;
-
-    private final float mChildScale = 1f;
-
-=======
     @ContainerType
     private final int mContainerType;
 
@@ -178,7 +168,6 @@ public class CellLayout extends ViewGroup implements Transposable {
 
     private final int mDockIconSize;
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     public static final int MODE_SHOW_REORDER_HINT = 0;
     public static final int MODE_DRAG_OVER = 1;
     public static final int MODE_ON_DROP = 2;
@@ -231,17 +220,11 @@ public class CellLayout extends ViewGroup implements Transposable {
         mCellWidth = mCellHeight = -1;
         mFixedCellWidth = mFixedCellHeight = -1;
 
-<<<<<<< HEAD
-        mCountX = grid.inv.numColumns;
-        mCountY = grid.inv.numRows;
-        mOccupied =  new GridOccupancy(mCountX, mCountY);
-=======
         mDockIconSize = grid.hotseatIconSizePx;
 
         mCountX = grid.inv.numColumns;
         mCountY = grid.inv.numRows;
         mOccupied = new GridOccupancy(mCountX, mCountY);
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
         mTmpOccupied = new GridOccupancy(mCountX, mCountY);
 
         mPreviousReorderDirection[0] = INVALID_DIRECTION;
@@ -610,13 +593,8 @@ public class CellLayout extends ViewGroup implements Transposable {
             //bubbleChild.setTextVisibility(mContainerType!=HOTSEAT);
             if (mContainerType == HOTSEAT) {
                 bubbleChild.setTextVisibility(!Utilities.getOmegaPrefs(getContext()).getHideDockLabels());
-<<<<<<< HEAD
-                bubbleChild.setLines(Utilities.getOmegaPrefs(getContext()).getDockLabelRows());
-
-=======
                 bubbleChild.setIconSize(mDockIconSize);
                 bubbleChild.setLines(Utilities.getOmegaPrefs(getContext()).getDockLabelRows());
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             }
         }
 

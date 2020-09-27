@@ -64,11 +64,7 @@
             android:key="pref_gesture_double_tap"
             android:persistent="true"
             android:title="@string/gesture_double_tap"
-<<<<<<< HEAD
-            app:gestureClass="com.saggitt.omega.gestures.DoubleTapGesture"
-=======
             app:gestureClass="com.saggitt.omega.gestures.gestures.DoubleTapGesture"
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
             app:iconSpaceReserved="false" />
 
         <com.saggitt.omega.gestures.ui.GesturePreference
@@ -76,10 +72,6 @@
             android:key="pref_gesture_long_press"
             android:persistent="true"
             android:title="@string/gesture_long_press"
-<<<<<<< HEAD
-            app:gestureClass="com.saggitt.omega.gestures.LongPressGesture"
-            app:iconSpaceReserved="false" />
-=======
             app:gestureClass="com.saggitt.omega.gestures.gestures.LongPressGesture"
             app:iconSpaceReserved="false" />
 
@@ -99,6 +91,5 @@
             app:gestureClass="com.saggitt.omega.gestures.gestures.VerticalSwipeGesture"
             app:iconSpaceReserved="false" />
 
->>>>>>> ba3d8f4607d1f35bce071eabb638c4e819bb5fbc
     </com.saggitt.omega.preferences.ThemedPreferenceCategory>
 </PreferenceScreen>
