@@ -16,12 +16,7 @@
 package com.android.launcher3.appprediction;
 
 import android.annotation.TargetApi;
-import android.app.prediction.AppPredictionContext;
-import android.app.prediction.AppPredictionManager;
-import android.app.prediction.AppPredictor;
-import android.app.prediction.AppTarget;
 import android.app.prediction.AppTargetEvent;
-import android.app.prediction.AppTargetId;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
@@ -42,6 +37,14 @@ import com.android.launcher3.model.AppLaunchTracker;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
 import com.android.systemui.plugins.AppLaunchEventsPlugin;
 import com.android.systemui.plugins.PluginListener;
+import com.saggitt.omega.OmegaPreferences;
+import com.saggitt.omega.predictions.AppPredictorCompat;
+import com.saggitt.omega.predictions.AppTargetCompat;
+import com.saggitt.omega.predictions.AppTargetEventCompat;
+import com.saggitt.omega.predictions.AppTargetIdCompat;
+import com.saggitt.omega.predictions.OmegaPredictionManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +57,7 @@ import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
  */
 @TargetApi(Build.VERSION_CODES.P)
 public class PredictionAppTracker extends AppLaunchTracker
-        implements PluginListener<AppLaunchEventsPlugin> {
+        implements PluginListener<AppLaunchEventsPlugin>, OmegaPreferences.OnPreferenceChangeListener {
 
     private static final String TAG = "PredictionAppTracker";
     private static final boolean DBG = false;
@@ -69,13 +72,15 @@ public class PredictionAppTracker extends AppLaunchTracker
     private final List<AppLaunchEventsPlugin> mAppLaunchEventsPluginsList;
 
     // Accessed only on worker thread
-    private AppPredictor mHomeAppPredictor;
-    private AppPredictor mRecentsOverviewPredictor;
+    private AppPredictorCompat mHomeAppPredictor;
+    private AppPredictorCompat mRecentsOverviewPredictor;
 
     public PredictionAppTracker(Context context) {
         mContext = context;
         mMessageHandler = new Handler(UI_HELPER_EXECUTOR.getLooper(), this::handleMessage);
         InvariantDeviceProfile.INSTANCE.get(mContext).addOnChangeListener(this::onIdpChanged);
+
+        Utilities.getOmegaPrefs(mContext).addOnPreferenceChangeListener("pref_show_predictions", this);
 
         mMessageHandler.sendEmptyMessage(MSG_INIT);
 
@@ -83,6 +88,13 @@ public class PredictionAppTracker extends AppLaunchTracker
         if (Utilities.ATLEAST_R)
             PluginManagerWrapper.INSTANCE.get(context)
                     .addPluginListener(this, AppLaunchEventsPlugin.class, true);
+    }
+
+    @Override
+    public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs,
+                               boolean force) {
+        if (force) return;
+        mMessageHandler.sendEmptyMessage(MSG_INIT);
     }
 
     @UiThread
@@ -106,23 +118,9 @@ public class PredictionAppTracker extends AppLaunchTracker
     }
 
     @WorkerThread
-    private AppPredictor createPredictor(Client client, int count) {
-        AppPredictionManager apm = mContext.getSystemService(AppPredictionManager.class);
-
-        if (apm == null) {
-            return null;
-        }
-
-        AppPredictor predictor = apm.createAppPredictionSession(
-                new AppPredictionContext.Builder(mContext)
-                        .setUiSurface(client.id)
-                        .setPredictedTargetCount(count)
-                        .setExtras(getAppPredictionContextExtras(client))
-                        .build());
-        predictor.registerPredictionUpdates(mContext.getMainExecutor(),
-                PredictionUiStateManager.INSTANCE.get(mContext).appPredictorCallback(client));
-        predictor.requestPredictionUpdate();
-        return predictor;
+    private AppPredictorCompat createPredictor(Client client, int count) {
+        return OmegaPredictionManager.Companion.getInstance(mContext)
+                .createPredictor(client, count, getAppPredictionContextExtras(client));
     }
 
     /**
@@ -143,11 +141,10 @@ public class PredictionAppTracker extends AppLaunchTracker
 
                 // Initialize the clients
 
-                if (Utilities.ATLEAST_R) {
-                    int count = InvariantDeviceProfile.INSTANCE.get(mContext).numAllAppsColumns;
-                    mHomeAppPredictor = createPredictor(Client.HOME, count);
-                    mRecentsOverviewPredictor = createPredictor(Client.OVERVIEW, count);
-                }
+                int count = InvariantDeviceProfile.INSTANCE.get(mContext).numAllAppsColumns;
+                mHomeAppPredictor = createPredictor(Client.HOME, count);
+                mRecentsOverviewPredictor = createPredictor(Client.OVERVIEW, count);
+
                 return true;
             }
             case MSG_DESTROY: {
@@ -156,7 +153,7 @@ public class PredictionAppTracker extends AppLaunchTracker
             }
             case MSG_LAUNCH: {
                 if (mHomeAppPredictor != null) {
-                    mHomeAppPredictor.notifyAppTargetEvent((AppTargetEvent) msg.obj);
+                    mHomeAppPredictor.notifyAppTargetEvent((AppTargetEventCompat) msg.obj);
                 }
                 return true;
             }
@@ -194,8 +191,8 @@ public class PredictionAppTracker extends AppLaunchTracker
     public void onStartShortcut(String packageName, String shortcutId, UserHandle user,
                                 String container) {
         // TODO: Use the full shortcut info
-        AppTarget target = new AppTarget.Builder(
-                new AppTargetId("shortcut:" + shortcutId), packageName, user)
+        AppTargetCompat target = new AppTargetCompat
+                .Builder(new AppTargetIdCompat("shortcut:" + shortcutId), packageName, user)
                 .setClassName(shortcutId)
                 .build();
 
@@ -216,8 +213,8 @@ public class PredictionAppTracker extends AppLaunchTracker
     @UiThread
     public void onStartApp(ComponentName cn, UserHandle user, String container) {
         if (cn != null) {
-            AppTarget target = new AppTarget.Builder(
-                    new AppTargetId("app:" + cn), cn.getPackageName(), user)
+            AppTargetCompat target = new AppTargetCompat
+                    .Builder(new AppTargetIdCompat("app:" + cn), cn.getPackageName(), user)
                     .setClassName(cn.getClassName())
                     .build();
             sendLaunch(target, container);
@@ -236,8 +233,8 @@ public class PredictionAppTracker extends AppLaunchTracker
     @UiThread
     public void onDismissApp(ComponentName cn, UserHandle user, String container) {
         if (cn == null) return;
-        AppTarget target = new AppTarget.Builder(
-                new AppTargetId("app: " + cn), cn.getPackageName(), user)
+        AppTargetCompat target = new AppTargetCompat.Builder(
+                new AppTargetIdCompat("app: " + cn), cn.getPackageName(), user)
                 .setClassName(cn.getClassName())
                 .build();
         sendDismiss(target, container);
@@ -252,20 +249,20 @@ public class PredictionAppTracker extends AppLaunchTracker
     }
 
     @UiThread
-    private void sendEvent(AppTarget target, String container, int eventId) {
-        AppTargetEvent event = new AppTargetEvent.Builder(target, eventId)
+    private void sendEvent(AppTargetCompat target, String container, int eventId) {
+        AppTargetEventCompat event = new AppTargetEventCompat.Builder(target, eventId)
                 .setLaunchLocation(container == null ? CONTAINER_DEFAULT : container)
                 .build();
         Message.obtain(mMessageHandler, MSG_LAUNCH, event).sendToTarget();
     }
 
     @UiThread
-    private void sendLaunch(AppTarget target, String container) {
+    private void sendLaunch(AppTargetCompat target, String container) {
         sendEvent(target, container, AppTargetEvent.ACTION_LAUNCH);
     }
 
     @UiThread
-    private void sendDismiss(AppTarget target, String container) {
+    private void sendDismiss(AppTargetCompat target, String container) {
         sendEvent(target, container, AppTargetEvent.ACTION_DISMISS);
     }
 
