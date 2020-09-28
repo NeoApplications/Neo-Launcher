@@ -26,8 +26,8 @@ import com.google.android.libraries.gsa.launcherclient.LauncherClientCallbacks;
 
 public class CustomLauncherClient extends LauncherClient {
 
-    public CustomLauncherClient(Activity activity, LauncherClientCallbacks c1250g, ClientOptions c1249f) {
-        super(activity, c1250g, c1249f);
+    public CustomLauncherClient(Activity activity, LauncherClientCallbacks callbacks, ClientOptions options) {
+        super(activity, callbacks, options);
     }
 
     // Only used for accessibility
