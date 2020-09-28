@@ -19,6 +19,5 @@ bin/
 local.properties
 gradle/
 build/
-gradlew*
 .DS_Store
 *.jks

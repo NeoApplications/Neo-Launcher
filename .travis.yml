@@ -37,6 +37,7 @@ licenses:
   - google-gdk-license-.+
 
 before_install:
+  - gradle wrapper
   - chmod +x gradlew
   - ./gradlew dependencies || true
   - yes | sdkmanager "platforms;android-30"
