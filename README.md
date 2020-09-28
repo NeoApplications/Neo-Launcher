@@ -3,8 +3,6 @@ Free and Open Source Launcher. <br/>
 [![Travis](https://img.shields.io/travis/otakuhqz/Omega.svg?style=for-the-badge)](https://travis-ci.org/otakuhqz/Omega)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub release](https://img.shields.io/github/release/otakuhqz/Omega.svg?style=for-the-badge)](https://github.com/otakuhqz/Omega/releases)
-[![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-orange.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
-[![Donate on Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/otakuhqz/donate)
 
 ## Installation
 [<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/otakuhqz/omega/releases)
@@ -74,6 +72,8 @@ Free and Open Source Launcher. <br/>
     alt="Buy Me A Coffee" width="150" >
 </a>
 
+[![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-orange.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
+[![Donate on Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/otakuhqz/donate)
 
 ## Want to contribute?
 If you have knowledge in Java or Kotlin you can work on additional features!
