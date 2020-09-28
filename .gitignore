@@ -17,7 +17,6 @@ bin/
 .idea/
 .gradle/
 local.properties
-gradle/
 build/
 .DS_Store
 *.jks
