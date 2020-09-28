@@ -20,7 +20,7 @@
     <string name="title__general_dock">Dock</string>
     <string name="title__general_drawer">Aplicaciones</string>
     <string name="title__general_theme">Temas</string>
-    <string name="title__general_search">Busqueda</string>
+    <string name="title__general_search">Búsqueda</string>
     <string name="title__general_advanced">Avanzados</string>
     <string name="pref_category__others">Otras</string>
     <string name="title__dock_hide">Ocultar Dock</string>
@@ -67,4 +67,22 @@
     <string name="title__general_notifications">Gestos y Notificaciones</string>
     <string name="summary__general_search">Proveedores de búsqueda, estilos, íconos</string>
     <string name="title__search_show_assistant">Mostrar el botón de búsqueda por voz</string>
+    <string name="pref_app_groups_edit_tip">Toca para editar, arrastra para reordenar.</string>
+    <string name="title_show_google_app">Mostrar Google App</string>
+    <string name="title__drawer_columns">Número de columnas</string>
+    <string name="title__dev_show_Dev">Mostrar en preferencias</string>
+    <string name="failed">Algo salió mal.</string>
+    <string name="search_menu">Buscar preferencias</string>
+    <string name="title__gesture_swipe_down">Deslizar hacia abajo</string>
+    <string name="title__drawer_hide_icon_labels">Ocultar el nombre de la aplicacion</string>
+    <string name="title__dock_icon_size">Tamaño de Icono</string>
+    <string name="grid_size_width">Ancho</string>
+    <string name="title__desktop_icon_size">Tamaño de icono</string>
+    <string name="allow_rotation_blocked_desc">La configuración actual no permite la rotación de pantalla</string>
+    <string name="pref_category__inputs">Gestos y Búsqueda</string>
+    <string name="pref_category__interfaces">Vistas</string>
+    <string name="summary__general_about">Mas información sobre Omega Launcher</string>
+    <string name="summary__general_advanced">Idioma, respaldo, busqueda de preferencias</string>
+    <string name="summary__general_smartspace">Fecha, Hora, widget inicio</string>
+    <string name="summary__general_theme">Cambiar colores, pack de iconos, forma de icono</string>
 </resources>
