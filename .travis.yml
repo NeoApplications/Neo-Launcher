@@ -35,10 +35,16 @@ licenses:
   - google-gdk-license-.+
 
 before_install:
+  - wget http://services.gradle.org/distributions/gradle-6.5.1-all.zip
+  - unzip -qq gradle-6.5.1-all.zip
+  - export GRADLE_HOME=$PWD/gradle-6.5
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - gradle -v
+
   - gradle wrapper
-  - chmod +x gradlew
-  - ./gradlew dependencies || true
-  - yes | sdkmanager "platforms;android-30"
+    - chmod +x gradlew
+    - ./gradlew dependencies || true
+    - yes | sdkmanager "platforms;android-30"
 
 #before_script:
 #- echo no | android create avd --force -n test -t android-25 --abi google_apis/armeabi-v7a
