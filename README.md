@@ -5,9 +5,13 @@ Free and Open Source Launcher. <br/>
 [![GitHub release](https://img.shields.io/github/release/otakuhqz/Omega.svg?style=for-the-badge)](https://github.com/otakuhqz/Omega/releases)
 
 ## Installation
+The release apks are shared in github and at the Telegram Channel. Some nightly builds 
+are shared at the Telegram Channel only.
 [<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/otakuhqz/omega/releases)
 
 ## Community
+You can join to the Telegram Channel to have the latest builds. There is also a Telegram Group 
+to discuss the development, issues and new features.
 [![Telegram](https://img.shields.io/badge/Telegram-channel-blue.svg?style=for-the-badge)](https://t.me/omegalauncher)
 
 ##  Working Features
@@ -29,11 +33,11 @@ Free and Open Source Launcher. <br/>
 -   [X] Dock Icon Scale.
 -   [X] Workspace Icon Scale.
 -   [X] Desktop grid preference.
+-   [ ] Apps Predictions (Experimental).
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
 -   [ ] Back up and restore.
--   [ ] Apps Predictions.
 -   [ ] Horizontal drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
 -   [ ] Animations.
