@@ -96,7 +96,8 @@
             android:key="pref_gesture_dock_swipe_up"
             android:persistent="true"
             android:title="@string/gesture_dock_swipe_up"
-            app:gestureClass="com.saggitt.omega.gestures.gestures.VerticalSwipeGesture" />
+            app:gestureClass="com.saggitt.omega.gestures.gestures.VerticalSwipeGesture"
+            app:iconSpaceReserved="false" />
 
     </com.saggitt.omega.preferences.ThemedPreferenceCategory>
 </PreferenceScreen>
