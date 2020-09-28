@@ -80,6 +80,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     public void onCreate(Bundle savedInstanceState) {
         mPrefs = Utilities.getPrefs(mLauncher);
         mOverlayCallbacks = new OverlayCallbackImpl(mLauncher);
+
         mLauncherClient = new CustomLauncherClient(mLauncher, mOverlayCallbacks, getClientOptions(mPrefs));
         mQsbController = new QsbAnimationController(mLauncher);
         mOverlayCallbacks.setClient(mLauncherClient);

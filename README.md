@@ -6,12 +6,12 @@ Free and Open Source Launcher. <br/>
 
 ## Installation
 The release apks are shared in github and at the Telegram Channel. Some nightly builds 
-are shared at the Telegram Channel only.
+are shared at the Telegram Channel only.<br/>
 [<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/otakuhqz/omega/releases)
 
 ## Community
 You can join to the Telegram Channel to have the latest builds. There is also a Telegram Group 
-to discuss the development, issues and new features.
+to discuss the development, issues and new features.<br/>
 [![Telegram](https://img.shields.io/badge/Telegram-channel-blue.svg?style=for-the-badge)](https://t.me/omegalauncher)
 
 ##  Working Features
@@ -75,8 +75,7 @@ to discuss the development, issues and new features.
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
     alt="Buy Me A Coffee" width="150" >
 </a>
-
-[![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-orange.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
+[![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-red.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
 [![Donate on Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/otakuhqz/donate)
 
 ## Want to contribute?
