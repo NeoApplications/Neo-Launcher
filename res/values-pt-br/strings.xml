@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright (c) 2020 Omega Launcher
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+        http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="derived_app_name" translatable="false">Omega Launcher</string>
+    <string name="app_version" translatable="false">Version</string>
+    <string name="app_build" translatable="false">Build</string>
+    <!-- PREFERENCES GENERAL -->
+    <string name="title__general_about">Sobre</string>
+    <string name="title__general_desktop">Área de trabalho</string>
+    <string name="title__general_dock">Dock</string>
+    <string name="title__general_drawer">Grade de Apps</string>
+    <string name="title__general_theme">Tema</string>
+    <string name="title__general_search">Pesquisar</string>
+    <string name="title__general_smartspace">Home Widget</string>
+    <string name="title__general_advanced">Avançado</string>
+    <string name="title__general_notifications">Gestos e notificações</string>
+    <string name="summary__general_desktop">Personalize sua área de trabalho</string>
+    <string name="summary__general_dock">Ícones do 'Hotsea', barra de pesquisa</string>
+    <string name="summary__general_drawer">Personalize sua Grade de Apps</string>
+    <string name="summary__general_theme">Mudar as cores, pacote de ícones, Formato do ícone</string>
+    <string name="summary__general_search">Provedor de pesquisa, estilo, ícones</string>
+    <string name="summary__general_smartspace">Data, Hora, home widget</string>
+    <string name="summary__general_notifications">Badge count, badge color, gestures</string>
+    <string name="summary__general_advanced">Idioma, BackUp, Configuração de pesquisa</string>
+    <string name="summary__general_about">Mais informações sobre o Omega Launcher</string>
+
+    <string name="pref_category__interfaces">Interfaces</string>
+    <string name="pref_category__inputs">Gestos e pesquisa</string>
+    <string name="pref_category__others">Outros</string>
+
+    <!-- PREFERENCES DESKTOP -->
+    <string name="allow_rotation_blocked_desc">A configuração atual da sua tela não permite rotação</string>
+    <string name="title__desktop_full_width_widgets">Windgets com largura extendida</string>
+    <string name="title__desktop_icon_size">Tamanho do ícone</string>
+    <string name="title__desktop_grid_size">Tamanho da grade</string>
+    <string name="title__desktop_hide_icon_labels">Hide icon labels on home screen</string>
+    <string name="title__desktop_hide_icon_labels">Esconder o nome dos ícones na Área de Trabalho</string>
+    <string name="title__desktop_multiline_labels">Nome dos Apps em multilinha</string>
+    <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
+    <string name="grid_size_height">Altura</string>
+    <string name="grid_size_width">Largura</string>
+
+    <!-- PREFERENCES DOCK -->
+    <string name="title__dock_icon_size">Tamanho do ícone</string>
+    <string name="title__dock_scale">Tamanho da 'Dock'</string>
+    <string name="title__dock_hide">Esconder a 'Dock'</string>
+    <string name="title__dock_hide_labels">Esconder os nomes</string>
+    <string name="title__dock_colored_icons">Ícones coloridos</string>
+    <string name="title__dock_search_bar">Mostrar a barra de pesquisa</string>
+    <string name="title__dock_hotseat_icons">Quantidade de ícones</string>
+
+    <string name="pref_value_disabled">Desativado</string>
+    <string name="dock_search_value" translatable="false">%1$s %2$s</string>
+
+    <!-- PREFERENCES DRAWER -->
+    <string name="title__drawer_sort">Organização dos ícones</string>
+    <string name="title__drawer_all_apps">Show "All Apps" label</string>
+    <string name="title__drawer_mutliline_labels">Nome dos Apps em multilinha</string>
+    <string name="title__drawer_paged_apps">Visualizar os Apps em páginas</string>
+    <string name="title__drawer_hide_icon_labels">Esconder o nome dos Apps</string>
+    <string name="title__drawer_hide_apps">Esconder os atalhos dos Apps</string>
+    <string name="title__drawer_icon_size">Tamanho do ícone de todos os Apps</string>
+    <string name="title__drawer_categorization">Categorias</string>
+    <string name="title__drawer_icon_popup_menu">Shortcut Bubble</string>
+    <string name="title__drawer_columns">Número de colunas</string>
+    <string name="title__sort_mode">Organização dos Apps</string>
+    <string name="title__sort_alphabetical_az">Ordem alfabética (A-Z)</string>
+    <string name="title__sort_alphabetical_za">Ordem alfabética (Z-A)</string>
+    <string name="title__sort_last_installed">A partir do último instalado</string>
+    <string name="title__sort_most_used">Mais usado</string>
+    <string name="title__sort_by_color">Por cor</string>
+    <string name="title_all_apps_search">Barra de pesquisas na Grade de Apps</string>
+    <string name="title_all_apps_google_search">Pesquisa global</string>
+    <string name="summary_all_apps_google_search">Encontrar resultados e apps na web</string>
+    <string name="summary__drawer_hide_apps">Esconder o App na Grade de Apps</string>
+    <string name="title_disable_suggestions_prompt">Desativar sugestão de Apps</string>
+    <string name="msg_disable_suggestions_prompt">"Usage data will be deleted."</string>
+    <string name="label_turn_off_suggestions">Desativar</string>
+
+    <string name="pref_appcategorization_flowerpot_title">Categoria de Apps</string>
+    <string name="pref_appcategorization_enable_title">Categorizar os Apps</string>
+    <string name="pref_appcategorization_enable_summary">Escolha o 'layout' da Grade de Apps</string>
+    <string name="pref_appcategorization_style_text">Estilo</string>
+    <string name="pref_app_groups_create">Criar</string>
+    <string name="pref_appcategorization_folders_title">Pastas</string>
+    <string name="pref_appcategorization_folders_summary">Toque para abrir o pop-up.</string>
+    <string name="pref_appcategorization_tabs_title">Tabs</string>
+    <string name="pref_appcategorization_tabs_summary">Deslizar entre os grupos.</string>
+    <string name="pref_app_groups_edit_tip">Toque para editar, arraster para reorganizar.</string>
+    <string name="default_folder_name">Nova pasta</string>
+    <string name="tab_type_custom">Personalizado</string>
+    <string name="tab_type_custom_desc">Escolher os Apps manualmente.</string>
+    <string name="tab_type_smart">Automático</string>
+    <string name="pref_appcategorization_flowerpot_summary">Escolher os Apps automáticamente.</string>
+    <string name="drawer_folders">Pastas</string>
+    <string name="drawer_tabs">Tabs</string>
+    <string name="selected_count">%1$d selecionados</string>
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d App</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+    <plurals name="hidden_apps_count">
+        <item quantity="other">%1$d escondido</item>
+    </plurals>
+    <string name="hide_app_selected">&#160; escondido</string>
+    <string name="hide_app_reset">Resetar</string>
+    <string name="action_preferences" translatable="false">@string/customize</string>
+
+    <!-- PREFERENCES THEME -->
+    <string name="title__theme_accent_color">Cor secundária</string>
+    <string name="title__theme_blur">Blur (Borrar)</string>
+    <string name="title__theme_blur_radius">Intensidade do "blur"</string>
+    <string name="title__theme_icon_shape">Trocar a forma do ícone</string>
+
+    <string name="summary__theme_blur">"Blur" do plano de fundo das páginas</string>
+
+    <string name="theme_auto">Seguir o Papel de Parede</string>
+    <string name="theme_auto_night_mode">Seguir o tema do sistema</string>
+    <string name="theme_based">Definido pelo nome</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_with_dark_text">Texto escuro</string>
+    <string name="theme_black">Preto</string>
+    <string name="theme_black_dark_text">Preto com texto escuro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="theme_dark_text">Claro com texto escuro</string>
+    <string name="theme_dark_dark_text">Escuro com texto escuro</string>
+    <string name="theme_dark_theme_mode">Tema escuro</string>
+    <string name="theme_dark_theme_mode_on">Ativado</string>
+    <string name="theme_dark_theme_mode_off">Desativado</string>
+    <string name="theme_dark_theme_mode_follow_wallpaper">@string/theme_auto</string>
+    <string name="theme_dark_theme_mode_follow_system">@string/theme_auto_night_mode</string>
+    <string name="theme_dark_theme_mode_follow_daylight">Seguir a luz do dia</string>
+    <string name="theme_use_black">Usar a cor preta absoluta</string>
+    <string name="theme_use_dark_text">Usar o texto escuro</string>
+    <string name="theme_default">Padrão</string>
+
+    <string name="icon_pack">Pacote de ícones</string>
+    <string name="get_more_icon_packs">Obter mais</string>
+    <string name="icon_shape_override_progress">"Aplicando as mudanças na forma dos ícones"</string>
+    <!-- Developer setting to change the shape of icons on home screen. [CHAR LIMIT=50] -->
+    <string name="icon_shape_override_label">Mudar a forma do ícone</string>
+    <!-- Subtext explaining that the icons will only be affected on the home screen. This text follows the actual icon action: Change icon shape, on Home screen [CHAR LIMIT=100] -->
+    <string name="icon_shape_override_label_location">na tela inicial</string>
+    <!-- Option to not change the icon shape on home screen and use the system default setting instead. [CHAR LIMIT=50] -->
+    <string name="icon_shape_system_default">Padrão do sistema</string>
+    <!-- Option to change the shape of the home screen icons to a square. [CHAR LIMIT=50] -->
+    <string name="icon_shape_square">Quadrado</string>
+    <!-- Option to change the shape of the home screen icons to a squircle. This represents the name of the shape somewhere between a circle and a square. [CHAR LIMIT=50] -->
+    <string name="icon_shape_squircle">Quadrado deformado</string>
+    <!-- Option to change the shape of the home screen icons to a circle. [CHAR LIMIT=50] -->
+    <string name="icon_shape_circle">Redondo</string>
+    <!-- Option to change the shape of the home screen icons to a teardrop. This represents the name of the shape similar to a circle with with the bottom right corner pushed out like a square [CHAR LIMIT=50] -->
+    <string name="icon_shape_teardrop">Lágrima</string>
+    <!-- Option to change the shape of the home screen icons to a cylinder. [CHAR LIMIT=50] -->
+    <string name="icon_shape_cylinder">Cilindro</string>
+    <string name="icon_shape_rounded_square">Quadrado arredondado</string>
+    <string name="icon_shape_top_left">Superior esquerdo</string>
+    <string name="icon_shape_top_right">Superior direito</string>
+    <string name="icon_shape_bottom_left">Inferior esquerdo</string>
+    <string name="icon_shape_bottom_right">Inferior direito</string>
+    <string name="icon_shape_corner_round">Arredondado</string>
+    <string name="icon_shape_corner_squircle">Deformado</string>
+    <string name="icon_shape_corner_cut">Cortado</string>
+
+    <string name="icon_pack_applied_toast">%s aplicado</string>
+    <string name="icon_pack_default">Ícones do sistema</string>
+    <string name="icon_pack_external_picker">Open external picker</string>
+    <string name="open_image_picker">Open image picker</string>
+    <string name="import_icon">Importar ícone</string>
+    <string name="import_as_adaptive">Ícone adaptável</string>
+    <string name="playstore_query_icon_pack">Pacote de ícones</string>
+
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_default">Padrão</string>
+    <string name="reset_custom_icons">Remover os ícones customizados</string>
+    <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
+
+    <string name="color_presets">Presets</string>
+
+    <!-- PREFERENCES SMARTSPACE -->
+    <string name="title_show_google_app">Show Google app</string>
+    <string name="title__smartspace_feed_theme">Feed Theme</string>
+    <string name="pref_show_google_now_summary" translatable="false">@string/msg_minus_one_on_left</string>
+    <string name="google_app" translatable="false">Google app</string>
+    <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
+    <string name="smartspace_preferences">Preferences</string>
+
+    <!-- PREFERENCES NOTIFICATION -->
+    <string name="icon_badging_desc_on">Ativado</string>
+    <string name="icon_badging_desc_off">Desativado</string>
+    <string name="title__notification_count">Show Notification Count</string>
+    <string name="title__folder_badge_count">Show folder badge Count</string>
+    <string name="title__notification_background">Notification Background Color</string>
+    <string name="title__gesture_swipe_down">Swipe down</string>
+
+    <string name="pref_category__notifications">Notifications</string>
+    <string name="pref_category__gestures">Gestures</string>
+
+    <string name="action_none">Do Nothing</string>
+    <string name="action_open_drawer">Open app drawer</string>
+    <string name="action_open_settings">Open Launcher Settings</string>
+    <string name="action_open_overview">Show Desktop Bubble</string>
+    <string name="action_open_dash">Open Dash</string>
+    <string name="gesture_double_tap">Double tap</string>
+    <string name="gesture_long_press">Touch &amp; Hold</string>
+    <string name="gesture_swipe_up">Swipe Up</string>
+    <string name="gesture_dock_swipe_up">Swipe Up From Dock</string>
+    <string name="omega_actions">Actions</string>
+    <string name="action_app_search">Open app search</string>
+    <string name="action_open_notifications">Open notifications</string>
+    <string name="action_close_notifications">Close notifications</string>
+    <string name="action_global_search">Launch Global Search</string>
+
+    <!-- SEARCH -->
+    <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
+    <string name="title__search_action_assistant">Open Assistant</string>
+    <string name="title__search_show_assistant">Show Voice Search Button</string>
+    <string name="title__search_provider">Search engine</string>
+    <string name="title__search_bar_radius">Corner Radius</string>
+    <string name="summary__search_show_as_assistant_summary">Open Assistant instead of Voice Search</string>
+    <string name="cat_search_bar">Search Bar</string>
+    <string name="search_no_results">No Results</string>
+    <string name="search_breadcrumb_connector" translatable="false">
+        <xliff:g name="first_item">%1$s</xliff:g> >
+        <xliff:g name="second_item">%2$s</xliff:g>
+    </string>
+    <string name="search_provider_yandex" translatable="false">Yandex</string>
+    <string name="search_provider_ddg" translatable="false">DuckDuckGo</string>
+    <string name="search_provider_baidu" translatable="false">Baidu</string>
+    <string name="search_provider_s_finder" translatable="false">S Finder</string>
+    <string name="google" translatable="false">Google</string>
+    <string name="search_provider_google_go" translatable="false">Google Go</string>
+    <string name="search_provider_firefox" translatable="false">Firefox</string>
+    <string name="search_provider_search_lite" translatable="false">Search Lite</string>
+    <string name="search_provider_cool_search" translatable="false">Cool Search</string>
+    <string name="search_provider_appsearch">App search</string>
+    <string name="search_provider_bing" translatable="false">Bing</string>
+    <string name="search_provider_edge" translatable="false">Edge</string>
+    <string name="search_provider_qwant" translatable="false">Qwant</string>
+    <string name="web_search_google" translatable="false">Google (web)</string>
+    <string name="web_search_ddg" translatable="false">DuckDuckGo (web)</string>
+    <string name="web_search_startpage" translatable="false">Startpage.com (web)</string>
+    <string name="web_search_bing" translatable="false">Bing (web)</string>
+    <string name="web_search_qwant" translatable="false">Qwant (web)</string>
+    <string name="web_search_ecosia" translatable="false">Ecosia (web)</string>
+    <string name="web_search_yandex" translatable="false">Yandex (web)</string>
+    <string name="web_search_naver" translatable="false">Naver (web)</string>
+    <string name="web_search_baidu" translatable="false">Baidu (web)</string>
+    <string name="web_search_yahoo" translatable="false">Yahoo (web)</string>
+    <string name="error_no_browser">No activity found to handle URLs</string>
+
+    <!-- ADVANCED -->
+    <string name="summary__advanced_setting_search">Display setting search in the action bar</string>
+    <string name="summary__advanced_language">Change language of this app</string>
+    <string name="title__advanced_setting_search">Show settings search</string>
+    <string name="title__advanced_language">Language</string>
+
+    <!-- DEVELOPER -->
+    <string name="developer_options_enabled">Developer options enabled</string>
+    <string name="search_menu">Find settings</string>
+    <string name="failed">Something went wrong.</string>
+    <string name="developer_options_title">Developer Options</string>
+    <string name="title__dev_show_Dev">Show in Settings</string>
+    <string name="title__dev_show_debug_info">Show debug info</string>
+    <string name="title__restart_launcher">Restart</string>
+    <string name="summary__dev_restart">Can be helpful if some settings are not properly applied</string>
+    <string name="change_default_home">Set as Home App</string>
+
+    <!-- ABOUT -->
+    <string name="title__about_copy_build">Copy build information</string>
+    <string name="title__about_donate">Donate</string>
+    <string name="title__about_changelog">Changelog</string>
+    <string name="title__about_project_team">Project Team</string>
+    <string name="title__about_open_source">Open Source</string>
+    <string name="title__about_project_license">Project License</string>
+    <string name="summary__about_donate">More information on donating or otherwise supporting this project</string>
+    <string name="category__about_licenses">License</string>
+    <string name="app_donate_url" translatable="false">https://paypal.me/saulhenriquez</string>
+
+    <string name="title_storage_permission_required">Storage Access Needed</string>
+    <string name="content_storage_permission_required">To set a wallpaper, grant the Storage permission.</string>
+
+    <!-- DASH -->
+    <string name="edit_dash">Edit Dash</string>
+    <string name="wallpaper_pick">Pick Wallpaper</string>
+    <string name="drag_to_disable_packs">Drag down to disable</string>
+    <string name="drag_to_enable_packs">Drag up to enable</string>
+    <string name="enabled_icon_packs">Enabled</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+
+    <!-- SEEKBAR PREFERENCE -->
+    <string name="reset_to_default">Reset to default</string>
+    <string name="automatic_short">Auto</string>
+
+    <!-- QSB -->
+    <string name="label_voice_search">Voice search</string>
+    <string name="customize">Customize</string>
+
+    <!-- TABS -->
+    <string name="tab_bottom_sheet_save">Save</string>
+    <string name="tab_hide_from_main">Hide from main tab</string>
+    <string name="tab_color">Tab color</string>
+    <string name="tab_manage_apps">Manage apps</string>
+    <string name="delete">Delete</string>
+    <string name="select_tab_type">New Tab</string>
+    <string name="none">None</string>
+    <string name="name">Name</string>
+    <string name="apps_label">Apps</string>
+    <string name="custom">Custom</string>
+    <string name="default_tab_name">New tab</string>
+    <string name="show_in_tabs">Tabs</string>
+    <string name="tabs_manage">Manage</string>
+    <string name="dismiss_drop_target_label">"Don\’t show"</string>
+
+    <string name="debug_component_name">Component Name</string>
+    <string name="debug_component_name_copied">Copied to clipboard.</string>
+    <string name="hide_app">Hide Shortcut</string>
+    <string name="folder_cover_mode">Use Cover Mode</string>
+    <string name="folder_cover_mode_desc">Tap to open first app, swipe up to view all.</string>
+
+    <string name="loading">Loading…</string>
+</resources>
