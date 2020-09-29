@@ -85,4 +85,11 @@
     <string name="summary__general_advanced">Idioma, respaldo, busqueda de preferencias</string>
     <string name="summary__general_smartspace">Fecha, Hora, widget inicio</string>
     <string name="summary__general_theme">Cambiar colores, pack de iconos, forma de icono</string>
+    <string name="title__notification_count">Mostrar cuenta de notificaciones</string>
+    <string name="icon_badging_desc_off">Desactivado</string>
+    <string name="icon_badging_desc_on">Activado</string>
+    <string name="smartspace_preferences">Preferencias</string>
+    <string name="msg_minus_one_on_left">A la izquierda de la pantalla principal</string>
+    <string name="title__smartspace_feed_theme">Tema del Feed</string>
+    <string name="color_presets">Predeterminados</string>
 </resources>
