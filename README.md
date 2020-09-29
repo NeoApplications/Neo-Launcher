@@ -75,6 +75,7 @@ to discuss the development, issues and new features.<br/>
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" 
     alt="Buy Me A Coffee" width="150" >
 </a>
+
 [![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-red.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
 [![Donate on Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/otakuhqz/donate)
 
