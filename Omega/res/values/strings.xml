@@ -231,6 +231,7 @@
     <string name="title__search_action_assistant">Open Assistant</string>
     <string name="title__search_show_assistant">Show Voice Search Button</string>
     <string name="title__search_provider">Search engine</string>
+    <string name="title__search_bar_radius">Corner Radius</string>
     <string name="summary__search_show_as_assistant_summary">Open Assistant instead of Voice Search</string>
     <string name="cat_search_bar">Search Bar</string>
     <string name="search_no_results">No Results</string>

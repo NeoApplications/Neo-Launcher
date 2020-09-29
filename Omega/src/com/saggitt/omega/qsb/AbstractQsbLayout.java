@@ -171,11 +171,12 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         mTouchDelegate = new TransformingTouchDelegate(this);
         setTouchDelegate(mTouchDelegate);
         CV.setColor(Color.WHITE);
+        mRadius = round(Utilities.getOmegaPrefs(getContext()).getSearchBarRadius());
     }
 
-    public static float getCornerRadius(Context context, float defaultRadius) {
+    public float getCornerRadius(Context context, float defaultRadius) {
         float radius = round(Utilities.getOmegaPrefs(context).getSearchBarRadius());
-        if (radius > 0f) {
+        if (radius >= 0f) {
             return radius;
         }
         TypedValue edgeRadius = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius);
@@ -673,7 +674,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             case "pref_bubbleSearchStyle":
                 loadPreferences(sharedPreferences);
         }
-        if (key.equals("pref_searchbarRadius")) {
+        if (key.equals("pref_searchbar_radius")) {
             loadPreferences(sharedPreferences);
         }
     }

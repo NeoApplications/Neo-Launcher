@@ -165,7 +165,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val blurRadius by FloatPref("pref_blurRadius", omegaConfig.defaultBlurStrength, updateBlur)
 
     /* --SEARCH-- */
-    var searchBarRadius by DimensionPref("pref_searchbarRadius", -1f)
+    var searchBarRadius by DimensionPref("pref_searchbar_radius", -1f)
     val dockColoredGoogle by BooleanPref("pref_dockColoredGoogle", true, doNothing)
     var searchProvider by StringPref("pref_globalSearchProvider", omegaConfig.defaultSearchProvider) {
         SearchProviderController.getInstance(context).onSearchProviderChanged()

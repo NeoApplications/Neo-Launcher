@@ -50,8 +50,7 @@
         android:title="@string/title_app_suggestions"
         app:iconSpaceReserved="false" />
 
-    <!--
     <com.saggitt.omega.preferences.PreviewPreference
         android:key="pref_dock_preview"
-        app:previewLayout="@layout/dock_preview" /> -->
+        app:layout="@layout/dock_preview" />
 </PreferenceScreen>

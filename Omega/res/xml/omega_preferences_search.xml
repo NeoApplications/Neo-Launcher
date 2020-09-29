@@ -45,4 +45,13 @@
         android:key="pref_bubbleSearchStyle"
         android:title="@string/title__search_bubble_searchbar"
         app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.AutoModeSeekbarPreference
+        android:key="pref_searchbar_radius"
+        android:title="@string/title__search_bar_radius"
+        app:defaultSeekbarValue="-1.0"
+        app:maxValue="24"
+        app:minValue="0.0"
+        app:steps="24"
+        app:summaryFormat="%.0fdp" />
 </PreferenceScreen>
