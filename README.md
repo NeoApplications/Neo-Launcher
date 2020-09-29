@@ -33,10 +33,13 @@ to discuss the development, issues and new features.<br/>
 -   [X] Dock Icon Scale.
 -   [X] Workspace Icon Scale.
 -   [X] Desktop grid preference.
--   [ ] Apps Predictions (Experimental).
+-   [X] Apps Predictions (Experimental).
 
 ##  New Features and TODOs
 -   [ ] Icon pack support.
+-   [ ] Disable auto remove empty screen.
+-   [ ] Add desktop screen manually.
+-   [ ] Reorder empty screens.
 -   [ ] Back up and restore.
 -   [ ] Horizontal drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
