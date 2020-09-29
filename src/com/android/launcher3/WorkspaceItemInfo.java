@@ -242,9 +242,9 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     public void onLoadCustomizations(String titleAlias, String swipeUpAction,
-                                     IconPackManager.CustomIconEntry customEntry, Bitmap icon) {
+                                     IconPackManager.CustomIconEntry customIcon, Bitmap icon) {
         customTitle = titleAlias;
-        customIconEntry = customEntry;
+        customIconEntry = customIcon;
         this.customIcon = icon;
         this.swipeUpAction = swipeUpAction;
     }

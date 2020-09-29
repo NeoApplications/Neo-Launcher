@@ -18,15 +18,14 @@
 package com.saggitt.omega
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import android.os.Process
 import android.text.TextUtils
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
+import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
@@ -185,14 +184,14 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     val customAppName = object : MutableMapPref<ComponentKey, String>("pref_appNameMap", reloadAll) {
         override fun flattenKey(key: ComponentKey) = key.toString()
-        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun unflattenKey(key: String) = makeComponentKey(context, key)
         override fun flattenValue(value: String) = value
         override fun unflattenValue(value: String) = value
     }
 
     val customAppIcon = object : MutableMapPref<ComponentKey, IconPackManager.CustomIconEntry>("pref_appIconMap", reloadAll) {
         override fun flattenKey(key: ComponentKey) = key.toString()
-        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun unflattenKey(key: String) = makeComponentKey(context, key)
         override fun flattenValue(value: IconPackManager.CustomIconEntry) = value.toString()
         override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(value)
     }
