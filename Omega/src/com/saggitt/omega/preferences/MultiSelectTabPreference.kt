@@ -42,9 +42,7 @@ class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : Recycle
     private val selections = mutableMapOf<DrawerTabs.CustomTab, Boolean>()
     private val tabs = context.omegaPrefs.drawerTabs.getGroups().mapNotNull { it as? DrawerTabs.CustomTab }
     var edited = false
-        private set(value) {
-            field = value
-        }
+        private set
 
     override fun onBindRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = Adapter()

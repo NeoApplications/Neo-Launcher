@@ -57,7 +57,7 @@ import kotlin.collections.HashSet
 import kotlin.reflect.KProperty
 
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
-    val mContext = context;
+    val mContext = context
 
     val doNothing = { }
     val restart = { restart() }

@@ -58,7 +58,7 @@ class IconMask {
         val canvas = Canvas(bitmap)
 
         // Draw the app icon
-        var bb = baseIcon.toBitmap()!!
+        var bb = baseIcon.toBitmap()
         if (!bb.isMutable) bb = bb.copy(bb.config, true)
         matrix.setScale((size * scale) / bb.width, (size * scale) / bb.height)
         matrix.postTranslate((size / 2) * (1 - scale), (size / 2) * (1 - scale))
@@ -67,7 +67,7 @@ class IconMask {
 
         // Mask the app icon
         if (iconMask != null && iconMask.drawableId != 0) {
-            iconMask.drawable.toBitmap()?.let {
+            iconMask.drawable.toBitmap().let {
                 paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
                 matrix.setScale(size.toFloat() / it.width, size.toFloat() / it.height)
                 canvas.drawBitmap(it, matrix, paint)
@@ -82,7 +82,7 @@ class IconMask {
             if (Utilities.ATLEAST_OREO && drawable is AdaptiveIconCompat) {
                 adaptiveBackground = drawable.background
             } else {
-                drawable.toBitmap()!!.let {
+                drawable.toBitmap().let {
                     paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OVER)
                     matrix.setScale(size.toFloat() / it.width, size.toFloat() / it.height)
                     canvas.drawBitmap(it, matrix, paint)
@@ -94,7 +94,7 @@ class IconMask {
 
         // Draw iconUpon
         if (iconUpon != null && iconUpon.drawableId != 0) {
-            iconUpon.drawable.toBitmap()!!.let {
+            iconUpon.drawable.toBitmap().let {
                 matrix.setScale(size.toFloat() / it.width, size.toFloat() / it.height)
                 canvas.drawBitmap(it, matrix, paint)
                 matrix.reset()

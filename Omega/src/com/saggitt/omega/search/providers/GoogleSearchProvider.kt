@@ -33,7 +33,7 @@ class GoogleSearchProvider(context: Context) : SearchProvider(context) {
         val launcher = OmegaLauncher.getLauncher(context)
         if (launcher.googleNow != null) {
             //TODO OPEN GOOGLE FEED.
-            launcher.googleNow!!.showOverlay(true);
+            launcher.googleNow!!.showOverlay(true)
         } else {
             callback(Intent(Intent.ACTION_MAIN).setClassName(PACKAGE, "$PACKAGE.SearchActivity"))
         }
