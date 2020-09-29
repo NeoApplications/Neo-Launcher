@@ -24,7 +24,7 @@
         android:id="@android:id/icon"
         android:layout_width="@dimen/dashboard_tile_image_size"
         android:layout_height="@dimen/dashboard_tile_image_size"
-        android:scaleType="centerInside"
+        android:scaleType="center"
         android:layout_marginStart="@dimen/dashboard_tile_image_margin_start"
         android:layout_marginEnd="@dimen/dashboard_tile_image_margin_end" />
 
