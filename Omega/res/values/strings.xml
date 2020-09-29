@@ -130,6 +130,7 @@
 
     <string name="theme_auto">Follow wallpaper</string>
     <string name="theme_auto_night_mode">Follow system theme</string>
+    <string name="theme_based">Set by Theme</string>
     <string name="theme_light">Light</string>
     <string name="theme_with_dark_text">dark text</string>
     <string name="theme_black">Black</string>
@@ -193,7 +194,8 @@
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>
-    <string name="pref_show_google_now_summary">@string/msg_minus_one_on_left</string>
+    <string name="title__smartspace_feed_theme">Feed Theme</string>
+    <string name="pref_show_google_now_summary" translatable="false">@string/msg_minus_one_on_left</string>
     <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>

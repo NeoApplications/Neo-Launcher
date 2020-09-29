@@ -85,6 +85,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         mQsbController = new QsbAnimationController(mLauncher);
         mOverlayCallbacks.setClient(mLauncherClient);
         mUiInformation.putInt("system_ui_visibility", mLauncher.getWindow().getDecorView().getSystemUiVisibility());
+        applyFeedTheme(false);
         WallpaperColorInfo instance = WallpaperColorInfo.getInstance(mLauncher);
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
@@ -239,6 +240,8 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
                 mLauncherClient.getEventInfo().parse("setClientOptions ", mLauncherClient.mFlags);
             }
         }
+        if (SettingsActivity.FEED_THEME_PREF.equals(key))
+            applyFeedTheme(true);
     }
 
     @Override
@@ -247,7 +250,26 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         mUiInformation.putInt("background_color_hint", primaryColor(wallpaperColorInfo, mLauncher.getApplicationContext(), alpha));
         mUiInformation.putInt("background_secondary_color_hint", secondaryColor(wallpaperColorInfo, mLauncher, alpha));
         mUiInformation.putBoolean("is_background_dark", Themes.getAttrBoolean(mLauncher, R.attr.isMainColorDark));
-        mLauncherClient.redraw(mUiInformation);
+
+        applyFeedTheme(true);
+    }
+
+    private void applyFeedTheme(boolean redraw) {
+        String prefValue = Utilities.getPrefs(mLauncher).getString(SettingsActivity.FEED_THEME_PREF, null);
+        int feedTheme;
+        try {
+            feedTheme = Integer.valueOf(prefValue == null ? "1" : prefValue);
+        } catch (Exception e) {
+            feedTheme = 1;
+        }
+        boolean auto = (feedTheme & 1) != 0;
+        boolean preferDark = (feedTheme & 2) != 0;
+        boolean isDark = auto ? Themes.getAttrBoolean(mLauncher, R.attr.isMainColorDark) : preferDark;
+        mUiInformation.putBoolean("is_background_dark", isDark);
+
+        if (redraw) {
+            mLauncherClient.redraw(mUiInformation);
+        }
     }
 
     public CustomLauncherClient getClient() {
