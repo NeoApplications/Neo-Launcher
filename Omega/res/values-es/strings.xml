@@ -25,7 +25,7 @@
     <string name="pref_category__others">Otras</string>
     <string name="title__dock_hide">Ocultar Dock</string>
     <string name="title__dock_hide_labels">Ocultar Nombres</string>
-    <string name="title__dock_search_bar">Mostrr barra de busqueda</string>
+    <string name="title__dock_search_bar">Mostrar barra de busqueda</string>
     <string name="title__drawer_sort">Ordenar Aplicaciones</string>
     <string name="title__dock_scale">Tamaño del Dock</string>
     <string name="title__drawer_categorization">Categorias</string>
