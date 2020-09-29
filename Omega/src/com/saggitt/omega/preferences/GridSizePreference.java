@@ -34,7 +34,8 @@ public class GridSizePreference extends DialogPreference {
     }
 
     public GridSizePreference(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        updateSummary();
     }
 
     public GridSizePreference(Context context, AttributeSet attrs, int defStyleAttr) {
