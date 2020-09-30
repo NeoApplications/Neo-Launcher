@@ -57,6 +57,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
@@ -93,8 +94,8 @@ import com.saggitt.omega.preferences.SingleDimensionGridSizePreference;
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
+import com.saggitt.omega.smartspace.FeedBridge;
 import com.saggitt.omega.theme.ThemeOverride;
-import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.util.SettingsObserver;
@@ -583,7 +584,7 @@ public class SettingsActivity extends SettingsBaseActivity
             requireActivity().setTitleColor(R.color.colorAccent);
             boolean dev = Utilities.getOmegaPrefs(getActivity()).getDeveloperOptionsEnabled();
             if (dev != mShowDevOptions) {
-                getActivity().recreate();
+                requireActivity().recreate();
             }
         }
 
@@ -756,6 +757,13 @@ public class SettingsActivity extends SettingsBaseActivity
         public void onResume() {
             super.onResume();
             setActivityTitle();
+
+            if (getContent() == R.xml.omega_preferences_smartspace) {
+                SwitchPreference minusOne = (SwitchPreference) findPreference(ENABLE_MINUS_ONE_PREF);
+                if (minusOne != null && !FeedBridge.Companion.getInstance(getActivity()).isInstalled()) {
+                    minusOne.setChecked(false);
+                }
+            }
         }
 
         protected void setActivityTitle() {
@@ -782,21 +790,13 @@ public class SettingsActivity extends SettingsBaseActivity
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            switch (preference.getKey()) {
-                case SHOW_PREDICTIONS_PREF:
-                    if ((boolean) newValue) {
-                        return true;
-                    }
-                    SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
-                    confirmationFragment.setTargetFragment(this, 0);
-                    confirmationFragment.show(getFragmentManager(), preference.getKey());
-                    break;
-
-                case ENABLE_MINUS_ONE_PREF:
-                    if (Config.hasPackageInstalled(getActivity(), Config.GOOGLE_QSB)) {
-                        return true;
-                    }
-                    break;
+            if (SHOW_PREDICTIONS_PREF.equals(preference.getKey())) {
+                if ((boolean) newValue) {
+                    return true;
+                }
+                SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
+                confirmationFragment.setTargetFragment(this, 0);
+                confirmationFragment.show(getFragmentManager(), preference.getKey());
             }
             return false;
         }
