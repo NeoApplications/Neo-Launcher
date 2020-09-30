@@ -25,7 +25,7 @@
     <string name="title__general_advanced">Avançado</string>
     <string name="title__general_notifications">Gestos e notificações</string>
     <string name="summary__general_desktop">Personalize sua área de trabalho</string>
-    <string name="summary__general_dock">Ícones do 'Hotsea', barra de pesquisa</string>
+    <string name="summary__general_dock">Ícones do Hotsea, barra de pesquisa</string>
     <string name="summary__general_drawer">Personalize sua Grade de Apps</string>
     <string name="summary__general_theme">Mudar as cores, pacote de ícones, Formato do ícone</string>
     <string name="summary__general_search">Provedor de pesquisa, estilo, ícones</string>
@@ -43,7 +43,6 @@
     <string name="title__desktop_full_width_widgets">Windgets com largura extendida</string>
     <string name="title__desktop_icon_size">Tamanho do ícone</string>
     <string name="title__desktop_grid_size">Tamanho da grade</string>
-    <string name="title__desktop_hide_icon_labels">Hide icon labels on home screen</string>
     <string name="title__desktop_hide_icon_labels">Esconder o nome dos ícones na Área de Trabalho</string>
     <string name="title__desktop_multiline_labels">Nome dos Apps em multilinha</string>
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
@@ -52,8 +51,8 @@
 
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_icon_size">Tamanho do ícone</string>
-    <string name="title__dock_scale">Tamanho da 'Dock'</string>
-    <string name="title__dock_hide">Esconder a 'Dock'</string>
+    <string name="title__dock_scale">Tamanho da Dock</string>
+    <string name="title__dock_hide">Esconder a Dock</string>
     <string name="title__dock_hide_labels">Esconder os nomes</string>
     <string name="title__dock_colored_icons">Ícones coloridos</string>
     <string name="title__dock_search_bar">Mostrar a barra de pesquisa</string>
@@ -89,7 +88,7 @@
 
     <string name="pref_appcategorization_flowerpot_title">Categoria de Apps</string>
     <string name="pref_appcategorization_enable_title">Categorizar os Apps</string>
-    <string name="pref_appcategorization_enable_summary">Escolha o 'layout' da Grade de Apps</string>
+    <string name="pref_appcategorization_enable_summary">Escolha o layout da Grade de Apps</string>
     <string name="pref_appcategorization_style_text">Estilo</string>
     <string name="pref_app_groups_create">Criar</string>
     <string name="pref_appcategorization_folders_title">Pastas</string>
