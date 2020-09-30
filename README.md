@@ -87,4 +87,8 @@ If you have knowledge in Java or Kotlin you can work on additional features!
 I will be happy to work on features you would like to include, just open an issue.
 
 ## Translation?
-[![Translation Status](https://hosted.weblate.org/widgets/omegalauncher/-/omegalauncher/svg-badge.svg)](https://hosted.weblate.org/engage/omegalauncher/)
+Translations are hanled in Weblate. If want to help, visite [Weblate](https://hosted.weblate.org/projects/omegalauncher/)
+
+[![Estado de la traducción](https://hosted.weblate.org/widgets/omegalauncher/-/287x66-white.png)](https://hosted.weblate.org/engage/omegalauncher/)
+
+[![Estado de la traducción](https://hosted.weblate.org/widgets/omegalauncher/-/multi-red.svg)](https://hosted.weblate.org/engage/omegalauncher/)
