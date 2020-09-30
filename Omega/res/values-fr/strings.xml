@@ -234,4 +234,7 @@
     <string name="title__desktop_hide_icon_labels">Masquer l\'étiquette des icônes sur l\'écran d\'accueil</string>
     <string name="title__desktop_grid_size">Taille de la grille</string>
     <string name="gesture_dock_swipe_up">Glisser vers le haut à partir du Dock</string>
+    <string name="title__search_bar_radius">Arrondi</string>
+    <string name="title__smartspace_feed_theme">Thème de flux</string>
+    <string name="theme_based">Défini par le thème</string>
 </resources>
