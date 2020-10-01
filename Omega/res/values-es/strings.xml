@@ -92,4 +92,40 @@
     <string name="msg_minus_one_on_left">A la izquierda de la pantalla principal</string>
     <string name="title__smartspace_feed_theme">Tema del Feed</string>
     <string name="color_presets">Predeterminados</string>
+    <string name="icon_shape_override_label_location">en la pantalla de inicio</string>
+    <string name="get_more_icon_packs">Obtener mas</string>
+    <string name="icon_pack">Pack de Iconos</string>
+    <string name="theme_default">Predeterminado</string>
+    <string name="theme_use_dark_text">Usar texto oscuro</string>
+    <string name="theme_dark_theme_mode_off">Apagado</string>
+    <string name="theme_dark_theme_mode_on">Encendido</string>
+    <string name="theme_dark_dark_text">Oscuro con texto oscuro</string>
+    <string name="theme_dark_text">Claro con texto oscuro</string>
+    <string name="theme_with_dark_text">Texto oscuro</string>
+    <string name="theme_light">Claro</string>
+    <string name="hide_app_reset">Reiniciar</string>
+    <string name="hide_app_selected">  Oculta</string>
+    <plurals name="hidden_apps_count">
+        <item quantity="one">%1$d Ocultas</item>
+        <item quantity="other"></item>
+    </plurals>
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d Aplicación</item>
+        <item quantity="other">%1$d Aplicaciones</item>
+    </plurals>
+    <string name="selected_count">%1$d seleccionada</string>
+    <string name="tab_type_smart">Automático</string>
+    <string name="tab_type_custom">Personalizada</string>
+    <string name="pref_appcategorization_tabs_title">Tabs</string>
+    <string name="pref_appcategorization_enable_title">Categorizar aplicaciones</string>
+    <string name="pref_appcategorization_flowerpot_title">Categoria de Aplicación</string>
+    <string name="msg_disable_suggestions_prompt">Los datos de uso serán borrados.</string>
+    <string name="title_disable_suggestions_prompt">Deshabilitar sugerencias</string>
+    <string name="summary_all_apps_google_search">Buscar resultados web y aplicaciones</string>
+    <string name="title_all_apps_google_search">Búsqueda global</string>
+    <string name="title__drawer_all_apps">Mostrar la etiqueta All Apps</string>
+    <string name="pref_value_disabled">Deshabilitado</string>
+    <string name="title__dock_hotseat_icons">Cantidad de Iconos</string>
+    <string name="title__dock_colored_icons">Iconos a colores</string>
+    <string name="grid_size_height">Alto</string>
 </resources>
