@@ -16,8 +16,6 @@
 
 package com.android.quickstep;
 
-import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
-
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.os.Build;
@@ -37,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 /**
  * Manages the recent task list from the system, caching it as necessary.
@@ -64,13 +64,17 @@ public class RecentTasksList extends TaskStackChangeListener {
         mChangeId = 1;
         mActivityManagerWrapper = activityManagerWrapper;
         //mActivityManagerWrapper.registerTaskStackListener(this);
+        if (Utilities.isRecentsEnabled()) {
+            mActivityManagerWrapper.registerTaskStackListener(this);
+        }
+        /*
         if (Utilities.ATLEAST_Q) {
             try {
                 mActivityManagerWrapper.registerTaskStackListener(this);
             } catch (NoSuchMethodError exception) {
                 exception.printStackTrace();
             }
-        }
+        }*/
     }
 
     /**

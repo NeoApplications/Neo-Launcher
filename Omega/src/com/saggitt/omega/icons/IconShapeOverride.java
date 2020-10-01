@@ -108,7 +108,6 @@ public class IconShapeOverride {
         if (!TextUtils.isEmpty(devValue)) {
             // Migrate to general preferences to back up shape overrides
             getPrefs(context).edit().putString(KEY_PREFERENCE, devValue).apply();
-            ;
             getDevicePrefs(context).edit().remove(KEY_PREFERENCE).apply();
         }
 

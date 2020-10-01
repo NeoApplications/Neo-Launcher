@@ -43,7 +43,7 @@
     <dimen name="dashboard_padding_top">0dp</dimen>
     <dimen name="dashboard_padding_bottom">0dp</dimen>
     <dimen name="dashboard_tile_minimum_height">72dp</dimen>
-    <dimen name="dashboard_tile_image_size">38dp</dimen>
+    <dimen name="dashboard_tile_image_size">40dp</dimen>
     <dimen name="dashboard_tile_image_margin_start">16dp</dimen>
     <dimen name="dashboard_tile_image_margin_end">20dp</dimen>
 

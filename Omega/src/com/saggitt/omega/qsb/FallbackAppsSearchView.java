@@ -25,10 +25,10 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.allapps.AllAppsStore.OnUpdateListener;
 import com.android.launcher3.allapps.AlphabeticalAppsList;
+import com.android.launcher3.allapps.FloatingHeaderView;
 import com.android.launcher3.allapps.search.AllAppsSearchBarController;
 import com.android.launcher3.allapps.search.AllAppsSearchBarController.Callbacks;
 import com.android.launcher3.util.ComponentKey;
-import com.saggitt.omega.allapps.PredictionsFloatingHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
     }
 
     private void hidePredictionRowView(boolean z) {
-        PredictionsFloatingHeader predictionsFloatingHeader = mAppsView.getFloatingHeaderView();
+        FloatingHeaderView predictionsFloatingHeader = mAppsView.getFloatingHeaderView();
         predictionsFloatingHeader.setCollapsed(z);
     }
 

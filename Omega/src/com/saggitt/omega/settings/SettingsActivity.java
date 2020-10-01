@@ -57,6 +57,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
+import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
@@ -92,8 +94,8 @@ import com.saggitt.omega.preferences.SingleDimensionGridSizePreference;
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
+import com.saggitt.omega.smartspace.FeedBridge;
 import com.saggitt.omega.theme.ThemeOverride;
-import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.util.SettingsObserver;
@@ -121,8 +123,9 @@ public class SettingsActivity extends SettingsBaseActivity
      */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
 
-    //public final static String SHOW_PREDICTIONS_PREF = "pref_show_predictions";
+    public final static String SHOW_PREDICTIONS_PREF = "pref_show_predictions";
     public final static String ENABLE_MINUS_ONE_PREF = "pref_enable_minus_one";
+    public final static String FEED_THEME_PREF = "pref_feed_theme";
 
     public static final String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
     public static final String EXTRA_SHOW_FRAGMENT_ARGS = ":settings:show_fragment_args";
@@ -231,7 +234,7 @@ public class SettingsActivity extends SettingsBaseActivity
             toolbar.getMenu().clear();
 
             toolbar.inflateMenu(R.menu.menu_settings);
-            ActionMenuView menuView;
+            ActionMenuView menuView = null;
             int count = toolbar.getChildCount();
             for (int i = 0; i < count; i++) {
                 View child = toolbar.getChildAt(i);
@@ -240,6 +243,11 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
                 }
             }
+            if (menuView != null) {
+                Objects.requireNonNull(menuView.getOverflowIcon())
+                        .setTint(Utilities.getOmegaPrefs(getApplicationContext()).getAccentColor());
+            }
+
             if (!BuildConfig.APPLICATION_ID.equals(resolveDefaultHome())) {
                 toolbar.inflateMenu(R.menu.menu_change_default_home);
             }
@@ -581,7 +589,7 @@ public class SettingsActivity extends SettingsBaseActivity
             requireActivity().setTitleColor(R.color.colorAccent);
             boolean dev = Utilities.getOmegaPrefs(getActivity()).getDeveloperOptionsEnabled();
             if (dev != mShowDevOptions) {
-                getActivity().recreate();
+                requireActivity().recreate();
             }
         }
 
@@ -692,6 +700,7 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
 
                 case R.xml.omega_preferences_developer:
+                    findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     findPreference("kill").setOnPreferenceClickListener(this);
                     break;
 
@@ -753,6 +762,13 @@ public class SettingsActivity extends SettingsBaseActivity
         public void onResume() {
             super.onResume();
             setActivityTitle();
+
+            if (getContent() == R.xml.omega_preferences_smartspace) {
+                SwitchPreference minusOne = (SwitchPreference) findPreference(ENABLE_MINUS_ONE_PREF);
+                if (minusOne != null && !FeedBridge.Companion.getInstance(getActivity()).isInstalled()) {
+                    minusOne.setChecked(false);
+                }
+            }
         }
 
         protected void setActivityTitle() {
@@ -779,21 +795,13 @@ public class SettingsActivity extends SettingsBaseActivity
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            switch (preference.getKey()) {
-/*                case SHOW_PREDICTIONS_PREF:
-                    if ((boolean) newValue) {
-                        return true;
-                    }
-                    SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
-                    confirmationFragment.setTargetFragment(this, 0);
-                    confirmationFragment.show(getFragmentManager(), preference.getKey());
-                    break;
-*/
-                case ENABLE_MINUS_ONE_PREF:
-                    if (Config.hasPackageInstalled(getActivity(), Config.GOOGLE_QSB)) {
-                        return true;
-                    }
-                    break;
+            if (SHOW_PREDICTIONS_PREF.equals(preference.getKey())) {
+                if ((boolean) newValue) {
+                    return true;
+                }
+                SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
+                confirmationFragment.setTargetFragment(this, 0);
+                confirmationFragment.show(getFragmentManager(), preference.getKey());
             }
             return false;
         }
@@ -985,6 +993,35 @@ public class SettingsActivity extends SettingsBaseActivity
             if (prefsCallback != null) {
                 prefsCallback.reloadAll();
             }
+        }
+    }
+
+    public static class SuggestionConfirmationFragment extends DialogFragment implements
+            DialogInterface.OnClickListener {
+
+        public void onClick(final DialogInterface dialogInterface, final int n) {
+            if (getTargetFragment() instanceof PreferenceFragmentCompat) {
+                Preference preference = ((PreferenceFragmentCompat) getTargetFragment())
+                        .findPreference(SHOW_PREDICTIONS_PREF);
+                if (preference instanceof TwoStatePreference) {
+                    ((TwoStatePreference) preference).setChecked(false);
+                }
+            }
+        }
+
+        public Dialog onCreateDialog(final Bundle bundle) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.title_disable_suggestions_prompt)
+                    .setMessage(R.string.msg_disable_suggestions_prompt)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.label_turn_off_suggestions, this).create();
+        }
+
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            OmegaUtilsKt.applyAccent(((AlertDialog) getDialog()));
         }
     }
 

@@ -192,11 +192,8 @@ public class SwipeDetector {
         }
 
         // Check if the client is interested in scroll in current direction.
-        if (((mScrollConditions & DIRECTION_NEGATIVE) > 0 && mDisplacement > 0) ||
-                ((mScrollConditions & DIRECTION_POSITIVE) > 0 && mDisplacement < 0)) {
-            return true;
-        }
-        return false;
+        return ((mScrollConditions & DIRECTION_NEGATIVE) > 0 && mDisplacement > 0) ||
+                ((mScrollConditions & DIRECTION_POSITIVE) > 0 && mDisplacement < 0);
     }
 
     public boolean onTouchEvent(MotionEvent ev) {

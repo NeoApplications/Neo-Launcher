@@ -406,7 +406,7 @@ public abstract class RecentsView<T extends BaseActivity> extends PagedView impl
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         updateTaskStackListenerState();
-        if (Utilities.ATLEAST_Q) {
+        if (Utilities.isRecentsEnabled()) {
             mModel.getThumbnailCache().getHighResLoadingState().addCallback(this);
             mActivity.addMultiWindowModeChangedListener(mMultiWindowModeChangedListener);
 
@@ -429,7 +429,7 @@ public abstract class RecentsView<T extends BaseActivity> extends PagedView impl
         mActivity.removeMultiWindowModeChangedListener(mMultiWindowModeChangedListener);
         //ActivityManagerWrapper.getInstance().unregisterTaskStackListener(mTaskStackListener);
         mSyncTransactionApplier = null;
-        if (Utilities.ATLEAST_Q) {
+        if (Utilities.isRecentsEnabled()) {
             try {
                 ActivityManagerWrapper.getInstance().unregisterTaskStackListener(mTaskStackListener);
                 RecentsModel.INSTANCE.get(getContext()).removeThumbnailChangeListener(this);

@@ -142,7 +142,7 @@ class FlowerpotTabs(manager: AppGroupsManager) : DrawerTabs(manager, AppGroupsMa
         }
 
         private fun updateSummary(view: View) {
-            view.findViewById<TextView>(R.id.current_category).setText(displayName)
+            view.findViewById<TextView>(R.id.current_category).text = displayName
         }
 
         override fun clone(): AppGroups.Group.Customization<String, String> {

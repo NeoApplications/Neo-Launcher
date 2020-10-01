@@ -19,9 +19,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.launcher3.Utilities;
+import com.android.launcher3.logging.UserEventDispatcher;
 import com.android.launcher3.userevent.nano.LauncherLogProto;
 import com.android.systemui.shared.system.MetricsLoggerCompat;
-import com.saggitt.omega.predictions.OmegaEventPredictor;
 
 import static com.android.launcher3.logging.LoggerUtils.newLauncherEvent;
 import static com.android.launcher3.userevent.nano.LauncherLogProto.ControlType.CANCEL_TARGET;
@@ -35,14 +35,13 @@ import static com.android.systemui.shared.system.LauncherEventUtil.VISIBLE;
  * quickstep interactions.
  */
 @SuppressWarnings("unused")
-public class UserEventDispatcherExtension extends OmegaEventPredictor {
+public class UserEventDispatcherExtension extends UserEventDispatcher {
 
     public static final int ALL_APPS_PREDICTION_TIPS = 2;
 
     private static final String TAG = "UserEventDispatcher";
 
     public UserEventDispatcherExtension(Context context) {
-        super(context);
     }
 
     public void logStateChangeAction(int action, int dir, int downX, int downY,

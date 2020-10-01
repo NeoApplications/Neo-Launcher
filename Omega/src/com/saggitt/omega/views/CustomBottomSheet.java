@@ -56,7 +56,7 @@ import com.saggitt.omega.gestures.BlankGestureHandler;
 import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.ui.LauncherGesturePreference;
 import com.saggitt.omega.override.CustomInfoProvider;
-import com.saggitt.omega.predictions.CustomAppPredictor;
+import com.saggitt.omega.predictions.OmegaAppPredictor;
 import com.saggitt.omega.preferences.MultiSelectTabPreference;
 
 public class CustomBottomSheet extends WidgetsBottomSheet {
@@ -257,8 +257,8 @@ public class CustomBottomSheet extends WidgetsBottomSheet {
             }
 
             if (mPrefHidePredictions != null) {
-                mPrefHidePredictions.setChecked(CustomAppPredictor.isHiddenApp(context, mKey));
-                mPrefHidePredictions.setOnPreferenceChangeListener(this);
+                //mPrefHidePredictions.setChecked(CustomAppPredictor.isHiddenApp(context, mKey));
+                //mPrefHidePredictions.setOnPreferenceChangeListener(this);
             }
 
             if (prefs.getShowDebugInfo() && mKey != null && mKey.componentName != null) {
@@ -370,7 +370,7 @@ public class CustomBottomSheet extends WidgetsBottomSheet {
                     CustomAppFilter.setComponentNameState(launcher, mKey, enabled);
                     break;
                 case PREF_HIDE_FROM_PREDICTIONS:
-                    CustomAppPredictor.setComponentNameState(launcher, mKey, enabled);
+                    OmegaAppPredictor.setComponentNameState(launcher, mKey, enabled);
             }
             return true;
         }

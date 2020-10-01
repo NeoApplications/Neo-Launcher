@@ -54,7 +54,6 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "com.google.protobuf:protobuf-gradle-plugin:${versions.protobuf}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-
     }
 }
 
@@ -72,8 +71,8 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
-    def name = "0.4.1"
-    def code = 34
+    def name = "0.5.1"
+    def code = 44
 
     defaultConfig {
         minSdkVersion 25

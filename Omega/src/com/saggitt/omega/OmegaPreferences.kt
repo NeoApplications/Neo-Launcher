@@ -18,15 +18,14 @@
 package com.saggitt.omega
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import android.os.Process
 import android.text.TextUtils
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
+import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
@@ -57,7 +56,7 @@ import kotlin.collections.HashSet
 import kotlin.reflect.KProperty
 
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
-    val mContext = context;
+    val mContext = context
 
     val doNothing = { }
     val restart = { restart() }
@@ -78,10 +77,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     /* --APP DRAWER-- */
     var sortMode by StringIntPref("pref_key__sort_mode", 0, recreate)
     val showPredictions by BooleanPref("pref_show_predictions", false, doNothing)
-    val showAllAppsLabel by BooleanPref("pref_showAllAppsLabel", false) {
-        val header = onChangeCallback?.launcher?.appsView?.floatingHeaderView
-        header?.updateShowAllAppsLabel()
-    }
+    val showAllAppsLabel by BooleanPref("pref_showAllAppsLabel", false)
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set", Collections.emptySet(), doNothing)
     val drawerLabelColor by IntPref("pref_key__drawer_label_color", R.color.qsb_drawer_text_color_normal, reloadApps)
@@ -168,7 +164,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val blurRadius by FloatPref("pref_blurRadius", omegaConfig.defaultBlurStrength, updateBlur)
 
     /* --SEARCH-- */
-    var searchBarRadius by DimensionPref("pref_searchbarRadius", -1f)
+    var searchBarRadius by DimensionPref("pref_searchbar_radius", -1f)
     val dockColoredGoogle by BooleanPref("pref_dockColoredGoogle", true, doNothing)
     var searchProvider by StringPref("pref_globalSearchProvider", omegaConfig.defaultSearchProvider) {
         SearchProviderController.getInstance(context).onSearchProviderChanged()
@@ -188,14 +184,14 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     val customAppName = object : MutableMapPref<ComponentKey, String>("pref_appNameMap", reloadAll) {
         override fun flattenKey(key: ComponentKey) = key.toString()
-        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun unflattenKey(key: String) = makeComponentKey(context, key)
         override fun flattenValue(value: String) = value
         override fun unflattenValue(value: String) = value
     }
 
     val customAppIcon = object : MutableMapPref<ComponentKey, IconPackManager.CustomIconEntry>("pref_appIconMap", reloadAll) {
         override fun flattenKey(key: ComponentKey) = key.toString()
-        override fun unflattenKey(key: String) = ComponentKey(ComponentName(context, key), Process.myUserHandle())
+        override fun unflattenKey(key: String) = makeComponentKey(context, key)
         override fun flattenValue(value: IconPackManager.CustomIconEntry) = value.toString()
         override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(value)
     }

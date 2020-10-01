@@ -152,7 +152,7 @@ class IconPackList(private val context: Context, private val manager: IconPackMa
         }
 
         override val displayIcon by lazy {
-            context.packageManager.getApplicationIcon(applicationInfo)!!
+            context.packageManager.getApplicationIcon(applicationInfo)
         }
 
         override val displayName by lazy {

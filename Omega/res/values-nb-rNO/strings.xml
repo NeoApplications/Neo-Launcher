@@ -168,7 +168,7 @@
     <string name="title__theme_blur">Tilslør</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d skjulte</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d program</item>
@@ -190,4 +190,32 @@
     <string name="icon_shape_top_left">Øverst til venstre</string>
     <string name="icon_shape_rounded_square">Avrundet firkant</string>
     <string name="icon_shape_cylinder">Sylinder</string>
+    <string name="action_app_search">Åpne programsøk</string>
+    <string name="action_open_notifications">Åpne merknader</string>
+    <string name="action_close_notifications">Lukk merknader</string>
+    <string name="search_menu">Finn innstillinger</string>
+    <string name="title__gesture_swipe_down">Dra nedover</string>
+    <string name="dialog_default">Forvalg</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Avbryt</string>
+    <string name="icon_shape_corner_squircle">Kvirkel</string>
+    <string name="icon_shape_teardrop">Dråpe</string>
+    <string name="icon_shape_circle">Sirkel</string>
+    <string name="icon_shape_squircle">Kvirkel</string>
+    <string name="icon_shape_square">Firkant</string>
+    <string name="icon_shape_system_default">Systemforvalg</string>
+    <string name="icon_shape_override_label">Endre ikonstørrelse</string>
+    <string name="title__theme_accent_color">Aksentfarge</string>
+    <string name="hide_app_reset">Tilbakestill</string>
+    <string name="hide_app_selected">  skjult</string>
+    <string name="selected_count">%1$d valgt</string>
+    <string name="drawer_tabs">Faner</string>
+    <string name="drawer_folders">Mapper</string>
+    <string name="title__dock_hotseat_icons">Ikonantall</string>
+    <string name="title__dock_icon_size">Ikonstørrelse</string>
+    <string name="grid_size_width">Bredde</string>
+    <string name="grid_size_height">Høyde</string>
+    <string name="title__desktop_hide_icon_labels">Skjul ikonetiketter på hjemmeskjermen</string>
+    <string name="title__desktop_grid_size">Ruttenettstørrelse</string>
+    <string name="title__desktop_icon_size">Ikonstørrelse</string>
 </resources>

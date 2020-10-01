@@ -32,9 +32,9 @@ class LauncherGesturePreference(context: Context, attrs: AttributeSet?) : Recycl
             field = value
             notifyChanged()
         }
-    var defaultValue = BlankGestureHandler::class.java.name!!
+    var defaultValue = BlankGestureHandler::class.java.name
     lateinit var onSelectHandler: (GestureHandler) -> Unit
-    private val mContext = context;
+    private val mContext = context
     private val blankGestureHandler = BlankGestureHandler(mContext, null)
     private val handler get() = GestureController.createGestureHandler(mContext, value.toString(), blankGestureHandler)
 

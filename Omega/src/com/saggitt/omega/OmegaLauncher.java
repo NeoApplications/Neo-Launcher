@@ -21,6 +21,7 @@ import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -41,6 +42,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.iconpack.EditIconActivity;
 import com.saggitt.omega.override.CustomInfoProvider;
+import com.saggitt.omega.smartspace.FeedBridge;
 import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
@@ -82,6 +84,12 @@ public class OmegaLauncher extends Launcher {
         }
 
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = Utilities.getPrefs(this);
+        if (!FeedBridge.Companion.getInstance(this).isInstalled()) {
+            prefs.edit().putBoolean("pref_enable_minus_one", false).apply();
+        }
+
         mContext = this;
         OmegaPreferences mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);

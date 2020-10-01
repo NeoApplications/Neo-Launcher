@@ -1,9 +1,15 @@
+### v0.6.0 (Build 60)
+
+
 ### v0.5.0 (Build 40)
 * **Add: Desktop grid preference**
 * **Add: Desktop Hide Labels preference**
 * **Add: Desktop Multiline labels preference**
 * **Add: Dock icons count preference**
 * **Add: Swipe down gesture**
+* **Add: Predictions preference**
+* **Add: Search bar radius preference**
+* **Fix: Custom icons when the app is restarted**
 
 ### v0.4.0 (Build 32)
 * **Add: Hide apps preference**

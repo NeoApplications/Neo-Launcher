@@ -36,7 +36,7 @@
             app:content="@xml/omega_preferences_dock" />
 
         <com.saggitt.omega.preferences.SubPreference
-            android:icon="@drawable/ic_apps"
+            android:icon="@drawable/ic_apps_colored"
             android:layout="@layout/home_preference"
             android:summary="@string/summary__general_drawer"
             android:title="@string/title__general_drawer"
@@ -52,7 +52,7 @@
 
     <com.saggitt.omega.preferences.ThemedPreferenceCategory android:title="@string/pref_category__inputs">
         <com.saggitt.omega.preferences.SubPreference
-            android:icon="@drawable/ic_search"
+            android:icon="@drawable/ic_search_colored"
             android:layout="@layout/home_preference"
             android:summary="@string/summary__general_search"
             android:title="@string/title__general_search"

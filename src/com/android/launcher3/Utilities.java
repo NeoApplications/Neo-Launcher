@@ -90,6 +90,7 @@ import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.OmegaAppKt;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.iconpack.IconPackManager;
 import com.saggitt.omega.util.Config;
@@ -920,11 +921,13 @@ public final class Utilities {
         }
     }
 
-    public static String upperCaseFirstLetter(String str) {
-        if (TextUtils.isEmpty(str)) {
-            return str;
+    public static boolean isRecentsEnabled() {
+        LauncherAppState las = LauncherAppState.getInstanceNoCreate();
+        if (las != null) {
+            Context context = las.getContext();
+            return OmegaAppKt.getOmegaApp(context).getRecentsEnabled();
         }
-        return str.substring(0, 1).toUpperCase(Locale.US) + str.substring(1);
+        return false;
     }
 
     /*FIN CUSTOM*/

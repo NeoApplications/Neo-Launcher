@@ -86,7 +86,7 @@ class SelectSearchProviderFragment : PreferenceDialogFragmentCompat() {
         }
 
         inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-            val providerIcon = itemView.findViewById<ImageView>(R.id.provider_icon);
+            val providerIcon = itemView.findViewById<ImageView>(R.id.provider_icon)
             val text = itemView.findViewById<CheckedTextView>(android.R.id.text1)!!.apply {
                 setOnClickListener(this@Holder)
                 val tintList = ColorStateList.valueOf(context.omegaPrefs.accentColor)

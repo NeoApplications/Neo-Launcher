@@ -68,7 +68,6 @@ import com.android.launcher3.views.SpringRelativeLayout;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.allapps.AllAppsTabs;
 import com.saggitt.omega.allapps.AllAppsTabsController;
-import com.saggitt.omega.allapps.PredictionsFloatingHeader;
 import com.saggitt.omega.qsb.AllAppsQsbLayout;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
@@ -99,7 +98,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     private SearchUiManager mSearchUiManager;
     private View mSearchContainer;
     private AllAppsPagedView mViewPager;
-    private PredictionsFloatingHeader mHeader;
+    private FloatingHeaderView mHeader;
     private AdapterHolder[] mAH;
 
     private boolean mUsingTabs;
@@ -524,7 +523,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
         return results;
     }
 
-    public PredictionsFloatingHeader getFloatingHeaderView() {
+    public FloatingHeaderView getFloatingHeaderView() {
         return mHeader;
     }
 

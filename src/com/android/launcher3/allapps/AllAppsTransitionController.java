@@ -3,7 +3,6 @@ package com.android.launcher3.allapps;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.util.FloatProperty;
-import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 
 import com.android.launcher3.DeviceProfile;
@@ -19,7 +18,6 @@ import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.anim.SpringObjectAnimator;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ScrimView;
-import com.saggitt.omega.OmegaPreferences;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
 import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
@@ -151,10 +149,6 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
         return mProgress;
     }
 
-    private int getQsbHeight() {
-        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) mAppsView.getSearchView().getLayoutParams();
-        return mlp.topMargin + mlp.height;
-    }
 
     /**
      * Sets the vertical transition progress to {@param state} and updates all the dependent UI
@@ -213,7 +207,6 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
     public void setAlphas(int visibleElements, AnimationConfig config, AnimatorSetBuilder builder) {
         PropertySetter setter = config == null ? NO_ANIM_PROPERTY_SETTER
                 : config.getPropertySetter(builder);
-        OmegaPreferences prefs = OmegaPreferences.Companion.getInstanceNoCreate();
 
         boolean hasHeaderExtra = (visibleElements & ALL_APPS_HEADER_EXTRA) != 0;
         boolean hasAllAppsContent = (visibleElements & ALL_APPS_CONTENT) != 0;
@@ -275,5 +268,13 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
         if (isAllAppsExpanded()) {
             mAppsView.highlightWorkTabIfNecessary();
         }
+    }
+
+    public void reset() {
+        setProgress(1f);
+    }
+
+    public AllAppsContainerView getAppsView() {
+        return mAppsView;
     }
 }
