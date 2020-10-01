@@ -234,7 +234,7 @@ public class SettingsActivity extends SettingsBaseActivity
             toolbar.getMenu().clear();
 
             toolbar.inflateMenu(R.menu.menu_settings);
-            ActionMenuView menuView;
+            ActionMenuView menuView = null;
             int count = toolbar.getChildCount();
             for (int i = 0; i < count; i++) {
                 View child = toolbar.getChildAt(i);
@@ -243,6 +243,11 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
                 }
             }
+            if (menuView != null) {
+                Objects.requireNonNull(menuView.getOverflowIcon())
+                        .setTint(Utilities.getOmegaPrefs(getApplicationContext()).getAccentColor());
+            }
+
             if (!BuildConfig.APPLICATION_ID.equals(resolveDefaultHome())) {
                 toolbar.inflateMenu(R.menu.menu_change_default_home);
             }
