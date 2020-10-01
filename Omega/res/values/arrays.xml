@@ -33,7 +33,7 @@
         <item>3</item>
         <item>4</item>
     </string-array>
-    <string-array name="themes">
+    <string-array name="themes" translatable="false">
         <item>@string/theme_auto</item>
         <item>@string/theme_auto_night_mode</item>
         <item>@string/theme_light</item>
@@ -44,7 +44,7 @@
         <item>@string/theme_black_dark_text</item>
     </string-array>
 
-    <string-array name="themeValues">
+    <string-array name="themeValues" translatable="false">
         <item>1</item>  <!-- 00001 -->
         <item>17</item> <!-- 10001 -->
         <item>0</item>  <!-- 00000 -->
@@ -78,7 +78,7 @@
         <item>@string/icon_shape_cylinder</item>
     </string-array>
 
-    <string-array name="feedThemes">
+    <string-array name="feedThemes" translatable="false">
         <item>@string/theme_based</item>
         <item>@string/theme_light</item>
         <item>@string/theme_dark</item>
