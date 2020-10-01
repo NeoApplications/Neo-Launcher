@@ -93,6 +93,9 @@ android {
         debug {
             minifyEnabled false
         }
+        release {
+            applicationIdSuffix '.neo'
+        }
     }
     kotlinOptions {
         jvmTarget = '1.8'
