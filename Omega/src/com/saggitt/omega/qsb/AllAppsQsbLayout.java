@@ -49,7 +49,6 @@ import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.search.SearchProviderController;
 import com.saggitt.omega.search.SearchThread;
 import com.saggitt.omega.search.providers.AppSearchSearchProvider;
-import com.saggitt.omega.search.providers.GoogleSearchProvider;
 import com.saggitt.omega.search.webproviders.WebSearchProvider;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
@@ -296,8 +295,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         return !Utilities
                 .getOmegaPrefs(getContext()).getAllAppsGlobalSearch()
                 || provider instanceof AppSearchSearchProvider
-                || provider instanceof WebSearchProvider
-                || (!Utilities.ATLEAST_NOUGAT && provider instanceof GoogleSearchProvider);
+                || provider instanceof WebSearchProvider;
     }
 
     public void searchFallback(String query) {

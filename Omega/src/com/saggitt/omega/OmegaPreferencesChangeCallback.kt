@@ -49,7 +49,6 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
 
-
     fun forceReloadApps() {
         UserManagerCompat.getInstance(launcher).userProfiles.forEach { launcher.model.forceReload() }
     }

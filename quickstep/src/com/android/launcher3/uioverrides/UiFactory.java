@@ -16,23 +16,9 @@
 
 package com.android.launcher3.uioverrides;
 
-import static android.app.Activity.RESULT_CANCELED;
-
-import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
-import static com.android.launcher3.AbstractFloatingView.TYPE_HIDE_BACK_BUTTON;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.LauncherState.OVERVIEW;
-import static com.android.launcher3.allapps.DiscoveryBounce.BOUNCE_MAX_COUNT;
-import static com.android.launcher3.allapps.DiscoveryBounce.HOME_BOUNCE_COUNT;
-import static com.android.launcher3.allapps.DiscoveryBounce.HOME_BOUNCE_SEEN;
-import static com.android.launcher3.allapps.DiscoveryBounce.SHELF_BOUNCE_COUNT;
-import static com.android.launcher3.allapps.DiscoveryBounce.SHELF_BOUNCE_SEEN;
-
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -62,6 +48,18 @@ import com.android.systemui.shared.system.ActivityCompat;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.zip.Deflater;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
+import static com.android.launcher3.AbstractFloatingView.TYPE_HIDE_BACK_BUTTON;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.allapps.DiscoveryBounce.BOUNCE_MAX_COUNT;
+import static com.android.launcher3.allapps.DiscoveryBounce.HOME_BOUNCE_COUNT;
+import static com.android.launcher3.allapps.DiscoveryBounce.HOME_BOUNCE_SEEN;
+import static com.android.launcher3.allapps.DiscoveryBounce.SHELF_BOUNCE_COUNT;
+import static com.android.launcher3.allapps.DiscoveryBounce.SHELF_BOUNCE_SEEN;
 
 public class UiFactory extends RecentsUiFactory {
 
@@ -147,6 +145,7 @@ public class UiFactory extends RecentsUiFactory {
     }
 
     public static void onEnterAnimationComplete(Context context) {
+        if (!Utilities.isRecentsEnabled()) return;
         // After the transition to home, enable the high-res thumbnail loader if it wasn't enabled
         // as a part of quickstep, so that high-res thumbnails can load the next time we enter
         // overview
