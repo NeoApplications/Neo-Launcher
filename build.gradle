@@ -72,7 +72,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.1"
-    def code = 44
+    def code = 45
 
     defaultConfig {
         minSdkVersion 25
@@ -121,11 +121,6 @@ android {
             minSdkVersion 25
         }
 
-        withQuickstepIconRecents {
-            dimension "recents"
-            minSdkVersion 28
-        }
-
         withoutQuickstep {
             dimension "recents"
         }
@@ -141,11 +136,6 @@ android {
         /*if (variant.buildType.name.endsWith('release')) {
             variant.setIgnore(true)
         }*/
-
-        // Icon recents is Go only
-        if (name.contains("WithQuickstepIconRecents")) {
-            variant.setIgnore(true)
-        }
     }
     lintOptions {
         disable 'MissingTranslation'
@@ -191,12 +181,6 @@ android {
         withQuickstep {
             res.srcDirs = ['quickstep/res', 'quickstep/recents_ui_overrides/res']
             java.srcDirs = ['quickstep/src', 'quickstep/recents_ui_overrides/src']
-            manifest.srcFile "quickstep/AndroidManifest.xml"
-        }
-
-        withQuickstepIconRecents {
-            res.srcDirs = ['quickstep/res', 'go/quickstep/res']
-            java.srcDirs = ['quickstep/src', 'go/quickstep/src']
             manifest.srcFile "quickstep/AndroidManifest.xml"
         }
 
@@ -251,9 +235,6 @@ dependencies {
 
     // Recents lib dependency
     withQuickstepImplementation fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}/libs", include: 'sysui_shared.jar')
-
-    // Recents lib dependency for Go
-    withQuickstepIconRecentsImplementation fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}/libs", include: 'sysui_shared.jar')
 
     // Required for AOSP to compile. This is already included in the sysui_shared.jar
     withoutQuickstepImplementation fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}/libs", include: 'plugin_core.jar')
