@@ -27,6 +27,10 @@ import android.os.Message;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.allapps.search.AllAppsSearchBarController;
 import com.android.launcher3.allapps.search.SearchAlgorithm;
+import com.saggitt.omega.search.webproviders.WebSearchProvider;
+
+import java.util.Collections;
+import java.util.List;
 
 public class SearchThread implements SearchAlgorithm, Handler.Callback {
     private static HandlerThread handlerThread;
@@ -66,7 +70,7 @@ public class SearchThread implements SearchAlgorithm, Handler.Callback {
                 cursor.close();
             }
         }
-
+        componentList.mSuggestions.addAll(getSuggestions(componentList.mQuery));
         Message.obtain(mUiHandler, 200, componentList).sendToTarget();
     }
 
@@ -81,6 +85,15 @@ public class SearchThread implements SearchAlgorithm, Handler.Callback {
     public void doSearch(String query, AllAppsSearchBarController.Callbacks callback) {
         mHandler.removeMessages(100);
         Message.obtain(mHandler, 100, new SearchResult(query, callback)).sendToTarget();
+    }
+
+    private List<String> getSuggestions(String query) {
+        SearchProvider provider = SearchProviderController.Companion
+                .getInstance(mContext).getSearchProvider();
+        if (provider instanceof WebSearchProvider) {
+            return ((WebSearchProvider) provider).getSuggestions(query);
+        }
+        return Collections.emptyList();
     }
 
     public boolean handleMessage(final Message message) {

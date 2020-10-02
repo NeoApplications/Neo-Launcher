@@ -189,8 +189,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
 
     public abstract void startSearch(String str, int i);
 
-    public abstract void l(String str);
-
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         getDevicePreferences().registerOnSharedPreferenceChangeListener(this);

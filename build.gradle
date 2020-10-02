@@ -29,7 +29,7 @@ buildscript {
                 hokolite               : "0e21db9ae5",
                 sunrisesunsetcalculator: "1.2",
                 okhttp                 : "4.8.0",
-                logginginterceptor     : "4.0.0-RC1",
+                logginginterceptor     : "4.8.0",
                 fuzzywuzzy             : "1.2.0",
                 junit                  : "1.1.1",
                 mockito                : "1.9.5",

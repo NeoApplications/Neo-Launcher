@@ -29,19 +29,17 @@ import com.android.launcher3.allapps.search.AllAppsSearchBarController
 import com.android.launcher3.allapps.search.SearchAlgorithm
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
-import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.OmegaAppFilter
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.search.webproviders.WebSearchProvider
 import com.saggitt.omega.util.omegaPrefs
-
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.ToStringFunction
 
 class FuzzyAppSearchAlgorithm(private val context: Context, private val apps: List<AppInfo>) :
         SearchAlgorithm {
 
-    private var resultHandler: Handler = MAIN_EXECUTOR.handler
+    private var resultHandler: Handler = Handler()
     private var baseFilter: AppFilter = OmegaAppFilter(context)
 
     override fun doSearch(query: String, callback: AllAppsSearchBarController.Callbacks) {

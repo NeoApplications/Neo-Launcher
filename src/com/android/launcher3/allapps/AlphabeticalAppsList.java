@@ -191,7 +191,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
 
         if (hasFilter()) {
             // Append the search market item
-            if (hasNoFilteredResults()) {
+            if (hasNoFilteredResults() && !hasSuggestions()) {
                 mAdapterItems.add(AdapterItem.asEmptySearch(position++));
             } else {
                 mAdapterItems.add(AdapterItem.asAllAppsDivider(position++));

@@ -56,7 +56,6 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
     private boolean mStarted;
     private boolean mResumed;
     private boolean mAlreadyOnHome;
-    QsbAnimationController mQsbAnimationController;
     private final Runnable mUpdatePredictionsIfResumed = this::updatePredictionsIfResumed;
     private PredictionUiStateManager predictionUiStateManager;
 
@@ -90,7 +89,6 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         instance.addOnChangeListener(this);
         onExtractedColorsChanged(instance);
         mPrefs.registerOnSharedPreferenceChangeListener(this);
-        mQsbAnimationController = new QsbAnimationController(mLauncher);
         predictionUiStateManager = PredictionUiStateManager.INSTANCE.get(mLauncher);
         predictionUiStateManager.setTargetAppsView(mLauncher.getAppsView());
         if (FeatureFlags.REFLECTION_FORCE_OVERVIEW_MODE) {

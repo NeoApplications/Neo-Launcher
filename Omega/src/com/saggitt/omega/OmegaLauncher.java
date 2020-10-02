@@ -220,10 +220,10 @@ public class OmegaLauncher extends Launcher {
     }
 
     public void playQsbAnimation() {
-        launcherCallbacks.mQsbAnimationController.dZ();
+        launcherCallbacks.getQsbController().dZ();
     }
 
     public AnimatorSet openQsb() {
-        return launcherCallbacks.mQsbAnimationController.openQsb();
+        return launcherCallbacks.getQsbController().openQsb();
     }
 }
