@@ -7,4 +7,4 @@
     android:layout_marginBottom="@dimen/icon_preview_padding"
     android:background="?android:attr/selectableItemBackgroundBorderless"
     android:scaleType="fitCenter"
-    tools:src="@mipmap/ic_launcher_home" />
+    tools:src="@mipmap/ic_launcher" />

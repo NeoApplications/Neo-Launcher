@@ -27,7 +27,7 @@
             android:layout_width="@android:dimen/app_icon_size"
             android:layout_height="@android:dimen/app_icon_size"
             android:layout_margin="8dp"
-            tools:src="@mipmap/ic_launcher_home" />
+            tools:src="@mipmap/ic_launcher" />
     </LinearLayout>
 
     <TextView

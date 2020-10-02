@@ -135,7 +135,7 @@
         <!-- Actions -->
         <activity
             android:name="com.saggitt.omega.gestures.OmegaShortcutActivity"
-            android:icon="@mipmap/ic_launcher_home"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/omega_actions"
             android:theme="@style/SettingsTheme_Light.Transparent">
             <intent-filter>

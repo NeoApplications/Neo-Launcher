@@ -30,7 +30,7 @@
         android:layout_height="56dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginEnd="8dp"
-        tools:src="@mipmap/ic_launcher_home" />
+        tools:src="@mipmap/ic_launcher" />
 
     <CheckBox
         android:id="@android:id/checkbox"

@@ -15,7 +15,7 @@
         android:layout_width="@dimen/icon_preview_size"
         android:layout_height="@dimen/icon_preview_size"
         android:scaleType="fitCenter"
-        tools:src="@mipmap/ic_launcher_home" />
+        tools:src="@mipmap/ic_launcher" />
 
     <LinearLayout
         android:layout_width="match_parent"
