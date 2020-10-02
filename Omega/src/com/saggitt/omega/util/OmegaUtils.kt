@@ -41,6 +41,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
+import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherModel
 import com.android.launcher3.Utilities
@@ -160,6 +161,14 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
         r()
     } else {
         handler.post(r)
+    }
+}
+
+fun Context.getLauncherOrNull(): Launcher? {
+    return try {
+        Launcher.getLauncher(this)
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
 

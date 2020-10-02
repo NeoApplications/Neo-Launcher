@@ -47,5 +47,6 @@ public class ThemedPreferenceCategory extends PreferenceCategory {
         TextView title = (TextView) holder.findViewById(android.R.id.title);
         title.setTextSize(16f);
         title.setTextColor(Utilities.getOmegaPrefs(mContext).getAccentColor());
+        holder.setDividerAllowedBelow(true);
     }
 }

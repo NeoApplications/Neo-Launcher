@@ -53,6 +53,7 @@ import java.util.concurrent.ExecutionException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
@@ -101,7 +102,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val predictionGridSize by predictionGridSizeDelegate
 
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
-    val forceShapeless by BooleanPref("pref_forceShapeless", false)
+    val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
+
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -133,6 +135,11 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val dockIconScale by FloatPref("pref_hotseatIconSize", 1f, recreate)
     private val dockGridSizeDelegate = ResettableLazy { GridSize(this, "numHotseatIcons", LauncherAppState.getIDP(context), restart) }
     val dockGridSize by dockGridSizeDelegate
+    var dockRadius by FloatPref("pref_dockRadius", 16f, recreate)
+    var dockShadow by BooleanPref("pref_dockShadow", false, recreate)
+    val dockBackground by BooleanPref("pref_dockBackground", false, recreate)
+    inline val dockGradientStyle get() = !dockBackground
+    var dockOpacity by AlphaPref("pref_hotseatCustomOpacity", -1, recreate)
 
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
@@ -641,6 +648,15 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
         override fun onSetValue(value: Int) {
             edit { putInt(getKey(), value) }
+        }
+    }
+
+    open inner class AlphaPref(key: String, defaultValue: Int = 0, onChange: () -> Unit = doNothing) :
+            PrefDelegate<Int>(key, defaultValue, onChange) {
+        override fun onGetValue(): Int = (sharedPrefs.getFloat(getKey(), defaultValue.toFloat() / 255) * 255).roundToInt()
+
+        override fun onSetValue(value: Int) {
+            edit { putFloat(getKey(), value.toFloat() / 255) }
         }
     }
 

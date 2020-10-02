@@ -35,7 +35,7 @@ import java.util.List;
 
 public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdateListener, Callbacks {
     AllAppsSearchBarController mSearchBarController;
-    AllAppsQsbLayout DJ;
+    AllAppsQsbLayout allAppsQsbLayout;
     AlphabeticalAppsList mApps;
     AllAppsContainerView mAppsView;
 
@@ -96,9 +96,9 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
                 notifyResultChanged();
             }
             hidePredictionRowView(false);
-            DJ.mDoNotRemoveFallback = true;
+            allAppsQsbLayout.mDoNotRemoveFallback = true;
             mAppsView.onClearSearchResult();
-            DJ.mDoNotRemoveFallback = false;
+            allAppsQsbLayout.mDoNotRemoveFallback = false;
         }
     }
 
@@ -113,7 +113,7 @@ public class FallbackAppsSearchView extends ExtendedEditText implements OnUpdate
     }
 
     private void notifyResultChanged() {
-        DJ.setShadowAlpha(0);
+        allAppsQsbLayout.setShadowAlpha(0);
         mAppsView.onSearchResultsChanged();
     }
 }

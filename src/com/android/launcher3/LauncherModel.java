@@ -113,10 +113,20 @@ public class LauncherModel extends BroadcastReceiver
      */
     static final BgDataModel sBgDataModel = new BgDataModel();
 
+    @Thunk
+    static final HandlerThread sIconPackThread = new HandlerThread("launcher-icon-pack");
     static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
 
     static {
+        sIconPackThread.start();
         sIconPackUiThread.start();
+    }
+
+    /**
+     * @return the looper for the icon pack thread which can be used to load icon packs.
+     */
+    public static Looper getIconPackLooper() {
+        return sIconPackThread.getLooper();
     }
 
     /**

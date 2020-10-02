@@ -81,11 +81,7 @@ public class AllAppsState extends LauncherState {
 
     @Override
     public int getVisibleElements(Launcher launcher) {
-        //return ALL_APPS_HEADER | ALL_APPS_HEADER_EXTRA | ALL_APPS_CONTENT;
-        boolean hasAllAppsHeaderExtra = launcher.getAppsView() != null
-                && launcher.getAppsView().getFloatingHeaderView().hasVisibleContent();
-        return ALL_APPS_HEADER | ALL_APPS_CONTENT |
-                (hasAllAppsHeaderExtra ? ALL_APPS_HEADER_EXTRA : 0);
+        return ALL_APPS_HEADER | ALL_APPS_HEADER_EXTRA | ALL_APPS_CONTENT;
     }
 
     @Override

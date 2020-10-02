@@ -114,6 +114,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     }
 
     public void setInsets(Rect insets) {
+        c(Utilities.getDevicePrefs(getContext()));
         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
         mlp.topMargin = Math.round(Math.max(-mFixedTranslationY, insets.top - mMarginTopAdjusting));
         requestLayout();
@@ -323,7 +324,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
             mFallback = (FallbackAppsSearchView) this.mLauncher.getLayoutInflater()
                     .inflate(R.layout.all_apps_google_search_fallback, this, false);
             AllAppsContainerView allAppsContainerView = this.mAppsView;
-            mFallback.DJ = this;
+            mFallback.allAppsQsbLayout = this;
             mFallback.mApps = allAppsContainerView.getApps();
             mFallback.mAppsView = allAppsContainerView;
             mFallback.mSearchBarController.initialize(new SearchThread(mFallback.getContext()), mFallback,
@@ -408,7 +409,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         int i = (wallpaperDeviceProfile.hotseatBarSizePx - wallpaperDeviceProfile.hotseatCellHeightPx) - getLayoutParams().height;
         int bottom = insets.bottom;
         return ((getLayoutParams().height + Math.max(-mVerticalOffset, insets.top - mTopAdjusting)) +
-                mVerticalOffset) + (bottom + ((int) (((float) (i - bottom)) * 0.45f)));
+                mVerticalOffset) + (bottom + (i - bottom) * 0.45f);
     }
 
     @Override
@@ -416,8 +417,8 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
         OmegaPreferences prefs = Utilities.getOmegaPrefs(getContext());
         boolean hotseatQsbEnabled = prefs.getDockSearchBar() || widgetMode;
-        boolean drawerQsbEnabled = prefs.getAllAppsSearch();
         boolean hotseatQsbVisible = (visibleElements & HOTSEAT_SEARCH_BOX) != 0;
+        boolean drawerQsbEnabled = prefs.getAllAppsSearch();
         boolean drawerQsbVisible = (visibleElements & ALL_APPS_HEADER) != 0;
         boolean qsbVisible = (hotseatQsbEnabled && hotseatQsbVisible) || (drawerQsbEnabled && drawerQsbVisible);
         float hotseatProgress, micProgress;

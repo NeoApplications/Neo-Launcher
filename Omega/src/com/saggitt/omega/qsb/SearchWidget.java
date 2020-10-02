@@ -25,6 +25,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.R;
+import com.saggitt.omega.allapps.BlurQsbLayout;
+import com.saggitt.omega.util.OmegaUtilsKt;
+
 public class SearchWidget extends FrameLayout {
     public SearchWidget(@NonNull Context context) {
         this(context, null, 0);
@@ -40,8 +44,10 @@ public class SearchWidget extends FrameLayout {
 
     public void addView(View child) {
         super.addView(child);
-        /*if (child instanceof BlurQsbLayout) {
+        if (child instanceof BlurQsbLayout) {
             ((BlurQsbLayout) child).setWidgetMode(true);
-        }*/
+
+            ((BlurQsbLayout) child).setScrimView(OmegaUtilsKt.getLauncherOrNull(getContext()).findViewById(R.id.scrim_view));
+        }
     }
 }

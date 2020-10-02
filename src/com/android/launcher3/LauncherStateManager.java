@@ -16,9 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -39,6 +36,9 @@ import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
 
 /**
  * TODO: figure out what kind of tests we can write for this
@@ -118,6 +118,8 @@ public class LauncherStateManager {
     private LauncherState mLastStableState = NORMAL;
     private LauncherState mCurrentStableState = NORMAL;
 
+    private LauncherState mToState = mState;
+
     private LauncherState mRestState;
 
     public LauncherStateManager(Launcher l) {
@@ -127,6 +129,10 @@ public class LauncherStateManager {
 
     public LauncherState getState() {
         return mState;
+    }
+
+    public LauncherState getToState() {
+        return mToState;
     }
 
     public LauncherState getCurrentStableState() {
@@ -249,6 +255,7 @@ public class LauncherStateManager {
 
         // Cancel the current animation. This will reset mState to mCurrentStableState, so store it.
         LauncherState fromState = mState;
+        mToState = state;
         mConfig.reset();
 
         if (!animated) {

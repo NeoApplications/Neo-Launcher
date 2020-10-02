@@ -23,6 +23,7 @@ import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
+import com.saggitt.omega.states.HomeState;
 import com.saggitt.omega.states.OptionsState;
 
 import java.util.Arrays;
@@ -95,7 +96,7 @@ public class LauncherState {
     /**
      * TODO: Create a separate class for NORMAL state.
      */
-    public static final LauncherState NORMAL = new LauncherState(NORMAL_STATE_ORDINAL,
+    public static final LauncherState NORMAL = new HomeState(NORMAL_STATE_ORDINAL,
             ContainerType.WORKSPACE, 0,
             FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED | FLAG_HIDE_BACK_BUTTON |
                     FLAG_HAS_SYS_UI_SCRIM);
@@ -232,6 +233,11 @@ public class LauncherState {
      *
      * @see com.android.launcher3.allapps.AllAppsTransitionController
      */
+
+    public float getScrimProgress(Launcher launcher) {
+        return getVerticalProgress(launcher);
+    }
+
     public float getVerticalProgress(Launcher launcher) {
         return 1f;
     }

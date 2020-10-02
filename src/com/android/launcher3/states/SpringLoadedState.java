@@ -15,22 +15,22 @@
  */
 package com.android.launcher3.states;
 
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
-import static com.android.launcher3.states.RotationHelper.REQUEST_LOCK;
-
 import android.graphics.Rect;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InstallShortcutReceiver;
 import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherState;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
+import com.saggitt.omega.states.HomeState;
+
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
+import static com.android.launcher3.states.RotationHelper.REQUEST_LOCK;
 
 /**
  * Definition for spring loaded state used during drag and drop.
  */
-public class SpringLoadedState extends LauncherState {
+public class SpringLoadedState extends HomeState {
 
     private static final int STATE_FLAGS = FLAG_MULTI_PAGE |
             FLAG_DISABLE_ACCESSIBILITY | FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED |

@@ -15,17 +15,6 @@
  */
 package com.android.launcher3.views;
 
-import static android.content.Context.ACCESSIBILITY_SERVICE;
-import static android.view.MotionEvent.ACTION_DOWN;
-
-import static androidx.core.graphics.ColorUtils.compositeColors;
-
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.anim.Interpolators.ACCEL;
-import static com.android.launcher3.anim.Interpolators.DEACCEL;
-import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.Keyframe;
@@ -35,6 +24,7 @@ import android.animation.RectEvaluator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -73,6 +63,15 @@ import com.android.launcher3.widget.WidgetsFullSheet;
 
 import java.util.List;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static androidx.core.graphics.ColorUtils.compositeColors;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.anim.Interpolators.ACCEL;
+import static com.android.launcher3.anim.Interpolators.DEACCEL;
+import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
+
 
 /**
  * Simple scrim which draws a flat color
@@ -104,7 +103,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
     protected final Launcher mLauncher;
     private final WallpaperColorInfo mWallpaperColorInfo;
     private final AccessibilityManager mAM;
-    protected final int mEndScrim;
+    protected int mEndScrim;
 
     protected float mMaxScrimAlpha;
 
@@ -117,7 +116,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
     protected final int mDragHandleSize;
     protected float mDragHandleOffset;
-    private final Rect mDragHandleBounds;
+    protected Rect mDragHandleBounds;
     private final RectF mHitRect = new RectF();
 
     private final MultiValueAlpha mMultiValueAlpha;
@@ -335,7 +334,11 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
         updateDragHandleVisibility(null);
     }
 
-    private void updateDragHandleVisibility(Drawable recycle) {
+    protected void updateDragHandleVisibility() {
+        updateDragHandleVisibility(null);
+    }
+
+    protected void updateDragHandleVisibility(Drawable recycle) {
         boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() || mAM.isEnabled();
         boolean wasVisible = mDragHandle != null;
         if (visible != wasVisible) {
@@ -468,5 +471,13 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
     public int getDragHandleSize() {
         return mDragHandleSize;
+    }
+
+    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom,
+                                   float rx, float ry, Paint paint) {
+
+    }
+
+    protected void onDrawFlatColor(Canvas canvas) {
     }
 }

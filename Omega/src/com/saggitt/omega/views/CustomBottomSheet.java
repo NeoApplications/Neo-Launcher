@@ -257,8 +257,8 @@ public class CustomBottomSheet extends WidgetsBottomSheet {
             }
 
             if (mPrefHidePredictions != null) {
-                //mPrefHidePredictions.setChecked(CustomAppPredictor.isHiddenApp(context, mKey));
-                //mPrefHidePredictions.setOnPreferenceChangeListener(this);
+                mPrefHidePredictions.setChecked(OmegaAppPredictor.isHiddenApp(context, mKey));
+                mPrefHidePredictions.setOnPreferenceChangeListener(this);
             }
 
             if (prefs.getShowDebugInfo() && mKey != null && mKey.componentName != null) {

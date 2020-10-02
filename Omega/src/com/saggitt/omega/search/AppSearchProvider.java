@@ -221,6 +221,7 @@ public class AppSearchProvider extends ContentProvider {
                 return Collections.emptyList();
             }
             final List<AppInfo> results = FuzzyAppSearchAlgorithm.query(mApp.getContext(), mQuery, mAllAppsList.data, getBaseFilter());
+
             for (AppInfo appInfo : results) {
                 if (appInfo.usingLowResIcon()) {
                     mApp.getIconCache().getTitleAndIcon(appInfo, false);

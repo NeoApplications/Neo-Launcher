@@ -2624,6 +2624,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return super.onKeyUp(keyCode, event);
     }
 
+    public boolean useVerticalBarLayout() {
+        return mDeviceProfile.isVerticalBarLayout();
+    }
+
     public static Launcher getLauncher(Context context) {
         return (Launcher) fromContext(context);
     }
