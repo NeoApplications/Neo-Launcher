@@ -56,13 +56,21 @@ import static com.android.launcher3.AppInfo.EMPTY_ARRAY;
 public class AllAppsList {
 
     private static final String TAG = "AllAppsList";
-    private static final Consumer<AppInfo> NO_OP_CONSUMER = a -> { };
+    private static final Consumer<AppInfo> NO_OP_CONSUMER = a -> {
+    };
 
 
     public static final int DEFAULT_APPLICATIONS_NUMBER = 42;
 
-    /** The list off all apps. */
+    /**
+     * The list off all apps.
+     */
     public final ArrayList<AppInfo> data = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
+
+    /**
+     * The list of apps that have been removed since the last notify() call.
+     */
+    public ArrayList<AppInfo> removed = new ArrayList<>();
 
     private IconCache mIconCache;
     private AppFilter mAppFilter;
@@ -156,6 +164,8 @@ public class AllAppsList {
     public void clear() {
         data.clear();
         mDataChanged = false;
+        ;
+        removed.clear();
         // Reset the index as locales might have changed
         mIndex = new AlphabeticIndexCompat(LocaleList.getDefault());
     }
@@ -271,7 +281,8 @@ public class AllAppsList {
         for (int i = data.size() - 1; i >= 0; i--) {
             final AppInfo applicationInfo = data.get(i);
             if (user.equals(applicationInfo.user) && !mAppFilter.shouldShowApp(applicationInfo.componentName, applicationInfo.user)) {
-                mIconCache.remove(applicationInfo.componentName,applicationInfo.user);
+                mIconCache.remove(applicationInfo.componentName, applicationInfo.user);
+                removed.add(applicationInfo);
                 data.remove(i);
             }
         }

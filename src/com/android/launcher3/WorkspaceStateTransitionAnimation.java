@@ -24,6 +24,7 @@ import com.android.launcher3.LauncherState.ScaleAndTranslation;
 import com.android.launcher3.LauncherStateManager.AnimationConfig;
 import com.android.launcher3.anim.AnimatorSetBuilder;
 import com.android.launcher3.anim.PropertySetter;
+import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.graphics.WorkspaceAndHotseatScrim;
 
 import static com.android.launcher3.LauncherAnimUtils.DRAWABLE_ALPHA;
@@ -99,9 +100,16 @@ public class WorkspaceStateTransitionAnimation {
                 // together. Since both hotseat and workspace can move, transform the point
                 // manually instead of using dragLayer.getDescendantCoordRelativeToSelf and
                 // related methods.
-                hotseat.setPivotY(mWorkspace.getPivotY() + mWorkspace.getTop() - hotseat.getTop());
+                /*hotseat.setPivotY(mWorkspace.getPivotY() + mWorkspace.getTop() - hotseat.getTop());
                 hotseat.setPivotX(mWorkspace.getPivotX()
-                        + mWorkspace.getLeft() - hotseat.getLeft());
+                        + mWorkspace.getLeft() - hotseat.getLeft());*/
+                DragLayer dragLayer = mLauncher.getDragLayer();
+                float[] workspacePivot =
+                        new float[]{mWorkspace.getPivotX(), mWorkspace.getPivotY()};
+                dragLayer.getDescendantCoordRelativeToSelf(mWorkspace, workspacePivot);
+                dragLayer.mapCoordInSelfToDescendant(hotseat, workspacePivot);
+                hotseat.setPivotX(workspacePivot[0]);
+                hotseat.setPivotY(workspacePivot[1]);
             }
             float hotseatScale = hotseatScaleAndTranslation.scale;
             Interpolator hotseatScaleInterpolator = builder.getInterpolator(ANIM_HOTSEAT_SCALE,
