@@ -16,18 +16,20 @@
 
 package com.android.quickstep;
 
-import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.android.launcher3.Utilities;
 import com.android.launcher3.util.MainThreadInitializedObject;
+import com.saggitt.omega.util.NavigationModeCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.android.launcher3.util.PackageManagerHelper.getPackageFilter;
 
 /**
  * Observer for the resource config that specifies the navigation bar mode.
@@ -62,9 +64,10 @@ public class SysUINavigationMode {
             "config_navBarInteractionMode";
 
     private final Context mContext;
-    private Mode mMode;
+    private Mode mMode = Mode.NO_BUTTON;
 
     private final List<NavigationModeChangeListener> mChangeListeners = new ArrayList<>();
+    private boolean mUserUnlocked = false;
 
     public SysUINavigationMode(Context context) {
         mContext = context;
@@ -82,12 +85,32 @@ public class SysUINavigationMode {
         }, getPackageFilter("android", ACTION_OVERLAY_CHANGED));
     }
 
+    void onUserUnlocked() {
+        mUserUnlocked = true;
+        NavigationModeCompat.Companion.getInstance(mContext).setListener(this::reinitializeMode);
+        reinitializeMode();
+    }
+
+    private void reinitializeMode() {
+        Mode oldMode = mMode;
+        initializeMode();
+        if (mMode != oldMode) {
+            dispatchModeChange();
+        }
+    }
+
     private void initializeMode() {
-        int modeInt = getSystemIntegerRes(mContext, NAV_BAR_INTERACTION_MODE_RES_NAME);
-        for(Mode m : Mode.values()) {
-            if (m.resValue == modeInt) {
-                mMode = m;
+        if (!Utilities.isRecentsEnabled()) {
+            mMode = Mode.THREE_BUTTONS;
+        } else if (Utilities.ATLEAST_Q) {
+            int modeInt = getSystemIntegerRes(mContext, NAV_BAR_INTERACTION_MODE_RES_NAME);
+            for (Mode m : Mode.values()) {
+                if (m.resValue == modeInt) {
+                    mMode = m;
+                }
             }
+        } else if (mUserUnlocked) {
+            mMode = NavigationModeCompat.Companion.getInstance(mContext).getCurrentMode();
         }
     }
 

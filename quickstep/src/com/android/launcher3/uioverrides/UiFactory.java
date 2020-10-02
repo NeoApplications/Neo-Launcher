@@ -42,6 +42,7 @@ import com.android.quickstep.RecentsModel;
 import com.android.quickstep.SysUINavigationMode;
 import com.android.quickstep.SysUINavigationMode.Mode;
 import com.android.quickstep.SysUINavigationMode.NavigationModeChangeListener;
+import com.android.quickstep.TouchInteractionService;
 import com.android.quickstep.util.RemoteFadeOutAnimationListener;
 import com.android.systemui.shared.system.ActivityCompat;
 
@@ -110,8 +111,8 @@ public class UiFactory extends RecentsUiFactory {
 
                 @Override
                 public void onStateTransitionComplete(LauncherState finalState) {
-                    boolean swipeUpEnabled = Utilities.ATLEAST_Q && SysUINavigationMode.INSTANCE.get(launcher).getMode()
-                            .hasGestures;
+                    boolean swipeUpEnabled = SysUINavigationMode.INSTANCE.get(launcher).getMode()
+                            .hasGestures && TouchInteractionService.isConnected();
                     LauncherState prevState = launcher.getStateManager().getLastState();
 
                     if (((swipeUpEnabled && finalState == OVERVIEW) || (!swipeUpEnabled
