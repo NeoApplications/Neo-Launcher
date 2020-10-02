@@ -16,6 +16,7 @@
   -->
 <resources>
     <color name="white">#FFFFFF</color>
+    <color name="ic_allapps_background">#FAFAFA</color>
     <color name="ic_launcher_background">#0F111A</color>
     <color name="ic_launcher_foreground">#0988d1</color>
 
