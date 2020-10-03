@@ -25,10 +25,7 @@ import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.gestures.*
-import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
-import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
-import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
-import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
+import com.saggitt.omega.gestures.handlers.*
 import com.saggitt.omega.util.omegaPrefs
 import org.json.JSONException
 import org.json.JSONObject
@@ -133,6 +130,9 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
                 OpenDashGestureHandler(context, null),
                 OpenDrawerGestureHandler(context, null),
                 NotificationsOpenGestureHandler(context, null),
+                OpenOverviewGestureHandler(context, null),
+                StartGlobalSearchGestureHandler(context, null),
+                StartAppSearchGestureHandler(context, null),
                 OpenSettingsGestureHandler(context, null)
         ).apply {
             if (hasBlank) {

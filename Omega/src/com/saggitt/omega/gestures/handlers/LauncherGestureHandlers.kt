@@ -76,7 +76,6 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) : G
     }
 }
 
-
 @Keep
 class StartAppSearchGestureHandler(context: Context, config: JSONObject?) : OpenDrawerGestureHandler(context, config) {
 
@@ -87,7 +86,6 @@ class StartAppSearchGestureHandler(context: Context, config: JSONObject?) : Open
         return Runnable { controller.launcher.appsView.searchUiManager.startSearch() }
     }
 }
-
 
 @Keep
 class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
@@ -132,7 +130,6 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) : Gestur
         }
     }
 }
-
 
 interface VerticalSwipeGestureHandler {
 
