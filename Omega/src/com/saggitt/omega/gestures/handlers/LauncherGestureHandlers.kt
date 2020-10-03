@@ -21,16 +21,25 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.UserHandle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.Keep
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
+import com.android.launcher3.compat.LauncherAppsCompat
+import com.android.launcher3.compat.UserManagerCompat
+import com.android.launcher3.shortcuts.DeepShortcutManager
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.dash.DashBottomSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
+import com.saggitt.omega.gestures.ui.SelectAppActivity
 import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.util.getIcon
 import com.saggitt.omega.util.omegaPrefs
 import org.json.JSONObject
 
@@ -87,6 +96,125 @@ class StartAppSearchGestureHandler(context: Context, config: JSONObject?) : Open
     }
 }
 
+
+@Keep
+class StartAppGestureHandler(context: Context, config: JSONObject?) : GestureHandler(context, config) {
+
+    override val hasConfig = true
+    override val configIntent = Intent(context, SelectAppActivity::class.java)
+    override val displayName
+        get() = if (target != null)
+            String.format(displayNameWithTarget, appName) else displayNameWithoutTarget
+    override val icon: Drawable
+        get() = when {
+            intent != null -> try {
+                context.packageManager.getActivityIcon(intent!!)
+            } catch (e: Exception) {
+                context.getIcon()
+            }
+            target != null -> try {
+                context.packageManager.getApplicationIcon(target?.componentName!!.packageName)
+            } catch (e: Exception) {
+                context.getIcon()
+            }
+            else -> context.getIcon()
+        }
+
+    private val displayNameWithoutTarget: String = context.getString(R.string.action_open_app)
+    private val displayNameWithTarget: String = context.getString(R.string.action_open_app_with_target)
+
+    var type: String? = null
+    var appName: String? = null
+    var target: ComponentKey? = null
+    var intent: Intent? = null
+    var user: UserHandle? = null
+    var packageName: String? = null
+    var id: String? = null
+
+    init {
+        if (config?.has("appName") == true) {
+            appName = config.getString("appName")
+            type = if (config.has("type")) config.getString("type") else "app"
+            if (type == "app") {
+                Log.d("GestureController", "Class " + target.toString())
+                target = Utilities.makeComponentKey(context, config.getString("target"))
+            } else {
+                intent = Intent.parseUri(config.getString("intent"), 0)
+                user = UserManagerCompat.getInstance(context).getUserForSerialNumber(config.getLong("user"))
+                packageName = config.getString("packageName")
+                id = config.getString("id")
+            }
+        }
+    }
+
+    override fun saveConfig(config: JSONObject) {
+        super.saveConfig(config)
+        config.put("appName", appName)
+        config.put("type", type)
+        when (type) {
+            "app" -> {
+                config.put("target", target.toString())
+            }
+            "shortcut" -> {
+                config.put("intent", intent!!.toUri(0))
+                config.put("user", UserManagerCompat.getInstance(context).getSerialNumberForUser(user))
+                config.put("packageName", packageName)
+                config.put("id", id)
+            }
+        }
+    }
+
+    override fun onConfigResult(data: Intent?) {
+        super.onConfigResult(data)
+        if (data != null) {
+            appName = data.getStringExtra("appName")
+            type = data.getStringExtra("type")
+            when (type) {
+                "app" -> {
+                    target = Utilities.makeComponentKey(context, data.getStringExtra("target"))
+                }
+                "shortcut" -> {
+                    intent = Intent.parseUri(data.getStringExtra("intent"), 0)
+                    user = data.getParcelableExtra("user")
+                    packageName = data.getStringExtra("packageName")
+                    id = data.getStringExtra("id")
+                }
+            }
+        }
+    }
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        Log.d("Open App", "Opening app")
+
+        if (view == null) {
+            val down = controller.touchDownPoint
+            controller.launcher.prepareDummyView(down.x.toInt(), down.y.toInt()) {
+                onGestureTrigger(controller, controller.launcher.dummyView)
+            }
+            return
+        }
+        val opts = view.let { controller.launcher.getActivityLaunchOptionsAsBundle(it) }
+        when (type) {
+            "app" -> {
+                try {
+                    LauncherAppsCompat.getInstance(context)
+                            .startActivityForProfile(target!!.componentName, target!!.user, null, opts)
+                } catch (e: NullPointerException) {
+                    // App is probably not installed anymore, show a Toast
+                    Toast.makeText(context, R.string.failed, Toast.LENGTH_LONG).show()
+                } catch (e: SecurityException) {
+                    // App is probably not installed anymore, show a Toast
+                    Toast.makeText(context, R.string.failed, Toast.LENGTH_LONG).show()
+                }
+            }
+            "shortcut" -> {
+                DeepShortcutManager.getInstance(context)
+                        .startShortcut(packageName, id, null, opts, user)
+            }
+        }
+    }
+}
+
 @Keep
 class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
         GestureHandler(context, config) {
@@ -109,7 +237,6 @@ class OpenDashGestureHandler(context: Context, config: JSONObject?) :
 
     override val displayName = context.getString(R.string.action_open_dash)
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        //TODO: INFLAR DASH VIEW
         DashBottomSheet.show(controller.launcher, true)
     }
 }

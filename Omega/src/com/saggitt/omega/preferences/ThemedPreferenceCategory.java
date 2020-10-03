@@ -29,11 +29,8 @@ import com.android.launcher3.Utilities;
 public class ThemedPreferenceCategory extends PreferenceCategory {
     private Context mContext;
 
-    public ThemedPreferenceCategory(Context context) {
-        this(context, null, 0);
-    }
     public ThemedPreferenceCategory(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
     }
 
     public ThemedPreferenceCategory(Context context, AttributeSet attrs, int defStyle) {
@@ -47,6 +44,5 @@ public class ThemedPreferenceCategory extends PreferenceCategory {
         TextView title = (TextView) holder.findViewById(android.R.id.title);
         title.setTextSize(16f);
         title.setTextColor(Utilities.getOmegaPrefs(mContext).getAccentColor());
-        holder.setDividerAllowedBelow(true);
     }
 }

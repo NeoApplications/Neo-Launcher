@@ -24,6 +24,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Handler
 import android.os.Looper
@@ -171,6 +172,8 @@ fun Context.getLauncherOrNull(): Launcher? {
         null
     }
 }
+
+fun Context.getIcon(): Drawable = packageManager.getApplicationIcon(applicationInfo)
 
 @Suppress("UNCHECKED_CAST")
 fun <T> JSONArray.toArrayList(): ArrayList<T> {

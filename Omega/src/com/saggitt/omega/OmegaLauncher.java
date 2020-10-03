@@ -26,6 +26,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -47,7 +49,12 @@ import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static com.saggitt.omega.iconpack.IconPackManager.Companion;
 import static com.saggitt.omega.iconpack.IconPackManager.CustomIconEntry;
@@ -63,6 +70,7 @@ public class OmegaLauncher extends Launcher {
     private OmegaPreferencesChangeCallback prefCallback = new OmegaPreferencesChangeCallback(this);
     private OmegaLauncherCallbacks launcherCallbacks;
     private GestureController mGestureController;
+    public View dummyView;
 
     public OmegaLauncher() {
         launcherCallbacks = new OmegaLauncherCallbacks(this);
@@ -70,11 +78,8 @@ public class OmegaLauncher extends Launcher {
     }
 
     public static OmegaLauncher getLauncher(Context context) {
-        if (context instanceof OmegaLauncher) {
-            return (OmegaLauncher) context;
-        } else {
-            return (OmegaLauncher) LauncherAppState.getInstance(context).getLauncher();
-        }
+        return context instanceof OmegaLauncher ? (OmegaLauncher) context :
+                (OmegaLauncher) LauncherAppState.getInstance(context).getLauncher();
     }
 
     @Override
@@ -96,12 +101,12 @@ public class OmegaLauncher extends Launcher {
         ContextUtils contextUtils = new ContextUtils(this);
         contextUtils.setAppLanguage(mOmegaPrefs.getLanguage());
         showFolderNotificationCount = mOmegaPrefs.getFolderBadgeCount();
+        dummyView = findViewById(R.id.dummy_view);
     }
 
     public GestureController getGestureController() {
         if (mGestureController == null)
             mGestureController = new GestureController(this);
-
         return mGestureController;
     }
 
@@ -225,5 +230,22 @@ public class OmegaLauncher extends Launcher {
 
     public AnimatorSet openQsb() {
         return launcherCallbacks.getQsbController().openQsb();
+    }
+
+    public void prepareDummyView(int left, int top, @NotNull Function0<Unit> callback) {
+        int size = getResources().getDimensionPixelSize(R.dimen.options_menu_thumb_size);
+        int halfSize = size / 2;
+        prepareDummyView(left - halfSize, top - halfSize, left + halfSize, top + halfSize, callback);
+    }
+
+    public void prepareDummyView(int left, int top, int right, int bottom, @NotNull Function0<Unit> callback) {
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) dummyView.getLayoutParams();
+        lp.leftMargin = left;
+        lp.topMargin = top;
+        lp.height = bottom - top;
+        lp.width = right - left;
+        dummyView.setLayoutParams(lp);
+        dummyView.requestLayout();
+        dummyView.post(callback::invoke);
     }
 }

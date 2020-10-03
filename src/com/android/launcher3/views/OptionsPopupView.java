@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.views;
 
-import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_FLAVOR;
-import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -46,6 +43,9 @@ import com.android.launcher3.widget.WidgetsFullSheet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_FLAVOR;
+import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
 
 
 /**
@@ -141,6 +141,16 @@ public class OptionsPopupView extends ArrowPopup
     @VisibleForTesting
     public static ArrowPopup getOptionsPopup(Launcher launcher) {
         return launcher.findViewById(R.id.deep_shortcuts_container);
+    }
+
+    public static void show(Launcher launcher, float x, float y, List<OptionItem> items) {
+        float halfSize = launcher.getResources().getDimension(R.dimen.options_menu_thumb_size) / 2;
+        if (x < 0 || y < 0) {
+            x = launcher.getDragLayer().getWidth() / 2;
+            y = launcher.getDragLayer().getHeight() / 2;
+        }
+        RectF target = new RectF(x - halfSize, y - halfSize, x + halfSize, y + halfSize);
+        show(launcher, target, items);
     }
 
     public static void showDefaultOptions(Launcher launcher, float x, float y) {

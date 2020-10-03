@@ -115,6 +115,7 @@ public class LauncherModel extends BroadcastReceiver
 
     @Thunk
     static final HandlerThread sIconPackThread = new HandlerThread("launcher-icon-pack");
+    @Thunk
     static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
 
     static {

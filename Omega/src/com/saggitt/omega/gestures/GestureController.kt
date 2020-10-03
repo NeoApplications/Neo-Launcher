@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.text.TextUtils
 import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
@@ -39,6 +40,8 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val pressBackGesture by lazy { PressBackGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
 
+    val hasBackGesture
+        get() = pressBackGesture.handler !is BlankGestureHandler
     val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
     val navSwipeUpGesture by lazy { NavSwipeUpGesture(this) }
 
@@ -54,8 +57,8 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
         return false
     }
 
-    fun onBlankAreaTouch(ev: MotionEvent): Boolean {
-        return doubleTapGesture.isEnabled && doubleTapGesture.onTouchEvent(ev)
+    fun attachDoubleTapListener(gestureDetector: GestureDetector) {
+        gestureDetector.setOnDoubleTapListener(doubleTapGesture.createDoubleTapListener())
     }
 
     fun onLongPress() {
@@ -133,6 +136,7 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
                 OpenOverviewGestureHandler(context, null),
                 StartGlobalSearchGestureHandler(context, null),
                 StartAppSearchGestureHandler(context, null),
+                StartAppGestureHandler(context, null),
                 OpenSettingsGestureHandler(context, null)
         ).apply {
             if (hasBlank) {

@@ -646,7 +646,6 @@ public final class Utilities {
         return slop * slop;
     }
 
-
     /*INICIO CUSTOM*/
 
     public static OmegaPreferences getOmegaPrefs(Context context) {

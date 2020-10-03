@@ -17,33 +17,41 @@ package com.android.launcher3.touch;
 
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherState;
+import com.android.launcher3.R;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
-import com.saggitt.omega.touch.GestureTouchListener;
+import com.android.launcher3.views.OptionsPopupView;
+import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.blur.BlurWallpaperProvider;
+import com.saggitt.omega.gestures.GestureController;
+
+import java.util.ArrayList;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
 import static android.view.MotionEvent.ACTION_POINTER_UP;
 import static android.view.MotionEvent.ACTION_UP;
-import static android.view.ViewConfiguration.getLongPressTimeout;
 import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OPTIONS;
 
 /**
  * Helper class to handle touch on empty space in workspace and show options popup on long press
  */
-public class WorkspaceTouchListener extends GestureTouchListener implements OnTouchListener, Runnable {
+public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListener implements OnTouchListener {
 
     /**
      * STATE_PENDING_PARENT_INFORM is the state between longPress performed & the next motionEvent.
@@ -60,23 +68,27 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
     private final Launcher mLauncher;
     private final Workspace mWorkspace;
     private final PointF mTouchDownPoint = new PointF();
+    private final float mTouchSlop;
 
     private int mLongPressState = STATE_CANCELLED;
 
+    private final GestureDetector mGestureDetector;
+    private final GestureController mGestureController;
+
     public WorkspaceTouchListener(Launcher launcher, Workspace workspace) {
-        super(launcher);
         mLauncher = launcher;
         mWorkspace = workspace;
-        setTouchDownPoint(mTouchDownPoint);
+
+        mTouchSlop = 2 * ViewConfiguration.get(launcher).getScaledTouchSlop();
+        mGestureDetector = new GestureDetector(workspace.getContext(), this);
+        mGestureController = ((OmegaLauncher) launcher).getGestureController();
+        mGestureController.attachDoubleTapListener(mGestureDetector);
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent ev) {
-        mTouchDownPoint.set(ev.getX(), ev.getY());
-        if (super.onTouch(view, ev)) {
-            cancelLongPress();
-            return true;
-        }
+        mGestureDetector.onTouchEvent(ev);
+
         int action = ev.getActionMasked();
         if (action == ACTION_DOWN) {
             // Check if we can handle long press.
@@ -94,10 +106,10 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
                 handleLongPress = mTempRect.contains((int) ev.getX(), (int) ev.getY());
             }
 
-            cancelLongPress();
             if (handleLongPress) {
                 mLongPressState = STATE_REQUESTED;
-                mWorkspace.postDelayed(this, getLongPressTimeout());
+                mTouchDownPoint.set(ev.getX(), ev.getY());
+                mGestureController.setTouchDownPoint(mTouchDownPoint);
             }
 
             mWorkspace.onTouchEvent(ev);
@@ -122,7 +134,11 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
             mWorkspace.onTouchEvent(ev);
             if (mWorkspace.isHandlingTouch()) {
                 cancelLongPress();
+            } else if (action == ACTION_MOVE && PointF.length(
+                    mTouchDownPoint.x - ev.getX(), mTouchDownPoint.y - ev.getY()) > mTouchSlop) {
+                cancelLongPress();
             }
+
 
             result = true;
         } else {
@@ -148,16 +164,15 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
 
     private boolean canHandleLongPress() {
         return AbstractFloatingView.getTopOpenView(mLauncher) == null
-                && mLauncher.isInState(NORMAL) || mLauncher.isInState(LauncherState.OPTIONS);
+                && mLauncher.isInState(NORMAL) || mLauncher.isInState(OPTIONS);
     }
 
     private void cancelLongPress() {
-        mWorkspace.removeCallbacks(this);
         mLongPressState = STATE_CANCELLED;
     }
 
     @Override
-    public void run() {
+    public void onLongPress(MotionEvent event) {
         if (mLongPressState == STATE_REQUESTED) {
             if (canHandleLongPress()) {
                 mLongPressState = STATE_PENDING_PARENT_INFORM;
@@ -168,10 +183,30 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
                 mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.LONGPRESS,
                         Action.Direction.NONE, ContainerType.WORKSPACE,
                         mWorkspace.getCurrentPage());
-                onLongPress();
+                doLongPressAction();
             } else {
                 cancelLongPress();
             }
+        }
+    }
+
+    private void doLongPressAction() {
+        if (mLauncher.isInState(NORMAL)) {
+            mGestureController.onLongPress();
+        } else if (mLauncher.isInState(OPTIONS)) {
+            final int currentScreen = mLauncher.getCurrentWorkspaceScreen();
+            ArrayList<OptionsPopupView.OptionItem> options = new ArrayList<>();
+            options.add(new OptionsPopupView.OptionItem(
+                    R.string.remove_drop_target_label,
+                    R.drawable.ic_remove_no_shadow,
+                    -1, v -> {
+                mLauncher.getWorkspace().removeScreen(currentScreen, true);
+                return true;
+            }));
+            if (BlurWallpaperProvider.Companion.isEnabled()) {
+                //options.add(mWorkspace.getWorkspaceBlur().getOptionItem(currentScreen));
+            }
+            OptionsPopupView.show(mLauncher, mTouchDownPoint.x, mTouchDownPoint.y, options);
         }
     }
 }

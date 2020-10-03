@@ -216,15 +216,18 @@
     <string name="action_open_settings">Open Launcher Settings</string>
     <string name="action_open_overview">Show Desktop Bubble</string>
     <string name="action_open_dash">Open Dash</string>
+    <string name="action_open_app">Open App</string>
+    <string name="action_open_app_with_target">Open “%s”</string>
+    <string name="action_open_app_select_app">Pick app</string>
+    <string name="action_app_search">Open app search</string>
+    <string name="action_open_notifications">Open notifications</string>
+    <string name="action_close_notifications">Close notifications</string>
+    <string name="action_global_search">Launch Global Search</string>
     <string name="gesture_double_tap">Double tap</string>
     <string name="gesture_long_press">Touch &amp; Hold</string>
     <string name="gesture_swipe_up">Swipe Up</string>
     <string name="gesture_dock_swipe_up">Swipe Up From Dock</string>
     <string name="omega_actions">Actions</string>
-    <string name="action_app_search">Open app search</string>
-    <string name="action_open_notifications">Open notifications</string>
-    <string name="action_close_notifications">Close notifications</string>
-    <string name="action_global_search">Launch Global Search</string>
 
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
