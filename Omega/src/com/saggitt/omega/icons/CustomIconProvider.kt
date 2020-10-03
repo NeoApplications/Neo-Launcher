@@ -19,6 +19,7 @@ package com.saggitt.omega.icons
 
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.ShortcutInfo
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -43,6 +44,10 @@ class CustomIconProvider(context: Context) : DynamicIconProvider(context) {
     }
 
     fun getIcon(shortcutInfo: ShortcutInfoCompat, iconDpi: Int): Drawable? {
+        return iconPackManager.getIcon(shortcutInfo, iconDpi).assertNotAdaptiveIconDrawable(shortcutInfo)
+    }
+
+    fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable? {
         return iconPackManager.getIcon(shortcutInfo, iconDpi).assertNotAdaptiveIconDrawable(shortcutInfo)
     }
 
