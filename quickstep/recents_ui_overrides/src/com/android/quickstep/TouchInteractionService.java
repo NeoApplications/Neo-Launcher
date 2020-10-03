@@ -15,28 +15,6 @@
  */
 package com.android.quickstep;
 
-import static android.view.MotionEvent.ACTION_DOWN;
-
-import static com.android.launcher3.config.FeatureFlags.ADAPTIVE_ICON_WINDOW_ANIM;
-import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
-import static com.android.launcher3.config.FeatureFlags.ENABLE_HINTS_IN_OVERVIEW;
-import static com.android.launcher3.config.FeatureFlags.ENABLE_QUICKSTEP_LIVE_TILE;
-import static com.android.launcher3.config.FeatureFlags.FAKE_LANDSCAPE_UI;
-import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
-import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
-import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
-import static com.android.systemui.shared.system.QuickStepContract.KEY_EXTRA_INPUT_MONITOR;
-import static com.android.systemui.shared.system.QuickStepContract.KEY_EXTRA_SYSUI_PROXY;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_A11Y_BUTTON_CLICKABLE;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_A11Y_BUTTON_LONG_CLICKABLE;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_HOME_DISABLED;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_NAV_BAR_HIDDEN;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_NOTIFICATION_PANEL_EXPANDED;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_SCREEN_PINNING;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_STATUS_BAR_KEYGUARD_SHOWING_OCCLUDED;
-import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.ACTIVITY_TYPE_ASSISTANT;
-
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -102,12 +80,34 @@ import com.android.systemui.shared.system.QuickStepContract;
 import com.android.systemui.shared.system.QuickStepContract.SystemUiStateFlags;
 import com.android.systemui.shared.system.RecentsAnimationListener;
 import com.android.systemui.shared.system.SystemGestureExclusionListenerCompat;
+import com.saggitt.omega.gestures.gestures.GestureTouchConsumer;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static android.view.MotionEvent.ACTION_DOWN;
+import static com.android.launcher3.config.FeatureFlags.ADAPTIVE_ICON_WINDOW_ANIM;
+import static com.android.launcher3.config.FeatureFlags.APPLY_CONFIG_AT_RUNTIME;
+import static com.android.launcher3.config.FeatureFlags.ENABLE_HINTS_IN_OVERVIEW;
+import static com.android.launcher3.config.FeatureFlags.ENABLE_QUICKSTEP_LIVE_TILE;
+import static com.android.launcher3.config.FeatureFlags.FAKE_LANDSCAPE_UI;
+import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
+import static com.android.systemui.shared.system.QuickStepContract.KEY_EXTRA_INPUT_MONITOR;
+import static com.android.systemui.shared.system.QuickStepContract.KEY_EXTRA_SYSUI_PROXY;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_A11Y_BUTTON_CLICKABLE;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_A11Y_BUTTON_LONG_CLICKABLE;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_HOME_DISABLED;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_NAV_BAR_HIDDEN;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_NOTIFICATION_PANEL_EXPANDED;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_SCREEN_PINNING;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_STATUS_BAR_KEYGUARD_SHOWING_OCCLUDED;
+import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.ACTIVITY_TYPE_ASSISTANT;
 
 /**
  * Wrapper around a list for processing arguments.
@@ -300,6 +300,8 @@ public class TouchInteractionService extends Service implements
     private final RectF mSwipeTouchRegion = new RectF();
     private final RectF mAssistantLeftRegion = new RectF();
     private final RectF mAssistantRightRegion = new RectF();
+    private final RectF mCustomLeftRegion = new RectF();
+    private final RectF mCustomRightRegion = new RectF();
 
     private ComponentName mGestureBlockingActivity;
 
@@ -392,6 +394,7 @@ public class TouchInteractionService extends Service implements
         DefaultDisplay.Info displayInfo = DefaultDisplay.INSTANCE.get(this).getInfo();
         Point realSize = new Point(displayInfo.realSize);
         mSwipeTouchRegion.set(0, 0, realSize.x, realSize.y);
+        float customGestureFraction = 0.25f;
         if (mMode == Mode.NO_BUTTON) {
             int touchHeight = getNavbarSize(ResourceUtils.NAVBAR_BOTTOM_GESTURE_SIZE);
             mSwipeTouchRegion.top = mSwipeTouchRegion.bottom - touchHeight;
@@ -409,6 +412,18 @@ public class TouchInteractionService extends Service implements
 
             mAssistantRightRegion.right = mSwipeTouchRegion.right;
             mAssistantRightRegion.left = mSwipeTouchRegion.right - assistantWidth;
+
+            // Custom gesture regions
+            float customGestureWidth = mSwipeTouchRegion.width() * customGestureFraction;
+            mCustomLeftRegion.bottom = mCustomRightRegion.bottom = mAssistantLeftRegion.bottom;
+            mCustomLeftRegion.top = mCustomRightRegion.top = mAssistantLeftRegion.top;
+
+            mCustomLeftRegion.left = 0;
+            mCustomLeftRegion.right = customGestureWidth;
+
+            mCustomRightRegion.right = mSwipeTouchRegion.right;
+            mCustomRightRegion.left = mSwipeTouchRegion.right - customGestureWidth;
+
         } else {
             mAssistantLeftRegion.setEmpty();
             mAssistantRightRegion.setEmpty();
@@ -424,6 +439,26 @@ public class TouchInteractionService extends Service implements
                 default:
                     mSwipeTouchRegion.top = mSwipeTouchRegion.bottom
                             - getNavbarSize(ResourceUtils.NAVBAR_BOTTOM_GESTURE_SIZE);
+            }
+            // Custom gesture regions
+            mCustomLeftRegion.set(mSwipeTouchRegion);
+            mCustomRightRegion.set(mSwipeTouchRegion);
+            float customGestureWidth;
+            switch (displayInfo.rotation) {
+                case Surface.ROTATION_90:
+                    customGestureWidth = mSwipeTouchRegion.height() * customGestureFraction;
+                    mCustomLeftRegion.top = mSwipeTouchRegion.bottom - customGestureWidth;
+                    mCustomRightRegion.bottom = mSwipeTouchRegion.top + customGestureWidth;
+                    break;
+                case Surface.ROTATION_270:
+                    customGestureWidth = mSwipeTouchRegion.height() * customGestureFraction;
+                    mCustomLeftRegion.bottom = mSwipeTouchRegion.top + customGestureWidth;
+                    mCustomRightRegion.top = mSwipeTouchRegion.bottom - customGestureWidth;
+                    break;
+                default:
+                    customGestureWidth = mSwipeTouchRegion.width() * customGestureFraction;
+                    mCustomLeftRegion.right = mSwipeTouchRegion.left + customGestureWidth;
+                    mCustomRightRegion.left = mSwipeTouchRegion.right - customGestureWidth;
             }
         }
     }
@@ -587,7 +622,14 @@ public class TouchInteractionService extends Service implements
         return mAssistantAvailable
                 && !QuickStepContract.isAssistantGestureDisabled(mSystemUiStateFlags)
                 && (mAssistantLeftRegion.contains(ev.getX(), ev.getY()) ||
-                    mAssistantRightRegion.contains(ev.getX(), ev.getY()))
+                mAssistantRightRegion.contains(ev.getX(), ev.getY()))
+                && !ActivityManagerWrapper.getInstance().isLockToAppActive();
+    }
+
+    private boolean canTriggerCustomAction(MotionEvent ev) {
+        return !QuickStepContract.isAssistantGestureDisabled(mSystemUiStateFlags)
+                && (mCustomLeftRegion.contains(ev.getX(), ev.getY()) ||
+                mCustomRightRegion.contains(ev.getX(), ev.getY()))
                 && !ActivityManagerWrapper.getInstance().isLockToAppActive();
     }
 
@@ -614,6 +656,11 @@ public class TouchInteractionService extends Service implements
             if (canTriggerAssistantAction(event)) {
                 base = new AssistantTouchConsumer(this, mISystemUiProxy, activityControl, base,
                         mInputMonitorCompat);
+            }
+
+            if (canTriggerCustomAction(event)) {
+                base = new GestureTouchConsumer(this, mCustomLeftRegion, mCustomRightRegion,
+                        activityControl, base, mInputMonitorCompat);
             }
 
             if ((mSystemUiStateFlags & SYSUI_STATE_SCREEN_PINNING) != 0) {

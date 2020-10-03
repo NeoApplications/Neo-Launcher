@@ -36,9 +36,9 @@ class SelectGestureHandlerFragment : PreferenceDialogFragmentCompat() {
 
     private val requestCode = "config".hashCode() and 65535
 
-    private val key by lazy { arguments!!.getString("key") }
-    private val value by lazy { arguments!!.getString("value") }
-    private val isSwipeUp by lazy { arguments!!.getBoolean("isSwipeUp") }
+    private val key by lazy { requireArguments().getString("key") }
+    private val value by lazy { requireArguments().getString("value") }
+    private val isSwipeUp by lazy { requireArguments().getBoolean("isSwipeUp") }
     private val currentClass by lazy { GestureController.getClassName(value!!) }
 
     private var selectedHandler: GestureHandler? = null

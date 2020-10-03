@@ -36,13 +36,14 @@ import org.json.JSONObject
 class GestureController(val launcher: OmegaLauncher) : TouchController {
 
     private val prefs = launcher.omegaPrefs
-    private val blankGestureHandler = BlankGestureHandler(launcher, null)
+    val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
     private val pressHomeGesture by lazy { PressHomeGesture(this) }
     private val pressBackGesture by lazy { PressBackGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
 
     val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
+    val navSwipeUpGesture by lazy { NavSwipeUpGesture(this) }
 
     var touchDownPoint = PointF()
 
