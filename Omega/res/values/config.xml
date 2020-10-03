@@ -48,6 +48,6 @@
     <string name="action_do_nothing_class" translatable="false">com.saggitt.omega.gestures.BlankGestureHandler</string>
     <string name="action_open_notifications_class" translatable="false">com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler</string>
     <string name="action_open_drawer_class" translatable="false">com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler</string>
-
+    <string name="action_open_overview_class" translatable="false">com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler</string>
 
 </resources>
