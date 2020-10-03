@@ -63,18 +63,9 @@ public class RecentTasksList extends TaskStackChangeListener {
         mKeyguardManager = keyguardManager;
         mChangeId = 1;
         mActivityManagerWrapper = activityManagerWrapper;
-        //mActivityManagerWrapper.registerTaskStackListener(this);
         if (Utilities.isRecentsEnabled()) {
             mActivityManagerWrapper.registerTaskStackListener(this);
         }
-        /*
-        if (Utilities.ATLEAST_Q) {
-            try {
-                mActivityManagerWrapper.registerTaskStackListener(this);
-            } catch (NoSuchMethodError exception) {
-                exception.printStackTrace();
-            }
-        }*/
     }
 
     /**
