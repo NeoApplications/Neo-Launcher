@@ -22,7 +22,6 @@ import android.util.AttributeSet
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import com.saggitt.omega.wallpaper.WallpaperPreviewProvider
-import java.lang.Math.max
 
 class PreviewFrame(context: Context, attrs: AttributeSet?) :
         FrameLayout(context, attrs), ViewTreeObserver.OnScrollChangedListener {
@@ -56,7 +55,7 @@ class PreviewFrame(context: Context, attrs: AttributeSet?) :
         val dm = resources.displayMetrics
         val scaleX = dm.widthPixels.toFloat() / width
         val scaleY = dm.heightPixels.toFloat() / height
-        val scale = max(scaleX, scaleY)
+        val scale = kotlin.math.max(scaleX, scaleY)
 
         canvas.save()
         canvas.translate(0f, -viewLocation[1].toFloat())

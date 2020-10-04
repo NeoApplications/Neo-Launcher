@@ -88,6 +88,15 @@ public class PackageManagerHelper {
         }
     }
 
+    public static boolean isAppInstalled(PackageManager pm, String packageName, int flags) {
+        try {
+            ApplicationInfo info = pm.getApplicationInfo(packageName, flags);
+            return info != null;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     public String getPackageVersion(final String packageName) {
         try {
             PackageInfo info = mPm.getPackageInfo(packageName, 0);

@@ -91,6 +91,8 @@
     <string name="msg_disable_suggestions_prompt">"Usage data will be deleted."</string>
     <string name="label_turn_off_suggestions">Disable</string>
 
+    <string name="title_app_suggestions">Apps</string>
+
     <string name="pref_appcategorization_flowerpot_title">App Category</string>
     <string name="pref_appcategorization_enable_title">Categorize Apps</string>
     <string name="pref_appcategorization_enable_summary">Choose the drawer layout mode</string>

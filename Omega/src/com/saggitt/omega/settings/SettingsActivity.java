@@ -324,14 +324,21 @@ public class SettingsActivity extends SettingsBaseActivity
     }
 
     public static void startFragment(Context context, String fragment, @Nullable Bundle args, @Nullable CharSequence title) {
-        context.startActivity(createFragmentIntent(context, fragment, args, title));
+        context.startActivity(createFragmentIntent(context, fragment, args, title, false));
+    }
+
+    public static void startFragment(Context context, String fragment, @Nullable Bundle args,
+                                     @Nullable CharSequence title, boolean hasPreview) {
+        context.startActivity(createFragmentIntent(context, fragment, args, title, hasPreview));
     }
 
     @NotNull
-    private static Intent createFragmentIntent(Context context, String fragment, @Nullable Bundle args, @Nullable CharSequence title) {
+    private static Intent createFragmentIntent(Context context, String fragment, @Nullable Bundle args,
+                                               @Nullable CharSequence title, boolean hasPreview) {
         Intent intent = new Intent(context, SettingsActivity.class);
         intent.putExtra(EXTRA_FRAGMENT, fragment);
         intent.putExtra(EXTRA_FRAGMENT_ARGS, args);
+        intent.putExtra(SubSettingsFragment.HAS_PREVIEW, hasPreview);
         if (title != null) {
             intent.putExtra(EXTRA_TITLE, title);
         }

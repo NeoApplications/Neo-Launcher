@@ -29,8 +29,14 @@ import com.android.launcher3.Utilities;
 public class ThemedPreferenceCategory extends PreferenceCategory {
     private Context mContext;
 
+    public ThemedPreferenceCategory(Context context) {
+        super(context);
+        mContext = context;
+    }
+
     public ThemedPreferenceCategory(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     public ThemedPreferenceCategory(Context context, AttributeSet attrs, int defStyle) {

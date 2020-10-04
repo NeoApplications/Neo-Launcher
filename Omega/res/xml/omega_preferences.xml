@@ -86,6 +86,7 @@
             android:key="developerOptions"
             android:layout="@layout/home_preference"
             android:title="@string/developer_options_title"
+            app:hasPreview="true"
             app:content="@xml/omega_preferences_developer"
             app:controllerClass="com.saggitt.omega.settings.controllers.DeveloperOptionsController" />
 

@@ -63,6 +63,7 @@
     <dimen name="dynamic_grid_cell_layout_bottom_padding">0dp</dimen>
     <dimen name="dynamic_grid_workspace_page_spacing">4dp</dimen>
     <dimen name="dynamic_grid_workspace_top_padding">4dp</dimen>
+    <dimen name="dock_preview_height">150dp</dimen>
 
     <!-- QSB -->
     <dimen name="hotseat_qsb_bottom_margin">5dp</dimen>
