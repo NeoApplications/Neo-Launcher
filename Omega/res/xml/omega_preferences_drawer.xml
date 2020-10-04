@@ -66,21 +66,20 @@
         android:key="pref_drawer_grid_size"
         android:title="@string/title__drawer_columns"
         app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:key="pref_showAllAppsLabel"
+        android:title="@string/title__drawer_all_apps"
+        android:defaultValue="false"
+        android:persistent="true"
+        app:iconSpaceReserved="false" />
     <!--
-       <com.saggitt.omega.preferences.StyledSwitchPreference
-           android:key="pref_showAllAppsLabel"
-           android:title="@string/title__drawer_all_apps"
-           android:defaultValue="false"
-           android:persistent="true"
-           app:iconSpaceReserved="false"/>
-
-
-          <com.saggitt.omega.preferences.StyledSwitchPreference
-              android:defaultValue="false"
-              android:key="pref_show_predictions"
-              android:title="@string/title_app_suggestions"
-              app:iconSpaceReserved="false" />
-         > -->
+              <com.saggitt.omega.preferences.StyledSwitchPreference
+                  android:defaultValue="false"
+                  android:key="pref_show_predictions"
+                  android:title="@string/title_app_suggestions"
+                  app:iconSpaceReserved="false" />
+             > -->
 
     <androidx.preference.Preference
         android:fragment="com.saggitt.omega.groups.ui.AppCategorizationFragment"
