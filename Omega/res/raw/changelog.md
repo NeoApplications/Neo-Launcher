@@ -1,5 +1,7 @@
 ### v0.6.0 (Build 60)
-
+* **Add: Show All Apps Label**
+* **Add: Open App from Gesture**
+* **Fix: Search web results**
 
 ### v0.5.0 (Build 40)
 * **Add: Desktop grid preference**

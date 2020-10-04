@@ -66,21 +66,21 @@
         android:key="pref_drawer_grid_size"
         android:title="@string/title__drawer_columns"
         app:iconSpaceReserved="false" />
-
     <!--
        <com.saggitt.omega.preferences.StyledSwitchPreference
+           android:key="pref_showAllAppsLabel"
+           android:title="@string/title__drawer_all_apps"
            android:defaultValue="false"
-           android:key="pref_show_predictions"
-           android:title="@string/title_app_suggestions"
-           app:iconSpaceReserved="false" />
+           android:persistent="true"
+           app:iconSpaceReserved="false"/>
 
 
-               <com.saggitt.omega.preferences.StyledSwitchPreference
-                   android:key="pref_showAllAppsLabel"
-                   android:title="@string/title__drawer_all_apps"
-                   android:defaultValue="false"
-                   android:persistent="true"
-                   app:iconSpaceReserved="false"/> -->
+          <com.saggitt.omega.preferences.StyledSwitchPreference
+              android:defaultValue="false"
+              android:key="pref_show_predictions"
+              android:title="@string/title_app_suggestions"
+              app:iconSpaceReserved="false" />
+         > -->
 
     <androidx.preference.Preference
         android:fragment="com.saggitt.omega.groups.ui.AppCategorizationFragment"
@@ -108,5 +108,12 @@
         android:key="pref_allAppsGoogleSearch"
         android:summary="@string/summary_all_apps_google_search"
         android:title="@string/title_all_apps_google_search"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreference
+        android:key="pref_search_hidden_apps"
+        android:title="@string/title_search_hidden_apps"
+        android:summary="@string/summary_search_hidden_apps"
+        android:defaultValue="false"
         app:iconSpaceReserved="false" />
 </PreferenceScreen>
