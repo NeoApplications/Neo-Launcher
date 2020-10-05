@@ -44,15 +44,9 @@
         android:title="@string/title__drawer_paged_apps"
         app:iconSpaceReserved="false" />
 
-    <com.saggitt.omega.preferences.StyledSwitchPreference
-        android:defaultValue="false"
-        android:key="pref_show_predictions"
-        android:title="@string/title_app_suggestions"
-        app:iconSpaceReserved="false" />
-
-    <androidx.preference.Preference
-        android:fragment="com.saggitt.omega.icons.IconCustomizeFragment"
-        android:key="pref_icons"
-        android:title="Customize Icons"
-        app:iconSpaceReserved="false" />
+        <androidx.preference.Preference
+            android:fragment="com.saggitt.omega.icons.IconCustomizeFragment"
+            android:key="pref_icons"
+            android:title="Customize Icons"
+            app:iconSpaceReserved="false" />
 </PreferenceScreen>

@@ -683,11 +683,11 @@ public class SettingsActivity extends SettingsBaseActivity
                         rotationPref.setDefaultValue(Utilities.getAllowRotationDefaultValue(getActivity()));
                     }
                     break;
-                /*
+
                 case R.xml.omega_preferences_drawer:
                     findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     break;
-                */
+
                 case R.xml.omega_preferences_theme:
                     Preference resetIconsPreference = findPreference("pref_reset_custom_icon");
                     resetIconsPreference.setOnPreferenceClickListener(pref -> {
@@ -707,7 +707,6 @@ public class SettingsActivity extends SettingsBaseActivity
                     break;
 
                 case R.xml.omega_preferences_developer:
-                    findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
                     findPreference("kill").setOnPreferenceClickListener(this);
                     break;
 
