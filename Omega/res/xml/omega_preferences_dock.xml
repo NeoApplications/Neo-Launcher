@@ -38,6 +38,13 @@
         android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
+        android:key="pref_dockIconLabelsInTwoLines"
+        android:title="@string/title__drawer_mutliline_labels"
+        android:defaultValue="false"
+        android:dependency="pref_hideDockLabels"
+        android:persistent="true" />
+
     <com.saggitt.omega.preferences.DockGridSizePreference
         android:key="pref_dock_grid_size"
         android:title="@string/title__dock_hotseat_icons"
