@@ -40,7 +40,7 @@
 
     <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
         android:key="pref_dockIconLabelsInTwoLines"
-        android:title="@string/title__drawer_mutliline_labels"
+        android:title="@string/title__multiline_labels"
         android:defaultValue="false"
         android:dependency="pref_hideDockLabels"
         android:persistent="true" />

@@ -53,7 +53,7 @@
         android:dependency="pref_hideAllAppsAppLabels"
         android:key="pref_iconLabelsInTwoLines"
         android:persistent="true"
-        android:title="@string/title__drawer_mutliline_labels"
+        android:title="@string/title__multiline_labels"
         app:iconSpaceReserved="false" />
 
     <com.saggitt.omega.settings.PreferenceDialogPreference

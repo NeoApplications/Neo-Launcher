@@ -49,7 +49,7 @@
     <string name="title__desktop_icon_size">Icon size</string>
     <string name="title__desktop_grid_size">Grid size</string>
     <string name="title__desktop_hide_icon_labels">Hide icon labels on home screen</string>
-    <string name="title__desktop_multiline_labels">Multiline app names</string>
+    <string name="title__multiline_labels">Multiline app names</string>
     <string name="summary__full_width_widgets">Allow widgets to span over the whole width without padding</string>
     <string name="grid_size_height">Height</string>
     <string name="grid_size_width">Width</string>
@@ -69,7 +69,6 @@
     <!-- PREFERENCES DRAWER -->
     <string name="title__drawer_sort">Apps Sort</string>
     <string name="title__drawer_all_apps">Show "All Apps" label</string>
-    <string name="title__drawer_mutliline_labels">Multiline app names</string>
     <string name="title__drawer_paged_apps">Paged Apps view</string>
     <string name="title__drawer_hide_icon_labels">Hide app names</string>
     <string name="title__drawer_hide_apps">Hidden App Shortcuts</string>

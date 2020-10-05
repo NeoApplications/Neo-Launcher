@@ -73,7 +73,6 @@
     <string name="title__drawer_hide_apps">Esconder os atalhos dos apps</string>
     <string name="title__drawer_hide_icon_labels">Esconder o nome dos apps</string>
     <string name="title__drawer_paged_apps">Visualizar os apps em página</string>
-    <string name="title__drawer_mutliline_labels">Nome dos apps em multilinha</string>
     <string name="title__drawer_all_apps">Mostrar o rótulo de todos os apps</string>
     <string name="title__drawer_sort">Classificação dos apps</string>
     <string name="pref_value_disabled">Desativado</string>
@@ -87,7 +86,7 @@
     <string name="grid_size_width">Largura</string>
     <string name="grid_size_height">Altura</string>
     <string name="summary__full_width_widgets">Permitir que os widgets ocupem toda a largura sem preenchimento</string>
-    <string name="title__desktop_multiline_labels">Nome dos apps em multilinha</string>
+    <string name="title__multiline_labels">Nome dos apps em multilinha</string>
     <string name="title__desktop_hide_icon_labels">Esconder o rótulo dos ícones na tela inicial</string>
     <string name="title__desktop_grid_size">Tamanho da grade</string>
     <string name="title__desktop_icon_size">Tamanho do ícone</string>

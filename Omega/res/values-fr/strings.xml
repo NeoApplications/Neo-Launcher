@@ -186,7 +186,6 @@
     <string name="title__drawer_hide_apps">Raccourcis des applications cachées</string>
     <string name="title__drawer_hide_icon_labels">Masquer le nom des applications</string>
     <string name="title__drawer_paged_apps">Vue des applications avec pagination</string>
-    <string name="title__drawer_mutliline_labels">Nom des applications sur plusieurs lignes</string>
     <string name="title__drawer_all_apps">Afficher le nom des applications</string>
     <string name="title__drawer_sort">Tri des applications</string>
     <string name="pref_value_disabled">Désactivé</string>
@@ -230,7 +229,7 @@
     <string name="title__dock_hotseat_icons">Compteur de l\'icône</string>
     <string name="grid_size_width">Largeur</string>
     <string name="grid_size_height">Hauteur</string>
-    <string name="title__desktop_multiline_labels">Nom des applications sur plusieurs lignes</string>
+    <string name="title__multiline_labels">Nom des applications sur plusieurs lignes</string>
     <string name="title__desktop_hide_icon_labels">Masquer l\'étiquette des icônes sur l\'écran d\'accueil</string>
     <string name="title__desktop_grid_size">Taille de la grille</string>
     <string name="gesture_dock_swipe_up">Glisser vers le haut à partir du Dock</string>

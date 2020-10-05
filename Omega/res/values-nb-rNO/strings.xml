@@ -29,7 +29,6 @@
     <string name="title__dock_search_bar">Vis søkefelt</string>
     <string name="title__drawer_hide_icon_labels">Skjul programnavn</string>
     <string name="title__drawer_paged_apps">Sideinndelt programoversikt</string>
-    <string name="title__drawer_mutliline_labels">Programnavn på flere linjer</string>
     <string name="title__drawer_all_apps">Vis alle programetiketter</string>
     <string name="title__drawer_sort">Programsortering</string>
     <string name="pref_appcategorization_folders_title">Mapper</string>
