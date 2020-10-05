@@ -35,6 +35,7 @@
         android:defaultValue="true"
         android:key="pref_hideDockLabels"
         android:persistent="true"
+        android:disableDependentsState="true"
         android:title="@string/title__dock_hide_labels"
         app:iconSpaceReserved="false" />
 
@@ -43,7 +44,8 @@
         android:title="@string/title__multiline_labels"
         android:defaultValue="false"
         android:dependency="pref_hideDockLabels"
-        android:persistent="true" />
+        android:persistent="true"
+        app:iconSpaceReserved="false" />
 
     <com.saggitt.omega.preferences.DockGridSizePreference
         android:key="pref_dock_grid_size"
