@@ -20,15 +20,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.os.Process
 import com.android.launcher3.AppInfo
-import com.android.launcher3.R
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.util.PackageManagerHelper
 import com.saggitt.omega.allapps.CustomAppFilter
+import com.saggitt.omega.predictions.CustomAppPredictor
 
 object IconPreviewUtils {
 
     private fun getPreviewPackages(resources: Resources): Array<String> {
-        return resources.getStringArray(R.array.icon_shape_preview_packages)
+        return CustomAppPredictor.PLACE_HOLDERS
     }
 
     fun getPreviewAppInfos(context: Context): List<AppInfo> {

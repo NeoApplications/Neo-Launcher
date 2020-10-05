@@ -258,7 +258,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
         // misc
         putBoolean("pref_add_icon_to_home", prefs.getBoolean("pref_autoAddShortcuts", true))
-        putString("pref_iconShape", "")
         putInt("pref_notification_background", R.color.notification_background)
         putBoolean("pref_allAppsGoogleSearch", false)
         putFloat("pref_dockScale", 0.90f)

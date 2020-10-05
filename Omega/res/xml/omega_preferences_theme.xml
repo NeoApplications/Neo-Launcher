@@ -26,7 +26,7 @@
         android:persistent="true"
         android:summary="%s"
         android:title="@string/title__theme_icon_shape"
-        app:controllerClass="com.saggitt.omega.settings.controllers.IconShapeOverrideController"
+        app:controllerClass=".IconShapeOverrideController"
         app:iconSpaceReserved="false" />
 
     <Preference
