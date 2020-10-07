@@ -21,13 +21,18 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import com.android.launcher3.R;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class YandexWebSearchProvider extends WebSearchProvider {
+
+    private Context mContext;
+
     public YandexWebSearchProvider(@NotNull Context context) {
         super(context);
+        mContext = context;
     }
 
     @NotNull
@@ -45,7 +50,7 @@ public class YandexWebSearchProvider extends WebSearchProvider {
     @Nullable
     @Override
     protected String getSuggestionsUrl() {
-        return "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=${context.locale.language}";
+        return "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=" + OmegaUtilsKt.getLocale(mContext).getLanguage();
     }
 
     @NotNull

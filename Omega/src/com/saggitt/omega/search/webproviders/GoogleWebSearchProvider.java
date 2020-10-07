@@ -21,13 +21,16 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import com.android.launcher3.R;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GoogleWebSearchProvider extends WebSearchProvider {
+    private Context mContext;
     public GoogleWebSearchProvider(@NotNull Context context) {
         super(context);
+        mContext = context;
     }
 
     @NotNull
@@ -45,7 +48,7 @@ public class GoogleWebSearchProvider extends WebSearchProvider {
     @Nullable
     @Override
     protected String getSuggestionsUrl() {
-        return "https://www.google.com/complete/search?client=chrome&q=%s&hl=${context.locale.language}";
+        return "https://www.google.com/complete/search?client=chrome&q=%s&hl=" + OmegaUtilsKt.getLocale(mContext).getLanguage();
     }
 
     @NotNull
