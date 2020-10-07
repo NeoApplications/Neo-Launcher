@@ -73,6 +73,7 @@ import android.view.ViewConfiguration;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -683,39 +684,32 @@ public final class Utilities {
             CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
             TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
+    @Nullable
     public static Bitmap drawableToBitmap(Drawable drawable) {
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            return null;
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+        return Utilities.drawableToBitmap(drawable, true);
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
+        return drawableToBitmap(drawable, forceCreate, 0);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
         if (!forceCreate && drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
 
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            return null;
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+
+        if (width <= 0 || height <= 0) {
+            if (fallbackSize > 0) {
+                width = height = fallbackSize;
+            } else {
+                return null;
+            }
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(
-                drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -813,6 +807,9 @@ public final class Utilities {
     public static void openURLinBrowser(Context context, String url, Rect sourceBounds, Bundle options) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            if (!(context instanceof Activity)) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             intent.setSourceBounds(sourceBounds);
             if (options == null) {
                 context.startActivity(intent);
