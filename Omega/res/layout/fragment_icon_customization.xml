@@ -23,21 +23,65 @@
         android:id="@+id/preview_frame"
         layout="@layout/desktop_preview" />
 
-    <View
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
-        android:layout_marginEnd="?android:attr/listPreferredItemPaddingStart"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="?android:listDivider" />
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="true"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbars="horizontal">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/shapeView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:nestedScrollingEnabled="false" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shape_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" />
 
+        <View
+            android:id="@+id/list_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/shape_view"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="?android:attr/listPreferredItemPaddingStart"
+            android:layout_marginBottom="8dp"
+            android:background="?android:listDivider" />
+
+        <include
+            android:id="@+id/shapeless_icons"
+            layout="@layout/custom_icon_shapeless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/list_divider" />
+
+        <include
+            android:id="@+id/legacy_icons"
+            layout="@layout/custom_icon_legacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shapeless_icons" />
+
+        <include
+            android:id="@+id/colored_icons"
+            layout="@layout/custom_icon_colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/legacy_icons" />
+
+        <include
+            android:id="@+id/white_icons"
+            layout="@layout/custom_icon_white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/colored_icons" />
+
+        <include
+            android:id="@+id/adaptive_icons"
+            layout="@layout/custom_icon_adaptive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/white_icons" />
+    </RelativeLayout>
 </LinearLayout>

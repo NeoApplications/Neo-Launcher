@@ -18,6 +18,7 @@ package com.saggitt.omega.icons
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,11 +26,13 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import java.util.*
 
 class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomizeAdapter.Holder>() {
-    val adapterItems = ArrayList<String>()
-    val mContext = context
+    private val adapterItems = ArrayList<String>()
+    private val mContext = context
+    private var currentShape: String? = null
 
     init {
         val currentItems = context.resources.getStringArray(R.array.icon_shape_values)
@@ -56,10 +59,13 @@ class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomiz
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val iconButton = itemView.findViewById<Button>(R.id.shape_icon)
         private val check = itemView.findViewById<ImageView>(R.id.check_mark)
+        private var prefs = Utilities.getOmegaPrefs(mContext);
 
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(item: String) {
             var drawable = mContext.getDrawable(R.drawable.shape_circle)
+
+            check.visibility = View.INVISIBLE
             when (item) {
                 TYPE_CIRLE -> drawable = mContext.getDrawable(R.drawable.shape_circle)
                 TYPE_SQUARE -> drawable = mContext.getDrawable(R.drawable.shape_square)
@@ -68,8 +74,27 @@ class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomiz
                 TYPE_TEARDROP -> drawable = mContext.getDrawable(R.drawable.shape_teardrop)
                 TYPE_CYLINDER -> drawable = mContext.getDrawable(R.drawable.shape_cylinder)
             }
+
+            if (prefs.iconShape == item) {
+                drawable!!.setTint(prefs.accentColor)
+                currentShape = item
+                check.drawable.setTint(Color.WHITE)
+                check.visibility = View.VISIBLE
+            }
+
             iconButton.background = drawable
-            check.visibility = View.INVISIBLE
+            iconButton.setOnClickListener {
+                onButtonClick(item)
+            }
+        }
+
+        private fun onButtonClick(shape: String) {
+            if (prefs.iconShape != shape) {
+                Utilities.getPrefs(mContext)
+                        .edit()
+                        .putString("pref_iconShape", shape)
+                        .apply()
+            }
         }
     }
 

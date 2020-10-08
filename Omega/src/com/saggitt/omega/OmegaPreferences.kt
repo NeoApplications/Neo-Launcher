@@ -65,7 +65,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val reloadAll = { reloadAll() }
     private val refreshGrid = { refreshGrid() }
     val updateBlur = { updateBlur() }
-    private val reloadIcons = { reloadIcons() }
+    val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
     val recreate = { recreate() }
     private val omegaConfig = Config(context)
@@ -103,7 +103,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
     val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
-
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -145,17 +144,20 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)
 
+    var iconShape by StringPref("pref_iconShape", "", doNothing)
     private var iconPack by StringPref("pref_icon_pack", "", reloadIconPacks)
     val iconPacks = object : MutableListPref<String>("pref_iconPacks", reloadIconPacks,
             if (!TextUtils.isEmpty(iconPack)) listOf(iconPack) else omegaConfig.defaultIconPacks.asList()) {
-
         override fun unflattenValue(value: String) = value
     }
-    val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, reloadIcons)
-    val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, reloadIcons)
-    val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, reloadIcons)
-    val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
+
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
+
+    val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, doNothing)
+    val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, doNothing)
+    val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
+    val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, doNothing)
+    val forceShapeless by BooleanPref("pref_forceShapeless", false, doNothing)
 
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
@@ -233,7 +235,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
                 }
     }
 
-    fun migrateConfig(prefs: SharedPreferences) {
+    private fun migrateConfig(prefs: SharedPreferences) {
         val version = prefs.getInt(VERSION_KEY, CURRENT_VERSION)
         if (version != CURRENT_VERSION) {
             with(prefs.edit()) {

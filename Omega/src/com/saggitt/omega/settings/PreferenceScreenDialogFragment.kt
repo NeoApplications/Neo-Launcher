@@ -35,7 +35,7 @@ class PreferenceScreenDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val content = arguments!!.getInt(KEY_CONTENT)
+        val content = requireArguments().getInt(KEY_CONTENT)
         val fragment = SettingsActivity.DialogSettingsFragment.newInstance("", content)
         childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_content, fragment)
@@ -43,7 +43,7 @@ class PreferenceScreenDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return Dialog(activity!!, activity!!.getThemeAttr(R.attr.alertDialogTheme))
+        return Dialog(requireActivity(), requireActivity().getThemeAttr(R.attr.alertDialogTheme))
     }
 
     companion object {

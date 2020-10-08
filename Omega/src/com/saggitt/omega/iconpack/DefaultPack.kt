@@ -17,6 +17,7 @@
 
 package com.saggitt.omega.iconpack
 
+
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
@@ -38,8 +39,10 @@ import com.saggitt.omega.icons.CustomDrawableFactory
 import com.saggitt.omega.icons.CustomIconProvider
 import com.saggitt.omega.icons.calendar.DynamicCalendar.GOOGLE_CALENDAR
 import com.saggitt.omega.icons.clock.DynamicClock
+import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.getLauncherActivityInfo
 import com.saggitt.omega.util.omegaPrefs
+import com.saggitt.omega.util.overrideSdk
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -91,12 +94,17 @@ class DefaultPack(context: Context) : IconPack(context, "") {
 
         val info = key.getLauncherActivityInfo(context) ?: return null
         val component = key.componentName
-        val originalIcon = info.getIcon(iconDpi).apply { mutate() }
-        var roundIcon: Drawable? = null
-        getRoundIcon(component, iconDpi)?.let {
-            roundIcon = it.apply { mutate() }
+        var originalIcon = info.getIcon(iconDpi).apply { mutate() }
+        getLegacyIcon(component, iconDpi, prefs.forceShapeless)?.let {
+            originalIcon = it.apply { mutate() }
         }
-        val gen = AdaptiveIconGenerator(context, roundIcon ?: originalIcon)
+        var roundIcon: Drawable? = null
+        if (!prefs.forceShapeless) {
+            getRoundIcon(component, iconDpi)?.let {
+                roundIcon = it.apply { mutate() }
+            }
+        }
+        val gen = AdaptiveIconGenerator(context, originalIcon, roundIcon)
         return gen.result
     }
 
@@ -117,13 +125,18 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         }
         val component = key.componentName
         val packageName = component.packageName
-        val originalIcon = info.getIcon(iconDpi).apply { mutate() }
+        var originalIcon = info.getIcon(iconDpi).apply { mutate() }
+        getLegacyIcon(component, iconDpi, prefs.forceShapeless)?.let {
+            originalIcon = it.apply { mutate() }
+        }
         if (iconProvider == null || (GOOGLE_CALENDAR != packageName && DynamicClock.DESK_CLOCK != component)) {
             var roundIcon: Drawable? = null
-            getRoundIcon(component, iconDpi)?.let {
-                roundIcon = it.apply { mutate() }
+            if (!prefs.forceShapeless) {
+                getRoundIcon(component, iconDpi)?.let {
+                    roundIcon = it.apply { mutate() }
+                }
             }
-            val gen = AdaptiveIconGenerator(context, roundIcon ?: originalIcon)
+            val gen = AdaptiveIconGenerator(context, originalIcon, roundIcon)
             return gen.result
         }
 
@@ -138,7 +151,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         ensureInitialLoadComplete()
 
         val drawable = DeepShortcutManager.getInstance(context).getShortcutIconDrawable(shortcutInfo, iconDpi)
-        val gen = AdaptiveIconGenerator(context, drawable)
+        val gen = AdaptiveIconGenerator(context, drawable, null)
         return gen.result
     }
 
@@ -146,7 +159,7 @@ class DefaultPack(context: Context) : IconPack(context, "") {
         ensureInitialLoadComplete()
 
         val drawable = DeepShortcutManager.getInstance(context).getShortcutIconDrawable(shortcutInfo, iconDpi)
-        val gen = AdaptiveIconGenerator(context, drawable)
+        val gen = AdaptiveIconGenerator(context, drawable, null)
         return gen.result
     }
 
@@ -203,6 +216,63 @@ class DefaultPack(context: Context) : IconPack(context, "") {
 
             if (appIcon != null) {
                 val resId = Utilities.parseResourceIdentifier(resourcesForApplication, appIcon, component.packageName)
+                return resourcesForApplication.getDrawableForDensity(resId, iconDpi)
+            }
+        } catch (ex: PackageManager.NameNotFoundException) {
+            ex.printStackTrace()
+        } catch (ex: Resources.NotFoundException) {
+            ex.printStackTrace()
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        } catch (ex: XmlPullParserException) {
+            ex.printStackTrace()
+        }
+
+        return null
+    }
+
+    private fun getLegacyIcon(component: ComponentName, iconDpi: Int, loadShapeless: Boolean): Drawable? {
+        var appIcon: String? = null
+        val elementTags = HashMap<String, String>()
+
+        try {
+            val resourcesForApplication = context.packageManager.getResourcesForApplication(component.packageName)
+            val info = context.packageManager.getApplicationInfo(component.packageName, PackageManager.GET_SHARED_LIBRARY_FILES or PackageManager.GET_META_DATA)
+
+            val parseXml = try {
+                // For apps which are installed as Split APKs the asset instance we can get via PM won't hold the right Manifest for us.
+                ApkAssets(info.publicSourceDir).openXml("AndroidManifest.xml")
+            } catch (ex: Exception) {
+                val assets = resourcesForApplication.assets
+                assets.openXmlResourceParser("AndroidManifest.xml")
+            }
+
+            while (parseXml.next() != XmlPullParser.END_DOCUMENT) {
+                if (parseXml.eventType == XmlPullParser.START_TAG) {
+                    val name = parseXml.name
+                    for (i in 0 until parseXml.attributeCount) {
+                        elementTags[parseXml.getAttributeName(i)] = parseXml.getAttributeValue(i)
+                    }
+                    if (elementTags.containsKey("icon")) {
+                        if (name == "application") {
+                            appIcon = elementTags["icon"]
+                        } else if ((name == "activity" || name == "activity-alias") &&
+                                elementTags.containsKey("name") &&
+                                elementTags["name"] == component.className) {
+                            appIcon = elementTags["icon"]
+                            break
+                        }
+                    }
+                    elementTags.clear()
+                }
+            }
+            parseXml.close()
+
+            if (appIcon != null) {
+                val resId = Utilities.parseResourceIdentifier(resourcesForApplication, appIcon, component.packageName)
+                if (loadShapeless) {
+                    return resourcesForApplication.overrideSdk(Build.VERSION_CODES.M) { getDrawable(resId) }
+                }
                 return resourcesForApplication.getDrawableForDensity(resId, iconDpi)
             }
         } catch (ex: PackageManager.NameNotFoundException) {

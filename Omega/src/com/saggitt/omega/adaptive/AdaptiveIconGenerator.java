@@ -27,6 +27,7 @@ import android.util.Log;
 import android.util.SparseIntArray;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.AdaptiveIconCompat;
@@ -65,6 +66,8 @@ public class AdaptiveIconGenerator {
     private final boolean treatWhite;
     private Context context;
     private Drawable icon;
+    private Drawable roundIcon;
+
     private boolean ranLoop;
     private boolean shouldWrap;
     private int backgroundColor = Color.WHITE;
@@ -82,9 +85,10 @@ public class AdaptiveIconGenerator {
 
     private AdaptiveIconCompat tmp;
 
-    public AdaptiveIconGenerator(Context context, @NonNull Drawable icon) {
+    public AdaptiveIconGenerator(Context context, @NonNull Drawable icon, @Nullable Drawable roundIcon) {
         this.context = context;
         this.icon = AdaptiveIconCompat.wrap(icon);
+        this.roundIcon = AdaptiveIconCompat.wrapNullable(roundIcon);
         OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
         shouldWrap = prefs.getEnableLegacyTreatment();
         extractColor = shouldWrap && prefs.getColorizedLegacyTreatment();
@@ -120,13 +124,16 @@ public class AdaptiveIconGenerator {
 
     private void loop() {
         if (Utilities.ATLEAST_OREO && shouldWrap) {
+            if (roundIcon != null && roundIcon instanceof AdaptiveIconCompat) {
+                icon = roundIcon;
+            }
             Drawable extractee = icon;
             if (icon instanceof AdaptiveIconCompat) {
                 if (!treatWhite) {
                     onExitLoop();
                     return;
                 }
-                AdaptiveIconCompat aid = (AdaptiveIconCompat) icon;
+                AdaptiveIconCompat aid = (AdaptiveIconCompat) extractee;
                 // we still check this seperately as this is the only information we need from the background
                 if (!isSingleColor(aid.getBackground(), Color.WHITE)) {
                     onExitLoop();
@@ -150,7 +157,8 @@ public class AdaptiveIconGenerator {
             RectF bounds = new RectF();
 
             initTmpIfNeeded();
-            scale = normalizer.getScale(extractee, bounds, tmp.getIconMask(), outShape);
+            //scale = normalizer.getScale(extractee, bounds, tmp.getIconMask(), outShape);
+            scale = normalizer.getScale(extractee, bounds, tmp.getIconMask(), outShape, MIN_VISIBLE_ALPHA);
             matchesMaskShape = outShape[0];
 
             if (extractee instanceof ColorDrawable) {
@@ -223,7 +231,7 @@ public class AdaptiveIconGenerator {
                     if (transparentScore > maxTransparent) {
                         isFullBleed = false;
                         fullBleedChecked = true;
-                        if (!extractColor) {
+                        if (!extractColor && transparentScore > noMixinScore) {
                             break;
                         }
                     }
@@ -297,6 +305,13 @@ public class AdaptiveIconGenerator {
 
     private Drawable genResult() {
         if (!Utilities.ATLEAST_OREO || !shouldWrap) {
+            if (roundIcon != null) {
+                if (icon instanceof AdaptiveIconCompat &&
+                        !(roundIcon instanceof AdaptiveIconCompat)) {
+                    return icon;
+                }
+                return roundIcon;
+            }
             return icon;
         }
         if (icon instanceof AdaptiveIconCompat) {

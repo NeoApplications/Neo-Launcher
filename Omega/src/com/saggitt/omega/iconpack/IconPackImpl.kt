@@ -223,7 +223,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
                     drawable = DynamicDrawable.getIcon(context, drawable, packDynamicDrawables[drawableId]!!, iconDpi)
                 }
                 if (prefs.adaptifyIconPacks) {
-                    val gen = AdaptiveIconGenerator(context, drawable.mutate())
+                    val gen = AdaptiveIconGenerator(context, drawable.mutate(), null)
                     return gen.result
                 }
                 return drawable.mutate()
@@ -258,7 +258,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
                     drawable = DynamicDrawable.getIcon(context, drawable, packDynamicDrawables[drawableId]!!, iconDpi)
                 }
                 if (prefs.adaptifyIconPacks) {
-                    val gen = AdaptiveIconGenerator(context, drawable.mutate())
+                    val gen = AdaptiveIconGenerator(context, drawable.mutate(), null)
                     return gen.result
                 }
                 return drawable.mutate()
@@ -272,7 +272,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
                     customIconEntry, iconProvider)
             val icon = packMask.getIcon(context, baseIcon, launcherActivityInfo.componentName)
             if (prefs.adaptifyIconPacks) {
-                val gen = AdaptiveIconGenerator(context, icon)
+                val gen = AdaptiveIconGenerator(context, icon, null)
                 return gen.result
             }
             return icon
@@ -290,7 +290,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
             if (baseIcon != null) {
                 val icon = packMask.getIcon(context, baseIcon, shortcutInfo.activity)
                 if (prefs.adaptifyIconPacks) {
-                    val gen = AdaptiveIconGenerator(context, icon)
+                    val gen = AdaptiveIconGenerator(context, icon, null)
                     return gen.result
                 }
                 return icon
@@ -309,7 +309,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
             if (baseIcon != null) {
                 val icon = packMask.getIcon(context, baseIcon, shortcutInfo.activity)
                 if (prefs.adaptifyIconPacks) {
-                    val gen = AdaptiveIconGenerator(context, icon)
+                    val gen = AdaptiveIconGenerator(context, icon, null)
                     return gen.result
                 }
                 return icon
@@ -472,7 +472,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
             val baseIcon = defaultPack.getIcon(key, density)!!
             val icon = packMask.getIcon(context, baseIcon, key.componentName)
             if (prefs.adaptifyIconPacks) {
-                val gen = AdaptiveIconGenerator(context, icon)
+                val gen = AdaptiveIconGenerator(context, icon, null)
                 return gen.result
             }
             return icon

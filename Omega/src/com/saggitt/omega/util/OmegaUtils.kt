@@ -345,7 +345,6 @@ fun BgDataModel.workspaceContains(packageName: String): Boolean {
     return this.workspaceItems.any { it.targetComponent?.packageName == packageName }
 }
 
-
 fun Switch.applyColor(color: Int) {
     val colorForeground = Themes.getAttrColor(context, android.R.attr.colorForeground)
     val alphaDisabled = Themes.getAlpha(context, android.R.attr.disabledAlpha)

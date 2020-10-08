@@ -169,7 +169,7 @@ public class BaseIconFactory implements AutoCloseable {
         }
         icon = normalizeAndWrapToAdaptiveIcon(icon, shrinkNonAdaptiveIcons, null, scale);
         Bitmap bitmap = createIconBitmap(icon, scale[0]);
-        if (ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+        if (ATLEAST_OREO && icon instanceof AdaptiveIconCompat) {
             mCanvas.setBitmap(bitmap);
             getShadowGenerator().recreateIcon(Bitmap.createBitmap(bitmap), mCanvas);
             mCanvas.setBitmap(null);
@@ -214,9 +214,6 @@ public class BaseIconFactory implements AutoCloseable {
 
     private Drawable normalizeAndWrapToAdaptiveIcon(@NonNull Drawable icon,
                                                     boolean shrinkNonAdaptiveIcons, RectF outIconBounds, float[] outScale) {
-        if (icon == null) {
-            return null;
-        }
         float scale;
 
         if (shrinkNonAdaptiveIcons && ATLEAST_OREO) {

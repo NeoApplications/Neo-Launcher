@@ -24,21 +24,15 @@
         android:layout_height="@dimen/icon_preview_size"
         android:layout_margin="8dp"
         android:gravity="center"
-        android:background="@drawable/shape_teardrop" />
+        android:background="@drawable/shape_teardrop"
+        android:elevation="2dp" />
 
-    <LinearLayout
-        android:id="@android:id/widget_frame"
+    <ImageView
+        android:id="@+id/check_mark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:orientation="vertical"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp">
-
-        <ImageView
-            android:id="@+id/check_mark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_check" />
-    </LinearLayout>
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_check"
+        android:elevation="4dp" />
 </RelativeLayout>
