@@ -19,15 +19,18 @@ package com.saggitt.omega.util
 
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Handler
 import android.os.Looper
+import android.service.notification.StatusBarNotification
 import android.text.TextUtils
 import android.util.Property
 import android.util.TypedValue
@@ -54,6 +57,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
+import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.iconpack.CustomIconUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -163,6 +167,41 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
     } else {
         handler.post(r)
     }
+}
+
+fun ViewGroup.getAllChilds() = ArrayList<View>().also { getAllChilds(it) }
+
+fun ViewGroup.getAllChilds(list: MutableList<View>) {
+    for (i in (0 until childCount)) {
+        val child = getChildAt(i)
+        if (child is ViewGroup) {
+            child.getAllChilds(list)
+        } else {
+            list.add(child)
+        }
+    }
+}
+
+fun StatusBarNotification.loadSmallIcon(context: Context): Drawable? {
+    return notification.smallIcon?.loadDrawable(context)
+}
+
+fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
+    try {
+        val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+        info.requestedPermissions.forEachIndexed { index, s ->
+            if (s == permissionName) {
+                return info.requestedPermissionsFlags[index].hasFlag(REQUESTED_PERMISSION_GRANTED)
+            }
+        }
+    } catch (e: PackageManager.NameNotFoundException) {
+    }
+    return false
+}
+
+fun openPopupMenu(view: View, rect: RectF?, vararg items: OptionsPopupView.OptionItem) {
+    val launcher = Launcher.getLauncher(view.context)
+    OptionsPopupView.show(launcher, rect ?: RectF(launcher.getViewBounds(view)), items.toList())
 }
 
 fun Context.getLauncherOrNull(): Launcher? {
@@ -539,3 +578,6 @@ class JavaField<T>(private val targetObject: Any, fieldName: String, targetClass
         field.set(targetObject, value)
     }
 }
+
+inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
+inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
