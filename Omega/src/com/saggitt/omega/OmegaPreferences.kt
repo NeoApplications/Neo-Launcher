@@ -39,11 +39,9 @@ import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.smartspace.*
 import com.saggitt.omega.theme.ThemeManager
-import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.dpToPx
-import com.saggitt.omega.util.pxToDp
-import com.saggitt.omega.util.runOnMainThread
+import com.saggitt.omega.util.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -65,6 +63,10 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val reloadAll = { reloadAll() }
     private val refreshGrid = { refreshGrid() }
     val updateBlur = { updateBlur() }
+    private val resetAllApps = { onChangeCallback?.resetAllApps() ?: Unit }
+    private val updateSmartspace = { updateSmartspace() }
+    private val updateWeatherData = { onChangeCallback?.updateWeatherData() ?: Unit }
+
     val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
     val recreate = { recreate() }
@@ -152,7 +154,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     }
 
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
-
     val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, doNothing)
     val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, doNothing)
     val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
@@ -163,6 +164,28 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
     val folderBadgeCount by BooleanPref("pref_folder_badge_count", true, recreate)
     val notificationBackground by IntPref("pref_notification_background", R.color.notification_background, recreate)
+
+    /* --SMARTSPACE-- */
+    var usePillQsb by BooleanPref("pref_use_pill_qsb", false, recreate)
+    val smartspaceTime by BooleanPref("pref_smartspace_time", false, refreshGrid)
+    val smartspaceDate by BooleanPref("pref_smartspace_date", true, refreshGrid)
+    val smartspaceTimeAbove by BooleanPref("pref_smartspace_time_above", false, refreshGrid)
+    val smartspaceTime24H by BooleanPref("pref_smartspace_time_24_h", false, refreshGrid)
+
+    val weatherUnit by StringBasedPref("pref_weather_units", Temperature.Unit.Celsius, ::updateSmartspaceProvider,
+            Temperature.Companion::unitFromString, Temperature.Companion::unitToString) { }
+    var smartspaceWidgetId by IntPref("smartspace_widget_id", -1, doNothing)
+    var weatherIconPack by StringPref("pref_weatherIcons", "", updateWeatherData)
+    var weatherProvider by StringPref("pref_smartspace_widget_provider",
+            SmartspaceDataWidget::class.java.name, ::updateSmartspaceProvider)
+    var eventProvider by StringPref("pref_smartspace_event_provider",
+            SmartspaceDataWidget::class.java.name, ::updateSmartspaceProvider)
+    var eventProviders = StringListPref("pref_smartspace_event_providers",
+            ::updateSmartspaceProvider, listOf(eventProvider,
+            NotificationUnreadProvider::class.java.name,
+            NowPlayingProvider::class.java.name,
+            BatteryStatusProvider::class.java.name,
+            PersonalityProvider::class.java.name))
 
     /* --ADVANCED-- */
     var settingsSearch by BooleanPref("pref_settings_search", true, restart)
@@ -323,6 +346,14 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         onChangeCallback?.updateBlur()
     }
 
+    private fun updateSmartspaceProvider() {
+        onChangeCallback?.updateSmartspaceProvider()
+    }
+
+    private fun updateSmartspace() {
+        onChangeCallback?.updateSmartspace()
+    }
+
     fun reloadIcons() {
         LauncherAppState.getInstance(context).reloadIconCache()
         runOnMainThread {
@@ -408,6 +439,16 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     }
 
     //PREFERENCE CLASSES
+
+    inner class StringListPref(prefKey: String,
+                               onChange: () -> Unit = doNothing,
+                               default: List<String> = emptyList())
+        : MutableListPref<String>(prefKey, onChange, default) {
+
+        override fun unflattenValue(value: String) = value
+        override fun flattenValue(value: String) = value
+    }
+
     abstract inner class MutableListPref<T>(private val prefs: SharedPreferences, private val prefKey: String,
                                             onChange: () -> Unit = doNothing,
                                             default: List<T> = emptyList()) : PrefDelegate<List<T>>(prefKey, default, onChange) {

@@ -52,4 +52,20 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
     fun forceReloadApps() {
         UserManagerCompat.getInstance(launcher).userProfiles.forEach { launcher.model.forceReload() }
     }
+
+    fun resetAllApps() {
+        launcher.mAllAppsController.reset()
+    }
+
+    fun updateSmartspaceProvider() {
+        launcher.omegaApp.smartspace.onProviderChanged()
+    }
+
+    fun updateSmartspace() {
+        launcher.refreshGrid()
+    }
+
+    fun updateWeatherData() {
+        launcher.omegaApp.smartspace.forceUpdateWeather()
+    }
 }

@@ -208,6 +208,80 @@
     <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>
+    <string name="smartspace_add_to_home">Add to Desktop</string>
+    <string name="smartspace_setup_text">Tap to Set Up</string>
+    <string name="smartspace_now">now</string>
+    <string name="smartspace_in_time">in %1$s</string>
+    <string name="smartspace_hours_mins">%1$s %2$s</string>
+
+    <string name="smartspace_widget_provider_not_found">Get the Google App.</string>
+    <string name="zen_mode_enabled">Do Not Disturb is enabled.</string>
+    <string name="home_widget">At a Glance</string>
+    <string name="battery_charging">Charging</string>
+    <string name="battery_full">Charged</string>
+    <string name="battery_low">Battery Low</string>
+    <string name="event_provider_missing_notification_access">To use <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable notifications from <xliff:g example="My App" id="name">“%2$s”.</xliff:g></string>
+    <string name="event_provider_missing_notification_dots">To use <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable Notification Dots.</string>
+
+    <string name="permission_iplocate">Approximate Location</string>
+    <string name="permission_iplocate_twilight_explanation">Allow access to your approximate location? This enables more accurate daylight calculation.</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
+    <string name="smartspace_provider_calendar">Calendar events</string>
+    <string name="personality_provider">Greetings</string>
+
+    <string name="onbording">Onboarding</string>
+    <string name="onbording_settings_title">Set Up %s</string>
+    <string name="onbording_settings_summary">Touch &amp; hold on the Desktop.</string>
+    <string name="onboarding_swipe_up">Swipe up to open the Drawer.</string>
+
+    <string name="weather_icons_default">Default</string>
+    <string name="weather_provider_disabled">Disabled</string>
+    <string name="weather_provider_testing">Debug</string>
+    <string name="weather_provider_pe">Pixel Experience</string>
+    <string name="weather_provider_oneplus_weather">OnePlus Weather</string>
+    <string name="event_provider_now_playing">Now Playing</string>
+    <string name="event_provider_unread_notifications">Notifications</string>
+    <string name="battery_status">Battery Status</string>
+
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
+    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
+    <string name="icu_abbrev_time">HH:mm</string>
+    <string name="icu_abbrev_time_12h">hh:mm aa</string>
+    <string name="icu_abbrev_date"> dd MMMM</string>
+
+
+    <string-array name="greetings_morning">
+        <item>Good morning!</item>
+        <item>Have a great day!</item>
+        <item>It’s a beautiful day outside!</item>
+    </string-array>
+
+    <string-array name="greetings_evening">
+        <item>What’s up?</item>
+        <item>Good evening!</item>
+        <item>How did your day go?</item>
+        <item>How was your day?</item>
+    </string-array>
+
+    <string-array name="greetings_night">
+        <item>Sleep well!</item>
+        <item>See you tomorrow!</item>
+        <item>Good night!</item>
+        <item>Don’t stay up too late!</item>
+    </string-array>
+
+
+    <!-- Pixel 1 -->
+    <dimen name="qsb_overlap_margin">0dp</dimen>
+    <dimen name="qsb_button_height">56dp</dimen>
+    <dimen name="qsb_button_elevation">3dp</dimen>
+    <dimen name="qsb_touch_extension">20dp</dimen>
+    <dimen name="qsb_shadow_blur_radius">1dp</dimen>
+    <dimen name="qsb_key_shadow_offset">1dp</dimen>
+    <dimen name="qsb_connector_gradient_end_padding">20dp</dimen>
+    <dimen name="qsb_min_width_with_mic">124dp</dimen>
+    <dimen name="qsb_min_width_portrait">96dp</dimen>
 
     <!-- PREFERENCES NOTIFICATION -->
     <string name="icon_badging_desc_on">On</string>

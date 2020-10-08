@@ -27,6 +27,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Handler
 import android.os.Looper
@@ -45,10 +46,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
-import com.android.launcher3.Launcher
-import com.android.launcher3.LauncherAppState
-import com.android.launcher3.LauncherModel
-import com.android.launcher3.Utilities
+import com.android.launcher3.*
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.model.BgDataModel
@@ -341,6 +339,22 @@ val Context.locale: Locale
             this.resources.configuration.locale
         }
     }
+
+fun createRipplePill(context: Context, color: Int, radius: Float): Drawable {
+    return RippleDrawable(
+            ContextCompat.getColorStateList(context, R.color.focused_background)!!,
+            createPill(color, radius),
+            createPill(color, radius)
+    )
+}
+
+fun createPill(color: Int, radius: Float): Drawable {
+    return GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        setColor(color)
+        cornerRadius = radius
+    }
+}
 
 
 operator fun XmlPullParser.get(index: Int): String? = getAttributeValue(index)

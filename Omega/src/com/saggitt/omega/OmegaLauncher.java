@@ -45,6 +45,7 @@ import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.iconpack.EditIconActivity;
 import com.saggitt.omega.override.CustomInfoProvider;
 import com.saggitt.omega.smartspace.FeedBridge;
+import com.saggitt.omega.smartspace.SmartspaceView;
 import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
@@ -247,5 +248,9 @@ public class OmegaLauncher extends Launcher {
         dummyView.setLayoutParams(lp);
         dummyView.requestLayout();
         dummyView.post(callback::invoke);
+    }
+
+    public void registerSmartspaceView(SmartspaceView smartspace) {
+        launcherCallbacks.registerSmartspaceView(smartspace);
     }
 }

@@ -63,6 +63,7 @@
             android:layout="@layout/home_preference"
             android:summary="@string/summary__general_smartspace"
             android:title="@string/title__general_smartspace"
+            app:hasPreview="true"
             app:content="@xml/omega_preferences_smartspace" />
 
         <com.saggitt.omega.preferences.SubPreference

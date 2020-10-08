@@ -16,15 +16,25 @@
 
 package com.saggitt.omega.views
 
+import android.app.ActivityOptions
+import android.content.ClipData
+import android.content.ClipDescription
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
+import android.graphics.Point
 import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
+import com.android.launcher3.LauncherAppWidgetProviderInfo
+import com.saggitt.omega.dragndrop.CustomWidgetDragListener
+import com.saggitt.omega.util.childs
 import com.saggitt.omega.wallpaper.WallpaperPreviewProvider
 
 class PreviewFrame(context: Context, attrs: AttributeSet?) :
-        FrameLayout(context, attrs), ViewTreeObserver.OnScrollChangedListener {
+        FrameLayout(context, attrs), View.OnLongClickListener, ViewTreeObserver.OnScrollChangedListener {
 
     private val viewLocation = IntArray(2)
     private val wallpaper = WallpaperPreviewProvider.getInstance(context).wallpaper
@@ -65,5 +75,52 @@ class PreviewFrame(context: Context, attrs: AttributeSet?) :
         canvas.restore()
 
         super.dispatchDraw(canvas)
+    }
+
+    override fun onLongClick(v: View): Boolean {
+        childs.filterIsInstance<CustomWidgetPreview>().firstOrNull()?.also {
+            val provider = it.provider
+            val bounds = clipBounds
+            val listener = CustomWidgetDragListener(provider, bounds,
+                    width, width)
+
+            val homeIntent = listener.addToIntent(
+                    Intent(Intent.ACTION_MAIN)
+                            .addCategory(Intent.CATEGORY_HOME)
+                            .setPackage(context.packageName)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+
+            listener.initWhenReady()
+            context.startActivity(
+                    homeIntent,
+                    ActivityOptions.makeCustomAnimation(
+                            context, 0, android.R.anim.fade_out).toBundle())
+
+            // Start a system drag and drop. We use a transparent bitmap as preview for system drag
+            // as the preview is handled internally by launcher.
+            val description = ClipDescription("", arrayOf(listener.mimeType))
+            val data = ClipData(description, ClipData.Item(""))
+            startDragAndDrop(data, object : DragShadowBuilder(this) {
+
+                override fun onDrawShadow(canvas: Canvas) {}
+
+                override fun onProvideShadowMetrics(
+                        outShadowSize: Point, outShadowTouchPoint: Point
+                ) {
+                    outShadowSize.set(10, 10)
+                    outShadowTouchPoint.set(5, 5)
+                }
+            }, null, View.DRAG_FLAG_GLOBAL)
+        }
+        return false
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        return true
+    }
+
+    interface CustomWidgetPreview {
+
+        val provider: LauncherAppWidgetProviderInfo
     }
 }
