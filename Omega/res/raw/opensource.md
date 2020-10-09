@@ -91,7 +91,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## SIL Open Font License, Version 1.1.
 * **"Kaushan Script" Font**
-opyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com),
+Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com),
 Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com),
 with Reserved Font Name Kaushan Script.
 http://scripts.sil.org/OFL
