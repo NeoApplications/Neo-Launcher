@@ -42,6 +42,7 @@ to discuss the development, issues and new features.<br/>
 -   [ ] Reorder empty screens.
 -   [ ] Back up and restore.
 -   [ ] Horizontal drawer.
+-   [ ] Add auto tab mode for drawer.
 -   [ ] Support for more news feeds (Like Microsoft Bing).
 -   [ ] Animations.
 
