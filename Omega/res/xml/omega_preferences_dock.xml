@@ -77,5 +77,6 @@
     <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
         android:key="pref_hotseatShowArrow"
         android:title="@string/title__dock_show_arrow"
+        android:defaultValue="true"
         android:persistent="true" />
 </PreferenceScreen>
