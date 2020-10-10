@@ -18,6 +18,7 @@
 package com.saggitt.omega
 
 import com.android.launcher3.compat.UserManagerCompat
+import com.android.launcher3.pageindicators.WorkspacePageIndicator
 import com.saggitt.omega.blur.BlurWallpaperProvider
 
 class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
@@ -55,6 +56,13 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
 
     fun resetAllApps() {
         launcher.mAllAppsController.reset()
+    }
+
+    fun updatePageIndicator() {
+        val indicator = launcher.workspace.pageIndicator
+        if (indicator is WorkspacePageIndicator) {
+            indicator.updateLineHeight()
+        }
     }
 
     fun updateSmartspaceProvider() {

@@ -78,5 +78,13 @@
         android:key="pref_hotseatShowArrow"
         android:title="@string/title__dock_show_arrow"
         android:defaultValue="true"
-        android:persistent="true" />
+        android:persistent="true"
+        app:iconSpaceReserved="false" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
+        android:key="pref_hotseatShowPageIndicator"
+        android:title="@string/hotseat_show_page_indicator"
+        android:defaultValue="true"
+        android:persistent="true"
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>

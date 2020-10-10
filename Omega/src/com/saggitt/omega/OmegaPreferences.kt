@@ -139,6 +139,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var dockRadius by FloatPref("pref_dockRadius", 16f, recreate)
     var dockShadow by BooleanPref("pref_dockShadow", false, recreate)
     var dockShowArrow by BooleanPref("pref_hotseatShowArrow", true, recreate)
+    val dockShowPageIndicator by BooleanPref("pref_hotseatShowPageIndicator", true, { onChangeCallback?.updatePageIndicator() })
     val dockBackground by BooleanPref("pref_dockBackground", false, recreate)
     inline val dockGradientStyle get() = !dockBackground
     var dockOpacity by AlphaPref("pref_hotseatCustomOpacity", -1, recreate)
