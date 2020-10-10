@@ -91,6 +91,8 @@ import com.saggitt.omega.preferences.SearchProviderPreference;
 import com.saggitt.omega.preferences.SelectSearchProviderFragment;
 import com.saggitt.omega.preferences.SingleDimensionGridSizeDialogFragmentCompat;
 import com.saggitt.omega.preferences.SingleDimensionGridSizePreference;
+import com.saggitt.omega.preferences.SmartspaceEventProvidersFragment;
+import com.saggitt.omega.preferences.SmartspaceEventProvidersPreference;
 import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
@@ -917,6 +919,8 @@ public class SettingsActivity extends SettingsBaseActivity
                         .newInstance((GesturePreference) preference);
             } else if (preference instanceof IconShapePreference) {
                 f = ((IconShapePreference) preference).createDialogFragment();
+            } else if (preference instanceof SmartspaceEventProvidersPreference) {
+                f = SmartspaceEventProvidersFragment.Companion.newInstance(preference.getKey());
             } else if (preference instanceof PreferenceDialogPreference) {
                 f = PreferenceScreenDialogFragment.Companion
                         .newInstance((PreferenceDialogPreference) preference);

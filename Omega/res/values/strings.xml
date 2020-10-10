@@ -209,7 +209,11 @@
     <string name="title_smartspace_date">Show Date</string>
     <string name="title_smartspace_time_24_h">Use 24-Hour Format</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>
+    <string name="title_smartspace_widget_provider">Weather source</string>
+    <string name="title_smartspace_weather_units">Temperature unit</string>
+    <string name="title_smartspace_event_providers">Events sources</string>
     <string name="pref_show_google_now_summary" translatable="false">@string/msg_minus_one_on_left</string>
+    <string name="category__behavior_weather">Weather</string>
     <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>
@@ -218,6 +222,7 @@
     <string name="smartspace_now">now</string>
     <string name="smartspace_in_time">in %1$s</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
+    <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
 
     <string name="smartspace_widget_provider_not_found">Get the Google App.</string>
     <string name="zen_mode_enabled">Do Not Disturb is enabled.</string>
@@ -256,6 +261,14 @@
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_date"> dd MMMM</string>
 
+    <string name="units_metric">Celsius</string>
+    <string name="units_imperial">Fahrenheit</string>
+    <string name="units_kelvin">Kelvin</string>
+    <string name="units_rakine">Rankine</string>
+    <string name="units_newton">Newton</string>
+    <string name="units_delisle">Delisle</string>
+    <string name="units_reaumur">Réaumur</string>
+    <string name="units_romer">Rømer</string>
 
     <string-array name="greetings_morning">
         <item>Good morning!</item>
@@ -276,7 +289,6 @@
         <item>Good night!</item>
         <item>Don’t stay up too late!</item>
     </string-array>
-
 
     <!-- Pixel 1 -->
     <dimen name="qsb_overlap_margin">0dp</dimen>
