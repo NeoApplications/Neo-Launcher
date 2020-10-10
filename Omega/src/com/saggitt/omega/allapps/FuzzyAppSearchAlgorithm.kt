@@ -29,7 +29,6 @@ import com.android.launcher3.allapps.search.AllAppsSearchBarController
 import com.android.launcher3.allapps.search.SearchAlgorithm
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
-import com.saggitt.omega.OmegaAppFilter
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.search.webproviders.WebSearchProvider
 import com.saggitt.omega.util.omegaPrefs

@@ -37,7 +37,6 @@ public class StyledSwitchPreferenceCompat extends SwitchPreference implements Co
     public StyledSwitchPreferenceCompat(Context context, AttributeSet attrs) {
         super(context, attrs);
         delegate = new Delegate(context, attrs);
-
     }
 
     public StyledSwitchPreferenceCompat(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -47,7 +46,7 @@ public class StyledSwitchPreferenceCompat extends SwitchPreference implements Co
 
     public void onBindViewHolder(@Nullable PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        checkableView = holder != null ? holder.findViewById(android.R.id.switch_widget) : null;
+        checkableView = holder.findViewById(android.R.id.switch_widget);
         OmegaUtilsKt.applyColor((Switch) checkableView, Utilities.getOmegaPrefs(getContext()).getAccentColor());
     }
 

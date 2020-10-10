@@ -164,7 +164,6 @@ public class AllAppsList {
     public void clear() {
         data.clear();
         mDataChanged = false;
-        ;
         removed.clear();
         // Reset the index as locales might have changed
         mIndex = new AlphabeticIndexCompat(LocaleList.getDefault());

@@ -16,15 +16,22 @@
 package com.android.launcher3.allapps;
 
 import android.content.Context;
+import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Process;
+import android.os.UserHandle;
 
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.AlphabeticIndexCompat;
+import com.android.launcher3.compat.LauncherAppsCompat;
+import com.android.launcher3.compat.UserManagerCompat;
+import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
@@ -361,7 +368,8 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
      * Returns whether there are no filtered results.
      */
     public boolean hasNoFilteredResults() {
-        return (mSearchResults != null) && mFilteredApps.isEmpty();
+        return (mSearchResults != null) && mFilteredApps.isEmpty() && (mSearchSuggestions != null) && mSearchSuggestions.isEmpty();
+
     }
 
     public boolean setSearchSuggestions(List<String> suggestions) {
@@ -616,11 +624,25 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         if (mSearchResults == null) {
             return mApps;
         }
+        LauncherAppsCompat launcherApps = LauncherAppsCompat.getInstance(mLauncher);
+        UserHandle user = Process.myUserHandle();
+        IconCache iconCache = LauncherAppState.getInstance(mLauncher).getIconCache();
+        boolean quietMode = UserManagerCompat.getInstance(mLauncher).isQuietModeEnabled(user);
         ArrayList<AppInfo> result = new ArrayList<>();
         for (ComponentKey key : mSearchResults) {
             AppInfo match = mAllAppsStore.getApp(key);
             if (match != null) {
                 result.add(match);
+            } else {
+                for (LauncherActivityInfo info : launcherApps
+                        .getActivityList(key.componentName.getPackageName(), user)) {
+                    if (info.getComponentName().equals(key.componentName)) {
+                        AppInfo appInfo = new AppInfo(info, user, quietMode);
+                        iconCache.getTitleAndIcon(appInfo, false);
+                        result.add(appInfo);
+                        break;
+                    }
+                }
             }
         }
         return result;

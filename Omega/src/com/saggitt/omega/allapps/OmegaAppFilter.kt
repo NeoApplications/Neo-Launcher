@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 Omega Launcher
+ * Copyright (c) 2020 Omega Launcher
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -12,34 +12,21 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
-package com.saggitt.omega
+package com.saggitt.omega.allapps
 
 import android.content.ComponentName
 import android.content.Context
 import android.os.UserHandle
-import com.android.launcher3.AppFilter
+import com.saggitt.omega.OmegaLauncher
 
-open class OmegaAppFilter(context: Context) : AppFilter() {
+open class OmegaAppFilter(context: Context) : NexusAppFilter(context) {
 
     private val mHideList = HashSet<ComponentName>()
 
     init {
         mHideList.add(ComponentName(context, OmegaLauncher::class.java.name))
-
-        //Voice Search
-        mHideList.add(ComponentName(context, "com.google.android.googlequicksearchbox/.VoiceSearchActivity"))
-
-        //Wallpapers
-        mHideList.add(ComponentName(context, "com.google.android.apps.wallpaper/.picker.CategoryPickerActivity"))
-
-        //Google Now Launcher
-        mHideList.add(ComponentName(context, "com.google.android.launcher/.StubApp"))
-
-        //Actions Services
-        mHideList.add(ComponentName(context, "com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity"))
     }
 
     override fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {

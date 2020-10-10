@@ -41,13 +41,14 @@ import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.LoaderResults;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LooperExecutor;
-import com.saggitt.omega.OmegaAppFilter;
 import com.saggitt.omega.allapps.FuzzyAppSearchAlgorithm;
+import com.saggitt.omega.allapps.OmegaAppFilter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -148,8 +149,8 @@ public class AppSearchProvider extends ContentProvider {
     }
 
     public boolean onCreate() {
-        this.mLooper = new LooperExecutor(MODEL_EXECUTOR.getLooper());
-        this.mApp = LauncherAppState.getInstance(this.getContext());
+        mLooper = new LooperExecutor(MODEL_EXECUTOR.getLooper());
+        mApp = LauncherAppState.getInstance(getContext());
         return true;
     }
 
@@ -159,7 +160,7 @@ public class AppSearchProvider extends ContentProvider {
             return null;
         }
         try {
-            final ComponentKey dl = uriToComponent(uri, this.getContext());
+            final ComponentKey dl = uriToComponent(uri, getContext());
             final String s2 = "image/png";
             final Callable<Bitmap> g = () -> {
                 final AppItemInfoWithIcon d = new AppItemInfoWithIcon(dl);
@@ -194,7 +195,8 @@ public class AppSearchProvider extends ContentProvider {
     }
 
     public AppFilter getBaseFilter() {
-        if (mBaseFilter == null) mBaseFilter = new OmegaAppFilter(getContext());
+        if (mBaseFilter == null)
+            mBaseFilter = new OmegaAppFilter(Objects.requireNonNull(getContext()));
         return mBaseFilter;
     }
 
@@ -212,11 +214,11 @@ public class AppSearchProvider extends ContentProvider {
         }
 
         public List<AppInfo> call() {
-            if (!this.mModel.isModelLoaded()) {
+            if (!mModel.isModelLoaded()) {
                 Log.d("AppSearchProvider", "Workspace not loaded, loading now");
-                this.mModel.startLoaderForResults(new LoaderResults(this.mApp, this.mBgDataModel, this.mAllAppsList, 0, null));
+                mModel.startLoaderForResults(new LoaderResults(this.mApp, this.mBgDataModel, this.mAllAppsList, 0, null));
             }
-            if (!this.mModel.isModelLoaded()) {
+            if (!mModel.isModelLoaded()) {
                 Log.d("AppSearchProvider", "Loading workspace failed");
                 return Collections.emptyList();
             }

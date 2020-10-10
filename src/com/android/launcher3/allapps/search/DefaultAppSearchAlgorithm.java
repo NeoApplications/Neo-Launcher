@@ -29,7 +29,7 @@ import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.util.ComponentKey;
-import com.saggitt.omega.OmegaAppFilter;
+import com.saggitt.omega.allapps.OmegaAppFilter;
 import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.search.SearchProviderController;
 import com.saggitt.omega.search.webproviders.WebSearchProvider;

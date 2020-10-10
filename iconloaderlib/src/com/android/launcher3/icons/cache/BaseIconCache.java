@@ -313,16 +313,24 @@ public abstract class BaseIconCache {
      * Retrieves the entry from the cache. If the entry is not present, it creates a new entry.
      * This method is not thread safe, it must be called from a synchronized method.
      */
+
     protected <T> CacheEntry cacheLocked(
             @NonNull ComponentName componentName, @NonNull UserHandle user,
             @NonNull Supplier<T> infoProvider, @NonNull CachingLogic<T> cachingLogic,
             boolean usePackageIcon, boolean useLowResIcon) {
-        assertWorkerThread();
+        return cacheLocked(componentName, user, infoProvider, cachingLogic, usePackageIcon,
+                useLowResIcon, true);
+    }
+
+    protected <T> CacheEntry cacheLocked(
+            @NonNull ComponentName componentName, @NonNull UserHandle user,
+            @NonNull Supplier<T> infoProvider, @NonNull CachingLogic<T> cachingLogic,
+            boolean usePackageIcon, boolean useLowResIcon, boolean addToMemCache) {
         ComponentKey cacheKey = new ComponentKey(componentName, user);
         CacheEntry entry = mCache.get(cacheKey);
         if (entry == null || (entry.isLowRes() && !useLowResIcon)) {
             entry = new CacheEntry();
-            if (cachingLogic.addToMemCache()) {
+            if (addToMemCache) {
                 mCache.put(cacheKey, entry);
             }
 

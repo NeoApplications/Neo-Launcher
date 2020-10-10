@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.OmegaAppFilter
+import com.saggitt.omega.allapps.OmegaAppFilter
 import com.saggitt.omega.views.RecyclerViewFragment
 
 class HiddenAppsFragment : RecyclerViewFragment(), SelectableAppsAdapter.Callback {

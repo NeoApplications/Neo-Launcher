@@ -1,8 +1,6 @@
 
 package com.android.launcher3.model;
 
-import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
-
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -10,9 +8,9 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.android.launcher3.AppFilter;
-import com.android.launcher3.icons.ComponentWithLabel;
-import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherAppWidgetProviderInfo;
@@ -22,6 +20,8 @@ import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.icons.ComponentWithLabel;
+import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import androidx.annotation.Nullable;
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
 
 /**
  * Widgets data model that is used by the adapters of the widget views and controllers.
@@ -189,7 +189,7 @@ public class WidgetsModel {
             if (mAppFilter == null) {
                 mAppFilter = AppFilter.newInstance(app.getContext());
             }
-            if (!mAppFilter.shouldShowApp(item.componentName)) {
+            if (!mAppFilter.shouldShowApp(item.componentName, item.user)) {
                 if (DEBUG) {
                     Log.d(TAG, String.format("%s is filtered and not added to the widget tray.",
                             item.componentName));

@@ -30,7 +30,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.saggitt.omega.OmegaAppFilter
+import com.saggitt.omega.allapps.OmegaAppFilter
 import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.settings.SettingsActivity
 import com.saggitt.omega.views.RecyclerViewFragment
