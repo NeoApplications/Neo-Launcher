@@ -279,7 +279,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putBoolean("pref_legacyUpgrade", true)
         putBoolean("pref_restoreSuccess", false)
 
-        putString("pref_iconShape", "")
+        putString("pref_iconShape", "square")
 
         // misc
         putBoolean("pref_add_icon_to_home", prefs.getBoolean("pref_autoAddShortcuts", true))
