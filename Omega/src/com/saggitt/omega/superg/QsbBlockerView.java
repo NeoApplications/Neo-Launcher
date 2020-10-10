@@ -35,13 +35,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class QsbBlockerView extends FrameLayout implements OnStateChangeListener, OmegaSmartspaceController.Listener, View.OnLongClickListener, View.OnClickListener {
     public static final Property<QsbBlockerView, Integer> QSB_BLOCKER_VIEW_ALPHA = new QsbBlockerViewAlpha(Integer.TYPE, "bgAlpha");
+    private final Paint mBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private OmegaSmartspaceController mController;
     private int mState = 0;
     private View mView;
-
     private BubbleTextView mDummyBubbleTextView;
-
-    private final Paint mBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public QsbBlockerView(Context context, AttributeSet attrs) {
         super(context, attrs);

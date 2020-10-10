@@ -90,7 +90,7 @@
     <string name="icon_badging_desc_on">Activado</string>
     <string name="smartspace_preferences">Preferencias</string>
     <string name="msg_minus_one_on_left">A la izquierda de la pantalla principal</string>
-    <string name="title__smartspace_feed_theme">Tema del Feed</string>
+    <string name="title_smartspace_feed_theme">Tema del Feed</string>
     <string name="color_presets">Predeterminados</string>
     <string name="icon_shape_override_label_location">en la pantalla de inicio</string>
     <string name="get_more_icon_packs">Obtener mas</string>

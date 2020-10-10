@@ -203,7 +203,12 @@
 
     <!-- PREFERENCES SMARTSPACE -->
     <string name="title_show_google_app">Show Google app</string>
-    <string name="title__smartspace_feed_theme">Feed Theme</string>
+    <string name="title_smartspace_feed_theme">Feed Theme</string>
+    <string name="title_use_pill_qsb">Show Pill Search Shortcut</string>
+    <string name="title_smartspace_time">Show Time</string>
+    <string name="title_smartspace_date">Show Date</string>
+    <string name="title_smartspace_time_24_h">Use 24-Hour Format</string>
+    <string name="title_smartspace_time_above">Show Large Clock</string>
     <string name="pref_show_google_now_summary" translatable="false">@string/msg_minus_one_on_left</string>
     <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->
@@ -244,6 +249,7 @@
     <string name="event_provider_unread_notifications">Notifications</string>
     <string name="battery_status">Battery Status</string>
 
+    <string name="week_day_format">%1$s, %2$s</string>
     <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
     <string name="icu_abbrev_time">HH:mm</string>

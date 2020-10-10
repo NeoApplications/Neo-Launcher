@@ -35,7 +35,7 @@ public class DashItemAdapter {
 
     public DashItemAdapter(LayoutInflater inflater, ArrayList<DashModel> items, Context context) {
         mContext = context;
-        this.mItemViews = new ArrayList<>();
+        mItemViews = new ArrayList<>();
         for (DashModel dashItem : items) {
             View view = inflater.inflate(R.layout.dash_item, null);
             ImageView itemView = view.findViewById(R.id.bt_item);
@@ -77,7 +77,7 @@ public class DashItemAdapter {
     }
 
     public void setOnItemChangeListener(DashItemChangeListener listener) {
-        this.circularItemChangeListener = listener;
+        circularItemChangeListener = listener;
     }
 
     public void notifyItemChange() {

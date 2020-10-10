@@ -188,7 +188,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             PersonalityProvider::class.java.name))
 
     /* --ADVANCED-- */
-    var settingsSearch by BooleanPref("pref_settings_search", true, restart)
+    var settingsSearch by BooleanPref("pref_settings_search", true, recreate)
     var language by StringPref("pref_key__language", "", recreate)
 
     /* --BLUR--*/

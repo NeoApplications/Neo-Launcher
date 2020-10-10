@@ -14,12 +14,12 @@
      limitations under the License.
 -->
 
-<com.saggitt.omega.superg.SuperGContainerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="top"
+<com.saggitt.omega.superg.SuperGContainerView android:gravity="top"
     android:orientation="horizontal"
     android:id="@+id/qsb_container"
     android:padding="0dp"
     android:clipToPadding="false"
     android:layout_width="fill_parent"
     android:layout_height="0dp"
-    android:layout_marginStart="16dp" />
+    android:layout_marginStart="@dimen/qsb_overlap_margin"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

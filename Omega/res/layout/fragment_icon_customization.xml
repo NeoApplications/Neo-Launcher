@@ -34,20 +34,11 @@
             android:id="@+id/shape_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp" />
 
-        <View
-            android:id="@+id/list_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/shape_view"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="?android:attr/listPreferredItemPaddingStart"
-            android:layout_marginBottom="8dp"
-            android:background="?android:listDivider" />
+        <include layout="@layout/list_divider" />
 
         <include
             android:id="@+id/shapeless_icons"

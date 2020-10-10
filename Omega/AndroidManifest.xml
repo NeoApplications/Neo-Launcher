@@ -208,6 +208,13 @@
                 <action android:name="com.google.android.systemui.OPA_ENABLED" />
             </intent-filter>
         </receiver>
+        <receiver android:name="com.saggitt.omega.smartspace.SmartspaceBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.saggitt.omega.qsb.LongClickReceiver" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -28,14 +28,17 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.LauncherAppWidgetInfo;
 import com.android.launcher3.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public abstract class AppWidgetManagerCompat {
+    private static final List<String> EMUI_BLACKLIST = Arrays.asList("com.android.systemui", "com.android.gallery3d", "com.android.mediacenter", "com.android.settings");
 
     private static final Object sInstanceLock = new Object();
     private static AppWidgetManagerCompat sInstance;
@@ -61,8 +64,12 @@ public abstract class AppWidgetManagerCompat {
         mAppWidgetManager = AppWidgetManager.getInstance(context);
     }
 
+    boolean isBlacklisted(String packageName) {
+        return Utilities.isEmui() && (packageName.toLowerCase().contains("huawei") || EMUI_BLACKLIST.contains(packageName));
+    }
+
     public LauncherAppWidgetProviderInfo getLauncherAppWidgetInfo(int appWidgetId) {
-        if (appWidgetId <= LauncherAppWidgetInfo.CUSTOM_WIDGET_ID) {
+        if (FeatureFlags.ENABLE_CUSTOM_WIDGETS && appWidgetId <= LauncherAppWidgetInfo.CUSTOM_WIDGET_ID) {
             return CustomWidgetManager.INSTANCE.get(mContext).getWidgetProvider(appWidgetId);
         }
         AppWidgetProviderInfo info = mAppWidgetManager.getAppWidgetInfo(appWidgetId);

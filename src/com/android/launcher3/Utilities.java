@@ -926,6 +926,10 @@ public final class Utilities {
         return false;
     }
 
+    public static Boolean isEmui() {
+        return !TextUtils.isEmpty(getSystemProperty("ro.build.version.emui", ""));
+    }
+
     /*FIN CUSTOM*/
 
     private static class FixedSizeEmptyDrawable extends ColorDrawable {

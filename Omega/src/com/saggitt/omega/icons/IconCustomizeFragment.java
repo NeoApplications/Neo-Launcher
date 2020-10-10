@@ -74,6 +74,7 @@ public class IconCustomizeFragment extends Fragment {
         shapeView.setLayoutManager(new LinearLayoutManager(mContext));
         StaggeredGridLayoutManager mStaggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(4, GridLayoutManager.VERTICAL);
+
         shapeView.setLayoutManager(mStaggeredGridLayoutManager);
         adapter = new IconCustomizeAdapter(mContext);
         shapeView.setAdapter(adapter);

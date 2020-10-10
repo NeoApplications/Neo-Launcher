@@ -59,6 +59,7 @@ import kotlin.jvm.functions.Function0;
 
 import static com.saggitt.omega.iconpack.IconPackManager.Companion;
 import static com.saggitt.omega.iconpack.IconPackManager.CustomIconEntry;
+import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
 public class OmegaLauncher extends Launcher {
@@ -198,6 +199,9 @@ public class OmegaLauncher extends Launcher {
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> Utilities.requestStoragePermission(this))
                         .show();
             }
+        }
+        if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
+            OmegaAppKt.getOmegaApp(this).getSmartspace().updateWeatherData();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
