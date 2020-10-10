@@ -73,4 +73,9 @@
         app:minValue="0.70"
         app:summaryFormat="%.0f%%"
         app:summaryMultiplier="100" />
+
+    <com.saggitt.omega.preferences.StyledSwitchPreferenceCompat
+        android:key="pref_hotseatShowArrow"
+        android:title="@string/title__dock_show_arrow"
+        android:persistent="true" />
 </PreferenceScreen>

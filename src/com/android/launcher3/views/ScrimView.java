@@ -339,7 +339,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
     }
 
     protected void updateDragHandleVisibility(Drawable recycle) {
-        boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() || mAM.isEnabled();
+        boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() || mAM.isEnabled() || Utilities.getOmegaPrefs(mLauncher).getDockShowArrow();
         boolean wasVisible = mDragHandle != null;
         if (visible != wasVisible) {
             if (visible) {
