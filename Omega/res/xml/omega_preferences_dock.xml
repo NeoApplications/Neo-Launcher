@@ -37,7 +37,7 @@
         android:title="@string/title_dock_background_color"
         android:dependency="pref_dockBackground"
         android:defaultValue="@color/transparentish"
-        app:cpv_dialogTitle="@string/title__theme_accent_color"
+        app:cpv_dialogTitle="@string/title_dock_background_color"
         app:cpv_showAlphaSlider="true"
         app:iconSpaceReserved="false" />
 
