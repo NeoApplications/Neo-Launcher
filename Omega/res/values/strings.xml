@@ -66,6 +66,7 @@
     <string name="title__dock_hotseat_icons">Icon Count</string>
     <string name="title__dock_show_arrow">Show Arrow</string>
 
+    <string name="title_opacity">Opacity</string>
     <string name="hotseat_show_page_indicator">Show Page Indicator</string>
     <string name="pref_value_disabled">"Disabled"</string>
     <string name="dock_search_value" translatable="false">%1$s %2$s</string>

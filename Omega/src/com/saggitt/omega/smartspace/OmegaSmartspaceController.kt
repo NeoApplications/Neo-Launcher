@@ -545,7 +545,7 @@ class OmegaSmartspaceController(val context: Context) {
         private val displayNames = mapOf(
                 Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
                 Pair(SmartspaceDataWidget::class.java.name, R.string.google_app),
-                Pair(SmartspacePixelBridge::class.java.name, R.string.smartspace_provider_bridge),
+                //Pair(SmartspacePixelBridge::class.java.name, R.string.smartspace_provider_bridge),
                 Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
                 Pair(OnePlusWeatherDataProvider::class.java.name, R.string.weather_provider_oneplus_weather),
                 Pair(NowPlayingProvider::class.java.name, R.string.event_provider_now_playing),

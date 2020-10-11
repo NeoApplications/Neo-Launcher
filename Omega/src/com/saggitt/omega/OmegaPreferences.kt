@@ -291,6 +291,15 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         putBoolean("pref_allAppsGoogleSearch", false)
         putFloat("pref_dockScale", 0.90f)
 
+        // Home widget
+        val pillQsb = prefs.getBoolean("pref_showPixelBar", true)
+                // The new dock qsb should be close enough I guess
+                && !prefs.getBoolean("pref_fullWidthSearchbar", false)
+        putBoolean("pref_use_pill_qsb", pillQsb)
+        if (!prefs.getBoolean("pref_showDateOrWeather", true)) {
+            putString("pref_smartspace_widget_provider", BlankDataProvider::class.java.name)
+        }
+
         // Gestures
         putString("pref_gesture_swipe_down",
                 when (Integer.parseInt(prefs.getString("pref_pulldownAction", "1"))) {
