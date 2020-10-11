@@ -1,6 +1,11 @@
 ### v0.6.0 (Build 60)
 * **Add: Show All Apps Label**
 * **Add: Open App from Gesture**
+* **Add: At glance widget**
+* **Add: Search bar widget**
+* **Add: Dock background**
+* **Add: dock arrow customization**
+* **Add: Workspace indicator customization**
 * **Fix: Search web results**
 
 ### v0.5.0 (Build 40)
