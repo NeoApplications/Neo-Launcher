@@ -16,8 +16,6 @@
 
 package com.android.launcher3;
 
-import static android.app.Activity.RESULT_CANCELED;
-
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
@@ -27,15 +25,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.widget.Toast;
 
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.widget.DeferredAppWidgetHostView;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
-import com.android.launcher3.widget.custom.CustomWidgetManager;
 
 import java.util.ArrayList;
 import java.util.function.IntConsumer;
+
+import static android.app.Activity.RESULT_CANCELED;
 
 
 /**
@@ -192,9 +192,15 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
     public AppWidgetHostView createView(Context context, int appWidgetId,
             LauncherAppWidgetProviderInfo appWidget) {
         if (appWidget.isCustomWidget()) {
-            LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
+            /*LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
             lahv.setAppWidget(0, appWidget);
             CustomWidgetManager.INSTANCE.get(context).onViewCreated(lahv);
+            return lahv;*/
+            LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
+            LayoutInflater inflater = (LayoutInflater)
+                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            inflater.inflate(appWidget.initialLayout, lahv);
+            lahv.setAppWidget(0, appWidget);
             return lahv;
         } else if ((mFlags & FLAG_LISTENING) == 0) {
             DeferredAppWidgetHostView view = new DeferredAppWidgetHostView(context);
