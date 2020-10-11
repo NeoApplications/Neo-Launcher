@@ -3,6 +3,7 @@ package com.android.launcher3.allapps;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.util.FloatProperty;
+import android.view.View;
 import android.view.animation.Interpolator;
 
 import com.android.launcher3.DeviceProfile;
@@ -18,6 +19,8 @@ import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.anim.SpringObjectAnimator;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ScrimView;
+import com.saggitt.omega.allapps.BlurQsbLayout;
+import com.saggitt.omega.blur.BlurScrimView;
 
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
 import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
@@ -234,6 +237,7 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
     public void setupViews(AllAppsContainerView appsView) {
         mAppsView = appsView;
         mScrimView = mLauncher.findViewById(R.id.scrim_view);
+        ((BlurQsbLayout) mAppsView.getSearchView()).setScrimView((BlurScrimView) mScrimView);
     }
 
     /**
@@ -276,5 +280,15 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
 
     public AllAppsContainerView getAppsView() {
         return mAppsView;
+    }
+
+    public void setOverlayScroll(float scroll) {
+        if (mScrimView instanceof BlurScrimView) {
+            ((BlurScrimView) mScrimView).setOverlayScroll(scroll);
+        }
+        View searchView = mAppsView.getSearchView();
+        if (searchView instanceof BlurQsbLayout) {
+            ((BlurQsbLayout) searchView).setOverlayScroll(scroll);
+        }
     }
 }

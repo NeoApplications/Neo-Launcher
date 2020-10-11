@@ -87,6 +87,24 @@
         android:title="@string/title__drawer_categorization"
         app:iconSpaceReserved="false" />
 
+
+    <com.saggitt.omega.preferences.AutoModeSeekbarPreference
+        android:key="pref_allAppsOpacitySB"
+        android:title="@string/title_opacity"
+        app:minValue="0"
+        app:maxValue="1"
+        app:summaryFormat="%.0f%%"
+        app:summaryMultiplier="100"
+        android:persistent="true" />
+
+    <com.saggitt.omega.preferences.ColorPreferenceCompat
+        android:key="pref_drawer_background_color"
+        android:title="@string/title_dock_background_color"
+        android:defaultValue="@color/transparentish"
+        app:cpv_dialogTitle="@string/title_dock_background_color"
+        app:cpv_showAlphaSlider="true"
+        app:iconSpaceReserved="false" />
+
     <androidx.preference.Preference
         android:fragment="com.saggitt.omega.preferences.HiddenAppsFragment"
         android:key="pref_hiddenApps"

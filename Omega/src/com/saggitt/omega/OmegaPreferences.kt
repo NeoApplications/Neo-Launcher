@@ -105,6 +105,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
     val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
+    val dragerBackgroundColor by IntPref("pref_drawer_background_color", R.color.transparentish, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)

@@ -91,6 +91,8 @@ import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
+import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.views.OmegaBackgroundView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -1177,6 +1179,12 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         // device I've tried, translating the launcher causes things to get quite laggy.
         mLauncher.getDragLayer().setTranslationX(transX);
         mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
+
+        if (mLauncher instanceof OmegaLauncher) {
+            ((OmegaLauncher) mLauncher).getBackground().getBlurAlphas().getProperty(
+                    OmegaBackgroundView.ALPHA_INDEX_OVERLAY).setValue(1 - alpha);
+        }
+        mLauncher.mAllAppsController.setOverlayScroll(transX);
     }
 
     /**

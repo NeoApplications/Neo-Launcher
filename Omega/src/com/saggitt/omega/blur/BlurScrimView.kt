@@ -44,10 +44,12 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private val key_dock_arrow = "pref_hotseatShowArrow"
     private val key_search_radius = "pref_searchbarRadius"
     private val key_debug_state = "pref_debugDisplayState"
+    private val key_drawer_background = "pref_drawer_background_color"
+    private val key_dock_background = "pref_dock_background_color"
 
     private val prefsToWatch =
             arrayOf(key_radius, key_opacity, key_dock_opacity, key_dock_arrow, key_search_radius,
-                    key_debug_state)
+                    key_debug_state, key_drawer_background, key_dock_background)
 
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
@@ -73,7 +75,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
 
     private val colorRanges = ArrayList<ColorRange>()
 
-    private var allAppsBackground = 0
+    private var allAppsBackground = context.omegaPrefs.dragerBackgroundColor
     private var dockBackground = context.omegaPrefs.dockBackgroundColor
 
     private val reInitUiRunnable = this::reInitUi
@@ -137,6 +139,15 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
             }
             key_dock_arrow -> {
                 updateDragHandleVisibility()
+            }
+            key_dock_background -> {
+                dockBackground = prefs.dockBackgroundColor
+                postReInitUi()
+            }
+            key_drawer_background -> {
+                allAppsBackground = prefs.dragerBackgroundColor
+                calculateEndScrim()
+                postReInitUi()
             }
         }
     }
@@ -264,15 +275,6 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         if (useFlatColor) {
             blurDrawable?.setBounds(left, top, right, bottom)
         }
-    }
-
-    override fun getMidProgress(): Float {
-        /* TODO: implement this
-        if (!prefs.dockGradientStyle) {
-            return Math.max(HomeState.getNormalProgress(mLauncher), OverviewState.getNormalVerticalProgress(mLauncher))
-        }
-         */
-        return super.getMidProgress()
     }
 
     override fun onEnabledChanged() {

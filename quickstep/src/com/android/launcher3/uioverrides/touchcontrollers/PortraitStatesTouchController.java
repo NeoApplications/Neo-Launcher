@@ -44,6 +44,7 @@ import static com.android.launcher3.AbstractFloatingView.TYPE_ACCESSIBLE;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.Utilities.EDGE_NAV_BAR;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_OVERVIEW_FADE;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
@@ -78,6 +79,8 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
 
     // If true, we will finish the current animation instantly on second touch.
     private boolean mFinishFastOnSecondTouch;
+
+    private boolean mGoToOverview;
     private boolean mStartedFromHotseat;
 
     public PortraitStatesTouchController(Launcher l, boolean allowDragToOverview) {
@@ -89,6 +92,7 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
     @Override
     protected boolean canInterceptTouch(MotionEvent ev) {
         mStartedFromHotseat = isTouchOverHotseat(mLauncher, ev);
+        mGoToOverview = false;
         if (mCurrentAnimation != null) {
             if (mFinishFastOnSecondTouch) {
                 // TODO: Animate to finish instead.
@@ -118,6 +122,9 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
                 return false;
             }
         } else {
+            if ((ev.getEdgeFlags() & EDGE_NAV_BAR) != 0) {
+                mGoToOverview = true;
+            }
             // If we are swiping to all apps instead of overview, allow it from anywhere.
             boolean interceptAnywhere = mLauncher.isInState(NORMAL) && !mAllowDragToOverview;
             // For all other states, only listen if the event originated below the hotseat height
@@ -142,20 +149,25 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
         } else if (fromState == NORMAL && isDragTowardPositive) {
             int stateFlags = OverviewInteractionState.INSTANCE.get(mLauncher)
                     .getSystemUiStateFlags();
-            return mAllowDragToOverview && TouchInteractionService.isConnected()
+            boolean overviewEnabled = TouchInteractionService.isConnected()
                     && (stateFlags & SYSUI_STATE_OVERVIEW_DISABLED) == 0
-                    ? OVERVIEW : ALL_APPS;
-        }
-        if (mLauncher instanceof OmegaLauncher) {
-            return ((OmegaLauncher) mLauncher).getGestureController()
-                    .getVerticalSwipeGesture().getTargetState(mStartedFromHotseat);
+                    && mAllowDragToOverview;
+            if (!mAllowDragToOverview) return ALL_APPS;
+            if (overviewEnabled && mGoToOverview) {
+                return OVERVIEW;
+            }
+            if (mLauncher instanceof OmegaLauncher) {
+                return ((OmegaLauncher) mLauncher).getGestureController()
+                        .getVerticalSwipeGesture().getTargetState(mStartedFromHotseat);
+            }
         }
         return fromState;
     }
 
     @Override
     protected int getLogContainerTypeForNormalState(MotionEvent ev) {
-        return isTouchOverHotseat(mLauncher, ev) ? ContainerType.HOTSEAT : ContainerType.WORKSPACE;
+        //return isTouchOverHotseat(mLauncher, ev) ? ContainerType.HOTSEAT : ContainerType.WORKSPACE;
+        return ContainerType.HOTSEAT;
     }
 
     private AnimatorSetBuilder getNormalToOverviewAnimation() {
@@ -183,7 +195,7 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
                 0f, 1 - RECENTS_FADE_THRESHOLD));
         return builder;
     }
-
+/*
     private AnimatorSetBuilder getNormalToAllAppsAnimation() {
         AnimatorSetBuilder builder = new AnimatorSetBuilder();
         builder.setInterpolator(ANIM_ALL_APPS_FADE, Interpolators.clampToProgress(ACCEL,
@@ -196,7 +208,7 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
         builder.setInterpolator(ANIM_ALL_APPS_FADE, Interpolators.clampToProgress(DEACCEL,
                 1 - ALL_APPS_CONTENT_FADE_THRESHOLD, 1));
         return builder;
-    }
+    }*/
 
     @Override
     protected AnimatorSetBuilder getAnimatorSetBuilderForStates(LauncherState fromState,
@@ -208,10 +220,6 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
             builder = getOverviewToAllAppsAnimation();
         } else if (fromState == ALL_APPS && toState == OVERVIEW) {
             builder = getAllAppsToOverviewAnimation();
-        } else if (fromState == NORMAL && toState == ALL_APPS) {
-            builder = getNormalToAllAppsAnimation();
-        } else if (fromState == ALL_APPS && toState == NORMAL) {
-            builder = getAllAppsToNormalAnimation();
         }
         return builder;
     }

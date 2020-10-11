@@ -71,6 +71,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     private TextView mHint;
     private AllAppsContainerView mAppsView;
     private OmegaPreferences prefs;
+    private int mForegroundColor;
 
     // This value was used to position the QSB. We store it here for translationY animations.
     private final float mFixedTranslationY;
@@ -100,6 +101,8 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
         mFixedTranslationY = getTranslationY();
         mMarginTopAdjusting = mFixedTranslationY - getPaddingTop();
+        mForegroundColor = prefs.getDragerBackgroundColor();
+        setAllAppsBgColor(mForegroundColor);
     }
 
     protected void onFinishInflate() {

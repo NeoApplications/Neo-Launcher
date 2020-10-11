@@ -12,7 +12,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.saggitt.omega.qsb.AllAppsQsbLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.saggitt.omega.allapps.BlurQsbLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_container_all_apps"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/qsb_widget_height"
@@ -65,4 +65,4 @@
         <include layout="@layout/qsb_hint" />
 
     </FrameLayout>
-</com.saggitt.omega.qsb.AllAppsQsbLayout>
+</com.saggitt.omega.allapps.BlurQsbLayout>

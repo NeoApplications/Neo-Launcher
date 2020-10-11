@@ -280,6 +280,12 @@ public class ShelfScrimView extends ScrimView implements NavigationModeChangeLis
         canvas.drawRoundRect(0, mShelfTop, width, height + mRadius, mRadius, mRadius, mPaint);
     }
 
+    @Override
+    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom,
+                                   float rx, float ry, Paint paint) {
+        canvas.drawRoundRect(left, top, right, bottom, rx, ry, paint);
+    }
+
     public int getShelfColor() {
         return mShelfColor;
     }
