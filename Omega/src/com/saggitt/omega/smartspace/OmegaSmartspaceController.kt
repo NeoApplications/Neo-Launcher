@@ -402,7 +402,7 @@ class OmegaSmartspaceController(val context: Context) {
                 intent = Intent(context, SettingsActivity::class.java)
                         .putExtra(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, "pref_icon_badging")
                         .putExtra(TITLE, context.getString(R.string.title__general_desktop))
-                        .putExtra(CONTENT_RES_ID, R.xml.omega_preferences_desktop)
+                        .putExtra(CONTENT_RES_ID, R.xml.omega_preferences_notification)
                 msg = context.getString(R.string.event_provider_missing_notification_dots,
                         context.getString(providerName))
             } else {
