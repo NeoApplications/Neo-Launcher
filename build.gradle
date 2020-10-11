@@ -73,7 +73,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.2"
-    def code = 55
+    def code = 57
 
     defaultConfig {
         minSdkVersion 25
@@ -245,6 +245,7 @@ dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     }
 
+    implementation "androidx.test.ext:junit:${versions.testjunit}"
     androidTestImplementation "org.mockito:mockito-core:${versions.mockito}"
     androidTestImplementation "com.google.dexmaker:dexmaker:${versions.dexmaker}"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:${versions.dexmaker}"

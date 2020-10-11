@@ -49,6 +49,7 @@ import com.saggitt.omega.smartspace.SmartspaceView;
 import com.saggitt.omega.util.Config;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.CustomLauncherClient;
+import com.saggitt.omega.views.OmegaBackgroundView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -73,6 +74,7 @@ public class OmegaLauncher extends Launcher {
     private OmegaLauncherCallbacks launcherCallbacks;
     private GestureController mGestureController;
     public View dummyView;
+    public OmegaBackgroundView background;
 
     public OmegaLauncher() {
         launcherCallbacks = new OmegaLauncherCallbacks(this);
@@ -143,6 +145,10 @@ public class OmegaLauncher extends Launcher {
             sRestart = false;
             OmegaPreferences.Companion.destroyInstance();
         }
+    }
+
+    public OmegaBackgroundView getBackground() {
+        return background = findViewById(R.id.omega_background);
     }
 
     public void startEditIcon(ItemInfo itemInfo, CustomInfoProvider<ItemInfo> infoProvider) {

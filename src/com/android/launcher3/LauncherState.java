@@ -246,6 +246,10 @@ public class LauncherState {
         return 0;
     }
 
+    public float getWorkspaceBlurAlpha(Launcher launcher) {
+        return 0;
+    }
+
     public float getOverviewScrimAlpha(Launcher launcher) {
         return 0;
     }

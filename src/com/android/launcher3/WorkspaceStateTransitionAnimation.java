@@ -26,6 +26,9 @@ import com.android.launcher3.anim.AnimatorSetBuilder;
 import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.graphics.WorkspaceAndHotseatScrim;
+import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.util.InvertedMultiValueAlpha;
+import com.saggitt.omega.views.OmegaBackgroundView;
 
 import static com.android.launcher3.LauncherAnimUtils.DRAWABLE_ALPHA;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
@@ -40,6 +43,7 @@ import static com.android.launcher3.anim.Interpolators.ZOOM_OUT;
 import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
 import static com.android.launcher3.graphics.WorkspaceAndHotseatScrim.SCRIM_PROGRESS;
 import static com.android.launcher3.graphics.WorkspaceAndHotseatScrim.SYSUI_PROGRESS;
+import static com.saggitt.omega.views.OmegaBackgroundView.ALPHA_INDEX_STATE;
 
 /**
  * Manages the animations between each of the workspace states.
@@ -122,6 +126,9 @@ public class WorkspaceStateTransitionAnimation {
             propertySetter.setViewAlpha(mLauncher.getWorkspace().getPageIndicator(),
                     hotseatIconsAlpha, fadeInterpolator);
         }
+        // Set options view
+        //OptionsPanel optionsPanel = OmegaLauncher.getLauncher(mLauncher).getOptionsView();
+        //propertySetter.setViewAlpha(optionsPanel, (elements & OPTIONS_VIEW) != 0 ? 1 : 0, fadeInterpolator);
 
         if (!config.playNonAtomicComponent()) {
             // Only the alpha and scale, handled above, are included in the atomic animation.
@@ -151,6 +158,10 @@ public class WorkspaceStateTransitionAnimation {
         propertySetter.setFloat(scrim, SCRIM_PROGRESS, state.getWorkspaceScrimAlpha(mLauncher),
                 LINEAR);
         propertySetter.setFloat(scrim, SYSUI_PROGRESS, state.hasSysUiScrim ? 1 : 0, LINEAR);
+
+        OmegaBackgroundView background = OmegaLauncher.getLauncher(mLauncher).getBackground();
+        propertySetter.setFloat(background.getBlurAlphas().getProperty(ALPHA_INDEX_STATE),
+                InvertedMultiValueAlpha.VALUE, state.getWorkspaceBlurAlpha(mLauncher), LINEAR);
     }
 
     public void applyChildState(LauncherState state, CellLayout cl, int childIndex) {

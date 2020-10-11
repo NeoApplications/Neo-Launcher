@@ -4,7 +4,8 @@
 * **Add: At glance widget**
 * **Add: Search bar widget**
 * **Add: Dock background**
-* **Add: dock arrow customization**
+* **Add: Dock arrow customization**
+* **Add: Dock opacity customization**
 * **Add: Workspace indicator customization**
 * **Fix: Search web results**
 
