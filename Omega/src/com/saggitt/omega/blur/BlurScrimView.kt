@@ -31,6 +31,7 @@ import com.android.quickstep.SysUINavigationMode
 import com.android.quickstep.views.ShelfScrimView
 import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.util.dpToPx
+import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.runOnMainThread
 
 class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(context, attrs),
@@ -73,7 +74,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private val colorRanges = ArrayList<ColorRange>()
 
     private var allAppsBackground = 0
-    private var dockBackground = 0
+    private var dockBackground = context.omegaPrefs.dockBackgroundColor
 
     private val reInitUiRunnable = this::reInitUi
     private var fullBlurProgress = 0f

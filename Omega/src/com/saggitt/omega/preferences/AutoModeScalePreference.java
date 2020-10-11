@@ -25,12 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class AutoModeScalePreference extends AutoModeSeekbarPreference {
 
-    public AutoModeScalePreference(@NotNull Context context) {
-        this(context, null, 0);
-    }
-
     public AutoModeScalePreference(@NotNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
     }
 
     public AutoModeScalePreference(@NotNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

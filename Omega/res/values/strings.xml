@@ -57,6 +57,8 @@
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_icon_size">Icon size</string>
     <string name="title__dock_scale">Dock scale</string>
+    <string name="title_dock_fill">Show Background</string>
+    <string name="title_dock_background_color">Background Color</string>
     <string name="title__dock_hide">Dock Hide</string>
     <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_colored_icons">Colored icons</string>

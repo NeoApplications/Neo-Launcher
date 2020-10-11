@@ -144,6 +144,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     inline val dockGradientStyle get() = !dockBackground
     var dockOpacity by AlphaPref("pref_hotseatCustomOpacity", -1, recreate)
 
+    val dockBackgroundColor by IntPref("pref_dock_background_color", R.color.transparentish, recreate)
+
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)
