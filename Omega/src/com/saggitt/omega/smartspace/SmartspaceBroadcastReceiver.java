@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.protobuf.nano.InvalidProtocolBufferNanoException;
 import com.saggitt.omega.smartspace.nano.SmartspaceProto;
 import com.saggitt.omega.smartspace.nano.SmartspaceProto.b;
+import com.saggitt.omega.util.Config;
 
 public class SmartspaceBroadcastReceiver extends BroadcastReceiver {
     private void cg(b b, Context context, Intent intent, boolean b2) throws PackageManager.NameNotFoundException {
@@ -19,9 +20,9 @@ public class SmartspaceBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo("com.google.android.googlequicksearchbox", 0);
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(Config.GOOGLE_QSB, 0);
             SmartspaceController.get(context).cV(new NewCardInfo(b, intent, b2, SystemClock.uptimeMillis(), packageInfo));
-        } catch (PackageManager.NameNotFoundException ex) {
+        } catch (PackageManager.NameNotFoundException ignored) {
         }
     }
 

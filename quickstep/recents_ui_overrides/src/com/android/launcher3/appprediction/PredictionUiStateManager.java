@@ -18,6 +18,7 @@ package com.android.launcher3.appprediction;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 
@@ -29,8 +30,6 @@ import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.LauncherState;
-import com.android.launcher3.LauncherStateManager.StateListener;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.android.launcher3.allapps.AllAppsStore.OnUpdateListener;
@@ -65,7 +64,7 @@ import static com.android.quickstep.InstantAppResolverImpl.COMPONENT_CLASS_MARKE
  * 4) Maintains the current active client id (for the predictions) and all updates are performed on
  * that client id.
  */
-public class PredictionUiStateManager implements StateListener, ItemInfoUpdateReceiver,
+public class PredictionUiStateManager implements ViewTreeObserver.OnGlobalLayoutListener, ItemInfoUpdateReceiver,
         OnIDPChangeListener, OnUpdateListener {
 
     public static final String LAST_PREDICTION_ENABLED_STATE = "last_prediction_enabled_state";
@@ -157,9 +156,24 @@ public class PredictionUiStateManager implements StateListener, ItemInfoUpdateRe
     }
 
     @Override
-    public void reapplyItemInfo(ItemInfoWithIcon info) { }
+    public void reapplyItemInfo(ItemInfoWithIcon info) {
+    }
 
     @Override
+    public void onGlobalLayout() {
+        if (mAppsView == null) {
+            return;
+        }
+        if (mPendingState != null && canApplyPredictions(mPendingState)) {
+            applyState(mPendingState);
+            mPendingState = null;
+        }
+        if (mPendingState == null) {
+            mAppsView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        }
+    }
+
+    /*@Override
     public void onStateTransitionStart(LauncherState toState) { }
 
     @Override
@@ -175,14 +189,15 @@ public class PredictionUiStateManager implements StateListener, ItemInfoUpdateRe
             Launcher.getLauncher(mAppsView.getContext()).getStateManager()
                     .removeStateListener(this);
         }
-    }
+    }*/
 
     private void scheduleApplyPredictedApps(PredictionState state) {
         boolean registerListener = mPendingState == null;
         mPendingState = state;
         if (registerListener) {
             // Add a listener and wait until appsView is invisible again.
-            Launcher.getLauncher(mAppsView.getContext()).getStateManager().addStateListener(this);
+            //Launcher.getLauncher(mAppsView.getContext()).getStateManager().addStateListener(this);
+            mAppsView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         }
     }
 

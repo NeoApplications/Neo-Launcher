@@ -22,14 +22,21 @@ package com.saggitt.omega.allapps;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.graphics.ColorUtils;
+
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsContainerView;
+import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.qsb.AllAppsQsbLayout;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
-public class AllAppsSearchContainerView extends AllAppsContainerView {
+import org.jetbrains.annotations.NotNull;
+
+public class AllAppsSearchContainerView extends AllAppsContainerView implements OmegaPreferences.OnPreferenceChangeListener {
 
     private boolean mClearQsb;
 
@@ -70,5 +77,31 @@ public class AllAppsSearchContainerView extends AllAppsContainerView {
     public void setTranslationY(float translationY) {
         super.setTranslationY(translationY);
         ((BlurQsbLayout) getSearchView()).invalidateBlur();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Utilities.getOmegaPrefs(getContext()).addOnPreferenceChangeListener("pref_drawer_background_color", this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        Utilities.getOmegaPrefs(getContext()).removeOnPreferenceChangeListener("pref_drawer_background_color", this);
+    }
+
+    @Override
+    public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
+        if (key.equals("pref_drawer_background_color")) {
+            int newScrimColor = ColorUtils.setAlphaComponent(Utilities.getOmegaPrefs(getContext()).getDragerBackgroundColor(),
+                    Color.alpha(mNavBarScrimColor));
+            if (Utilities.ATLEAST_OREO || OmegaUtilsKt.isDark(newScrimColor)) {
+                mNavBarScrimPaint.setColor(newScrimColor);
+            } else {
+                mNavBarScrimPaint.setColor(mNavBarScrimColor);
+            }
+            invalidate();
+        }
     }
 }

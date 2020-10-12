@@ -23,7 +23,7 @@ import android.content.pm.PackageManager;
 
 public class ActionIntentFilter {
     public static IntentFilter googleInstance(String... array) {
-        return newInstance("com.google.android.googlequicksearchbox", array);
+        return newInstance(Config.GOOGLE_QSB, array);
     }
 
     public static IntentFilter newInstance(String s, String... array) {
@@ -38,7 +38,7 @@ public class ActionIntentFilter {
 
     public static boolean googleEnabled(final Context context) {
         try {
-            return context.getPackageManager().getApplicationInfo("com.google.android.googlequicksearchbox", 0).enabled;
+            return context.getPackageManager().getApplicationInfo(Config.GOOGLE_QSB, 0).enabled;
         } catch (PackageManager.NameNotFoundException ex) {
             return false;
         }

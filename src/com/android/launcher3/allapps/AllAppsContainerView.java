@@ -87,13 +87,13 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     private static final int ALPHA_CHANNEL_COUNT = 2;
 
     private final Launcher mLauncher;
-    int drawerMode = 0;
     private final ItemInfoMatcher mPersonalMatcher = ItemInfoMatcher.ofUser(Process.myUserHandle());
     private final ItemInfoMatcher mWorkMatcher = ItemInfoMatcher.not(mPersonalMatcher);
     private final AllAppsStore mAllAppsStore = new AllAppsStore();
 
-    private final Paint mNavBarScrimPaint;
-    private int mNavBarScrimHeight = 0;
+    protected final Paint mNavBarScrimPaint;
+    protected int mNavBarScrimHeight = 0;
+    protected int mNavBarScrimColor;
 
     private SearchUiManager mSearchUiManager;
     private View mSearchContainer;
@@ -109,7 +109,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
     private final MultiValueAlpha mMultiValueAlpha;
     private SpannableStringBuilder mSearchQueryBuilder;
-    private AllAppsTabsController mTabsController;
+    protected AllAppsTabsController mTabsController;
 
     public AllAppsContainerView(Context context) {
         this(context, null);
@@ -133,7 +133,8 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
         createHolders();
 
         mNavBarScrimPaint = new Paint();
-        mNavBarScrimPaint.setColor(Themes.getAttrColor(context, R.attr.allAppsNavBarScrimColor));
+        mNavBarScrimColor = Themes.getAttrColor(context, R.attr.allAppsNavBarScrimColor);
+        mNavBarScrimPaint.setColor(mNavBarScrimColor);
 
         mAllAppsStore.addUpdateListener(this::onAppsUpdated);
 

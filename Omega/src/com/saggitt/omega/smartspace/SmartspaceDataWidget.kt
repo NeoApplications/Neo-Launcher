@@ -40,10 +40,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.omegaApp
-import com.saggitt.omega.util.Temperature
-import com.saggitt.omega.util.applyAccent
-import com.saggitt.omega.util.getAllChilds
-import com.saggitt.omega.util.runOnMainThread
+import com.saggitt.omega.util.*
 
 @Keep
 class SmartspaceDataWidget(controller: OmegaSmartspaceController) : OmegaSmartspaceController.DataProvider(controller) {
@@ -160,6 +157,7 @@ class SmartspaceDataWidget(controller: OmegaSmartspaceController) : OmegaSmartsp
             val childs = getAllChilds()
             val texts = (childs.filter { it is TextView } as List<TextView>).filter { !TextUtils.isEmpty(it.text) }
             val images = childs.filter { it is ImageView } as List<ImageView>
+
             var weatherIconView: ImageView? = null
             var cardIconView: ImageView? = null
             var title: TextView? = null
@@ -190,10 +188,9 @@ class SmartspaceDataWidget(controller: OmegaSmartspaceController) : OmegaSmartsp
     companion object {
 
         private const val TAG = "SmartspaceDataWidget"
-        private const val googlePackage = "com.google.android.googlequicksearchbox"
         private const val smartspaceComponent = "com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider"
 
-        private val smartspaceProviderComponent = ComponentName(googlePackage, smartspaceComponent)
+        private val smartspaceProviderComponent = ComponentName(Config.GOOGLE_QSB, smartspaceComponent)
 
         fun getSmartspaceWidgetProvider(context: Context): AppWidgetProviderInfo {
             val appWidgetManager = AppWidgetManager.getInstance(context)

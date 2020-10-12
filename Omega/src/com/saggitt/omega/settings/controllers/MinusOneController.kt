@@ -26,6 +26,7 @@ import androidx.preference.Preference
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.PreferenceController
 import com.saggitt.omega.smartspace.FeedBridge
+import com.saggitt.omega.util.Config
 
 @Keep
 class MinusOneController(context: Context) : PreferenceController(context) {
@@ -46,8 +47,9 @@ class MinusOneController(context: Context) : PreferenceController(context) {
     private fun getDisplayGoogleTitle(): String {
         var charSequence: CharSequence? = null
         try {
-            val resourcesForApplication = context.packageManager.getResourcesForApplication("com.google.android.googlequicksearchbox")
-            val identifier = resourcesForApplication.getIdentifier("title_google_home_screen", "string", "com.google.android.googlequicksearchbox")
+            val resourcesForApplication = context.packageManager
+                    .getResourcesForApplication(Config.GOOGLE_QSB)
+            val identifier = resourcesForApplication.getIdentifier("title_google_home_screen", "string", Config.GOOGLE_QSB)
             if (identifier != 0) {
                 charSequence = resourcesForApplication.getString(identifier)
             }

@@ -7,6 +7,8 @@
 * **Add: Dock arrow customization**
 * **Add: Dock opacity customization**
 * **Add: Workspace indicator customization**
+* **Add: Drawer color customization**
+* **Add: Drawer opacity customization**
 * **Fix: Search web results**
 
 ### v0.5.0 (Build 40)

@@ -7,6 +7,7 @@ import androidx.annotation.Keep
 import com.android.launcher3.R
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.search.SearchProvider
+import com.saggitt.omega.util.Config
 
 
 @Keep
@@ -18,16 +19,19 @@ class GoogleSearchProvider(context: Context) : SearchProvider(context) {
     override val supportsFeed = true
     override val settingsIntent: Intent
         get() = Intent("com.google.android.googlequicksearchbox.TEXT_ASSIST")
-                .setPackage(PACKAGE).addFlags(268435456)
+                .setPackage(Config.GOOGLE_QSB).addFlags(268435456)
     override val isBroadcast: Boolean
         get() = true
 
 
-    override fun startSearch(callback: (intent: Intent) -> Unit) = callback(Intent().setClassName(PACKAGE, "$PACKAGE.SearchActivity"))
+    override fun startSearch(callback: (intent: Intent) -> Unit) =
+            callback(Intent().setClassName(Config.GOOGLE_QSB, Config.GOOGLE_QSB + "SearchActivity"))
 
-    override fun startVoiceSearch(callback: (intent: Intent) -> Unit) = callback(Intent("android.intent.action.VOICE_ASSIST").setPackage(PACKAGE))
+    override fun startVoiceSearch(callback: (intent: Intent) -> Unit) =
+            callback(Intent("android.intent.action.VOICE_ASSIST").setPackage(Config.GOOGLE_QSB))
 
-    override fun startAssistant(callback: (intent: Intent) -> Unit) = callback(Intent(Intent.ACTION_VOICE_COMMAND).setPackage(PACKAGE))
+    override fun startAssistant(callback: (intent: Intent) -> Unit) =
+            callback(Intent(Intent.ACTION_VOICE_COMMAND).setPackage(Config.GOOGLE_QSB))
 
     override fun startFeed(callback: (intent: Intent) -> Unit) {
         val launcher = OmegaLauncher.getLauncher(context)
@@ -35,7 +39,7 @@ class GoogleSearchProvider(context: Context) : SearchProvider(context) {
             //TODO OPEN GOOGLE FEED.
             launcher.googleNow!!.showOverlay(true)
         } else {
-            callback(Intent(Intent.ACTION_MAIN).setClassName(PACKAGE, "$PACKAGE.SearchActivity"))
+            callback(Intent(Intent.ACTION_MAIN).setClassName(Config.GOOGLE_QSB, Config.GOOGLE_QSB + ".SearchActivity"))
         }
     }
 
@@ -44,8 +48,4 @@ class GoogleSearchProvider(context: Context) : SearchProvider(context) {
     override fun getVoiceIcon(): Drawable = context.getDrawable(R.drawable.ic_qsb_mic)!!
 
     override fun getAssistantIcon(): Drawable = context.getDrawable(R.drawable.ic_qsb_assist)!!
-
-    companion object {
-        private const val PACKAGE = "com.google.android.googlequicksearchbox"
-    }
 }

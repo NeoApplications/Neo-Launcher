@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.icons.LauncherIcons;
+import com.saggitt.omega.util.Config;
 
 import static com.saggitt.omega.smartspace.nano.SmartspaceProto.b;
 import static com.saggitt.omega.smartspace.nano.SmartspaceProto.f;
@@ -50,7 +51,8 @@ public class NewCardInfo {
         try {
             if (TextUtils.isEmpty(fVar.cW)) {
                 if (!TextUtils.isEmpty(fVar.cX)) {
-                    Resources resourcesForApplication = context.getPackageManager().getResourcesForApplication("com.google.android.googlequicksearchbox");
+                    Resources resourcesForApplication = context.getPackageManager()
+                            .getResourcesForApplication(Config.GOOGLE_QSB);
                     return LauncherIcons.obtain(context).createIconBitmap(
                             resourcesForApplication.getDrawableForDensity(resourcesForApplication.getIdentifier(fVar.cX, null, null),
                                     LauncherAppState.getIDP(context).fillResIconDpi), 1f);

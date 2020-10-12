@@ -1038,6 +1038,10 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
     }
 
+    public boolean duringScrollInteraction() {
+        return mScrollInteractionBegan;
+    }
+
     public void setLauncherOverlay(LauncherOverlay overlay) {
         mLauncherOverlay = overlay;
         // A new overlay has been set. Reset event tracking

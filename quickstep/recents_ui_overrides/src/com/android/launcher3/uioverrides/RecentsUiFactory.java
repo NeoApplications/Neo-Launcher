@@ -47,6 +47,7 @@ import com.android.quickstep.TouchInteractionService;
 import com.android.quickstep.views.RecentsView;
 import com.android.systemui.shared.system.WindowManagerWrapper;
 import com.saggitt.omega.gestures.VerticalSwipeGestureController;
+import com.saggitt.omega.touch.PinchStateChangeTouchController;
 
 import java.util.ArrayList;
 
@@ -156,6 +157,7 @@ public abstract class RecentsUiFactory {
 
         ArrayList<TouchController> list = new ArrayList<>();
         list.add(launcher.getDragController());
+        list.add(new PinchStateChangeTouchController(launcher));
         if (mode == NO_BUTTON) {
             list.add(new NoButtonQuickSwitchTouchController(launcher));
             list.add(new NavBarToHomeTouchController(launcher));

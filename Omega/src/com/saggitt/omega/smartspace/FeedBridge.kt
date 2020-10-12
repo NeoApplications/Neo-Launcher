@@ -26,6 +26,7 @@ import android.os.Process
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
+import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.useApplicationContext
@@ -48,7 +49,7 @@ class FeedBridge(private val context: Context) {
 
     fun resolveSmartspace(): String {
         return bridgePackages.firstOrNull { it.supportsSmartspace }?.packageName
-                ?: "com.google.android.googlequicksearchbox"
+                ?: Config.GOOGLE_QSB
     }
 
     open inner class BridgeInfo(val packageName: String, signatureHashRes: Int) {

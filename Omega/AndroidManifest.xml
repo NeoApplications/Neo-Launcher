@@ -41,6 +41,8 @@
     <!-- For weather / sunset/-rise -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="org.pixelexperience.weather.client.READ_WEATHER" />
+
     <!-- App prediction -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"

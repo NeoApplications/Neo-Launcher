@@ -16,10 +16,6 @@
 
 package com.android.launcher3.qsb;
 
-import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_BIND;
-import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
-import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_PROVIDER;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
@@ -50,10 +46,14 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.FragmentWithPreview;
 
+import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_BIND;
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_PROVIDER;
+
 /**
  * A frame layout which contains a QSB. This internally uses fragment to bind the view, which
  * allows it to contain the logic for {@link Fragment#startActivityForResult(Intent, int)}.
- *
+ * <p>
  * Note: AppWidgetManagerCompat can be disabled using FeatureFlags. In QSB, we should use
  * AppWidgetManager directly, so that it keeps working in that case.
  */
@@ -236,6 +236,7 @@ public class QsbContainerView extends FrameLayout {
                             .getAppWidgetOptions(widgetId), opts)) {
                         mQsb.updateAppWidgetOptions(opts);
                     }
+                    mQsbWidgetHost.startListening();
                 }
                 return mQsb;
             }

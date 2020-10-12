@@ -16,28 +16,10 @@
 
 package com.android.launcher3.uioverrides.touchcontrollers;
 
-import static com.android.launcher3.LauncherAppTransitionManagerImpl.INDEX_PAUSE_TO_OVERVIEW_ANIM;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.LauncherState.OVERVIEW;
-import static com.android.launcher3.LauncherState.OVERVIEW_PEEK;
-import static com.android.launcher3.LauncherStateManager.ATOMIC_OVERVIEW_PEEK_COMPONENT;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_HEADER_FADE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_FADE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_SCALE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_TRANSLATE;
-import static com.android.launcher3.anim.Interpolators.ACCEL;
-import static com.android.launcher3.anim.Interpolators.DEACCEL;
-import static com.android.launcher3.anim.Interpolators.DEACCEL_3;
-import static com.android.launcher3.util.VibratorWrapper.OVERVIEW_HAPTIC;
-import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.android.launcher3.Launcher;
@@ -50,6 +32,28 @@ import com.android.launcher3.util.VibratorWrapper;
 import com.android.quickstep.OverviewInteractionState;
 import com.android.quickstep.util.MotionPauseDetector;
 import com.android.quickstep.views.RecentsView;
+
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.LauncherState.OVERVIEW_PEEK;
+import static com.android.launcher3.LauncherStateManager.ANIM_ALL;
+import static com.android.launcher3.LauncherStateManager.ATOMIC_OVERVIEW_PEEK_COMPONENT;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_HEADER_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_SCALE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_TRANSLATE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_SCALE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_TRANSLATE;
+import static com.android.launcher3.anim.Interpolators.ACCEL;
+import static com.android.launcher3.anim.Interpolators.DEACCEL;
+import static com.android.launcher3.anim.Interpolators.DEACCEL_3;
+import static com.android.launcher3.anim.Interpolators.OVERSHOOT_1_2;
+import static com.android.launcher3.util.VibratorWrapper.OVERVIEW_HAPTIC;
+import static com.android.systemui.shared.system.QuickStepContract.SYSUI_STATE_OVERVIEW_DISABLED;
 
 /**
  * Touch controller which handles swipe and hold to go to Overview
@@ -65,6 +69,8 @@ public class FlingAndHoldTouchController extends PortraitStatesTouchController {
     private final float mMotionPauseMaxDisplacement;
 
     private AnimatorSet mPeekAnim;
+    private boolean mAnimatingToHome;
+    private boolean mGoingHome;
 
     public FlingAndHoldTouchController(Launcher l) {
         super(l, false /* allowDragToOverview */);
@@ -170,7 +176,7 @@ public class FlingAndHoldTouchController extends PortraitStatesTouchController {
 
     @Override
     public void onDragEnd(float velocity) {
-        if (mMotionPauseDetector.isPaused() && handlingOverviewAnim()) {
+        /*if (mMotionPauseDetector.isPaused() && handlingOverviewAnim()) {
             if (mPeekAnim != null) {
                 mPeekAnim.cancel();
             }
@@ -191,6 +197,45 @@ public class FlingAndHoldTouchController extends PortraitStatesTouchController {
         View searchView = mLauncher.getAppsView().getSearchView();
         if (searchView instanceof FeedbackHandler) {
             ((FeedbackHandler) searchView).resetFeedback();
+        }
+        mMotionPauseDetector.clear();*/
+
+        if (mMotionPauseDetector.isPaused() && handlingOverviewAnim()) {
+            if (mPeekAnim != null) {
+                mPeekAnim.cancel();
+            }
+
+            AnimatorSetBuilder builder = new AnimatorSetBuilder();
+            builder.setInterpolator(ANIM_VERTICAL_PROGRESS, OVERSHOOT_1_2);
+            if ((OVERVIEW.getVisibleElements(mLauncher) & HOTSEAT_ICONS) != 0) {
+                builder.setInterpolator(ANIM_HOTSEAT_SCALE, OVERSHOOT_1_2);
+                builder.setInterpolator(ANIM_HOTSEAT_TRANSLATE, OVERSHOOT_1_2);
+            }
+            AnimatorSet overviewAnim = mLauncher.getStateManager().createAtomicAnimation(
+                    NORMAL, OVERVIEW, builder, ANIM_ALL, ATOMIC_DURATION);
+            overviewAnim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onSwipeInteractionCompleted(OVERVIEW, Touch.SWIPE);
+                }
+            });
+            overviewAnim.start();
+        } else if (mGoingHome && Float.compare(Math.signum(velocity), Math.signum(mProgressMultiplier)) == 0) {
+            mAnimatingToHome = true;
+            AnimatorSetBuilder builder = new AnimatorSetBuilder();
+            AnimatorSet homeAnim = mLauncher.getStateManager().createAtomicAnimation(
+                    NORMAL, NORMAL, builder, ANIM_ALL, ATOMIC_DURATION);
+            homeAnim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onSwipeInteractionCompleted(NORMAL, Touch.SWIPE);
+                    mAnimatingToHome = false;
+                }
+            });
+            homeAnim.start();
+            mLauncher.getWorkspace().snapToPage(0);
+        } else if (!mAnimatingToHome) {
+            super.onDragEnd(velocity);
         }
         mMotionPauseDetector.clear();
     }

@@ -312,6 +312,10 @@ fun Context.checkLocationAccess(): Boolean {
             Utilities.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 }
 
+val Int.luminance get() = ColorUtils.calculateLuminance(this)
+
+val Int.isDark get() = luminance < 0.5f
+
 fun View.runOnAttached(runnable: Runnable) {
     if (isAttachedToWindow) {
         runnable.run()

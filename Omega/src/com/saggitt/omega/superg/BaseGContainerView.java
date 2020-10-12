@@ -25,6 +25,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.saggitt.omega.search.SearchProvider;
 import com.saggitt.omega.search.SearchProviderController;
+import com.saggitt.omega.util.Config;
 
 public abstract class BaseGContainerView extends FrameLayout implements View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TEXT_ASSIST = "com.google.android.googlequicksearchbox.TEXT_ASSIST";
@@ -130,7 +131,7 @@ public abstract class BaseGContainerView extends FrameLayout implements View.OnC
         return intent.putExtra("source_round_left", true)
                 .putExtra("source_round_right", true)
                 .putExtra("source_logo_offset", midLocation(findViewById(R.id.g_icon), rect))
-                .setPackage("com.google.android.googlequicksearchbox")
+                .setPackage(Config.GOOGLE_QSB)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
@@ -211,7 +212,7 @@ public abstract class BaseGContainerView extends FrameLayout implements View.OnC
         Context context = getContext();
         try {
             context.startActivity(new Intent(action).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .setPackage("com.google.android.googlequicksearchbox"));
+                    .setPackage(Config.GOOGLE_QSB));
         } catch (ActivityNotFoundException ignored) {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com")),
