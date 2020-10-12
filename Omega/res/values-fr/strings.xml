@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_all_apps_search">Barre de recherche du tiroir d\'applications</string>
     <string name="summary__general_drawer">Personnalisez votre tiroir d\'applications</string>
     <string name="title__general_drawer">Tiroir d\'applications</string>
@@ -209,7 +209,7 @@
     <string name="summary__general_dock">Icônes Hotsea, barre de recherche</string>
     <string name="summary__general_desktop">Personnalisez votre bureau</string>
     <string name="title__general_notifications">Gestes et notifications</string>
-    <string name="title__general_advanced">Avancé</string>
+    <string name="title__general_advanced">Paramètres avancés</string>
     <string name="title__general_smartspace">Widget d\'accueil</string>
     <string name="title__general_search">Recherche</string>
     <string name="title__general_theme">Thème</string>
@@ -236,4 +236,51 @@
     <string name="title__search_bar_radius">Arrondi</string>
     <string name="title_smartspace_feed_theme">Thème de flux</string>
     <string name="theme_based">Défini par le thème</string>
+    <string name="action_open_app_select_app">Obtenir l\'application</string>
+    <string name="action_open_app_with_target">Ouvrir « %s »</string>
+    <string name="action_open_app">Ouvrir l\'application</string>
+    <string name="icu_abbrev_date">dd MMMM</string>
+    <string name="icu_abbrev_time_12h">hh:mm aa</string>
+    <string name="icu_abbrev_time">HH:mm</string>
+    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
+    <string name="battery_status">État de la batterie</string>
+    <string name="event_provider_unread_notifications">Notifications</string>
+    <string name="event_provider_now_playing">En cours de lecture</string>
+    <string name="weather_provider_oneplus_weather">Météo OnePlus</string>
+    <string name="weather_provider_pe">Expérience des pixels</string>
+    <string name="weather_provider_testing">Débogage</string>
+    <string name="weather_provider_disabled">Désactivé</string>
+    <string name="weather_icons_default">Par défaut</string>
+    <string name="onboarding_swipe_up">Glissez vers le haut pour ouvrir le tiroir d\'applications.</string>
+    <string name="onbording_settings_summary">Restez appuyez sur l\'écran d\'accueil.</string>
+    <string name="onbording_settings_title">Configuration de %s</string>
+    <string name="onbording">Démarrage</string>
+    <string name="personality_provider">Fêtes</string>
+    <string name="smartspace_provider_calendar">Évènements du calendrier</string>
+    <string name="deny">Refuser</string>
+    <string name="allow">Autoriser</string>
+    <string name="permission_iplocate_twilight_explanation">Autoriser l\'accès à votre emplacement approximatif \? Cela aura pour effet un meilleur calcul de l\'heure de la journée.</string>
+    <string name="permission_iplocate">Emplacement approximatif</string>
+    <string name="event_provider_missing_notification_dots">Pour utiliser &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My Provider\" id=\"providerName\"&gt;“%1$s”&lt;/xliff:g&gt;, activez les notifications.<xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable Notification Dots.</string>
+    <string name="event_provider_missing_notification_access">Pour utiliser &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My Provider\" id=\"providerName\"&gt;“%1$s”&lt;/xliff:g&gt;, activez les notifications depuis &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My App\" id=\"name\"&gt;“%2$s”.&lt;/xliff:g&gt;<xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable notifications from <xliff:g example="My App" id="name">“%2$s”.</xliff:g></string>
+    <string name="battery_low">Batterie faible</string>
+    <string name="battery_full">Chargé</string>
+    <string name="battery_charging">En cours de chargement</string>
+    <string name="home_widget">En un coup d’œil</string>
+    <string name="zen_mode_enabled">Le mode Ne pas déranger est activé.</string>
+    <string name="smartspace_widget_provider_not_found">Obtenir l\'application Google.</string>
+    <string name="smartspace_hours_mins">%1$s %2$s</string>
+    <string name="smartspace_in_time">dans %1$s</string>
+    <string name="smartspace_now">maintenant</string>
+    <string name="smartspace_setup_text">Appuyez pour définir</string>
+    <string name="smartspace_add_to_home">Ajouter à l\'écran d\'accueil</string>
+    <string name="title_white_only_treatment">Remplacer les arrière-plans blancs</string>
+    <string name="title_legacy_treatment">Créer des icônes adaptatives</string>
+    <string name="title_legacy_colored_backgrounds">Arrière-plans colorés</string>
+    <string name="title_force_shapeless">Forcer la mise en forme des icônes</string>
+    <string name="title_adaptify_pack">Créer des icônes adaptatives pour le pack d\'icônes</string>
+    <string name="title_app_suggestions">Applications</string>
+    <string name="summary_search_hidden_apps">Afficher les raccourcis masqués dans les résultats.</string>
+    <string name="title_search_hidden_apps">Rechercher les raccourcis masqués</string>
 </resources>
