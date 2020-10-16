@@ -63,7 +63,7 @@
         launcher:screen="4"
         launcher:x="4"
         launcher:y="0">
-        <favorite launcher:uri="#Intent;action=com.saggitt.omega.START_ACTION;package=com.saggitt.omega;component=com.saggitt.omega/.gestures.ui.RunHandlerActivity;S.com.saggitt.omega.EXTRA_HANDLER=%7B%22class%22%3A%22com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler%22%7D;end" />
+        <favorite launcher:uri="#Intent;action=com.saggitt.omega.START_ACTION;package=com.saggitt.omega;component=com.saggitt.omega/.gestures.ui.RunHandlerActivity;com.saggitt.omega.EXTRA_HANDLER=%7B%22class%22%3A%22com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler%22%7D;end" />
     </resolve>
 
     <!-- Bottom row -->
@@ -100,7 +100,7 @@
         <favorite launcher:uri="#Intent;action=com.saggitt.omega.START_ACTION;
             package=com.saggitt.omega;
             component=com.saggitt.omega/.gestures.ui.RunHandlerActivity;
-            S.com.saggitt.omega.EXTRA_HANDLER=%7B%22class%22%3A%22com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler%22%7D;end" />
+            com.saggitt.omega.EXTRA_HANDLER=%7B%22class%22%3A%22com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler%22%7D;end" />
 
     </resolve>
 
