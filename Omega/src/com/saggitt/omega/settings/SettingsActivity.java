@@ -47,7 +47,6 @@ import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -73,6 +72,7 @@ import com.android.launcher3.settings.NotificationDotsPreference;
 import com.android.launcher3.settings.PreferenceHighlighter;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
+import com.android.launcher3.util.SecureSettingsObserver;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.saggitt.omega.FakeLauncherKt;
@@ -113,6 +113,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static com.android.launcher3.util.SecureSettingsObserver.newNotificationSettingsObserver;
 
 public class SettingsActivity extends SettingsBaseActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, OnPreferenceDisplayDialogCallback,
@@ -655,8 +656,8 @@ public class SettingsActivity extends SettingsBaseActivity
         public static final String HAS_PREVIEW = "has_peview";
 
         private SystemDisplayRotationLockObserver mRotationLockObserver;
-        private IconBadgingObserver mIconBadgingObserver;
 
+        private SecureSettingsObserver mNotificationDotsObserver;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -704,9 +705,15 @@ public class SettingsActivity extends SettingsBaseActivity
                     if (getResources().getBoolean(R.bool.notification_dots_enabled)) {
                         NotificationDotsPreference iconBadgingPref = (NotificationDotsPreference) findPreference(NOTIFICATION_DOTS_PREFERENCE_KEY);
                         // Listen to system notification badge settings while this UI is active.
-                        mIconBadgingObserver = new IconBadgingObserver(
-                                iconBadgingPref, getActivity().getContentResolver(), getFragmentManager());
-                        mIconBadgingObserver.register(NOTIFICATION_BADGING, NOTIFICATION_ENABLED_LISTENERS);
+
+                        mNotificationDotsObserver = newNotificationSettingsObserver(
+                                getActivity(), iconBadgingPref);
+                        mNotificationDotsObserver.register();
+                        // Also listen if notification permission changes
+                        mNotificationDotsObserver.getResolver().registerContentObserver(
+                                Settings.Secure.getUriFor(NOTIFICATION_ENABLED_LISTENERS), false,
+                                mNotificationDotsObserver);
+                        mNotificationDotsObserver.dispatchOnChange();
                     }
                     break;
 
@@ -790,6 +797,10 @@ public class SettingsActivity extends SettingsBaseActivity
             if (mRotationLockObserver != null) {
                 mRotationLockObserver.unregister();
                 mRotationLockObserver = null;
+            }
+            if (mNotificationDotsObserver != null) {
+                mNotificationDotsObserver.unregister();
+                mNotificationDotsObserver = null;
             }
             super.onDestroy();
         }
@@ -1086,66 +1097,6 @@ public class SettingsActivity extends SettingsBaseActivity
             mRotationPref.setEnabled(enabled);
             mRotationPref.setSummary(enabled
                     ? R.string.allow_rotation_desc : R.string.allow_rotation_blocked_desc);
-        }
-    }
-
-    /**
-     * Content observer which listens for system badging setting changes, and updates the launcher
-     * badging setting subtext accordingly.
-     */
-    private static class IconBadgingObserver extends SettingsObserver.Secure implements Preference.OnPreferenceClickListener {
-
-        private final NotificationDotsPreference mBadgingPref;
-        private final ContentResolver mResolver;
-        private final FragmentManager mFragmentManager;
-        private boolean serviceEnabled = true;
-
-        public IconBadgingObserver(NotificationDotsPreference badgingPref, ContentResolver resolver,
-                                   FragmentManager fragmentManager) {
-            super(resolver);
-            mBadgingPref = badgingPref;
-            mResolver = resolver;
-            mFragmentManager = fragmentManager;
-        }
-
-        @Override
-        public void onSettingChanged(boolean enabled) {
-            int summary = enabled ? R.string.icon_badging_desc_on : R.string.icon_badging_desc_off;
-
-            if (enabled) {
-                // Check if the listener is enabled or not.
-                String enabledListeners =
-                        Settings.Secure.getString(mResolver, NOTIFICATION_ENABLED_LISTENERS);
-                ComponentName myListener =
-                        new ComponentName(mBadgingPref.getContext(), NotificationListener.class);
-                serviceEnabled = enabledListeners != null &&
-                        (enabledListeners.contains(myListener.flattenToString()) ||
-                                enabledListeners.contains(myListener.flattenToShortString()));
-                if (!serviceEnabled) {
-                    summary = R.string.title_missing_notification_access;
-                }
-            }
-            mBadgingPref.setWidgetFrameVisible(!serviceEnabled);
-            mBadgingPref.setOnPreferenceClickListener(
-                    serviceEnabled && Utilities.ATLEAST_OREO ? null : this);
-            mBadgingPref.setSummary(summary);
-
-        }
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            if (!Utilities.ATLEAST_OREO && serviceEnabled) {
-                ComponentName cn = new ComponentName(preference.getContext(),
-                        NotificationListener.class);
-                Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra(":settings:fragment_args_key", cn.flattenToString());
-                preference.getContext().startActivity(intent);
-            } else {
-                new SettingsActivity.NotificationAccessConfirmation()
-                        .show(mFragmentManager, "notification_access");
-            }
-            return true;
         }
     }
 }
