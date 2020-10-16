@@ -31,4 +31,16 @@
         android:key="pref_key__language"
         android:summary="@string/summary__advanced_language"
         android:title="@string/title__advanced_language" />
+
+    <Preference
+        android:icon="@drawable/ic_import_export"
+        android:key="backups"
+        android:summary="@string/backup_pref_summary"
+        android:title="@string/backups">
+
+        <!--suppress AndroidDomInspection (Injected at compile time) -->
+        <intent
+            android:targetClass="com.saggitt.omega.backup.BackupListActivity"
+            android:targetPackage="@string/application_id" />
+    </Preference>
 </PreferenceScreen>

@@ -16,7 +16,6 @@
 
 package com.android.launcher3;
 
-import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -93,8 +92,8 @@ import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.OmegaAppKt;
 import com.saggitt.omega.OmegaPreferences;
+import com.saggitt.omega.backup.RestoreBackupActivity;
 import com.saggitt.omega.iconpack.IconPackManager;
-import com.saggitt.omega.util.Config;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -784,10 +783,6 @@ public final class Utilities {
         ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_STORAGE_ACCESS);
     }
 
-    public static void requestLocationPermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Config.REQUEST_PERMISSION_LOCATION_ACCESS);
-    }
-
     public static boolean getAllowRotationDefaultValue(Context context) {
         if (ATLEAST_NOUGAT) {
             // If the device was scaled, used the original dimensions to determine if rotation
@@ -928,6 +923,81 @@ public final class Utilities {
 
     public static Boolean isEmui() {
         return !TextUtils.isEmpty(getSystemProperty("ro.build.version.emui", ""));
+    }
+
+    /**
+     * @param bitmap                the Bitmap to be scaled
+     * @param threshold             the maxium dimension (either width or height) of the scaled bitmap
+     * @param isNecessaryToKeepOrig is it necessary to keep the original bitmap? If not recycle the original bitmap to prevent memory leak.
+     *                              <p>
+     *                              Credit: https://gist.github.com/vxhviet/873d142b41217739a1302d337b7285ba
+     */
+    public static Bitmap getScaledDownBitmap(Bitmap bitmap, int threshold, boolean isNecessaryToKeepOrig) {
+        if (bitmap == null) return null;
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int newWidth = width;
+        int newHeight = height;
+
+        if (width > height && width > threshold) {
+            newWidth = threshold;
+            newHeight = (int) (height * (float) newWidth / width);
+        }
+
+        if (width > height && width <= threshold) {
+            //the bitmap is already smaller than our required dimension, no need to resize it
+            return bitmap;
+        }
+
+        if (width < height && height > threshold) {
+            newHeight = threshold;
+            newWidth = (int) (width * (float) newHeight / height);
+        }
+
+        if (width < height && height <= threshold) {
+            //the bitmap is already smaller than our required dimension, no need to resize it
+            return bitmap;
+        }
+
+        if (width == height && width > threshold) {
+            newWidth = threshold;
+            newHeight = newWidth;
+        }
+
+        if (width == height && width <= threshold) {
+            //the bitmap is already smaller than our required dimension, no need to resize it
+            return bitmap;
+        }
+
+        return getResizedBitmap(bitmap, newWidth, newHeight, isNecessaryToKeepOrig);
+    }
+
+    private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean isNecessaryToKeepOrig) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        if (!isNecessaryToKeepOrig) {
+            bm.recycle();
+        }
+        return resizedBitmap;
+    }
+
+    public static void checkRestoreSuccess(Context context) {
+        OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
+        if (prefs.getRestoreSuccess()) {
+            prefs.setRestoreSuccess(false);
+            context.startActivity(new Intent(context, RestoreBackupActivity.class)
+                    .putExtra(RestoreBackupActivity.EXTRA_SUCCESS, true));
+        }
     }
 
     /*FIN CUSTOM*/

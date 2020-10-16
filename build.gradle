@@ -212,7 +212,11 @@ repositories {
         url 'https://jitpack.io'
     }
 }
-
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        variant.resValue 'string', 'application_id', variant.applicationId
+    }
+}
 dependencies {
     implementation "androidx.legacy:legacy-preference-v14:${versions.preferencev14}"
     implementation "androidx.dynamicanimation:dynamicanimation:${versions.dynamicanimation}"

@@ -181,10 +181,7 @@ public class SmartspaceCard {
         }
         String cn = cg.cN;
         if (this.cL(cg)) {
-            return String.format(cn, this.cK(cg.cO, s));
-        }
-        if (cn == null) {
-            cn = "";
+            return String.format(cn, (Object) this.cK(cg.cO, s));
         }
         return cn;
     }

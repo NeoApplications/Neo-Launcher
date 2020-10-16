@@ -20,17 +20,20 @@ package com.saggitt.omega
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Looper
 import android.text.TextUtils
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.StartAppSearchGestureHandler
 import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import com.saggitt.omega.groups.AppGroupsManager
@@ -203,6 +206,11 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val dualBubbleSearch by BooleanPref("pref_bubbleSearchStyle", false, recreate)
     val searchHiddenApps by BooleanPref(DefaultAppSearchAlgorithm.SEARCH_HIDDEN_APPS, false)
 
+    val recentBackups = object : MutableListPref<Uri>(
+            Utilities.getDevicePrefs(context), "pref_recentBackups") {
+        override fun unflattenValue(value: String) = Uri.parse(value)
+    }
+
     /* --DEV-- */
     var developerOptionsEnabled by BooleanPref("pref_showDevOptions", false, recreate)
     val showDebugInfo by BooleanPref("pref_showDebugInfo", false, doNothing)
@@ -227,21 +235,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(value)
     }
 
-    init {
-        migrateConfig()
-    }
-
-    private fun migrateConfig() {
-        if (configVersion != CURRENT_VERSION) {
-            blockingEdit {
-                bulkEdit {
-                    // Migration codes here
-                    configVersion = CURRENT_VERSION
-                }
-            }
-        }
-    }
-
     private fun migratePrefs(): SharedPreferences {
         val dir = mContext.cacheDir.parent
         val oldFile = File(dir, "shared_prefs/" + LauncherFiles.OLD_SHARED_PREFERENCES_KEY + ".xml")
@@ -261,11 +254,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         val version = prefs.getInt(VERSION_KEY, CURRENT_VERSION)
         if (version != CURRENT_VERSION) {
             with(prefs.edit()) {
-                // Migration codes here
-
-                //if (version == 100) {
                 initialConfig(this, prefs)
-                //}
 
                 putInt(VERSION_KEY, CURRENT_VERSION)
                 commit()
@@ -292,9 +281,23 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
                 // The new dock qsb should be close enough I guess
                 && !prefs.getBoolean("pref_fullWidthSearchbar", false)
         putBoolean("pref_use_pill_qsb", pillQsb)
+        if (pillQsb) {
+            putBoolean("pref_dockSearchBar", false)
+        }
         if (!prefs.getBoolean("pref_showDateOrWeather", true)) {
             putString("pref_smartspace_widget_provider", BlankDataProvider::class.java.name)
         }
+        val showAssistant = prefs.getBoolean("pref_showMic", false)
+        putBoolean("opa_enabled", showAssistant)
+        putBoolean("opa_assistant", showAssistant)
+
+        // Theme
+        putString("pref_launcherTheme",
+                when (prefs.getString("pref_theme", "0")) {
+                    "1" -> ThemeManager.THEME_DARK
+                    "2" -> ThemeManager.THEME_USE_BLACK or ThemeManager.THEME_DARK
+                    else -> 0
+                }.toString())
 
         // Gestures
         putString("pref_gesture_swipe_down",
@@ -304,6 +307,11 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
                     3 -> StartAppSearchGestureHandler(context, null)
                     else -> BlankGestureHandler(context, null)
                 }.toString())
+
+        if (prefs.getBoolean("pref_homeOpensDrawer", false)) {
+            putString("pref_gesture_press_home",
+                    OpenDrawerGestureHandler(context, null).toString())
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
