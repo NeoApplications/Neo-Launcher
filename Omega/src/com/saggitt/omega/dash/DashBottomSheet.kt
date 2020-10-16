@@ -25,6 +25,9 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.saggitt.omega.views.CenterFloatingView
 
+/*
+* Esta clase despliega la vista circular desde la parte inferior de la pantalla.
+*/
 class DashBottomSheet(context: Context) : RelativeLayout(context) {
     private var adapter: DashItemAdapter? = null
     private var mInflater: LayoutInflater? = null

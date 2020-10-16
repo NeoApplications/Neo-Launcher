@@ -26,7 +26,7 @@ import android.os.ResultReceiver
 import android.view.ContextThemeWrapper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.android.launcher3.util.Executors.MODEL_EXECUTOR
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.applyAccent
 
@@ -124,7 +124,7 @@ class BlankActivity : AppCompatActivity() {
             val intent = Intent(context, BlankActivity::class.java).apply {
                 putExtra("intent", targetIntent)
                 putExtra("requestCode", requestCode)
-                putExtra("callback", object : ResultReceiver(MODEL_EXECUTOR.handler) {
+                putExtra("callback", object : ResultReceiver(MAIN_EXECUTOR.handler) {
 
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         callback(resultCode, resultData)
@@ -144,7 +144,7 @@ class BlankActivity : AppCompatActivity() {
                 putExtra("dialogTitle", dialogTitle)
                 putExtra("dialogMessage", dialogMessage)
                 putExtra("positiveButton", positiveButton)
-                putExtra("callback", object : ResultReceiver(MODEL_EXECUTOR.handler) {
+                putExtra("callback", object : ResultReceiver(MAIN_EXECUTOR.handler) {
 
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         callback(resultCode)
@@ -166,7 +166,7 @@ class BlankActivity : AppCompatActivity() {
             val intent = Intent(context, BlankActivity::class.java).apply {
                 putExtra("permissions", permissions)
                 putExtra("permissionRequestCode", requestCode)
-                putExtra("callback", object : ResultReceiver(MODEL_EXECUTOR.handler) {
+                putExtra("callback", object : ResultReceiver(MAIN_EXECUTOR.handler) {
 
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         if (resultCode == RESULT_OK && resultData != null) {

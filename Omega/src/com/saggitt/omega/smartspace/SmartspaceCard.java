@@ -181,7 +181,7 @@ public class SmartspaceCard {
         }
         String cn = cg.cN;
         if (this.cL(cg)) {
-            return String.format(cn, (Object[]) this.cK(cg.cO, s));
+            return String.format(cn, this.cK(cg.cO, s));
         }
         if (cn == null) {
             cn = "";
@@ -205,7 +205,7 @@ public class SmartspaceCard {
         final Bitmap ci = a.getBitmap(context);
         Bitmap cp;
         if (ci != null && i.dc) {
-            if (a.dj) {
+            if (a.forWeather) {
                 cp = cP(ci, -1);
             } else {
                 cp = ci;
@@ -305,8 +305,7 @@ public class SmartspaceCard {
         final c ch = this.cH();
         if (ch != null && this.cL(ch.cL)) {
             final e[] co = ch.cL.cO;
-            for (int i = 0; i < co.length; ++i) {
-                final e e = co[i];
+            for (final SmartspaceProto.e e : co) {
                 if (e.cQ == 1 || e.cQ == 2) {
                     return this.cI(e);
                 }

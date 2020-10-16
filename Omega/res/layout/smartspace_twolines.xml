@@ -16,7 +16,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/smartspace_content"
+    android:id="@+id/smartspace_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -102,6 +102,14 @@
             android:paddingBottom="6dp"
             android:paddingRight="6dp"
             android:paddingTop="6dp">
+
+            <com.saggitt.omega.smartspace.SmartspaceDividerView
+                android:id="@+id/subtitle_sep"
+                android:layout_width="@dimen/smartspace_title_sep_width"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginBottom="4dp" />
 
             <ImageView
                 android:id="@+id/subtitle_weather_icon"

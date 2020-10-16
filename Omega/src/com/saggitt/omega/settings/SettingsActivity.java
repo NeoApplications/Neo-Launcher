@@ -19,7 +19,6 @@ package com.saggitt.omega.settings;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,7 +66,6 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.R;
 import com.android.launcher3.SessionCommitReceiver;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.settings.NotificationDotsPreference;
 import com.android.launcher3.settings.PreferenceHighlighter;
 import com.android.launcher3.util.ComponentKey;
@@ -1045,36 +1043,6 @@ public class SettingsActivity extends SettingsBaseActivity
         public void onStart() {
             super.onStart();
             OmegaUtilsKt.applyAccent(((AlertDialog) getDialog()));
-        }
-    }
-
-    public static class NotificationAccessConfirmation extends DialogFragment implements DialogInterface.OnClickListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Context context = getActivity();
-            String msg = context.getString(R.string.msg_missing_notification_access,
-                    context.getString(R.string.derived_app_name));
-            return new AlertDialog.Builder(context)
-                    .setTitle(R.string.title_missing_notification_access)
-                    .setMessage(msg)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.title_change_settings, this)
-                    .create();
-        }
-
-        @Override
-        public void onStart() {
-            super.onStart();
-        }
-
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-            ComponentName cn = new ComponentName(getActivity(), NotificationListener.class);
-            Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .putExtra(":settings:fragment_args_key", cn.flattenToString());
-            getActivity().startActivity(intent);
         }
     }
 

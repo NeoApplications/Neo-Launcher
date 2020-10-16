@@ -269,7 +269,7 @@ public class OmegaLauncherCallbacks implements LauncherCallbacks,
         String prefValue = Utilities.getPrefs(mLauncher).getString(SettingsActivity.FEED_THEME_PREF, null);
         int feedTheme;
         try {
-            feedTheme = Integer.valueOf(prefValue == null ? "1" : prefValue);
+            feedTheme = Integer.parseInt(prefValue == null ? "1" : prefValue);
         } catch (Exception e) {
             feedTheme = 1;
         }

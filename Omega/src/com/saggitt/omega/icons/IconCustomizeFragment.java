@@ -27,9 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -71,11 +69,8 @@ public class IconCustomizeFragment extends Fragment {
         adaptive = prefs.getAdaptifyIconPacks();
 
         shapeView = view.findViewById(R.id.shape_view);
-        shapeView.setLayoutManager(new LinearLayoutManager(mContext));
-        StaggeredGridLayoutManager mStaggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(4, GridLayoutManager.VERTICAL);
-
-        shapeView.setLayoutManager(mStaggeredGridLayoutManager);
+        GridLayoutManager layoutManager = new GridLayoutManager(mContext, 4);
+        shapeView.setLayoutManager(layoutManager);
         adapter = new IconCustomizeAdapter(mContext);
         shapeView.setAdapter(adapter);
 
@@ -96,6 +91,10 @@ public class IconCustomizeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         prefs.reloadIcons();
+    }
+
+    public void onResume() {
+        super.onResume();
     }
 
     /*
@@ -127,29 +126,16 @@ public class IconCustomizeFragment extends Fragment {
         if (view == coloredView) {
             coloredIcons = !coloredIcons;
             syncSwitch(switchView, coloredIcons);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_colorizeGeneratedBackgrounds", coloredIcons)
-                    .apply();
-            if (!coloredIcons) {
-                updateWhite(false);
-            } else {
-                updateWhite(true);
-            }
+            prefs.setColorizedLegacyTreatment(coloredIcons);
+            updateWhite(coloredIcons);
         } else if (view == shapeLessView) {
             shapeLess = !shapeLess;
             syncSwitch(switchView, shapeLess);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_forceShapeless", shapeLess)
-                    .apply();
+            prefs.setForceShapeless(shapeLess);
         } else if (view == legacyView) {
             legacy = !legacy;
             syncSwitch(switchView, legacy);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_enableLegacyTreatment", legacy)
-                    .apply();
+            prefs.setEnableLegacyTreatment(legacy);
             if (!legacy) {
                 updateColoredBackground(false);
                 updateAdaptive(false);
@@ -162,27 +148,19 @@ public class IconCustomizeFragment extends Fragment {
         } else if (view == whiteView) {
             white = !white;
             syncSwitch(switchView, white);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_enableWhiteOnlyTreatment", white)
-                    .apply();
+            prefs.setEnableWhiteOnlyTreatment(white);
         } else if (view == adaptiveView) {
             adaptive = !adaptive;
             syncSwitch(switchView, adaptive);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_generateAdaptiveForIconPack", adaptive)
-                    .apply();
+
+            prefs.setAdaptifyIconPacks(adaptive);
         }
     }
 
     private void updateColoredBackground(boolean state) {
         if (!state) {
             coloredView.setClickable(false);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_colorizeGeneratedBackgrounds", false)
-                    .apply();
+            prefs.setColorizedLegacyTreatment(false);
             coloredView.findViewById(R.id.switchWidget).setEnabled(false);
         } else {
             coloredView.setClickable(true);
@@ -193,10 +171,7 @@ public class IconCustomizeFragment extends Fragment {
     private void updateWhite(boolean state) {
         if (!state) {
             whiteView.setClickable(false);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_enableWhiteOnlyTreatment", false)
-                    .apply();
+            prefs.setEnableWhiteOnlyTreatment(false);
             whiteView.findViewById(R.id.switchWidget).setEnabled(false);
         } else {
             whiteView.setClickable(true);
@@ -207,10 +182,7 @@ public class IconCustomizeFragment extends Fragment {
     private void updateAdaptive(boolean state) {
         if (!state) {
             adaptiveView.setClickable(false);
-            Utilities.getPrefs(mContext)
-                    .edit()
-                    .putBoolean("pref_generateAdaptiveForIconPack", false)
-                    .apply();
+            prefs.setAdaptifyIconPacks(false);
             adaptiveView.findViewById(R.id.switchWidget).setEnabled(false);
         } else {
             adaptiveView.setClickable(true);

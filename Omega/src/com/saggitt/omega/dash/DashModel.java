@@ -44,9 +44,6 @@ public class DashModel implements Serializable {
     private boolean isEnabled;
     private Drawable icon;
 
-    public DashModel() {
-    }
-
     public int getId() {
         return id;
     }

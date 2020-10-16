@@ -11,11 +11,19 @@ public class DoubleShadowTextView extends TextView {
     private final DoubleShadowBubbleTextView.ShadowInfo mShadowInfo;
 
     public DoubleShadowTextView(Context context) {
-        this(context, null);
+        super(context, null);
+        mShadowInfo = new DoubleShadowBubbleTextView.ShadowInfo(context, null, 0);
+        setShadowLayer(Math.max(mShadowInfo.keyShadowBlur + mShadowInfo.keyShadowOffset,
+                mShadowInfo.ambientShadowBlur), 0f, 0f,
+                mShadowInfo.keyShadowColor);
     }
 
     public DoubleShadowTextView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        mShadowInfo = new DoubleShadowBubbleTextView.ShadowInfo(context, attrs, 0);
+        setShadowLayer(Math.max(mShadowInfo.keyShadowBlur + mShadowInfo.keyShadowOffset,
+                mShadowInfo.ambientShadowBlur), 0f, 0f,
+                mShadowInfo.keyShadowColor);
     }
 
     public DoubleShadowTextView(Context context, AttributeSet attrs, int defStyleAttr) {

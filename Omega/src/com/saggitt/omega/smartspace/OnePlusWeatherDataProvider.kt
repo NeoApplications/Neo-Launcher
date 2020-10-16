@@ -16,12 +16,15 @@
  */
 package com.saggitt.omega.smartspace
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Criteria
 import android.location.LocationManager
 import androidx.annotation.Keep
+import androidx.core.app.ActivityCompat
 import com.android.launcher3.R
 import com.android.launcher3.util.PackageManagerHelper
 import com.saggitt.omega.perms.CustomPermissionManager
@@ -91,6 +94,19 @@ class OnePlusWeatherDataProvider(controller: OmegaSmartspaceController) :
         var isDay = c.get(HOUR_OF_DAY) in 6 until 20
         if (locationAccess) {
             locationManager?.getBestProvider(Criteria(), true)?.let { provider ->
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    //return
+                }
                 locationManager?.getLastKnownLocation(provider)?.let { location ->
                     isDay = TwilightManager.calculateTwilightState(location.latitude, location.longitude, c.timeInMillis)?.isNight != true
                 }

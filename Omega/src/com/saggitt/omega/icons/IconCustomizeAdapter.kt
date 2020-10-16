@@ -16,7 +16,6 @@
 
 package com.saggitt.omega.icons
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -30,18 +29,19 @@ import com.android.launcher3.Utilities
 import java.util.*
 
 class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomizeAdapter.Holder>() {
-    private val adapterItems = ArrayList<String>()
+    private val adapterItems = ArrayList<ShapeModel>()
     private val mContext = context
-    private var currentShape: String? = null
 
     init {
-        val currentItems = context.resources.getStringArray(R.array.icon_shape_values)
-        adapterItems.addAll(currentItems)
-        adapterItems.removeAt(0);
+        val shapeItems = context.resources.getStringArray(R.array.icon_shape_values)
+        for (shape in shapeItems) {
+            adapterItems.add(ShapeModel(shape, Utilities.getOmegaPrefs(mContext).iconShape == shape))
+        }
+        adapterItems.removeAt(0)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(adapterItems[position])
+        holder.bind(adapterItems[position], position)
     }
 
     override fun getItemCount(): Int {
@@ -59,51 +59,27 @@ class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomiz
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val iconButton = itemView.findViewById<Button>(R.id.shape_icon)
         private val check = itemView.findViewById<ImageView>(R.id.check_mark)
-        private var prefs = Utilities.getOmegaPrefs(mContext);
+        private var prefs = Utilities.getOmegaPrefs(mContext)
 
-        @SuppressLint("UseCompatLoadingForDrawables")
-        fun bind(item: String) {
-            var drawable = mContext.getDrawable(R.drawable.shape_circle)
-
-            check.visibility = View.INVISIBLE
-            when (item) {
-                TYPE_CIRLE -> drawable = mContext.getDrawable(R.drawable.shape_circle)
-                TYPE_SQUARE -> drawable = mContext.getDrawable(R.drawable.shape_square)
-                TYPE_ROUNDED -> drawable = mContext.getDrawable(R.drawable.shape_rounded)
-                TYPE_SQUIRCLE -> drawable = mContext.getDrawable(R.drawable.shape_squircle)
-                TYPE_TEARDROP -> drawable = mContext.getDrawable(R.drawable.shape_teardrop)
-                TYPE_CYLINDER -> drawable = mContext.getDrawable(R.drawable.shape_cylinder)
-            }
-
-            if (prefs.iconShape == item) {
-                drawable!!.setTint(prefs.accentColor)
-                currentShape = item
+        fun bind(item: ShapeModel, itemPosition: Int) {
+            val drawable = item.getIcon(mContext, item.shapeName)
+            if (prefs.iconShape == item.shapeName) {
+                drawable.setTint(prefs.accentColor)
+                item.isSelected = true
                 check.drawable.setTint(Color.WHITE)
                 check.visibility = View.VISIBLE
+            } else {
+                drawable.setTint(mContext.getColor(R.color.transparentish))
+                item.isSelected = false
+                check.visibility = View.INVISIBLE
             }
 
             iconButton.background = drawable
             iconButton.setOnClickListener {
-                onButtonClick(item)
+                adapterItems.get(itemPosition).isSelected = true
+                notifyDataSetChanged()
+                prefs.iconShape = item.shapeName
             }
         }
-
-        private fun onButtonClick(shape: String) {
-            if (prefs.iconShape != shape) {
-                Utilities.getPrefs(mContext)
-                        .edit()
-                        .putString("pref_iconShape", shape)
-                        .apply()
-            }
-        }
-    }
-
-    companion object {
-        const val TYPE_CIRLE = "circle"
-        const val TYPE_SQUARE = "square"
-        const val TYPE_ROUNDED = "roundedSquare"
-        const val TYPE_SQUIRCLE = "squircle"
-        const val TYPE_TEARDROP = "teardrop"
-        const val TYPE_CYLINDER = "cylinder"
     }
 }

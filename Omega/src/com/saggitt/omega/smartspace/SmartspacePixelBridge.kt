@@ -16,14 +16,14 @@
 
 package com.saggitt.omega.smartspace
 
-import android.os.Handler
 import android.util.Log
+import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 
 class SmartspacePixelBridge(controller: OmegaSmartspaceController) :
         OmegaSmartspaceController.DataProvider(controller), ISmartspace, Runnable {
 
     private val smartspaceController = SmartspaceController.get(controller.context)
-    private val handler = Handler()
+    private val handler = MODEL_EXECUTOR.handler
     private var data: SmartspaceDataContainer? = null
     private var ds = false
 
@@ -42,13 +42,13 @@ class SmartspacePixelBridge(controller: OmegaSmartspaceController) :
     override fun onGsaChanged() {
         ds = smartspaceController.cY()
         if (data != null) {
-            cr(data)
+            postUpdate(data)
         } else {
             Log.d("SmartspacePixelBridge", "onGsaChanged but no data present")
         }
     }
 
-    override fun cr(data: SmartspaceDataContainer?) {
+    override fun postUpdate(data: SmartspaceDataContainer?) {
         this.data = data?.also { initListeners(it) }
     }
 

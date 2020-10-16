@@ -19,7 +19,7 @@
     android:id="@android:id/title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dip"
+    android:layout_marginBottom="6dip"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingTop="16dip"
+    android:paddingTop="14dip"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd" />

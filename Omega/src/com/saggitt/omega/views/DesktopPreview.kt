@@ -22,12 +22,12 @@ import android.os.Handler
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
-import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import com.android.launcher3.*
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.views.ActivityContext
 import com.android.launcher3.views.BaseDragLayer
+import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.IconPreviewUtils
 import com.saggitt.omega.util.runOnMainThread
@@ -37,7 +37,7 @@ import kotlinx.android.synthetic.omega.desktop_preview.view.*
 
 class DesktopPreview(context: Context, attrs: AttributeSet?) :
         FrameLayout(PreviewContext(context), attrs), WorkspaceLayoutManager,
-        InvariantDeviceProfile.OnIDPChangeListener, ViewTreeObserver.OnScrollChangedListener {
+        OmegaPreferences.OnPreferenceChangeListener {
 
     private val previewContext = this.context as PreviewContext
     private val previewApps = IconPreviewUtils.getPreviewAppInfos(context)
@@ -46,7 +46,10 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
     private val wallpaper = WallpaperPreviewProvider.getInstance(context).wallpaper
 
     private val idp = previewContext.idp
-
+    private val prefs: OmegaPreferences by lazy { Utilities.getOmegaPrefs(context) }
+    private val prefsToWatch = arrayOf("pref_iconShape", "pref_colorizeGeneratedBackgrounds",
+            "pref_enableWhiteOnlyTreatment", "pref_enableLegacyTreatment",
+            "pref_generateAdaptiveForIconPack", "pref_forceShapeless")
     private val homeElementInflater = LayoutInflater.from(ContextThemeWrapper(previewContext, R.style.HomeScreenElementTheme))
 
     init {
@@ -58,23 +61,33 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
         }
     }
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        populatePreview()
-    }
-
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        idp.addOnChangeListener(this)
-
-        viewTreeObserver.addOnScrollChangedListener(this)
+        prefs.addOnPreferenceChangeListener(this, *prefsToWatch)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        idp.removeOnChangeListener(this)
+        prefs.removeOnPreferenceChangeListener(this, *prefsToWatch)
+    }
 
-        viewTreeObserver.removeOnScrollChangedListener(this)
+    override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
+
+        runOnMainThread { populatePreview() }
+        /*when (key) {
+            "pref_iconShape" -> {
+                Log.d("IconCustomizeFragment", "Cambiando Icon Shape Fragment " + prefs.iconShape)
+                populatePreview()
+            }
+            "pref_colorizeGeneratedBackgrounds" -> {
+                Log.d("IconCustomizeFragment", "Cambiando Background")
+                populatePreview()
+            }
+            "pref_enableWhiteOnlyTreatment" -> Log.d("IconCustomizeFragment", "Cambiando White Only")
+            "pref_enableLegacyTreatment" -> Log.d("IconCustomizeFragment", "Cambiando Legacy")
+            "pref_generateAdaptiveForIconPack" -> Log.d("IconCustomizeFragment", "Cambiando Adaptive")
+            "pref_forceShapeless" -> Log.d("IconCustomizeFragment", "Cambiando Shapeless")
+        }*/
     }
 
     override fun dispatchDraw(canvas: Canvas) {
@@ -101,11 +114,7 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
         super.dispatchDraw(canvas)
     }
 
-    override fun onIdpChanged(changeFlags: Int, profile: InvariantDeviceProfile) {
-        populatePreview()
-    }
-
-    private fun populatePreview() {
+    fun populatePreview() {
         val dp = idp.getDeviceProfile(previewContext)
         val leftPadding = dp.workspacePadding.left + dp.workspaceCellPaddingXPx
         val rightPadding = dp.workspacePadding.right + dp.workspaceCellPaddingXPx
@@ -140,10 +149,6 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
     override fun getScreenWithId(screenId: Int) = workspace!!
 
     override fun getHotseat() = null
-
-    override fun onScrollChanged() {
-        invalidate()
-    }
 
     private class PreviewContext(base: Context) : ContextThemeWrapper(
             base, ThemeOverride.Launcher().getTheme(base)), ActivityContext {

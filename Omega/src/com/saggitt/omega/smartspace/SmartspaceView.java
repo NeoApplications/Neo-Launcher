@@ -47,6 +47,7 @@ import com.saggitt.omega.graphics.DoubleShadowTextView;
 import com.saggitt.omega.graphics.IcuDateTextView;
 import com.saggitt.omega.icons.calendar.DynamicCalendar;
 import com.saggitt.omega.smartspace.OmegaSmartspaceController.CardData;
+import com.saggitt.omega.smartspace.OmegaSmartspaceController.Line;
 import com.saggitt.omega.smartspace.OmegaSmartspaceController.WeatherData;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.views.SmartspacePreview;
@@ -162,7 +163,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
             if (launcher instanceof OmegaLauncher) {
                 ((OmegaLauncher) launcher).registerSmartspaceView(this);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
 
         }
     }
@@ -221,8 +222,8 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
             if (getParent() instanceof SmartspacePreview) {
                 setupIfNeeded();
             } else {
-                List<OmegaSmartspaceController.Line> lines = new ArrayList<>();
-                lines.add(new OmegaSmartspaceController.Line(getContext().getString(R.string.smartspace_setup_text)));
+                List<Line> lines = new ArrayList<>();
+                lines.add(new Line(getContext().getString(R.string.smartspace_setup_text)));
                 card = new CardData(null, lines, v -> setupIfNeeded(), false);
             }
         }
@@ -388,13 +389,13 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     public void onGsaChanged() {
         ds = dp.cY();
         if (dq != null) {
-            cr(dq);
+            postUpdate(dq);
         } else {
             Log.d("SmartspaceView", "onGsaChanged but no data present");
         }
     }
 
-    public void cr(final SmartspaceDataContainer dq2) {
+    public void postUpdate(final SmartspaceDataContainer dq2) {
         dq = dq2;
         boolean visible = mSmartspaceContent.getVisibility() == View.VISIBLE;
         if (!visible) {
@@ -488,34 +489,10 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     @Override
     public void run() {
-
     }
 
     @Override
     public void setPadding(final int n, final int n2, final int n3, final int n4) {
         super.setPadding(0, 0, 0, 0);
-    }
-
-    final class h implements OnClickListener {
-        final SmartspaceView dZ;
-
-        h(final SmartspaceView dz) {
-            dZ = dz;
-        }
-
-        public void onClick(final View view) {
-            final Uri content_URI = CalendarContract.CONTENT_URI;
-            final Uri.Builder appendPath = content_URI.buildUpon().appendPath("time");
-            ContentUris.appendId(appendPath, System.currentTimeMillis());
-            final Intent addFlags = new Intent(Intent.ACTION_VIEW).setData(appendPath.build())
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            try {
-                final Context context = dZ.getContext();
-                Launcher.getLauncher(context).startActivitySafely(view, addFlags, null, null);
-            } catch (ActivityNotFoundException ex) {
-                LauncherAppsCompat.getInstance(dZ.getContext()).showAppDetailsForProfile(
-                        new ComponentName(DynamicCalendar.GOOGLE_CALENDAR, ""), Process.myUserHandle(), null, null);
-            }
-        }
     }
 }

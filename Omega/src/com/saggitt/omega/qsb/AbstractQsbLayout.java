@@ -45,7 +45,6 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -520,7 +519,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     protected final int getHeightWithoutPadding() {
-        Log.d(TAG, "Height: " + getHeight());
         return (getHeight() - getPaddingTop()) - getPaddingBottom();
     }
 

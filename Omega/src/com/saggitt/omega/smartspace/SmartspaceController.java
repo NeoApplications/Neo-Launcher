@@ -109,12 +109,12 @@ public class SmartspaceController implements Handler.Callback {
             this.dR.setAlarm(ct);
         }
         if (this.dS != null) {
-            this.dS.cr(this.dQ);
+            this.dS.postUpdate(this.dQ);
         }
     }
 
     public void cV(final NewCardInfo a) {
-        if (a != null && !a.dj) {
+        if (a != null && !a.forWeather) {
             this.df(a, SmartspaceController.Store.WEATHER);
         } else {
             this.df(a, SmartspaceController.Store.CURRENT);
@@ -144,7 +144,7 @@ public class SmartspaceController implements Handler.Callback {
     public void da(final ISmartspace ds) {
         this.dS = ds;
         if (this.dS != null && this.dQ != null) {
-            this.dS.cr(this.dQ);
+            this.dS.postUpdate(this.dQ);
             this.dS.onGsaChanged();
         }
     }

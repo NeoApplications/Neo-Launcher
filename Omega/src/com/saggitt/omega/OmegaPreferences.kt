@@ -63,15 +63,12 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val reloadAll = { reloadAll() }
     private val refreshGrid = { refreshGrid() }
     val updateBlur = { updateBlur() }
-    private val resetAllApps = { onChangeCallback?.resetAllApps() ?: Unit }
-    private val updateSmartspace = { updateSmartspace() }
     private val updateWeatherData = { onChangeCallback?.updateWeatherData() ?: Unit }
-
     val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
     val recreate = { recreate() }
-    private val omegaConfig = Config(context)
 
+    private val omegaConfig = Config(context)
     private val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
     val onChangeListeners: MutableMap<String, MutableSet<OnPreferenceChangeListener>> = HashMap()
     private var onChangeCallback: OmegaPreferencesChangeCallback? = null
@@ -91,7 +88,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
     val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
     val hideAllAppsAppLabels by BooleanPref("pref_hideAllAppsAppLabels", false, recreate)
-    var pagedDrawer by BooleanPref("pref_key__paged_drawer", false, recreate)
 
     val currentTabsModel
         get() = appGroupsManager.getEnabledModel() as? DrawerTabs ?: appGroupsManager.drawerTabs
@@ -105,7 +101,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
     val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
-    val dragerBackgroundColor by IntPref("pref_drawer_background_color", R.color.transparentish, recreate)
+    val dragerBackgroundColor by IntPref("pref_drawer_background_color", R.color.white, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
@@ -113,7 +109,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     fun setDashEnable(enable: Boolean) {
         sharedPrefs.edit().putBoolean("pref_key__dash_enable", enable).apply()
     }
-
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)
     val desktopTextScale by FloatPref("pref_iconTextScale", 1f, reloadAll)
     private val homeMultilineLabel by BooleanPref("pref_homeIconLabelsInTwoLines", false, recreate)
@@ -126,7 +121,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val hideAppLabels by BooleanPref("pref_hideAppLabels", false, recreate)
 
     /* --DOCK-- */
-    var dockHide by BooleanPref("pref_hideHotseat", false, recreate)
+    var dockHide by BooleanPref("pref_hideHotseat", false, restart)
     val dockTextScale by FloatPref("pref_dockTextScale", -1f, restart)
     private val dockMultilineLabel by BooleanPref("pref_dockIconLabelsInTwoLines", false, recreate)
     val dockLabelRows get() = if (dockMultilineLabel) 2 else 1
@@ -144,7 +139,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val dockBackground by BooleanPref("pref_dockBackground", false, recreate)
     inline val dockGradientStyle get() = !dockBackground
     var dockOpacity by AlphaPref("pref_hotseatCustomOpacity", -1, recreate)
-
     val dockBackgroundColor by IntPref("pref_dock_background_color", R.color.transparentish, recreate)
 
     /* --THEME-- */
@@ -159,11 +153,11 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     }
 
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
-    val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, doNothing)
-    val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, doNothing)
-    val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
-    val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, doNothing)
-    val forceShapeless by BooleanPref("pref_forceShapeless", false, doNothing)
+    var colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", false, doNothing)
+    var enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", false, doNothing)
+    var enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
+    var adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, doNothing)
+    var forceShapeless by BooleanPref("pref_forceShapeless", false, doNothing)
 
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
@@ -269,9 +263,9 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             with(prefs.edit()) {
                 // Migration codes here
 
-                if (version == 100) {
-                    initialConfig(this, prefs)
-                }
+                //if (version == 100) {
+                initialConfig(this, prefs)
+                //}
 
                 putInt(VERSION_KEY, CURRENT_VERSION)
                 commit()
@@ -289,6 +283,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
         // misc
         putBoolean("pref_add_icon_to_home", prefs.getBoolean("pref_autoAddShortcuts", true))
         putInt("pref_notification_background", R.color.notification_background)
+        putInt("pref_key__accent_color", R.color.colorAccent)
         putBoolean("pref_allAppsGoogleSearch", false)
         putFloat("pref_dockScale", 0.90f)
 
@@ -849,7 +844,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
             INSTANCE?.apply {
                 onChangeListeners.clear()
                 onChangeCallback = null
-                gridSizeDelegate.resetValue()
                 dockGridSizeDelegate.resetValue()
                 drawerGridSizeDelegate.resetValue()
                 predictionGridSizeDelegate.resetValue()

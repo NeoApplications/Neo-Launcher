@@ -34,9 +34,11 @@
             android:id="@+id/shape_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|center_vertical"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="10dp"
+            android:clipChildren="true"
+            android:clipToPadding="true" />
 
         <include layout="@layout/list_divider" />
 
