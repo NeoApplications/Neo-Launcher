@@ -100,6 +100,7 @@ class OmegaBackup(val context: Context, val uri: Uri) {
         try {
             val contextWrapper = ContextWrapper(mContext)
             val dbFile = contextWrapper.getDatabasePath(LauncherFiles.LAUNCHER_DB)
+            val dbFile2 = contextWrapper.getDatabasePath(LauncherFiles.LAUNCHER_DB2)
             val dir = contextWrapper.cacheDir.parent
             val settingsFile = File(dir, "shared_prefs/" + LauncherFiles.SHARED_PREFERENCES_KEY + ".xml")
 
@@ -117,6 +118,9 @@ class OmegaBackup(val context: Context, val uri: Uri) {
                     val file = if (entry.name == dbFile.name) {
                         if (contents and INCLUDE_HOMESCREEN == 0) continue
                         dbFile
+                    } else if (entry.name == dbFile2.name) {
+                        if (contents and INCLUDE_HOMESCREEN == 0) continue
+                        dbFile2
                     } else if (entry.name == settingsFile.name) {
                         if (contents and INCLUDE_SETTINGS == 0) continue
                         settingsFile
@@ -246,7 +250,6 @@ class OmegaBackup(val context: Context, val uri: Uri) {
         const val INCLUDE_HOMESCREEN = 1 shl 0
         const val INCLUDE_SETTINGS = 1 shl 1
         const val INCLUDE_WALLPAPER = 1 shl 2
-        const val INCLUDE_SCREENSHOT = 1 shl 3
 
         const val BUFFER = 2018
 
