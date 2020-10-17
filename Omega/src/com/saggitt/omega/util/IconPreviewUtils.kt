@@ -23,12 +23,12 @@ import com.android.launcher3.AppInfo
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.util.PackageManagerHelper
 import com.saggitt.omega.allapps.CustomAppFilter
-import com.saggitt.omega.predictions.CustomAppPredictor
+import com.saggitt.omega.predictions.OmegaAppPredictor
 
 object IconPreviewUtils {
 
     private fun getPreviewPackages(resources: Resources): Array<String> {
-        return CustomAppPredictor.PLACE_HOLDERS
+        return OmegaAppPredictor.PLACE_HOLDERS
     }
 
     fun getPreviewAppInfos(context: Context): List<AppInfo> {

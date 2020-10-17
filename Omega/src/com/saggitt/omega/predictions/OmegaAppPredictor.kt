@@ -282,18 +282,18 @@ open class OmegaAppPredictor(
         @JvmStatic
         val DURATION_RECENTLY = TimeUnit.MINUTES.toMillis(2)
 
-        private val PLACE_HOLDERS =
-                arrayOf("com.google.android.apps.photos", "com.google.android.apps.maps",
-                        "com.google.android.gm", "com.google.android.deskclock",
-                        "com.android.settings", "com.whatsapp", "com.facebook.katana",
-                        "com.facebook.orca", "com.google.android.youtube", "com.yodo1.crossyroad",
-                        "com.spotify.music", "com.android.chrome", "com.instagram.android",
+        val PLACE_HOLDERS =
+                arrayOf("com.google.android.apps.photos", "com.google.android.youtube",
+                        "com.instagram.android", "com.whatsapp", "com.facebook.katana",
+                        "com.facebook.orca", "com.google.android.apps.maps", "com.yodo1.crossyroad",
+                        "com.spotify.music", "com.android.chrome", "com.android.settings",
                         "com.skype.raider", "com.snapchat.android", "com.viber.voip",
                         "com.twitter.android", "com.android.phone", "com.google.android.music",
                         "com.google.android.calendar", "com.google.android.apps.genie.geniewidget",
                         "com.netflix.mediaclient", "bbc.iplayer.android",
                         "com.google.android.videos", "com.amazon.mShop.android.shopping",
                         "com.microsoft.office.word", "com.google.android.apps.docs",
+                        "com.google.android.gm", "com.google.android.deskclock",
                         "com.google.android.keep", "com.google.android.apps.plus",
                         "com.google.android.talk")
 
