@@ -20,8 +20,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -113,30 +111,6 @@ public class LauncherModel extends BroadcastReceiver
      */
     static final BgDataModel sBgDataModel = new BgDataModel();
 
-    @Thunk
-    static final HandlerThread sIconPackThread = new HandlerThread("launcher-icon-pack");
-    @Thunk
-    static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
-
-    static {
-        sIconPackThread.start();
-        sIconPackUiThread.start();
-    }
-
-    /**
-     * @return the looper for the icon pack thread which can be used to load icon packs.
-     */
-    public static Looper getIconPackLooper() {
-        return sIconPackThread.getLooper();
-    }
-
-    /**
-     * @return the looper for the icon pack ui thread which can be used to load icon pickers.
-     */
-    public static Looper getIconPackUiLooper() {
-        return sIconPackUiThread.getLooper();
-    }
-
     // Runnable to check if the shortcuts permission has changed.
     private final Runnable mShortcutPermissionCheckRunnable = new Runnable() {
         @Override
@@ -149,6 +123,7 @@ public class LauncherModel extends BroadcastReceiver
                 }
             }
         }
+
     };
 
     LauncherModel(LauncherAppState app, IconCache iconCache, AppFilter appFilter) {

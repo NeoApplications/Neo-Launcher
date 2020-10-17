@@ -37,7 +37,7 @@ public class CustomAppFilter extends OmegaAppFilter {
 
     public static void setComponentNameState(Context context, ComponentKey key, boolean hidden) {
         String comp = key.toString();
-        Set<String> hiddenApps = new HashSet<>(getHiddenApps(context));
+        Set<String> hiddenApps = getHiddenApps(context);
         while (hiddenApps.contains(comp)) {
             hiddenApps.remove(comp);
         }

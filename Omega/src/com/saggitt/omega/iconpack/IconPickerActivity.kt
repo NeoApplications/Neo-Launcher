@@ -33,9 +33,9 @@ import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.launcher3.LauncherModel
 import com.android.launcher3.R
 import com.android.launcher3.compat.LauncherAppsCompat
+import com.android.launcher3.util.Executors.ICON_PACK_UI_EXECUTOR
 import com.saggitt.omega.iconpack.EditIconActivity.Companion.EXTRA_ENTRY
 import com.saggitt.omega.settings.SettingsBaseActivity
 import com.saggitt.omega.util.*
@@ -68,7 +68,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
     }
 
     private var searchItems: MutableList<AdapterItem>? = null
-    private val searchHandler = object : Handler(LauncherModel.getIconPackUiLooper()) {
+    private val searchHandler = object : Handler(ICON_PACK_UI_EXECUTOR.looper) {
         override fun handleMessage(msg: Message) {
             if (msg.what == R.id.message_search) {
                 processSearchQuery(msg.obj as String?)
