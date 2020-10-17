@@ -293,6 +293,7 @@ class OmegaBackup(val context: Context, val uri: Uri) {
             val files: MutableList<File> = ArrayList()
             if (contents or INCLUDE_HOMESCREEN != 0) {
                 files.add(contextWrapper.getDatabasePath(LauncherFiles.LAUNCHER_DB))
+                files.add(contextWrapper.getDatabasePath(LauncherFiles.LAUNCHER_DB2))
             }
             if (contents or INCLUDE_SETTINGS != 0) {
                 val dir = contextWrapper.cacheDir.parent
