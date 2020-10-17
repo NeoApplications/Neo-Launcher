@@ -255,17 +255,20 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * Used to inflate the Workspace from XML.
      *
      * @param context The application's context.
-     * @param attrs The attributes set containing the Workspace's customization values.
+     * @param attrs   The attributes set containing the Workspace's customization values.
      */
     public Workspace(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    public boolean mPillQsb;
+    private int mFirstPageScrollX;
+
     /**
      * Used to inflate the Workspace from XML.
      *
-     * @param context The application's context.
-     * @param attrs The attributes set containing the Workspace's customization values.
+     * @param context  The application's context.
+     * @param attrs    The attributes set containing the Workspace's customization values.
      * @param defStyle Unused.
      */
     public Workspace(Context context, AttributeSet attrs, int defStyle) {
@@ -276,6 +279,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         mWallpaperManager = WallpaperManager.getInstance(context);
 
         mWallpaperOffset = new WallpaperOffsetInterpolator(this);
+
+        mPillQsb = FeatureFlags.QSB_ON_FIRST_SCREEN && Utilities.getOmegaPrefs(context).getUsePillQsb();
 
         setHapticFeedbackEnabled(false);
         initWorkspace();
@@ -506,14 +511,55 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         if (qsb == null) {
             // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
             // edges, we do not need a full width QSB.
+            //qsb = LayoutInflater.from(getContext())
+            //        .inflate(R.layout.search_container_workspace,firstPage, false);
             qsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace,firstPage, false);
+                    .inflate(getEmbeddedQsbLayout(), firstPage, false);
         }
 
         CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, firstPage.getCountX(), 1);
         lp.canReorder = false;
-        if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+        //if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
+        if (!firstPage.addViewToCellLayout(qsb, 0, getEmbeddedQsbId(), lp, true)) {
             Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // Update the QSB to match the cell height. This is treating the QSB essentially as a child
+        // of workspace despite that it's not a true child.
+        // Note that it relies on the strict ordering of measuring the workspace before the QSB
+        // at the dragLayer level.
+        // Only measure the QSB when the view is enabled
+        if (mPillQsb && getChildCount() > 0) {
+            CellLayout firstPage = (CellLayout) getChildAt(0);
+            int cellHeight = firstPage.getCellHeight();
+
+            View qsbContainer = mLauncher.getQsbContainer();
+            ViewGroup.LayoutParams lp = qsbContainer.getLayoutParams();
+            if (cellHeight > 0 && lp.height != cellHeight) {
+                lp.height = cellHeight;
+                qsbContainer.setLayoutParams(lp);
+            }
+        }
+    }
+
+    private int getEmbeddedQsbId() {
+        if (mPillQsb) {
+            return R.id.qsb_container;
+        } else {
+            return R.id.search_container_workspace;
+        }
+    }
+
+    private int getEmbeddedQsbLayout() {
+        if (mPillQsb) {
+            return R.layout.qsb_container;
+        } else {
+            return R.layout.search_container_workspace;
         }
     }
 
@@ -523,7 +569,8 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         disableLayoutTransitions();
 
         // Recycle the QSB widget
-        View qsb = findViewById(R.id.search_container_workspace);
+        //View qsb = findViewById(R.id.search_container_workspace);
+        View qsb = findViewById(getEmbeddedQsbId());
         if (qsb != null) {
             ((ViewGroup) qsb.getParent()).removeView(qsb);
         }
@@ -1072,10 +1119,17 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
     }
 
+    private void onWorkspaceOverallScrollChanged() {
+        if (mPillQsb) {
+            mLauncher.getQsbContainer().setTranslationX(mOverlayTranslation + mFirstPageScrollX - getScrollX());
+        }
+    }
+
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
 
+        onWorkspaceOverallScrollChanged();
         // Update the page indicator progress.
         boolean isTransitioning = mIsSwitchingState
                 || (getLayoutTransition() != null && getLayoutTransition().isRunning());
@@ -1350,7 +1404,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             mWallpaperOffset.jumpToFinal();
         }
         super.onLayout(changed, left, top, right, bottom);
+        mFirstPageScrollX = getScrollForPage(0);
         updatePageAlphaValues();
+        onWorkspaceOverallScrollChanged();
     }
 
     @Override

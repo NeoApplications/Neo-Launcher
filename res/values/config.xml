@@ -109,7 +109,7 @@
     <item type="id" name="action_move_screen_forwards" />
     <item type="id" name="action_resize" />
     <item type="id" name="action_deep_shortcuts" />
-    <item type="id" name="action_shortcuts_and_notifications"/>
+    <item type="id" name="action_shortcuts_and_notifications" />
     <item type="id" name="action_dismiss_notification" />
     <item type="id" name="action_remote_action_shortcut" />
     <item name="action_customize" type="id" />
@@ -117,7 +117,10 @@
     <!-- QSB IDs. DO not change -->
     <item type="id" name="search_container_workspace" />
     <item type="id" name="search_container_all_apps" />
-    <item name="search_container_hotseat" type="id" />
+    <item type="id" name="search_container_hotseat" />
+
+    <!-- View ID to use for blocked area on the first screen -->
+    <item type="id" name="workspace_blocked_row" />
 
     <!-- Recents -->
     <item type="id" name="overview_panel" />

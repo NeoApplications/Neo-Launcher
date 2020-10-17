@@ -228,6 +228,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     @Thunk
     DragLayer mDragLayer;
     private DragController mDragController;
+    private View mQsbContainer;
 
     private AppWidgetManagerCompat mAppWidgetManager;
     private LauncherAppWidgetHost mAppWidgetHost;
@@ -1118,9 +1119,12 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         mFocusHandler = mDragLayer.getFocusIndicatorHelper();
         mWorkspace = mDragLayer.findViewById(R.id.workspace);
         mWorkspace.initParentViews(mDragLayer);
+        if (Utilities.getOmegaPrefs(this).getUsePillQsb()) {
+            mQsbContainer = mDragLayer.findViewById(R.id.workspace_blocked_row);
+        }
         mOverviewPanel = findViewById(R.id.overview_panel);
         mHotseat = findViewById(R.id.hotseat);
-        //mHotseatSearchBox = findViewById(R.id.search_container_hotseat);
+        mHotseatSearchBox = findViewById(R.id.search_container_hotseat);
 
         mLauncherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -1357,6 +1361,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     public Workspace getWorkspace() {
         return mWorkspace;
+    }
+
+    public View getQsbContainer() {
+        return mQsbContainer;
     }
 
     public Hotseat getHotseat() {

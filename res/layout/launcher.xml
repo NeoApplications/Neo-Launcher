@@ -47,6 +47,10 @@
             android:theme="@style/HomeScreenElementTheme"
             launcher:pageIndicator="@+id/page_indicator" />
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:id="@+id/workspace_blocked_row" />
         <!-- DO NOT CHANGE THE ID -->
         <include
             android:id="@+id/hotseat"
