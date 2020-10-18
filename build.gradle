@@ -73,7 +73,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.3"
-    def code = 66
+    def code = 67
 
     defaultConfig {
         minSdkVersion 25
@@ -95,7 +95,7 @@ android {
             minifyEnabled false
         }
         release {
-            applicationIdSuffix '.neo'
+            minifyEnabled false
         }
     }
     kotlinOptions {
