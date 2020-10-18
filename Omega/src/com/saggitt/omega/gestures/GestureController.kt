@@ -98,6 +98,9 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     companion object {
 
         private const val TAG = "GestureController"
+        private val LEGACY_SLEEP_HANDLERS = listOf(
+                "com.saggitt.omega.gestures.handlers.SleepGestureHandlerDeviceAdmin",
+                "com.saggitt.omega.gestures.handlers.SleepGestureHandlerAccessibility")
 
         fun createGestureHandler(context: Context, jsonString: String, fallback: GestureHandler): GestureHandler {
             if (!TextUtils.isEmpty(jsonString)) {
@@ -106,7 +109,10 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
                 } catch (e: JSONException) {
                     null
                 }
-                val className = config?.getString("class") ?: jsonString
+                var className = config?.getString("class") ?: jsonString
+                if (className in LEGACY_SLEEP_HANDLERS) {
+                    className = SleepGestureHandler::class.java.name
+                }
                 val configValue = if (config?.has("config") == true) config.getJSONObject("config") else null
                 try {
                     val handler = Class.forName(className).getConstructor(Context::class.java, JSONObject::class.java)
@@ -125,11 +131,17 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
             } catch (e: JSONException) {
                 null
             }
-            return config?.getString("class") ?: jsonString
-
+            val className = config?.getString("class") ?: jsonString
+            return if (className in LEGACY_SLEEP_HANDLERS) {
+                SleepGestureHandler::class.java.name
+            } else {
+                className
+            }
         }
 
         fun getGestureHandlers(context: Context, isSwipeUp: Boolean, hasBlank: Boolean) = mutableListOf(
+                SleepGestureHandler(context, null),
+                SleepGestureHandlerTimeout(context, null),
                 OpenDashGestureHandler(context, null),
                 OpenDrawerGestureHandler(context, null),
                 NotificationsOpenGestureHandler(context, null),

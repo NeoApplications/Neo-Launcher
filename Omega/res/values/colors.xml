@@ -29,6 +29,7 @@
     <color name="textColorPrimaryInverse">#de000000</color>
     <color name="textColorSecondaryInverse">#8a000000</color>
 
+    <color name="lollipopStatusBar">#61000000</color>
     <color name="all_apps_navbar_color">#28000000</color>
 
     <color name="notification_background">#EB0854</color>

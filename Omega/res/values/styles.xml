@@ -101,7 +101,9 @@
         <item name="cpv_borderColor">@color/colorAccent</item>
     </style>
 
-    <style name="SettingsTheme_Light" parent="@style/SettingsTheme.Base" />
+    <style name="SettingsTheme_Light" parent="@style/SettingsTheme.Base">
+        <item name="android:statusBarColor">@color/lollipopStatusBar</item>
+    </style>
 
     <style name="SettingsTheme_Dark">
         <item name="android:windowBackground">@color/settings_background_dark</item>
@@ -200,6 +202,13 @@
         <item name="workspaceShadowColor">#B0000000</item>
         <item name="workspaceAmbientShadowColor">#33000000</item>
         <item name="workspaceKeyShadowColor">#44000000</item>
+    </style>
+
+    <style name="SleepTimeoutTheme" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
     </style>
 
     <style name="Theme.Transparent" parent="Theme.AppCompat.Light">
