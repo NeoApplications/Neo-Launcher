@@ -1494,7 +1494,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         // We close any open folders and shortcut containers that are not safe for rebind,
         // and we need to make sure this state is reflected.
-        //AbstractFloatingView.closeOpenViews(this, false, TYPE_ALL & ~TYPE_REBIND_SAFE);
         AbstractFloatingView.closeOpenViews(this, false,
                 AbstractFloatingView.TYPE_ALL & ~AbstractFloatingView.TYPE_SETTINGS_SHEET);
         finishAutoCancelActionMode();

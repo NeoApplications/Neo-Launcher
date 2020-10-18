@@ -73,7 +73,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.3"
-    def code = 65
+    def code = 66
 
     defaultConfig {
         minSdkVersion 25
@@ -133,11 +133,11 @@ android {
     }
 
     // Disable release builds for now
-    android.variantFilter { variant ->
-        /*if (variant.buildType.name.endsWith('release')) {
+    /*android.variantFilter { variant ->
+        if (variant.buildType.name.endsWith('release')) {
             variant.setIgnore(true)
-        }*/
-    }
+        }
+    }*/
     lintOptions {
         disable 'MissingTranslation'
         disable 'ExtraTranslation'

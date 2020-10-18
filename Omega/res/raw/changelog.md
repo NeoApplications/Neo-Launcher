@@ -9,6 +9,7 @@
 * **Add: Workspace indicator customization**
 * **Add: Drawer color customization**
 * **Add: Drawer opacity customization**
+* **Add: Device Sleep preference**
 * **Fix: Search web results**
 
 ### v0.5.0 (Build 40)

@@ -32,7 +32,7 @@ import com.android.launcher3.views.AbstractSlideInView;
 
 public class CenterFloatingView extends AbstractSlideInView implements Insettable {
     private static final int DEFAULT_CLOSE_DURATION = 200;
-    private Rect mInsets;
+    private final Rect mInsets;
 
     public CenterFloatingView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);

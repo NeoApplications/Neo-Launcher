@@ -23,15 +23,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.android.launcher3.AbstractFloatingView;
+import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
 
 import java.util.ArrayList;
 
 public class DashItemAdapter {
-    private ArrayList<View> mItemViews;
+    private final ArrayList<View> mItemViews;
     private DashItemChangeListener circularItemChangeListener;
-    private Context mContext;
+    private final Context mContext;
 
     public DashItemAdapter(LayoutInflater inflater, ArrayList<DashModel> items, Context context) {
         mContext = context;
@@ -47,6 +49,7 @@ public class DashItemAdapter {
 
             itemView.setOnClickListener((parent) -> {
                 dashItem.RunAction(dashItem.getAction(), mContext);
+                AbstractFloatingView.closeAllOpenViews(Launcher.getLauncher(mContext));
             });
             mItemViews.add(view);
         }
