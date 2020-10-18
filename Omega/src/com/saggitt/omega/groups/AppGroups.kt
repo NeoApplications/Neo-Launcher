@@ -344,8 +344,8 @@ abstract class AppGroups<T : AppGroups.Group>(private val manager: AppGroupsMana
             }
         }
 
-        /*open class ColorCustomization(key: String, default: ColorEngine.ColorResolver) :
-                Customization<ColorEngine.ColorResolver, String>(key, default) {
+        /*open class ColorCustomization(key: String, default: Int) :
+                Customization<Int, String>(key, default) {
 
             override fun loadFromJson(context: Context, obj: String?) {
                 value = obj?.let { AppGroupsUtils.getInstance(context).createColorResolver(it) }
@@ -358,9 +358,9 @@ abstract class AppGroups<T : AppGroups.Group>(private val manager: AppGroupsMana
             override fun clone(): Customization<ColorEngine.ColorResolver, String> {
                 return ColorCustomization(key, default).also { it.value = value }
             }
-        }*/
+        }
 
-        /*class ColorRow(key: String, default: ColorEngine.ColorResolver) :
+        class ColorRow(key: String, default: Int) :
                 ColorCustomization(key, default) {
 
             override fun createRow(context: Context, parent: ViewGroup, accent: Int): View? {
@@ -408,8 +408,8 @@ abstract class AppGroups<T : AppGroups.Group>(private val manager: AppGroupsMana
             override fun clone(): Customization<ColorEngine.ColorResolver, String> {
                 return ColorRow(key, default).also { it.value = value }
             }
-        }
-         */
+        }*/
+
         abstract class SetCustomization<T : Any, S : Any>(key: String, default: MutableSet<T>) :
                 Customization<MutableSet<T>, JSONArray>(key, default) {
 

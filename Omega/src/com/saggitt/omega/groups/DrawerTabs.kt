@@ -65,9 +65,9 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
     abstract class Tab(context: Context, type: Int, titleRes: Int) : Group(type, context, titleRes) {
 
-        // val colorResolver = ColorRow(KEY_COLOR, AppGroupsUtils.getInstance(context).defaultColorResolver)
+         /*val colorResolver = ColorRow(KEY_COLOR, AppGroupsUtils.getInstance(context).defaultColorResolver)
 
-        /*init {
+        init {
             addCustomization(colorResolver)
         }*/
     }

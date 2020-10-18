@@ -101,7 +101,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     private FloatingHeaderView mHeader;
     private AdapterHolder[] mAH;
 
-    private boolean mUsingTabs;
+    public boolean mUsingTabs;
     private boolean mSearchModeWhileUsingTabs = false;
 
     private RecyclerViewFastScroller mTouchHandler;
@@ -350,6 +350,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
             AllAppsQsbLayout qsb = (AllAppsQsbLayout) mSearchContainer;
             mlp.topMargin = -(qsb.getTopMargin(insets) + qsb.getLayoutParams().height);
         }
+
         setLayoutParams(mlp);
 
         InsettableFrameLayout.dispatchInsets(this, insets);
@@ -492,7 +493,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     }
 
     // Used by tests only
-    private boolean isDescendantViewVisible(int viewId) {
+/*    private boolean isDescendantViewVisible(int viewId) {
         final View view = findViewById(viewId);
         if (view == null) return false;
 
@@ -500,7 +501,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
         return view.getGlobalVisibleRect(new Rect());
     }
-
+*/
     // Used by tests only
     /*public boolean isPersonalTabVisible() {
         return isDescendantViewVisible(R.id.tab_personal);

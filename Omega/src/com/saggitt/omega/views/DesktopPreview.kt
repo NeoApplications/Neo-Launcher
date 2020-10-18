@@ -20,14 +20,15 @@ import android.content.Context
 import android.graphics.Canvas
 import android.os.Handler
 import android.util.AttributeSet
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.android.launcher3.*
+import com.android.launcher3.icons.IconCache
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.views.ActivityContext
 import com.android.launcher3.views.BaseDragLayer
-import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.IconPreviewUtils
 import com.saggitt.omega.util.runOnMainThread
@@ -36,8 +37,7 @@ import com.saggitt.omega.wallpaper.WallpaperPreviewProvider
 import kotlinx.android.synthetic.omega.desktop_preview.view.*
 
 class DesktopPreview(context: Context, attrs: AttributeSet?) :
-        FrameLayout(PreviewContext(context), attrs), WorkspaceLayoutManager,
-        OmegaPreferences.OnPreferenceChangeListener {
+        FrameLayout(PreviewContext(context), attrs), WorkspaceLayoutManager {
 
     private val previewContext = this.context as PreviewContext
     private val previewApps = IconPreviewUtils.getPreviewAppInfos(context)
@@ -46,48 +46,17 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
     private val wallpaper = WallpaperPreviewProvider.getInstance(context).wallpaper
 
     private val idp = previewContext.idp
-    private val prefs: OmegaPreferences by lazy { Utilities.getOmegaPrefs(context) }
-    private val prefsToWatch = arrayOf("pref_iconShape", "pref_colorizeGeneratedBackgrounds",
-            "pref_enableWhiteOnlyTreatment", "pref_enableLegacyTreatment",
-            "pref_generateAdaptiveForIconPack", "pref_forceShapeless")
+
     private val homeElementInflater = LayoutInflater.from(ContextThemeWrapper(previewContext, R.style.HomeScreenElementTheme))
 
     init {
         runOnThread(Handler(MODEL_EXECUTOR.looper)) {
-            val iconCache = LauncherAppState.getInstance(context).iconCache
-            previewApps.forEach { iconCache.getTitleAndIcon(it, false) }
+            //val mIconCache = LauncherAppState.getInstance(context).iconCache
+            val mIconCache = IconCache(context, LauncherAppState.getIDP(context))
+            previewApps.forEach { mIconCache.getTitleAndIcon(it, false) }
             iconsLoaded = true
-            runOnMainThread(::populatePreview)
+            runOnMainThread { populatePreview(false) }
         }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        prefs.addOnPreferenceChangeListener(this, *prefsToWatch)
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        prefs.removeOnPreferenceChangeListener(this, *prefsToWatch)
-    }
-
-    override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
-
-        runOnMainThread { populatePreview() }
-        /*when (key) {
-            "pref_iconShape" -> {
-                Log.d("IconCustomizeFragment", "Cambiando Icon Shape Fragment " + prefs.iconShape)
-                populatePreview()
-            }
-            "pref_colorizeGeneratedBackgrounds" -> {
-                Log.d("IconCustomizeFragment", "Cambiando Background")
-                populatePreview()
-            }
-            "pref_enableWhiteOnlyTreatment" -> Log.d("IconCustomizeFragment", "Cambiando White Only")
-            "pref_enableLegacyTreatment" -> Log.d("IconCustomizeFragment", "Cambiando Legacy")
-            "pref_generateAdaptiveForIconPack" -> Log.d("IconCustomizeFragment", "Cambiando Adaptive")
-            "pref_forceShapeless" -> Log.d("IconCustomizeFragment", "Cambiando Shapeless")
-        }*/
     }
 
     override fun dispatchDraw(canvas: Canvas) {
@@ -114,7 +83,16 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
         super.dispatchDraw(canvas)
     }
 
-    fun populatePreview() {
+    fun populatePreview(force: Boolean) {
+        if (force) {
+            iconsLoaded = force
+            populatePreview()
+        } else
+            populatePreview()
+
+    }
+
+    private fun populatePreview() {
         val dp = idp.getDeviceProfile(previewContext)
         val leftPadding = dp.workspacePadding.left + dp.workspaceCellPaddingXPx
         val rightPadding = dp.workspacePadding.right + dp.workspaceCellPaddingXPx
@@ -129,6 +107,21 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
                 verticalPadding,
                 rightPadding,
                 verticalPadding)
+
+        previewApps.take(idp.numColumns).forEachIndexed { index, info ->
+            info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP
+            info.screenId = 0
+            info.cellX = index
+            info.cellY = 0
+            inflateAndAddIcon(info)
+        }
+    }
+
+    fun reloadApps() {
+        Log.d("DesktopPreview", "Reloading apps");
+
+        workspace.removeAllViews()
+        workspace.setGridSize(idp.numColumns, 1)
 
         previewApps.take(idp.numColumns).forEachIndexed { index, info ->
             info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP

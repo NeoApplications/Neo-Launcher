@@ -19,7 +19,6 @@ package com.saggitt.omega.qsb;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,7 +38,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Process;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
@@ -64,7 +62,6 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.graphics.NinePatchDrawHelper;
 import com.android.launcher3.icons.ShadowGenerator;
@@ -437,8 +434,8 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
     }
 
     private Bitmap createShadowBitmap(int bgColor, boolean withShadow) {
-        float f = (float) LauncherAppState.getInstance(getContext()).getInvariantDeviceProfile().iconBitmapSize;
-        return createShadowBitmap(0.010416667f * f, f * 0.020833334f, bgColor, withShadow);
+        float iconSize = (float) LauncherAppState.getInstance(getContext()).getInvariantDeviceProfile().iconBitmapSize;
+        return createShadowBitmap(0.010416667f * iconSize, iconSize * 0.020833334f, bgColor, withShadow);
     }
 
     protected final Bitmap createShadowBitmap(float f, float f2, int i, boolean withShadow) {
@@ -463,7 +460,7 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         } else {
             pill = builder.createPill(i2, height, mRadius);
         }
-        if (Utilities.ATLEAST_P) {
+        if (Utilities.ATLEAST_Q) {
             return pill.copy(Config.HARDWARE, false);
         }
         return pill;
@@ -484,34 +481,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
             width -= getRtlDimens();
         }
         helper.draw(bitmap, canvas, (float) paddingLeft, (float) paddingTop, (float) width);
-    }
-
-    protected final Bitmap createBitmap(float shadowBlur, float keyShadowDistance, int color, boolean withShadow) {
-        int height = getHeightWithoutPadding();
-        int heightSpec = height + 20;
-        ShadowGenerator.Builder builder = new ShadowGenerator.Builder(color);
-        builder.shadowBlur = shadowBlur;
-        builder.keyShadowDistance = keyShadowDistance;
-        if (!withShadow) {
-            builder.ambientShadowAlpha = 0;
-        }
-        builder.keyShadowAlpha = builder.ambientShadowAlpha;
-        Bitmap pill;
-        if (mRadius < 0) {
-            TypedValue edgeRadius = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius);
-            if (edgeRadius != null) {
-                pill = builder.createPill(heightSpec, height,
-                        edgeRadius.getDimension(getResources().getDisplayMetrics()));
-            } else {
-                pill = builder.createPill(heightSpec, height);
-            }
-        } else {
-            pill = builder.createPill(heightSpec, height, mRadius);
-        }
-        if (Utilities.ATLEAST_OREO) {
-            return pill.copy(Config.HARDWARE, false);
-        }
-        return pill;
     }
 
     protected final int getShadowDimens(@NotNull Bitmap bitmap) {
@@ -653,14 +622,6 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
 
     protected boolean logoCanOpenFeed() {
         return true;
-    }
-
-    protected final void k(String str) {
-        try {
-            getContext().startActivity(new Intent(str).addFlags(268468224).setPackage(GOOGLE_QSB));
-        } catch (ActivityNotFoundException e) {
-            LauncherAppsCompat.getInstance(getContext()).showAppDetailsForProfile(new ComponentName(GOOGLE_QSB, ".SearchActivity"), Process.myUserHandle(), null, null);
-        }
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

@@ -18,6 +18,7 @@ package com.saggitt.omega.icons;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +34,13 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.util.OmegaUtilsKt;
+import com.saggitt.omega.views.DesktopPreview;
 
-public class IconCustomizeFragment extends Fragment {
+import org.jetbrains.annotations.NotNull;
 
-    private RecyclerView shapeView;
-    private Context mContext;
-    private IconCustomizeAdapter adapter;
+public class IconCustomizeFragment extends Fragment implements
+        OmegaPreferences.OnPreferenceChangeListener {
+
     private View coloredView;
     private View shapeLessView;
     private View legacyView;
@@ -50,6 +52,10 @@ public class IconCustomizeFragment extends Fragment {
     private boolean legacy;
     private boolean white;
     private boolean adaptive;
+    private String[] prefsToWatch = {"pref_iconShape", "pref_colorizeGeneratedBackgrounds",
+            "pref_enableWhiteOnlyTreatment", "pref_enableLegacyTreatment",
+            "pref_generateAdaptiveForIconPack", "pref_forceShapeless"};
+    private DesktopPreview desktopPreview;
 
     @Nullable
     @Override
@@ -60,7 +66,10 @@ public class IconCustomizeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mContext = getActivity();
+        Context mContext = getActivity();
+
+        desktopPreview = view.findViewById(R.id.preview_frame);
+
         prefs = Utilities.getOmegaPrefs(mContext);
         coloredIcons = prefs.getColorizedLegacyTreatment();
         shapeLess = prefs.getForceShapeless();
@@ -68,10 +77,10 @@ public class IconCustomizeFragment extends Fragment {
         white = prefs.getEnableWhiteOnlyTreatment();
         adaptive = prefs.getAdaptifyIconPacks();
 
-        shapeView = view.findViewById(R.id.shape_view);
+        RecyclerView shapeView = view.findViewById(R.id.shape_view);
         GridLayoutManager layoutManager = new GridLayoutManager(mContext, 4);
         shapeView.setLayoutManager(layoutManager);
-        adapter = new IconCustomizeAdapter(mContext);
+        IconCustomizeAdapter adapter = new IconCustomizeAdapter(mContext);
         shapeView.setAdapter(adapter);
 
         coloredView = view.findViewById(R.id.colored_icons);
@@ -91,10 +100,38 @@ public class IconCustomizeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         prefs.reloadIcons();
+        prefs.removeOnPreferenceChangeListener(this, prefsToWatch);
     }
 
     public void onResume() {
         super.onResume();
+        prefs.addOnPreferenceChangeListener(this, prefsToWatch);
+    }
+
+    @Override
+    public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
+        switch (key) {
+            case "pref_iconShape":
+                Log.d("IconCustomizeFragment", "Cambiando Icon Shape Fragment " + prefs.getIconShape());
+                break;
+            case "pref_colorizeGeneratedBackgrounds":
+                Log.d("IconCustomizeFragment", "Cambiando Background");
+                break;
+            case "pref_enableWhiteOnlyTreatment":
+                Log.d("IconCustomizeFragment", "Cambiando White Only");
+                break;
+            case "pref_enableLegacyTreatment":
+                Log.d("IconCustomizeFragment", "Cambiando Legacy");
+                break;
+            case "pref_generateAdaptiveForIconPack":
+                Log.d("IconCustomizeFragment", "Cambiando Adaptive");
+                break;
+            case "pref_forceShapeless":
+                Log.d("IconCustomizeFragment", "Cambiando Shapeless");
+                break;
+        }
+        desktopPreview.populatePreview(true);
+
     }
 
     /*
@@ -117,9 +154,7 @@ public class IconCustomizeFragment extends Fragment {
         Switch switchView = itemView.findViewById(R.id.switchWidget);
         OmegaUtilsKt.applyColor(switchView, prefs.getAccentColor());
         syncSwitch(switchView, isChecked);
-        itemView.setOnClickListener(view -> {
-            doOnClick(view, switchView);
-        });
+        itemView.setOnClickListener(view -> doOnClick(view, switchView));
     }
 
     public void doOnClick(View view, Switch switchView) {
@@ -193,4 +228,5 @@ public class IconCustomizeFragment extends Fragment {
     private void syncSwitch(Switch switchCompat, boolean checked) {
         switchCompat.setChecked(checked);
     }
+
 }

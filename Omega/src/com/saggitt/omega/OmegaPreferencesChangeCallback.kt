@@ -28,7 +28,7 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
 
     fun reloadApps() {
         UserManagerCompat.getInstance(launcher).userProfiles.forEach { launcher.model.onPackagesReload(it) }
-    }
+   }
 
     fun reloadAll() {
         launcher.model.forceReload()

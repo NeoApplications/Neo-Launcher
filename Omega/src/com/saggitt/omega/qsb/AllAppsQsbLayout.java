@@ -65,13 +65,12 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     boolean mDoNotRemoveFallback;
     private boolean mLowPerformanceMode;
     private int mShadowAlpha;
-    private Bitmap Dv;
+    private Bitmap mShadowBitmap;
     private boolean mUseFallbackSearch;
     private FallbackAppsSearchView mFallback;
     private TextView mHint;
     private AllAppsContainerView mAppsView;
-    private OmegaPreferences prefs;
-    //private int mForegroundColor;
+    private final OmegaPreferences prefs;
 
     // This value was used to position the QSB. We store it here for translationY animations.
     private final float mFixedTranslationY;
@@ -117,7 +116,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
     }
 
     public void setInsets(Rect insets) {
-        c(Utilities.getDevicePrefs(getContext()));
+        removeFallBack();
         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
         mlp.topMargin = Math.round(Math.max(-mFixedTranslationY, insets.top - mMarginTopAdjusting));
         requestLayout();
@@ -362,14 +361,14 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     public void draw(Canvas canvas) {
         if (mShadowAlpha > 0) {
-            if (this.Dv == null) {
-                this.Dv = createBitmap(
+            if (mShadowBitmap == null) {
+                mShadowBitmap = createShadowBitmap(
                         getResources().getDimension(R.dimen.hotseat_qsb_scroll_shadow_blur_radius),
                         getResources().getDimension(R.dimen.hotseat_qsb_scroll_key_shadow_offset),
                         0, true);
             }
             mShadowHelper.paint.setAlpha(mShadowAlpha);
-            drawShadow(Dv, canvas);
+            drawShadow(mShadowBitmap, canvas);
             mShadowHelper.paint.setAlpha(255);
         }
         super.draw(canvas);
@@ -390,7 +389,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         return super.dK();
     }
 
-    protected final void c(SharedPreferences sharedPreferences) {
+    protected final void removeFallBack() {
         if (mUseFallbackSearch) {
             removeFallbackView();
             mUseFallbackSearch = false;
@@ -437,7 +436,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         } else {
             micProgress = hotseatProgress;
         }
-        setter.setFloat(this, HOTSEAT_PROGRESS, hotseatProgress, LINEAR);
+        //setter.setFloat(this, HOTSEAT_PROGRESS, hotseatProgress, LINEAR);
         setter.setViewAlpha(this, qsbVisible ? 1 : 0, interpolator);
         setter.setViewAlpha(mLogoIconView, 1 - hotseatProgress, interpolator);
         setter.setViewAlpha(mHotseatLogoIconView, hotseatProgress, interpolator);

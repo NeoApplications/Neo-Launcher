@@ -19,7 +19,7 @@
 <resources>
     <!-- String representing the fragment class for settings activity.-->
     <string name="settings_fragment_name" translatable="false">com.saggitt.omega.settings.SettingsActivity$LauncherSettingsFragment</string>
-    <string name="user_event_dispatcher_class" translatable="false">com.saggitt.omega.predictions.CustomAppPredictor</string>
+    <string name="user_event_dispatcher_class" translatable="false">com.saggitt.omega.predictions.OmegaAppPredictor</string>
     <string name="icon_provider_class" translatable="false">com.saggitt.omega.icons.CustomIconProvider</string>
     <string name="drawable_factory_class" translatable="false">com.saggitt.omega.icons.CustomDrawableFactory</string>
     <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.providers.GoogleSearchProvider</string>
