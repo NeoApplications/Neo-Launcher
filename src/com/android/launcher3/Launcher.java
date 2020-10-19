@@ -254,7 +254,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     // UI and state for the overview panel
     private View mOverviewPanel;
-    private View mDashView;
 
     @Thunk
     boolean mWorkspaceLoading = true;
@@ -300,7 +299,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     private DeviceProfile mStableDeviceProfile;
     private RotationMode mRotationMode = RotationMode.NORMAL;
 
-    public static Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         RaceConditionTracker.onEvent(ON_CREATE_EVT, ENTER);
@@ -322,7 +320,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         super.onCreate(savedInstanceState);
         TraceHelper.partitionSection("Launcher-onCreate", "super call");
-        mContext = this;
 
         LauncherAppState app = LauncherAppState.getInstance(this);
 

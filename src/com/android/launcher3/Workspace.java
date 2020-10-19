@@ -914,6 +914,12 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             return;
         }
 
+        //TODO: PREFERENCE TO KEEP EMPTY SCREEN
+        /*if (OmegaPreferences.Companion.getInstance(mLauncher).getKeepEmptyScreens()) {
+            // Don't strip empty screens if we should keep them
+            return;
+        }*/
+
         if (isPageInTransition()) {
             mStripScreensOnPageStopMoving = true;
             return;
@@ -1149,11 +1155,13 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
     @Override
     protected void overScroll(int amount) {
+        boolean inOptionsState = mLauncher.isInState(LauncherState.OPTIONS);
+
         boolean shouldScrollOverlay = mLauncherOverlay != null && !mScroller.isSpringing() &&
-                ((amount <= 0 && !mIsRtl) || (amount >= 0 && mIsRtl));
+                ((amount <= 0 && !mIsRtl) || (amount >= 0 && mIsRtl)) && !inOptionsState;
 
         boolean shouldZeroOverlay = mLauncherOverlay != null && mLastOverlayScroll != 0 &&
-                ((amount >= 0 && !mIsRtl) || (amount <= 0 && mIsRtl));
+                ((amount >= 0 && !mIsRtl) || (amount <= 0 && mIsRtl) || inOptionsState);
 
         if (shouldScrollOverlay) {
             if (!mStartedSendingScrollEvents && mScrollInteractionBegan) {
@@ -1194,7 +1202,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             if (!mOverlayShown) {
                 mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
                         Action.Direction.LEFT, ContainerType.WORKSPACE, 0);
-                mLauncher.getStatsLogManager().logSwipeOnContainer(true, 0);
+                //mLauncher.getStatsLogManager().logSwipeOnContainer(true, 0);
             }
             mOverlayShown = true;
             // Not announcing the overlay page for accessibility since it announces itself.
@@ -1204,7 +1212,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
                 if (!ued.isPreviousHomeGesture()) {
                     mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
                         Action.Direction.RIGHT, ContainerType.WORKSPACE, -1);
-                    mLauncher.getStatsLogManager().logSwipeOnContainer(false, -1);
+                    //mLauncher.getStatsLogManager().logSwipeOnContainer(false, -1);
                 }
             } else if (Float.compare(mOverlayTranslation, 0f) != 0) {
                 // When arriving to 0 overscroll from non-zero overscroll, announce page for

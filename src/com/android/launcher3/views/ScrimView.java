@@ -287,7 +287,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
             anim.addUpdateListener((v) -> invalidate(invalidateRegion));
             getOverlay().add(drawable);
             anim.start();
-            return true;
+            //return true;
         }
         return value;
     }
@@ -339,7 +339,8 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
     }
 
     protected void updateDragHandleVisibility(Drawable recycle) {
-        boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() || mAM.isEnabled() || Utilities.getOmegaPrefs(mLauncher).getDockShowArrow();
+        boolean visible = mLauncher.getDeviceProfile()
+                .isVerticalBarLayout() || mAM.isEnabled() || Utilities.getOmegaPrefs(mLauncher).getDockShowArrow();
         boolean wasVisible = mDragHandle != null;
         if (visible != wasVisible) {
             if (visible) {
@@ -466,6 +467,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
             }
 
             return false;
+
         }
     }
 

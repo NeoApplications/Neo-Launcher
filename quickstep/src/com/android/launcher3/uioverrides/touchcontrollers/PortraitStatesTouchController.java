@@ -126,7 +126,8 @@ public class PortraitStatesTouchController extends AbstractStateChangeTouchContr
                 mGoToOverview = true;
             }
             // If we are swiping to all apps instead of overview, allow it from anywhere.
-            boolean interceptAnywhere = mLauncher.isInState(NORMAL) && !mAllowDragToOverview;
+            //boolean interceptAnywhere = mLauncher.isInState(NORMAL) && !mAllowDragToOverview;
+            boolean interceptAnywhere = mLauncher.isInState(NORMAL);
             // For all other states, only listen if the event originated below the hotseat height
             if (!interceptAnywhere && !isTouchOverHotseat(mLauncher, ev)) {
                 return false;

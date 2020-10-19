@@ -416,7 +416,6 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
     @Override
     public void setContentVisibility(int visibleElements, PropertySetter setter, Interpolator interpolator) {
-
         OmegaPreferences prefs = Utilities.getOmegaPrefs(getContext());
         boolean hotseatQsbEnabled = prefs.getDockSearchBar() || widgetMode;
         boolean hotseatQsbVisible = (visibleElements & HOTSEAT_SEARCH_BOX) != 0;
@@ -436,7 +435,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         } else {
             micProgress = hotseatProgress;
         }
-        //setter.setFloat(this, HOTSEAT_PROGRESS, hotseatProgress, LINEAR);
+        setter.setFloat(this, HOTSEAT_PROGRESS, hotseatProgress, LINEAR);
         setter.setViewAlpha(this, qsbVisible ? 1 : 0, interpolator);
         setter.setViewAlpha(mLogoIconView, 1 - hotseatProgress, interpolator);
         setter.setViewAlpha(mHotseatLogoIconView, hotseatProgress, interpolator);

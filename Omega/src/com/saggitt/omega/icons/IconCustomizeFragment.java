@@ -131,7 +131,7 @@ public class IconCustomizeFragment extends Fragment implements
                 break;
         }
         desktopPreview.populatePreview(true);
-
+        desktopPreview.invalidate();
     }
 
     /*

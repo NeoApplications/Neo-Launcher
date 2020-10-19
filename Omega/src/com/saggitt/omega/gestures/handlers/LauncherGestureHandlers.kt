@@ -43,7 +43,6 @@ import com.saggitt.omega.util.getIcon
 import com.saggitt.omega.util.omegaPrefs
 import org.json.JSONObject
 
-
 @Keep
 open class OpenDrawerGestureHandler(context: Context, config: JSONObject?) : GestureHandler(context, config),
         VerticalSwipeGestureHandler, StateChangeGestureHandler {

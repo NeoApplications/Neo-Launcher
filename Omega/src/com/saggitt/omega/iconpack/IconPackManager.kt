@@ -44,7 +44,6 @@ import com.saggitt.omega.icons.CustomIconProvider
 import com.saggitt.omega.override.AppInfoProvider
 import com.saggitt.omega.override.CustomInfoProvider
 import com.saggitt.omega.util.asNonEmpty
-import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.runOnMainThread
 import java.util.*
 import kotlin.collections.HashMap
@@ -196,7 +195,6 @@ class IconPackManager(private val context: Context) {
     }
 
     fun onPacksUpdated() {
-        context.omegaPrefs.reloadIcons()
         runOnMainThread { listeners.forEach { it.invoke() } }
     }
 

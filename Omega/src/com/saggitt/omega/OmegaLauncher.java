@@ -53,8 +53,6 @@ import com.saggitt.omega.views.OmegaBackgroundView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 
@@ -188,8 +186,10 @@ public class OmegaLauncher extends Launcher {
             }
             ItemInfo itemInfo = currentEditInfo;
             String entryString = data.getString(EditIconActivity.EXTRA_ENTRY);
-            CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(Objects.requireNonNull(entryString));
-            (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
+            if (entryString != null) {
+                CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(entryString);
+                (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
+            }
         }
     }
 

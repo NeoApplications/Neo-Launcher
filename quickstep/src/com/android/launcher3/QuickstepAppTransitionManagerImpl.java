@@ -16,26 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.BaseActivity.INVISIBLE_ALL;
-import static com.android.launcher3.BaseActivity.INVISIBLE_BY_APP_TRANSITIONS;
-import static com.android.launcher3.BaseActivity.INVISIBLE_BY_PENDING_FLAGS;
-import static com.android.launcher3.BaseActivity.PENDING_INVISIBLE_BY_WALLPAPER_ANIMATION;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.OVERVIEW;
-import static com.android.launcher3.Utilities.postAsyncCallback;
-import static com.android.launcher3.allapps.AllAppsTransitionController.ALL_APPS_PROGRESS;
-import static com.android.launcher3.anim.Interpolators.AGGRESSIVE_EASE;
-import static com.android.launcher3.anim.Interpolators.DEACCEL_1_7;
-import static com.android.launcher3.anim.Interpolators.EXAGGERATED_EASE;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_TRANSITIONS;
-import static com.android.launcher3.views.FloatingIconView.SHAPE_PROGRESS_DURATION;
-import static com.android.quickstep.TaskUtils.taskIsATargetWithMode;
-import static com.android.systemui.shared.system.QuickStepContract.getWindowCornerRadius;
-import static com.android.systemui.shared.system.QuickStepContract.supportsRoundedCornersOnWindows;
-import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.MODE_CLOSING;
-import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.MODE_OPENING;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -84,6 +64,26 @@ import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplierCompat;
 import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplierCompat.SurfaceParams;
 import com.android.systemui.shared.system.WindowManagerWrapper;
 
+import static com.android.launcher3.BaseActivity.INVISIBLE_ALL;
+import static com.android.launcher3.BaseActivity.INVISIBLE_BY_APP_TRANSITIONS;
+import static com.android.launcher3.BaseActivity.INVISIBLE_BY_PENDING_FLAGS;
+import static com.android.launcher3.BaseActivity.PENDING_INVISIBLE_BY_WALLPAPER_ANIMATION;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.Utilities.postAsyncCallback;
+import static com.android.launcher3.allapps.AllAppsTransitionController.ALL_APPS_PROGRESS;
+import static com.android.launcher3.anim.Interpolators.AGGRESSIVE_EASE;
+import static com.android.launcher3.anim.Interpolators.DEACCEL_1_7;
+import static com.android.launcher3.anim.Interpolators.EXAGGERATED_EASE;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_TRANSITIONS;
+import static com.android.launcher3.views.FloatingIconView.SHAPE_PROGRESS_DURATION;
+import static com.android.quickstep.TaskUtils.taskIsATargetWithMode;
+import static com.android.systemui.shared.system.QuickStepContract.getWindowCornerRadius;
+import static com.android.systemui.shared.system.QuickStepContract.supportsRoundedCornersOnWindows;
+import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.MODE_CLOSING;
+import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.MODE_OPENING;
+
 /**
  * {@link LauncherAppTransitionManager} with Quickstep-specific app transitions for launching from
  * home and/or all-apps.
@@ -126,7 +126,7 @@ public abstract class QuickstepAppTransitionManagerImpl extends LauncherAppTrans
     private static final long RADIUS_DURATION = 375;
 
     public static final int RECENTS_LAUNCH_DURATION = 336;
-    private static final int LAUNCHER_RESUME_START_DELAY = 100;
+    protected static final int LAUNCHER_RESUME_START_DELAY = 100;
     private static final int CLOSING_TRANSITION_DURATION_MS = 250;
 
     protected static final int CONTENT_ALPHA_DURATION = 217;
@@ -343,16 +343,16 @@ public abstract class QuickstepAppTransitionManagerImpl extends LauncherAppTrans
      *
      * @param isAppOpening True when this is called when an app is opening.
      *                     False when this is called when an app is closing.
-     * @param trans Array that contains the start and end translation values for the content.
+     * @param trans        Array that contains the start and end translation values for the content.
      */
-    private Pair<AnimatorSet, Runnable> getLauncherContentAnimator(boolean isAppOpening,
-            float[] trans) {
+    protected Pair<AnimatorSet, Runnable> getLauncherContentAnimator(boolean isAppOpening,
+                                                                     float[] trans) {
         AnimatorSet launcherAnimator = new AnimatorSet();
         Runnable endListener;
 
         float[] alphas = isAppOpening
-                ? new float[] {1, 0}
-                : new float[] {0, 1};
+                ? new float[]{1, 0}
+                : new float[]{0, 1};
 
         if (mLauncher.isInState(ALL_APPS)) {
             // All Apps in portrait mode is full screen, so we only animate AllAppsContainerView.
@@ -703,11 +703,11 @@ public abstract class QuickstepAppTransitionManagerImpl extends LauncherAppTrans
     /**
      * Creates an animator that modifies Launcher as a result from {@link #getWallpaperOpenRunner}.
      */
-    private void createLauncherResumeAnimation(AnimatorSet anim) {
+    protected void createLauncherResumeAnimation(AnimatorSet anim) {
         if (mLauncher.isInState(LauncherState.ALL_APPS)) {
             Pair<AnimatorSet, Runnable> contentAnimator =
                     getLauncherContentAnimator(false /* isAppOpening */,
-                            new float[] {-mContentTransY, 0});
+                            new float[]{-mContentTransY, 0});
             contentAnimator.first.setStartDelay(LAUNCHER_RESUME_START_DELAY);
             anim.play(contentAnimator.first);
             anim.addListener(new AnimatorListenerAdapter() {
@@ -747,7 +747,7 @@ public abstract class QuickstepAppTransitionManagerImpl extends LauncherAppTrans
         }
     }
 
-    private void resetContentView() {
+    protected void resetContentView() {
         mLauncher.getWorkspace().getPageIndicator().skipAnimationsToEnd();
         mDragLayerAlpha.setValue(1f);
         mDragLayer.setLayerType(View.LAYER_TYPE_NONE, null);

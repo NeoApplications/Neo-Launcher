@@ -33,8 +33,8 @@ import com.saggitt.omega.views.OmegaBackgroundView;
 import static com.android.launcher3.LauncherAnimUtils.DRAWABLE_ALPHA;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
 import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
-import static com.android.launcher3.LauncherState.HOTSEAT_SEARCH_BOX;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_SCALE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_TRANSLATE;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_FADE;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_SCALE;
 import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_WORKSPACE_TRANSLATE;
@@ -143,16 +143,13 @@ public class WorkspaceStateTransitionAnimation {
         propertySetter.setFloat(mWorkspace, View.TRANSLATION_Y,
                 scaleAndTranslation.translationY, translationInterpolator);
 
-        propertySetter.setViewAlpha(mLauncher.getHotseatSearchBox(),
-                (elements & HOTSEAT_SEARCH_BOX) != 0 ? 1 : 0, fadeInterpolator);
-
-        /*Interpolator hotseatTranslationInterpolator = builder.getInterpolator(
+        Interpolator hotseatTranslationInterpolator = builder.getInterpolator(
                 ANIM_HOTSEAT_TRANSLATE, translationInterpolator);
         propertySetter.setFloat(hotseat, View.TRANSLATION_Y,
                 hotseatScaleAndTranslation.translationY, hotseatTranslationInterpolator);
         propertySetter.setFloat(mWorkspace.getPageIndicator(), View.TRANSLATION_Y,
                 hotseatScaleAndTranslation.translationY, hotseatTranslationInterpolator);
-        */
+
         setScrim(propertySetter, state);
     }
 

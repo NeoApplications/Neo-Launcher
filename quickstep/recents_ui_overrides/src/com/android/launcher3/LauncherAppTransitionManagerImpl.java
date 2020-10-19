@@ -16,23 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_X;
-import static com.android.launcher3.LauncherState.BACKGROUND_APP;
-import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.LauncherState.OVERVIEW;
-import static com.android.launcher3.LauncherStateManager.ANIM_ALL;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_SCALE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_TRANSLATE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
-import static com.android.launcher3.anim.Interpolators.AGGRESSIVE_EASE;
-import static com.android.launcher3.anim.Interpolators.DEACCEL_3;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.anim.Interpolators.OVERSHOOT_1_2;
-import static com.android.quickstep.TaskViewUtils.findTaskViewToLaunch;
-import static com.android.quickstep.TaskViewUtils.getRecentsWindowAnimator;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -55,11 +38,28 @@ import com.android.quickstep.views.RecentsView;
 import com.android.quickstep.views.TaskView;
 import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 
+import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_X;
+import static com.android.launcher3.LauncherState.BACKGROUND_APP;
+import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.LauncherStateManager.ANIM_ALL;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_SCALE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_HOTSEAT_TRANSLATE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
+import static com.android.launcher3.anim.Interpolators.AGGRESSIVE_EASE;
+import static com.android.launcher3.anim.Interpolators.DEACCEL_3;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.anim.Interpolators.OVERSHOOT_1_2;
+import static com.android.quickstep.TaskViewUtils.findTaskViewToLaunch;
+import static com.android.quickstep.TaskViewUtils.getRecentsWindowAnimator;
+
 /**
  * A {@link QuickstepAppTransitionManagerImpl} that also implements recents transitions from
  * {@link RecentsView}.
  */
-public final class LauncherAppTransitionManagerImpl extends QuickstepAppTransitionManagerImpl {
+public class LauncherAppTransitionManagerImpl extends QuickstepAppTransitionManagerImpl {
 
     public static final int INDEX_SHELF_ANIM = 0;
     public static final int INDEX_RECENTS_FADE_ANIM = 1;
