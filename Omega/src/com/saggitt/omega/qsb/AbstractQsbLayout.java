@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -460,9 +459,9 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         } else {
             pill = builder.createPill(i2, height, mRadius);
         }
-        if (Utilities.ATLEAST_Q) {
+        /*if (Utilities.ATLEAST_Q) {
             return pill.copy(Config.HARDWARE, false);
-        }
+        }*/
         return pill;
     }
 
