@@ -21,6 +21,7 @@ import com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS
 import com.android.launcher3.LauncherState
 import com.android.launcher3.states.RotationHelper
 import com.android.launcher3.userevent.nano.LauncherLogProto
+import com.saggitt.omega.OmegaLauncher
 
 class OptionsState(id: Int) : LauncherState(id, LauncherLogProto.ContainerType.OVERVIEW,
         SPRING_LOADED_TRANSITION_MS, STATE_FLAGS) {
@@ -29,7 +30,7 @@ class OptionsState(id: Int) : LauncherState(id, LauncherLogProto.ContainerType.O
         val grid = launcher.deviceProfile
         val ws = launcher.workspace
 
-        /*if (grid.isVerticalBarLayout) {
+        if (grid.isVerticalBarLayout) {
             val scale = grid.workspaceOptionsShrinkFactor
             val optionsView = OmegaLauncher.getLauncher(launcher).optionsView
 
@@ -41,7 +42,7 @@ class OptionsState(id: Int) : LauncherState(id, LauncherLogProto.ContainerType.O
             val actualBottom = ws.height * 0.5f + (ws.height * 0.5f * scale)
 
             return ScaleAndTranslation(scale, 0f, Math.max(desiredCenter - actualCenter, desiredBottom - actualBottom))
-        }*/
+        }
 
         val scale = grid.workspaceOptionsShrinkFactor
         val insets = launcher.dragLayer.insets

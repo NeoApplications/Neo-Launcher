@@ -1,4 +1,4 @@
-### v0.6.0 (Build 60)
+### v0.6.0 (Build 80)
 * **Add: Show All Apps Label**
 * **Add: Open App from Gesture**
 * **Add: At glance widget**
@@ -10,6 +10,7 @@
 * **Add: Drawer color customization**
 * **Add: Drawer opacity customization**
 * **Add: Device Sleep preference**
+* **Add: Full screen preference**
 * **Fix: Search web results**
 
 ### v0.5.0 (Build 40)

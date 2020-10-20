@@ -1171,7 +1171,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
             mLastOverlayScroll = Math.abs(((float) amount) / getMeasuredWidth());
             mLauncherOverlay.onScrollChange(mLastOverlayScroll, mIsRtl);
-        } else {
+        } else if (!inOptionsState) {
             dampedOverScroll(amount);
         }
 

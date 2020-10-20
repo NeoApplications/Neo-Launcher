@@ -112,6 +112,28 @@ fun Context.getDimenAttr(attr: Int): Int {
     return size
 }
 
+inline fun ViewGroup.forEachChildIndexed(action: (View, Int) -> Unit) {
+    val count = childCount
+    for (i in (0 until count)) {
+        action(getChildAt(i), i)
+    }
+}
+
+inline fun ViewGroup.forEachChild(action: (View) -> Unit) {
+    forEachChildIndexed { view, _ -> action(view) }
+}
+
+inline fun ViewGroup.forEachChildReversedIndexed(action: (View, Int) -> Unit) {
+    val count = childCount
+    for (i in (0 until count).reversed()) {
+        action(getChildAt(i), i)
+    }
+}
+
+inline fun ViewGroup.forEachChildReversed(action: (View) -> Unit) {
+    forEachChildReversedIndexed { view, _ -> action(view) }
+}
+
 fun CheckedTextView.applyAccent() {
     val tintList = ColorStateList.valueOf(context.getColorAccent())
     compoundDrawableTintList = tintList
@@ -257,17 +279,6 @@ var View.isVisible: Boolean
     set(value) {
         visibility = if (value) View.VISIBLE else View.GONE
     }
-
-inline fun ViewGroup.forEachChildReversed(action: (View) -> Unit) {
-    forEachChildReversedIndexed { view, _ -> action(view) }
-}
-
-inline fun ViewGroup.forEachChildReversedIndexed(action: (View, Int) -> Unit) {
-    val count = childCount
-    for (i in (0 until count).reversed()) {
-        action(getChildAt(i), i)
-    }
-}
 
 operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
 inline fun PreferenceGroup.forEachIndexed(action: (i: Int, pref: Preference) -> Unit) {
@@ -505,13 +516,6 @@ fun JSONObject.getNullable(key: String): Any? {
 fun String.asNonEmpty(): String? {
     if (TextUtils.isEmpty(this)) return null
     return this
-}
-
-inline fun ViewGroup.forEachChildIndexed(action: (View, Int) -> Unit) {
-    val count = childCount
-    for (i in (0 until count)) {
-        action(getChildAt(i), i)
-    }
 }
 
 fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
