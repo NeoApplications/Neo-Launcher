@@ -26,8 +26,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -53,6 +55,8 @@ import com.saggitt.omega.views.OmegaBackgroundView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 
@@ -61,7 +65,7 @@ import static com.saggitt.omega.iconpack.IconPackManager.CustomIconEntry;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_LOCATION_ACCESS;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
-public class OmegaLauncher extends Launcher {
+public class OmegaLauncher extends Launcher implements OmegaPreferences.OnPreferenceChangeListener {
     public static boolean showFolderNotificationCount;
     public static Drawable currentEditIcon = null;
     public ItemInfo currentEditInfo = null;
@@ -73,6 +77,7 @@ public class OmegaLauncher extends Launcher {
     private GestureController mGestureController;
     public View dummyView;
     public OmegaBackgroundView background;
+    private String hideStatusBarKey = "pref_hideStatusBar";
 
     public OmegaLauncher() {
         launcherCallbacks = new OmegaLauncherCallbacks(this);
@@ -100,6 +105,7 @@ public class OmegaLauncher extends Launcher {
         mContext = this;
         OmegaPreferences mOmegaPrefs = Utilities.getOmegaPrefs(mContext);
         mOmegaPrefs.registerCallback(prefCallback);
+        mOmegaPrefs.addOnPreferenceChangeListener(hideStatusBarKey, this);
         ContextUtils contextUtils = new ContextUtils(this);
         contextUtils.setAppLanguage(mOmegaPrefs.getLanguage());
         showFolderNotificationCount = mOmegaPrefs.getFolderBadgeCount();
@@ -123,12 +129,14 @@ public class OmegaLauncher extends Launcher {
     public void onPause() {
         super.onPause();
         paused = true;
+
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
         Utilities.onLauncherStart();
+        Utilities.getOmegaPrefs(this).unregisterCallback();
     }
 
     public void refreshGrid() {
@@ -138,10 +146,21 @@ public class OmegaLauncher extends Launcher {
     public void onDestroy() {
         super.onDestroy();
         Utilities.getOmegaPrefs(this).unregisterCallback();
+        Utilities.getOmegaPrefs(this).removeOnPreferenceChangeListener(hideStatusBarKey, this);
 
         if (sRestart) {
             sRestart = false;
             OmegaPreferences.Companion.destroyInstance();
+        }
+    }
+
+    public void onValueChanged(String key, OmegaPreferences prefs, boolean force) {
+        if (key.equals(hideStatusBarKey)) {
+            if (prefs.getHideStatusBar()) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else if (!force) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
         }
     }
 
@@ -155,8 +174,8 @@ public class OmegaLauncher extends Launcher {
 
         if (itemInfo instanceof AppInfo) {
             component = ((AppInfo) itemInfo).toComponentKey();
-            currentEditIcon = Companion.getInstance(this)
-                    .getEntryForComponent(component).getDrawable();
+            currentEditIcon = Objects.requireNonNull(Companion.getInstance(this)
+                    .getEntryForComponent(component)).getDrawable();
         } else if (itemInfo instanceof WorkspaceItemInfo) {
             component = new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user);
             currentEditIcon = new BitmapDrawable(mContext.getResources(), ((WorkspaceItemInfo) itemInfo).iconBitmap);
@@ -189,6 +208,10 @@ public class OmegaLauncher extends Launcher {
             if (entryString != null) {
                 CustomIconEntry customIconEntry = CustomIconEntry.Companion.fromString(entryString);
                 (CustomInfoProvider.Companion.forItem(this, itemInfo)).setIcon(itemInfo, customIconEntry);
+                Log.d("OmegaLauncher", "Provider " + CustomInfoProvider
+                        .Companion.forItem(this, itemInfo).toString());
+            } else {
+                CustomInfoProvider.Companion.forItem(this, itemInfo).setIcon(itemInfo, null);
             }
         }
     }

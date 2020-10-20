@@ -161,6 +161,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
     var adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, doNothing)
     var forceShapeless by BooleanPref("pref_forceShapeless", false, doNothing)
+    val hideStatusBar by BooleanPref("pref_hideStatusBar", false, recreate)
 
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)
