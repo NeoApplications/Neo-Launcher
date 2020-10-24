@@ -7,7 +7,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.provider.CalendarContract;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.TextClock;
 
 import com.android.launcher3.R;
@@ -37,13 +36,10 @@ public class DoubleShadowTextClock extends TextClock {
         keyShadowOffset = ta.getDimension(4, 0f);
         ta.recycle();
         setShadowLayer(Math.max(keyShadowBlur + keyShadowOffset, ambientShadowBlur), 0f, 0f, keyShadowColor);
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, CalendarContract.CONTENT_URI.buildUpon().appendPath("time").build()));
-                } catch (ActivityNotFoundException ignored) {
-                }
+        setOnClickListener(view -> {
+            try {
+                view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, CalendarContract.CONTENT_URI.buildUpon().appendPath("time").build()));
+            } catch (ActivityNotFoundException ignored) {
             }
         });
     }

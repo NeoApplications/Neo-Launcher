@@ -33,6 +33,7 @@ import android.os.Handler
 import android.os.Looper
 import android.service.notification.StatusBarNotification
 import android.text.TextUtils
+import android.text.format.DateFormat
 import android.util.Property
 import android.util.TypedValue
 import android.view.View
@@ -64,6 +65,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import java.lang.reflect.Field
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -195,6 +197,44 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
         r()
     } else {
         handler.post(r)
+    }
+}
+
+
+fun formatTime(dateTime: Date, context: Context? = null): String {
+    return when (context) {
+        null -> String.format("%d:%02d", dateTime.hours, dateTime.minutes)
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", dateTime.hours,
+                dateTime.minutes) else String.format(
+                "%d:%02d %s", if (dateTime.hours % 12 == 0) 12 else dateTime.hours % 12, dateTime.minutes,
+                if (dateTime.hours < 12) "am" else "pm")
+    }
+}
+
+fun formatTime(calendar: Calendar, context: Context? = null): String {
+    return when (context) {
+        null -> String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.HOUR_OF_DAY))
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", calendar.get(
+                Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)) else String.format("%02d:%02d %s",
+                if (calendar.get(
+                                Calendar.HOUR_OF_DAY) % 12 == 0) 12 else calendar.get(
+                        Calendar.HOUR_OF_DAY) % 12,
+                calendar.get(
+                        Calendar.MINUTE),
+                if (calendar.get(
+                                Calendar.HOUR_OF_DAY) < 12) "AM" else "PM")
+    }
+}
+
+fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
+    return when (context) {
+        null -> String.format("%d:%02d", zonedDateTime.hour, zonedDateTime.minute)
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d",
+                zonedDateTime.hour,
+                zonedDateTime.minute) else String.format(
+                "%d:%02d %s", if (zonedDateTime.hour % 12 == 0) 12 else zonedDateTime.hour % 12, zonedDateTime.minute,
+                if (zonedDateTime.hour < 12) "AM" else "PM")
     }
 }
 

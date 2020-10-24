@@ -32,7 +32,6 @@ import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.icons.clock.CustomClock
 import com.saggitt.omega.icons.clock.DynamicClock
 
-
 class CustomDrawableFactory(context: Context) : DrawableFactory() {
     private val iconPackManager = IconPackManager.getInstance(context)
     val customClockDrawer by lazy { CustomClock(context) }

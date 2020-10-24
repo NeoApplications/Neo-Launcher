@@ -8,13 +8,13 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.android.launcher3.Alarm;
-import com.saggitt.omega.smartspace.nano.SmartspaceProto.i;
 import com.saggitt.omega.util.ActionIntentFilter;
 
 import java.io.PrintWriter;
 import java.util.List;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.i;
 
 public class SmartspaceController implements Handler.Callback {
     enum Store {

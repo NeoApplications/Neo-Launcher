@@ -14,8 +14,8 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.icons.LauncherIcons;
 import com.saggitt.omega.util.Config;
 
-import static com.saggitt.omega.smartspace.nano.SmartspaceProto.b;
-import static com.saggitt.omega.smartspace.nano.SmartspaceProto.f;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.b;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.f;
 
 public class NewCardInfo {
     public final b di;

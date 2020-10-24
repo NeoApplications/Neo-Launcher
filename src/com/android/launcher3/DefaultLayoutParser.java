@@ -73,7 +73,7 @@ public class DefaultLayoutParser extends AutoInstallsLayout {
         parsers.put(TAG_FAVORITE, new AppShortcutWithUriParser());
         parsers.put(TAG_APPWIDGET, new AppWidgetParser());
         parsers.put(TAG_CUSTOM_APPWIDGET, new CustomAppWidgetParser());
-        parsers.put(TAG_SEARCH_WIDGET, new SearchWidgetParser());
+        //parsers.put(TAG_SEARCH_WIDGET, new SearchWidgetParser());
         parsers.put(TAG_SHORTCUT, new UriShortcutParser(mSourceRes));
         parsers.put(TAG_RESOLVE, new ResolveParser());
         parsers.put(TAG_FOLDER, new MyFolderParser());

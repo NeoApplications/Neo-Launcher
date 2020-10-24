@@ -1000,6 +1000,26 @@ public final class Utilities {
         }
     }
 
+    /**
+     * Returns true if {@param original} contains all entries defined in {@param updates} and
+     * have the same value.
+     * The comparison uses {@link Object#equals(Object)} to compare the values.
+     */
+    public static boolean containsAll(Bundle original, Bundle updates) {
+        for (String key : updates.keySet()) {
+            Object value1 = updates.get(key);
+            Object value2 = original.get(key);
+            if (value1 == null) {
+                if (value2 != null) {
+                    return false;
+                }
+            } else if (!value1.equals(value2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /*FIN CUSTOM*/
 
     private static class FixedSizeEmptyDrawable extends ColorDrawable {

@@ -232,6 +232,8 @@
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
 
+    <string name="resuable_text_alarm">Alarm</string>
+    <string name="name_provider_alarm_events">Upcoming alarms</string>
     <string name="smartspace_widget_provider_not_found">Get the Google App.</string>
     <string name="zen_mode_enabled">Do Not Disturb is enabled.</string>
     <string name="home_widget">At a Glance</string>

@@ -19,14 +19,13 @@ import com.android.launcher3.R;
 import com.android.launcher3.ResourceUtils;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.ShadowGenerator;
-import com.saggitt.omega.smartspace.nano.SmartspaceProto;
-import com.saggitt.omega.smartspace.nano.SmartspaceProto.b;
-import com.saggitt.omega.smartspace.nano.SmartspaceProto.e;
-import com.saggitt.omega.smartspace.nano.SmartspaceProto.i;
 import com.saggitt.omega.util.ColorManipulation;
 
-import static com.saggitt.omega.smartspace.nano.SmartspaceProto.c;
-import static com.saggitt.omega.smartspace.nano.SmartspaceProto.d;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.b;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.c;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.e;
+import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.i;
 
 public class SmartspaceCard {
     private final b dI;
@@ -98,7 +97,7 @@ public class SmartspaceCard {
     private d cG(final boolean b) {
         final c ch = this.cH();
         if (ch != null) {
-            SmartspaceProto.d d;
+            d d;
             if (b) {
                 d = ch.cL;
             } else {
@@ -162,7 +161,7 @@ public class SmartspaceCard {
         return array2;
     }
 
-    private boolean cL(final SmartspaceProto.d d) {
+    private boolean cL(final d d) {
         boolean b = false;
         if (d != null && d.cN != null && d.cO != null && d.cO.length > 0) {
             b = true;
@@ -175,7 +174,7 @@ public class SmartspaceCard {
     }
 
     private String cO(final boolean b, final String s) {
-        final SmartspaceProto.d cg = this.cG(b);
+        final d cg = this.cG(b);
         if (cg == null || cg.cN == null) {
             return "";
         }
@@ -302,7 +301,7 @@ public class SmartspaceCard {
         final c ch = this.cH();
         if (ch != null && this.cL(ch.cL)) {
             final e[] co = ch.cL.cO;
-            for (final SmartspaceProto.e e : co) {
+            for (final e e : co) {
                 if (e.cQ == 1 || e.cQ == 2) {
                     return this.cI(e);
                 }

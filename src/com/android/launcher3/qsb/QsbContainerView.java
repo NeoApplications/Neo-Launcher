@@ -28,15 +28,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.launcher3.AppWidgetResizeFrame;
 import com.android.launcher3.InvariantDeviceProfile;
@@ -44,7 +40,6 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.graphics.FragmentWithPreview;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_BIND;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
@@ -57,75 +52,8 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_PROVIDER;
  * Note: AppWidgetManagerCompat can be disabled using FeatureFlags. In QSB, we should use
  * AppWidgetManager directly, so that it keeps working in that case.
  */
+
 public class QsbContainerView extends FrameLayout {
-
-    public static final String SEARCH_PROVIDER_SETTINGS_KEY = "SEARCH_PROVIDER_PACKAGE_NAME";
-
-    /**
-     * Returns the package name for user configured search provider or from searchManager
-     * @param context
-     * @return String
-     */
-    @Nullable
-    public static String getSearchWidgetPackageName(@NonNull Context context) {
-        String providerPkg = Settings.Global.getString(context.getContentResolver(),
-                SEARCH_PROVIDER_SETTINGS_KEY);
-        if (providerPkg == null) {
-            SearchManager searchManager = context.getSystemService(SearchManager.class);
-            ComponentName componentName = searchManager.getGlobalSearchActivity();
-            if (componentName != null) {
-                providerPkg = searchManager.getGlobalSearchActivity().getPackageName();
-            }
-        }
-        return providerPkg;
-    }
-
-    /**
-     * returns it's AppWidgetProviderInfo using package name from getSearchWidgetPackageName
-     * @param context
-     * @return AppWidgetProviderInfo
-     */
-    @Nullable
-    public static AppWidgetProviderInfo getSearchWidgetProviderInfo(@NonNull Context context) {
-        String providerPkg = getSearchWidgetPackageName(context);
-        if (providerPkg == null) {
-            return null;
-        }
-
-        AppWidgetProviderInfo defaultWidgetForSearchPackage = null;
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        for (AppWidgetProviderInfo info :
-                appWidgetManager.getInstalledProvidersForPackage(providerPkg, null)) {
-            if (info.provider.getPackageName().equals(providerPkg) && info.configure == null) {
-                if ((info.widgetCategory
-                        & AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX) != 0) {
-                    return info;
-                } else if (defaultWidgetForSearchPackage == null) {
-                    defaultWidgetForSearchPackage = info;
-                }
-            }
-        }
-        return defaultWidgetForSearchPackage;
-    }
-
-    /**
-     * returns componentName for searchWidget if package name is known.
-     */
-    @Nullable
-    public static ComponentName getSearchComponentName(@NonNull  Context context) {
-        AppWidgetProviderInfo providerInfo =
-                QsbContainerView.getSearchWidgetProviderInfo(context);
-        if (providerInfo != null) {
-            return providerInfo.provider;
-        } else {
-            String pkgName = QsbContainerView.getSearchWidgetPackageName(context);
-            if (pkgName != null) {
-                //we don't know the class name yet. we'll put the package name as placeholder
-                return new ComponentName(pkgName, pkgName);
-            }
-            return null;
-        }
-    }
 
     public QsbContainerView(Context context) {
         super(context);
@@ -151,7 +79,7 @@ public class QsbContainerView extends FrameLayout {
     /**
      * A fragment to display the QSB.
      */
-    public static class QsbFragment extends FragmentWithPreview {
+    public static class QsbFragment extends Fragment {
 
         public static final int QSB_WIDGET_HOST_ID = 1026;
         private static final int REQUEST_BIND_QSB = 1;
@@ -166,14 +94,15 @@ public class QsbContainerView extends FrameLayout {
         private int mOrientation;
 
         @Override
-        public void onInit(Bundle savedInstanceState) {
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             mQsbWidgetHost = createHost();
             mOrientation = getContext().getResources().getConfiguration().orientation;
         }
 
         protected QsbWidgetHost createHost() {
-            return new QsbWidgetHost(getContext(), QSB_WIDGET_HOST_ID,
-                    (c) -> new QsbWidgetHostView(c), this::rebindFragment);
+            return new QsbWidgetHost(getActivity(), QSB_WIDGET_HOST_ID,
+                    (c) -> new QsbWidgetHostView(c));
         }
 
         private FrameLayout mWrapper;
@@ -182,10 +111,10 @@ public class QsbContainerView extends FrameLayout {
         public View onCreateView(
                 LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-            mWrapper = new FrameLayout(getContext());
+            mWrapper = new FrameLayout(getActivity());
+
             // Only add the view when enabled
             if (isQsbEnabled()) {
-                mQsbWidgetHost.startListening();
                 mWrapper.addView(createQsb(mWrapper));
             }
             return mWrapper;
@@ -198,16 +127,16 @@ public class QsbContainerView extends FrameLayout {
                 return getDefaultView(container, false /* show setup icon */);
             }
             Bundle opts = createBindOptions();
-            Context context = getContext();
-            AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+            Activity activity = getActivity();
+            AppWidgetManager widgetManager = AppWidgetManager.getInstance(activity);
 
-            int widgetId = Utilities.getPrefs(context).getInt(mKeyWidgetId, -1);
+            int widgetId = Utilities.getPrefs(activity).getInt(mKeyWidgetId, -1);
             AppWidgetProviderInfo widgetInfo = widgetManager.getAppWidgetInfo(widgetId);
             boolean isWidgetBound = (widgetInfo != null) &&
                     widgetInfo.provider.equals(mWidgetInfo.provider);
 
             int oldWidgetId = widgetId;
-            if (!isWidgetBound && !isInPreviewMode()) {
+            if (!isWidgetBound) {
                 if (widgetId > -1) {
                     // widgetId is already bound and its not the correct provider. reset host.
                     mQsbWidgetHost.deleteHost();
@@ -227,17 +156,14 @@ public class QsbContainerView extends FrameLayout {
             }
 
             if (isWidgetBound) {
-                mQsb = (QsbWidgetHostView) mQsbWidgetHost.createView(context, widgetId,
-                        mWidgetInfo);
+                mQsb = (QsbWidgetHostView) mQsbWidgetHost.createView(activity, widgetId, mWidgetInfo);
                 mQsb.setId(R.id.qsb_widget);
 
-                if (!isInPreviewMode()) {
-                    if (!containsAll(AppWidgetManager.getInstance(context)
-                            .getAppWidgetOptions(widgetId), opts)) {
-                        mQsb.updateAppWidgetOptions(opts);
-                    }
-                    mQsbWidgetHost.startListening();
+                if (!Utilities.containsAll(AppWidgetManager.getInstance(activity)
+                        .getAppWidgetOptions(widgetId), opts)) {
+                    mQsb.updateAppWidgetOptions(opts);
                 }
+                mQsbWidgetHost.startListening();
                 return mQsb;
             }
 
@@ -246,7 +172,7 @@ public class QsbContainerView extends FrameLayout {
         }
 
         private void saveWidgetId(int widgetId) {
-            Utilities.getPrefs(getContext()).edit().putInt(mKeyWidgetId, widgetId).apply();
+            Utilities.getPrefs(getActivity()).edit().putInt(mKeyWidgetId, widgetId).apply();
         }
 
         @Override
@@ -281,7 +207,7 @@ public class QsbContainerView extends FrameLayout {
                 return;
             }
 
-            if (mWrapper != null && getContext() != null) {
+            if (mWrapper != null && getActivity() != null) {
                 mWrapper.removeAllViews();
                 mWrapper.addView(createQsb(mWrapper));
             }
@@ -292,10 +218,10 @@ public class QsbContainerView extends FrameLayout {
         }
 
         protected Bundle createBindOptions() {
-            InvariantDeviceProfile idp = LauncherAppState.getIDP(getContext());
+            InvariantDeviceProfile idp = LauncherAppState.getIDP(getActivity());
 
             Bundle opts = new Bundle();
-            Rect size = AppWidgetResizeFrame.getWidgetSizeRanges(getContext(),
+            Rect size = AppWidgetResizeFrame.getWidgetSizeRanges(getActivity(),
                     idp.numColumns, 1, null);
             opts.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, size.left);
             opts.putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, size.top);
@@ -319,32 +245,43 @@ public class QsbContainerView extends FrameLayout {
             return v;
         }
 
-
         /**
          * Returns a widget with category {@link AppWidgetProviderInfo#WIDGET_CATEGORY_SEARCHBOX}
-         * provided by the package from getSearchProviderPackageName
+         * provided by the same package which is set to be global search activity.
          * If widgetCategory is not supported, or no such widget is found, returns the first widget
          * provided by the package.
          */
         protected AppWidgetProviderInfo getSearchWidgetProvider() {
-            return getSearchWidgetProviderInfo(getContext());
+            SearchManager searchManager =
+                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            ComponentName searchComponent = searchManager.getGlobalSearchActivity();
+            if (searchComponent == null) return null;
+            String providerPkg = searchComponent.getPackageName();
+
+            AppWidgetProviderInfo defaultWidgetForSearchPackage = null;
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+            for (AppWidgetProviderInfo info : appWidgetManager.getInstalledProviders()) {
+                if (info.provider.getPackageName().equals(providerPkg) && info.configure == null) {
+                    if ((info.widgetCategory
+                            & AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX) != 0) {
+                        return info;
+                    } else if (defaultWidgetForSearchPackage == null) {
+                        defaultWidgetForSearchPackage = info;
+                    }
+                }
+            }
+            return defaultWidgetForSearchPackage;
         }
     }
 
     public static class QsbWidgetHost extends AppWidgetHost {
 
         private final WidgetViewFactory mViewFactory;
-        private final WidgetProvidersUpdateCallback mWidgetsUpdateCallback;
-
-        public QsbWidgetHost(Context context, int hostId, WidgetViewFactory viewFactory,
-                WidgetProvidersUpdateCallback widgetProvidersUpdateCallback) {
-            super(context, hostId);
-            mViewFactory = viewFactory;
-            mWidgetsUpdateCallback = widgetProvidersUpdateCallback;
-        }
 
         public QsbWidgetHost(Context context, int hostId, WidgetViewFactory viewFactory) {
-            this(context, hostId, viewFactory, null);
+            super(context, hostId);
+            mViewFactory = viewFactory;
         }
 
         @Override
@@ -352,50 +289,10 @@ public class QsbContainerView extends FrameLayout {
                 Context context, int appWidgetId, AppWidgetProviderInfo appWidget) {
             return mViewFactory.newView(context);
         }
-
-        @Override
-        protected void onProvidersChanged() {
-            super.onProvidersChanged();
-            if (mWidgetsUpdateCallback != null) {
-                mWidgetsUpdateCallback.onProvidersUpdated();
-            }
-        }
     }
 
     public interface WidgetViewFactory {
 
         QsbWidgetHostView newView(Context context);
     }
-
-    /**
-     * Callback interface for packages list update.
-     */
-    @FunctionalInterface
-    public interface WidgetProvidersUpdateCallback {
-        /**
-         * Gets called when widget providers list changes
-         */
-        void onProvidersUpdated();
-    }
-
-    /**
-     * Returns true if {@param original} contains all entries defined in {@param updates} and
-     * have the same value.
-     * The comparison uses {@link Object#equals(Object)} to compare the values.
-     */
-    private static boolean containsAll(Bundle original, Bundle updates) {
-        for (String key : updates.keySet()) {
-            Object value1 = updates.get(key);
-            Object value2 = original.get(key);
-            if (value1 == null) {
-                if (value2 != null) {
-                    return false;
-                }
-            } else if (!value1.equals(value2)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

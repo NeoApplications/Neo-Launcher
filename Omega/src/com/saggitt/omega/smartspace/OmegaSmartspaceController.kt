@@ -551,6 +551,7 @@ class OmegaSmartspaceController(val context: Context) {
                 Pair(NowPlayingProvider::class.java.name, R.string.event_provider_now_playing),
                 Pair(NotificationUnreadProvider::class.java.name, R.string.event_provider_unread_notifications),
                 Pair(BatteryStatusProvider::class.java.name, R.string.battery_status),
+                Pair(AlarmEventProvider::class.java.name, R.string.name_provider_alarm_events),
                 Pair(PersonalityProvider::class.java.name, R.string.personality_provider),
                 Pair(OnboardingProvider::class.java.name, R.string.onbording),
                 Pair(CalendarEventProvider::class.java.name, R.string.smartspace_provider_calendar),

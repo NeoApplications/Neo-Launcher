@@ -28,7 +28,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import java.util.*
 
-class IconCustomizeAdapter(context: Context) : RecyclerView.Adapter<IconCustomizeAdapter.Holder>() {
+class IconShapeAdapter(context: Context) : RecyclerView.Adapter<IconShapeAdapter.Holder>() {
     private val adapterItems = ArrayList<ShapeModel>()
     private val mContext = context
 
