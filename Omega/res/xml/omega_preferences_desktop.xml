@@ -59,6 +59,11 @@
         android:title="@string/auto_add_shortcuts_label"
         app:iconSpaceReserved="false" />
 
+    <com.saggitt.omega.settings.PreferenceDialogPreference
+        android:key="pref_iconPopupMenu"
+        android:title="@string/title_desktop_icon_popup_menu"
+        app:content="@xml/omega_desktop_icon_popup_menu_preferences" />
+
     <com.saggitt.omega.preferences.StyledSwitchPreference
         android:defaultValue="@bool/allow_rotation"
         android:key="pref_allowRotation"
