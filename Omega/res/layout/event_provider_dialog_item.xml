@@ -35,7 +35,7 @@
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="14sp"
             android:visibility="gone"
-            tools:text="ch.deletescape.lawnchair.smartspace.DummyProvider"
+            tools:text="com.saggitt.omega.smartspace.DummyProvider"
             tools:visibility="visible" />
     </LinearLayout>
 

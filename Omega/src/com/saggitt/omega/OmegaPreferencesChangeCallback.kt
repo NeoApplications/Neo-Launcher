@@ -69,10 +69,6 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
         launcher.omegaApp.smartspace.onProviderChanged()
     }
 
-    fun updateSmartspace() {
-        launcher.refreshGrid()
-    }
-
     fun updateWeatherData() {
         launcher.omegaApp.smartspace.forceUpdateWeather()
     }

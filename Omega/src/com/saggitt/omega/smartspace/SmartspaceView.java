@@ -416,7 +416,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     }
 
     public void onClick(final View view) {
-        if (dq != null && dq.cS()) {
+        if (dq != null && dq.isDataAvailable()) {
             dq.dP.click(view);
         }
     }
@@ -447,7 +447,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     protected void onLayout(final boolean b, final int n, final int n2, final int n3, final int n4) {
         super.onLayout(b, n, n2, n3, n4);
-        if (dq != null && dq.cS() && dq.dP.cv()) {
+        if (dq != null && dq.isDataAvailable() && dq.dP.cv()) {
             final String cn = cn();
             if (!cn.equals(mTitleText.getText())) {
                 mTitleText.setText(cn);

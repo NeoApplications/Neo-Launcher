@@ -65,7 +65,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import java.lang.reflect.Field
-import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -177,15 +176,10 @@ fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
 val mainHandler by lazy { Handler(Looper.getMainLooper()) }
 
 val iconPackUiHandler by lazy { Handler(ICON_PACK_UI_EXECUTOR.looper) }
-val workerHandler by lazy { Handler(MODEL_EXECUTOR.looper) }
 val uiWorkerHandler by lazy { Handler(MAIN_EXECUTOR.looper) }
 
 fun runOnUiWorkerThread(r: () -> Unit) {
     runOnThread(uiWorkerHandler, r)
-}
-
-fun runOnWorkerThread(r: () -> Unit) {
-    runOnThread(workerHandler, r)
 }
 
 fun runOnMainThread(r: () -> Unit) {
@@ -224,17 +218,6 @@ fun formatTime(calendar: Calendar, context: Context? = null): String {
                         Calendar.MINUTE),
                 if (calendar.get(
                                 Calendar.HOUR_OF_DAY) < 12) "AM" else "PM")
-    }
-}
-
-fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
-    return when (context) {
-        null -> String.format("%d:%02d", zonedDateTime.hour, zonedDateTime.minute)
-        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d",
-                zonedDateTime.hour,
-                zonedDateTime.minute) else String.format(
-                "%d:%02d %s", if (zonedDateTime.hour % 12 == 0) 12 else zonedDateTime.hour % 12, zonedDateTime.minute,
-                if (zonedDateTime.hour < 12) "AM" else "PM")
     }
 }
 
@@ -502,7 +485,7 @@ fun reloadIconsFromComponents(context: Context, components: Collection<Component
 }
 
 fun reloadIcons(context: Context, packages: Collection<PackageUserKey>) {
-    MAIN_EXECUTOR.execute {
+    ICON_PACK_EXECUTOR.execute {
         val userManagerCompat = UserManagerCompat.getInstance(context)
         val las = LauncherAppState.getInstance(context)
         val model = las.model

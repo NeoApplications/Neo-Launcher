@@ -20,6 +20,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -88,6 +91,16 @@ public class LauncherModel extends BroadcastReceiver
     @Thunk
     boolean mIsLoaderTaskRunning;
 
+    @Thunk
+    static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
+
+    static {
+        sWorkerThread.start();
+    }
+
+    @Thunk
+    static final Handler sWorker = new Handler(sWorkerThread.getLooper());
+
     // Indicates whether the current model data is valid or not.
     // We start off with everything not loaded. After that, we assume that
     // our monitoring of the package manager provides all updates and we never
@@ -129,6 +142,19 @@ public class LauncherModel extends BroadcastReceiver
     LauncherModel(LauncherAppState app, IconCache iconCache, AppFilter appFilter) {
         mApp = app;
         mBgAllAppsList = new AllAppsList(iconCache, appFilter);
+    }
+
+    /**
+     * Runs the specified runnable immediately if called from the worker thread, otherwise it is
+     * posted on the worker thread handler.
+     */
+    private static void runOnWorkerThread(Runnable r) {
+        if (sWorkerThread.getThreadId() == Process.myTid()) {
+            r.run();
+        } else {
+            // If we are not on the worker thread, then post to the worker handler
+            sWorker.post(r);
+        }
     }
 
     public void setPackageState(PackageInstallInfo installInfo) {

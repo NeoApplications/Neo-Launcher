@@ -23,10 +23,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Looper
 import android.text.TextUtils
-import com.android.launcher3.LauncherAppState
-import com.android.launcher3.LauncherFiles
-import com.android.launcher3.R
-import com.android.launcher3.Utilities
+import com.android.launcher3.*
 import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
@@ -42,7 +39,12 @@ import com.saggitt.omega.iconpack.IconPackManager
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.search.SearchProviderController
-import com.saggitt.omega.smartspace.*
+import com.saggitt.omega.smartspace.BlankDataProvider
+import com.saggitt.omega.smartspace.SmartspaceDataWidget
+import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
+import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
+import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.*
 import org.json.JSONArray
@@ -168,7 +170,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val smartspaceDate by BooleanPref("pref_smartspace_date", true, refreshGrid)
     val smartspaceTimeAbove by BooleanPref("pref_smartspace_time_above", false, refreshGrid)
     val smartspaceTime24H by BooleanPref("pref_smartspace_time_24_h", false, refreshGrid)
-
+    var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID, restart)
     val weatherUnit by StringBasedPref("pref_weather_units", Temperature.Unit.Celsius, ::updateSmartspaceProvider,
             Temperature.Companion::unitFromString, Temperature.Companion::unitToString) { }
     var smartspaceWidgetId by IntPref("smartspace_widget_id", -1, doNothing)
@@ -360,10 +362,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
 
     private fun updateSmartspaceProvider() {
         onChangeCallback?.updateSmartspaceProvider()
-    }
-
-    private fun updateSmartspace() {
-        onChangeCallback?.updateSmartspace()
     }
 
     fun reloadIcons() {

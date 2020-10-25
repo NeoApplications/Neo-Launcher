@@ -13,16 +13,16 @@ public class SmartspaceDataContainer {
         return dO != null;
     }
 
-    public boolean cS() {
+    public boolean isDataAvailable() {
         return dP != null;
     }
 
     public long cT() {
         final long currentTimeMillis = System.currentTimeMillis();
-        if (cS() && isWeatherAvailable()) {
+        if (isDataAvailable() && isWeatherAvailable()) {
             return Math.min(dP.cF(), dO.cF()) - currentTimeMillis;
         }
-        if (cS()) {
+        if (isDataAvailable()) {
             return dP.cF() - currentTimeMillis;
         }
         if (isWeatherAvailable()) {
@@ -31,14 +31,14 @@ public class SmartspaceDataContainer {
         return 0L;
     }
 
-    public boolean cU() {
+    public boolean clearAll() {
         final boolean b = true;
         boolean b2 = false;
         if (isWeatherAvailable() && dO.cM()) {
             dO = null;
             b2 = b;
         }
-        if (cS() && dP.cM()) {
+        if (isDataAvailable() && dP.cM()) {
             dP = null;
             b2 = b;
         }

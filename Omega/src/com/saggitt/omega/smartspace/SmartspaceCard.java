@@ -273,22 +273,17 @@ public class SmartspaceCard {
         }
         Intent intent = new Intent(this.getIntent());
         Launcher launcher = Launcher.getLauncher(view.getContext());
-        switch (this.dI.cG.cY) {
-            default: {
-                Log.w("SmartspaceCard", "unrecognized tap action: " + this);
-                break;
-            }
-            case 1: {
+        if (this.dI.cG.cY == 2) {
+            launcher.startActivitySafely(view, intent, null, null);
+        } else {
+            Log.w("SmartspaceCard", "unrecognized tap action: " + this);
+            /*case 1: {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setSourceBounds(launcher.getViewBounds(view));
                 intent.setPackage(FeedBridge.Companion.getInstance(mContext).resolveSmartspace());
                 view.getContext().sendBroadcast(intent);
                 break;
-            }
-            case 2: {
-                launcher.startActivitySafely(view, intent, null, null);
-                break;
-            }
+            }*/
         }
     }
 

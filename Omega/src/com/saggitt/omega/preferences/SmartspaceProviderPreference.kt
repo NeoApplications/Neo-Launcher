@@ -21,7 +21,12 @@ import android.util.AttributeSet
 import androidx.preference.ListPreference
 import com.android.launcher3.Utilities
 import com.saggitt.omega.OmegaPreferences
-import com.saggitt.omega.smartspace.*
+import com.saggitt.omega.smartspace.BlankDataProvider
+import com.saggitt.omega.smartspace.OmegaSmartspaceController
+import com.saggitt.omega.smartspace.SmartspaceDataWidget
+import com.saggitt.omega.smartspace.weather.FakeDataProvider
+import com.saggitt.omega.smartspace.weather.OnePlusWeatherDataProvider
+import com.saggitt.omega.smartspace.weather.PEWeatherDataProvider
 import com.saggitt.omega.util.buildEntries
 
 class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
@@ -50,8 +55,6 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
         list.add(SmartspaceDataWidget::class.java.name)
-        if (FeedBridge.getInstance(context).resolveBridge()?.supportsSmartspace == true)
-            list.add(SmartspacePixelBridge::class.java.name)
         if (PEWeatherDataProvider.isAvailable(context))
             list.add(PEWeatherDataProvider::class.java.name)
         if (OnePlusWeatherDataProvider.isAvailable(context))

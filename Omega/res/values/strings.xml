@@ -221,6 +221,8 @@
     <string name="title_smartspace_weather_units">Temperature unit</string>
     <string name="title_smartspace_event_providers">Events sources</string>
     <string name="pref_show_google_now_summary" translatable="false">@string/msg_minus_one_on_left</string>
+    <string name="title_feed_provider_package">Feed provider</string>
+
     <string name="category__behavior_weather">Weather</string>
     <string name="google_app" translatable="false">Google app</string>
     <string name="msg_minus_one_on_left">To the left of the main Home screen</string> <!-- SmartSpace -->

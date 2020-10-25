@@ -15,7 +15,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.weather.icons
 
 import android.content.Context
 import android.graphics.Bitmap

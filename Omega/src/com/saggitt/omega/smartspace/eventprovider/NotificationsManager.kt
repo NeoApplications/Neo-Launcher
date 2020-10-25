@@ -1,4 +1,20 @@
 /*
+ * Copyright (c) 2020 Omega Launcher
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+/*
  *     This file is part of Lawnchair Launcher.
  *
  *     Lawnchair Launcher is free software: you can redistribute it and/or modify
@@ -15,7 +31,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.smartspace
+package com.saggitt.omega.smartspace.eventprovider
 
 import android.service.notification.StatusBarNotification
 import com.android.launcher3.notification.NotificationListener
@@ -68,7 +84,7 @@ object NotificationsManager : NotificationListener.StatusBarNotificationsChanged
 
     private fun onChange() {
         val notifications = notificationsMap.values.toList()
-        this.notifications = notifications
+        NotificationsManager.notifications = notifications
         listeners.forEach(OnChangeListener::onNotificationsChanged)
     }
 
