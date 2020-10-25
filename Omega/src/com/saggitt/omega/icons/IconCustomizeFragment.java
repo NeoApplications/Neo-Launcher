@@ -33,6 +33,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.util.OmegaUtilsKt;
+import com.saggitt.omega.views.DesktopPreview;
 
 import java.util.Objects;
 
@@ -49,6 +50,7 @@ public class IconCustomizeFragment extends Fragment {
     private boolean legacy;
     private boolean white;
     private boolean adaptive;
+    private DesktopPreview desktopPreview;
 
     @Nullable
     @Override
@@ -79,6 +81,8 @@ public class IconCustomizeFragment extends Fragment {
         legacyView = view.findViewById(R.id.legacy_icons);
         whiteView = view.findViewById(R.id.white_icons);
         adaptiveView = view.findViewById(R.id.adaptive_icons);
+
+        desktopPreview = view.findViewById(R.id.preview_frame);
 
         setupSwitchView(shapeLessView, shapeLess);
         setupSwitchView(legacyView, legacy);
@@ -122,6 +126,8 @@ public class IconCustomizeFragment extends Fragment {
             syncSwitch(switchView, coloredIcons);
             prefs.setColorizedLegacyTreatment(coloredIcons);
             updateWhite(coloredIcons);
+            desktopPreview.requestLayout();
+            desktopPreview.populatePreview();
         } else if (view == shapeLessView) {
             shapeLess = !shapeLess;
             syncSwitch(switchView, shapeLess);

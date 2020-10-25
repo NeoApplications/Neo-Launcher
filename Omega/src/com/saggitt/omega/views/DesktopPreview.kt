@@ -25,10 +25,10 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.android.launcher3.*
-import com.android.launcher3.icons.IconCache
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.views.ActivityContext
 import com.android.launcher3.views.BaseDragLayer
+import com.saggitt.omega.OmegaPreferences
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.IconPreviewUtils
 import com.saggitt.omega.util.runOnMainThread
@@ -37,7 +37,8 @@ import com.saggitt.omega.wallpaper.WallpaperPreviewProvider
 import kotlinx.android.synthetic.omega.desktop_preview.view.*
 
 class DesktopPreview(context: Context, attrs: AttributeSet?) :
-        FrameLayout(PreviewContext(context), attrs), WorkspaceLayoutManager {
+        FrameLayout(PreviewContext(context), attrs), WorkspaceLayoutManager,
+        OmegaPreferences.OnPreferenceChangeListener {
 
     private val previewContext = this.context as PreviewContext
     private val previewApps = IconPreviewUtils.getPreviewAppInfos(context)
@@ -46,17 +47,28 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
     private val wallpaper = WallpaperPreviewProvider.getInstance(context).wallpaper
 
     private val idp = previewContext.idp
-
     private val homeElementInflater = LayoutInflater.from(ContextThemeWrapper(previewContext, R.style.HomeScreenElementTheme))
+
+    private val prefsToWatch = arrayOf("pref_iconShape", "pref_colorizeGeneratedBackgrounds",
+            "pref_enableWhiteOnlyTreatment", "pref_enableLegacyTreatment",
+            "pref_generateAdaptiveForIconPack", "pref_forceShapeless")
+    private var firstLoad = true
 
     init {
         runOnThread(Handler(MODEL_EXECUTOR.looper)) {
-            //val mIconCache = LauncherAppState.getInstance(context).iconCache
-            val mIconCache = IconCache(context, LauncherAppState.getIDP(context))
+            val mIconCache = LauncherAppState.getInstance(context).iconCache
             previewApps.forEach { mIconCache.getTitleAndIcon(it, false) }
             iconsLoaded = true
-            runOnMainThread { populatePreview(false) }
+            runOnMainThread { populatePreview() }
         }
+    }
+
+    override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
+        if (!firstLoad) {
+            populatePreview()
+            requestLayout()
+        } else
+            firstLoad = false;
     }
 
     override fun dispatchDraw(canvas: Canvas) {
@@ -83,45 +95,38 @@ class DesktopPreview(context: Context, attrs: AttributeSet?) :
         super.dispatchDraw(canvas)
     }
 
-    fun populatePreview(force: Boolean) {
-        if (force) {
-            iconsLoaded = force
-            populatePreview()
-        } else
-            populatePreview()
-
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        //populatePreview()
     }
 
-    private fun populatePreview() {
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        firstLoad = true
+        Utilities.getOmegaPrefs(previewContext).addOnPreferenceChangeListener(this, *prefsToWatch)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Utilities.getOmegaPrefs(previewContext).removeOnPreferenceChangeListener(this, *prefsToWatch)
+    }
+
+    fun populatePreview() {
         val dp = idp.getDeviceProfile(previewContext)
         val leftPadding = dp.workspacePadding.left + dp.workspaceCellPaddingXPx
         val rightPadding = dp.workspacePadding.right + dp.workspaceCellPaddingXPx
         val verticalPadding = (leftPadding + rightPadding) / 2 + dp.iconDrawablePaddingPx
         layoutParams.height = context.resources.getDimensionPixelSize(R.dimen.dock_preview_height)
-
         if (!iconsLoaded || !isAttachedToWindow) return
-
+        Log.d("DesktopPreview", "Ejecuntando vista")
         workspace.removeAllViews()
+
+
         workspace.setGridSize(idp.numColumns, 1)
         workspace.setPadding(leftPadding,
                 verticalPadding,
                 rightPadding,
                 verticalPadding)
-
-        previewApps.take(idp.numColumns).forEachIndexed { index, info ->
-            info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP
-            info.screenId = 0
-            info.cellX = index
-            info.cellY = 0
-            inflateAndAddIcon(info)
-        }
-    }
-
-    fun reloadApps() {
-        Log.d("DesktopPreview", "Reloading apps");
-
-        workspace.removeAllViews()
-        workspace.setGridSize(idp.numColumns, 1)
 
         previewApps.take(idp.numColumns).forEachIndexed { index, info ->
             info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP

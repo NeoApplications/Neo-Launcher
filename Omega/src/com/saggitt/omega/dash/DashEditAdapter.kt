@@ -210,7 +210,6 @@ class DashEditAdapter(context: Context) : RecyclerView.Adapter<DashEditAdapter.H
         @SuppressLint("PrivateResource")
         override fun bind(item: Item) {
             super.bind(item)
-            //val context = Launcher.mContext
             val states = arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf(android.R.attr.state_checked), intArrayOf())
             val colors = intArrayOf(androidx.preference.R.color.switch_thumb_normal_material_light, //Normal
                     prefs.accentColor, //checked
@@ -226,7 +225,7 @@ class DashEditAdapter(context: Context) : RecyclerView.Adapter<DashEditAdapter.H
 
             switchEnable.setOnCheckedChangeListener { buttonView, isChecked ->
                 buttonView.setText(if (isChecked) R.string.on else R.string.off)
-                prefs.setDashEnable(isChecked)
+                prefs.dashEnable = isChecked
             }
         }
     }

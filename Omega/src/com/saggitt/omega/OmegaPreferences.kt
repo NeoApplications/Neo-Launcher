@@ -91,7 +91,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
     val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
     val hideAllAppsAppLabels by BooleanPref("pref_hideAllAppsAppLabels", false, recreate)
-
     val currentTabsModel
         get() = appGroupsManager.getEnabledModel() as? DrawerTabs ?: appGroupsManager.drawerTabs
     val drawerTabs get() = appGroupsManager.drawerTabs
@@ -101,17 +100,13 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val drawerGridSize by drawerGridSizeDelegate
     private val predictionGridSizeDelegate = ResettableLazy { GridSize(this, "numPredictions", LauncherAppState.getIDP(context), recreate) }
     val predictionGridSize by predictionGridSizeDelegate
-
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
     val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
     val dragerBackgroundColor by IntPref("pref_drawer_background_color", R.color.white, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
-    val dashEnable by BooleanPref("pref_key__dash_enable", true, recreate)
-    fun setDashEnable(enable: Boolean) {
-        sharedPrefs.edit().putBoolean("pref_key__dash_enable", enable).apply()
-    }
+    var dashEnable by BooleanPref("pref_key__dash_enable", true, recreate)
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)
     val desktopTextScale by FloatPref("pref_iconTextScale", 1f, reloadAll)
     private val homeMultilineLabel by BooleanPref("pref_homeIconLabelsInTwoLines", false, recreate)
@@ -122,6 +117,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     private var gridSizeDelegate = ResettableLazy { GridSize2D(this, "numRows", "numColumns", LauncherAppState.getIDP(context), refreshGrid) }
     val gridSize by gridSizeDelegate
     val hideAppLabels by BooleanPref("pref_hideAppLabels", false, recreate)
+    val hideStatusBar by BooleanPref("pref_hideStatusBar", false, restart)
 
     /* --DOCK-- */
     var dockHide by BooleanPref("pref_hideHotseat", false, restart)
@@ -147,7 +143,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     /* --THEME-- */
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val accentColor by IntPref("pref_key__accent_color", R.color.colorAccent, recreate)
-
     var iconShape by StringPref("pref_iconShape", "", doNothing)
     private var iconPack by StringPref("pref_icon_pack", "", reloadIconPacks)
     val iconPacks = object : MutableListPref<String>("pref_iconPacks", reloadIconPacks,
@@ -161,7 +156,6 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", false, doNothing)
     var adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, doNothing)
     var forceShapeless by BooleanPref("pref_forceShapeless", false, doNothing)
-    val hideStatusBar by BooleanPref("pref_hideStatusBar", false, recreate)
 
     /* --NOTIFICATION-- */
     val notificationCount by BooleanPref("pref_notification_count", true, restart)

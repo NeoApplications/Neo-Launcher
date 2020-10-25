@@ -43,7 +43,7 @@ object IconPreviewUtils {
                 .asSequence()
         return (predefined + randomized)
                 .filter { appFilter.shouldShowApp(it.componentName, it.user) }
-                .take(10)
+                .take(20)
                 .map { AppInfo(it, it.user, false) }
                 .toList()
     }
