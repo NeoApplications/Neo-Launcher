@@ -39,9 +39,6 @@ assemble:
     - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
     - set -o pipefail
     - ./gradlew assembleAospWithQuickstepOmegaDebug
-  artifacts:
-    enabled: false
-    untracked: true
 
 signRelease:
   stage: sign
