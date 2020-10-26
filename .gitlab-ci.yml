@@ -40,6 +40,7 @@ assemble:
     - set -o pipefail
     - ./gradlew assembleAospWithQuickstepOmegaDebug
   artifacts:
+    enabled: false
     untracked: true
 
 signRelease:
@@ -54,6 +55,7 @@ signRelease:
   artifacts:
     paths:
       - outputs/omega-ci-signed-aligned.apk
+    expire_in: 1 week
 
 #sendReleaseTelegram:
 #  stage: deploy
