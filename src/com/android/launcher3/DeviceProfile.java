@@ -34,7 +34,7 @@ import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.util.DefaultDisplay;
 import com.saggitt.omega.OmegaPreferences;
 
-public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListener {
+public class DeviceProfile {
 
     public final InvariantDeviceProfile inv;
     public final int defaultPageSpacingPx;
@@ -303,15 +303,10 @@ public class DeviceProfile implements OmegaPreferences.OnPreferenceChangeListene
         topWorkspacePadding =
                 res.getDimensionPixelSize(R.dimen.dynamic_grid_workspace_top_padding);
 
-        prefs.addOnPreferenceChangeListener(this, "pref_fullWidthWidgets", "pref_dockScale");
+        updateDimensions();
     }
 
-    @Override
-    public void onValueChanged(String key, OmegaPreferences prefs, boolean force) {
-        updateDimensions(prefs);
-    }
-
-    public void updateDimensions(OmegaPreferences prefs) {
+    public void updateDimensions() {
         Resources res = mContext.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
 

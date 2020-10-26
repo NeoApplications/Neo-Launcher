@@ -97,6 +97,7 @@ import com.saggitt.omega.preferences.StyledIconPreference;
 import com.saggitt.omega.preferences.SubPreference;
 import com.saggitt.omega.settings.search.SettingsSearchActivity;
 import com.saggitt.omega.smartspace.FeedBridge;
+import com.saggitt.omega.smartspace.OnboardingProvider;
 import com.saggitt.omega.theme.ThemeOverride;
 import com.saggitt.omega.util.ContextUtils;
 import com.saggitt.omega.util.OmegaUtilsKt;
@@ -180,7 +181,7 @@ public class SettingsActivity extends SettingsBaseActivity
         if (hasPreview) {
             overrideOpenAnim();
         }
-        //Utilities.getDevicePrefs(this).edit().putBoolean(OnboardingProvider.PREF_HAS_OPENED_SETTINGS, true).apply();
+        Utilities.getDevicePrefs(this).edit().putBoolean(OnboardingProvider.PREF_HAS_OPENED_SETTINGS, true).apply();
         defaultHome = resolveDefaultHome();
     }
 
