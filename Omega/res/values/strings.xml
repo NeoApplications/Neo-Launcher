@@ -30,7 +30,7 @@
     <string name="title__general_advanced">Advanced Settings</string>
     <string name="title__general_notifications">Gestures and Notifications</string>
     <string name="summary__general_desktop">Customize your desktop</string>
-    <string name="summary__general_dock">Hotsea icons, search bar</string>
+    <string name="summary__general_dock">Hotseat icons, search bar</string>
     <string name="summary__general_drawer">Customize your Drawer</string>
     <string name="summary__general_theme">Change colors, icon pack, icon shape</string>
     <string name="summary__general_search">Search Provider, style, icons</string>
