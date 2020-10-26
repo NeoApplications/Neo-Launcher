@@ -24,7 +24,7 @@ before_script:
 stages:
   - build
   - sign
-  - deploy
+  #- deploy
 
 assemble:
   stage: build

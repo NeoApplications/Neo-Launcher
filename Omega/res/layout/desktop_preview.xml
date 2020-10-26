@@ -14,17 +14,7 @@
   ~  limitations under the License.
   -->
 
-<com.saggitt.omega.views.DesktopPreview xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto"
+<com.saggitt.omega.icons.IconPreview xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/icon_preview"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dock_preview_height">
-
-    <com.android.launcher3.CellLayout
-        android:id="@+id/workspace"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top|left"
-        android:theme="@style/HomeScreenElementTheme"
-        launcher:containerType="workspace"
-        launcher:pageIndicator="@+id/page_indicator" />
-</com.saggitt.omega.views.DesktopPreview>
+    android:layout_height="@dimen/dock_preview_height" />
