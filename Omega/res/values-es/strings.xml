@@ -107,7 +107,7 @@
     <string name="hide_app_selected">  Oculta</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Ocultas</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Aplicación</item>
@@ -128,4 +128,18 @@
     <string name="title__dock_hotseat_icons">Cantidad de Iconos</string>
     <string name="title__dock_colored_icons">Iconos a colores</string>
     <string name="grid_size_height">Alto</string>
+    <string name="theme_auto_night_mode">Seguir tema del sistema</string>
+    <string name="theme_auto">Seguir wallpaper</string>
+    <string name="title_app_suggestions">Aplicaciones</string>
+    <string name="hotseat_show_page_indicator">Mostrar indicador de página</string>
+    <string name="title_opacity">Opacidad</string>
+    <string name="title__dock_show_arrow">Mostrar flecha</string>
+    <string name="title_dock_background_color">Color de fondo</string>
+    <string name="title_dock_fill">Mostrar fondo</string>
+    <string name="title_desktop_hide_statusbar">Ocultar barra de estado</string>
+    <string name="title__multiline_labels">Nombre de aplicaciones en varias lineas</string>
+    <string name="title__desktop_hide_icon_labels">Ocultar etiquetas en los iconos de la pantalla de inicio</string>
+    <string name="title__desktop_grid_size">Tamaño de la cuadrícula</string>
+    <string name="title__desktop_full_width_widgets">Widgets en ancho completo</string>
+    <string name="pref_category__incubating">Incubando</string>
 </resources>
