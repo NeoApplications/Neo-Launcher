@@ -6,9 +6,8 @@ variables:
   ANDROID_SDK_TOOLS:   "4333796"
   VARIANT:             "aospWithQuickstepOmega"
   FLAVOUR:             "debug"
-  FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "omega"
-  APK_NAME:            "Omega-nightly"
+  APK_NAME:            "Omega-Nightly"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
@@ -39,7 +38,7 @@ assemble:
     - set +o pipefail
     - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
     - set -o pipefail
-    - ./gradlew assemble${VARIANT_CAP}${FLAVOUR_CAP}
+    - ./gradlew assembleAospWithQuickstepOmegaDebug
   artifacts:
     untracked: true
 
