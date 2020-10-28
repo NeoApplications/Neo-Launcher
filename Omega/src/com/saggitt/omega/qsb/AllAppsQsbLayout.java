@@ -100,8 +100,6 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
 
         mFixedTranslationY = getTranslationY();
         mMarginTopAdjusting = mFixedTranslationY - getPaddingTop();
-        //mForegroundColor = prefs.getDragerBackgroundColor();
-        //setAllAppsBgColor(mForegroundColor);
     }
 
     protected void onFinishInflate() {

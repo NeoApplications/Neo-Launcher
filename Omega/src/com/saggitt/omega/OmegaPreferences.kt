@@ -104,7 +104,8 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val predictionGridSize by predictionGridSizeDelegate
     var allAppsIconScale by FloatPref("allAppsIconSize", 1f, reloadApps)
     val allAppsOpacity by AlphaPref("pref_allAppsOpacitySB", -1, recreate)
-    val dragerBackgroundColor by IntPref("pref_drawer_background_color", R.color.white, recreate)
+    val customBackground by BooleanPref("pref_enable_custom_background", false, doNothing)
+    val drawerBackgroundColor by IntPref("pref_drawer_background_color", R.color.white, recreate)
 
     /* --DESKTOP-- */
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)

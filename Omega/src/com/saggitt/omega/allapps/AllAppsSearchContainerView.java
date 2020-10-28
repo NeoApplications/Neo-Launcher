@@ -32,7 +32,6 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.AllAppsContainerView;
 import com.saggitt.omega.OmegaPreferences;
 import com.saggitt.omega.qsb.AllAppsQsbLayout;
-import com.saggitt.omega.util.OmegaUtilsKt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -93,15 +92,14 @@ public class AllAppsSearchContainerView extends AllAppsContainerView implements 
 
     @Override
     public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
-        if (key.equals("pref_drawer_background_color")) {
-            int newScrimColor = ColorUtils.setAlphaComponent(Utilities.getOmegaPrefs(getContext()).getDragerBackgroundColor(),
-                    Color.alpha(mNavBarScrimColor));
-            if (Utilities.ATLEAST_OREO || OmegaUtilsKt.isDark(newScrimColor)) {
-                mNavBarScrimPaint.setColor(newScrimColor);
-            } else {
-                mNavBarScrimPaint.setColor(mNavBarScrimColor);
-            }
-            invalidate();
+        if (prefs.getCustomBackground() && key.equals("pref_drawer_background_color")) {
+            int newScrimColor = ColorUtils.setAlphaComponent(Utilities.getOmegaPrefs(getContext())
+                    .getDrawerBackgroundColor(), Color.alpha(mNavBarScrimColor));
+            mClearQsb = Color.alpha(newScrimColor) != 255
+                    && prefs.getAllAppsSearch() && !prefs.getLowPerformanceMode();
+        } else {
+            mClearQsb = false;
         }
     }
+
 }

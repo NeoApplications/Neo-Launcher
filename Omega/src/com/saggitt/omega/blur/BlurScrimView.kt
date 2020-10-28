@@ -24,9 +24,11 @@ import androidx.core.graphics.ColorUtils
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.LauncherState
 import com.android.launcher3.LauncherState.BACKGROUND_APP
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.anim.Interpolators.ACCEL_2
 import com.android.launcher3.anim.Interpolators.LINEAR
+import com.android.launcher3.util.Themes
 import com.android.quickstep.SysUINavigationMode
 import com.android.quickstep.views.ShelfScrimView
 import com.saggitt.omega.OmegaPreferences
@@ -75,8 +77,9 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
 
     private val colorRanges = ArrayList<ColorRange>()
 
-    private var allAppsBackground = context.omegaPrefs.dragerBackgroundColor
+    private var allAppsBackground = context.omegaPrefs.drawerBackgroundColor
     private var dockBackground = context.omegaPrefs.dockBackgroundColor
+    private val defaultAllAppsBackground = Themes.getAttrColor(context, R.attr.allAppsNavBarScrimColor)
 
     private val reInitUiRunnable = this::reInitUi
     private var fullBlurProgress = 0f
@@ -145,7 +148,11 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
                 postReInitUi()
             }
             key_drawer_background -> {
-                allAppsBackground = prefs.dragerBackgroundColor
+                if (prefs.customBackground) {
+                    allAppsBackground = prefs.drawerBackgroundColor
+                } else {
+                    allAppsBackground = defaultAllAppsBackground
+                }
                 calculateEndScrim()
                 postReInitUi()
             }
