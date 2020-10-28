@@ -199,6 +199,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
             int lines = prefs.getDrawerLabelRows();
             setLineCount(lines);
             mIgnorePaddingTouch = true;
+            setTextColor(prefs.getDrawerLabelColor());
         } else if (mDisplay == DISPLAY_FOLDER) {
             mHideText = prefs.getHideAppLabels();
             DeviceProfile grid = mActivity.getDeviceProfile();
