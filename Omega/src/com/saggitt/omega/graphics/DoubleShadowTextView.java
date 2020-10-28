@@ -1,12 +1,15 @@
 package com.saggitt.omega.graphics;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import com.android.launcher3.views.DoubleShadowBubbleTextView;
 
-public class DoubleShadowTextView extends androidx.appcompat.widget.AppCompatTextView {
+@SuppressLint("AppCompatCustomView")
+public class DoubleShadowTextView extends TextView {
     private final DoubleShadowBubbleTextView.ShadowInfo mShadowInfo;
 
     public DoubleShadowTextView(Context context) {

@@ -23,7 +23,6 @@ import com.saggitt.omega.util.ColorManipulation;
 
 import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.b;
 import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.c;
-import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d;
 import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.e;
 import static com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.i;
 
@@ -94,10 +93,10 @@ public class SmartspaceCard {
         return res.getQuantityString(R.plurals.smartspace_minutes, minutesToEvent, minutesToEvent);
     }
 
-    private d cG(final boolean b) {
+    private com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cG(final boolean b) {
         final c ch = this.cH();
         if (ch != null) {
-            d d;
+            com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d d;
             if (b) {
                 d = ch.cL;
             } else {
@@ -161,7 +160,7 @@ public class SmartspaceCard {
         return array2;
     }
 
-    private boolean cL(final d d) {
+    private boolean cL(final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d d) {
         boolean b = false;
         if (d != null && d.cN != null && d.cO != null && d.cO.length > 0) {
             b = true;
@@ -174,13 +173,16 @@ public class SmartspaceCard {
     }
 
     private String cO(final boolean b, final String s) {
-        final d cg = this.cG(b);
+        final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cg = this.cG(b);
         if (cg == null || cg.cN == null) {
             return "";
         }
         String cn = cg.cN;
         if (this.cL(cg)) {
-            return String.format(cn, (Object) this.cK(cg.cO, s));
+            return String.format(cn, (Object[]) this.cK(cg.cO, s));
+        }
+        if (cn == null) {
+            cn = "";
         }
         return cn;
     }
@@ -273,17 +275,22 @@ public class SmartspaceCard {
         }
         Intent intent = new Intent(this.getIntent());
         Launcher launcher = Launcher.getLauncher(view.getContext());
-        if (this.dI.cG.cY == 2) {
-            launcher.startActivitySafely(view, intent, null, null);
-        } else {
-            Log.w("SmartspaceCard", "unrecognized tap action: " + this);
-            /*case 1: {
+        switch (this.dI.cG.cY) {
+            default: {
+                Log.w("SmartspaceCard", "unrecognized tap action: " + this);
+                break;
+            }
+            case 1: {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setSourceBounds(launcher.getViewBounds(view));
                 intent.setPackage(FeedBridge.Companion.getInstance(mContext).resolveSmartspace());
                 view.getContext().sendBroadcast(intent);
                 break;
-            }*/
+            }
+            case 2: {
+                launcher.startActivitySafely(view, intent, null, null);
+                break;
+            }
         }
     }
 
@@ -296,7 +303,8 @@ public class SmartspaceCard {
         final c ch = this.cH();
         if (ch != null && this.cL(ch.cL)) {
             final e[] co = ch.cL.cO;
-            for (final e e : co) {
+            for (int i = 0; i < co.length; ++i) {
+                final e e = co[i];
                 if (e.cQ == 1 || e.cQ == 2) {
                     return this.cI(e);
                 }

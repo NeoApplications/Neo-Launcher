@@ -496,6 +496,22 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         return mTouchState != TOUCH_STATE_REST;
     }
 
+    private int getEmbeddedQsbId() {
+        if (mPillQsb) {
+            return R.id.qsb_container;
+        } else {
+            return R.id.search_container_workspace;
+        }
+    }
+
+    private int getEmbeddedQsbLayout() {
+        if (mPillQsb) {
+            return R.layout.qsb_container;
+        } else {
+            return R.layout.search_container_workspace;
+        }
+    }
+
     /**
      * Initializes and binds the first page
      *
@@ -519,7 +535,6 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
         CellLayout.LayoutParams lp = new CellLayout.LayoutParams(0, 0, firstPage.getCountX(), 1);
         lp.canReorder = false;
-        //if (!firstPage.addViewToCellLayout(qsb, 0, R.id.search_container_workspace, lp, true)) {
         if (!firstPage.addViewToCellLayout(qsb, 0, getEmbeddedQsbId(), lp, true)) {
             Log.e(TAG, "Failed to add to item at (0, 0) to CellLayout");
         }
@@ -547,30 +562,13 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         }
     }
 
-    private int getEmbeddedQsbId() {
-        if (mPillQsb) {
-            return R.id.qsb_container;
-        } else {
-            return R.id.search_container_workspace;
-        }
-    }
-
-    private int getEmbeddedQsbLayout() {
-        if (mPillQsb) {
-            return R.layout.qsb_container;
-        } else {
-            return R.layout.search_container_workspace;
-        }
-    }
-
     public void removeAllWorkspaceScreens() {
         // Disable all layout transitions before removing all pages to ensure that we don't get the
         // transition animations competing with us changing the scroll when we add pages
         disableLayoutTransitions();
 
         // Recycle the QSB widget
-        //View qsb = findViewById(R.id.search_container_workspace);
-        View qsb = findViewById(getEmbeddedQsbId());
+        View qsb = findViewById(R.id.search_container_workspace);
         if (qsb != null) {
             ((ViewGroup) qsb.getParent()).removeView(qsb);
         }
@@ -2993,14 +2991,11 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * Removes all folder listeners
      */
     public void removeFolderListeners() {
-        mapOverItems(new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View view) {
-                if (view instanceof FolderIcon) {
-                    ((FolderIcon) view).removeListeners();
-                }
-                return false;
+        mapOverItems((info, view) -> {
+            if (view instanceof FolderIcon) {
+                ((FolderIcon) view).removeListeners();
             }
+            return false;
         });
     }
 
@@ -3193,15 +3188,12 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     }
 
     void clearDropTargets() {
-        mapOverItems(new ItemOperator() {
-            @Override
-            public boolean evaluate(ItemInfo info, View v) {
-                if (v instanceof DropTarget) {
-                    mDragController.removeDropTarget((DropTarget) v);
-                }
-                // not done, process all the shortcuts
-                return false;
+        mapOverItems((info, v) -> {
+            if (v instanceof DropTarget) {
+                mDragController.removeDropTarget((DropTarget) v);
             }
+            // not done, process all the shortcuts
+            return false;
         });
     }
 

@@ -58,19 +58,23 @@ public class SmartspaceController implements Handler.Callback {
     }
 
     private Intent getSmartspaceOptionsIntent() {
-        return new Intent();
+        return new Intent("com.google.android.apps.gsa.smartspace.SETTINGS")
+                .setPackage(FeedBridge.Companion.getInstance(mAppContext).resolveSmartspace())
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
-
 
     private void refresh() {
         final boolean weatherAvailable = this.dataContainer.isWeatherAvailable();
         final boolean dataAvailable = this.dataContainer.isDataAvailable();
-        this.dataContainer.clearAll();
+        dataContainer.clearAll();
         if (weatherAvailable && !this.dataContainer.isWeatherAvailable()) {
             this.updateSmartspaceStore(null, SmartspaceController.Store.WEATHER);
         }
         if (dataAvailable && !this.dataContainer.isDataAvailable()) {
-            this.updateSmartspaceStore(null, SmartspaceController.Store.CURRENT);
+            updateSmartspaceStore(null, SmartspaceController.Store.CURRENT);
+            mAppContext.sendBroadcast(new Intent("com.google.android.apps.gsa.smartspace.EXPIRE_EVENT")
+                    .setPackage(FeedBridge.Companion.getInstance(mAppContext).resolveSmartspace())
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 
@@ -82,6 +86,9 @@ public class SmartspaceController implements Handler.Callback {
     }
 
     private void onPostGsaUpdate() {
+        mAppContext.sendBroadcast(new Intent("com.google.android.apps.gsa.smartspace.ENABLE_UPDATE")
+                .setPackage(FeedBridge.Companion.getInstance(mAppContext).resolveSmartspace())
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     private void updateSmartspaceStore(final NewCardInfo a, final SmartspaceController.Store SmartspaceControllerStore) {
@@ -128,7 +135,7 @@ public class SmartspaceController implements Handler.Callback {
     public boolean cY() {
         boolean b = false;
         final List queryBroadcastReceivers = this.mAppContext.getPackageManager()
-                .queryBroadcastReceivers(this.getSmartspaceOptionsIntent(), 0);
+                .queryBroadcastReceivers(getSmartspaceOptionsIntent(), 0);
         if (queryBroadcastReceivers != null) {
             b = !queryBroadcastReceivers.isEmpty();
         }

@@ -23,6 +23,13 @@
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="signatureOrSystem" />
 
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="${applicationId}.permission.READ_SETTINGS" />
+    <uses-permission android:name="${applicationId}.permission.WRITE_SETTINGS" />
+
     <uses-permission android:name="${applicationId}.permission.QSB" />
 
     <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS" />
@@ -285,6 +292,12 @@
         <meta-data
             android:name="com.samsung.android.non_immersive"
             android:value="true" />
+
+        <receiver android:name="com.saggitt.omega.smartspace.SmartspaceBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name="com.saggitt.omega.qsb.LongClickReceiver" />
 

@@ -280,7 +280,6 @@ public class AllAppsList {
         for (int i = data.size() - 1; i >= 0; i--) {
             final AppInfo applicationInfo = data.get(i);
             if (user.equals(applicationInfo.user) && !mAppFilter.shouldShowApp(applicationInfo.componentName, applicationInfo.user)) {
-                mIconCache.remove(applicationInfo.componentName, applicationInfo.user);
                 removed.add(applicationInfo);
                 data.remove(i);
             }

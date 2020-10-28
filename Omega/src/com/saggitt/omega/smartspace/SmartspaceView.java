@@ -71,7 +71,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     private IcuDateTextView mClockView;
     private IcuDateTextView mClockAboveView;
     private ViewGroup mSmartspaceContent;
-    private final SmartspaceController dp;
+    private final SmartspaceController controller;
     private SmartspaceDataContainer dq;
     private BubbleTextView dr;
     private boolean ds;
@@ -140,10 +140,10 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
                 mController.openWeather(v);
         };
 
-        dp = SmartspaceController.get(context);
+        controller = SmartspaceController.get(context);
         mHandler = new Handler();
         dH = ColorStateList.valueOf(Themes.getAttrColor(getContext(), R.attr.workspaceTextColor));
-        ds = dp.cY();
+        ds = controller.cY();
         mSmartspaceBackgroundRes = R.drawable.bg_smartspace;
         dB = new TextPaint();
         dB.setTextSize((float) getResources().getDimensionPixelSize(R.dimen.smartspace_title_size));
@@ -387,7 +387,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     }
 
     public void onGsaChanged() {
-        ds = dp.cY();
+        ds = controller.cY();
         if (dq != null) {
             postUpdate(dq);
         } else {

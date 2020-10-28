@@ -47,16 +47,14 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
-import com.android.launcher3.Launcher
-import com.android.launcher3.LauncherAppState
-import com.android.launcher3.R
-import com.android.launcher3.Utilities
+import com.android.launcher3.*
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.Executors.*
+import com.android.launcher3.util.Executors.ICON_PACK_EXECUTOR
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.OptionsPopupView
@@ -174,9 +172,8 @@ fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
 }
 
 val mainHandler by lazy { Handler(Looper.getMainLooper()) }
-
-val iconPackUiHandler by lazy { Handler(ICON_PACK_UI_EXECUTOR.looper) }
-val uiWorkerHandler by lazy { Handler(MAIN_EXECUTOR.looper) }
+val uiWorkerHandler by lazy { Handler(LauncherModel.getUiWorkerLooper()) }
+val iconPackUiHandler by lazy { Handler(LauncherModel.getIconPackUiLooper()) }
 
 fun runOnUiWorkerThread(r: () -> Unit) {
     runOnThread(uiWorkerHandler, r)
@@ -193,7 +190,6 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
         handler.post(r)
     }
 }
-
 
 fun formatTime(dateTime: Date, context: Context? = null): String {
     return when (context) {

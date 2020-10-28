@@ -49,10 +49,7 @@ import com.saggitt.omega.smartspace.eventprovider.*
 import com.saggitt.omega.smartspace.weather.FakeDataProvider
 import com.saggitt.omega.smartspace.weather.OnePlusWeatherDataProvider
 import com.saggitt.omega.smartspace.weather.PEWeatherDataProvider
-import com.saggitt.omega.util.Temperature
-import com.saggitt.omega.util.checkPackagePermission
-import com.saggitt.omega.util.hasFlag
-import com.saggitt.omega.util.omegaPrefs
+import com.saggitt.omega.util.*
 import java.util.concurrent.TimeUnit
 
 class OmegaSmartspaceController(val context: Context) {
@@ -232,10 +229,10 @@ class OmegaSmartspaceController(val context: Context) {
                     Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts)
         } else if (data.forecastIntent != null) {
             launcher.startActivitySafely(v, data.forecastIntent, null, null)
-        } else if (PackageManagerHelper.isAppEnabled(launcher.packageManager, "com.google.android.googlequicksearchbox", 0)) {
+        } else if (PackageManagerHelper.isAppEnabled(launcher.packageManager, Config.GOOGLE_QSB, 0)) {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("dynact://velour/weather/ProxyActivity")
-            intent.component = ComponentName("com.google.android.googlequicksearchbox",
+            intent.component = ComponentName(Config.GOOGLE_QSB,
                     "com.google.android.apps.gsa.velour.DynamicActivityTrampoline")
             launcher.startActivitySafely(v, intent, null, null)
         } else {

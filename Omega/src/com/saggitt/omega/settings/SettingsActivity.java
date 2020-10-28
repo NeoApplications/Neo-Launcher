@@ -777,7 +777,7 @@ public class SettingsActivity extends SettingsBaseActivity
             setActivityTitle();
 
             if (getContent() == R.xml.omega_preferences_smartspace) {
-                SwitchPreference minusOne = (SwitchPreference) findPreference(ENABLE_MINUS_ONE_PREF);
+                SwitchPreference minusOne = findPreference(ENABLE_MINUS_ONE_PREF);
                 if (minusOne != null && !FeedBridge.Companion.getInstance(getActivity()).isInstalled()) {
                     minusOne.setChecked(false);
                 }

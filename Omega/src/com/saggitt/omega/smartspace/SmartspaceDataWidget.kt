@@ -29,6 +29,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RemoteViews
@@ -155,7 +156,13 @@ class SmartspaceDataWidget(controller: OmegaSmartspaceController) : OmegaSmartsp
             super.updateAppWidget(remoteViews)
 
             val childs = getAllChilds()
+            Log.d(TAG, "Child count " + childs.size);
             val texts = (childs.filter { it is TextView } as List<TextView>).filter { !TextUtils.isEmpty(it.text) }
+
+            Log.d(TAG, "Texts size " + texts.size);
+
+            Log.d(TAG, "Texts size " + texts.get(0).text);
+
             val images = childs.filter { it is ImageView } as List<ImageView>
 
             var weatherIconView: ImageView? = null

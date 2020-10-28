@@ -73,7 +73,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.4"
-    def code = 73
+    def code = 77
 
     defaultConfig {
         minSdkVersion 25
@@ -232,7 +232,6 @@ dependencies {
     implementation "com.luckycatlabs:SunriseSunsetCalculator:${versions.sunrisesunsetcalculator}"
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.logginginterceptor}"
-
     implementation "me.xdrop:fuzzywuzzy:${versions.fuzzywuzzy}"
 
     implementation project(':IconLoader')
