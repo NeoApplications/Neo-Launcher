@@ -73,7 +73,7 @@ android {
     buildToolsVersion "30.0.2"
 
     def name = "0.5.4"
-    def code = 77
+    def code = 79
 
     defaultConfig {
         minSdkVersion 25
@@ -212,11 +212,7 @@ repositories {
         url 'https://jitpack.io'
     }
 }
-afterEvaluate {
-    android.applicationVariants.all { variant ->
-        variant.resValue 'string', 'application_id', variant.applicationId
-    }
-}
+
 dependencies {
     implementation "androidx.legacy:legacy-preference-v14:${versions.preferencev14}"
     implementation "androidx.dynamicanimation:dynamicanimation:${versions.dynamicanimation}"
@@ -240,6 +236,7 @@ dependencies {
 
     // Recents lib dependency
     withQuickstepImplementation fileTree(dir: "${PREBUILTS_DIR}/libs", include: 'sysui_shared.jar')
+    withQuickstepImplementation project(':SystemUISharedLib')
 
     // Required for AOSP to compile. This is already included in the sysui_shared.jar
     withoutQuickstepImplementation fileTree(dir: "${PREBUILTS_DIR}/libs", include: 'plugin_core.jar')
