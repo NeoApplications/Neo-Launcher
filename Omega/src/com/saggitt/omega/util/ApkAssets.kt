@@ -21,7 +21,6 @@ package com.saggitt.omega.util
 
 import android.content.res.XmlResourceParser
 
-
 class ApkAssets(apkPath: String) {
     private val instance = loadFromPath(apkPath, false, true)
 

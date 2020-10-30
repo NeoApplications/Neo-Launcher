@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -119,7 +118,6 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
     public WorkspacePageIndicator(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        Resources res = context.getResources();
         mLinePaint = new Paint();
         mLinePaint.setAlpha(0);
 

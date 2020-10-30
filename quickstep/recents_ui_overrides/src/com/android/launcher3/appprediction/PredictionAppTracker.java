@@ -60,7 +60,7 @@ public class PredictionAppTracker extends AppLaunchTracker
         implements PluginListener<AppLaunchEventsPlugin>, OmegaPreferences.OnPreferenceChangeListener {
 
     private static final String TAG = "PredictionAppTracker";
-    private static final boolean DBG = false;
+    private static final boolean DBG = true;
 
     private static final int MSG_INIT = 0;
     private static final int MSG_DESTROY = 1;

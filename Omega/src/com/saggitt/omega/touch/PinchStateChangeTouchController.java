@@ -32,7 +32,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.anim.AnimatorPlaybackController;
 import com.android.launcher3.anim.Interpolators;
-import com.android.launcher3.touch.SwipeDetector;
+import com.android.launcher3.touch.SingleAxisSwipeDetector;
 import com.android.launcher3.util.PendingAnimation;
 import com.android.launcher3.util.TouchController;
 
@@ -173,14 +173,14 @@ public class PinchStateChangeTouchController extends AnimatorListenerAdapter imp
                 f3 = f;
             } else {
                 f = Utilities.boundToRange(((16 * f2) * mProgressMultiplier) + progressFraction, 0, 1);
-                j = SwipeDetector.calculateDuration(f2, 1 - Math.max(progressFraction, 0));
+                j = SingleAxisSwipeDetector.calculateDuration(f2, 1 - Math.max(progressFraction, 0));
                 f3 = 1;
             }
         } else if (progressFraction <= 0) {
             f = 0;
         } else {
             f = Utilities.boundToRange(((16 * f2) * mProgressMultiplier) + progressFraction, 0, 1);
-            j = SwipeDetector.calculateDuration(f2, Math.min(progressFraction, 1) - 0);
+            j = SingleAxisSwipeDetector.calculateDuration(f2, Math.min(progressFraction, 1) - 0);
         }
         mCurrentAnimation.setEndAction(() -> onPinchInteractionCompleted(launcherState2, i));
         ValueAnimator animationPlayer = mCurrentAnimation.getAnimationPlayer();

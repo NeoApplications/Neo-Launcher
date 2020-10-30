@@ -293,8 +293,8 @@ public class AdaptiveIconGenerator {
 
             // Vary color mix-in based on lightness and amount of colors
             int fill = (light && !veryLight) || veryDark ? 0xFFFFFFFF : 0xFF333333;
-            //backgroundColor = ColorUtils.blendARGB(bestRGB, fill, mixRatio);
-            backgroundColor = Utilities.findDominantColorByHue(bitmap, 20);
+            backgroundColor = ColorUtils.blendARGB(bestRGB, fill, mixRatio);
+            //backgroundColor = Utilities.findDominantColorByHue(bitmap, 20);
         }
         onExitLoop();
     }

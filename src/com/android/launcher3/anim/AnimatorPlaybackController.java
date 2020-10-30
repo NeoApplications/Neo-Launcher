@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.anim;
 
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -35,10 +32,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.config.FeatureFlags.QUICKSTEP_SPRINGS;
+
 /**
  * Helper class to control the playback of an {@link AnimatorSet}, with custom interpolators
  * and durations.
- *
+ * <p>
  * Note: The implementation does not support start delays on child animations or
  * sequential playbacks.
  */
@@ -293,6 +293,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
     public void setOnCancelRunnable(Runnable runnable) {
         mOnCancelRunnable = runnable;
     }
+
 
     public void skipToEnd() {
         mSkipToEnd = true;

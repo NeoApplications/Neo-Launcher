@@ -292,4 +292,6 @@ public class OmegaLauncher extends Launcher implements OmegaPreferences.OnPrefer
     public void registerSmartspaceView(SmartspaceView smartspace) {
         launcherCallbacks.registerSmartspaceView(smartspace);
     }
+
+
 }

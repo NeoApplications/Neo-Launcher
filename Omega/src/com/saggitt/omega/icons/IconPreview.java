@@ -58,6 +58,7 @@ import java.util.Random;
 import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 import static com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import static com.android.launcher3.userevent.nano.LauncherLogProto.Target;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static java.lang.Math.max;
 
 public class IconPreview extends LinearLayout implements LogContainerProvider,
@@ -148,8 +149,6 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
     }
 
     private void applyPreviewIcons() {
-
-
         for (int i = 0; i < 5; i++) {
             BubbleTextView icon = (BubbleTextView) mLauncher.getLayoutInflater().inflate(
                     R.layout.all_apps_icon, this, false);
@@ -237,6 +236,7 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
     @Override
     public void onValueChanged(@NotNull String key, @NotNull OmegaPreferences prefs, boolean force) {
         removeAllViews();
-        loadPreviewComponents();
+        MAIN_EXECUTOR.execute(this::loadPreviewComponents);
+        invalidate();
     }
 }

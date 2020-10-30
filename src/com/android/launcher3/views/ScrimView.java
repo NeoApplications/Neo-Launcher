@@ -116,7 +116,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
     protected final int mDragHandleSize;
     protected float mDragHandleOffset;
-    protected Rect mDragHandleBounds;
+    protected final Rect mDragHandleBounds;
     private final RectF mHitRect = new RectF();
 
     private final MultiValueAlpha mMultiValueAlpha;
@@ -287,7 +287,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
             anim.addUpdateListener((v) -> invalidate(invalidateRegion));
             getOverlay().add(drawable);
             anim.start();
-            //return true;
+            return true;
         }
         return value;
     }
@@ -338,9 +338,10 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
         updateDragHandleVisibility(null);
     }
 
-    protected void updateDragHandleVisibility(Drawable recycle) {
-        boolean visible = mLauncher.getDeviceProfile()
-                .isVerticalBarLayout() || mAM.isEnabled() || Utilities.getOmegaPrefs(mLauncher).getDockShowArrow();
+    private void updateDragHandleVisibility(Drawable recycle) {
+        boolean visible = mLauncher.getDeviceProfile().isVerticalBarLayout() ||
+                mAM.isEnabled() || Utilities.getOmegaPrefs(mLauncher).getDockShowArrow();
+        ;
         boolean wasVisible = mDragHandle != null;
         if (visible != wasVisible) {
             if (visible) {
@@ -368,7 +369,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
     @Override
     public void onFocusChanged(boolean gainFocus, int direction,
-            Rect previouslyFocusedRect) {
+                               Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         mAccessibilityHelper.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
@@ -408,7 +409,7 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
         @Override
         protected void onPopulateNodeForVirtualView(int virtualViewId,
-                AccessibilityNodeInfoCompat node) {
+                                                    AccessibilityNodeInfoCompat node) {
             node.setContentDescription(getContext().getString(R.string.all_apps_button_label));
             node.setBoundsInParent(mDragHandleBounds);
 
@@ -467,7 +468,6 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
             }
 
             return false;
-
         }
     }
 
@@ -475,11 +475,13 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
         return mDragHandleSize;
     }
 
+    protected void onDrawFlatColor(Canvas canvas) {
+
+    }
+
     protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom,
                                    float rx, float ry, Paint paint) {
 
     }
-
-    protected void onDrawFlatColor(Canvas canvas) {
-    }
 }
+

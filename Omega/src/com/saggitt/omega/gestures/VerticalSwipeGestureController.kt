@@ -21,14 +21,14 @@ import android.view.MotionEvent
 import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
-import com.android.launcher3.touch.SwipeDetector
+import com.android.launcher3.touch.SingleAxisSwipeDetector
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.handlers.VerticalSwipeGestureHandler
 import java.lang.Math.abs
 import java.lang.reflect.InvocationTargetException
 
-class VerticalSwipeGestureController(private val launcher: Launcher) : TouchController, SwipeDetector.Listener {
+class VerticalSwipeGestureController(private val launcher: Launcher) : TouchController, SingleAxisSwipeDetector.Listener {
 
     enum class GestureState {
         Locked,
@@ -43,7 +43,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
 
     private val controller by lazy { OmegaLauncher.getLauncher(launcher).gestureController }
     private val gesture by lazy { controller.verticalSwipeGesture }
-    private val detector by lazy { SwipeDetector(launcher, this, SwipeDetector.VERTICAL) }
+    private val detector by lazy { SingleAxisSwipeDetector(launcher, this, SingleAxisSwipeDetector.VERTICAL) }
     private var noIntercept = false
 
     private var swipeUpOverride: GestureHandler? = null
@@ -109,13 +109,13 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
         return when {
             controller.getSwipeUpOverride(ev.downTime) != null -> {
                 if (canInterceptTouch())
-                    SwipeDetector.DIRECTION_BOTH
+                    SingleAxisSwipeDetector.DIRECTION_BOTH
                 else
-                    SwipeDetector.DIRECTION_POSITIVE
+                    SingleAxisSwipeDetector.DIRECTION_POSITIVE
             }
-            gesture.customSwipeUp && !isOverHotseat(ev) -> SwipeDetector.DIRECTION_BOTH
-            gesture.customDockSwipeUp && isOverHotseat(ev) -> SwipeDetector.DIRECTION_BOTH
-            else -> SwipeDetector.DIRECTION_NEGATIVE
+            gesture.customSwipeUp && !isOverHotseat(ev) -> SingleAxisSwipeDetector.DIRECTION_BOTH
+            gesture.customDockSwipeUp && isOverHotseat(ev) -> SingleAxisSwipeDetector.DIRECTION_BOTH
+            else -> SingleAxisSwipeDetector.DIRECTION_NEGATIVE
         }
     }
 
@@ -198,9 +198,9 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
         return (1.0f - alpha) * from + alpha * to
     }
 
-    override fun onDragEnd(velocity: Float, fling: Boolean) {
+    override fun onDragEnd(velocity: Float) {
         launcher.workspace.postDelayed(detector::finishedScrolling, 200)
-        sendOnDragEnd(velocity, fling)
+        sendOnDragEnd(velocity, true)
     }
 
     private fun sendOnDragEnd(velocity: Float, fling: Boolean) {

@@ -219,4 +219,5 @@ public class LauncherAppTransitionManagerImpl extends QuickstepAppTransitionMana
                 return super.createStateElementAnimation(index, values);
         }
     }
+
 }

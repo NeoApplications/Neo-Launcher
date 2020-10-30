@@ -38,7 +38,8 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.anim.Interpolators
 import com.android.launcher3.anim.Interpolators.scrollInterpolatorForVelocity
-import com.android.launcher3.touch.SwipeDetector
+import com.android.launcher3.touch.BaseSwipeDetector
+import com.android.launcher3.touch.SingleAxisSwipeDetector
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.util.getColorAttr
 import com.saggitt.omega.views.ColorScrim
@@ -47,7 +48,7 @@ import com.saggitt.omega.views.ColorScrim
  * Base class for custom popups
  */
 class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
-        Insettable, TouchController, SwipeDetector.Listener {
+        Insettable, TouchController, SingleAxisSwipeDetector.Listener {
 
     private val activity = SettingsBaseActivity.getActivity(context)
 
@@ -64,7 +65,7 @@ class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(
     private var isOpen = false
     private val openCloseAnimator: ObjectAnimator
     private var scrollInterpolator = Interpolators.SCROLL_CUBIC
-    private val mSwipeDetector = SwipeDetector(context, this, SwipeDetector.VERTICAL)
+    private val mSwipeDetector = SingleAxisSwipeDetector(context, this, SingleAxisSwipeDetector.VERTICAL)
     private val content = this
 
     init {
@@ -104,7 +105,7 @@ class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
         val directionsToDetectScroll = if (mSwipeDetector.isIdleState)
-            SwipeDetector.DIRECTION_NEGATIVE
+            SingleAxisSwipeDetector.DIRECTION_NEGATIVE
         else
             0
         mSwipeDetector.setDetectableScrollConditions(
@@ -148,16 +149,17 @@ class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(
         return true
     }
 
-    override fun onDragEnd(velocity: Float, fling: Boolean) {
-        if (fling && velocity > 0 || translationShift > 0.5f) {
+    override fun onDragEnd(velocity: Float) {
+        //if (fling && velocity > 0 || translationShift > 0.5f) {
+        if (velocity > 0 || translationShift > 0.5f) {
             scrollInterpolator = scrollInterpolatorForVelocity(velocity)
-            openCloseAnimator.duration = SwipeDetector.calculateDuration(
+            openCloseAnimator.duration = BaseSwipeDetector.calculateDuration(
                     velocity, TRANSLATION_SHIFT_CLOSED - translationShift)
             close(true)
         } else {
             openCloseAnimator.setValues(PropertyValuesHolder.ofFloat(
                     TRANSLATION_SHIFT, TRANSLATION_SHIFT_OPENED))
-            openCloseAnimator.duration = SwipeDetector.calculateDuration(velocity, translationShift)
+            openCloseAnimator.duration = BaseSwipeDetector.calculateDuration(velocity, translationShift)
             openCloseAnimator.interpolator = Interpolators.DEACCEL
             openCloseAnimator.start()
         }

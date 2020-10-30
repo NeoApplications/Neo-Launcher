@@ -15,8 +15,6 @@
  */
 package com.android.launcher3.touch;
 
-import static android.view.MotionEvent.INVALID_POINTER_ID;
-
 import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,6 +22,8 @@ import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
 import androidx.annotation.NonNull;
+
+import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 /**
  * Scroll/drag/swipe gesture detector.
@@ -40,15 +40,17 @@ public abstract class BaseSwipeDetector {
     private static final boolean DBG = false;
     private static final String TAG = "BaseSwipeDetector";
     private static final float ANIMATION_DURATION = 1200;
-    /** The minimum release velocity in pixels per millisecond that triggers fling.*/
+    /**
+     * The minimum release velocity in pixels per millisecond that triggers fling.
+     */
     private static final float RELEASE_VELOCITY_PX_MS = 1.0f;
     private static final PointF sTempPoint = new PointF();
 
     private final PointF mDownPos = new PointF();
     private final PointF mLastPos = new PointF();
-    protected final boolean mIsRtl;
-    protected final float mTouchSlop;
-    protected final float mMaxVelocity;
+    public boolean mIsRtl;
+    protected float mTouchSlop;
+    public float mMaxVelocity;
 
     private int mActivePointerId = INVALID_POINTER_ID;
     private VelocityTracker mVelocityTracker;
