@@ -42,7 +42,6 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.android.launcher3.util.LooperExecutor
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.settings.SettingsBaseActivity
 import com.saggitt.omega.util.applyAccent
@@ -76,8 +75,7 @@ class EditIconActivity : SettingsBaseActivity() {
 
         title = intent.getStringExtra(EXTRA_TITLE)
 
-        //MAIN_EXECUTOR.execute {
-        LooperExecutor(MAIN_EXECUTOR.looper).execute {
+        MAIN_EXECUTOR.execute {
             val packs = iconPacks.map { it.getIconPack() }
             runOnUiThread(::bindViews)
             if (isFolder) {

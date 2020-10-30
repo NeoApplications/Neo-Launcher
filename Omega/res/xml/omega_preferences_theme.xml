@@ -18,6 +18,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <com.saggitt.omega.iconpack.IconPackPreference
+        android:defaultValue="@string/config_default_icon_pack"
+        android:key="pref_icon_packs"
+        android:persistent="true"
+        android:title="@string/title_theme_icon_packs" />
+
     <com.saggitt.omega.adaptive.IconShapePreference
         android:defaultValue="@string/icon_shape_system_default"
         android:entries="@array/icon_shape_names"

@@ -72,6 +72,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     val reloadIcons = { reloadIcons() }
     private val reloadIconPacks = { IconPackManager.getInstance(context).packList.reloadPacks() }
     val recreate = { recreate() }
+    val appsRecreate = { updateSortApps() }
 
     private val omegaConfig = Config(context)
     private val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
@@ -83,7 +84,7 @@ class OmegaPreferences(val context: Context) : SharedPreferences.OnSharedPrefere
     var sortMode by StringIntPref("pref_key__sort_mode", 0, recreate)
     val showPredictions by BooleanPref("pref_show_predictions", false, doNothing)
     val showAllAppsLabel by BooleanPref("pref_showAllAppsLabel", false, recreate)
-    var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
+    var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), appsRecreate)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set", Collections.emptySet(), doNothing)
     val drawerLabelColor by IntPref("pref_drawer_label_color", R.color.qsb_drawer_text_color_normal, reloadApps)
     var allAppsGlobalSearch by BooleanPref("pref_allAppsGoogleSearch", true, doNothing)

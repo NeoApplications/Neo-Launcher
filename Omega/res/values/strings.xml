@@ -138,6 +138,7 @@
     <string name="title__theme_blur">Blur</string>
     <string name="title__theme_blur_radius">Blur Intensity</string>
     <string name="title__theme_icon_shape">Change icon shape</string>
+    <string name="title_theme_icon_packs">Icon Packs</string>
 
     <string name="summary__theme_blur">Blur page backgrounds</string>
 
