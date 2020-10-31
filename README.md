@@ -83,8 +83,8 @@ to discuss the development, issues and new features.<br/>
 [![Donate on PayPal](https://img.shields.io/badge/PayPal-Donate%20Now-red.svg?style=for-the-badge)](https://paypal.me/saulhenriquez)
 
 ## Contributions
-If you have knowledge in Java or Kotlin you can work on additional features!
-I will be happy to work on features you would like to include, just open an issue.
+If you know Java or Kotlin you can work on additional features!
+I will happily work on features you would like to have, just open an issue.
 
 ## Translation
 Translations are handled via Weblate. If want to help, visit [Hosted Weblate](https://hosted.weblate.org/projects/omegalauncher/)
