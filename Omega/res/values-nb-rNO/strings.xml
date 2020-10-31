@@ -315,4 +315,8 @@
     <string name="event_provider_missing_notification_dots">For å bruke &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My Provider\" id=\"providerName\"&gt;«%1$s»&lt;/xliff:g&gt; må du skru på merknadsdotter.<xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable Notification Dots.</string>
     <string name="event_provider_missing_notification_access">Skru på merknader fra &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My App\" id=\"name\"&gt;“%2$s”.&lt;/xliff:g&gt; for å bruke &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" example=\"My Provider\" id=\"providerName\"&gt;“%1$s”&lt;/xliff:g&gt;,<xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, enable notifications from <xliff:g example="My App" id="name">“%2$s”.</xliff:g></string>
     <string name="zen_mode_enabled">«Ikke forstyrr» er påslått</string>
+    <string name="title_theme_icon_packs">Ikonpakker</string>
+    <string name="title_text_color">Tekstfarge</string>
+    <string name="title_drawer_enable_background">Bruk tilpasset bakgrunnsfarge</string>
+    <string name="title__multiline_labels">Programnavn med linjeskift</string>
 </resources>
