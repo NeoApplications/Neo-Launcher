@@ -57,13 +57,16 @@ abstract class WebSearchProvider(context: Context) : SearchProvider(context) {
         if (suggestionsUrl == null) return emptyList()
         try {
             val response = client.newCall(Request.Builder().url(suggestionsUrl!!.format(query)).build()).execute()
-            return JSONArray(response.body?.string())
+            val result = JSONArray(response.body?.string())
                     .getJSONArray(1)
                     .toArrayList<String>()
                     .take(MAX_SUGGESTIONS)
+            response.close();
+            return result;
         } catch (ex: Exception) {
             Log.e("WebSearchProvider", ex.message ?: "", ex)
         }
+
         return emptyList()
     }
 
