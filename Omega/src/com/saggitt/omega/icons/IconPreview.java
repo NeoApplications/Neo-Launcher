@@ -38,7 +38,6 @@ import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.WorkspaceItemInfo;
 import com.android.launcher3.allapps.AllAppsStore;
 import com.android.launcher3.logging.StatsLogUtils.LogContainerProvider;
 import com.android.launcher3.util.ComponentKey;
@@ -55,7 +54,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 import static com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import static com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
@@ -66,7 +64,6 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
 
     private final Drawable wallpaper;
     private final int[] viewLocation = new int[2];
-    private final Context mContext;
     private final Launcher mLauncher;
     private final ArrayList<ItemInfoWithIcon> mPreviewApps = new ArrayList<>();
     private final List<ComponentKey> mPreviewAppComponents = new ArrayList<>();
@@ -93,11 +90,10 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
         super(context, attrs, defStyleAttr);
         setOrientation(LinearLayout.HORIZONTAL);
         wallpaper = WallpaperPreviewProvider.Companion.getInstance(context).getWallpaper();
-        mContext = context;
         mIconTextColor = Themes.getAttrColor(context, android.R.attr.textColorSecondary);
         mIconCurrentTextAlpha = Color.alpha(mIconTextColor);
-        mPackageManager = mContext.getPackageManager();
-        mLauncher = OmegaLauncher.getLauncher(mContext);
+        mPackageManager = context.getPackageManager();
+        mLauncher = OmegaLauncher.getLauncher(context);
         prefs = Utilities.getOmegaPrefs(context);
         randomGenerator = new Random();
     }
@@ -159,18 +155,12 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
             addView(icon);
         }
 
-        int iconColor = setColorAlphaBound(mIconTextColor, mIconCurrentTextAlpha);
-
         for (int i = 0; i < 5; i++) {
             BubbleTextView icon = (BubbleTextView) getChildAt(i);
             icon.reset();
             icon.setVisibility(View.VISIBLE);
-            if (mPreviewApps.get(getRandomApp()) instanceof AppInfo) {
-                icon.applyFromApplicationInfo((AppInfo) mPreviewApps.get(i));
-            } else if (mPreviewApps.get(i) instanceof WorkspaceItemInfo) {
-                icon.applyFromWorkspaceItem((WorkspaceItemInfo) mPreviewApps.get(i));
-            }
-            icon.setTextColor(iconColor);
+            icon.applyFromApplicationInfo((AppInfo) mPreviewApps.get(getRandomApp()));
+            icon.setTextColor(mIconTextColor);
         }
         mLauncher.reapplyUi();
     }
@@ -190,6 +180,7 @@ public class IconPreview extends LinearLayout implements LogContainerProvider,
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getAppsStore().unregisterIconContainer(this);
+        prefs.reloadIcons();
         prefs.removeOnPreferenceChangeListener(this, prefsToWatch);
     }
 

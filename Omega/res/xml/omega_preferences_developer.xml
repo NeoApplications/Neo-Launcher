@@ -45,12 +45,7 @@
             android:summary="Feature under development. Not working yet"
             android:title="@string/title__drawer_paged_apps"
             app:iconSpaceReserved="false" />
-
-        <androidx.preference.Preference
-            android:fragment="com.saggitt.omega.icons.IconCustomizeFragment"
-            android:key="pref_icons"
-            android:title="Customize Icons"
-            app:iconSpaceReserved="false" />
+        
     </com.saggitt.omega.preferences.ThemedPreferenceCategory>
 
 </PreferenceScreen>
