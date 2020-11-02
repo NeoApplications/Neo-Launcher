@@ -1045,11 +1045,13 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
             return false;
         }
 
+        @RequiresApi(api = VERSION_CODES.O)
         @Override
         public Drawable newDrawable() {
             return new AdaptiveIconCompat(this, null);
         }
 
+        @RequiresApi(api = VERSION_CODES.O)
         @Override
         public Drawable newDrawable(@Nullable Resources res) {
             return new AdaptiveIconCompat(this, res);
