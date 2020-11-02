@@ -274,7 +274,6 @@ public class PredictionRowView extends LinearLayout implements
         }
 
         boolean predictionsEnabled = predictionCount > 0;
-        Log.d(TAG, "Prediction count " + predictionCount);
         if (predictionsEnabled != mPredictionsEnabled) {
             mPredictionsEnabled = predictionsEnabled;
             mLauncher.reapplyUi(false /* cancelCurrentAnimation */);
