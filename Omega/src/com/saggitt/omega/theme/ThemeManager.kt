@@ -19,9 +19,10 @@ package com.saggitt.omega.theme
 
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Handler
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.uioverrides.WallpaperColorInfo
-import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.twilight.TwilightListener
@@ -55,7 +56,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
             return strings.getOrNull(index) ?: context.resources.getString(R.string.theme_auto)
         }
     private val twilightManager by lazy { TwilightManager.getInstance(context) }
-    private val handler = MAIN_EXECUTOR.handler
+    private val handler = Handler()
     private var listenToTwilight = false
         set(value) {
             if (field != value) {
@@ -125,13 +126,16 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
         val supportsDarkText = when {
             theme.hasFlag(THEME_DARK_TEXT) -> true
             theme.hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperColorInfo.supportsDarkText()
-            else -> false
+            else -> wallpaperColorInfo.supportsDarkText()
         }
+
+        val darkMainColor = wallpaperColorInfo.isMainColorDark
 
         var newFlags = 0
         if (supportsDarkText) newFlags = newFlags or THEME_DARK_TEXT
         if (isDark) newFlags = newFlags or THEME_DARK
         if (isBlack) newFlags = newFlags or THEME_USE_BLACK
+        if (darkMainColor) newFlags = newFlags or THEME_DARK_MAIN_COLOR
         if (newFlags == themeFlags) return
         themeFlags = newFlags
         reloadActivities()
@@ -193,6 +197,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
         const val THEME_USE_BLACK = 1 shl 3          // 001000 = 8
         const val THEME_FOLLOW_NIGHT_MODE = 1 shl 4  // 010000 = 16
         const val THEME_FOLLOW_DAYLIGHT = 1 shl 5    // 100000 = 32
+        const val THEME_DARK_MAIN_COLOR = 1 shl 6    // 1000000 = 64
 
         const val THEME_AUTO_MASK = THEME_FOLLOW_WALLPAPER or THEME_FOLLOW_NIGHT_MODE or THEME_FOLLOW_DAYLIGHT
         const val THEME_DARK_MASK = THEME_DARK or THEME_AUTO_MASK
@@ -200,5 +205,13 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
         fun isDarkText(flags: Int) = (flags and THEME_DARK_TEXT) != 0
         fun isDark(flags: Int) = (flags and THEME_DARK) != 0
         fun isBlack(flags: Int) = (flags and THEME_USE_BLACK) != 0
+
+        fun getDefaultTheme(): Int {
+            return if (Utilities.ATLEAST_Q) {
+                THEME_FOLLOW_NIGHT_MODE
+            } else {
+                THEME_FOLLOW_WALLPAPER
+            }
+        }
     }
 }
