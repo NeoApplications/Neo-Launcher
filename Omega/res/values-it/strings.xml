@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~  Copyright (c) 2020 Omega Launcher
   ~
   ~  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +14,13 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
   ~
-  -->
-<resources>
+  --><resources>
     <string name="tab_bottom_sheet_save">Guardare</string>
     <string name="pref_appcategorization_folders_title">Cartellas</string>
     <string name="default_folder_name">Nuova cartella</string>
+    <string name="title__general_notifications">Gesti e notifiche</string>
+    <string name="title__general_advanced">Impostazioni avanzate</string>
+    <string name="title__general_search">Cerca</string>
+    <string name="title__general_theme">Tema</string>
+    <string name="title__general_about">Informazioni</string>
 </resources>
