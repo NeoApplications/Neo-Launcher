@@ -73,14 +73,14 @@
     <string name="theme_auto">Hintergrundbild folgen</string>
     <string name="summary__theme_blur">Verwische die Seitenhindergründe</string>
     <string name="title_theme_icon_packs">Symbol Pakete</string>
-    <string name="title__theme_icon_shape">Symbolform ändern</string>
+    <string name="title__theme_icon_shape">Symbolform</string>
     <string name="title__theme_blur_radius">Unschärfe Intensität</string>
     <string name="title__theme_blur">Unschärfe</string>
     <string name="title__theme_accent_color">Akzentfarbe</string>
     <string name="msg_missing_usage_access">Erteilen Sie den Nutzungszugriff für <xliff:g example="My App" id="name">%1$s</xliff:g> um App-Vorschläge anzuzeigen.</string>
     <string name="needs_usage_access">Nutzungzugriff erforderlich</string>
     <string name="hide_app_reset">Versteckte Anwendungen zurücksetzen</string>
-    <string name="hide_app_selected"> versteckt</string>
+    <string name="hide_app_selected">versteckte Apps (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Versteckt</item>
         <item quantity="other"/>
@@ -109,9 +109,9 @@
     <string name="summary__drawer_hide_apps">App in der App-Übersicht ausblenden</string>
     <string name="summary_all_apps_google_search">Web-Ergebnisse und Apps finden</string>
     <string name="summary_search_hidden_apps">Zeige versteckte Verknüpfungen in den Ergebnissen.</string>
-    <string name="title_search_hidden_apps">Finde ausgeblendete Verknüpfungen</string>
+    <string name="title_search_hidden_apps">Finde ausgeblendete Apps</string>
     <string name="title_all_apps_keep_scroll_state">Position merken</string>
-    <string name="title_all_apps_google_search">Globale Suche</string>
+    <string name="title_all_apps_google_search">Websuche</string>
     <string name="title_all_apps_search">App-Übersicht Suchleiste</string>
     <string name="title__sort_by_color">Nach Farbe</string>
     <string name="title__sort_most_used">Meist verwendet</string>
@@ -161,7 +161,7 @@
     <string name="pref_category__others">Anderes</string>
     <string name="pref_category__inputs">Gesten und Suche</string>
     <string name="pref_category__interfaces">Benutzeroberfläche</string>
-    <string name="summary__general_about">Mehr über den Omega Launcher</string>
+    <string name="summary__general_about">Mehr über den Neo Launcher</string>
     <string name="summary__general_advanced">Sprache, Sicherung, Einstellungssuche</string>
     <string name="summary__general_notifications">Abzeichen-Anzahl, Abzeichen-Farbe, Gesten</string>
     <string name="summary__general_smartspace">Datum, Uhrzeit, Home-Widget</string>
@@ -244,7 +244,7 @@
     <string name="label_voice_search">Sprachsuche</string>
     <string name="automatic_short">Auto</string>
     <string name="reset_to_default">Auf Standard zurücksetzen</string>
-    <string name="drag_to_enable_packs">Zum Ausschalten nach oben ziehen</string>
+    <string name="drag_to_enable_packs">Zum Einschalten nach oben ziehen</string>
     <string name="drag_to_disable_packs">Zum Einschalten nach unten ziehen</string>
     <string name="wallpaper_pick">Bildschirmhintergrund auswählen</string>
     <string name="edit_dash">Bearbeite Dash</string>
@@ -267,9 +267,9 @@
     <string name="developer_options_enabled">Entwickleroptionen an</string>
     <string name="local_backups">Im Speicher</string>
     <string name="read_external_storage_required">Erlaube Speicherzugriff, um eine Sicherung zu erstellen.</string>
-    <string name="backup_location_device_storage">Omega Ordner</string>
+    <string name="backup_location_device_storage">Interner Ordner</string>
     <string name="backup_location">Ort</string>
-    <string name="backup_share_text">Omega Sicherungsdatei</string>
+    <string name="backup_share_text">Neo Launcher Sicherungsdatei</string>
     <string name="backup_share_title">Sicherung teilen</string>
     <string name="restore_read_meta_fail">Ungültige Sicherungsdatei</string>
     <string name="restore_failed">Wiederherstellung fehlgeschlagen</string>
@@ -432,4 +432,38 @@
     <string name="cat_desktop_grid">Raster und Layout</string>
     <string name="title_app_categorization_enable">Aktivieren von App-Kategorien</string>
     <string name="summary_app_categorization_enable">Erstelle Tabs oder Ordner</string>
+    <string name="title__general_widgets_notifications">Widgets &amp; Benachrichtigungen</string>
+    <string name="selected_apps">Ausgewählte Apps (%1$d)</string>
+    <string name="title_desktop_widget_corner_radius">Widget Eckradius</string>
+    <string name="summary_fuzzy_search">Näherungsweise Übereinstimmung in der App-Suche.</string>
+    <string name="owm_get_your_own_key">API-Schlüssel gibt\'s auf api.openweathermap.org.</string>
+    <string name="icon_picker_load_failed">Konnte keine weiteren Symbole laden.</string>
+    <string name="notification_dots_missing_notification_access">Um Benachrichtigungs-Punkte anzuzeigen wird Zugriff auf die Benachrichtigungen benötigt</string>
+    <string name="tab_launcher">Launcher</string>
+    <string name="tab_shortcuts">Verknüpfungen</string>
+    <string name="folder_name">Ordnername</string>
+    <string name="icon_picker_default_category">Symbole</string>
+    <string name="author_role">Entwickler</string>
+    <string name="title_search_contacts">Kontakt suchen</string>
+    <string name="section_web">Web</string>
+    <string name="section_contacts">Kontakte</string>
+    <string name="app_reset">Auswahl zurücksetzen</string>
+    <string name="debug_options_title">Debuginfo</string>
+    <string name="contributor_role">beitragend</string>
+    <string name="accessibility_undo">Rückgängig</string>
+    <string name="app_name">Appname</string>
+    <string name="title__general_profile">Profil</string>
+    <string name="title__general_gestures_dash">Gesten &amp; Dash</string>
+    <string name="title__general_search_feed">Suche &amp; Feed</string>
+    <string name="pref_category__features">Features</string>
+    <string name="title__drawer_rows">Anzahl der Zeilen</string>
+    <string name="protected_apps">Geschützte Apps</string>
+    <string name="protected_app_selected">Geschützte Apps (%1$d)</string>
+    <string name="section_apps">Apps</string>
+    <string name="default_city">Berlin, BE</string>
+    <string name="weather_api_key">OWM API Schlüssel</string>
+    <string name="weather_city">Stadt</string>
+    <string name="notification_dots_disabled">Um Benachrichtigungs-Punkte anzuzeigen muss das Feature in den Einstellungen aktiviert werden</string>
+    <string name="title__feed">Feed</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
 </resources>
