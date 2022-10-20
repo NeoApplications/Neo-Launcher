@@ -8,7 +8,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/NeoApplications/Neo-Launcher?display_name=tag)](https://github.com/NeoApplications/Neo-Launcher/releases/latest)
 [![Small translation badge](https://hosted.weblate.org/widgets/omegalauncher/-/omegalauncher/svg-badge.svg)](https://hosted.weblate.org/engage/omegalauncher/?utm_source=widget)
 
-![Neo Applications Banner](neo_banner.png)
+[![Neo Applications Banner](neo_banner.png)](https://github.com/NeoApplications)
 
 ## *Installation & Download*
 
