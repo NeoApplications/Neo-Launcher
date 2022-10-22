@@ -466,4 +466,8 @@
     <string name="notification_dots_disabled">Um Benachrichtigungs-Punkte anzuzeigen muss das Feature in den Einstellungen aktiviert werden</string>
     <string name="title__feed">Feed</string>
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="theme_auto_black">Hintergrundbild folgen (schwarz)</string>
+    <string name="pref_category__dash">Dash</string>
+    <string name="cat_dock_search">Drawer und Dock</string>
+    <string name="title_fuzzy_search">Fuzzy Suche</string>
 </resources>
