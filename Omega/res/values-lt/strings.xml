@@ -6,7 +6,7 @@
     <string name="title__multiline_labels">Kelių eilučių programų pavadinimai</string>
     <string name="title_desktop_keep_empty">Leisti tuščius puslapius</string>
     <string name="title_desktop_lock_desktop">Užrakinti darbalaukį</string>
-    <string name="title_desktop_overlap_placement">Leisti persidengimus</string>
+    <string name="title_desktop_overlap_placement">Leisti persidengiančius valdiklius</string>
     <string name="title__desktop_hide_icon_labels">Slėpti piktogramų etiketes pagrindiniame ekrane</string>
     <string name="summary__general_smartspace">Data, laikas, pagrindinio ekrano valdiklis</string>
     <string name="title__general_smartspace">Pagrindinio ekrano valdiklis</string>
@@ -31,7 +31,7 @@
     <string name="title__general_desktop">Darbalaukis</string>
     <string name="title__general_about">Apie</string>
     <string name="default_folder_name">Naujas aplankas</string>
-    <string name="get_more_icon_packs">Gauti daugiau</string>
+    <string name="get_more_icon_packs">Atsisiųsti naują piktogramų paketą</string>
     <string name="icon_pack">Piktogramų paketas</string>
     <string name="title_default">Numatytoji</string>
     <string name="theme_use_dark_text">Naudoti tamsų tekstą</string>
@@ -62,7 +62,7 @@
     <string name="title_disable_suggestions_prompt">Išjungti programėlių pasiūlymus</string>
     <string name="summary_all_apps_google_search">Raskite žiniatinklio rezultatus ir programėles</string>
     <string name="title_all_apps_keep_scroll_state">Prisiminti poziciją</string>
-    <string name="title_all_apps_google_search">Visuotinė paieška</string>
+    <string name="title_all_apps_google_search">Žiniatinklio rezultatai</string>
     <string name="title__sort_by_color">Pagal spalvą</string>
     <string name="title__sort_most_used">Dažniausiai naudojamos</string>
     <string name="title__sort_last_installed">Vėliausiai įdiegtos</string>
@@ -292,7 +292,7 @@
     <string name="tab_type_custom_desc">Pasirinkti nuorodas neautomatiniu būdu.</string>
     <string name="pref_appcategorization_tabs_summary">Braukite naršydami tarp grupių.</string>
     <string name="summary__drawer_hide_apps">Slėpti programėlę iš programėlių stalčiaus</string>
-    <string name="title_search_hidden_apps">Rasti paslėptas nuorodas</string>
+    <string name="title_search_hidden_apps">Rasti paslėptas programėles</string>
     <string name="title_all_apps_search">Stalčiaus paieškos juosta</string>
     <string name="title__drawer_paged_apps">Puslapinis programėlių rodinys</string>
     <string name="title__drawer_all_apps">Rodyti „Visos programėlės“ etiketę</string>
@@ -329,25 +329,25 @@
     <string name="icon_shape_teardrop">Lašas</string>
     <string name="icon_shape_circle">Apskritimas</string>
     <string name="icon_shape_square">Kvadratas</string>
-    <string name="icon_shape_system_default">Sistemos numatytoji</string>
+    <string name="icon_shape_system_default">Sistemos</string>
     <string name="icon_shape_override_label_location">pagrindiniame ekrane</string>
     <string name="icon_shape_override_label">Keisti piktogramos formą</string>
     <string name="icon_shape_override_progress">Taikomi piktogramos formos pakeitimai</string>
     <string name="menu_icon_shape">Pasirinktinė piktogramos forma</string>
     <string name="theme_dark_theme_mode_follow_daylight">Sekti dienos metą</string>
     <string name="theme_based">Pritaikyti pagal temą</string>
-    <string name="theme_auto_night_mode">Pritaikyti pagal sistemos temą</string>
+    <string name="theme_auto_night_mode">Sistemos</string>
     <string name="theme_auto">Pritaikyti pagal ekrano paveikslėlį</string>
     <string name="summary__theme_blur">Puslapių fonų suliejimas</string>
     <string name="title_theme_icon_packs">Piktogramų paketai</string>
-    <string name="title__theme_icon_shape">Keisti piktogramos formą</string>
+    <string name="title__theme_icon_shape">Piktogramos forma</string>
     <string name="title__theme_blur_radius">Suliejimo intensyvumas</string>
     <string name="title__theme_blur">Suliejimas</string>
     <string name="title__theme_accent_color">Akcento spalva</string>
-    <string name="msg_missing_usage_access">Jei norite rodyti programėlių pasiūlymus, įjunkite naudojimo prieigą <xliff:g example="My App" id="name">%1$s</xliff:g></string>
+    <string name="msg_missing_usage_access">Įjunkite naudojimo prieigą <xliff:g example="My App" id="name">%1$s</xliff:g>, jei norite rodyti programėlių pasiūlymus</string>
     <string name="needs_usage_access">Reikalinga naudojimo prieiga</string>
     <string name="hide_app_reset">Atstatyti paslėptas programėles</string>
-    <string name="hide_app_selected">  paslėpta</string>
+    <string name="hide_app_selected">Paslėptos programėlės (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d paslėpta</item>
         <item quantity="few"/>
@@ -361,7 +361,7 @@
     </plurals>
     <string name="add_new_tab">Pridėti</string>
     <string name="pref_appcategorization_flowerpot_title">Programėlių kategorija</string>
-    <string name="dialog_message_change_sort">Keisti programų rikiavimo tvarką į abėcėlės tvarka\?</string>
+    <string name="dialog_message_change_sort">Pakeisti į abėcėlinį programėlių rikiavimą\?</string>
     <string name="summary_search_hidden_apps">Rodyti paslėptas nuorodas rezultatuose.</string>
     <string name="title__drawer_icon_size">„Visos programėlės“ piktogramos dydis</string>
     <string name="title__drawer_hide_apps">Paslėptų programėlių nuorodos</string>
@@ -381,7 +381,7 @@
     <string name="fonts_global_font">Visuotinis šriftas</string>
     <string name="disable_protected_apps_message">Norint išjungti apsaugotas programėles, reikalinga autentikacija</string>
     <string name="disable_protected_apps">Išjungti apsaugotas programėles</string>
-    <string name="enable_protected_apps">Įgalinti apsaugotas programėles</string>
+    <string name="enable_protected_apps">Įjungti apsaugotas programėles</string>
     <string name="trust_apps_manager_name">Paslėptos ir apsaugotos programėlės</string>
     <string name="trust_apps_no_lock_error">Nustatykite saugų užrakinimo ekraną, kad apribotumėte prieigą prie programėlės</string>
     <string name="protected_app_reset">Atstatyti apsaugotas programėles</string>
@@ -406,4 +406,30 @@
     <string name="about_translators_group">Bendraautoriai ir vertėjai</string>
     <string name="about_channel">Kanalas</string>
     <string name="about_open_source">Bibliotekos, kurias naudojame</string>
+    <string name="folder_name">Aplanko pavadinimas</string>
+    <string name="summary_app_categorize">Pasirinkite skirtukus arba aplankus</string>
+    <string name="title_fuzzy_search">Fuzzy paieška</string>
+    <string name="summary_app_suggestions">Visoms programėlėms ir pagrindiniam ekranui</string>
+    <string name="title__general_widgets_notifications">Valdikliai ir pranešimai</string>
+    <string name="pref_category__features">Ypatybės</string>
+    <string name="selected_apps">Pasirinktos programėlės (%1$d)</string>
+    <string name="app_reset">Atstatyti pasirinkimą</string>
+    <string name="summary_fuzzy_search">Apytikslė programėlių paieškų atitiktis.</string>
+    <string name="theme_dark_theme_mode_follow_daylight_black">Sekti dienos šviesą (juoda)</string>
+    <string name="title_app_categorization_enable">Įgalinti programėlių kategorijas</string>
+    <string name="title_dock_search">Greitos prieigos įrankių paieškos juosta</string>
+    <string name="summary_dock_search">Rodyti apatinėje greitos prieigos įrankių juostoje</string>
+    <string name="label_search">Paieška</string>
+    <string name="title_desktop_widget_corner_radius">Valdiklio kampo spindulys</string>
+    <string name="cat_dock_search">Programėlių stalčius ir greitos prieigos įrankių juosta</string>
+    <string name="title__general_profile">Profilis</string>
+    <string name="title__general_search_feed">Paieška ir sklaidos kanalas</string>
+    <string name="title__drawer_rows">Eilučių skaičius</string>
+    <string name="summary_app_categorization_enable">Sukurti skirtukus arba aplankus</string>
+    <string name="cat_desktop_grid">Tinklelis ir išdėstymas</string>
+    <string name="protected_apps">Apsaugotos programėlės</string>
+    <string name="protected_app_selected">Apsaugotos programėlės (%1$d)</string>
+    <string name="title_theme_customize_icons">Tinkinkite piktogramas</string>
+    <string name="theme_auto_black">Sekti ekrano užsklandą (juoda)</string>
+    <string name="theme_auto_night_mode_black">Sistemos (juoda)</string>
 </resources>
