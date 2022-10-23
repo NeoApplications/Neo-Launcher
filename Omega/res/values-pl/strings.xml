@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title__general_dock">Pasek szybkiego dostępu</string>
     <string name="title__general_theme">Motyw</string>
     <string name="title__general_search">Wyszukiwanie i foldery</string>
@@ -46,7 +46,7 @@
     <string name="trust_apps_manager_name">Ukryte i chronione aplikacje</string>
     <string name="enable_protected_apps">Włącz chronione aplikacje</string>
     <string name="disable_protected_apps">Wyłącz chronione aplikacje</string>
-    <string name="title__theme_icon_shape">Zmień kształt ikon</string>
+    <string name="title__theme_icon_shape">Kształt ikon</string>
     <string name="theme_light">Jasny</string>
     <string name="theme_with_dark_text">ciemny tekst</string>
     <string name="theme_black">Czarny</string>
@@ -205,7 +205,7 @@
         <item quantity="many"/>
         <item quantity="other"/>
     </plurals>
-    <string name="hide_app_selected"> ukryte</string>
+    <string name="hide_app_selected">Ukryte aplikacje (%1$d)</string>
     <string name="icon_shape_override_label_location">na ekranie głównym</string>
     <string name="title_adaptify_pack">Tworzenie adaptacyjnych ikon dla pakietu ikon</string>
     <string name="permission_iplocate_twilight_explanation">Zezwolić na dostęp do Twojej przybliżonej lokalizacji\? Umożliwia to dokładniejsze obliczenia światła dziennego.</string>
@@ -283,7 +283,7 @@
     <string name="pref_shelf_summary">Na lewo od głównego ekranu głównego</string>
     <string name="title__search_bubble_searchbar">Pokaż dwie bańki</string>
     <string name="dash_media_player_description">Pokaż lub ukryj elementy sterujące odtwarzaczem audio</string>
-    <string name="drag_to_disable_packs">Przeciągnij w dół, aby włączyć</string>
+    <string name="drag_to_disable_packs">Przeciągnij w dół, aby wyłączyć</string>
     <string name="customize">Dostosuj</string>
     <string name="label_voice_search">Wyszukiwanie głosowe</string>
     <string name="custom">Niestandardowe</string>
@@ -355,11 +355,104 @@
     <string name="title_colored_backgrounds">Kolorowe tła</string>
     <string name="about_copyright">Copyright © 2020-2021</string>
     <string name="dash_location_summary">Zmiana ustawień lokalizacji</string>
-    <string name="drag_to_enable_packs">Przeciągnij w górę, aby wyłączyć</string>
+    <string name="drag_to_enable_packs">Przeciągnij w górę, aby włączyć</string>
     <string name="title__general_profile">Profil</string>
     <string name="title__general_widgets_notifications">Widżety i powiadomienia</string>
     <string name="pref_category__features">Funkcje</string>
     <string name="backup_error_blank_contents">Zawartość nie może być pusta</string>
     <string name="backup_create_new">Utwórz nową kopię zapasową</string>
     <string name="backup_restarting">Ponowne uruchomienie</string>
+    <string name="default_city">San Salvador, SV</string>
+    <string name="weather_city">Miasto</string>
+    <string name="pref_desktop_mode">Tryb pulpitu</string>
+    <string name="title__search_action_assistant">Otwórz aplikację asystenta</string>
+    <string name="import_icon">Importuj ikony</string>
+    <string name="change_default_home">Ustaw jako ekran główny</string>
+    <string name="wallpaper_pick_summary">Otwórz wybór tapety</string>
+    <string name="selected_apps">Wybrane aplikacje (%1$d)</string>
+    <string name="gesture_dock_swipe_up">Przesuń w górę od paska szybkiego dostępu</string>
+    <string name="notification_dots_disabled">Aby wyświetlić kropki powiadomień, włącz wyświetlanie kropek powiadomień w ustawieniach</string>
+    <string name="modify_system_settings_message">Zezwól na możliwość modyfikowania ustawień systemowych, aby to działało</string>
+    <string name="summary_fuzzy_search">Przybliżone dopasowanie do wyszukiwań aplikacji.</string>
+    <string name="pref_appcategorization_folders_summary">Dotknij, aby otworzyć wyskakujące okienko.</string>
+    <string name="icon_shape_corner_cut">Wycięcie</string>
+    <string name="msg_missing_usage_access">Włącz dostęp do użycia aplikacji dla <xliff:g example="My App" id="name">%1$s</xliff:g>, aby wyświetlić sugestie aplikacji</string>
+    <string name="icon_pack_external_picker">Otwórz zewnętrzny selektor</string>
+    <string name="icon_pack_applied_toast">Zastosowano %s</string>
+    <string name="title_smartspace_feed_theme">Motyw kanału</string>
+    <string name="event_provider_missing_notification_dots">Włącz kropki powiadomień, aby użyć <xliff:g example="My Provider" id="providerName">\"%1$s\"</xliff:g>.</string>
+    <string name="title__dock_hide">Ukryj pasek szybkiego dostępu</string>
+    <string name="summary__drawer_hide_apps">Ukryj aplikację z szuflady aplikacji</string>
+    <string name="personality_provider">Podziękowania</string>
+    <string name="onbording">Wdrażanie</string>
+    <string name="onbording_settings_title">Konfiguracja %s</string>
+    <string name="title__advanced_setting_search">Pokaż ustawienia wyszukiwania</string>
+    <string name="dash_device_settings_summary">Otwórz ustawienia urządzenia</string>
+    <string name="enabled_events">Włączone</string>
+    <string name="launch_assistant">Uruchom aplikację asystenta</string>
+    <string name="icon_shape_squircle">Kwadratowe koło</string>
+    <string name="open_image_picker">Otwórz selektor obrazów</string>
+    <string name="event_provider_missing_notification_access">Włącz powiadomienia z <xliff:g example="My App" id="name">\"%2$s\", aby użyć </xliff:g><xliff:g example="My Provider" id="providerName">\"%1$s\".</xliff:g></string>
+    <string name="folder_radius">Promień narożników folderów</string>
+    <string name="backup_location_device_storage">Folder wewnętrzny</string>
+    <string name="local_backups">W pamięci</string>
+    <string name="author_role">Twórca</string>
+    <string name="dash_all_apps_summary">Pokaż przycisk pokazujący wszystkie aplikacje</string>
+    <string name="dash_launcher_settings_summary">Wyświetl ustawienia ekranu głównego</string>
+    <string name="dash_volume_summary">Wyświetl selektor dźwięku urządzenia</string>
+    <string name="app_reset">Zresetuj wybór</string>
+    <string name="needs_usage_access">Wymagane zezwolenie do użycia</string>
+    <string name="disable_protected_apps_message">Wyłącz chronione aplikacje wymagające uwierzytelnienia</string>
+    <string name="icon_shape_system_default">Systemowe</string>
+    <string name="icon_shape_corner_squircle">Kwadratowe koło</string>
+    <string name="color_presets">Ustawienia wstępne</string>
+    <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="units_rakine">Rankine</string>
+    <string name="weather_api_key">Klucz API OWM</string>
+    <string name="owm_get_your_own_key">Uzyskaj klucz API na api.openweathermap.org.</string>
+    <string name="action_open_drawer_or_recents">Otwórz ostatnie aplikacje/szufladę z aplikacjami</string>
+    <string name="action_sleep">Uśpienie</string>
+    <string name="gesture_swipe_up">Przesuń w górę</string>
+    <string name="action_sleep_timeout">Uśpienie przy użyciu limitu czasu ekranu</string>
+    <string name="notification_dots_missing_notification_access">Aby wyświetlić kropki powiadomień, włącz dostęp do powiadomień aplikacji</string>
+    <string name="title__search_bar_radius">Promień narożników</string>
+    <string name="title__feed">Kanał</string>
+    <string name="fonts_change_global_font">Zmień</string>
+    <string name="summary__advanced_setting_search">Wyświetl wyszukiwanie ustawień na pasku akcji</string>
+    <string name="restore_success">Przywrócono</string>
+    <string name="backup_share_text">Plik kopii zapasowej Neo Launcher</string>
+    <string name="developer_options_enabled">Opcje programisty włączone</string>
+    <string name="summary__dev_restart">Może być pomocne, jeśli niektóre ustawienia nie są prawidłowo zastosowane</string>
+    <string name="about_open_source">Biblioteki Open Source</string>
+    <string name="contributor_role">Współtwórca</string>
+    <string name="dash_wifi_summary">Połączenie i stan sieci Wi-Fi</string>
+    <string name="tab_hide_from_main">Ukryj z karty głównej</string>
+    <string name="none">Brak</string>
+    <string name="folder_cover_mode">Użyj trybu okładki</string>
+    <string name="tab_launcher">Ekran główny</string>
+    <string name="button_organize_screens">Rozmieszczanie stron</string>
+    <string name="action_open_overview">Pokaż dymek pulpitu</string>
+    <string name="folder_rows">Rzędy folderów</string>
+    <string name="folder_columns">Kolumny folderów</string>
+    <string name="backup_timestamp">Utworzono w</string>
+    <string name="restore_contents">Przywróć zawartość</string>
+    <string name="developer_options_title">Opcje programisty</string>
+    <string name="dash_volume_title">Okno dialogowe głośności</string>
+    <string name="title_desktop_widget_corner_radius">Promień narożników widżetów</string>
+    <string name="title__dock_scale">Skala paska szybkiego dostępu</string>
+    <string name="title__drawer_paged_apps">Widok aplikacji na stronach</string>
+    <string name="title_drawer_paged">Stronicowa</string>
+    <string name="weather_provider_pe">Pixel Experience</string>
+    <string name="folder_name_format">Folder: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
+    <string name="units_newton">Newton</string>
+    <string name="units_delisle">Delisle</string>
+    <string name="units_romer">Rømer</string>
+    <string name="action_overlay">Otwórz Google Feed</string>
+    <string name="title__general_search_feed">Wyszukiwanie i kanał</string>
+    <string name="backup_error_blank_name">Pole z nazwą musi zostać wypełnione</string>
+    <string name="title__drawer_rows">Liczba rzędów</string>
+    <string name="protected_apps">Chronione aplikacje</string>
+    <string name="protected_app_selected">Chronione aplikacje (%1$d)</string>
+    <string name="title_feed_provider">Dostawca kanału</string>
 </resources>
