@@ -1,0 +1,7 @@
+Neu: Geste zum nach oben wischen für Ordner
+Neu: Einstellung für Feed-Provider
+Fix: bevorzugte Sprache
+Update: Vergrößerung des Rasters/Spaltenweite von 2-16
+Entfernt: Google App und Google GO als Suchmaschinen
+Entfernt: StartAppSearch-, StartApp- und TimeoutSleep-Gesten
+Viele Absturz-Fixes

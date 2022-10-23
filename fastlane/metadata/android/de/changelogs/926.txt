@@ -1,0 +1,7 @@
+Neu: Option, Apps nach Farbe zu sortieren
+Neu: Erscheinungsbild folgt Hintergrund (schwarz)
+Fix: Absturz beim Öffnen von Backup/Restore
+Fix: Tönung der obere Leiste vom Drawer beim Schließen einer App
+Fix: Icons werden nicht geupdatet when eine benutzerdefinierte Iconform verwendet wird
+Entfernt: Follow Daylight Theme
+Entfernt: OnePlus Anbieter für Wetterdaten

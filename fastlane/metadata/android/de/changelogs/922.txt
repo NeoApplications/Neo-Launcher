@@ -1,0 +1,7 @@
+Notiz 1: inkompatibel mit Backups von älteren Versionen
+- Rebase auf Launcher von Android 12/L
+- Neu: Smartspace
+- Neu: direktes Bearbeiten von Tabs/Kategorien
+- Neu: Option für unscharfe/fuzzy Suche
+- Update: Dash, icons und UI umgestaltet
+Notiz 2 : fehlende Funktionen aus älteren Versionen könnten in späteren Releases hinzugefügt werden
