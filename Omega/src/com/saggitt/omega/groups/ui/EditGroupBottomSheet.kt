@@ -68,13 +68,11 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.saggitt.omega.compose.PrefsActivityX
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ComposeSwitchView
-import com.saggitt.omega.compose.components.NavigationPreference
 import com.saggitt.omega.compose.components.preferences.BasePreference
 import com.saggitt.omega.compose.screens.preferences.CategorySelectionDialogUI
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.omegaPrefs
 
@@ -105,12 +103,16 @@ fun EditGroupBottomSheet(
                 ?: AppGroups.KEY_FLOWERPOT_DEFAULT
         )
     }
-    val selectedApps = remember {
-        mutableStateListOf(
-            *((config[AppGroups.KEY_ITEMS] as? AppGroups.Group.ComponentsCustomization)?.value?.toTypedArray()
-                ?: emptyArray())
-        )
+
+    val allAppsTab = "profile{\"matchesAll\":true}}"
+    val apps: Array<ComponentKey> = if (group.type == allAppsTab) {
+        prefs.drawerHiddenAppSet.onGetValue().map { ComponentKey.fromString(it)!! }.toTypedArray()
+    } else {
+        (config[AppGroups.KEY_ITEMS] as? AppGroups.Group.ComponentsCustomization)?.value?.toTypedArray()
+            ?: emptyArray()
     }
+
+    val selectedApps = remember { mutableStateListOf(*apps) }
     var color by remember {
         mutableStateOf(
             Color(
@@ -166,19 +168,54 @@ fun EditGroupBottomSheet(
             selectedApps.size,
             selectedApps.size
         )
-        when {
-            group.type == DrawerTabs.TYPE_ALL_APPS -> {
-                NavigationPreference(
-                    title = stringResource(id = R.string.title__drawer_hide_apps),
+        when (group.type) {
+            allAppsTab -> {
+                BasePreference(
+                    titleId = R.string.title__drawer_hide_apps,
                     summary = summary,
-                    route = "app_selection",
-                    startIcon = R.drawable.ic_apps,
-                    endIcon = R.drawable.chevron_right,
-                    horizontalPadding = 4.dp
-                )
+                    startWidget = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_apps),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    endWidget = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.chevron_right),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                ) { openDialog.value = true }
                 Spacer(modifier = Modifier.height(8.dp))
+
+                if (openDialog.value) {
+                    BaseDialog(openDialogCustom = openDialog) {
+                        Card(
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.padding(8.dp),
+                            elevation = CardDefaults.elevatedCardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                        ) {
+                            GroupAppSelection(
+                                selectedApps = selectedApps.map { it.toString() }.toSet(),
+                            ) {
+                                val componentsSet =
+                                    it.mapNotNull { ck -> ComponentKey.fromString(ck) }
+                                        .toMutableSet()
+                                selectedApps.clear()
+                                selectedApps.addAll(componentsSet)
+                                prefs.drawerHiddenAppSet.onSetValue(selectedApps.map { key -> key.toString() }
+                                    .toSet())
+                                openDialog.value = false
+                            }
+                        }
+                    }
+                }
             }
-            group.type != DrawerTabs.TYPE_ALL_APPS -> {
+
+            "2" -> {
                 if (type != AppGroupsManager.CategorizationType.Flowerpot) {
                     BasePreference(
                         titleId = R.string.tab_manage_apps,
@@ -248,7 +285,7 @@ fun EditGroupBottomSheet(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                             )
-                        },
+                        }
                     ) { openDialog.value = true }
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -266,7 +303,7 @@ fun EditGroupBottomSheet(
             }
         }
 
-        if (type != AppGroupsManager.CategorizationType.Folders) {
+        if (group.type != "0") {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -357,10 +394,12 @@ fun EditGroupBottomSheet(
                             color.toArgb()
                     }
                     group.customizations.applyFrom(config)
+
                     when (type) {
                         AppGroupsManager.CategorizationType.Folders -> {
                             prefs.drawerAppGroupsManager.drawerFolders.saveToJson()
                         }
+
                         AppGroupsManager.CategorizationType.Tabs,
                         AppGroupsManager.CategorizationType.Flowerpot -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
