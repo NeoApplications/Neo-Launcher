@@ -363,7 +363,8 @@ fun AppCategoriesPage() {
                             },
                             removable = item.type in arrayOf(
                                 DrawerTabs.TYPE_CUSTOM,
-                                FlowerpotTabs.TYPE_FLOWERPOT
+                                FlowerpotTabs.TYPE_FLOWERPOT,
+                                DrawerFolders.TYPE_CUSTOM
                             ),
                             onClick = {
                                 coroutineScope.launch {
@@ -395,7 +396,6 @@ fun AppCategoriesPage() {
                                 }
                             }
                         )
-
                     }
                 }
             }
