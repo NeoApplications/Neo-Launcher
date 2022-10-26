@@ -215,7 +215,6 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) : PersonalWorkSlidin
                         onClose = { AbstractFloatingView.closeAllOpenViews(launcher) }
                     )
                 }
-                //editTab(Launcher.getLauncher(context), tab.drawerTab)
                 true
             }
         }
