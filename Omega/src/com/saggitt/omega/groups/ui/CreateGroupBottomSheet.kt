@@ -167,8 +167,14 @@ fun CreateGroupBottomSheet(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (type != AppGroupsManager.CategorizationType.Flowerpot) {
+            val summary = context.resources.getQuantityString(
+                R.plurals.tab_apps_count,
+                selectedApps.size,
+                selectedApps.size
+            )
             BasePreference(
                 titleId = R.string.tab_manage_apps,
+                summary = summary,
                 startWidget = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_apps),
