@@ -215,7 +215,7 @@ fun EditGroupBottomSheet(
                 }
             }
 
-            "2" -> {
+            "2", "0" -> {
                 if (type != AppGroupsManager.CategorizationType.Flowerpot) {
                     BasePreference(
                         titleId = R.string.tab_manage_apps,
