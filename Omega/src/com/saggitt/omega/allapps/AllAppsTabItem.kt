@@ -33,12 +33,13 @@ import com.android.launcher3.util.Themes
 import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.groups.ui.EditGroupBottomSheet
+import com.saggitt.omega.preferences.OmegaPreferences
 import com.saggitt.omega.views.ColoredButton
 import kotlin.math.floor
 
 class AllAppsTabItem(context: Context, attrs: AttributeSet) : PersonalWorkSlidingTabStrip(context, attrs) {
 
-    private var mSelectedIndicatorPaint: Paint
+    private var mSelectedIndicatorPaint: Paint = Paint()
     private var mDividerPaint: Paint
 
     private var mIndicatorLeft = -1
@@ -49,11 +50,10 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) : PersonalWorkSlidin
     private var mIsRtl = false
 
     private val mArgbEvaluator: ArgbEvaluator = ArgbEvaluator()
-    val prefs = Utilities.getOmegaPrefs(context)
-    val launcher = Launcher.getLauncher(context)
+    val prefs: OmegaPreferences = Utilities.getOmegaPrefs(context)
+    val launcher: Launcher = Launcher.getLauncher(context)
 
     init {
-        mSelectedIndicatorPaint = Paint()
         mSelectedIndicatorPaint.color = Themes.getAttrColor(context, android.R.attr.colorAccent)
         mDividerPaint = Paint()
         mDividerPaint.color = Themes.getAttrColor(context, android.R.attr.colorControlHighlight)
