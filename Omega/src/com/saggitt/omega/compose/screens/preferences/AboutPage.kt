@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -273,7 +272,11 @@ fun LicenseScreen() {
     ViewWithActionBar(
         title = stringResource(R.string.about_open_source),
     ) {
-        ComposableWebView(url = "file:///android_asset/license.htm")
+        Column(
+            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+        ) {
+            ComposableWebView(url = "file:///android_asset/license.htm")
+        }
     }
 }
 
@@ -282,8 +285,24 @@ fun ChangelogScreen() {
     ViewWithActionBar(
         title = stringResource(R.string.title__about_changelog),
     ) {
-        ComposableWebView(url = "file:///android_asset/changelog.htm")
-        Spacer(modifier = Modifier.requiredHeight(50.dp))
+        Column(
+            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+        ) {
+            ComposableWebView(url = "file:///android_asset/changelog.htm")
+        }
+    }
+}
+
+@Composable
+fun TranslatorsScreen() {
+    ViewWithActionBar(
+        title = stringResource(R.string.about_translators),
+    ) {
+        Column(
+            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+        ) {
+            ComposableWebView(url = "file:///android_asset/translators.htm")
+        }
     }
 }
 
@@ -351,14 +370,4 @@ fun ComposableWebView(url: String) {
         },
         update = { webView -> webView.loadUrl(url) }
     )
-}
-
-@Composable
-fun TranslatorsScreen() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_translators),
-    ) {
-        ComposableWebView(url = "file:///android_asset/translators.htm")
-        Spacer(modifier = Modifier.requiredHeight(50.dp))
-    }
 }

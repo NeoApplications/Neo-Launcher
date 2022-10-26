@@ -48,3 +48,45 @@ a:visited {color: #ff610a;}
     position:relative;
     top:1px;
 }
+
+/*Translators*/
+.language{
+    padding:0px;
+    margin-bottom: 8px;
+    border: solid 1px #b1b1b1;
+    border-radius: 8px;
+}
+
+.language .lang-title{
+    padding-top: 0px;
+    background-color:#071f5f;
+    border-radius: 8px 8px 0 0;
+}
+.language .lang-title h3{
+    margin-top: 0px;
+    padding:8px;
+    color: white;
+}
+
+.language .translator .name{
+    padding-left:8px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.language .translator .contact{
+    padding-left:8px;
+    padding-top:0px;
+    margin-top: 0px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.language .divider{
+    height: 1px;
+    background-color: #b1b1b1;
+    margin-left: 24px;
+    margin-right: 24px;
+}
