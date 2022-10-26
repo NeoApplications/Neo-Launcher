@@ -68,6 +68,7 @@ import com.saggitt.omega.compose.components.GroupItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.move
 import com.saggitt.omega.compose.components.rememberDragDropListState
+import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerFolders
 import com.saggitt.omega.groups.DrawerTabs
@@ -105,26 +106,7 @@ fun AppCategoriesPage() {
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
     val groups = remember(manager.categorizationType) {
-        mutableStateListOf(
-            *when (manager.categorizationType) {
-                AppGroupsManager.CategorizationType.Tabs,
-                AppGroupsManager.CategorizationType.Flowerpot -> {
-                    if (hasWorkApps) {
-                        manager.drawerTabs.getGroups()
-                            .filter { it !is DrawerTabs.ProfileTab || !it.profile.matchesAll }
-                    } else {
-                        manager.drawerTabs.getGroups()
-                            .filter { it !is DrawerTabs.ProfileTab || it.profile.matchesAll }
-                    }
-                }
-                AppGroupsManager.CategorizationType.Folders -> {
-                    manager.drawerFolders.getGroups()
-                }
-                else -> {
-                    emptyList()
-                }
-            }.toTypedArray()
-        )
+        mutableStateListOf(*loadAppGroups(manager, hasWorkApps))
     }
     val editGroup = remember {
         mutableStateOf(groups.firstOrNull())
@@ -175,23 +157,38 @@ fun AppCategoriesPage() {
             when (sheetChanger) {
                 Config.BS_SELECT_TAB_TYPE -> {
                     if (selectedOption == AppGroupsManager.CategorizationType.Tabs || selectedOption == AppGroupsManager.CategorizationType.Flowerpot) {
+                        /*
+                        * Show tab type selection if the category option is tab
+                        */
                         SelectTabBottomSheet { changer, categorizationType ->
                             onOptionSelected(categorizationType)
                             sheetChanger = changer
                         }
                     } else {
+                        /*
+                        * Show folder creation if the category option is folder
+                        */
                         CreateGroupBottomSheet(selectedOption) {
                             sheetChanger = it
+                            groups.clear()
+                            groups.addAll(loadAppGroups(manager, hasWorkApps))
                             coroutineScope.launch {
                                 sheetState.hide()
                             }
                         }
                     }
                 }
-
+                /*
+                * Show tab creation after selecting tab type
+                */
                 Config.BS_CREATE_GROUP -> {
                     CreateGroupBottomSheet(selectedOption) {
                         sheetChanger = it
+                        groups.clear()
+                        groups.addAll(loadAppGroups(manager, hasWorkApps))
+                        coroutineScope.launch {
+                            sheetState.hide()
+                        }
                     }
                 }
 
@@ -392,6 +389,7 @@ fun AppCategoriesPage() {
                                         manager.drawerFolders.removeGroup(item as DrawerFolders.Folder)
                                         manager.drawerFolders.saveToJson()
                                     }
+
                                     else -> {}
                                 }
                             }
@@ -401,4 +399,29 @@ fun AppCategoriesPage() {
             }
         }
     }
+}
+
+/* Load app groups */
+
+fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGroups.Group> {
+    return when (manager.categorizationType) {
+        AppGroupsManager.CategorizationType.Tabs,
+        AppGroupsManager.CategorizationType.Flowerpot -> {
+            if (hasWorkApps) {
+                manager.drawerTabs.getGroups()
+                    .filter { it !is DrawerTabs.ProfileTab || !it.profile.matchesAll }
+            } else {
+                manager.drawerTabs.getGroups()
+                    .filter { it !is DrawerTabs.ProfileTab || it.profile.matchesAll }
+            }
+        }
+
+        AppGroupsManager.CategorizationType.Folders -> {
+            manager.drawerFolders.getGroups()
+        }
+
+        else -> {
+            emptyList()
+        }
+    }.toTypedArray()
 }
