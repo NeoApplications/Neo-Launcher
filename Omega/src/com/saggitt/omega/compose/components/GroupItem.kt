@@ -19,6 +19,7 @@
 package com.saggitt.omega.compose.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,12 +28,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -47,12 +51,28 @@ fun GroupItem(
     summary: String?,
     modifier: Modifier = Modifier,
     removable: Boolean,
+    index: Int = 0,
+    groupSize: Int = 1,
     onClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
 ) {
+    val mShape = RoundedCornerShape(
+        topStart = if (index == 0) 16.dp else 6.dp,
+        topEnd = if (index == 0) 16.dp else 6.dp,
+        bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
+        bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
+    )
+
     Row(
         modifier = modifier
+            .background(
+                MaterialTheme.colorScheme
+                    .surfaceColorAtElevation(16.dp)
+                    .copy(alpha = 0.7f),
+                mShape,
+            )
             .fillMaxWidth()
+            .clip(mShape)
             .clickable { onClick() }
             .wrapContentSize()
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -100,6 +120,8 @@ fun GroupItemPreview() {
     GroupItem(
         title = "Tab 1",
         summary = "--5 APPS",
-        removable = true
+        removable = true,
+        index = 0,
+        groupSize = 2
     )
 }
