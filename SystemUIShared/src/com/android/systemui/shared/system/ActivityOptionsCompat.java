@@ -62,7 +62,7 @@ public abstract class ActivityOptionsCompat {
 
     public static ActivityOptions makeRemoteAnimation(
             RemoteAnimationAdapterCompat remoteAnimationAdapter) {
-        if (QuickstepCompat.ATLEAST_S) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
             return ActivityOptions.makeRemoteAnimation(remoteAnimationAdapter.getWrapped(),
                     remoteAnimationAdapter.getRemoteTransition().getTransition());
         } else {
