@@ -462,8 +462,11 @@
     <string name="app_reset">重选</string>
     <string name="owm_get_your_own_key">从 api.openweathermap,org 获取 API 密钥。</string>
     <string name="weather_provider_owm" translatable="true">Open Weather Map</string>
-    <string name="default_city">萨尔瓦多，圣萨尔瓦多</string>
+    <string name="default_city">圣萨尔瓦多，西南</string>
     <string name="weather_api_key">OWM API 密钥</string>
     <string name="weather_city">城市</string>
-    <string name="notification_dots_missing_notification_access">开放应用通知权限以显示通知点</string>
+    <string name="notification_dots_missing_notification_access">要显示通知点，请打开应用通知访问</string>
+    <string name="contributor_role">贡献者</string>
+    <string name="author_role">开发者</string>
+    <string name="notification_dots_disabled">要显示通知点，请在设置中启用显示通知点</string>
 </resources>
