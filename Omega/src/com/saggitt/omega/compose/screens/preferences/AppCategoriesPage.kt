@@ -23,6 +23,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,6 +59,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
@@ -287,23 +289,12 @@ fun AppCategoriesPage() {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = categoryTitle,
-                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Divider(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .padding(horizontal = 16.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.pref_app_groups_edit_tip),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
 
                 LazyColumn(
                     modifier = Modifier
@@ -344,6 +335,8 @@ fun AppCategoriesPage() {
                                 onDragCancel = { dragDropListState.onDragInterrupted() }
                             )
                         },
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp),
                     state = dragDropListState.lazyListState
                 ) {
                     itemsIndexed(groups) { index, item ->
@@ -366,6 +359,8 @@ fun AppCategoriesPage() {
                                 FlowerpotTabs.TYPE_FLOWERPOT,
                                 DrawerFolders.TYPE_CUSTOM
                             ),
+                            index = index,
+                            groupSize = groups.size,
                             onClick = {
                                 coroutineScope.launch {
                                     sheetChanger = Config.BS_EDIT_GROUP
@@ -379,26 +374,33 @@ fun AppCategoriesPage() {
                                     editGroup.value = item
                                     sheetState.show()
                                 }
-                            },
-                            onRemoveClick = {
-                                groups.remove(item)
-                                when (manager.categorizationType) {
-                                    AppGroupsManager.CategorizationType.Tabs,
-                                    AppGroupsManager.CategorizationType.Flowerpot -> {
-                                        manager.drawerTabs.removeGroup(item as DrawerTabs.Tab)
-                                        manager.drawerTabs.saveToJson()
-                                    }
-                                    AppGroupsManager.CategorizationType.Folders -> {
-                                        manager.drawerFolders.removeGroup(item as DrawerFolders.Folder)
-                                        manager.drawerFolders.saveToJson()
-                                    }
-
-                                    else -> {}
-                                }
                             }
-                        )
+                        ) {
+                            groups.remove(item)
+                            when (manager.categorizationType) {
+                                AppGroupsManager.CategorizationType.Tabs,
+                                AppGroupsManager.CategorizationType.Flowerpot -> {
+                                    manager.drawerTabs.removeGroup(item as DrawerTabs.Tab)
+                                    manager.drawerTabs.saveToJson()
+                                }
+                                AppGroupsManager.CategorizationType.Folders -> {
+                                    manager.drawerFolders.removeGroup(item as DrawerFolders.Folder)
+                                    manager.drawerFolders.saveToJson()
+                                }
+
+                                else -> {}
+                            }
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.pref_app_groups_edit_tip),
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
