@@ -63,18 +63,17 @@ fun ComposeSwitchView(
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically
 ) {
     val (checked, check) = remember { mutableStateOf(isChecked) }
-    Column(
-        modifier = Modifier.clickable(enabled = isEnabled) {
-            check(!checked)
-            onCheckedChange(!checked)
-        }
-    ) {
+    Column {
         if (showDivider) {
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
         }
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .clickable(enabled = isEnabled) {
+                    check(!checked)
+                    onCheckedChange(!checked)
+                }
                 .addIf(applyPaddings) {
                     padding(horizontal = horizontalPadding, vertical = verticalPadding)
                 },
