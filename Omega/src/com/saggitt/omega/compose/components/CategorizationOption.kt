@@ -5,11 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,8 +47,21 @@ fun CategorizationOption(
     ) {
         Row(
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
         ) {
+            Icon(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(
+                    id = when (type) {
+                        AppGroupsManager.CategorizationType.Folders -> R.drawable.ic_folder_outline
+                        else -> R.drawable.ic_category
+                    }
+                ), contentDescription = type.name,
+                tint = if (selected) MaterialTheme.colorScheme.primary.copy(0.95f)
+                else MaterialTheme.colorScheme.outline
+            )
+            Spacer(modifier = Modifier.width(6.dp))
             Column(
                 modifier = Modifier.weight(1f)
             ) {
