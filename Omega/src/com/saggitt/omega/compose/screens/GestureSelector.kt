@@ -18,18 +18,21 @@
 
 package com.saggitt.omega.compose.screens
 
+import android.graphics.Bitmap
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.TabRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +59,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -171,17 +175,28 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
             selectedColor = MaterialTheme.colorScheme.onPrimary,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        val groupSize = launcherItems.size
 
         PreferenceGroup {
-            LazyColumn {
-                itemsIndexed(launcherItems) { _, item ->
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                itemsIndexed(launcherItems) { index, item ->
                     ListItemWithIcon(
                         title = item.displayName,
                         modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = if (index == 0) 16.dp else 6.dp,
+                                    topEnd = if (index == 0) 16.dp else 6.dp,
+                                    bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
+                                    bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
+                                )
+                            )
                             .background(
                                 color = if (item.toString() == selectedOption.value)
-                                    MaterialTheme.colorScheme.primary.copy(0.65f)
-                                else Color.Transparent
+                                    MaterialTheme.colorScheme.primary.copy(0.4f)
+                                else MaterialTheme.colorScheme.surface
                             )
                             .clickable {
                                 selectedOption.value = item.toString()
@@ -193,11 +208,13 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
                             },
                         summary = "",
                         startIcon = {
-                            Image(
-                                painter = rememberDrawablePainter(drawable = item.icon),
+                            val bitmap = item.icon?.toBitmap(32, 32, Bitmap.Config.ARGB_8888)
+                            if (bitmap != null) Icon(
+                                bitmap = bitmap.asImageBitmap(),
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(32.dp),
                             )
+                            else Spacer(modifier = Modifier.size(32.dp))
                         },
                         endCheckbox = {
                             RadioButton(
