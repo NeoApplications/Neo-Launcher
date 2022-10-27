@@ -73,6 +73,8 @@ import com.saggitt.omega.compose.screens.preferences.CategorySelectionDialogUI
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.DrawerFolders
+import com.saggitt.omega.groups.DrawerTabs
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.omegaPrefs
 
@@ -215,7 +217,7 @@ fun EditGroupBottomSheet(
                 }
             }
 
-            "2", "0" -> {
+            DrawerTabs.TYPE_CUSTOM, DrawerFolders.TYPE_CUSTOM -> {
                 if (type != AppGroupsManager.CategorizationType.Flowerpot) {
                     BasePreference(
                         titleId = R.string.tab_manage_apps,
@@ -303,7 +305,7 @@ fun EditGroupBottomSheet(
             }
         }
 
-        if (group.type != "0") {
+        if (group.type != DrawerFolders.TYPE_CUSTOM) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
