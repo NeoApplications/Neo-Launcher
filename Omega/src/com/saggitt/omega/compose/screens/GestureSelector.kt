@@ -32,14 +32,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.TabRow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallTopAppBar
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,6 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.saggitt.omega.compose.components.ExpandableListItem
 import com.saggitt.omega.compose.components.ListItemWithIcon
@@ -142,13 +142,16 @@ fun MainGesturesScreen(key: String, default: String) {
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
-                title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) }
-            )
-        }
+            Column {
+                TopAppBar(
+                    title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) }
+                )
+                Tabs(tabs = tabs, pagerState = pagerState)
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
-            Tabs(tabs = tabs, pagerState = pagerState)
             TabsContent(tabs = tabs, pagerState = pagerState)
         }
     }
@@ -398,24 +401,36 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
     val scope = rememberCoroutineScope()
     TabRow(
         selectedTabIndex = pagerState.currentPage,
-        backgroundColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background,
         contentColor = Color.White,
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-            )
-        }
+        indicator = {},
+        divider = {}
     ) {
         tabs.forEachIndexed { index, tab ->
-            LeadingIconTab(
-                icon = { Icon(painter = painterResource(id = tab.icon), contentDescription = "") },
-                text = { Text(text = stringResource(id = tab.title)) }, // TODO Needs better layout for longer words
+            NavigationRailItem(
                 selected = pagerState.currentPage == index,
                 onClick = {
                     scope.launch {
                         pagerState.animateScrollToPage(index)
                     }
-                }
+                },
+                icon = {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = tab.icon),
+                        contentDescription = ""
+                    )
+                },
+                label = {
+                    Text(text = stringResource(id = tab.title))
+                },
+                colors = NavigationRailItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    indicatorColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                    unselectedTextColor = MaterialTheme.colorScheme.onBackground,
+                ),
             )
         }
     }
