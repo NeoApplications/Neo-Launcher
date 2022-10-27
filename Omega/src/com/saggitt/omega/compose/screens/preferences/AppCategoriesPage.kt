@@ -19,13 +19,14 @@
 package com.saggitt.omega.compose.screens.preferences
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,11 +39,11 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -89,7 +91,9 @@ fun AppCategoriesPage() {
     val coroutineScope = rememberCoroutineScope()
     val prefs = Utilities.getOmegaPrefs(context)
     val manager by lazy { prefs.drawerAppGroupsManager }
-    val enableCategories by remember { mutableStateOf(manager.categorizationEnabled) }
+    val (categoriesEnabled, enableCategories) = remember(manager.categorizationEnabled) {
+        mutableStateOf(manager.categorizationEnabled)
+    }
     var categoryTitle by remember { mutableStateOf("") }
 
     val sheetState = rememberModalBottomSheetState(
@@ -102,7 +106,10 @@ fun AppCategoriesPage() {
         radius = prefs.themeCornerRadius.onGetValue().dp
     }
 
-    var (selectedOption, onOptionSelected) = remember {
+    var (selectedOption, onOptionSelected) = remember(
+        manager.categorizationType,
+        categoriesEnabled
+    ) {
         mutableStateOf(manager.categorizationType)
     }
     val (openedOption, onOptionOpen) = remember(manager.categorizationType, categoriesEnabled) {
@@ -110,7 +117,7 @@ fun AppCategoriesPage() {
     }
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
-    val groups = remember(manager.categorizationType) {
+    val groups = remember(selectedOption, categoriesEnabled) {
         mutableStateListOf(*loadAppGroups(manager, hasWorkApps))
     }
     val editGroup = remember {
@@ -241,28 +248,31 @@ fun AppCategoriesPage() {
         ) { paddingValues ->
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(
                         top = paddingValues.calculateTopPadding(),
-                        bottom = paddingValues.calculateBottomPadding(), start = 8.dp, end = 8.dp
+                        bottom = paddingValues.calculateBottomPadding(),
+                        start = 8.dp,
+                        end = 8.dp
                     )
             ) {
                 ComposeSwitchView(
+                    modifier = Modifier
+                        .background(
+                            if (categoriesEnabled) MaterialTheme.colorScheme.primary.copy(0.6f)
+                            else MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                            MaterialTheme.shapes.extraLarge
+                        )
+                        .clip(MaterialTheme.shapes.extraLarge),
                     title = stringResource(id = R.string.title_app_categorization_enable),
                     summary = stringResource(id = R.string.summary_app_categorization_enable),
-                    verticalPadding = 8.dp,
+                    verticalPadding = 16.dp,
                     horizontalPadding = 16.dp,
-                    isChecked = enableCategories,
+                    isChecked = categoriesEnabled,
                     onCheckedChange = {
-                        manager.categorizationEnabled = !manager.categorizationEnabled
+                        enableCategories(it)
+                        manager.categorizationEnabled = it
                     }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Column(
