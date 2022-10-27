@@ -75,6 +75,7 @@ import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.DrawerFolders
 import com.saggitt.omega.groups.DrawerTabs
+import com.saggitt.omega.groups.FlowerpotTabs.Companion.TYPE_FLOWERPOT
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.omegaPrefs
 
@@ -217,7 +218,7 @@ fun EditGroupBottomSheet(
                 }
             }
 
-            DrawerTabs.TYPE_CUSTOM, DrawerFolders.TYPE_CUSTOM -> {
+            DrawerTabs.TYPE_CUSTOM, DrawerFolders.TYPE_CUSTOM, TYPE_FLOWERPOT -> {
                 if (type != AppGroupsManager.CategorizationType.Flowerpot) {
                     BasePreference(
                         titleId = R.string.tab_manage_apps,
