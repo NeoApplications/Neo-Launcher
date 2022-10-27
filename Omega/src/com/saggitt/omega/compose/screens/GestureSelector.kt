@@ -256,9 +256,11 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
         val selectedOption = remember {
             mutableStateOf(selectedHandler.value)
         }
+        val groupSize = apps.size
+
         PreferenceGroup {
-            LazyColumn {
-                itemsIndexed(apps) { _, item ->
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                itemsIndexed(apps) { index, item ->
                     val config = JSONObject("{}")
                     config.apply {
                         put("appName", item.label)
@@ -274,10 +276,18 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
                     ListItemWithIcon(
                         title = item.label,
                         modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = if (index == 0) 16.dp else 6.dp,
+                                    topEnd = if (index == 0) 16.dp else 6.dp,
+                                    bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
+                                    bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
+                                )
+                            )
                             .background(
                                 color = if (appGestureHandler.toString() == selectedOption.value)
-                                    MaterialTheme.colorScheme.primary.copy(0.65f)
-                                else Color.Transparent
+                                    MaterialTheme.colorScheme.primary.copy(0.4f)
+                                else MaterialTheme.colorScheme.surface
                             )
                             .clickable {
                                 selectedOption.value = appGestureHandler.toString()
