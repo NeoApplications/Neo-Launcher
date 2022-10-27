@@ -103,6 +103,9 @@ fun AppCategoriesPage() {
     var (selectedOption, onOptionSelected) = remember {
         mutableStateOf(manager.categorizationType)
     }
+    val (openedOption, onOptionOpen) = remember(manager.categorizationType, categoriesEnabled) {
+        mutableStateOf(manager.categorizationType)
+    }
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
     val groups = remember(manager.categorizationType) {
@@ -194,7 +197,7 @@ fun AppCategoriesPage() {
 
                 Config.BS_EDIT_GROUP -> {
                     editGroup.value?.let { editGroup ->
-                        EditGroupBottomSheet(selectedOption, editGroup) {
+                        EditGroupBottomSheet(openedOption, editGroup) {
                             sheetChanger = it
                             coroutineScope.launch {
                                 sheetState.hide()
@@ -366,7 +369,7 @@ fun AppCategoriesPage() {
                             onClick = {
                                 coroutineScope.launch {
                                     sheetChanger = Config.BS_EDIT_GROUP
-                                    onOptionSelected(
+                                    onOptionOpen(
                                         when (item.type) {
                                             DrawerTabs.TYPE_CUSTOM -> AppGroupsManager.CategorizationType.Tabs
                                             FlowerpotTabs.TYPE_FLOWERPOT -> AppGroupsManager.CategorizationType.Flowerpot
