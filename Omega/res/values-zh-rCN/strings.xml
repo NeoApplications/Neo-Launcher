@@ -458,4 +458,12 @@
     <string name="title__general_profile">用户文件</string>
     <string name="pref_category__dash">快速启动栏</string>
     <string name="title__drawer_rows">行数</string>
+    <string name="selected_apps">已选择的软件 (%1$d)</string>
+    <string name="app_reset">重选</string>
+    <string name="owm_get_your_own_key">从 api.openweathermap,org 获取 API 密钥。</string>
+    <string name="weather_provider_owm" translatable="true">Open Weather Map</string>
+    <string name="default_city">萨尔瓦多，圣萨尔瓦多</string>
+    <string name="weather_api_key">OWM API 密钥</string>
+    <string name="weather_city">城市</string>
+    <string name="notification_dots_missing_notification_access">开放应用通知权限以显示通知点</string>
 </resources>
