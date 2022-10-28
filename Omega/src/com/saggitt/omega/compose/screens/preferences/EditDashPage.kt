@@ -20,6 +20,7 @@ package com.saggitt.omega.compose.screens.preferences
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -28,10 +29,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -96,9 +95,11 @@ fun EditDashPage() {
         }
     ) { paddingValues ->
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .fillMaxSize()
+                .reorderable(state)
+                .detectReorderAfterLongPress(state)
                 .padding(paddingValues)
                 .padding(
                     start = 8.dp,
@@ -112,7 +113,7 @@ fun EditDashPage() {
                     text = stringResource(id = R.string.enabled_events),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
             itemsIndexed(enabledItems, { i, it -> it.key }) { index, item ->
@@ -121,7 +122,19 @@ fun EditDashPage() {
                     ListItemWithIcon(
                         title = stringResource(id = item.titleResId),
                         modifier = Modifier
-                            .composed { jit(index) }
+                            .shadow(elevation.value)
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = if (index == 0) 16.dp else 6.dp,
+                                    topEnd = if (index == 0) 16.dp else 6.dp,
+                                    bottomStart = if (index == enabledItems.size - 1) 16.dp else 6.dp,
+                                    bottomEnd = if (index == enabledItems.size - 1) 16.dp else 6.dp
+                                )
+                            )
+                            .background(
+                                if (isDragging) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surface
+                            )
                             .clickable {
                                 enabledItems.remove(item)
                                 val tempList = disabledItems.value.toMutableList()
@@ -161,27 +174,30 @@ fun EditDashPage() {
 
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                Divider(
-                    Modifier
-                        .height(1.dp)
-                        .padding(horizontal = 32.dp)
-                )
-            }
-            item {
                 Text(
-                    text = stringResource(id = R.string.drag_to_enable_packs),
+                    text = stringResource(id = R.string.tap_to_enable),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            items(disabledItems.value) { item ->
+            itemsIndexed(disabledItems.value) { index, item ->
                 ListItemWithIcon(
                     title = stringResource(id = item.titleResId),
-                    modifier = Modifier.clickable {
-                        disabledItems.value = disabledItems.value - item
-                        enabledItems.add(item)
-                    },
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = if (index == 0) 16.dp else 6.dp,
+                                topEnd = if (index == 0) 16.dp else 6.dp,
+                                bottomStart = if (index == disabledItems.value.size - 1) 16.dp else 6.dp,
+                                bottomEnd = if (index == disabledItems.value.size - 1) 16.dp else 6.dp
+                            )
+                        )
+                        .background(MaterialTheme.colorScheme.surface)
+                        .clickable {
+                            disabledItems.value = disabledItems.value - item
+                            enabledItems.add(item)
+                        },
                     startIcon = {
                         Image(
                             painter = painterResource(
@@ -192,22 +208,7 @@ fun EditDashPage() {
                         )
                     },
                     endCheckbox = {
-                        IconButton(
-                            modifier = Modifier.size(36.dp),
-                            onClick = {
-                                disabledItems.value = disabledItems.value - item
-                                val tempList = enabledItems.toMutableList()
-                                tempList.add(0, item)
-                                enabledItems.clear()
-                                enabledItems.addAll(tempList)
-                            }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_drag_handle),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                        Spacer(modifier = Modifier.height(32.dp))
                     },
                     verticalPadding = 6.dp
                 )

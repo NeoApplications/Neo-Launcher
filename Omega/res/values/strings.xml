@@ -527,6 +527,7 @@
     <string name="dash_device_settings_summary">Open the Device Settings</string>
     <string name="drag_to_disable_packs">Drag down to turn off</string>
     <string name="drag_to_enable_packs">Drag up to turn on</string>
+    <string name="tap_to_enable">Tap item to enable</string>
     <string name="enabled_events">Enabled</string>
     <string name="dash_wifi">Wi-Fi</string>
     <string name="dash_wifi_summary">Wi-Fi state and connection</string>
