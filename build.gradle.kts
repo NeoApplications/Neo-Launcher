@@ -34,8 +34,8 @@ android {
     namespace = "com.android.launcher3"
     compileSdk = 33
 
-    val name = "0.9.3-beta2"
-    val code = 933
+    val name = "0.9.3"
+    val code = 934
 
 
     defaultConfig {
