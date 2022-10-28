@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.screens
 
-import android.graphics.Bitmap
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -28,6 +27,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,9 +46,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -66,7 +68,6 @@ import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -208,7 +209,7 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
                             },
                         summary = "",
                         startIcon = {
-                            val bitmap = item.icon?.toBitmap(32, 32, Bitmap.Config.ARGB_8888)
+                            val bitmap = item.icon?.toBitmap(32, 32, null)
                             if (bitmap != null) Icon(
                                 bitmap = bitmap.asImageBitmap(),
                                 contentDescription = null,
@@ -302,7 +303,7 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
                             Image(
                                 painter = BitmapPainter(item.icon.asImageBitmap()),
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(32.dp)
                             )
                         },
                         endCheckbox = {
@@ -346,16 +347,35 @@ fun ShortcutsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<Strin
         val selectedOption = remember {
             mutableStateOf(selectedHandler.value)
         }
+        val appsNum = apps.size
 
         PreferenceGroup {
             LazyColumn {
-                itemsIndexed(apps) { _, app ->
+                itemsIndexed(apps) { index, app ->
                     if (app.hasShortcuts) {
+                        var expanded by remember { mutableStateOf(false) }
+
                         ExpandableListItem(
+                            modifier = Modifier
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = if (index == 0) 16.dp else 6.dp,
+                                        topEnd = if (index == 0) 16.dp else 6.dp,
+                                        bottomStart = if (index == appsNum - 1) 16.dp else 6.dp,
+                                        bottomEnd = if (index == appsNum - 1) 16.dp else 6.dp
+                                    )
+                                )
+                                .background(
+                                    if (expanded) MaterialTheme.colorScheme.background
+                                    else MaterialTheme.colorScheme.surface
+                                ),
                             title = app.info.label.toString(),
-                            icon = app.info.getIcon(LocalContext.current.resources.displayMetrics.densityDpi)
+                            icon = app.info.getIcon(LocalContext.current.resources.displayMetrics.densityDpi),
+                            onClick = { expanded = !expanded }
                         ) {
-                            app.shortcuts.forEach {
+                            val groupSize = app.shortcuts.size
+
+                            app.shortcuts.forEachIndexed { iIndex, it ->
 
                                 val config = JSONObject("{}")
                                 config.apply {
@@ -373,11 +393,18 @@ fun ShortcutsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<Strin
                                 ListItemWithIcon(
                                     title = it.label.toString(),
                                     modifier = Modifier
-                                        .clip(MaterialTheme.shapes.medium)
+                                        .clip(
+                                            RoundedCornerShape(
+                                                topStart = if (iIndex == 0) 16.dp else 6.dp,
+                                                topEnd = if (iIndex == 0) 16.dp else 6.dp,
+                                                bottomStart = if (iIndex == groupSize - 1) 16.dp else 6.dp,
+                                                bottomEnd = if (iIndex == groupSize - 1) 16.dp else 6.dp
+                                            )
+                                        )
                                         .background(
                                             color = if (appGestureHandler.toString() == selectedOption.value)
-                                                MaterialTheme.colorScheme.primary.copy(0.65f)
-                                            else Color.Transparent
+                                                MaterialTheme.colorScheme.primary.copy(0.4f)
+                                            else MaterialTheme.colorScheme.surface
                                         )
                                         .clickable {
                                             selectedOption.value = appGestureHandler.toString()
@@ -390,15 +417,19 @@ fun ShortcutsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<Strin
                                     summary = "",
                                     startIcon = {
                                         Image(
-                                            painter = rememberDrawablePainter(
-                                                drawable = it.iconDrawable
+                                            painter = BitmapPainter(
+                                                it.iconDrawable.toBitmap(
+                                                    32,
+                                                    32,
+                                                    null
+                                                ).asImageBitmap()
                                             ),
                                             contentDescription = null,
-                                            modifier = Modifier.size(36.dp)
+                                            modifier = Modifier.size(32.dp)
                                         )
                                     },
                                     verticalPadding = 4.dp,
-                                    horizontalPadding = 0.dp,
+                                    horizontalPadding = 8.dp,
                                     endCheckbox = {
                                         RadioButton(
                                             selected = (appGestureHandler.toString() == selectedOption.value),
@@ -413,8 +444,10 @@ fun ShortcutsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<Strin
                                         )
                                     }
                                 )
+                                if (iIndex < groupSize - 1) Spacer(modifier = Modifier.height(4.dp))
                             }
                         }
+                        if (index < appsNum - 1) Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
