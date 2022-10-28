@@ -253,6 +253,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("io.github.fornewid:material-motion-compose-core:0.9.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.0.20")
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
 
     //Accompanist
     implementation("com.google.accompanist:accompanist-flowlayout:$vAccompanist")
