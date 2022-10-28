@@ -7,10 +7,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.*
 
-val vCompose = "1.3.0-rc01"
+val vCompose = "1.3.0"
 val vComposeCompiler = "1.3.2"
-val vAccompanist =
-    "0.26.5-rc" //Do not update until rememberDrawablePainter is fixed (try the IconShapeItem to confirm)
+val vAccompanist = "0.27.0"
 val vRoom = "2.5.0-beta01"
 
 plugins {
@@ -215,7 +214,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
-    implementation("androidx.activity:activity-ktx:1.7.0-alpha01")
+    implementation("androidx.activity:activity-ktx:1.7.0-alpha02")
     implementation("androidx.fragment:fragment-ktx:1.5.3")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.savedstate:savedstate-ktx:1.2.0")
@@ -247,9 +246,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:$vCompose")
     implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
     implementation("androidx.compose.foundation:foundation:$vCompose")
-    implementation("androidx.compose.material3:material3:1.0.0-rc01")
-    implementation("androidx.navigation:navigation-compose:2.5.2")
-    implementation("androidx.activity:activity-compose:1.6.0")
+    implementation("androidx.compose.material3:material3:1.0.0")
+    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.activity:activity-compose:1.6.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("io.github.fornewid:material-motion-compose-core:0.9.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.0.20")
