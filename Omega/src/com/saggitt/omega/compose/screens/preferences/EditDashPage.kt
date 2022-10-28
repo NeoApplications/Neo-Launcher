@@ -18,15 +18,17 @@
 
 package com.saggitt.omega.compose.screens.preferences
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Divider
@@ -40,18 +42,23 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.compose.components.DraggableList
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.compose.components.move
 import com.saggitt.omega.dashProviderOptions
 import com.saggitt.omega.iconIds
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @Composable
 fun EditDashPage() {
@@ -73,6 +80,14 @@ fun EditDashPage() {
 
     val enabledItems = remember { mutableStateListOf(*enabledSorted.toTypedArray()) }
     val disabledItems = remember { mutableStateOf(disabled) }
+
+    val state = rememberReorderableLazyListState(onMove = { from, to ->
+        enabledItems.move(
+            (from.index - 2).coerceIn(0, enabledItems.size - 1),
+            (to.index - 2).coerceIn(0, enabledItems.size - 1)
+        )
+    })
+
     ViewWithActionBar(
         title = stringResource(id = R.string.edit_dash),
         onBackAction = {
@@ -80,9 +95,7 @@ fun EditDashPage() {
             prefs.dashProvidersItems.onSetValue(enabledKeys)
         }
     ) { paddingValues ->
-
-        val scrollState = rememberScrollState()
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxSize()
@@ -91,22 +104,20 @@ fun EditDashPage() {
                     start = 8.dp,
                     end = 8.dp,
                     bottom = paddingValues.calculateBottomPadding() + 8.dp
-                )
-            //.verticalScroll(scrollState)
+                ),
+            state = state.listState
         ) {
-            Text(
-                text = stringResource(id = R.string.enabled_events),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-            DraggableList(
-                list = enabledItems,
-                onDragEnd = {
-
-                }
-            ) { jit ->
-                itemsIndexed(enabledItems) { index, item ->
+            item {
+                Text(
+                    text = stringResource(id = R.string.enabled_events),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+            itemsIndexed(enabledItems, { i, it -> it.key }) { index, item ->
+                ReorderableItem(state, key = item.key, index = index + 2) { isDragging ->
+                    val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                     ListItemWithIcon(
                         title = stringResource(id = item.titleResId),
                         modifier = Modifier
@@ -148,20 +159,23 @@ fun EditDashPage() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(
-                Modifier
-                    .height(1.dp)
-                    .padding(horizontal = 32.dp)
-            )
-            Text(
-                text = stringResource(id = R.string.drag_to_enable_packs),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-            )
-
-            disabledItems.value.map { item ->
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Divider(
+                    Modifier
+                        .height(1.dp)
+                        .padding(horizontal = 32.dp)
+                )
+            }
+            item {
+                Text(
+                    text = stringResource(id = R.string.drag_to_enable_packs),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
+            items(disabledItems.value) { item ->
                 ListItemWithIcon(
                     title = stringResource(id = item.titleResId),
                     modifier = Modifier.clickable {
