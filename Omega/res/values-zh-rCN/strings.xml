@@ -430,7 +430,7 @@
     <string name="backup_create_new">创建新备份</string>
     <string name="backup_delete_failed">出错了</string>
     <string name="summary_app_suggestions">为所有应用和主屏幕</string>
-    <string name="folder_name">文件夹名称</string>
+    <string name="folder_name">目录名称</string>
     <string name="section_apps">应用</string>
     <string name="section_web">网络</string>
     <string name="icon_picker_load_failed">无法加载更多图标。</string>
