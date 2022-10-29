@@ -19,16 +19,16 @@
 package com.saggitt.omega.data
 
 import android.content.Context
-import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
 import android.text.TextUtils
 import android.util.DisplayMetrics
 import com.android.launcher3.shortcuts.ShortcutRequest
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.util.App
 
-class AppItemWithShortcuts(val context: Context, val info: LauncherActivityInfo) {
-    val key = ComponentKey(info.componentName, info.user)
+class AppItemWithShortcuts(val context: Context, val info: App) {
+    val key = ComponentKey(info.key.componentName, info.key.user)
     val shortcuts = loadShortcuts()
     val hasShortcuts get() = shortcuts.isNotEmpty()
     var expanded = false
@@ -48,6 +48,6 @@ class AppItemWithShortcuts(val context: Context, val info: LauncherActivityInfo)
         val label = if (!TextUtils.isEmpty(info.longLabel)) info.longLabel else info.shortLabel
         val iconDrawable = context
             .getSystemService(LauncherApps::class.java)
-            .getShortcutIconDrawable(info, DisplayMetrics.DENSITY_XXHIGH)!!
+            .getShortcutIconDrawable(info, DisplayMetrics.DENSITY_DEFAULT)!!
     }
 }
