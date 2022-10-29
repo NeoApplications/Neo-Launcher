@@ -115,6 +115,7 @@ class Config(val context: Context) {
         const val SORT_ZA = 1
         const val SORT_MOST_USED = 2
         const val SORT_BY_COLOR = 3
+        const val SORT_BY_INSTALL_DATE = 4
 
         //APP DRAWER LAYOUT MODE
         const val DRAWER_VERTICAL = 0

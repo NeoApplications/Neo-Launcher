@@ -15,11 +15,6 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.saggitt.omega.util.Config.SORT_AZ;
-import static com.saggitt.omega.util.Config.SORT_BY_COLOR;
-import static com.saggitt.omega.util.Config.SORT_MOST_USED;
-import static com.saggitt.omega.util.Config.SORT_ZA;
-
 import android.content.Context;
 import android.graphics.Color;
 
@@ -37,14 +32,10 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LabelComparator;
 import com.saggitt.omega.OmegaLauncher;
 import com.saggitt.omega.allapps.AppColorComparator;
-import com.saggitt.omega.allapps.AppUsageComparator;
-import com.saggitt.omega.data.AppTracker;
-import com.saggitt.omega.data.AppTrackerRepository;
 import com.saggitt.omega.groups.DrawerFolderInfo;
 import com.saggitt.omega.preferences.OmegaPreferences;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -170,31 +161,6 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
      */
     public List<AppInfo> getApps() {
         return mApps;
-    }
-
-    private void sortApps(int sortType) {
-        switch (sortType) {
-            case SORT_ZA:
-                mApps.sort((p2, p1) -> Collator
-                        .getInstance()
-                        .compare(p1.title, p2.title));
-                break;
-
-            case SORT_MOST_USED:
-                AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(mLauncher);
-                List<AppTracker> appsCounter = repository.getAppsCount();
-                AppUsageComparator mostUsedComparator = new AppUsageComparator(appsCounter);
-                mApps.sort(mostUsedComparator);
-                break;
-
-            case SORT_BY_COLOR:
-                mApps.sort(mAppColorComparator);
-                break;
-            case SORT_AZ:
-            default:
-                mApps.sort(mAppNameComparator);
-                break;
-        }
     }
 
     /**

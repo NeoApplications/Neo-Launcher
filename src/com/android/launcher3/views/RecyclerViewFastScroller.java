@@ -347,6 +347,9 @@ public class RecyclerViewFastScroller extends View {
                 mPopupSectionName = "";
                 mPopupView.setText("");
             }
+        } else if (prefs.getDrawerSortModeNew().onGetValue() == Config.SORT_BY_INSTALL_DATE) {
+            mPopupSectionName = "";
+            mPopupView.setText("");
         } else {
             animatePopupVisibility(!sectionName.isEmpty());
         }

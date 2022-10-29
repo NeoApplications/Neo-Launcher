@@ -208,6 +208,7 @@ val drawerSortOptions = mutableMapOf(
     Config.SORT_ZA to R.string.title__sort_alphabetical_za,
     Config.SORT_MOST_USED to R.string.title__sort_most_used,
     Config.SORT_BY_COLOR to R.string.title__sort_by_color,
+    Config.SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
 )
 
 val smartspaceProviderOptions = mapOf(
