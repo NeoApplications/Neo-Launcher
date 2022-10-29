@@ -29,6 +29,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -330,7 +331,7 @@ class BackupFile(context: Context, val uri: Uri) {
                 ?.map {
                     FileProvider.getUriForFile(
                         context,
-                        "com.saggitt.omega.fileprovider",
+                        BuildConfig.APPLICATION_ID + ".fileprovider",
                         it
                     )
                 }
