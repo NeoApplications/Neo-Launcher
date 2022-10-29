@@ -5,7 +5,8 @@ import com.google.protobuf.gradle.protoc
 import org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.TimeZone
 
 val vCompose = "1.3.0"
 val vComposeCompiler = "1.3.2"
@@ -34,7 +35,7 @@ android {
     namespace = "com.android.launcher3"
     compileSdk = 33
 
-    val name = "0.9.3"
+    val name = "0.9.3.1"
     val code = 934
 
 
