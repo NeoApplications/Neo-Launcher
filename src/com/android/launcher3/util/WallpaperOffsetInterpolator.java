@@ -17,6 +17,7 @@ import android.view.animation.Interpolator;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.anim.Interpolators;
+import com.saggitt.omega.blur.BlurWallpaperProvider;
 
 /**
  * Utility class to handle wallpaper scrolling along with workspace.
@@ -174,14 +175,15 @@ public class WallpaperOffsetInterpolator extends BroadcastReceiver {
             mWorkspace.getContext()
                     .registerReceiver(this, new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED));
             onReceive(mWorkspace.getContext(), null);
+            BlurWallpaperProvider.Companion.getInstance(mWorkspace.getContext()).updateAsync();
             mRegistered = true;
         }
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        mWallpaperIsLiveWallpaper =
-                WallpaperManager.getInstance(mWorkspace.getContext()).getWallpaperInfo() != null;
+        mWallpaperIsLiveWallpaper = WallpaperManager.getInstance(mWorkspace.getContext()).getWallpaperInfo() != null;
+        BlurWallpaperProvider.Companion.getInstance(context).updateAsync();
         updateOffset();
     }
 
@@ -203,10 +205,12 @@ public class WallpaperOffsetInterpolator extends BroadcastReceiver {
 
         private float mFinalOffset;
         private float mOffsetX;
+        private final Context mContext;
 
         public OffsetHandler(Context context) {
             super(UI_HELPER_EXECUTOR.getLooper());
             mInterpolator = Interpolators.DEACCEL_1_5;
+            mContext = context;
             mWM = WallpaperManager.getInstance(context);
         }
 
@@ -273,6 +277,8 @@ public class WallpaperOffsetInterpolator extends BroadcastReceiver {
         private void setOffsetSafely(IBinder token) {
             try {
                 mWM.setWallpaperOffsets(token, mCurrentOffset, 0.5f);
+                BlurWallpaperProvider.Companion.getInstance(mContext)
+                        .setWallpaperOffset(mCurrentOffset);
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Error updating wallpaper offset: " + e);
             }

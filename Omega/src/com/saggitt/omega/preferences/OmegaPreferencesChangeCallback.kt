@@ -46,7 +46,6 @@ class OmegaPreferencesChangeCallback(val launcher: OmegaLauncher) {
         launcher.omegaApp.smartspace.onProviderChanged()
     }
 
-
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
