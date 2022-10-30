@@ -430,7 +430,7 @@
     <string name="backup_create_new">创建新备份</string>
     <string name="backup_delete_failed">出错了</string>
     <string name="summary_app_suggestions">为所有应用和主屏幕</string>
-    <string name="folder_name">文件夹名称</string>
+    <string name="folder_name">目录名称</string>
     <string name="section_apps">应用</string>
     <string name="section_web">网络</string>
     <string name="icon_picker_load_failed">无法加载更多图标。</string>
@@ -458,4 +458,15 @@
     <string name="title__general_profile">用户文件</string>
     <string name="pref_category__dash">快速启动栏</string>
     <string name="title__drawer_rows">行数</string>
+    <string name="selected_apps">已选择的软件 (%1$d)</string>
+    <string name="app_reset">重选</string>
+    <string name="owm_get_your_own_key">从 api.openweathermap,org 获取 API 密钥。</string>
+    <string name="weather_provider_owm" translatable="true">Open Weather Map</string>
+    <string name="default_city">圣萨尔瓦多，西南</string>
+    <string name="weather_api_key">OWM API 密钥</string>
+    <string name="weather_city">城市</string>
+    <string name="notification_dots_missing_notification_access">要显示通知点，请打开应用通知访问</string>
+    <string name="contributor_role">贡献者</string>
+    <string name="author_role">开发者</string>
+    <string name="notification_dots_disabled">要显示通知点，请在设置中启用显示通知点</string>
 </resources>
