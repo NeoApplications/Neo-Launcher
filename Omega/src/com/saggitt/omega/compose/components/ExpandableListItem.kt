@@ -17,7 +17,7 @@
  */
 package com.saggitt.omega.compose.components
 
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,18 +44,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import com.android.launcher3.R
 
 @Composable
 fun ExpandableListItem(
     modifier: Modifier = Modifier,
     title: String,
-    icon: Drawable,
+    icon: Bitmap,
     onClick: () -> Unit = {},
     content: @Composable (ColumnScope.() -> Unit),
 ) {
@@ -74,7 +71,7 @@ fun ExpandableListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                bitmap = icon.toBitmap(32, 32, null).asImageBitmap(),
+                bitmap = icon.asImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier
                     .clip(CircleShape)
@@ -108,16 +105,4 @@ fun ExpandableListItem(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun ExpandableListItemPreview() {
-    ExpandableListItem(
-        title = "Title",
-        icon = LocalContext.current.getDrawable(R.drawable.ic_launcher_foreground)!!,
-        content = {
-            Text(text = "Content")
-        }
-    )
 }
