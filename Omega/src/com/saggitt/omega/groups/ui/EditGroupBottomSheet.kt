@@ -84,6 +84,7 @@ import com.saggitt.omega.util.omegaPrefs
 fun EditGroupBottomSheet(
     type: AppGroupsManager.CategorizationType,
     group: AppGroups.Group,
+    openFromSettings: Boolean = true,
     onClose: (Int) -> Unit
 ) {
     val context = LocalContext.current
@@ -331,10 +332,14 @@ fun EditGroupBottomSheet(
 
                             override fun onDialogDismissed(dialogId: Int) {}
                         })
-                        dialog.show(
-                            PrefsActivityX.getFragmentManager(context),
-                            "color-picker-dialog"
-                        )
+                        if (openFromSettings) {
+                            dialog.show(
+                                PrefsActivityX.getFragmentManager(context),
+                                "color-picker-dialog"
+                            )
+                        } else {
+                            //dialog.show(Launcher.getLauncher(context).fragmentManager,"color-picker-dialog")
+                        }
                     }
             )
             {
