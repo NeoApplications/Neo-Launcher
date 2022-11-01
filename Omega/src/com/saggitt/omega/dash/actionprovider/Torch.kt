@@ -20,6 +20,8 @@ package com.saggitt.omega.dash.actionprovider
 import android.content.Context
 import android.hardware.camera2.CameraManager
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Flashlight
 import com.saggitt.omega.dash.DashActionProvider
 import com.saggitt.omega.util.omegaPrefs
 
@@ -27,7 +29,7 @@ class Torch(context: Context) : DashActionProvider(context) {
     override val itemId = 11
     override val name = context.getString(R.string.dash_torch)
     override val description = context.getString(R.string.dash_torch_summary)
-    override val icon = R.drawable.ic_torch
+    override val icon = Phosphor.Flashlight
 
     override fun runAction(context: Context) {
         val camManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager?

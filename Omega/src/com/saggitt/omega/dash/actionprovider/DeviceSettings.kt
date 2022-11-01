@@ -21,13 +21,15 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.GearSix
 import com.saggitt.omega.dash.DashActionProvider
 
 class DeviceSettings(context: Context) : DashActionProvider(context) {
     override val itemId = 4
     override val name = context.getString(R.string.dash_device_settings_title)
     override val description = context.getString(R.string.dash_device_settings_summary)
-    override val icon = R.drawable.ic_setting
+    override val icon = Phosphor.GearSix
 
     override fun runAction(context: Context) {
         context.startActivity(Intent(Settings.ACTION_SETTINGS))

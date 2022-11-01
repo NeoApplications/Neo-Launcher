@@ -22,13 +22,15 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.ImageSquare
 import com.saggitt.omega.dash.DashActionProvider
 
 class ChangeWallpaper(context: Context) : DashActionProvider(context) {
     override val itemId = 3
     override val name = context.getString(R.string.wallpaper_pick)
     override val description = context.getString(R.string.wallpaper_pick_summary)
-    override val icon = R.drawable.ic_wallpaper
+    override val icon = Phosphor.ImageSquare
 
     override fun runAction(context: Context) {
         try {

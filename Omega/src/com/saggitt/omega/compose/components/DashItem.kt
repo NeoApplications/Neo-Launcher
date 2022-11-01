@@ -24,12 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.ImageSquare
+import com.saggitt.omega.compose.icons.phosphor.Wrench
 
 // TODO include padding in the items to insure real block-ratio
 
@@ -37,7 +41,7 @@ import com.android.launcher3.R
 fun ControlDashItem(
     modifier: Modifier = Modifier,
     ratio: Float = 3f,
-    icon: Painter,
+    icon: ImageVector,
     description: String,
     tint: Color = MaterialTheme.colorScheme.primary,
     isExtendable: Boolean = true,
@@ -65,7 +69,7 @@ fun ControlDashItem(
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
                     .aspectRatio(1f),
-                painter = icon,
+                imageVector = icon,
                 contentDescription = description
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -96,7 +100,7 @@ fun ControlDashItem(
 @Composable
 fun ControlDashItemPreview() {
     ControlDashItem(
-        icon = painterResource(id = R.drawable.ic_desktop),
+        icon = Phosphor.ImageSquare,
         description = "ControlThis"
     ) {
 
@@ -106,7 +110,7 @@ fun ControlDashItemPreview() {
 @Composable
 fun ActionDashItem(
     modifier: Modifier = Modifier,
-    icon: Painter,
+    icon: ImageVector,
     description: String,
     tint: Color = MaterialTheme.colorScheme.primary,
     enabled: Boolean = false,
@@ -131,7 +135,7 @@ fun ActionDashItem(
         ) {
             Icon(
                 modifier = Modifier.fillMaxSize(0.5f),
-                painter = icon,
+                imageVector = icon,
                 contentDescription = description
             )
         }
@@ -141,7 +145,7 @@ fun ActionDashItem(
 @Preview
 @Composable
 fun ActionDashItemPreview() {
-    ActionDashItem(icon = painterResource(id = R.drawable.ic_add), description = "ActionThat") {
+    ActionDashItem(icon = Phosphor.Wrench, description = "ActionThat") {
 
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.ActionDashItem
@@ -73,7 +72,7 @@ fun DashPage() {
                     }
                     ControlDashItem(
                         modifier = Modifier.fillMaxWidth(0.5f),
-                        icon = painterResource(id = item.icon),
+                        icon = item.icon,
                         description = item.name,
                         ratio = 2.15f,
                         isExtendable = item.extendable,
@@ -85,7 +84,7 @@ fun DashPage() {
                     )
                 }
                 is DashActionProvider -> ActionDashItem(
-                    icon = painterResource(id = item.icon),
+                    icon = item.icon,
                     description = item.name,
                     onClick = { item.runAction(context) }
                 )

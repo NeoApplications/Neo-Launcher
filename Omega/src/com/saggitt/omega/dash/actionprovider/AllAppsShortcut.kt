@@ -21,13 +21,15 @@ import android.content.Context
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.DotsNine
 import com.saggitt.omega.dash.DashActionProvider
 
 class AllAppsShortcut(context: Context) : DashActionProvider(context) {
     override val itemId = 1
     override val name = context.getString(R.string.dash_all_apps_title)
     override val description = context.getString(R.string.dash_all_apps_summary)
-    override val icon = R.drawable.ic_apps
+    override val icon = Phosphor.DotsNine
 
     override fun runAction(context: Context) {
         if (LauncherAppState.getInstance(context).launcher.stateManager.state != LauncherState.ALL_APPS) {

@@ -20,6 +20,8 @@ package com.saggitt.omega.dash.actionprovider
 import android.content.Context
 import com.android.launcher3.R
 import com.saggitt.omega.compose.PrefsActivityX
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.PencilSimple
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.dash.DashActionProvider
 
@@ -27,7 +29,7 @@ class EditDash(context: Context) : DashActionProvider(context) {
     override val itemId = 5
     override val name = context.getString(R.string.edit_dash)
     override val description = context.getString(R.string.edit_dash_summary)
-    override val icon = R.drawable.ic_edit_dash
+    override val icon = Phosphor.PencilSimple
 
     override fun runAction(context: Context) {
         context.startActivity(

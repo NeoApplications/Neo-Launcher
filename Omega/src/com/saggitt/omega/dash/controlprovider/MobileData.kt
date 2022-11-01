@@ -23,6 +23,8 @@ import android.os.Build
 import android.provider.Settings
 import android.telephony.TelephonyManager
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.ArrowsDownUp
 import com.saggitt.omega.dash.DashControlProvider
 
 class MobileData(context: Context) : DashControlProvider(context) {
@@ -30,7 +32,7 @@ class MobileData(context: Context) : DashControlProvider(context) {
     override val name = context.getString(R.string.dash_mobile_network_title)
     override val description = context.getString(R.string.dash_mobile_network_summary)
     override val extendable = true
-    override val icon = R.drawable.ic_mobile_network
+    override val icon = Phosphor.ArrowsDownUp
 
     var tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 

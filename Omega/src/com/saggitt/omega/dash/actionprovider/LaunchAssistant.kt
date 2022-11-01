@@ -20,13 +20,15 @@ package com.saggitt.omega.dash.actionprovider
 import android.content.Context
 import android.content.Intent
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Sparkle
 import com.saggitt.omega.dash.DashActionProvider
 
 class LaunchAssistant(context: Context) : DashActionProvider(context) {
     override val itemId = 6
     override val name = context.getString(R.string.launch_assistant)
     override val description = context.getString(R.string.gesture_launch_assistant)
-    override val icon = R.drawable.ic_assistant
+    override val icon = Phosphor.Sparkle
 
     override fun runAction(context: Context) {
         context.startActivity(Intent(Intent.ACTION_ASSIST).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

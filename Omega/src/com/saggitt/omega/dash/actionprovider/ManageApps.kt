@@ -21,13 +21,15 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Wrench
 import com.saggitt.omega.dash.DashActionProvider
 
 class ManageApps(context: Context) : DashActionProvider(context) {
     override val itemId = 7
     override val name = context.getString(R.string.tab_manage_apps)
     override val description = context.getString(R.string.dash_manage_apps_summary)
-    override val icon = R.drawable.ic_build
+    override val icon = Phosphor.Wrench
 
     override fun runAction(context: Context) {
         context.startActivity(Intent(Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS))

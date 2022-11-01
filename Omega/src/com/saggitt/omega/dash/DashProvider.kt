@@ -21,6 +21,7 @@ package com.saggitt.omega.dash
 import android.content.Context
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.launcher3.Utilities
 
 abstract class DashProvider(protected val context: Context) {
@@ -28,7 +29,7 @@ abstract class DashProvider(protected val context: Context) {
     abstract val itemId: Int
     abstract val name: String
     abstract val description: String
-    abstract val icon: Int
+    abstract val icon: ImageVector
 
     @ColorInt
     fun darkenColor(@ColorInt color: Int): Int {
