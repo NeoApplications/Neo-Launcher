@@ -2,19 +2,24 @@ package com.saggitt.omega.compose.objects
 
 import android.media.AudioManager
 import android.view.KeyEvent
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Pause
+import com.saggitt.omega.compose.icons.phosphor.Play
+import com.saggitt.omega.compose.icons.phosphor.SkipBack
+import com.saggitt.omega.compose.icons.phosphor.SkipForward
 
 class MusicControlItem(
-    @DrawableRes val icon: Int,
+    val icon: ImageVector,
     @StringRes val description: Int,
     val onClick: (AudioManager) -> Unit
 ) {
     // TODO fix descriptions
     companion object {
         val PLAY = MusicControlItem(
-            R.drawable.ic_music_play,
+            Phosphor.Play,
             R.string.dash_media_player
         ) { musicManager ->
             musicManager.dispatchMediaKeyEvent(
@@ -32,7 +37,7 @@ class MusicControlItem(
         }
 
         val PAUSE = MusicControlItem(
-            R.drawable.ic_music_pause,
+            Phosphor.Pause,
             R.string.dash_media_player
         ) { musicManager ->
             musicManager.dispatchMediaKeyEvent(
@@ -50,7 +55,7 @@ class MusicControlItem(
         }
 
         val PREVIOUS = MusicControlItem(
-            R.drawable.ic_music_previous,
+            Phosphor.SkipBack,
             R.string.dash_media_player
         ) { musicManager ->
             musicManager.dispatchMediaKeyEvent(
@@ -68,7 +73,7 @@ class MusicControlItem(
         }
 
         val NEXT = MusicControlItem(
-            R.drawable.ic_music_next,
+            Phosphor.SkipForward,
             R.string.dash_media_player
         ) { musicManager ->
             musicManager.dispatchMediaKeyEvent(
