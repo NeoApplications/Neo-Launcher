@@ -114,6 +114,7 @@ const val PREFS_LEGACY_TREATMENT = "pref_legacy_treatment"
 const val PREFS_FORCE_ADAPTIVE = "pref_adaptive_icon_pack"
 const val PREFS_FORCE_SHAPELESS = "pref_force_shape_less"
 const val PREFS_THEMED_ICONS = "pref_themed_icons"
+const val PREFS_RESET_CUSTOM_ICONS = "pref_reset_custom_icons"
 
 // SEARCH PREFS
 const val PREFS_SEARCH_PROVIDER = "pref_global_search_provider"

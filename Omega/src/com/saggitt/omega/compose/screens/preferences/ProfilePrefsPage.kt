@@ -35,6 +35,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.compose.components.preferences.AlertDialogUI
 import com.saggitt.omega.compose.components.preferences.GridSizePrefDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -42,9 +43,11 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.BasePreferences
 import com.saggitt.omega.preferences.custom.GridSize
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.collectAsStateBlocking
 
 @Composable
 fun ProfilePrefsPage() {
@@ -56,12 +59,19 @@ fun ProfilePrefsPage() {
         dialogPref = pref
         openDialog.value = true
     }
+
+    val overrideRepo = IconOverrideRepository.INSTANCE.get(LocalContext.current)
+    val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
     val profilePrefs = listOf(
         prefs.language,
         prefs.themePrefNew,
         prefs.themeAccentColor,
         prefs.themeIconPackGlobal, // TODO make more sophisticated
-        prefs.themeIconShapeX
+        prefs.themeIconShapeX,
+        if (customIconsCount > 0) {
+            prefs.themeResetCustomIcons
+        } else {
+        },
     )
     val others = listOf(
         prefs.themeBlurEnable,
@@ -103,14 +113,22 @@ fun ProfilePrefsPage() {
                             pref = dialogPref as BasePreferences.IntSelectionPref,
                             openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as BasePreferences.StringSelectionPref,
                             openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
                             pref = dialogPref as BasePreferences.StringMultiSelectionPref,
                             openDialogCustom = openDialog
                         )
+
+                        is BasePreferences.DialogPref -> AlertDialogUI(
+                            pref = dialogPref as BasePreferences.DialogPref,
+                            openDialogCustom = openDialog
+                        )
+
                         is GridSize -> GridSizePrefDialogUI(
                             pref = dialogPref as GridSize,
                             openDialogCustom = openDialog

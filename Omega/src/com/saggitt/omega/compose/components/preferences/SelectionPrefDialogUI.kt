@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +36,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,12 +44,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.MultiSelectionListItem
 import com.saggitt.omega.compose.components.SingleSelectionListItem
+import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.BasePreferences
+import kotlinx.coroutines.launch
 
 @Composable
 fun IntSelectionPrefDialogUI(
@@ -247,6 +252,65 @@ fun StringMultiSelectionPrefDialogUI(
                     cornerRadius = cornerRadius,
                     onClick = {
                         pref.onSetValue(selected)
+                        openDialogCustom.value = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AlertDialogUI(
+    pref: BasePreferences.DialogPref,
+    openDialogCustom: MutableState<Boolean>
+) {
+    val context = LocalContext.current
+    val prefs = Utilities.getOmegaPrefs(context)
+    val scope = rememberCoroutineScope()
+
+    var radius = 16.dp
+    if (prefs.themeCornerRadius.onGetValue() > -1) {
+        radius = prefs.themeCornerRadius.onGetValue().dp
+    }
+    val cornerRadius by remember { mutableStateOf(radius) }
+
+    Card(
+        shape = RoundedCornerShape(cornerRadius),
+        modifier = Modifier.padding(8.dp),
+        elevation = CardDefaults.elevatedCardElevation(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.reset_custom_icons_confirmation),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                Modifier.fillMaxWidth()
+            ) {
+                DialogNegativeButton(
+                    cornerRadius = cornerRadius,
+                    onClick = {
+                        openDialogCustom.value = false
+                    }
+                )
+                Spacer(Modifier.weight(1f))
+                DialogPositiveButton(
+                    cornerRadius = cornerRadius,
+                    onClick = {
+                        val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
+                        scope.launch {
+                            overrideRepo.deleteAll()
+                        }
                         openDialogCustom.value = false
                     }
                 )

@@ -4,8 +4,12 @@ import android.content.Context
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 class IconOverrideRepository(private val context: Context) {
 
@@ -38,8 +42,9 @@ class IconOverrideRepository(private val context: Context) {
     }
 
     fun observeTarget(target: ComponentKey) = dao.observeTarget(target)
+    fun observeCount() = dao.observeCount()
 
-    fun deleteAll() {
+    suspend fun deleteAll() {
         dao.deleteAll()
         reloadIcons()
     }

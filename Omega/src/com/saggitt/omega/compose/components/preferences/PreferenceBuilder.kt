@@ -43,22 +43,36 @@ val PreferenceBuilder =
             ) { onDialogPref(pref) }
             is BasePreferences.BooleanPref ->
                 SwitchPreference(pref = pref, index = index, groupSize = size)
+
             is BasePreferences.StringPref ->
                 StringPreference(pref = pref, index = index, groupSize = size)
+
             is BasePreferences.StringSetPref ->
                 StringSetPreference(pref = pref, index = index, groupSize = size)
+
             is BasePreferences.FloatPref ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)
+
             is BasePreferences.ColorIntPref ->
                 ColorIntPreference(pref = pref, index = index, groupSize = size)
+
             is BasePreferences.IdpIntPref ->
                 IntSeekBarPreference(pref = pref, index = index, groupSize = size)
+
+            is BasePreferences.DialogPref ->
+                AlertDialogPreference(pref = pref, index = index, groupSize = size) {
+                    onDialogPref(
+                        pref
+                    )
+                }
+
             is BasePreferences.IntSelectionPref ->
                 IntSelectionPreference(
                     pref = pref,
                     index = index,
                     groupSize = size
                 ) { onDialogPref(pref) }
+
             is BasePreferences.StringSelectionPref ->
                 StringSelectionPreference(
                     pref = pref,

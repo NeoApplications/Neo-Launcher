@@ -48,7 +48,6 @@ import com.saggitt.omega.PREFS_BLUR_RADIUS_X
 import com.saggitt.omega.PREFS_COLORED_BACKGROUND
 import com.saggitt.omega.PREFS_DASH
 import com.saggitt.omega.PREFS_DASH_LINESIZE
-import com.saggitt.omega.PREFS_DASH_PROVIDERS
 import com.saggitt.omega.PREFS_DASH_PROVIDERS_X
 import com.saggitt.omega.PREFS_DEBUG_MODE
 import com.saggitt.omega.PREFS_DESKTOP_COLUMNS
@@ -121,6 +120,7 @@ import com.saggitt.omega.PREFS_NOTIFICATION_COUNT_FOLDER
 import com.saggitt.omega.PREFS_PROTECTED_APPS
 import com.saggitt.omega.PREFS_PROTECTED_SET
 import com.saggitt.omega.PREFS_RECENT_BACKUP
+import com.saggitt.omega.PREFS_RESET_CUSTOM_ICONS
 import com.saggitt.omega.PREFS_RESTORE_SUCCESS
 import com.saggitt.omega.PREFS_SEARCH_BAR_RADIUS
 import com.saggitt.omega.PREFS_SEARCH_CONTACTS
@@ -266,13 +266,6 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         minValue = 4f,
         steps = 1,
         specialOutputs = { it.roundToInt().toString() },
-        onChange = doNothing
-    )
-    var dashProviders = StringListPref(
-        prefKey = PREFS_DASH_PROVIDERS,
-        titleId = R.string.edit_dash,
-        summaryId = R.string.edit_dash_summary,
-        default = listOf("17", "15", "4", "6", "8", "5"),
         onChange = doNothing
     )
     var dashEdit = StringPref(
@@ -745,6 +738,12 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         onChange = doNothing
     )
 
+    val themeResetCustomIcons = DialogPref(
+        key = PREFS_RESET_CUSTOM_ICONS,
+        titleId = R.string.reset_custom_icons,
+        onChange = doNothing
+    )
+
     // SEARCH & FEED
     var searchBarRadius = DimensionPref(
         key = PREFS_SEARCH_BAR_RADIUS,
@@ -911,7 +910,7 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         onChange = ::updateSmartspaceProvider
     )
 
-    var smartspaceweatherCity = StringTextPref(
+    var smartspaceWeatherCity = StringTextPref(
         key = "pref_weather_city",
         titleId = R.string.weather_city,
         defaultValue = context.getString(R.string.default_city),
