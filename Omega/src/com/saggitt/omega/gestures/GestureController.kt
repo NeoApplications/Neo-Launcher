@@ -54,10 +54,7 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val longPressGesture by lazy { LongPressGesture(this) }
     private val assistantGesture by lazy { LaunchAssistantGesture(this) }
 
-    val hasBackGesture
-        get() = createGestureHandler(pressBackGesture.handler) !is BlankGestureHandler
     val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
-    val navSwipeUpGesture by lazy { NavSwipeUpGesture(this) }
 
     var touchDownPoint = PointF()
 
