@@ -44,9 +44,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -69,9 +71,11 @@ import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.PreferenceItem
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.groups.ui.AppTabDialog
 import com.saggitt.omega.preferences.OmegaPreferences
 import com.saggitt.omega.util.addIfNotNull
+import kotlinx.coroutines.launch
 
 @Composable
 fun CustomizeIconSheet(
@@ -198,6 +202,10 @@ fun CustomizeIconView(
         Spacer(modifier = Modifier.height(16.dp))
 
         PreferenceGroup {
+            val repo = IconOverrideRepository.INSTANCE.get(context)
+            val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
+            val hasOverride = overrideItem != null
+            val scope = rememberCoroutineScope()
             if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
@@ -210,6 +218,17 @@ fun CustomizeIconView(
                         )
                     }
                 )
+
+                if (hasOverride) {
+                    PreferenceItem(
+                        title = stringResource(R.string.reset_custom_icon),
+                        modifier = Modifier.clickable {
+                            scope.launch {
+                                repo.deleteOverride(componentKey)
+                            }
+                        }
+                    )
+                }
 
                 if (prefs.drawerTabs.isEnabled) {
                     val openDialogCustom = remember { mutableStateOf(false) }

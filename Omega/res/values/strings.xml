@@ -233,6 +233,7 @@
     <string name="open_image_picker">Open image picker</string>
     <string name="import_icon">Import icon</string>
     <string name="import_as_adaptive">As adaptive icon</string>
+    <string name="reset_custom_icon">Remove Custom Icon</string>
     <string name="reset_custom_icons">Remove Custom Icons</string>
     <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
     <string name="color_presets">Presets</string>
