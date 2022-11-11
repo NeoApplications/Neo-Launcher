@@ -47,7 +47,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
     @SuppressLint("MissingPermission")
     override fun updateData() {
         // TODO: Create a search/dropdown for cities, make Auto the default
-        if (prefs.smartspaceweatherCity.onGetValue() == "##Auto") {
+        if (prefs.smartspaceWeatherCity.onGetValue() == "##Auto") {
             if (!locationAccess) {
                 Utilities.requestLocationPermission(context.omegaApp.activityHandler.foregroundActivity)
                 return
@@ -63,7 +63,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
                 }
             }
         } else {
-            owm.getCurrentWeatherByCityName(prefs.smartspaceweatherCity.onGetValue(), this)
+            owm.getCurrentWeatherByCityName(prefs.smartspaceWeatherCity.onGetValue(), this)
         }
     }
 
