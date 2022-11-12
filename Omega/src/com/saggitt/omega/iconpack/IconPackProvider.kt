@@ -8,6 +8,7 @@ import android.os.Process
 import android.os.UserHandle
 import androidx.core.content.ContextCompat
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.icons.ClockDrawableWrapper
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.MainThreadInitializedObject
@@ -80,7 +81,7 @@ class IconPackProvider(private val context: Context) {
         ) else null
         return listOfNotNull(
             defaultIconPack,
-            lawniconsInfo,
+            if (Utilities.ATLEAST_S) lawniconsInfo else null,
             themedIconsInfo
         ) + iconPacks.sortedBy { it.name }
     }
