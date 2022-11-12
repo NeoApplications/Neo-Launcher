@@ -51,11 +51,11 @@
     <string name="drag_to_enable_packs">Перетащите вверх, чтобы включить</string>
     <string name="drag_to_disable_packs">Потяните вниз, чтобы отключить</string>
     <string name="wallpaper_pick">Выбрать обои</string>
-    <string name="content_storage_permission_required">Чтобы создать резервную копию, предоставьте разрешение на хранение.</string>
+    <string name="content_storage_permission_required">Предоставьте доступ к хранилищу для установки обоев.</string>
     <string name="title_storage_permission_required">Требуется доступ к хранилищу</string>
     <string name="category__about_licenses">Лицензии</string>
     <string name="about_source">Исходный код</string>
-    <string name="about_team">Члены семьи</string>
+    <string name="about_team">Члены команды</string>
     <string name="title__about_changelog">Список изменений</string>
     <string name="title__about_donate">Пожертвовать</string>
     <string name="about_build_information">Информация о сборке</string>
@@ -68,15 +68,15 @@
     <string name="search_menu">Поиск настроек</string>
     <string name="developer_options_enabled">Параметры разработчика включены</string>
     <string name="local_backups">В хранилище</string>
-    <string name="read_external_storage_required">Чтобы создать резервную копию, предоставьте разрешение на хранение.</string>
-    <string name="backup_location_device_storage">Папка Omega</string>
+    <string name="read_external_storage_required">Предоставьте доступ к хранилищу для создания резервной копии.</string>
+    <string name="backup_location_device_storage">Внутренняя папка</string>
     <string name="backup_location">Расположение</string>
-    <string name="backup_share_text">Файл резервной копии Omega</string>
+    <string name="backup_share_text">Резервный файл Neo Launcher</string>
     <string name="backup_share_title">Поделиться резервной копией</string>
     <string name="restore_read_meta_fail">Поврежденный файл резервной копии</string>
     <string name="restore_failed">Восстановление не удалось</string>
     <string name="backup_failed">Резервное копирование не удалось</string>
-    <string name="restore_success">Восстановление успешно</string>
+    <string name="restore_success">Восстановлено</string>
     <string name="restore_contents">Восстановление содержимого</string>
     <string name="backup_restarting">Перезапуск</string>
     <string name="backup_restoring">Восстановление резервной копии</string>
@@ -84,8 +84,8 @@
     <string name="backup_invalid">Недоступен</string>
     <string name="no_recent_backups">Нет недавних резервных копий</string>
     <string name="backup_creating">Создание резервной копии</string>
-    <string name="backup_error_blank_contents">Содержимое не должно быть пустым</string>
-    <string name="backup_error_blank_name">Имя не может быть пустым</string>
+    <string name="backup_error_blank_contents">Содержание не может быть пустым</string>
+    <string name="backup_error_blank_name">Имя должно быть заполнено</string>
     <string name="backup_wallpaper">Обои</string>
     <string name="backup_settings">Настройки</string>
     <string name="backup_homescreen">Рабочий стол</string>
@@ -223,7 +223,7 @@
     <string name="title__theme_blur_radius">Интенсивность размытия</string>
     <string name="title__theme_blur">Размытие</string>
     <string name="title__theme_accent_color">Цвет акцента</string>
-    <string name="msg_missing_usage_access">Чтобы показать предложения приложений, включите доступ к использованию для <xliff:g id="name" example="My App"> %1$s </xliff:g></string>
+    <string name="msg_missing_usage_access">Чтобы показать предложения приложений, включите доступ к использованию для <xliff:g example="My App" id="name"> %1$s </xliff:g></string>
     <string name="needs_usage_access">Требуется доступ к использованию</string>
     <string name="hide_app_selected">Скрытые приложения (%1$d)</string>
     <plurals name="hidden_apps_count">
@@ -311,9 +311,9 @@
     <string name="title_drawer_layout">Режим отображения</string>
     <string name="dash_device_settings_summary">Открыть настройки устройства</string>
     <string name="wallpaper_pick_summary">Выбрать приложение для установки обоев</string>
-    <string name="dash_all_apps_summary">Показать все приложения</string>
+    <string name="dash_all_apps_summary">Кнопка \"Показать все приложения\"</string>
     <string name="dash_mobile_network_summary">Открыть настройки мобильных сетей</string>
-    <string name="dash_manage_apps_summary">Управление приложениями системы Андроид</string>
+    <string name="dash_manage_apps_summary">Откройте менеджер приложений Android</string>
     <string name="dash_volume_title">Функция \"Не беспокоить\"</string>
     <string name="cat_drawer_grid">Сетка экрана</string>
     <string name="title_force_shapeless">Не применять шаблон к форме иконок</string>
@@ -322,9 +322,9 @@
     <string name="backup_contents">Содержимое резервной копии</string>
     <string name="action_sleep_timeout">Сон (используя тайм-аут)</string>
     <string name="button_organize_screens">Упорядочить страницы</string>
-    <string name="uninstall_failed">Приложение не удалено</string>
+    <string name="uninstall_failed">Не удалось удалить приложение</string>
     <string name="dash_launcher_settings_summary">Настройки лаунчера</string>
-    <string name="edit_dash_summary">Включить или выключить ярлыки</string>
+    <string name="edit_dash_summary">Включение или отключение ярлыков</string>
     <string name="dash_mobile_network_title">Мобильная сеть</string>
     <string name="dash_launch_app_title">Запустить приложение</string>
     <string name="dash_device_settings_title">Настройки устройства</string>
@@ -408,7 +408,7 @@
     <string name="units_reaumur">Реомюр</string>
     <string name="units_rakine">Ранкин</string>
     <string name="units_newton">Ньютон</string>
-    <string name="units_delisle">Delisle</string>
+    <string name="units_delisle">Делайла</string>
     <string name="icon_picker_default_category">Иконки</string>
     <string name="cat_dock_search">Ящик и док</string>
     <string name="theme_auto_black">Следуйте за обоями (черный)</string>
@@ -439,4 +439,40 @@
     <string name="notification_dots_disabled">Чтобы показать точки уведомлений, включите показ точек уведомлений в настройках</string>
     <string name="folder_rows">Строки папок</string>
     <string name="weather_api_key">Ключ API OWM</string>
+    <string name="dash_sync_summary">Включите или выключите синхронизацию.</string>
+    <string name="author_role">Разработчик</string>
+    <string name="contributor_role">Контрибьютор</string>
+    <string name="launch_assistant">Запуск Ассистента</string>
+    <string name="dash_sync">Синхронизация</string>
+    <string name="none">Нет</string>
+    <string name="app_name">Название приложения</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="owm_get_your_own_key">Получите ключ API на api.openweathermap.org.</string>
+    <string name="folder_columns">Колонки папок</string>
+    <string name="section_apps">приложения</string>
+    <string name="section_web">Web</string>
+    <string name="section_contacts">Контакты</string>
+    <string name="backup_create_new">Создать новую резервную копию</string>
+    <string name="about_copyright">Авторское право © 2020-2021</string>
+    <string name="about_translators_group">Соавторы и переводчики</string>
+    <string name="accessibility_undo">Отменить</string>
+    <string name="dash_media_player_description">Показать или скрыть элементы управления аудиоплеером</string>
+    <string name="dash_location_summary">Изменить настройки местоположения</string>
+    <string name="dash_torch_summary">Включите или выключите свет вспышки.</string>
+    <string name="debug_options_title">Отладочная информация</string>
+    <string name="gesture_launch_assistant">Запуск Ассистента (кнопкой или жестом)</string>
+    <string name="modify_system_settings">Изменение системных настроек</string>
+    <string name="tab_shortcuts">Ярлыки</string>
+    <string name="web_search_metager">Метагер (Веб)</string>
+    <string name="dash_auto_rotation_summary">Включите или выключите автоповорот.</string>
+    <string name="title_feed_provider">Поставщик ленты</string>
+    <string name="dash_media_player">Аудиоплеер</string>
+    <string name="dash_torch">Факел</string>
+    <string name="tab_launcher">Лаунчер</string>
+    <string name="enabled_events">Включен</string>
+    <string name="dash_wifi_summary">Состояние и подключение Wi-Fi</string>
+    <string name="dash_bluetooth_summary">Включить или выключить Bluetooth</string>
+    <string name="modify_system_settings_message">Предоставьте возможность изменять системные настройки, чтобы это работало</string>
+    <string name="web_search_searx">Searx (Веб)</string>
+    <string name="permission_denied">Разрешение на чтение отклонено!</string>
 </resources>
