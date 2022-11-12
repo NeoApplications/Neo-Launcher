@@ -83,7 +83,6 @@ import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
-// TODO break into specialised files/classes
 @Suppress("UNCHECKED_CAST")
 class JavaField<T>(
     private val targetObject: Any,
@@ -264,14 +263,6 @@ fun Int.removeFlag(flag: Int): Int {
 
 fun Int.addFlag(flag: Int): Int {
     return this or flag
-}
-
-fun Int.setFlag(flag: Int, value: Boolean): Int {
-    return if (value) {
-        addFlag(flag)
-    } else {
-        removeFlag(flag)
-    }
 }
 
 inline fun ViewGroup.forEachChildIndexed(action: (View, Int) -> Unit) {
@@ -489,6 +480,11 @@ fun MutableList<AppInfo>.sortApps(context: Context, sortType: Int) {
 
         else -> sortWith(AppInfoComparator(context))
     }
+}
+
+fun getFolderPreviewAlpha(context: Context): Int {
+    val prefs = OmegaPreferences.getInstance(context)
+    return (prefs.folderOpacity.onGetValue() * 255).toInt()
 }
 
 fun getTimestampForFile(): String {

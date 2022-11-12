@@ -45,6 +45,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.PropertyResetListener;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.List;
 
@@ -181,8 +182,7 @@ public class FolderAnimationManager {
         } else {
             finalColor = mFolderBackground.getColor().getDefaultColor();
         }
-        final int initialColor = setColorAlphaBound(
-                folderFillColor, mPreviewBackground.getBackgroundAlpha());
+        final int initialColor = setColorAlphaBound(folderFillColor, OmegaUtilsKt.getFolderPreviewAlpha(mContext));
         mFolderBackground.mutate();
         mFolderBackground.setColor(mIsOpening ? initialColor : finalColor);
 

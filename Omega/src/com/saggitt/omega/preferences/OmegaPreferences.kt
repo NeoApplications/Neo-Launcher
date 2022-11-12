@@ -94,6 +94,7 @@ import com.saggitt.omega.PREFS_FEED_PROVIDER
 import com.saggitt.omega.PREFS_FOLDER_BACKGROUND
 import com.saggitt.omega.PREFS_FOLDER_BACKGROUND_CUSTOM
 import com.saggitt.omega.PREFS_FOLDER_COLUMNS
+import com.saggitt.omega.PREFS_FOLDER_OPACITY
 import com.saggitt.omega.PREFS_FOLDER_RADIUS
 import com.saggitt.omega.PREFS_FOLDER_ROWS
 import com.saggitt.omega.PREFS_FORCE_ADAPTIVE
@@ -348,6 +349,22 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         onChange = reloadApps
     )
     val desktopLabelRows get() = if (desktopMultilineLabel.onGetValue()) 2 else 1
+
+    var desktopPopup = StringMultiSelectionPref(
+        key = PREFS_DESKTOP_POPUP,
+        titleId = R.string.title_desktop_icon_popup_menu,
+        defaultValue = listOf(PREFS_DESKTOP_POPUP_EDIT),
+        entries = desktopPopupOptions,
+        withIcons = true,
+        onChange = doNothing
+    )
+    val desktopPopupEdit: Boolean
+        get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_EDIT)
+    val desktopPopupRemove: Boolean
+        get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
+
+
+    /* ==== Folder ====*/
     var desktopFolderRadius = DimensionPref(
         key = PREFS_FOLDER_RADIUS,
         titleId = R.string.folder_radius,
@@ -362,7 +379,7 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
             }
         },
         onChange = recreate
-    ) // TODO add
+    )
     val desktopCustomFolderBackground = BooleanPref(
         key = PREFS_FOLDER_BACKGROUND_CUSTOM,
         titleId = R.string.folder_custom_background,
@@ -395,18 +412,17 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         specialOutputs = { it.roundToInt().toString() },
         onChange = reloadGrid
     )
-    var desktopPopup = StringMultiSelectionPref(
-        key = PREFS_DESKTOP_POPUP,
-        titleId = R.string.title_desktop_icon_popup_menu,
-        defaultValue = listOf(PREFS_DESKTOP_POPUP_EDIT),
-        entries = desktopPopupOptions,
-        withIcons = true,
-        onChange = doNothing
+
+    val folderOpacity = FloatPref(
+        key = PREFS_FOLDER_OPACITY,
+        titleId = R.string.folder_opacity,
+        defaultValue = 1f,
+        maxValue = 1f,
+        minValue = 0f,
+        steps = 10,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = reloadIcons
     )
-    val desktopPopupEdit: Boolean
-        get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_EDIT)
-    val desktopPopupRemove: Boolean
-        get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
 
 
     // DOCK
