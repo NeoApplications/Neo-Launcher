@@ -49,7 +49,7 @@ their TODOs and plans.
 
 <table>
     <tr>
-        <td colspan="4"><img src="https://raw.githubusercontent.com/otakuhqz/Omega/master/snapshots/theme.svg" alt="" width="256"></td>
+        <td colspan="4"><img src="https://github.com/NeoApplications/Neo-Launcher/blob/A-12/snapshots/theme.png" alt="" width="512"></td>
     </tr>
     <tr>
         <td><img src="https://raw.githubusercontent.com/otakuhqz/Omega/omega-11/snapshots/omega1.jpg" alt="" width="256"></td>
