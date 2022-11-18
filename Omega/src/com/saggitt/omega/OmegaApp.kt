@@ -32,6 +32,7 @@ import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.android.systemui.shared.system.QuickStepContract
 import com.saggitt.omega.blur.BlurWallpaperProvider
+import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.theme.ThemeManager
 import org.chickenhook.restrictionbypass.Unseal
@@ -70,6 +71,7 @@ class OmegaApp : Application() {
     fun onLauncherAppStateCreated() {
         registerActivityLifecycleCallbacks(activityHandler)
         BlurWallpaperProvider.getInstance(this)
+        Flowerpot.Manager.getInstance(this)
     }
 
     fun restart(recreateLauncher: Boolean = true) {

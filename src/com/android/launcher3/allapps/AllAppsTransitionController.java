@@ -44,6 +44,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.statemanager.StateManager.StateHandler;
 import com.android.launcher3.states.StateAnimationConfig;
 import com.android.launcher3.views.ScrimView;
+import com.saggitt.omega.blur.BlurScrimView;
 
 /**
  * Handles AllApps view transition.
@@ -75,6 +76,7 @@ public class AllAppsTransitionController
                 }
             };
 
+    private static final int APPS_VIEW_ALPHA_CHANNEL_INDEX = 0;
     private AllAppsContainerView mAppsView;
 
     private final Launcher mLauncher;
@@ -111,6 +113,7 @@ public class AllAppsTransitionController
         setScrollRangeDelta(mScrollRangeDelta);
 
         if (mIsVerticalLayout) {
+            mAppsView.getAlphaProperty(APPS_VIEW_ALPHA_CHANNEL_INDEX).setValue(1);
             mLauncher.getHotseat().setTranslationY(0);
             mLauncher.getWorkspace().getPageIndicator().setTranslationY(0);
         }
@@ -229,5 +232,11 @@ public class AllAppsTransitionController
 
     public AllAppsContainerView getAppsView() {
         return mAppsView;
+    }
+
+    public void setOverlayScroll(float scroll) {
+        if (mScrimView instanceof BlurScrimView) {
+            ((BlurScrimView) mScrimView).setOverlayScroll(scroll);
+        }
     }
 }

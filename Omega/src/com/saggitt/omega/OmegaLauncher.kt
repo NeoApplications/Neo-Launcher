@@ -67,6 +67,7 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.shared.system.QuickStepContract
 import com.farmerbb.taskbar.lib.Taskbar
 import com.google.systemui.smartspace.SmartSpaceView
+import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.data.PeopleRepository
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.popup.OmegaShortcuts
@@ -77,6 +78,7 @@ import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.isPackageInstalled
+import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,6 +90,7 @@ class OmegaLauncher : QuickstepLauncher(), LifecycleOwner, SavedStateRegistryOwn
     ActivityResultRegistryOwner, ThemeManager.ThemeableActivity,
     OmegaPreferences.OnPreferenceChangeListener {
     val gestureController by lazy { GestureController(this) }
+    val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -333,6 +336,11 @@ class OmegaLauncher : QuickstepLauncher(), LifecycleOwner, SavedStateRegistryOwn
         if (sRestart) {
             sRestart = false
         }
+    }
+
+    override fun onRotationChanged() {
+        super.onRotationChanged()
+        BlurWallpaperProvider.getInstance(this).updateAsync()
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {

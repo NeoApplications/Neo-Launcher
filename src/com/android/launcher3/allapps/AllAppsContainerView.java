@@ -25,7 +25,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -67,6 +66,8 @@ import com.android.launcher3.keyboard.FocusedItemDecorator;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.testing.TestProtocol;
 import com.android.launcher3.util.ItemInfoMatcher;
+import com.android.launcher3.util.MultiValueAlpha;
+import com.android.launcher3.util.MultiValueAlpha.AlphaProperty;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 import com.android.launcher3.views.ScrimView;
@@ -132,7 +133,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
     private SearchAdapterProvider mSearchAdapterProvider;
     private WorkAdapterProvider mWorkAdapterProvider;
-    private final int mScrimColor;
+    //private final int mScrimColor;
     private final int mHeaderProtectionColor;
     private final float mHeaderThreshold;
     private ScrimView mScrimView;
@@ -144,6 +145,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     public int mCurrentPage;
     public AllAppsPagedView mHorizontalViewPager;
     private final boolean mScrimIsTranslucent;
+    private final MultiValueAlpha mMultiValueAlpha;
 
     public AllAppsContainerView(Context context) {
         this(context, null);
@@ -162,11 +164,11 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
         float drawerOpacity = prefs.getDrawerOpacity().onGetValue();
         mScrimIsTranslucent = drawerOpacity < 1f;
 
-        if (prefs.getDrawerBackground().onGetValue()) {
+        /*if (prefs.getDrawerBackground().onGetValue()) {
             mScrimColor = prefs.getDrawerBackgroundColor().onGetValue();
         } else {
             mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
-        }
+        }*/
 
         mHeaderThreshold = getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
@@ -197,6 +199,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
         mNavBarScrimPaint.setColor(Themes.getAttrColor(context, R.attr.allAppsNavBarScrimColor));
 
         mAllAppsStore.addUpdateListener(this::onAppsUpdated);
+        mMultiValueAlpha = new MultiValueAlpha(this, 1);
     }
 
     private boolean isPagedView() {
@@ -255,6 +258,10 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
     public AllAppsStore getAppsStore() {
         return mAllAppsStore;
+    }
+
+    public AlphaProperty getAlphaProperty(int index) {
+        return mMultiValueAlpha.getProperty(index);
     }
 
     public WorkModeSwitch getWorkModeSwitch() {
@@ -380,14 +387,20 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     }
 
     public AllAppsRecyclerView getActiveRecyclerView() {
-        if (mViewPager != null) {
+        /*if (mViewPager != null) {
             if (!mUsingTabs || mViewPager.getNextPage() == 0) {
                 return mAH[AdapterHolder.MAIN].recyclerView;
             } else {
                 return mAH[AdapterHolder.WORK].recyclerView;
             }
         }
-        return mAH[AdapterHolder.MAIN].recyclerView;
+        return mAH[AdapterHolder.MAIN].recyclerView;*/
+
+        if (!mUsingTabs) {
+            return mAH[AdapterHolder.MAIN].recyclerView;
+        } else {
+            return mAH[mViewPager.getNextPage()].recyclerView;
+        }
     }
 
     public LayoutInflater getLayoutInflater() {

@@ -223,6 +223,10 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         return 0;
     }
 
+    public float getWorkspaceBlurAlpha(Launcher launcher) {
+        return 0;
+    }
+
     /**
      * What color should the workspace scrim be in when at rest in this state.
      * Return {@link Color#TRANSPARENT} for no scrim.

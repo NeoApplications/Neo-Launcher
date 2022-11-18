@@ -20,6 +20,7 @@ import static com.android.launcher3.util.SystemUiController.UI_STATE_SCRIM_VIEW;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
@@ -170,6 +171,13 @@ public class ScrimView extends View implements Insettable {
      */
     public void removeOpaquenessListener(@NonNull Runnable listener) {
         mOpaquenessListeners.remove(listener);
+    }
+
+    protected void onDrawFlatColor(Canvas canvas) {
+    }
+
+    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, Paint paint) {
+
     }
 
     /**

@@ -2921,6 +2921,9 @@ public class Launcher extends StatefulActivity<LauncherState> implements Launche
         return mDeviceProfile.isVerticalBarLayout();
     }
 
+    protected void onRotationChanged() {
+    }
+
     /**
      * @see LauncherState#getTaskbarScale(Launcher)
      */

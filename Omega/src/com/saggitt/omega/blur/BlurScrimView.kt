@@ -19,25 +19,43 @@
 package com.saggitt.omega.blur
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import androidx.core.graphics.alpha
+import android.view.animation.Interpolator
+import androidx.core.graphics.ColorUtils
+import com.android.launcher3.LauncherState.BACKGROUND_APP
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
+import com.android.launcher3.anim.Interpolators.ACCEL
+import com.android.launcher3.anim.Interpolators.ACCEL_2
+import com.android.launcher3.anim.Interpolators.LINEAR
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
+import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.PREFS_BLUR_RADIUS_X
+import com.saggitt.omega.PREFS_DOCK_BACKGROUND_COLOR
+import com.saggitt.omega.PREFS_DOCK_OPACITY
+import com.saggitt.omega.PREFS_DRAWER_BACKGROUND_COLOR
 import com.saggitt.omega.PREFS_DRAWER_OPACITY
 import com.saggitt.omega.preferences.OmegaPreferences
+import com.saggitt.omega.util.dpToPx
 import com.saggitt.omega.util.runOnMainThread
 import kotlin.math.roundToInt
 
+
 class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs),
-    OmegaPreferences.OnPreferenceChangeListener, BlurWallpaperProvider.Listener {
+        OmegaPreferences.OnPreferenceChangeListener, BlurWallpaperProvider.Listener {
     private val prefs = OmegaPreferences.getInstance(context)
     private var drawerOpacity = prefs.drawerOpacity.onGetValue()
+    private var radius = prefs.themeBlurRadius.onGetValue()
+    private var mLauncher = OmegaLauncher.getLauncher(context)
+    private val prefsToWatch = arrayOf(PREFS_DRAWER_OPACITY, PREFS_DRAWER_OPACITY, PREFS_DRAWER_BACKGROUND_COLOR, PREFS_DOCK_BACKGROUND_COLOR)
 
-    private val prefsToWatch = arrayOf(PREFS_DRAWER_OPACITY)
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
             override fun unscheduleDrawable(who: Drawable, what: Runnable) {}
@@ -50,14 +68,35 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
         }
     }
     private val provider by lazy { BlurWallpaperProvider.getInstance(context) }
+    private val useFlatColor get() = mLauncher.deviceProfile.isVerticalBarLayout
     private var blurDrawable: BlurDrawable? = null
-    private var mEndScrim = Themes.getAttrColor(context, R.attr.allAppsScrimColor)
-    private var mEndAlpha = Color.alpha(mEndScrim)
-    private val defaultEndAlpha = Color.alpha(mEndScrim)
+
+    private val insets = Rect()
+    private val colorRanges = ArrayList<ColorRange>()
+
+    private var allAppsBackground = 0
+
     private val reInitUiRunnable = this::reInitUi
 
-    private var radius = BOTTOM_CORNER_RADIUS_RATIO * Themes.getDialogCornerRadius(context)
+    private var mEndScrim = Themes.getAttrColor(context, R.attr.allAppsScrimColor)
+    private val defaultAllAppsBackground = Themes.getAttrColor(context, R.attr.allAppsScrimColor)
 
+
+    private var mEndFlatColor = 0
+    private var mEndFlatColorAlpha = 0
+    private var mScrimColor = 0
+    private var mMaxScrimAlpha = 0
+    private var mEndAlpha = Color.alpha(mEndScrim)
+    private val defaultEndAlpha = Color.alpha(mEndScrim)
+    protected var mProgress = 1f
+    protected var mShelfColor = 0
+    private var fullBlurProgress = 0f
+    protected var mBeforeMidProgressColorInterpolator: Interpolator = ACCEL
+    protected var mAfterMidProgressColorInterpolator: Interpolator = ACCEL
+
+    // Mid point where the alpha changes
+    protected var mMidAlpha = 0
+    protected var mMidProgress = 0f
     override fun updateSysUiColors() {
         val threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD
         val forceChange = visibility == VISIBLE &&
@@ -84,6 +123,51 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
         }
     }
 
+    private fun reInitUi() {
+        blurDrawable = createBlurDrawable()
+        blurDrawable?.alpha = 0
+        rebuildColors()
+        updateColors();
+    }
+
+    fun updateColors() {
+        val alpha = when {
+            useFlatColor -> ((1 - mProgress) * 255).toInt()
+            mProgress >= fullBlurProgress -> Math.round(255 * ACCEL_2.getInterpolation(
+                    Math.max(0f, 1 - mProgress) / (1 - fullBlurProgress)))
+
+            else -> 255
+        }
+        blurDrawable?.alpha = alpha
+
+        if (!useFlatColor) {
+            if (mProgress >= 1
+                    && mLauncher.stateManager.state == BACKGROUND_APP) {
+                mShelfColor = ColorUtils.setAlphaComponent(allAppsBackground, mMidAlpha)
+            } else {
+                mShelfColor = getColorForProgress(mProgress)
+            }
+        }
+    }
+
+    private fun getColorForProgress(progress: Float): Int {
+        val interpolatedProgress: Float = when {
+            progress >= 1 -> progress
+            progress >= mMidProgress -> Utilities.mapToRange(
+                    progress, mMidProgress, 1f, mMidProgress, 1f,
+                    mBeforeMidProgressColorInterpolator)
+
+            else -> Utilities.mapToRange(
+                    progress, 0f, mMidProgress, 0f, mMidProgress, mAfterMidProgressColorInterpolator)
+        }
+        colorRanges.forEach {
+            if (interpolatedProgress in it) {
+                return it.getColor(interpolatedProgress)
+            }
+        }
+        return 0
+    }
+
     override fun isScrimDark() = if (drawerOpacity <= 0.3f) {
         !Themes.getAttrBoolean(context, R.attr.isWorkspaceDarkText)
     } else {
@@ -106,20 +190,117 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
         when (key) {
+            PREFS_BLUR_RADIUS_X -> {
+                val mRadius = dpToPx(prefs.themeBlurRadius.onGetValue())
+                blurDrawable?.also {
+                    it.blurRadii = BlurDrawable.Radii(mRadius, 0f)
+                }
+            }
+
             PREFS_DRAWER_OPACITY -> {
                 mEndAlpha = prefs.drawerOpacity.onGetValue().roundToInt().takeIf { it > 0 }
-                    ?: defaultEndAlpha
-                updateSysUiColors()
+                        ?: defaultEndAlpha
+                calculateEndScrim()
+                mEndFlatColorAlpha = Color.alpha(mEndFlatColor)
+                postReInitUi()
+            }
+
+            PREFS_DOCK_OPACITY -> {
+                postReInitUi()
+            }
+
+            PREFS_DRAWER_BACKGROUND_COLOR -> {
+                allAppsBackground = if (prefs.drawerBackground.onGetValue()) {
+                    prefs.drawerBackgroundColor.onGetValue()
+                } else {
+                    defaultAllAppsBackground
+                }
+                calculateEndScrim()
+                postReInitUi()
             }
         }
     }
 
-    private fun reInitUi() {
-        blurDrawable = createBlurDrawable()
-        blurDrawable?.alpha = 0
+    private fun calculateEndScrim() {
+        mEndScrim = ColorUtils.setAlphaComponent(allAppsBackground, mEndAlpha)
+        mEndFlatColor = ColorUtils.compositeColors(mEndScrim, ColorUtils.setAlphaComponent(mScrimColor, mMaxScrimAlpha)
+        )
+    }
+
+    private fun rebuildColors() {
+
+        val fullShelfColor = ColorUtils.setAlphaComponent(allAppsBackground, mEndAlpha)
+        val nullShelfColor = ColorUtils.setAlphaComponent(allAppsBackground, 0)
+
+        val colors = ArrayList<Pair<Float, Int>>()
+        colors.add(Pair(Float.NEGATIVE_INFINITY, fullShelfColor))
+        colors.add(Pair(0.5f, fullShelfColor))
+
+        colors.add(Pair(1f, nullShelfColor))
+        colors.add(Pair(Float.POSITIVE_INFINITY, nullShelfColor))
+
+        colorRanges.clear()
+
+        for (i in (1 until colors.size)) {
+            val color1 = colors[i - 1]
+            val color2 = colors[i]
+            colorRanges.add(ColorRange(color1.first, color2.first, color1.second, color2.second))
+        }
+    }
+
+    private fun postReInitUi() {
+        handler?.removeCallbacks(reInitUiRunnable)
+        handler?.post(reInitUiRunnable)
+    }
+
+    override fun setInsets(insets: Rect) {
+        super.setInsets(insets)
+        this.insets.set(insets)
+        postReInitUi()
+    }
+
+    override fun onDrawFlatColor(canvas: Canvas) {
+        blurDrawable?.run {
+            setBounds(0, 0, width, height)
+            draw(canvas, true)
+        }
+    }
+
+    override fun onDrawRoundRect(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, paint: Paint) {
+        blurDrawable?.run {
+            setBlurBounds(left, top, right, bottom)
+            draw(canvas)
+        }
+        super.onDrawRoundRect(canvas, left, top, right, bottom, rx, ry, paint)
+    }
+
+    fun setOverlayScroll(scroll: Float) {
+        blurDrawable?.viewOffsetX = scroll
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        if (useFlatColor) {
+            blurDrawable?.setBounds(left, top, right, bottom)
+        }
     }
 
     companion object {
         private const val BOTTOM_CORNER_RADIUS_RATIO = 2f
+    }
+
+    class ColorRange(private val start: Float, private val end: Float,
+                     private val startColor: Int, private val endColor: Int) {
+
+        private val range = start..end
+
+        fun getColor(progress: Float): Int {
+            if (start == Float.NEGATIVE_INFINITY) return endColor
+            if (end == Float.POSITIVE_INFINITY) return startColor
+            val amount = Utilities.mapToRange(progress, start, end, 0f, 1f, LINEAR)
+            return ColorUtils.blendARGB(startColor, endColor, amount)
+        }
+
+        operator fun contains(value: Float) = value in range
     }
 }
