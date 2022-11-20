@@ -89,8 +89,8 @@ fun DrawerPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -147,6 +147,7 @@ fun NavGraphBuilder.drawerPrefsGraph(route: String) {
     preferenceGraph(route, { DrawerPrefsPage() }) { subRoute ->
         preferenceGraph(route = subRoute(Routes.HIDDEN_APPS), { HiddenAppsPage() })
         preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
+        preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })
         preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })
     }
 }

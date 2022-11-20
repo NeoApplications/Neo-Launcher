@@ -607,15 +607,15 @@ abstract class BasePreferences(context: Context) :
         }
     }
 
-    open inner class StringSetPref( // TODO migrate to @StringMultiSelectionPref
-        key: String,
-        @StringRes titleId: Int,
-        @StringRes summaryId: Int = -1,
-        defaultValue: Set<String>,
-        val navRoute: String = "",
-        onChange: () -> Unit = doNothing
+    open inner class StringSetPref(
+            key: String,
+            @StringRes titleId: Int,
+            @StringRes summaryId: Int = -1,
+            defaultValue: Set<String>,
+            val navRoute: String = "",
+            onChange: () -> Unit = doNothing
     ) :
-        PrefDelegate<Set<String>>(key, titleId, summaryId, defaultValue, onChange) {
+            PrefDelegate<Set<String>>(key, titleId, summaryId, defaultValue, onChange) {
         override fun onGetValue(): Set<String> = sharedPrefs.getStringSet(getKey(), defaultValue)!!
 
         override fun onSetValue(value: Set<String>) {

@@ -25,9 +25,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.saggitt.omega.compose.navigation.LocalNavController
+import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.util.Config
 
 @Composable
 fun ProtectedAppsPage() {
+    val context = LocalContext.current
+    val prefs = Utilities.getOmegaPrefs(context)
+    val navController = LocalNavController.current
+    if (prefs.drawerEnableProtectedApps.onGetValue() && Utilities.ATLEAST_R) {
+        Config.showLockScreen(context, context.resources.getString(R.string.trust_apps_manager_name)) {
+            navController.popBackStack()
+            navController.navigate(Routes.PROTECTED_APPS_VIEW)
+        }
+    } else {
+        ProtectedAppsView()
+    }
+}
+
+@Composable
+fun ProtectedAppsView() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
     val protectedApps by remember {
@@ -37,9 +55,9 @@ fun ProtectedAppsPage() {
     else stringResource(id = R.string.protected_app_selected, protectedApps.size)
 
     AppSelectionPage(
-        pageTitle = title,
-        selectedApps = protectedApps,
-        pluralTitleId = R.string.protected_app_selected
+            pageTitle = title,
+            selectedApps = protectedApps,
+            pluralTitleId = R.string.protected_app_selected
     ) { selectedApps ->
         prefs.drawerProtectedApps = selectedApps
     }
