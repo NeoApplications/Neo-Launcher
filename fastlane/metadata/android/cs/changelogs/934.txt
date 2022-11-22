@@ -1,0 +1,8 @@
+Přidat: OWM jako poskytovatel počasí
+Přidat: Podpora pro LawnIcons
+Přidat: Podpora tematických ikon pro A13
+Aktualizace: Zcela nové uživatelské rozhraní/UX nastavení
+Oprava: Problém s ikonami duchů
+Oprava: Kompatibilita záloh mezi verzí/neo/debugem
+Oprava: Třídění aplikací na základě jazyka lokalizace
+Další podrobnosti najdete v úplném seznamu změn…
