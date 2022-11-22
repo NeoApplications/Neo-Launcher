@@ -473,4 +473,8 @@
     <string name="notification_dots_disabled">Norėdami rodyti pranešimų taškus, įgalinkite pranešimų taškų rodymą nustatymuose</string>
     <string name="title_search_contacts">Ieškoti kontaktuose</string>
     <string name="pref_category__dash">Skydelis</string>
+    <string name="reset_custom_icon">Pašalinti individualizuotą piktogramą</string>
+    <string name="title_themed_icons">Teminės piktogramos</string>
+    <string name="folder_opacity">Aplanko skaidrumas</string>
+    <string name="tap_to_enable">Bakstelėkite elementą, kad įjungtumėte</string>
 </resources>
