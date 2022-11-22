@@ -473,4 +473,8 @@
     <string name="notification_dots_disabled">Para mostrar puntos de notificación, habilite la visualización de puntos de notificación en la configuración</string>
     <string name="notification_dots_missing_notification_access">Para mostrar puntos de notificación, activa el acceso a las notificaciones de la aplicación</string>
     <string name="author_role">Desarrollador</string>
+    <string name="title_themed_icons">Iconos temáticos</string>
+    <string name="folder_opacity">Opacidad de las carpetas</string>
+    <string name="reset_custom_icon">Eliminar el ícono personalizado</string>
+    <string name="tap_to_enable">Toque el elemento para activarlo</string>
 </resources>
