@@ -479,4 +479,8 @@
     <string name="owm_get_your_own_key">احصل على مفتاح API في api.openweathermap.org.</string>
     <string name="weather_api_key">مفتاح واجهة برمجة تطبيقات OWM</string>
     <string name="notification_dots_missing_notification_access">لإظهار نقاط الإشعارات، قم بتشغيل الوصول إلى إشعارات التطبيق</string>
+    <string name="reset_custom_icon">إزالة الرمز المخصص</string>
+    <string name="title_themed_icons">أيقونات ذات طابع خاص</string>
+    <string name="folder_opacity">تعتيم المجلد</string>
+    <string name="tap_to_enable">انقر على العنصر لتمكينه</string>
 </resources>
