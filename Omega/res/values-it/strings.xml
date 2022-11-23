@@ -488,4 +488,8 @@
     <string name="notification_dots_missing_notification_access">Per mostrare i punti di notifica, attiva l\'accesso alle notifiche dell\'app</string>
     <string name="default_city">San Salvador, SV</string>
     <string name="weather_city">Città</string>
+    <string name="reset_custom_icon">Rimuovi icona personalizzata</string>
+    <string name="title_themed_icons">Icone a tema</string>
+    <string name="folder_opacity">Opacità cartella</string>
+    <string name="tap_to_enable">Tocca elemento per abilitarlo</string>
 </resources>
