@@ -1,0 +1,8 @@
+Aggiunto: OWM come provider meteo
+Aggiunto: supporto LawnIcons
+Aggiunto: supporto per icone a tema per A13
+Aggiornato: tutte le nuove impostazioni UI/UX
+Corretto: problema con le icone fantasma
+Corretto: compatibilità dei backup tra release/neo/debug
+Corretto: ordinamento delle app in base alla lingua locale
+Per maggiori dettagli controlla il log delle modifiche completo…
