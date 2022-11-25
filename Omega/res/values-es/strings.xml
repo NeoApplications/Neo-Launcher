@@ -256,7 +256,7 @@
     <string name="backup_creating">Creando respaldo</string>
     <string name="backup_error_blank_name">El nombre debe estar relleno</string>
     <string name="backup_wallpaper">Fondo de Pantalla</string>
-    <string name="backup_settings">Configuraciones</string>
+    <string name="backup_settings">Ajustes</string>
     <string name="backup_homescreen">Pantalla de Inicio</string>
     <string name="restore_backup">Restaurar</string>
     <string name="title_create">Crear</string>
@@ -391,7 +391,7 @@
     <string name="folder_columns">Columnas de Carpeta</string>
     <string name="fonts_global_font">Tipografía</string>
     <string name="fonts_change_global_font">Modificar</string>
-    <string name="summary__advanced_setting_search">Mostrar la búsqueda de la configuración en la barra de acciones</string>
+    <string name="summary__advanced_setting_search">Mostrar la búsqueda de configuraciones en la barra de acción</string>
     <string name="backup_error_blank_contents">El contenido no puede estar vacío</string>
     <string name="title_feed_provider">Proveedor de relleno</string>
     <string name="dash_mobile_network_summary">Muestra los parámetros de las redes del móvil</string>
