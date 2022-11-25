@@ -48,6 +48,7 @@ import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
 import com.android.launcher3.accessibility.ShortcutMenuAccessibilityDelegate;
 import com.android.launcher3.dot.DotInfo;
@@ -658,6 +659,7 @@ public class PopupContainerWithArrow<T extends StatefulActivity<LauncherState>>
 
         @Override
         public boolean onLongClick(View v) {
+            if (Utilities.getOmegaPrefs(mLauncher).getDesktopLock().onGetValue()) return false;
             if (!ItemLongClickListener.canStartDrag(mLauncher)) return false;
             // Return early if not the correct view
             if (!(v.getParent() instanceof DeepShortcutView)) return false;
