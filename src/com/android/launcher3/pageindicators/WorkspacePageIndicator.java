@@ -59,7 +59,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
     private int mCurrentScroll;
     private int mTotalScroll;
     private Paint mLinePaint;
-    private final int mLineHeight;
+    private int mLineHeight;
 
     private static final Property<WorkspacePageIndicator, Integer> PAINT_ALPHA
             = new Property<WorkspacePageIndicator, Integer>(Integer.class, "paint_alpha") {
@@ -121,11 +121,18 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         mLinePaint.setAlpha(0);
 
         mLauncher = Launcher.getLauncher(context);
-        mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
+        updateLineHeight();
+        //mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
 
         boolean darkText = ThemeManager.Companion.getInstance(context).getSupportsDarkText();
         mActiveAlpha = darkText ? BLACK_ALPHA : WHITE_ALPHA;
         mLinePaint.setColor(darkText ? Color.BLACK : Color.WHITE);
+    }
+
+    public void updateLineHeight() {
+        boolean show = Utilities.getOmegaPrefs(getContext()).getDockShowPageIndicator().onGetValue();
+        mLineHeight = !show ? 0 : getResources()
+                .getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
     }
 
     @Override

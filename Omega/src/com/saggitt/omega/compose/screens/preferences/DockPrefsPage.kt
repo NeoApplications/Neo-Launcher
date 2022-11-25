@@ -58,6 +58,7 @@ fun DockPrefsPage() {
         prefs.dockBackground,
         prefs.dockBackgroundColor,
         prefs.dockOpacity,
+        prefs.dockShowPageIndicator,
         prefs.dockScale,
         prefs.dockGridSize
     )

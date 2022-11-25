@@ -65,6 +65,7 @@ const val PREFS_DOCK_BACKGROUND = "pref_dockBackground"
 const val PREFS_DOCK_BACKGROUND_COLOR = "pref_dock_background_color"
 const val PREFS_DOCK_OPACITY = "pref_dock_opacity"
 const val PREFS_DOCK_SEARCH = "pref_dock_search"
+const val PREFS_DOCK_INDICATOR = "pref_dock_show_page_indicator"
 const val PREFS_DOCK_COLUMNS = "pref_numHotseatIcons"
 const val PREFS_DOCK_COLUMNS_RAW = "numHotseatIcons"
 

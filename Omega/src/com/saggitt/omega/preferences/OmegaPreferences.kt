@@ -71,6 +71,7 @@ import com.saggitt.omega.PREFS_DOCK_COLUMNS
 import com.saggitt.omega.PREFS_DOCK_COLUMNS_RAW
 import com.saggitt.omega.PREFS_DOCK_HIDE
 import com.saggitt.omega.PREFS_DOCK_ICON_SCALE
+import com.saggitt.omega.PREFS_DOCK_INDICATOR
 import com.saggitt.omega.PREFS_DOCK_OPACITY
 import com.saggitt.omega.PREFS_DOCK_SCALE
 import com.saggitt.omega.PREFS_DOCK_SEARCH
@@ -479,6 +480,14 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         defaultValue = false,
         onChange = restart
     )
+
+    val dockShowPageIndicator = BooleanPref(
+        key = PREFS_DOCK_INDICATOR,
+        titleId = R.string.hotseat_show_page_indicator,
+        defaultValue = true,
+        onChange = recreate
+    )
+
     val dockGridSizeDelegate = ResettableLazy {
         GridSize(
             titleId = R.string.title__dock_hotseat_icons,
@@ -498,7 +507,6 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         maxValue = 16f,
         steps = 15
     )
-
 
     // DRAWER
     val drawerSearch = BooleanPref(
