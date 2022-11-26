@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,28 +45,39 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.preferences.BasePreferences
 import com.saggitt.omega.preferences.custom.GridSize
+import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.search.WebSearchProvider
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
 fun SearchPrefsPage() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
+    var controller = SearchProviderController.getInstance(context)
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
         dialogPref = pref
         openDialog.value = true
     }
-    val searchPrefs = listOf(
-        prefs.searchProvider,
-        prefs.showMic,
-        prefs.openAssistant,
-        prefs.searchGlobal,
-        prefs.searchHiddenApps,
-        prefs.searchContacts,
-        prefs.searchFuzzy,
-        prefs.searchBarRadius
-    )
+    val searchPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.searchProvider,
+                if (controller.searchProvider !is WebSearchProvider) {
+                    prefs.showMic
+                } else null,
+                if (controller.searchProvider !is WebSearchProvider) {
+                    prefs.openAssistant
+                } else null,
+                prefs.searchGlobal,
+                prefs.searchHiddenApps,
+                prefs.searchContacts,
+                prefs.searchFuzzy,
+                prefs.searchBarRadius
+            ).toTypedArray()
+        )
+    }
     val showPrefs = listOf(
         prefs.drawerSearch,
         prefs.dockSearchBar
@@ -115,14 +128,17 @@ fun SearchPrefsPage() {
                             pref = dialogPref as BasePreferences.IntSelectionPref,
                             openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as BasePreferences.StringSelectionPref,
                             openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
                             pref = dialogPref as BasePreferences.StringMultiSelectionPref,
                             openDialogCustom = openDialog
                         )
+
                         is GridSize -> GridSizePrefDialogUI(
                             pref = dialogPref as GridSize,
                             openDialogCustom = openDialog
