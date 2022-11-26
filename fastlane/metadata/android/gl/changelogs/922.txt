@@ -1,0 +1,7 @@
+Nota 1: incompatible coas copias de seguridade de versións anteriores
+- Rebase no iniciador de Android 12/L
+- Engadido: Smartspace
+- Engadido: edición directa de pestanas/categorías
+- Engadido: opción de busca difusa
+- Actualizado: renovar Dash, iconas e IU
+Nota 2: As funcións perdidas das versións anteriores pódense engadir en versións posteriores

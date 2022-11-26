@@ -1,0 +1,7 @@
+Engadido: Ordealas aplicacións por opción de cor
+Engadido: seguilo tema Fondo de pantalla (negro).
+Solución: fallo ao abrir a copia de seguranza/restauración
+Solución: a barra superior do caixón de tinta ao saír dunha aplicación
+Solución: as iconas non se actualizan cando se usa a forma de icona personalizada
+Eliminadoo: segue o tema Daylight
+Eliminado: provedor de datos meteorolóxicos de OnePlus

@@ -1,0 +1,7 @@
+Engadido: pasalo dedo cara arriba aos cartafoles
+Engadido: Configuración do provedor de fontes
+Solucionado: preferencia lingüística
+Actualización: aumenta o intervalo de grade/columna a 2-16
+Eliminado: Google App e Google GO como provedores de busca
+Eliminado: xestos StartAppSearch, StartApp e TimeoutSleep
+Moitas solucións de emerxencia
