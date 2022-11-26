@@ -386,11 +386,12 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         titleId = R.string.folder_custom_background,
         defaultValue = false,
         onChange = recreate
-    ) // TODO add
-    val desktopFolderBackground = IntPref( // TODO add
+    )
+    val desktopFolderBackground = ColorIntPref(
         key = PREFS_FOLDER_BACKGROUND,
         titleId = R.string.folder_background,
         defaultValue = Themes.getAttrColor(context, R.attr.folderFillColor),
+        withAlpha = true,
         onChange = restart
     )
     val desktopFolderColumns = FloatPref(

@@ -35,6 +35,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -58,7 +59,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Alarm;
@@ -96,6 +96,7 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.util.Executors;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
@@ -319,9 +320,18 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     }
 
     private void customizeFolder() {
+        int bgColor;
+        if (prefs.getDesktopCustomFolderBackground().onGetValue()) {
+            bgColor = prefs.getDesktopFolderBackground().onGetValue();
+        } else {
+            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
+        }
+        /*mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
+                R.drawable.round_rect_folder, getContext().getTheme());*/
+        mBackground = new GradientDrawable();
+        mBackground.setShape(GradientDrawable.RECTANGLE);
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
 
-        mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
-                R.drawable.round_rect_folder, getContext().getTheme());
 
         mBackground.setCornerRadius(getCornerRadius());
     }

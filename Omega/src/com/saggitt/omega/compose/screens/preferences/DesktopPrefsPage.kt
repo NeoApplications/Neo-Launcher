@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -70,12 +72,20 @@ fun DesktopPrefsPage() {
         prefs.desktopAllowEmptyScreens,
         prefs.desktopWidgetRadius
     )
-    val folderPrefs = listOf(
-        prefs.desktopFolderRadius,
-        prefs.desktopFolderColumns,
-        prefs.desktopFolderRows,
-        prefs.folderOpacity
-    )
+    val folderPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.desktopFolderRadius,
+                prefs.desktopFolderColumns,
+                prefs.desktopFolderRows,
+                prefs.desktopCustomFolderBackground,
+                if (prefs.desktopCustomFolderBackground.onGetValue()) {
+                    prefs.desktopFolderBackground
+                } else null,
+                prefs.folderOpacity
+            ).toTypedArray()
+        )
+    }
     val otherPrefs = listOf(
         prefs.desktopHideStatusBar,
         prefs.desktopLock
