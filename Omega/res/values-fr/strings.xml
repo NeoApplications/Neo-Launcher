@@ -34,8 +34,8 @@
     <string name="label_voice_search">Recherche vocale</string>
     <string name="automatic_short">Auto</string>
     <string name="reset_to_default">Réinitialiser les valeurs par défaut</string>
-    <string name="drag_to_enable_packs">Glisser vers le haut pour désactiver</string>
-    <string name="drag_to_disable_packs">Glisser vers le bas pour activer</string>
+    <string name="drag_to_enable_packs">Glisser vers le haut pour activer</string>
+    <string name="drag_to_disable_packs">Glisser vers le bas pour désactiver</string>
     <string name="wallpaper_pick">Sélectionner un fond d\'écran</string>
     <string name="content_storage_permission_required">Autorisez l\'accès au stockage pour pouvoir définir un fond d\'écran.</string>
     <string name="title_storage_permission_required">Accès au stockage requis</string>
@@ -119,7 +119,7 @@
     <string name="icon_pack_default">Icônes du système</string>
     <string name="icon_pack_applied_toast">%s appliqué</string>
     <string name="color_presets">Réglages</string>
-    <string name="title__theme_icon_shape">Modifier le style d\'icône</string>
+    <string name="title__theme_icon_shape">Style d\'icône</string>
     <string name="icon_shape_corner_cut">Couper</string>
     <string name="icon_shape_corner_squircle">Carré arrondi</string>
     <string name="icon_shape_corner_round">Rond</string>
@@ -137,7 +137,7 @@
     <string name="icon_shape_override_label_location">sur l\'écran d\'accueil</string>
     <string name="icon_shape_override_label">Modifier le style d\'icône</string>
     <string name="hide_app_reset">Réinitialiser</string>
-    <string name="hide_app_selected"> masqué</string>
+    <string name="hide_app_selected">Applications masquées (%1$d)</string>
     <string name="selected_count">%1$d sélectionné</string>
     <string name="tab_type_smart">Automatique</string>
     <string name="default_folder_name">Nouveau dossier</string>
@@ -256,7 +256,7 @@
     <string name="title_force_shapeless">Forcer la mise en forme des icônes</string>
     <string name="title_adaptify_pack">Créer des icônes adaptatives pour le pack d\'icônes</string>
     <string name="summary_search_hidden_apps">Afficher les raccourcis masqués dans les résultats.</string>
-    <string name="title_search_hidden_apps">Rechercher les raccourcis masqués</string>
+    <string name="title_search_hidden_apps">Rechercher les applications masquées</string>
     <string name="units_romer">Rømer</string>
     <string name="units_reaumur">Réaumur</string>
     <string name="units_delisle">Delisle</string>
@@ -282,9 +282,9 @@
     <string name="title_dock_fill">Afficher l\'arrière-plan</string>
     <string name="local_backups">Dans le stockage</string>
     <string name="read_external_storage_required">Autoriser le stockage pour créer une sauvegarde.</string>
-    <string name="backup_location_device_storage">Dossier Omega</string>
+    <string name="backup_location_device_storage">Dossier interne</string>
     <string name="backup_location">Emplacement</string>
-    <string name="backup_share_text">Fichier de sauvegarde Omega</string>
+    <string name="backup_share_text">Fichier de sauvegarde Neo Launcher</string>
     <string name="backup_share_title">Partager la sauvegarde</string>
     <string name="restore_read_meta_fail">Fichier de sauvegarde invalide</string>
     <string name="restore_failed">Échec de la restauration</string>
@@ -458,4 +458,18 @@
     <string name="section_contacts">Contacts</string>
     <string name="title__general_widgets_notifications">Gadgets et notifications</string>
     <string name="theme_auto_black">Suivant l\'arrière-fond (noir)</string>
+    <string name="reset_custom_icon">Supprimer l\'icône personnalisé</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="owm_get_your_own_key">Obtenir une clé d\'API sur api.openweathermap.org.</string>
+    <string name="weather_api_key">Clé API OWM</string>
+    <string name="weather_city">Ville</string>
+    <string name="tap_to_enable">Appuyer sur l\'élément pour l\'activer</string>
+    <string name="folder_opacity">Opacité Dossier</string>
+    <string name="contributor_role">Contributeur</string>
+    <string name="selected_apps">Applications sélectionnées (%1$d)</string>
+    <string name="app_reset">Réinitialiser la sélection</string>
+    <string name="author_role">Développeur</string>
+    <string name="title__drawer_rows">Nombre de lignes</string>
+    <string name="protected_apps">Applications protégées</string>
+    <string name="protected_app_selected">Applications protégées (%1$d)</string>
 </resources>
