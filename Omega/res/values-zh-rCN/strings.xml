@@ -469,4 +469,7 @@
     <string name="contributor_role">贡献者</string>
     <string name="author_role">开发者</string>
     <string name="notification_dots_disabled">要显示通知点，请在设置中启用显示通知点</string>
+    <string name="tap_to_enable">点击项目以启用</string>
+    <string name="folder_opacity">文件夹不透明度</string>
+    <string name="reset_custom_icon">移除定制图标</string>
 </resources>
