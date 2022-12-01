@@ -67,6 +67,7 @@
     <string name="summary_full_width_widgets">Allow widgets to span over the whole width without padding</string>
     <string name="grid_size_height">Height</string>
     <string name="grid_size_width">Width</string>
+    <string name="show_top_shadow">Show Top Shadow</string>
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_icon_size">Icon size</string>
     <string name="title__dock_scale">Dock scale</string>

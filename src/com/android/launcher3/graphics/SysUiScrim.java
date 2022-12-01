@@ -48,6 +48,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.DynamicResource;
 import com.android.launcher3.util.Themes;
 import com.android.systemui.plugins.ResourceProvider;
+import com.saggitt.omega.preferences.OmegaPreferences;
 
 /**
  * View scrim which draws behind hotseat and workspace
@@ -141,6 +142,11 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mWallpaperScrimPaint.setColor(wallpaperScrimColor);
 
         view.addOnAttachStateChangeListener(this);
+        OmegaPreferences prefs = OmegaPreferences.Companion.getInstance(view.getContext());
+        if (prefs.getShowTopShadow().onGetValue()) {
+            mHideSysUiScrim = !prefs.getShowTopShadow().onGetValue();
+            mRoot.invalidate();
+        }
     }
 
     /**

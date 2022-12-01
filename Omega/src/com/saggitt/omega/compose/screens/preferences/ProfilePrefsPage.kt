@@ -77,6 +77,7 @@ fun ProfilePrefsPage() {
         prefs.themeBlurEnable,
         prefs.themeBlurRadius,
         prefs.themeCornerRadius,
+        prefs.showTopShadow
     )
 
     OmegaAppTheme {
@@ -85,8 +86,8 @@ fun ProfilePrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

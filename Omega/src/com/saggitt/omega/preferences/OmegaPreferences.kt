@@ -131,6 +131,7 @@ import com.saggitt.omega.PREFS_SEARCH_GLOBAL
 import com.saggitt.omega.PREFS_SEARCH_HIDDEN_APPS
 import com.saggitt.omega.PREFS_SEARCH_PROVIDER
 import com.saggitt.omega.PREFS_SEARCH_SHOW_ASSISTANT
+import com.saggitt.omega.PREFS_SHOW_TOP_SHADOW
 import com.saggitt.omega.PREFS_SMARTSPACE_DATE
 import com.saggitt.omega.PREFS_SMARTSPACE_ENABLE
 import com.saggitt.omega.PREFS_SMARTSPACE_EVENT_PROVIDERS_X
@@ -354,25 +355,32 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
     var desktopPopup = StringMultiSelectionPref(
         key = PREFS_DESKTOP_POPUP,
         titleId = R.string.title_desktop_icon_popup_menu,
-        defaultValue = listOf(PREFS_DESKTOP_POPUP_EDIT),
-        entries = desktopPopupOptions,
-        withIcons = true,
-        onChange = doNothing
+            defaultValue = listOf(PREFS_DESKTOP_POPUP_EDIT),
+            entries = desktopPopupOptions,
+            withIcons = true,
+            onChange = doNothing
     )
     val desktopPopupEdit: Boolean
         get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_EDIT)
     val desktopPopupRemove: Boolean
         get() = desktopPopup.onGetValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
 
+    val showTopShadow = BooleanPref(
+            key = PREFS_SHOW_TOP_SHADOW,
+            titleId = R.string.show_top_shadow,
+            defaultValue = true,
+            onChange = recreate
+    )
+
 
     /* ==== Folder ====*/
     var desktopFolderRadius = DimensionPref(
-        key = PREFS_FOLDER_RADIUS,
-        titleId = R.string.folder_radius,
-        defaultValue = -1f,
-        maxValue = 24f,
-        minValue = -1f,
-        steps = 24,
+            key = PREFS_FOLDER_RADIUS,
+            titleId = R.string.folder_radius,
+            defaultValue = -1f,
+            maxValue = 24f,
+            minValue = -1f,
+            steps = 24,
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
@@ -1080,7 +1088,6 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         defaultValue = true,
         onChange = recreate
     )
-
 
     // ADVANCED
     var restoreSuccess by BooleanPref(

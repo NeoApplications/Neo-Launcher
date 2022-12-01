@@ -56,6 +56,7 @@ const val PREFS_STATUSBAR_HIDE = "pref_hideStatusBar"
 const val PREFS_DASH = "pref_dash"
 const val PREFS_DASH_LINESIZE = "pref_dash_linesize"
 const val PREFS_DASH_PROVIDERS_X = "pref_dash_providers_x"
+const val PREFS_SHOW_TOP_SHADOW = "pref_show_top_shadow"
 
 // DOCK PREFS
 const val PREFS_DOCK_HIDE = "pref_hideHotseat"
