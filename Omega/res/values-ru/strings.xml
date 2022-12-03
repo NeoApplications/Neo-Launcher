@@ -475,4 +475,8 @@
     <string name="modify_system_settings_message">Предоставьте возможность изменять системные настройки, чтобы это работало</string>
     <string name="web_search_searx">Searx (Веб)</string>
     <string name="permission_denied">Разрешение на чтение отклонено!</string>
+    <string name="reset_custom_icon">Удалить пользовательский значок</string>
+    <string name="title_themed_icons">Тематические иконки</string>
+    <string name="folder_opacity">Непрозрачность папки</string>
+    <string name="tap_to_enable">Нажмите элемент, чтобы включить</string>
 </resources>
