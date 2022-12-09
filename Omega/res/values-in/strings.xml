@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="title__general_desktop">Desktop</string>
+    <string name="title__general_drawer">Drawer</string>
+    <string name="title__general_theme">Tema</string>
+    <string name="title__general_advanced">Pengaturan Lanjutan</string>
+    <string name="title__general_profile">Profil</string>
+    <string name="title__general_gestures_dash">Gerakan dan Dash</string>
+    <string name="folder_name">Nama Folder</string>
+    <string name="title__general_about">Tentang</string>
+    <string name="default_folder_name">Folder Baru</string>
+    <string name="title__general_dock">Dock</string>
+    <string name="title__general_search">Cari dan Folder</string>
+    <string name="title__general_notifications">Gerakan dan Notifikasi</string>
+    <string name="title__general_smartspace">Widget Rumah</string>
+</resources>
