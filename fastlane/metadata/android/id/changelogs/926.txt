@@ -1,0 +1,7 @@
+Tambahkan: Urutkan aplikasi berdasarkan opsi warna
+Tambahkan: Ikuti Wallpaper tema (Hitam).
+Fix: Crash saat membuka backup/restore
+Perbaiki: Mewarnai Drawer bilah atas saat keluar dari aplikasi
+Perbaiki: Ikon tidak diperbarui saat menggunakan bentuk ikon kustom
+Hapus: Ikuti tema Daylight
+Hapus: Penyedia data cuaca OnePlus

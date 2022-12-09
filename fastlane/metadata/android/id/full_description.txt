@@ -1,0 +1,12 @@
+Neo Launcher adalah fork dari launcher AOSP untuk power-user. Sangat dapat dikonfigurasi, dan menawarkan banyak fungsi kepada Anda. Diantaranya:
+
+- The _Dash_.
+- Dukungan tema yang kaya.
+- Mesin pencari khusus.
+- Dukungan gerakan.
+- Widget Custom yang unik.
+- Kategori atau folder di laci aplikasi.
+- Dukungan bentuk dan paket ikon.
+- Sembunyikan aplikasi.
+
+Selalu ada fitur baru yang direncanakan, jadi pantau terus…

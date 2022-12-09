@@ -1,0 +1,7 @@
+Catatan 1: tidak kompatibel dengan cadangan dari versi lama
+- Rebase pada peluncur Android 12/L
+- Tambahkan: Smartspace
+- Tambahkan: Pengeditan langsung tab/kategori
+- Tambahkan: Opsi Pencarian Fuzzy
+- Perbarui: Ubah Dash, ikon & UI
+Catatan 2: fitur yang terlewatkan dari versi lama dapat ditambahkan pada rilis selanjutnya

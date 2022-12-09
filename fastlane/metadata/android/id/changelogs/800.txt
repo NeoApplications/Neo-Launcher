@@ -1,0 +1,12 @@
+* Gabungkan android-11.0.0_r31
+* Tambahkan: Pertahankan preferensi layar Kosong
+* Tambahkan: Pemilih warna untuk tab
+* Tambahkan: kontrol Dash tambahan
+* Tambahkan: Kustomisasi Dash
+* Tambahkan: Mendukung QuickSwitch
+* Tambahkan: FiveSecs KLWP
+* Tambahkan: penyedia Searx
+* Tambahkan: Asisten tidur
+* Tambahkan: Aplikasi Daftar Vertikal (Eksperimental)
+* Perbaiki: Ukuran dock di layar panjang
+* Fix: Crash saat membuka Google Assistant
