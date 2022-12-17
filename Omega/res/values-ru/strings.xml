@@ -166,7 +166,7 @@
     <string name="title_smartspace_event_providers">Источники событий</string>
     <string name="title_smartspace_weather_units">Единица измерения температуры</string>
     <string name="title_smartspace_widget_provider">Источник погоды</string>
-    <string name="title_smartspace_time_above">Показать большие часы</string>
+    <string name="title_smartspace_time_above">Показывать большие часы</string>
     <string name="title_smartspace_time_24_h">Использовать 24-часовой формат</string>
     <string name="title_smartspace_date">Показать дату</string>
     <string name="title_smartspace_time">Показать время</string>
@@ -418,7 +418,7 @@
     <string name="protected_apps">Защищенные приложения</string>
     <string name="title_smartspace">Показать Смартспейс</string>
     <string name="icon_picker_load_failed">Не удалось загрузить больше иконок.</string>
-    <string name="title_use_pill_qsb">Показать ярлык поиска таблеток</string>
+    <string name="title_use_pill_qsb">Показать ярлык поиска в стиле таблетки</string>
     <string name="onbording">Адаптация</string>
     <string name="title__general_gestures_dash">Жесты и панель</string>
     <string name="units_romer">Рёмер</string>
@@ -467,7 +467,7 @@
     <string name="dash_auto_rotation_summary">Включите или выключите автоповорот.</string>
     <string name="title_feed_provider">Поставщик ленты</string>
     <string name="dash_media_player">Аудиоплеер</string>
-    <string name="dash_torch">Факел</string>
+    <string name="dash_torch">Фонарик</string>
     <string name="tab_launcher">Лаунчер</string>
     <string name="enabled_events">Включен</string>
     <string name="dash_wifi_summary">Состояние и подключение Wi-Fi</string>
