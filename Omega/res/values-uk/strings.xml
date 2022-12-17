@@ -97,4 +97,5 @@
     <string name="title_smartspace_widget_provider">Джерего прогнозу погоди</string>
     <string name="category__behavior_weather">Погода</string>
     <string name="hide_app">Сховати посилання</string>
+    <string name="folder_name">Назва теки</string>
 </resources>
