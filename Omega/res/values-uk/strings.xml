@@ -21,7 +21,7 @@
     <string name="summary__general_smartspace">Дата, час, домашній віджет</string>
     <string name="title__general_about">Про програму</string>
     <string name="title__dock_icon_size">Розмір значків</string>
-    <string name="title_desktop_hide_statusbar">Сховати статусбар</string>
+    <string name="title_desktop_hide_statusbar">Сховати рядок стану</string>
     <string name="hotseat_show_page_indicator">Показати індикатор сторінки</string>
     <string name="allow_rotation_blocked_desc">Поточна опція дисплею не дозволяє обертання</string>
     <string name="title_desktop_keep_empty">Дозволити пусті сторінки</string>
@@ -29,12 +29,12 @@
     <string name="title_desktop_text_size">Розмір тексту</string>
     <string name="title_dock_two_row">Показати другий ряд</string>
     <string name="title__dock_show_arrow">Показати стрілку</string>
-    <string name="title_disabled">Викл.</string>
+    <string name="title_disabled">Вимкнено</string>
     <string name="title_desktop_lock_desktop">Заблокувати робочий стіл</string>
     <string name="summary_full_width_widgets">Дозволити віджетам охоплювати всю ширину без відступів</string>
     <string name="grid_size_width">Ширина</string>
     <string name="title_opacity">Непрозорість</string>
-    <string name="title__dock_colored_icons">Забарвлені значки</string>
+    <string name="title__dock_colored_icons">Кольорові значки</string>
     <string name="title__dock_hotseat_icons">Кількість значків</string>
     <string name="num_hotseat_icons_pref_title">Кількість значків</string>
     <string name="title_dock_search">Панель пошуку</string>
@@ -46,16 +46,16 @@
     <string name="title_default">За замовчуванням</string>
     <string name="title_smartspace_date">Показати дату</string>
     <string name="smartspace_now">зараз</string>
-    <string name="title__general_dock">док</string>
+    <string name="title__general_dock">Панель швидкого доступу</string>
     <string name="summary__general_theme">Змінити кольори, набір значків та їх форму</string>
     <string name="pref_category__interfaces">Інтерфейс</string>
     <string name="pref_category__incubating">У розробці</string>
     <string name="title_desktop_overlap_placement">Дозволити перекриття віджетів</string>
     <string name="grid_size_height">Висота</string>
     <string name="title__multiline_labels">Багатострокові назви додатків</string>
-    <string name="title__dock_scale">Розмір доку</string>
+    <string name="title__dock_scale">Висота панелі швидкого доступу</string>
     <string name="title_dock_background_color">Колір фону</string>
-    <string name="title__dock_hide">Сховати док</string>
+    <string name="title__dock_hide">Сховати панель швидкого доступу</string>
     <string name="title__dock_hide_labels">Приховати ярлики</string>
     <string name="label_search">Пошук</string>
     <string name="title__drawer_sort">Сортування додатків</string>
@@ -65,8 +65,8 @@
     <string name="title_drawer_enable_background">Використовувати свій колір фону</string>
     <string name="title_drawer_row_height">Висота рядка</string>
     <string name="title__sort_mode">Сортування додатків</string>
-    <string name="title__sort_alphabetical_az">А→Я</string>
-    <string name="title__sort_alphabetical_za">Я→А</string>
+    <string name="title__sort_alphabetical_az">A→Z</string>
+    <string name="title__sort_alphabetical_za">Z→A</string>
     <string name="title__sort_most_used">Найчастіше використовувані</string>
     <string name="title__sort_by_color">За кольором</string>
     <string name="title_all_apps_google_search">Веб-результати</string>
@@ -82,10 +82,10 @@
     <string name="cat_drawer_icons">Значки</string>
     <string name="add_new_tab">Додати</string>
     <plurals name="tab_apps_count">
-        <item quantity="one">%1$d Додаток</item>
-        <item quantity="few">%1$d Додатки</item>
-        <item quantity="many">%1$d Додатків</item>
-        <item quantity="other">%1$d Додатків</item>
+        <item quantity="one">%1$d додаток</item>
+        <item quantity="few">%1$d додатки</item>
+        <item quantity="many">%1$d додатків</item>
+        <item quantity="other">%1$d додатків</item>
     </plurals>
     <string name="trust_apps_manager_name">Приховані та захищені додатки</string>
     <string name="title__theme_blur">Розмиття</string>
@@ -94,13 +94,13 @@
     <string name="icon_shape_teardrop">Крапля</string>
     <string name="icon_shape_cylinder">Циліндр</string>
     <string name="title_smartspace_time">Показати час</string>
-    <string name="title_smartspace_widget_provider">Джерего прогнозу погоди</string>
+    <string name="title_smartspace_widget_provider">Джерело прогнозу погоди</string>
     <string name="category__behavior_weather">Погода</string>
-    <string name="hide_app">Сховати посилання</string>
+    <string name="hide_app">Сховати ярлик</string>
     <string name="folder_name">Назва теки</string>
     <string name="event_provider_missing_notification_access">Увімкніть сповіщення від <xliff:g example="My App" id="name">“%2$s” для використання </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="smartspace_provider_calendar">Календарні події</string>
-    <string name="action_press_back">Кнопка \"Назад\"</string>
+    <string name="action_press_back">Кнопка “Назад\"</string>
     <string name="weather_provider_oneplus_weather">Погода OnePlus</string>
     <string name="units_imperial">Фаренгейт</string>
     <string name="owm_get_your_own_key">Отримати ключ API на api.openweathermap.org.</string>
@@ -109,8 +109,8 @@
     <string name="title_search_hidden_apps">Знайти приховані додатки</string>
     <string name="summary_fuzzy_search">Приблизна відповідність для пошуку програм.</string>
     <string name="title__drawer_icon_size">Розмір значків усіх додатків</string>
-    <string name="summary_app_categorize">Вибрати між Вкладками чи Теками</string>
-    <string name="dialog_message_change_sort">Змінити на алфавітне сортування додатків\?</string>
+    <string name="summary_app_categorize">Вибрати між вкладками чи теками</string>
+    <string name="dialog_message_change_sort">Установити сортування додатків за абеткою\?</string>
     <string name="cat_desktop_grid">Сітка та макет</string>
     <string name="icon_shape_squircle">Закруглений квадрат</string>
     <string name="icon_pack_external_picker">Відкрити зовнішній засіб вибору</string>
@@ -130,7 +130,7 @@
     <string name="smartspace_widget_provider_not_found">Завантажте програму Google.</string>
     <string name="zen_mode_enabled">Режим \"Не турбувати\" ввімкнено.</string>
     <string name="home_widget">Короткий огляд</string>
-    <string name="smartspace_provider_bridge">Міст Rootless Pixel</string>
+    <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
     <string name="battery_low">Низький заряд батареї</string>
     <string name="permission_iplocate_twilight_explanation">Дозволити доступ до вашого приблизного місцезнаходження\? Це дозволяє точніше розрахувати світловий день.</string>
     <string name="allow">Дозволити</string>
@@ -267,7 +267,7 @@
     <string name="tab_launcher">Лончер</string>
     <string name="web_search_metager">Metager (Веб)</string>
     <string name="pref_desktop_mode_settings">Параметри настільного режиму</string>
-    <string name="cat_dock_search">Висувна панель та док</string>
+    <string name="cat_dock_search">Висувна панель та панель швидкого доступу</string>
     <string name="disable_protected_apps">Вимкнути захищені додатки</string>
     <string name="open_image_picker">Відкрити засіб вибору зображень</string>
     <string name="icon_shape_corner_cut">Обрізка</string>
@@ -288,7 +288,7 @@
     <string name="title__theme_blur_radius">Інтенсивність розмивання</string>
     <string name="title_theme_icon_packs">Пакети значків</string>
     <string name="theme_auto_black">Відповідно до шпалер (Чорний)</string>
-    <string name="theme_auto_night_mode_black">Як у системі (Чорна)</string>
+    <string name="theme_auto_night_mode_black">Система (Чорна)</string>
     <string name="theme_based">Задано темою</string>
     <string name="theme_with_dark_text">темний текст</string>
     <string name="theme_light">Світлий</string>
@@ -300,8 +300,8 @@
     <string name="menu_icon_shape">Індивідуальна форма значків</string>
     <string name="icon_shape_override_progress">Застосування змін форми значка</string>
     <string name="icon_shape_override_label">Змінити форму значка</string>
-    <string name="icon_shape_bottom_left">Нижній лівий кут</string>
-    <string name="icon_shape_bottom_right">Нижній правий кут</string>
+    <string name="icon_shape_bottom_left">Знизу ліворуч</string>
+    <string name="icon_shape_bottom_right">Знизу праворуч</string>
     <string name="icon_shape_corner_round">Заокруглений</string>
     <string name="icon_shape_corner_squircle">Закруглений квадрат</string>
     <string name="icon_pack_applied_toast">%s застосовано</string>
@@ -366,8 +366,8 @@
     <string name="theme_dark_text">Світлий із темним текстом</string>
     <string name="theme_dark_theme_mode_follow_daylight_black">Відповідно до денного світла (Чорний)</string>
     <string name="theme_use_dark_text">Використовувати темний текст</string>
-    <string name="icon_shape_top_right">Верхній правий кут</string>
-    <string name="theme_use_black">Використовувати чисто чорний</string>
+    <string name="icon_shape_top_right">Зверху праворуч</string>
+    <string name="theme_use_black">Використовувати чистий чорний</string>
     <string name="import_icon">Імпорт значків</string>
     <string name="icon_pack_default">Системні значки</string>
     <string name="color_presets">Передустановки</string>
@@ -386,15 +386,15 @@
     <string name="event_provider_now_playing">Зараз грає</string>
     <string name="title__notification_count">Показувати кількість сповіщень</string>
     <string name="action_none">Нічого не робити</string>
-    <string name="action_open_drawer">Відкрити панель</string>
+    <string name="action_open_drawer">Відкрити висувну панель</string>
     <string name="action_open_app_with_target">Відкрити “%s”</string>
     <string name="action_open_app_select_app">Вибір додатку</string>
     <string name="action_app_search">Відкрити пошук додатків</string>
     <string name="action_open_widgets">Відкрити панель віджетів</string>
     <string name="action_open_notifications">Відкрити сповіщення</string>
-    <string name="gesture_press_back">Кнопка \"Назад\"</string>
+    <string name="gesture_press_back">Кнопка “Назад”</string>
     <string name="omega_actions">Дії</string>
-    <string name="gesture_press_home">Натискання кнопки «Додому»</string>
+    <string name="gesture_press_home">Натискання кнопки “Додому”</string>
     <string name="title__search_show_assistant">Відображати кнопку голосового пошуку</string>
     <string name="title_search_provider">Пошукова система</string>
     <string name="summary__search_show_as_assistant_summary">Відкрити Асистент замість голосового пошуку</string>
@@ -450,7 +450,7 @@
     <string name="customize">Налаштувати</string>
     <string name="title__general_profile">Профіль</string>
     <string name="title__general_gestures_dash">Жести та панель</string>
-    <string name="title__general_search_feed">Пошук та стрічка новин</string>
+    <string name="title__general_search_feed">Пошук та стрічка</string>
     <string name="title__general_widgets_notifications">Віджети та сповіщення</string>
     <string name="pref_category__features">Особливості</string>
     <string name="title__sort_last_installed">Останні встановлені</string>
@@ -470,7 +470,7 @@
     <string name="title_desktop_widget_corner_radius">Радіус заокруглення віджета</string>
     <string name="title_desktop_icon_popup_menu">Елементи контекстного меню</string>
     <string name="msg_missing_usage_access">Увімкніть доступ до використання для <xliff:g example="My App" id="name">%1$s</xliff:g>, щоб показати пропозиції додатків</string>
-    <string name="icon_shape_top_left">Верхній лівий кут</string>
+    <string name="icon_shape_top_left">Зверху ліворуч</string>
     <string name="action_open_recents">Відкрити нещодавні</string>
     <string name="search_no_results">Немає результатів</string>
 </resources>
