@@ -256,7 +256,7 @@ class OmegaSmartSpaceController(val context: Context) {
             else -> {
                 openURLinBrowser(
                     launcher, data.forecastUrl,
-                    launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v).toBundle()
+                    launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v)?.toBundle()
                 )
             }
         }
