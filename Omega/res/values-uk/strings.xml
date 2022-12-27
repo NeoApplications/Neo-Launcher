@@ -473,4 +473,5 @@
     <string name="icon_shape_top_left">Зверху ліворуч</string>
     <string name="action_open_recents">Відкрити нещодавні</string>
     <string name="search_no_results">Немає результатів</string>
+    <string name="show_top_shadow">Показати верхню тінь</string>
 </resources>
