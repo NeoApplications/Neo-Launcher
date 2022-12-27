@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title__general_about">Acerca de</string>
     <string name="title__general_desktop">Escritorio</string>
-    <string name="title__general_dock">Dock</string>
+    <string name="title__general_dock">Acceso rápido</string>
     <string name="title__general_drawer">Aplicaciones</string>
     <string name="title__general_theme">Temas</string>
     <string name="title__general_search">Búsqueda y Carpetas</string>
@@ -424,8 +424,8 @@
     <string name="read_external_storage_required">Acceso al almacenaje concedido para crear un respaldo.</string>
     <string name="local_backups">En Almacenaje</string>
     <string name="about_channel">Canal</string>
-    <string name="web_search_metager">Metager (Web)</string>
-    <string name="web_search_searx">Searx (Web)</string>
+    <string name="web_search_metager">Buscador Metager (Web)</string>
+    <string name="web_search_searx">Buscador Searx (Web)</string>
     <string name="cat_desktop_grid">Rejilla y Disposición</string>
     <string name="title_app_categorization_enable">Habilitar categorías de apps</string>
     <string name="summary_app_categorization_enable">Crear lengüetas o carpetas</string>
@@ -477,4 +477,5 @@
     <string name="folder_opacity">Opacidad de las carpetas</string>
     <string name="reset_custom_icon">Eliminar el ícono personalizado</string>
     <string name="tap_to_enable">Toque el elemento para activarlo</string>
+    <string name="show_top_shadow">Mostrar la sombra superior</string>
 </resources>
