@@ -492,4 +492,5 @@
     <string name="title_themed_icons">Icone a tema</string>
     <string name="folder_opacity">Opacità cartella</string>
     <string name="tap_to_enable">Tocca elemento per abilitarlo</string>
+    <string name="show_top_shadow">Mostra ombra superiore</string>
 </resources>
