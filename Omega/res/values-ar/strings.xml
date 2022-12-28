@@ -483,4 +483,5 @@
     <string name="title_themed_icons">أيقونات ذات طابع خاص</string>
     <string name="folder_opacity">تعتيم المجلد</string>
     <string name="tap_to_enable">انقر على العنصر لتمكينه</string>
+    <string name="show_top_shadow">إظهار الظل العلوي</string>
 </resources>
