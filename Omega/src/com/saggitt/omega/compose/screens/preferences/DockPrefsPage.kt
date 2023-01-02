@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,26 +55,34 @@ fun DockPrefsPage() {
         dialogPref = pref
         openDialog.value = true
     }
-    val dockPrefs = listOf(
-        prefs.dockHide,
-        prefs.dockBackground,
-        prefs.dockBackgroundColor,
-        prefs.dockOpacity,
-        prefs.dockShowPageIndicator,
-        prefs.dockScale,
-        prefs.dockGridSize
-    )
+    val dockPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+                *listOfNotNull(
+                        prefs.dockHide,
+                        prefs.dockBackground,
+                        if (prefs.dockBackground.onGetValue()) {
+                            prefs.dockBackgroundColor
+                        } else {
+                            null
+                        },
+                        prefs.dockOpacity,
+                        prefs.dockShowPageIndicator,
+                        prefs.dockScale,
+                        prefs.dockGridSize
+                ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_dock)
+                title = stringResource(R.string.title__general_dock)
         ) { paddingValues ->
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
                     PreferenceGroup(
