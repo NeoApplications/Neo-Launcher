@@ -90,13 +90,13 @@ fun BackupsPrefPage() {
             title = stringResource(R.string.backups)
         ) { paddingValues ->
             LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                columns = GridCells.Fixed(2),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                    columns = GridCells.Fixed(2),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     ElevatedActionButton(

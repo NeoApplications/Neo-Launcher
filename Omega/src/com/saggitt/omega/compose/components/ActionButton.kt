@@ -25,11 +25,11 @@ fun ElevatedActionButton(
     onClick: () -> Unit = {}
 ) {
     ElevatedButton(
-        modifier = modifier,
-        shape = RoundedCornerShape(cornerRadius),
-        elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
-        contentPadding = PaddingValues(vertical = 18.dp, horizontal = 8.dp),
-        onClick = onClick
+            modifier = modifier,
+            shape = RoundedCornerShape(cornerRadius),
+            elevation = ButtonDefaults.elevatedButtonElevation(8.dp),
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
+            onClick = onClick
     ) {
         if (iconId != -1)
             Icon(
