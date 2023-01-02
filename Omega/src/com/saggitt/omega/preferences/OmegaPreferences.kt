@@ -390,11 +390,12 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         onChange = recreate
     )
     val desktopCustomFolderBackground = BooleanPref(
-        key = PREFS_FOLDER_BACKGROUND_CUSTOM,
-        titleId = R.string.folder_custom_background,
-        defaultValue = false,
-        onChange = recreate
-    )
+            key = PREFS_FOLDER_BACKGROUND_CUSTOM,
+            titleId = R.string.folder_custom_background,
+            defaultValue = false
+    ) {
+        pokeChange()
+    }
     val desktopFolderBackground = ColorIntPref(
         key = PREFS_FOLDER_BACKGROUND,
         titleId = R.string.folder_background,
@@ -455,25 +456,27 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
     var dockScale = FloatPref(
         key = PREFS_DOCK_SCALE,
         titleId = R.string.title__dock_scale,
-        defaultValue = 1f,
-        maxValue = 1.75f,
-        minValue = 0.70f,
-        steps = 100,
-        specialOutputs = { "${(it * 100).roundToInt()}%" },
-        onChange = restart
+            defaultValue = 1f,
+            maxValue = 1.75f,
+            minValue = 0.70f,
+            steps = 100,
+            specialOutputs = { "${(it * 100).roundToInt()}%" },
+            onChange = restart
     )
     val dockBackground = BooleanPref(
-        key = PREFS_DOCK_BACKGROUND,
-        titleId = R.string.title_dock_fill,
-        defaultValue = false,
-        onChange = recreate
-    )
+            key = PREFS_DOCK_BACKGROUND,
+            titleId = R.string.title_dock_fill,
+            defaultValue = false
+    ) {
+        pokeChange()
+    }
+
     val dockBackgroundColor = ColorIntPref(
-        key = PREFS_DOCK_BACKGROUND_COLOR,
-        titleId = R.string.title_dock_background_color,
-        defaultValue = (0xff101010).toInt(),
-        withAlpha = false,
-        onChange = recreate
+            key = PREFS_DOCK_BACKGROUND_COLOR,
+            titleId = R.string.title_dock_background_color,
+            defaultValue = (0xff101010).toInt(),
+            withAlpha = false,
+            onChange = recreate
     )
 
     var dockOpacity = AlphaPref(
@@ -658,7 +661,7 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         key = PREFS_DRAWER_CUSTOM_BACKGROUND,
         titleId = R.string.title_drawer_enable_background,
         defaultValue = false,
-        onChange = doNothing
+            onChange = recreate
     )
     val drawerBackgroundColor = ColorIntPref(
         key = PREFS_DRAWER_BACKGROUND_COLOR,
@@ -1064,26 +1067,28 @@ class OmegaPreferences(val context: Context) : BasePreferences(context) {
         }
     )
     val notificationCount = BooleanPref(
-        key = PREFS_NOTIFICATION_COUNT,
-        titleId = R.string.title__notification_count,
-        defaultValue = false,
-        onChange = recreate
+            key = PREFS_NOTIFICATION_COUNT,
+            titleId = R.string.title__notification_count,
+            defaultValue = false,
+            onChange = recreate
     )
     val notificationCustomColor = BooleanPref(
-        key = PREFS_NOTIFICATION_BACKGROUND_CUSTOM,
-        titleId = R.string.notification_custom_color,
-        defaultValue = false,
-        onChange = recreate
-    )
+            key = PREFS_NOTIFICATION_BACKGROUND_CUSTOM,
+            titleId = R.string.notification_custom_color,
+            defaultValue = false
+    ) {
+        pokeChange()
+    }
+
     val notificationBackground = ColorIntPref(
-        key = PREFS_NOTIFICATION_BACKGROUND,
-        titleId = R.string.title__notification_background,
-        defaultValue = PINK.getValue(KEY_A400).toInt(),
-        withAlpha = true,
-        onChange = recreate
+            key = PREFS_NOTIFICATION_BACKGROUND,
+            titleId = R.string.title__notification_background,
+            defaultValue = PINK.getValue(KEY_A400).toInt(),
+            withAlpha = true,
+            onChange = recreate
     )
     val notificationCountFolder = BooleanPref(
-        key = PREFS_NOTIFICATION_COUNT_FOLDER,
+            key = PREFS_NOTIFICATION_COUNT_FOLDER,
         titleId = R.string.title__folder_badge_count,
         defaultValue = true,
         onChange = recreate

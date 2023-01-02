@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,60 +61,68 @@ fun DrawerPrefsPage() {
         openDialog.value = true
     }
     val iconPrefs = listOf(
-        prefs.drawerIconScale,
-        prefs.drawerHideAppLabels,
-        prefs.drawerMultilineLabel,
-        prefs.drawerTextScale,
-        prefs.drawerPopup,
+            prefs.drawerIconScale,
+            prefs.drawerHideAppLabels,
+            prefs.drawerMultilineLabel,
+            prefs.drawerTextScale,
+            prefs.drawerPopup,
     )
     val gridPrefs = listOf(
-        prefs.drawerGridSize,
-        prefs.drawerSortModeNew,
-        prefs.drawerAppGroups,
-        prefs.drawerSeparateWorkApps,
-        prefs.drawerCellHeightMultiplier,
-        prefs.drawerSaveScrollPosition,
-        //prefs.drawerLayoutNew TODO: Enable this when the horizontal layout is rewritten
+            prefs.drawerGridSize,
+            prefs.drawerSortModeNew,
+            prefs.drawerAppGroups,
+            prefs.drawerSeparateWorkApps,
+            prefs.drawerCellHeightMultiplier,
+            prefs.drawerSaveScrollPosition,
+            //prefs.drawerLayoutNew TODO: Enable this when the horizontal layout is rewritten
     )
-    val otherPrefs = listOf(
-        prefs.drawerHiddenAppSet,
-        prefs.drawerEnableProtectedApps,
-        prefs.drawerProtectedAppsSet,
-        prefs.drawerBackground,
-        prefs.drawerBackgroundColor,
-        prefs.drawerOpacity
-    )
+    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+                *listOfNotNull(
+                        prefs.drawerHiddenAppSet,
+                        prefs.drawerEnableProtectedApps,
+                        prefs.drawerProtectedAppsSet,
+                        prefs.drawerBackground,
+                        if (prefs.drawerBackground.onGetValue()) {
+                            prefs.drawerBackgroundColor
+                        } else {
+                            null
+                        },
+                        prefs.drawerOpacity
+                ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_drawer)
+                title = stringResource(R.string.title__general_drawer)
         ) { paddingValues ->
             LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.cat_drawer_icons),
-                        prefs = iconPrefs,
-                        onPrefDialog = onPrefDialog
+                            stringResource(id = R.string.cat_drawer_icons),
+                            prefs = iconPrefs,
+                            onPrefDialog = onPrefDialog
                     )
                 }
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.cat_drawer_grid),
-                        prefs = gridPrefs,
-                        onPrefDialog = onPrefDialog
+                            stringResource(id = R.string.cat_drawer_grid),
+                            prefs = gridPrefs,
+                            onPrefDialog = onPrefDialog
                     )
                 }
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.pref_category__others),
-                        prefs = otherPrefs,
-                        onPrefDialog = onPrefDialog
+                            stringResource(id = R.string.pref_category__others),
+                            prefs = otherPrefs,
+                            onPrefDialog = onPrefDialog
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -122,20 +132,23 @@ fun DrawerPrefsPage() {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
                     is BasePreferences.IntSelectionPref -> IntSelectionPrefDialogUI(
-                        pref = dialogPref as BasePreferences.IntSelectionPref,
-                        openDialogCustom = openDialog
+                            pref = dialogPref as BasePreferences.IntSelectionPref,
+                            openDialogCustom = openDialog
                     )
+
                     is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
-                        pref = dialogPref as BasePreferences.StringSelectionPref,
-                        openDialogCustom = openDialog
+                            pref = dialogPref as BasePreferences.StringSelectionPref,
+                            openDialogCustom = openDialog
                     )
+
                     is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                        pref = dialogPref as BasePreferences.StringMultiSelectionPref,
-                        openDialogCustom = openDialog
+                            pref = dialogPref as BasePreferences.StringMultiSelectionPref,
+                            openDialogCustom = openDialog
                     )
+
                     is GridSize -> GridSizePrefDialogUI(
-                        pref = dialogPref as GridSize,
-                        openDialogCustom = openDialog
+                            pref = dialogPref as GridSize,
+                            openDialogCustom = openDialog
                     )
                 }
             }
