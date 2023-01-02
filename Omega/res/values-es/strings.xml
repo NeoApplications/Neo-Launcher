@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title__general_about">Acerca de</string>
     <string name="title__general_desktop">Escritorio</string>
-    <string name="title__general_dock">Dock</string>
+    <string name="title__general_dock">Acceso rápido</string>
     <string name="title__general_drawer">Aplicaciones</string>
     <string name="title__general_theme">Temas</string>
     <string name="title__general_search">Búsqueda y Carpetas</string>
@@ -256,7 +256,7 @@
     <string name="backup_creating">Creando respaldo</string>
     <string name="backup_error_blank_name">El nombre debe estar relleno</string>
     <string name="backup_wallpaper">Fondo de Pantalla</string>
-    <string name="backup_settings">Configuraciones</string>
+    <string name="backup_settings">Ajustes</string>
     <string name="backup_homescreen">Pantalla de Inicio</string>
     <string name="restore_backup">Restaurar</string>
     <string name="title_create">Crear</string>
@@ -391,7 +391,7 @@
     <string name="folder_columns">Columnas de Carpeta</string>
     <string name="fonts_global_font">Tipografía</string>
     <string name="fonts_change_global_font">Modificar</string>
-    <string name="summary__advanced_setting_search">Mostrar la búsqueda de la configuración en la barra de acciones</string>
+    <string name="summary__advanced_setting_search">Mostrar la búsqueda de configuraciones en la barra de acción</string>
     <string name="backup_error_blank_contents">El contenido no puede estar vacío</string>
     <string name="title_feed_provider">Proveedor de relleno</string>
     <string name="dash_mobile_network_summary">Muestra los parámetros de las redes del móvil</string>
@@ -424,8 +424,8 @@
     <string name="read_external_storage_required">Acceso al almacenaje concedido para crear un respaldo.</string>
     <string name="local_backups">En Almacenaje</string>
     <string name="about_channel">Canal</string>
-    <string name="web_search_metager">Metager (Web)</string>
-    <string name="web_search_searx">Searx (Web)</string>
+    <string name="web_search_metager">Buscador Metager (Web)</string>
+    <string name="web_search_searx">Buscador Searx (Web)</string>
     <string name="cat_desktop_grid">Rejilla y Disposición</string>
     <string name="title_app_categorization_enable">Habilitar categorías de apps</string>
     <string name="summary_app_categorization_enable">Crear lengüetas o carpetas</string>
@@ -473,4 +473,9 @@
     <string name="notification_dots_disabled">Para mostrar puntos de notificación, habilite la visualización de puntos de notificación en la configuración</string>
     <string name="notification_dots_missing_notification_access">Para mostrar puntos de notificación, activa el acceso a las notificaciones de la aplicación</string>
     <string name="author_role">Desarrollador</string>
+    <string name="title_themed_icons">Iconos temáticos</string>
+    <string name="folder_opacity">Opacidad de las carpetas</string>
+    <string name="reset_custom_icon">Eliminar el ícono personalizado</string>
+    <string name="tap_to_enable">Toque el elemento para activarlo</string>
+    <string name="show_top_shadow">Mostrar la sombra superior</string>
 </resources>

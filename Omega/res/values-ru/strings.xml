@@ -146,18 +146,18 @@
     <string name="onbording_settings_summary">Коснитесь и удерживайте на рабочем столе.</string>
     <string name="onbording_settings_title">Настройка %s</string>
     <string name="personality_provider">Приветствия</string>
-    <string name="action_press_back">Кнопка «Назад»</string>
+    <string name="action_press_back">Кнопка “Назад”</string>
     <string name="deny">Запретить</string>
     <string name="allow">Разрешить</string>
     <string name="permission_iplocate_twilight_explanation">Разрешить доступ к вашему приблизительному местоположению\? Это позволяет более точно рассчитывать дневное освещение.</string>
     <string name="permission_iplocate">Приблизительное местоположение</string>
-    <string name="event_provider_missing_notification_access">Чтобы использовать <xliff:g example="My Provider" id="providerName">%1$s</xliff:g>, включите уведомления от <xliff:g example="My App" id="name">%2$s.</xliff:g></string>
+    <string name="event_provider_missing_notification_access">Включите уведомления от <xliff:g example="My App" id="name">“%2$s”, чтобы использовать </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="battery_low">Низкий заряд батареи</string>
     <string name="battery_full">Заряжено</string>
     <string name="battery_charging">Зарядка</string>
     <string name="zen_mode_enabled">Режим \"Не беспокоить\" включен.</string>
     <string name="smartspace_widget_provider_not_found">Загрузите приложение Google.</string>
-    <string name="smartspace_now">сейчас же</string>
+    <string name="smartspace_now">сейчас</string>
     <string name="smartspace_setup_text">Нажмите, чтобы настроить</string>
     <string name="smartspace_add_to_home">Добавить на рабочий стол</string>
     <string name="smartspace_preferences">Предпочтения</string>
@@ -166,7 +166,7 @@
     <string name="title_smartspace_event_providers">Источники событий</string>
     <string name="title_smartspace_weather_units">Единица измерения температуры</string>
     <string name="title_smartspace_widget_provider">Источник погоды</string>
-    <string name="title_smartspace_time_above">Показать большие часы</string>
+    <string name="title_smartspace_time_above">Показывать большие часы</string>
     <string name="title_smartspace_time_24_h">Использовать 24-часовой формат</string>
     <string name="title_smartspace_date">Показать дату</string>
     <string name="title_smartspace_time">Показать время</string>
@@ -214,7 +214,7 @@
     <string name="theme_black">Черный</string>
     <string name="theme_with_dark_text">темный текст</string>
     <string name="theme_light">Светлый</string>
-    <string name="theme_based">Установить по теме</string>
+    <string name="theme_based">Задано темой</string>
     <string name="theme_auto_night_mode">Система</string>
     <string name="theme_auto">В соответствии с обоями</string>
     <string name="summary__theme_blur">Размытие фона страницы</string>
@@ -223,7 +223,7 @@
     <string name="title__theme_blur_radius">Интенсивность размытия</string>
     <string name="title__theme_blur">Размытие</string>
     <string name="title__theme_accent_color">Цвет акцента</string>
-    <string name="msg_missing_usage_access">Чтобы показать предложения приложений, включите доступ к использованию для <xliff:g example="My App" id="name"> %1$s </xliff:g></string>
+    <string name="msg_missing_usage_access">Включите доступ к использованию для <xliff:g example="My App" id="name"> %1$s </xliff:g>, чтобы показать предложения приложений</string>
     <string name="needs_usage_access">Требуется доступ к использованию</string>
     <string name="hide_app_selected">Скрытые приложения (%1$d)</string>
     <plurals name="hidden_apps_count">
@@ -271,10 +271,10 @@
     <string name="title__dock_show_arrow">Показать стрелку</string>
     <string name="title__dock_hotseat_icons">Количество иконок</string>
     <string name="title__dock_hide_labels">Скрыть ярлыки</string>
-    <string name="title__dock_hide">Скрыть панель быстрого запуска</string>
+    <string name="title__dock_hide">Скрыть панель быстрого доступа</string>
     <string name="title_dock_background_color">Цвет фона</string>
     <string name="title_dock_fill">Показать фон</string>
-    <string name="title__dock_scale">Шкала панели быстрого доступа</string>
+    <string name="title__dock_scale">Высота панели быстрого доступа</string>
     <string name="title__dock_icon_size">Размер иконки</string>
     <string name="grid_size_width">Ширина</string>
     <string name="grid_size_height">Высота</string>
@@ -334,12 +334,12 @@
     <string name="title_create">Создать</string>
     <string name="summary__advanced_setting_search">Показать поиск настроек в панели действий</string>
     <string name="action_sleep">Сон</string>
-    <string name="action_open_widgets">Виджеты</string>
+    <string name="action_open_widgets">Открыть панель виджетов</string>
     <string name="folder_name_format">Папка: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
     <string name="weather_provider_oneplus_weather">Погода OnePlus</string>
     <string name="action_open_recents">Открыть недавние</string>
     <string name="smartspace_provider_calendar">События календаря</string>
-    <string name="event_provider_missing_notification_dots">Чтобы использовать <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>, включите точки уведомлений.</string>
+    <string name="event_provider_missing_notification_dots">Включите точки уведомлений, чтобы использовать <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_in_time">в %1$s</string>
     <string name="add_new_tab">Добавить</string>
@@ -404,25 +404,25 @@
     <string name="title__general_search_feed">Поиск и лента</string>
     <string name="pref_category__features">Особенности</string>
     <string name="title__general_widgets_notifications">Виджеты и уведомления</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Следите за дневным светом (черный)</string>
+    <string name="theme_dark_theme_mode_follow_daylight_black">В соответствии с дневным светом (черный)</string>
     <string name="units_reaumur">Реомюр</string>
     <string name="units_rakine">Ранкин</string>
     <string name="units_newton">Ньютон</string>
     <string name="units_delisle">Делайла</string>
     <string name="icon_picker_default_category">Иконки</string>
-    <string name="cat_dock_search">Ящик и док</string>
-    <string name="theme_auto_black">Следуйте за обоями (черный)</string>
+    <string name="cat_dock_search">Выдвижная панель и панель быстрого доступа</string>
+    <string name="theme_auto_black">В соответствии с обоями (черный)</string>
     <string name="title_desktop_widget_corner_radius">Радиус угла виджета</string>
     <string name="title__drawer_rows">Количество строк</string>
     <string name="summary_fuzzy_search">Приблизительное соответствие для поиска приложений.</string>
     <string name="protected_apps">Защищенные приложения</string>
     <string name="title_smartspace">Показать Смартспейс</string>
     <string name="icon_picker_load_failed">Не удалось загрузить больше иконок.</string>
-    <string name="title_use_pill_qsb">Показать ярлык поиска таблеток</string>
+    <string name="title_use_pill_qsb">Показать ярлык поиска в стиле таблетки</string>
     <string name="onbording">Адаптация</string>
     <string name="title__general_gestures_dash">Жесты и панель</string>
     <string name="units_romer">Рёмер</string>
-    <string name="title_fuzzy_search">Fuzzy Поиск</string>
+    <string name="title_fuzzy_search">Неточный поиск</string>
     <string name="protected_app_selected">Защищенные приложения (%1$d)</string>
     <string name="summary_white_only_treatment">Раскрасьте фон всех адаптивных иконок.</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
@@ -463,11 +463,11 @@
     <string name="gesture_launch_assistant">Запуск Ассистента (кнопкой или жестом)</string>
     <string name="modify_system_settings">Изменение системных настроек</string>
     <string name="tab_shortcuts">Ярлыки</string>
-    <string name="web_search_metager">Метагер (Веб)</string>
+    <string name="web_search_metager">Metager (Веб)</string>
     <string name="dash_auto_rotation_summary">Включите или выключите автоповорот.</string>
     <string name="title_feed_provider">Поставщик ленты</string>
     <string name="dash_media_player">Аудиоплеер</string>
-    <string name="dash_torch">Факел</string>
+    <string name="dash_torch">Фонарик</string>
     <string name="tab_launcher">Лаунчер</string>
     <string name="enabled_events">Включен</string>
     <string name="dash_wifi_summary">Состояние и подключение Wi-Fi</string>
@@ -475,4 +475,8 @@
     <string name="modify_system_settings_message">Предоставьте возможность изменять системные настройки, чтобы это работало</string>
     <string name="web_search_searx">Searx (Веб)</string>
     <string name="permission_denied">Разрешение на чтение отклонено!</string>
+    <string name="reset_custom_icon">Удалить пользовательский значок</string>
+    <string name="title_themed_icons">Тематические иконки</string>
+    <string name="folder_opacity">Непрозрачность папки</string>
+    <string name="tap_to_enable">Нажмите элемент, чтобы включить</string>
 </resources>

@@ -182,7 +182,7 @@
     <string name="msg_missing_usage_access">Uygulama önerilerini göstermek için <xliff:g example="My App" id="name">%1$s</xliff:g> için kullanım erişimini açın</string>
     <string name="needs_usage_access">Kullanım erişimi gerekli</string>
     <string name="hide_app_reset">Gizli uygulamaları sıfırla</string>
-    <string name="hide_app_selected"> gizli</string>
+    <string name="hide_app_selected">Gizli Uygulamalar</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Gizli</item>
         <item quantity="other"/>
@@ -212,9 +212,9 @@
     <string name="summary__drawer_hide_apps">Uygulamayı uygulama çekmecesinden gizle</string>
     <string name="summary_all_apps_google_search">Web sonuçlarını ve uygulamalarını bul</string>
     <string name="summary_search_hidden_apps">Sonuçlarda gizli kısayolları göster.</string>
-    <string name="title_search_hidden_apps">Gizli Kısayolları Bul</string>
+    <string name="title_search_hidden_apps">Gizli Uygulamaları Bul</string>
     <string name="title_all_apps_keep_scroll_state">Konumu Hatırla</string>
-    <string name="title_all_apps_google_search">Genel arama</string>
+    <string name="title_all_apps_google_search">Arama Sonuçları</string>
     <string name="title_all_apps_search">Çekmece arama çubuğu</string>
     <string name="title__sort_by_color">Renge Göre</string>
     <string name="title__sort_most_used">En Çok Kullanılan</string>
@@ -442,4 +442,13 @@
     <string name="tab_launcher">Başlatıcı</string>
     <string name="tab_shortcuts">Kısayollar</string>
     <string name="debug_options_title">Hata ayıklama bilgileri</string>
+    <string name="tap_to_enable">Etkinleştirmek için öğeye dokunun</string>
+    <string name="folder_name">Klasör İsmi</string>
+    <string name="selected_apps">Seçili Uygulamalar</string>
+    <string name="title__general_profile">Profil</string>
+    <string name="title__general_search_feed">Arama &amp; Destek Olma</string>
+    <string name="title__general_widgets_notifications">Widget\'lar &amp; Bildirimler</string>
+    <string name="pref_category__features">Özellikler</string>
+    <string name="title__drawer_rows">Satır sayısı</string>
+    <string name="protected_apps">Korumalı Uygulamalar</string>
 </resources>
