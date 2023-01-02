@@ -1,6 +1,6 @@
 Neo Launcher es una bifurcación del lanzador de AOSP para usuarios avanzados. Es altamente configurable y le ofrece mucha funcionalidad. Algunos son:
 
- - El _Dash_.
+- El _Dash_.
 - Soporte de temas ricos.
 - Motores de búsqueda personalizados.
 - Gestos de apoyo.
