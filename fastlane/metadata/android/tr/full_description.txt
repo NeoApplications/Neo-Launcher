@@ -1,4 +1,5 @@
-Neo Launcher, güç kullanıcıları için Aosp'nin başlatıcısının bir çatalıdır. Son derece yapılandırılabilir ve size çok fazla işlevsellik sunar. Bazıları şunlardır:
+Neo Launcher, güç kullanıcıları için Aosp'nin başlatıcısının bir çatalıdır.
+kSon derece yapılandırılabilir ve size çok fazla işlevsellik sunar. Bazıları şunlardır:
 
 - _Çizgi_.
 - Zengin temalar desteği.
