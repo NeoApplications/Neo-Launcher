@@ -1,0 +1,7 @@
+Tambahkan: Geser gerakan ke atas untuk folder
+Tambahkan: Pengaturan Feed-Provider
+Perbaiki: Preferensi bahasa
+Pembaruan: Tingkatkan rentang kisi/kolom ke 2-16
+Hapus: Google App dan Google GO sebagai penyedia pencarian
+Hapus: gerakan StartAppSearch, StartApp, dan TimeoutSleep
+Banyak perbaikan kerusakan

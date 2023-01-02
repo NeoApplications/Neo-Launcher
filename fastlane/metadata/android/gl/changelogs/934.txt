@@ -1,0 +1,8 @@
+Engadido: OWM como provedor do tempo
+Engadido: soporte para LawnIcons
+Engadido: compatibilidade con iconas temáticas para A13
+Correxido: a nova configuración UI/UX
+Correxido: problema coas iconas pantasmas
+Correxido: compatibilidade das copias de seguridade entre release/neo/debug
+Correxido: ordenación de aplicacións en función dos idiomas das rexións
+Para máis detalles consulte o rexistro de cambios completo…

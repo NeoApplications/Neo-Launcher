@@ -1,12 +1,12 @@
 <ul>
-  <li>Añadir: Buscador Web Brave</li>
-  <li>Añadir: Pulsar la preferencia del gesto de retroceso</li>
-  <li>Añadir: Pulse el gesto de preferencia de Inicio</li>
-  <li>Añadir: Modo de escritorio</li>
-  <li>Corrección: Color de texto en el selector de widgets para el tema claro</li>
-  <li>Corrección: Buscar aplicaciones ocultasn</li>
-  <li>Corrección: Icono de carpeta en modo de portada</li>
+  <li>Añadido: Buscador Brave</li>
+  <li>Añadido: El gesto de retroceso</li>
+  <li>Añadido: Gesto de Inicio</li>
+  <li>Añadido: Modo de escritorio</li>
+  <li>Corregido: Color del texto en los widgets para el tema claro</li>
+  <li>Corregido: Buscar aplicaciones ocultas</li>
+  <li>Corregido: Icono de la carpeta de portada</li>
   <li>Restaurar widget de espacio inteligente</li>
-  <li>Restaurar icono de reloj adaptable (Google)</li>
-  <li>Restaurar icono de calendario adaptable (Google)</li>
+  <li>Restaurar icono de reloj (Google)</li>
+  <li>Restaurar icono de calendario (Google)</li>
 </ul>

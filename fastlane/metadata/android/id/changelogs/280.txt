@@ -1,0 +1,12 @@
+<ul>
+   <li>Tambahkan: Penelusuran web Brave</li>
+   <li>Tambahkan: Preferensi gestur tekan kembali</li>
+   <li>Tambahkan: Preferensi gestur Tekan Beranda</li>
+   <li>Tambahkan: Mode Desktop</li>
+   <li>Perbaikan: Warna teks pada pemilih widget untuk tema terang</li>
+   <li>Perbaikan: Cari aplikasi tersembunyi</li>
+   <li>Perbaikan: Ikon folder dalam mode sampul</li>
+   <li>Pulihkan widget smartspace</li>
+   <li>Pulihkan ikon jam Adaptif (Google)</li>
+   <li>Pulihkan ikon kalender Adaptif (Google)</li>
+</ul>

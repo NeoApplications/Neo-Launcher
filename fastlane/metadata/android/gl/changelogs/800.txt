@@ -1,0 +1,12 @@
+* Un Android-11.0.0_r31
+* Engadido: mantén a preferencia de pantalla baleira
+* Engadido: selector de cores para pestanas
+* Engadido: controis de guión adicionais
+* Engadido: personalización do script
+* Engadido: Soporte QuickSwitch
+* Engadido: FiveSecs KLWP
+* Engadido: provedor de Searx
+* Engadido: axuda para durmir
+* Engadido: lista vertical de aplicacións (experimental)
+* Correxido: tamaño do peirao en pantallas longas
+* Amañado: fallo ao abrir Google Assistant

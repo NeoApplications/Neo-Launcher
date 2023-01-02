@@ -1,0 +1,8 @@
+Tambahkan: OWM sebagai penyedia cuaca
+Tambahkan: dukungan LawnIcons
+Tambahkan: Dukungan ikon bertema untuk A13
+Pembaruan: UI/UX baru untuk pengaturan
+Perbaiki: Masalah Ghost ikon
+Perbaiki: Kompatibilitas pencadangan antara rilis/neo/debug
+Perbaiki: Menyortir aplikasi berdasarkan bahasa lokal
+Untuk detail lebih lanjut, periksa log perubahan lengkap…
