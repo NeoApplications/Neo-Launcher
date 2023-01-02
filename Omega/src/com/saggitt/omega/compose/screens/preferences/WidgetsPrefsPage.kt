@@ -73,32 +73,39 @@ fun WidgetsPrefsPage() {
                 if (prefs.smartspaceWeatherProvider.onGetValue() == OWMWeatherDataProvider::class.java.name) {
                     prefs.smartspaceWeatherApiKey
                 } else null,
-                if (prefs.smartspaceWeatherProvider.onGetValue() == OWMWeatherDataProvider::class.java.name) {
-                    prefs.smartspaceWeatherCity
-                } else null,
-                prefs.smartspaceWeatherUnit,
-                prefs.smartspaceEventProvidersNew
+                    if (prefs.smartspaceWeatherProvider.onGetValue() == OWMWeatherDataProvider::class.java.name) {
+                        prefs.smartspaceWeatherCity
+                    } else null,
+                    prefs.smartspaceWeatherUnit,
+                    prefs.smartspaceEventProvidersNew
             ).toTypedArray()
         )
     }
-
-    val notificationsPrefs = listOf(
-        prefs.notificationDots,
-        prefs.notificationCount,
-        prefs.notificationCustomColor,
-        prefs.notificationBackground
-    )
+    val notificationsPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+                *listOfNotNull(
+                        prefs.notificationDots,
+                        prefs.notificationCustomColor,
+                        if (prefs.notificationCustomColor.onGetValue()) {
+                            prefs.notificationBackground
+                        } else {
+                            null
+                        },
+                        prefs.notificationCount
+                ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_widgets_notifications)
+                title = stringResource(R.string.title__general_widgets_notifications)
         ) { paddingValues ->
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // TODO Add Smartspace preview
                 item {
@@ -122,28 +129,33 @@ fun WidgetsPrefsPage() {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
                         is BasePreferences.IntentLauncherPref -> IntentLauncherDialogUI(
-                            pref = dialogPref as BasePreferences.IntentLauncherPref,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as BasePreferences.IntentLauncherPref,
+                                openDialogCustom = openDialog
                         )
+
                         is BasePreferences.IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as BasePreferences.IntSelectionPref,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as BasePreferences.IntSelectionPref,
+                                openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as BasePreferences.StringSelectionPref,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as BasePreferences.StringSelectionPref,
+                                openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as BasePreferences.StringMultiSelectionPref,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as BasePreferences.StringMultiSelectionPref,
+                                openDialogCustom = openDialog
                         )
+
                         is BasePreferences.StringTextPref -> StringTextPrefDialogUI(
-                            pref = dialogPref as BasePreferences.StringTextPref,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as BasePreferences.StringTextPref,
+                                openDialogCustom = openDialog
                         )
+
                         is GridSize -> GridSizePrefDialogUI(
-                            pref = dialogPref as GridSize,
-                            openDialogCustom = openDialog
+                                pref = dialogPref as GridSize,
+                                openDialogCustom = openDialog
                         )
                     }
                 }
