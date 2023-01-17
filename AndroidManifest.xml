@@ -21,7 +21,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.launcher3">
     <uses-sdk
-        android:targetSdkVersion="31"
+        android:targetSdkVersion="33"
         android:minSdkVersion="26" />
     <!--
     Manifest entries specific to Launcher3. This is merged with AndroidManifest-common.xml.
@@ -33,9 +33,10 @@
         android:fullBackupOnly="true"
         android:fullBackupContent="@xml/backupscheme"
         android:hardwareAccelerated="true"
+        android:debuggable="true"
         android:icon="@drawable/ic_launcher_home"
         android:label="@string/derived_app_name"
-        android:theme="@style/AppTheme.Light"
+        android:theme="@style/AppTheme"
         android:largeHeap="@bool/config_largeHeap"
         android:restoreAnyVersion="true"
         android:supportsRtl="true" >
@@ -51,7 +52,7 @@
             android:stateNotNeeded="true"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="unspecified"
-            android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize|density"
+            android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize"
             android:resizeableActivity="true"
             android:resumeWhilePausing="true"
             android:taskAffinity=""
@@ -59,6 +60,7 @@
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SHOW_WORK_APPS" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY"/>

@@ -18,7 +18,6 @@ package com.android.launcher3.folder;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
@@ -27,7 +26,6 @@ import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputMethodManager;
 
 import com.android.launcher3.ExtendedEditText;
-import com.android.launcher3.Utilities;
 
 import java.util.List;
 
@@ -78,13 +76,6 @@ public class FolderNameEditText extends ExtendedEditText {
         // callback to notify when the IME animation and state handling is finished.
         postDelayed(() -> getContext().getSystemService(InputMethodManager.class)
                 .displayCompletions(this, cInfo), 40 /* 2~3 frame delay */);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (Utilities.getOmegaPrefs(getContext()).getDesktopLock().onGetValue())
-            return true;
-        return super.onTouchEvent(event);
     }
 
     /**

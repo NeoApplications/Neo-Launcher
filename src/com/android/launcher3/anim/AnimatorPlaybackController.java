@@ -19,7 +19,7 @@ import static com.android.launcher3.Utilities.boundToRange;
 import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.anim.Interpolators.clampToProgress;
 import static com.android.launcher3.anim.Interpolators.scrollInterpolatorForVelocity;
-import static com.android.launcher3.util.DisplayController.getSingleFrameMs;
+import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 /**
  * Helper class to control the playback of an {@link AnimatorSet}, with custom interpolators
  * and durations.
- * <p>
+ *
  * Note: The implementation does not support start delays on child animations or
  * sequential playbacks.
  */

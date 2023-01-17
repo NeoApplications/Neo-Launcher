@@ -29,11 +29,6 @@ import java.util.Objects;
  */
 public class PackageItemInfo extends ItemInfoWithIcon {
     /**
-     * The package is categorized to conversations widget in the widget tray.
-     */
-    public static final int CONVERSATIONS = 1;
-
-    /**
      * Package name of the {@link PackageItemInfo}.
      */
     public final String packageName;
@@ -76,11 +71,13 @@ public class PackageItemInfo extends ItemInfoWithIcon {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PackageItemInfo that = (PackageItemInfo) o;
-        return Objects.equals(packageName, that.packageName);
+        return Objects.equals(packageName, that.packageName)
+                && Objects.equals(user, that.user)
+                && widgetCategory == that.widgetCategory;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(packageName, user);
+        return Objects.hash(packageName, user, widgetCategory);
     }
 }

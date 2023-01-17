@@ -16,17 +16,19 @@
 
 package com.android.launcher3.graphics;
 
-import static com.android.launcher3.config.FeatureFlags.MULTI_DB_GRID_MIRATION_ALGO;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
 import android.app.WallpaperColors;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
+import android.database.Cursor;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.util.Size;
+import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.SurfaceControlViewHost;
@@ -35,20 +37,21 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.Workspace;
 import com.android.launcher3.graphics.LauncherPreviewRenderer.PreviewContext;
 import com.android.launcher3.model.BgDataModel;
-import com.android.launcher3.model.GridSizeMigrationTask;
 import com.android.launcher3.model.GridSizeMigrationTaskV2;
 import com.android.launcher3.model.LoaderTask;
-import com.android.launcher3.model.ModelDelegate;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
@@ -128,6 +131,45 @@ public class PreviewSurfaceRenderer {
     }
 
     /**
+     * A function that queries for the launcher app widget span info
+     *
+     * @param context The context to get the content resolver from, should be related to launcher
+     * @return A SparseArray with the app widget id being the key and the span info being the values
+     */
+    @WorkerThread
+    @Nullable
+    public SparseArray<Size> getLoadedLauncherWidgetInfo(
+            @NonNull final Context context) {
+        final SparseArray<Size> widgetInfo = new SparseArray<>();
+        final String query = LauncherSettings.Favorites.ITEM_TYPE + " = "
+                + LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
+
+        try (Cursor c = context.getContentResolver().query(LauncherSettings.Favorites.CONTENT_URI,
+                new String[]{
+                        LauncherSettings.Favorites.APPWIDGET_ID,
+                        LauncherSettings.Favorites.SPANX,
+                        LauncherSettings.Favorites.SPANY
+                }, query, null, null)) {
+            final int appWidgetIdIndex = c.getColumnIndexOrThrow(
+                    LauncherSettings.Favorites.APPWIDGET_ID);
+            final int spanXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANX);
+            final int spanYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANY);
+            while (c.moveToNext()) {
+                final int appWidgetId = c.getInt(appWidgetIdIndex);
+                final int spanX = c.getInt(spanXIndex);
+                final int spanY = c.getInt(spanYIndex);
+
+                widgetInfo.append(appWidgetId, new Size(spanX, spanY));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error querying for launcher widget info", e);
+            return null;
+        }
+
+        return widgetInfo;
+    }
+
+    /**
      * Generates the preview in background
      */
     public void loadAsync() {
@@ -151,25 +193,38 @@ public class PreviewSurfaceRenderer {
             inflationContext = new ContextThemeWrapper(context,
                     Themes.getActivityThemeRes(context, mWallpaperColors.getColorHints()));
         } else {
-            inflationContext = new ContextThemeWrapper(mContext, R.style.AppTheme_Light);
+            inflationContext = new ContextThemeWrapper(mContext,
+                    Themes.getActivityThemeRes(mContext));
         }
 
         if (migrated) {
             PreviewContext previewContext = new PreviewContext(inflationContext, mIdp);
             new LoaderTask(
                     LauncherAppState.getInstance(previewContext),
-                    null,
+                    /* bgAllAppsList= */ null,
                     new BgDataModel(),
-                    new ModelDelegate(), null) {
+                    LauncherAppState.getInstance(previewContext).getModel().getModelDelegate(),
+                    /* results= */ null) {
 
                 @Override
                 public void run() {
+                    DeviceProfile deviceProfile = mIdp.getDeviceProfile(previewContext);
+                    String query =
+                            LauncherSettings.Favorites.SCREEN + " = " + Workspace.FIRST_SCREEN_ID
+                                    + " or " + LauncherSettings.Favorites.CONTAINER + " = "
+                                    + LauncherSettings.Favorites.CONTAINER_HOTSEAT;
+                    if (deviceProfile.isTwoPanels) {
+                        query += " or " + LauncherSettings.Favorites.SCREEN + " = "
+                                + Workspace.SECOND_SCREEN_ID;
+                    }
                     loadWorkspace(new ArrayList<>(), LauncherSettings.Favorites.PREVIEW_CONTENT_URI,
-                            LauncherSettings.Favorites.SCREEN + " = 0 or "
-                                    + LauncherSettings.Favorites.CONTAINER + " = "
-                                    + LauncherSettings.Favorites.CONTAINER_HOTSEAT);
+                            query);
+
+                    final SparseArray<Size> spanInfo =
+                            getLoadedLauncherWidgetInfo(previewContext.getBaseContext());
+
                     MAIN_EXECUTOR.execute(() -> {
-                        renderView(previewContext, mBgDataModel, mWidgetProvidersMap);
+                        renderView(previewContext, mBgDataModel, mWidgetProvidersMap, spanInfo);
                         mOnDestroyCallbacks.add(previewContext::onDestroy);
                     });
                 }
@@ -177,7 +232,8 @@ public class PreviewSurfaceRenderer {
         } else {
             LauncherAppState.getInstance(inflationContext).getModel().loadAsync(dataModel -> {
                 if (dataModel != null) {
-                    MAIN_EXECUTOR.execute(() -> renderView(inflationContext, dataModel, null));
+                    MAIN_EXECUTOR.execute(() -> renderView(inflationContext, dataModel, null,
+                            null));
                 } else {
                     Log.e(TAG, "Model loading failed");
                 }
@@ -187,26 +243,21 @@ public class PreviewSurfaceRenderer {
 
     @WorkerThread
     private boolean doGridMigrationIfNecessary() {
-        boolean needsToMigrate =
-                MULTI_DB_GRID_MIRATION_ALGO.get()
-                        ? GridSizeMigrationTaskV2.needsToMigrate(mContext, mIdp)
-                        : GridSizeMigrationTask.needsToMigrate(mContext, mIdp);
-        if (!needsToMigrate) {
+        if (!GridSizeMigrationTaskV2.needsToMigrate(mContext, mIdp)) {
             return false;
         }
-        return MULTI_DB_GRID_MIRATION_ALGO.get()
-                ? GridSizeMigrationTaskV2.migrateGridIfNeeded(mContext, mIdp)
-                : GridSizeMigrationTask.migrateGridIfNeeded(mContext, mIdp);
+        return GridSizeMigrationTaskV2.migrateGridIfNeeded(mContext, mIdp);
     }
 
     @UiThread
     private void renderView(Context inflationContext, BgDataModel dataModel,
-                            Map<ComponentKey, AppWidgetProviderInfo> widgetProviderInfoMap) {
+                            Map<ComponentKey, AppWidgetProviderInfo> widgetProviderInfoMap,
+                            @Nullable final SparseArray<Size> launcherWidgetSpanInfo) {
         if (mDestroyed) {
             return;
         }
-        View view = new LauncherPreviewRenderer(inflationContext, mIdp, mWallpaperColors)
-                .getRenderedView(dataModel, widgetProviderInfoMap);
+        View view = new LauncherPreviewRenderer(inflationContext, mIdp, mWallpaperColors,
+                launcherWidgetSpanInfo).getRenderedView(dataModel, widgetProviderInfoMap);
         // This aspect scales the view to fit in the surface and centers it
         final float scale = Math.min(mWidth / (float) view.getMeasuredWidth(),
                 mHeight / (float) view.getMeasuredHeight());

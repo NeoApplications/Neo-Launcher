@@ -27,23 +27,23 @@ option java_multiple_files = true;
    that they can be easily identified. */
 message LauncherTraceFileProto {
 
-  /* constant; MAGIC_NUMBER = (long) MAGIC_NUMBER_H << 32 | MagicNumber.MAGIC_NUMBER_L
-     (this is needed because enums have to be 32 bits and there's no nice way to put 64bit
-      constants into .proto files. */
-  enum MagicNumber {
-    INVALID = 0;
-    MAGIC_NUMBER_L = 0x48434E4C;  /* LNCH (little-endian ASCII) */
-    MAGIC_NUMBER_H = 0x43525452;  /* RTRC (little-endian ASCII) */
-  }
+    /* constant; MAGIC_NUMBER = (long) MAGIC_NUMBER_H << 32 | MagicNumber.MAGIC_NUMBER_L
+       (this is needed because enums have to be 32 bits and there's no nice way to put 64bit
+        constants into .proto files. */
+    enum MagicNumber {
+        INVALID = 0;
+        MAGIC_NUMBER_L = 0x48434E4C;  /* LNCH (little-endian ASCII) */
+        MAGIC_NUMBER_H = 0x43525452;  /* RTRC (little-endian ASCII) */
+    }
 
-  optional fixed64 magic_number = 1;  /* Must be the first field, set to value in MagicNumber */
-  repeated LauncherTraceEntryProto entry = 2;
+    optional fixed64 magic_number = 1;  /* Must be the first field, set to value in MagicNumber */
+    repeated LauncherTraceEntryProto entry = 2;
 }
 
 /* one launcher trace entry. */
 message LauncherTraceEntryProto {
-  /* required: elapsed realtime in nanos since boot of when this entry was logged */
-  optional fixed64 elapsed_realtime_nanos = 1;
+    /* required: elapsed realtime in nanos since boot of when this entry was logged */
+    optional fixed64 elapsed_realtime_nanos = 1;
 
-  optional LauncherTraceProto launcher = 3;
+    optional LauncherTraceProto launcher = 3;
 }

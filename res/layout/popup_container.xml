@@ -34,6 +34,5 @@
         android:id="@+id/notification_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:visibility="gone" />
 </com.android.launcher3.popup.PopupContainerWithArrow>

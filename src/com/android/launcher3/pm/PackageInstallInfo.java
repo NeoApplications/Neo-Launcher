@@ -58,6 +58,7 @@ public final class PackageInstallInfo {
         return new PackageInstallInfo(packageName, state, 0 /* progress */, user);
     }
 
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + dumpProperties() + ")";

@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.widget.picker;
 
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -39,6 +40,7 @@ import com.android.launcher3.icons.PlaceHolderIconDrawable;
 import com.android.launcher3.icons.cache.HandlerRunnable;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.PackageItemInfo;
+import com.android.launcher3.util.PluralMessageFormat;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
 import com.android.launcher3.widget.model.WidgetsListSearchHeaderEntry;
@@ -93,7 +95,7 @@ public final class WidgetsListHeader extends LinearLayout implements ItemInfoUpd
         mTitle = findViewById(R.id.app_title);
         mSubtitle = findViewById(R.id.app_subtitle);
         mExpandToggle = findViewById(R.id.toggle);
-        findViewById(R.id.app_container).setAccessibilityDelegate(new AccessibilityDelegate() {
+        setAccessibilityDelegate(new AccessibilityDelegate() {
 
             @Override
             public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
@@ -172,13 +174,7 @@ public final class WidgetsListHeader extends LinearLayout implements ItemInfoUpd
 
     private void setIcon(PackageItemInfo info) {
         Drawable icon;
-        switch (info.widgetCategory) {
-            case PackageItemInfo.CONVERSATIONS:
-                icon = getContext().getDrawable(R.drawable.ic_conversations_widget_category);
-                break;
-            default:
-                icon = info.newIcon(getContext());
-        }
+        icon = info.newIcon(getContext());
         applyDrawables(icon);
         mIconDrawable = icon;
         if (mIconDrawable != null) {
@@ -217,18 +213,18 @@ public final class WidgetsListHeader extends LinearLayout implements ItemInfoUpd
 
         String subtitle;
         if (entry.widgetsCount > 0 && entry.shortcutsCount > 0) {
-            String widgetsCount = resources.getQuantityString(R.plurals.widgets_count,
-                    entry.widgetsCount, entry.widgetsCount);
-            String shortcutsCount = resources.getQuantityString(R.plurals.shortcuts_count,
-                    entry.shortcutsCount, entry.shortcutsCount);
+            String widgetsCount = PluralMessageFormat.getIcuPluralString(getContext(),
+                    R.string.widgets_count, entry.widgetsCount);
+            String shortcutsCount = PluralMessageFormat.getIcuPluralString(getContext(),
+                    R.string.shortcuts_count, entry.shortcutsCount);
             subtitle = resources.getString(R.string.widgets_and_shortcuts_count, widgetsCount,
                     shortcutsCount);
         } else if (entry.widgetsCount > 0) {
-            subtitle = resources.getQuantityString(R.plurals.widgets_count,
-                    entry.widgetsCount, entry.widgetsCount);
+            subtitle = PluralMessageFormat.getIcuPluralString(getContext(),
+                    R.string.widgets_count, entry.widgetsCount);
         } else {
-            subtitle = resources.getQuantityString(R.plurals.shortcuts_count,
-                    entry.shortcutsCount, entry.shortcutsCount);
+            subtitle = PluralMessageFormat.getIcuPluralString(getContext(),
+                    R.string.shortcuts_count, entry.shortcutsCount);
         }
         mSubtitle.setText(subtitle);
         mSubtitle.setVisibility(VISIBLE);

@@ -18,6 +18,8 @@ package com.android.launcher3.testing;
 
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.os.Binder;
 import android.os.Bundle;
@@ -25,13 +27,20 @@ import android.system.Os;
 import android.view.View;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
+import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
+import com.android.launcher3.ShortcutAndWidgetContainer;
+import com.android.launcher3.testing.shared.TestProtocol;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,9 +50,48 @@ import java.util.concurrent.TimeUnit;
 public class DebugTestInformationHandler extends TestInformationHandler {
     private static LinkedList sLeaks;
     private static Collection<String> sEvents;
+    private static Application.ActivityLifecycleCallbacks sActivityLifecycleCallbacks;
+    private static final Map<Activity, Boolean> sActivities =
+            Collections.synchronizedMap(new WeakHashMap<>());
+    private static int sActivitiesCreatedCount = 0;
 
     public DebugTestInformationHandler(Context context) {
         init(context);
+        if (sActivityLifecycleCallbacks == null) {
+            sActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityCreated(Activity activity, Bundle bundle) {
+                    sActivities.put(activity, true);
+                    ++sActivitiesCreatedCount;
+                }
+
+                @Override
+                public void onActivityStarted(Activity activity) {
+                }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                }
+
+                @Override
+                public void onActivityPaused(Activity activity) {
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                }
+
+                @Override
+                public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+                }
+
+                @Override
+                public void onActivityDestroyed(Activity activity) {
+                }
+            };
+            ((Application) context.getApplicationContext())
+                    .registerActivityLifecycleCallbacks(sActivityLifecycleCallbacks);
+        }
     }
 
     private static void runGcAndFinalizersSync() {
@@ -80,7 +128,7 @@ public class DebugTestInformationHandler extends TestInformationHandler {
     }
 
     @Override
-    public Bundle call(String method) {
+    public Bundle call(String method, String arg, @Nullable Bundle extras) {
         final Bundle response = new Bundle();
         switch (method) {
             case TestProtocol.REQUEST_APP_LIST_FREEZE_FLAGS: {
@@ -160,8 +208,59 @@ public class DebugTestInformationHandler extends TestInformationHandler {
                 }
             }
 
+            case TestProtocol.REQUEST_USE_TEST_WORKSPACE_LAYOUT: {
+                useTestWorkspaceLayout(true);
+                return response;
+            }
+
+            case TestProtocol.REQUEST_USE_DEFAULT_WORKSPACE_LAYOUT: {
+                useTestWorkspaceLayout(false);
+                return response;
+            }
+
+            case TestProtocol.REQUEST_HOTSEAT_ICON_NAMES: {
+                return getLauncherUIProperty(Bundle::putStringArrayList, l -> {
+                    ShortcutAndWidgetContainer hotseatIconsContainer =
+                            l.getHotseat().getShortcutsAndWidgets();
+                    ArrayList<String> hotseatIconNames = new ArrayList<>();
+
+                    for (int i = 0; i < hotseatIconsContainer.getChildCount(); i++) {
+                        // Use unchecked cast to catch changes in hotseat layout
+                        BubbleTextView icon = (BubbleTextView) hotseatIconsContainer.getChildAt(i);
+                        hotseatIconNames.add((String) icon.getText());
+                    }
+
+                    return hotseatIconNames;
+                });
+            }
+
+            case TestProtocol.REQUEST_GET_ACTIVITIES_CREATED_COUNT: {
+                response.putInt(TestProtocol.TEST_INFO_RESPONSE_FIELD, sActivitiesCreatedCount);
+                return response;
+            }
+
+            case TestProtocol.REQUEST_GET_ACTIVITIES: {
+                response.putStringArray(TestProtocol.TEST_INFO_RESPONSE_FIELD,
+                        sActivities.keySet().stream().map(
+                                a -> a.getClass().getSimpleName() + " ("
+                                        + (a.isDestroyed() ? "destroyed" : "current") + ")")
+                                .toArray(String[]::new));
+                return response;
+            }
+
             default:
-                return super.call(method);
+                return super.call(method, arg, extras);
+        }
+    }
+
+    private void useTestWorkspaceLayout(boolean useTestWorkspaceLayout) {
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            LauncherSettings.Settings.call(mContext.getContentResolver(), useTestWorkspaceLayout
+                    ? LauncherSettings.Settings.METHOD_SET_USE_TEST_WORKSPACE_LAYOUT_FLAG
+                    : LauncherSettings.Settings.METHOD_CLEAR_USE_TEST_WORKSPACE_LAYOUT_FLAG);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
         }
     }
 }

@@ -41,12 +41,12 @@ import com.android.launcher3.PagedView;
 import com.android.launcher3.R;
 import com.android.launcher3.ShortcutAndWidgetContainer;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.Workspace.ItemOperator;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.touch.ItemClickHandler;
+import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.ViewCache;
 import com.android.launcher3.views.ActivityContext;
@@ -212,10 +212,8 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         if (item == null) {
             return null;
         }
-        int layout = mFolder.isInAppDrawer() ? R.layout.all_apps_folder_application
-                : R.layout.folder_application;
         final BubbleTextView textView = mViewCache.getView(
-                layout, getContext(), null);
+                R.layout.folder_application, getContext(), null);
         textView.applyFromWorkspaceItem(item);
         textView.setOnClickListener(ItemClickHandler.INSTANCE);
         textView.setOnLongClickListener(mFolder);
@@ -244,11 +242,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     private CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
-        if (mFolder.isInAppDrawer()) {
-            page.setCellDimensions(grid.allAppsCellWidthPx, grid.allAppsCellHeightPx);
-        } else {
-            page.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
-        }
+        page.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         page.setInvertIfRtl(true);
         page.setGridSize(mGridCountX, mGridCountY);
@@ -258,7 +252,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     }
 
     @Override
-    protected int getChildGap() {
+    protected int getChildGap(int fromIndex, int toIndex) {
         return getPaddingLeft() + getPaddingRight();
     }
 

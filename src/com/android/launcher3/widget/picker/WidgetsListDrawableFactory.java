@@ -27,19 +27,24 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
 
-/** Factory for creating drawables to use as background for list elements. */
+/**
+ * Factory for creating drawables to use as background for list elements.
+ */
 final class WidgetsListDrawableFactory {
 
     private final float mTopBottomCornerRadius;
     private final float mMiddleCornerRadius;
     private final ColorStateList mSurfaceColor;
     private final ColorStateList mRippleColor;
+    private final int mVerticalPadding;
+    private final int mHeaderMargin;
 
     WidgetsListDrawableFactory(Context context) {
         Resources res = context.getResources();
@@ -48,6 +53,9 @@ final class WidgetsListDrawableFactory {
         mSurfaceColor = context.getColorStateList(R.color.surface);
         mRippleColor = ColorStateList.valueOf(
                 Themes.getAttrColor(context, android.R.attr.colorControlHighlight));
+        mVerticalPadding =
+                res.getDimensionPixelSize(R.dimen.widget_list_header_view_vertical_padding);
+        mHeaderMargin = res.getDimensionPixelSize(R.dimen.widget_list_entry_spacing);
     }
 
     /**
@@ -74,7 +82,10 @@ final class WidgetsListDrawableFactory {
         stateList.addState(
                 LAST.mStateSet,
                 createRoundedRectDrawable(mMiddleCornerRadius, mTopBottomCornerRadius));
-        return new RippleDrawable(mRippleColor, /* content= */ stateList, /* mask= */ stateList);
+        RippleDrawable ripple =
+                new RippleDrawable(mRippleColor, /* content= */ stateList, /* mask= */ stateList);
+        ripple.setPadding(0, mVerticalPadding, 0, mVerticalPadding);
+        return new InsetDrawable(ripple, 0, mHeaderMargin, 0, 0);
     }
 
     /**

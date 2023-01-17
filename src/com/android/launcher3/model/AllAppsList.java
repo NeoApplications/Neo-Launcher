@@ -18,6 +18,7 @@ package com.android.launcher3.model;
 
 import static com.android.launcher3.model.data.AppInfo.COMPONENT_KEY_COMPARATOR;
 import static com.android.launcher3.model.data.AppInfo.EMPTY_ARRAY;
+import static com.android.launcher3.testing.shared.TestProtocol.INCORRECT_INFO_UPDATED;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,9 +37,10 @@ import com.android.launcher3.compat.AlphabeticIndexCompat;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.data.AppInfo;
+import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.pm.PackageInstallInfo;
+import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.FlagOp;
-import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.SafeCloseable;
 
@@ -47,6 +49,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 
 /**
@@ -66,7 +69,10 @@ public class AllAppsList {
      */
     public final ArrayList<AppInfo> data = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
 
+    @NonNull
     private IconCache mIconCache;
+
+    @NonNull
     private AppFilter mAppFilter;
 
     private boolean mDataChanged = false;
@@ -133,30 +139,58 @@ public class AllAppsList {
      * If the app is already in the list, doesn't add it.
      */
     public void add(AppInfo info, LauncherActivityInfo activityInfo) {
-        if (!mAppFilter.shouldShowApp(info.componentName, info.user)) {
+        add(info, activityInfo, true);
+    }
+
+    public void add(AppInfo info, LauncherActivityInfo activityInfo, boolean loadIcon) {
+        if (!mAppFilter.shouldShowApp(info.componentName)) {
             return;
         }
         if (findAppInfo(info.componentName, info.user) != null) {
             return;
         }
-        mIconCache.getTitleAndIcon(info, activityInfo, false /* useLowResIcon */);
-        info.sectionName = mIndex.computeSectionName(info.title);
+        if (loadIcon) {
+            mIconCache.getTitleAndIcon(info, activityInfo, false /* useLowResIcon */);
+            info.sectionName = mIndex.computeSectionName(info.title);
+        } else {
+            info.title = "";
+        }
 
         data.add(info);
         mDataChanged = true;
     }
 
-    public void addPromiseApp(Context context, PackageInstallInfo installInfo) {
-        // only if not yet installed
-        if (!new PackageManagerHelper(context)
-                .isAppInstalled(installInfo.packageName, installInfo.user)) {
-            AppInfo info = new AppInfo(installInfo);
-            mIconCache.getTitleAndIcon(info, info.usingLowResIcon());
-            info.sectionName = mIndex.computeSectionName(info.title);
+    @Nullable
+    public AppInfo addPromiseApp(Context context, PackageInstallInfo installInfo) {
+        return addPromiseApp(context, installInfo, true);
+    }
 
-            data.add(info);
-            mDataChanged = true;
+    @Nullable
+    public AppInfo addPromiseApp(
+            Context context, PackageInstallInfo installInfo, boolean loadIcon) {
+        // only if not yet installed
+        if (new PackageManagerHelper(context)
+                .isAppInstalled(installInfo.packageName, installInfo.user)) {
+            return null;
         }
+        AppInfo promiseAppInfo = new AppInfo(installInfo);
+
+        if (loadIcon) {
+            mIconCache.getTitleAndIcon(promiseAppInfo, promiseAppInfo.usingLowResIcon());
+            promiseAppInfo.sectionName = mIndex.computeSectionName(promiseAppInfo.title);
+        } else {
+            promiseAppInfo.title = "";
+        }
+
+        data.add(promiseAppInfo);
+        mDataChanged = true;
+
+        return promiseAppInfo;
+    }
+
+    public void updateSectionName(AppInfo appInfo) {
+        appInfo.sectionName = mIndex.computeSectionName(appInfo.title);
+
     }
 
     /**
@@ -234,11 +268,11 @@ public class AllAppsList {
     /**
      * Updates the disabled flags of apps matching {@param matcher} based on {@param op}.
      */
-    public void updateDisabledFlags(ItemInfoMatcher matcher, FlagOp op) {
+    public void updateDisabledFlags(Predicate<ItemInfo> matcher, FlagOp op) {
         final List<AppInfo> data = this.data;
         for (int i = data.size() - 1; i >= 0; i--) {
             AppInfo info = data.get(i);
-            if (matcher.matches(info, info.componentName)) {
+            if (matcher.test(info)) {
                 info.runtimeStatusFlags = op.apply(info.runtimeStatusFlags);
                 mDataChanged = true;
             }
@@ -246,8 +280,14 @@ public class AllAppsList {
     }
 
     public void updateIconsAndLabels(HashSet<String> packages, UserHandle user) {
+        if (TestProtocol.sDebugTracing) {
+            Log.i(INCORRECT_INFO_UPDATED, "updateIconsAndLabels: packages=" + packages);
+        }
         for (AppInfo info : data) {
             if (info.user.equals(user) && packages.contains(info.componentName.getPackageName())) {
+                if (TestProtocol.sDebugTracing) {
+                    Log.i(INCORRECT_INFO_UPDATED, "updateIconsAndLabels: updating info=" + info);
+                }
                 mIconCache.updateTitleAndIcon(info);
                 info.sectionName = mIndex.computeSectionName(info.title);
                 mDataChanged = true;
@@ -311,27 +351,6 @@ public class AllAppsList {
     }
 
     /**
-     * Add and remove icons for this package, depending on visibility.
-     */
-    public void reloadPackages(Context context, UserHandle user) {
-        List<LauncherActivityInfo> apps = context.getSystemService(LauncherApps.class)
-                .getActivityList(null, user);
-        for (LauncherActivityInfo info : apps) {
-            AppInfo applicationInfo = findAppInfo(info.getComponentName(), user);
-            if (applicationInfo == null) {
-                add(new AppInfo(context, info, user), info);
-            }
-        }
-
-        for (int i = data.size() - 1; i >= 0; i--) {
-            final AppInfo applicationInfo = data.get(i);
-            if (user.equals(applicationInfo.user) && !mAppFilter.shouldShowApp(applicationInfo.componentName, applicationInfo.user)) {
-                removeApp(i);
-            }
-        }
-    }
-
-    /**
      * Returns whether <em>apps</em> contains <em>component</em>.
      */
     private static boolean findActivity(List<LauncherActivityInfo> apps,
@@ -349,9 +368,8 @@ public class AllAppsList {
      *
      * @return the corresponding AppInfo or null
      */
-    public @Nullable
-    AppInfo findAppInfo(@NonNull ComponentName componentName,
-                        @NonNull UserHandle user) {
+    public @Nullable AppInfo findAppInfo(@NonNull ComponentName componentName,
+                                         @NonNull UserHandle user) {
         for (AppInfo info : data) {
             if (componentName.equals(info.componentName) && user.equals(info.user)) {
                 return info;

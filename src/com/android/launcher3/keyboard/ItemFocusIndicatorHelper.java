@@ -34,7 +34,6 @@ import com.android.launcher3.util.Themes;
 
 /**
  * A helper class to draw background of a focused item.
- *
  * @param <T> Item type
  */
 public abstract class ItemFocusIndicatorHelper<T> implements AnimatorUpdateListener {

@@ -68,12 +68,15 @@ public class ShortcutMenuAccessibilityDelegate extends LauncherAccessibilityDele
             final WorkspaceItemInfo info = ((DeepShortcutView) host.getParent()).getFinalInfo();
             final int[] coordinates = new int[2];
             final int screenId = findSpaceOnWorkspace(item, coordinates);
-            mLauncher.getStateManager().goToState(NORMAL, true, forSuccessCallback(() -> {
-                mLauncher.getModelWriter().addItemToDatabase(info,
+            if (screenId == -1) {
+                return false;
+            }
+            mContext.getStateManager().goToState(NORMAL, true, forSuccessCallback(() -> {
+                mContext.getModelWriter().addItemToDatabase(info,
                         LauncherSettings.Favorites.CONTAINER_DESKTOP,
                         screenId, coordinates[0], coordinates[1]);
-                mLauncher.bindItems(Collections.singletonList(info), true);
-                AbstractFloatingView.closeAllOpenViews(mLauncher);
+                mContext.bindItems(Collections.singletonList(info), true);
+                AbstractFloatingView.closeAllOpenViews(mContext);
                 announceConfirmation(R.string.item_added_to_workspace);
             }));
             return true;

@@ -26,6 +26,14 @@
     android:saveEnabled="false">
 
     <include
+        layout="@layout/all_apps_bottom_sheet_background"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/search_results_rv_layout"
+        android:visibility="gone" />
+
+    <include
         layout="@layout/all_apps_rv_layout"
         android:visibility="gone" />
 
@@ -33,8 +41,6 @@
         android:id="@+id/all_apps_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/search_container_all_apps"
-        android:clipChildren="false"
         android:clipToPadding="false"
         android:paddingTop="@dimen/all_apps_header_top_padding"
         android:paddingBottom="@dimen/all_apps_header_bottom_padding"
@@ -42,31 +48,11 @@
 
         <include layout="@layout/floating_header_content" />
 
-        <HorizontalScrollView
-            android:id="@+id/tabs_scroller"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:fillViewport="true"
-            android:paddingLeft="@dimen/all_apps_tabs_side_padding"
-            android:paddingRight="@dimen/all_apps_tabs_side_padding"
-            android:scrollbars="none">
-
-            <com.saggitt.omega.allapps.AllAppsTabItem
-                android:id="@+id/tabs"
-                style="@style/TextHeadline"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/all_apps_header_tab_height"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="horizontal" />
-        </HorizontalScrollView>
+        <include layout="@layout/all_apps_personal_work_tabs" />
 
     </com.android.launcher3.allapps.FloatingHeaderView>
 
-    <include layout="@layout/search_container_all_apps_plus" />
+    <include layout="@layout/search_container_all_apps" />
 
     <include layout="@layout/all_apps_fast_scroller" />
 </com.android.launcher3.allapps.LauncherAllAppsContainerView>

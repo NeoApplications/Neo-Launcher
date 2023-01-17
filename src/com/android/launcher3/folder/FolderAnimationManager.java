@@ -21,7 +21,6 @@ import static com.android.launcher3.BubbleTextView.TEXT_ALPHA_PROPERTY;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 import static com.android.launcher3.graphics.IconShape.getShape;
-import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -45,7 +44,6 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.PropertyResetListener;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
-import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.List;
 
@@ -175,14 +173,9 @@ public class FolderAnimationManager {
         final float yDistance = initialY - lp.y;
 
         // Set up the Folder background.
-        final int finalColor;
-        int folderFillColor = Themes.getAttrColor(mContext, R.attr.folderFillColor);
-        if (mIsOpening) {
-            finalColor = folderFillColor;
-        } else {
-            finalColor = mFolderBackground.getColor().getDefaultColor();
-        }
-        final int initialColor = setColorAlphaBound(folderFillColor, OmegaUtilsKt.getFolderPreviewAlpha(mContext));
+        final int initialColor = Themes.getAttrColor(mContext, R.attr.folderPreviewColor);
+        final int finalColor = Themes.getAttrColor(mContext, R.attr.folderBackgroundColor);
+
         mFolderBackground.mutate();
         mFolderBackground.setColor(mIsOpening ? initialColor : finalColor);
 
@@ -238,9 +231,9 @@ public class FolderAnimationManager {
                 mFolder, startRect, endRect, finalRadius, !mIsOpening));
 
         // Create reveal animator for the folder content (capture the top 4 icons 2x2)
-        int width = mDeviceProfile.folderCellLayoutBorderSpacingPx
+        int width = mDeviceProfile.folderCellLayoutBorderSpacePx.x
                 + mDeviceProfile.folderCellWidthPx * 2;
-        int height = mDeviceProfile.folderCellLayoutBorderSpacingPx
+        int height = mDeviceProfile.folderCellLayoutBorderSpacePx.y
                 + mDeviceProfile.folderCellHeightPx * 2;
         int page = mIsOpening ? mContent.getCurrentPage() : mContent.getDestinationPage();
         int left = mContent.getPaddingLeft() + page * lp.width;

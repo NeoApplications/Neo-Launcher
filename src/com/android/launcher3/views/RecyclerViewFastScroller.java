@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -40,17 +39,14 @@ import android.view.ViewConfiguration;
 import android.view.WindowInsets;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.launcher3.BaseRecyclerView;
+import com.android.launcher3.FastScrollRecyclerView;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.FastScrollThumbDrawable;
 import com.android.launcher3.util.Themes;
-import com.saggitt.omega.preferences.OmegaPreferences;
-import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -118,14 +114,12 @@ public class RecyclerViewFastScroller extends View {
     private boolean mIsThumbDetached;
     private final boolean mCanThumbDetach;
     private boolean mIgnoreDragGesture;
-    private boolean mIsRecyclerViewFirstChildInParent = true;
     private long mDownTimeStampMillis;
 
     // This is the offset from the top of the scrollbar when the user first starts touching.  To
     // prevent jumping, this offset is applied as the user scrolls.
     protected int mTouchOffsetY;
     protected int mThumbOffsetY;
-    protected int mRvOffsetY;
 
     // Fast scroller popup
     private TextView mPopupView;
@@ -133,16 +127,12 @@ public class RecyclerViewFastScroller extends View {
     private String mPopupSectionName;
     private Insets mSystemGestureInsets;
 
-    protected BaseRecyclerView mRv;
+    protected FastScrollRecyclerView mRv;
     private RecyclerView.OnScrollListener mOnScrollListener;
-    @Nullable
-    private OnFastScrollChangeListener mOnFastScrollChangeListener;
 
     private int mDownX;
     private int mDownY;
     private int mLastY;
-
-    private OmegaPreferences prefs;
 
     public RecyclerViewFastScroller(Context context) {
         this(context, null);
@@ -180,10 +170,16 @@ public class RecyclerViewFastScroller extends View {
                 context.obtainStyledAttributes(attrs, R.styleable.RecyclerViewFastScroller, defStyleAttr, 0);
         mCanThumbDetach = ta.getBoolean(R.styleable.RecyclerViewFastScroller_canThumbDetach, false);
         ta.recycle();
-        prefs = Utilities.getOmegaPrefs(context);
     }
 
-    public void setRecyclerView(BaseRecyclerView rv, TextView popupView) {
+    /**
+     * @return whether there is a RecyclerView bound to this scroller.
+     */
+    public boolean hasRecyclerView() {
+        return mRv != null;
+    }
+
+    public void setRecyclerView(FastScrollRecyclerView rv, TextView popupView) {
         if (mRv != null && mOnScrollListener != null) {
             mRv.removeOnScrollListener(mOnScrollListener);
         }
@@ -213,18 +209,11 @@ public class RecyclerViewFastScroller extends View {
 
     public void setThumbOffsetY(int y) {
         if (mThumbOffsetY == y) {
-            int rvCurrentOffsetY = mRv.getCurrentScrollY();
-            if (mRvOffsetY != rvCurrentOffsetY) {
-                mRvOffsetY = mRv.getCurrentScrollY();
-                notifyScrollChanged();
-            }
             return;
         }
         updatePopupY(y);
         mThumbOffsetY = y;
         invalidate();
-        mRvOffsetY = mRv.getCurrentScrollY();
-        notifyScrollChanged();
     }
 
     public int getThumbOffsetY() {
@@ -319,6 +308,7 @@ public class RecyclerViewFastScroller extends View {
     }
 
     private void calcTouchOffsetAndPrepToFastScroll(int downY, int lastY) {
+        ActivityContext.lookupContext(getContext()).hideKeyboard();
         mIsDragging = true;
         if (mCanThumbDetach) {
             mIsThumbDetached = true;
@@ -332,27 +322,13 @@ public class RecyclerViewFastScroller extends View {
         // Update the fastscroller section name at this touch position
         int bottom = mRv.getScrollbarTrackHeight() - mThumbHeight;
         float boundedY = (float) Math.max(0, Math.min(bottom, y - mTouchOffsetY));
-        BaseRecyclerView.PositionThumbInfo thumbInfo = mRv.scrollToPositionAtProgress(boundedY / bottom);
-        String sectionName = thumbInfo.name;
-        //String sectionName = mRv.scrollToPositionAtProgress(boundedY / bottom);
+        String sectionName = mRv.scrollToPositionAtProgress(boundedY / bottom);
         if (!sectionName.equals(mPopupSectionName)) {
             mPopupSectionName = sectionName;
             mPopupView.setText(sectionName);
             performHapticFeedback(CLOCK_TICK);
         }
-        int color = thumbInfo.color;
-        if (color != 0 && prefs.getDrawerSortModeNew().onGetValue() == Config.SORT_BY_COLOR) {
-            setColor(color, Color.WHITE);
-            if (!prefs.getShowDebugInfo().onGetValue()) {
-                mPopupSectionName = "";
-                mPopupView.setText("");
-            }
-        } else if (prefs.getDrawerSortModeNew().onGetValue() == Config.SORT_BY_INSTALL_DATE) {
-            mPopupSectionName = "";
-            mPopupView.setText("");
-        } else {
-            animatePopupVisibility(!sectionName.isEmpty());
-        }
+        animatePopupVisibility(!sectionName.isEmpty());
         mLastTouchY = boundedY;
         setThumbOffsetY((int) mLastTouchY);
     }
@@ -464,9 +440,7 @@ public class RecyclerViewFastScroller extends View {
             return false;
         }
         getHitRect(sTempRect);
-        if (mIsRecyclerViewFirstChildInParent) {
-            sTempRect.top += mRv.getScrollBarTop();
-        }
+        sTempRect.top += mRv.getScrollBarTop();
         if (outOffset != null) {
             outOffset.set(sTempRect.left, sTempRect.top);
         }
@@ -478,35 +452,5 @@ public class RecyclerViewFastScroller extends View {
         // There is actually some overlap between the track and the thumb. But since the track
         // alpha is so low, it does not matter.
         return false;
-    }
-
-    public void setIsRecyclerViewFirstChildInParent(boolean isRecyclerViewFirstChildInParent) {
-        mIsRecyclerViewFirstChildInParent = isRecyclerViewFirstChildInParent;
-    }
-
-    public void setOnFastScrollChangeListener(
-            @Nullable OnFastScrollChangeListener onFastScrollChangeListener) {
-        mOnFastScrollChangeListener = onFastScrollChangeListener;
-    }
-
-    private void notifyScrollChanged() {
-        if (mOnFastScrollChangeListener != null) {
-            mOnFastScrollChangeListener.onScrollChanged();
-        }
-    }
-
-    /**
-     * A callback that is invoked when there is a scroll change in {@link RecyclerViewFastScroller}.
-     */
-    public interface OnFastScrollChangeListener {
-        /**
-         * Called when the recycler view scroll has changed.
-         */
-        void onScrollChanged();
-    }
-
-    public void setColor(int color, int foregroundColor) {
-        mThumbPaint.setColor(color);
-        mPopupView.setTextColor(foregroundColor);
     }
 }

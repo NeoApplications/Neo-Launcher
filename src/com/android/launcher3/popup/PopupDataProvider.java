@@ -64,13 +64,9 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
      */
     private Map<PackageUserKey, DotInfo> mPackageUserToDotInfos = new HashMap<>();
 
-    /**
-     * All installed widgets.
-     */
+    /** All installed widgets. */
     private List<WidgetsListBaseEntry> mAllWidgets = List.of();
-    /**
-     * Widgets that can be recommended to the users.
-     */
+    /** Widgets that can be recommended to the users. */
     private List<ItemInfo> mRecommendedWidgets = List.of();
 
     private PopupDataChangeListener mChangeListener = PopupDataChangeListener.INSTANCE;
@@ -185,8 +181,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         return dotInfo;
     }
 
-    public @NonNull
-    List<NotificationKeyData> getNotificationKeysForItem(ItemInfo info) {
+    public @NonNull List<NotificationKeyData> getNotificationKeysForItem(ItemInfo info) {
         DotInfo dotInfo = getDotInfoForItem(info);
         return dotInfo == null ? Collections.EMPTY_LIST
                 : getNotificationsForItem(info, dotInfo.getNotificationKeys());
@@ -222,9 +217,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         return mAllWidgets;
     }
 
-    /**
-     * Returns a list of recommended widgets.
-     */
+    /** Returns a list of recommended widgets. */
     public List<WidgetItem> getRecommendedWidgets() {
         HashMap<ComponentKey, WidgetItem> allWidgetItems = new HashMap<>();
         mAllWidgets.stream()
@@ -252,8 +245,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
     /**
      * Returns a list of notifications that are relevant to given ItemInfo.
      */
-    public static @NonNull
-    List<NotificationKeyData> getNotificationsForItem(
+    public static @NonNull List<NotificationKeyData> getNotificationsForItem(
             @NonNull ItemInfo info, @NonNull List<NotificationKeyData> notifications) {
         String shortcutId = ShortcutUtil.getShortcutIdIfPinnedShortcut(info);
         if (shortcutId == null) {
@@ -276,6 +268,13 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         writer.println(prefix + "\tmPackageUserToDotInfos:" + mPackageUserToDotInfos);
     }
 
+    /**
+     * Tells the listener that the system shortcuts have been updated, causing them to be redrawn.
+     */
+    public void redrawSystemShortcuts() {
+        mChangeListener.onSystemShortcutsUpdated();
+    }
+
     public interface PopupDataChangeListener {
 
         PopupDataChangeListener INSTANCE = new PopupDataChangeListener() {
@@ -295,5 +294,10 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
          */
         default void onRecommendedWidgetsBound() {
         }
+
+        /**
+         * A callback to get notified when system shortcuts have been updated.
+         */
+        default void onSystemShortcutsUpdated() { }
     }
 }

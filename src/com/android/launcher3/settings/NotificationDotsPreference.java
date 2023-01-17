@@ -91,6 +91,7 @@ public class NotificationDotsPreference extends Preference
         // Update intent
         Bundle extras = new Bundle();
         extras.putString(EXTRA_FRAGMENT_ARG_KEY, "notification_badging");
+
         setIntent(new Intent("android.settings.NOTIFICATION_SETTINGS")
                 .putExtra(EXTRA_SHOW_FRAGMENT_ARGS, extras));
     }
@@ -108,7 +109,7 @@ public class NotificationDotsPreference extends Preference
 
     }
 
-    public void setWidgetFrameVisible(boolean isVisible) {
+    private void setWidgetFrameVisible(boolean isVisible) {
         if (mWidgetFrameVisible != isVisible) {
             mWidgetFrameVisible = isVisible;
             notifyChanged();

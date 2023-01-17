@@ -22,4 +22,3 @@
         android:right="@dimen/padded_rounded_button_padding"
         android:bottom="@dimen/padded_rounded_button_padding" />
 </layer-list>
-

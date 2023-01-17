@@ -41,14 +41,10 @@ public class DragOptions {
      */
     public Point simulatedDndStartPoint = null;
 
-    /**
-     * Determines when a pre-drag should transition to a drag. By default, this is immediate.
-     */
+    /** Determines when a pre-drag should transition to a drag. By default, this is immediate. */
     public PreDragCondition preDragCondition = null;
 
-    /**
-     * Scale of the icons over the workspace icon size.
-     */
+    /** Scale of the icons over the workspace icon size. */
     public float intrinsicIconScaleFactor = 1f;
 
     public boolean isFlingToDelete;

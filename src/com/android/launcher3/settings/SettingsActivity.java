@@ -48,6 +48,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.model.WidgetsModel;
+import com.android.launcher3.states.RotationHelper;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
 
 import java.util.Collections;
@@ -214,6 +215,14 @@ public class SettingsActivity extends FragmentActivity
             }
 
             if (getActivity() != null && !TextUtils.isEmpty(getPreferenceScreen().getTitle())) {
+                if (getPreferenceScreen().getTitle().equals(
+                        getResources().getString(R.string.search_pref_screen_title))) {
+                    DeviceProfile mDeviceProfile = InvariantDeviceProfile.INSTANCE.get(
+                            getContext()).getDeviceProfile(getContext());
+                    getPreferenceScreen().setTitle(mDeviceProfile.isTablet ?
+                            R.string.search_pref_screen_title_tablet
+                            : R.string.search_pref_screen_title);
+                }
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
         }
@@ -255,12 +264,13 @@ public class SettingsActivity extends FragmentActivity
                 case ALLOW_ROTATION_PREFERENCE_KEY:
                     DeviceProfile deviceProfile = InvariantDeviceProfile.INSTANCE.get(
                             getContext()).getDeviceProfile(getContext());
-                    if (deviceProfile.allowRotation) {
+                    if (deviceProfile.isTablet) {
                         // Launcher supports rotation by default. No need to show this setting.
                         return false;
                     }
                     // Initialize the UI once
-                    preference.setDefaultValue(false);
+                    preference.setDefaultValue(
+                            RotationHelper.getAllowRotationDefaultValue(deviceProfile));
                     return true;
 
                 case FLAGS_PREFERENCE_KEY:
@@ -277,7 +287,6 @@ public class SettingsActivity extends FragmentActivity
 
         /**
          * Show if plugins are enabled or flag UI is enabled.
-         *
          * @return True if we should show the preference option.
          */
         private boolean updateDeveloperOption() {

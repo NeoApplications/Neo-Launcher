@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.util;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.BaseActivity;
@@ -27,10 +24,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Helper class to statically track activity creation
+ *
  * @param <T> The activity type to track
  */
-public final class  ActivityTracker<T extends BaseActivity> {
-    private static final String EXTRA_SCHEDULER_CALLBACK = "launcher.scheduler_callback";
+public final class ActivityTracker<T extends BaseActivity> {
 
     private WeakReference<T> mCurrentActivity = new WeakReference<>(null);
     private CopyOnWriteArrayList<SchedulerCallback<T>> mCallbacks = new CopyOnWriteArrayList<>();
@@ -49,7 +46,7 @@ public final class  ActivityTracker<T extends BaseActivity> {
     /**
      * Call {@link SchedulerCallback#init(BaseActivity, boolean)} when the
      * activity is ready. If the activity is already created, this is called immediately.
-     * <p>
+     *
      * The tracker maintains a strong ref to the callback, so it is up to the caller to return
      * {@code false} in the callback OR to unregister the callback explicitly.
      *
@@ -97,22 +94,9 @@ public final class  ActivityTracker<T extends BaseActivity> {
 
         /**
          * Called when the activity is ready.
-         *
          * @param alreadyOnHome Whether the activity is already started.
          * @return Whether to continue receiving callbacks (i.e. if the activity is recreated).
          */
         boolean init(T activity, boolean alreadyOnHome);
-
-        /**
-         * Adds this callback as an extra on the intent, so we can retrieve it in handleIntent() and
-         * call {@link #init}. The intent should be used to start the activity after calling this
-         * method in order for us to get handleIntent().
-         */
-        default Intent addToIntent(Intent intent) {
-            Bundle extras = new Bundle();
-            extras.putBinder(EXTRA_SCHEDULER_CALLBACK, ObjectWrapper.wrap(this));
-            intent.putExtras(extras);
-            return intent;
-        }
     }
 }

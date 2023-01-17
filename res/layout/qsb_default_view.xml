@@ -38,7 +38,6 @@
             android:textAppearance="?android:textAppearanceMedium"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground" />
-
         <ImageView
             android:layout_width="48dp"
             android:id="@+id/btn_qsb_setup"

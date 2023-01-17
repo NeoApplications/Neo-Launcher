@@ -37,17 +37,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * ContentObserver over Settings keys that also has a caching layer.
  * Consumers can register for callbacks via {@link #register(Uri, OnChangeListener)} and
  * {@link #unregister(Uri, OnChangeListener)} methods.
- * <p>
+ *
  * This can be used as a normal cache without any listeners as well via the
  * {@link #getValue(Uri, int)} and {@link #onChange)} to update (and subsequently call
  * get)
- * <p>
+ *
  * The cache will be invalidated/updated through the normal
  * {@link ContentObserver#onChange(boolean)} calls
- * <p>
+ *
  * Cache will also be updated if a key queried is missing (even if it has no listeners registered).
  */
-public class SettingsCache extends ContentObserver {
+public class SettingsCache extends ContentObserver implements SafeCloseable {
 
     /**
      * Hidden field Settings.Secure.NOTIFICATION_BADGING
@@ -75,7 +75,6 @@ public class SettingsCache extends ContentObserver {
     private final Map<Uri, CopyOnWriteArrayList<OnChangeListener>> mListenerMap = new HashMap<>();
     protected final ContentResolver mResolver;
 
-
     /**
      * Singleton instance
      */
@@ -85,6 +84,11 @@ public class SettingsCache extends ContentObserver {
     private SettingsCache(Context context) {
         super(new Handler());
         mResolver = context.getContentResolver();
+    }
+
+    @Override
+    public void close() {
+        mResolver.unregisterContentObserver(this);
     }
 
     @Override
@@ -168,7 +172,6 @@ public class SettingsCache extends ContentObserver {
 
     /**
      * Don't use this. Ever.
-     *
      * @param keyCache Cache to replace {@link #mKeyCache}
      */
     @VisibleForTesting

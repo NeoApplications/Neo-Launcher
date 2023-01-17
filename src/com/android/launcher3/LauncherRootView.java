@@ -13,6 +13,7 @@ import android.view.WindowInsets;
 
 import com.android.launcher3.graphics.SysUiScrim;
 import com.android.launcher3.statemanager.StatefulActivity;
+import com.android.launcher3.util.window.WindowManagerProxy;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,15 +43,8 @@ public class LauncherRootView extends InsettableFrameLayout {
     }
 
     private void handleSystemWindowInsets(Rect insets) {
-        DeviceProfile dp = mActivity.getDeviceProfile();
-
-        // Taskbar provides insets, but we don't want that for most Launcher elements so remove it.
-        mTempRect.set(insets);
-        insets = mTempRect;
-        insets.bottom = Math.max(0, insets.bottom - dp.nonOverlappingTaskbarInset);
-
         // Update device profile before notifying the children.
-        dp.updateInsets(insets);
+        mActivity.getDeviceProfile().updateInsets(insets);
         boolean resetState = !insets.equals(mInsets);
         setInsets(insets);
 
@@ -61,8 +55,10 @@ public class LauncherRootView extends InsettableFrameLayout {
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        mTempRect.set(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
-                insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+        mActivity.handleConfigurationChanged(mActivity.getResources().getConfiguration());
+
+        insets = WindowManagerProxy.INSTANCE.get(getContext())
+                .normalizeWindowInsets(getContext(), insets, mTempRect);
         handleSystemWindowInsets(mTempRect);
         return insets;
     }

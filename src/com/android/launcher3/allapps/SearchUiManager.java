@@ -29,7 +29,7 @@ public interface SearchUiManager {
     /**
      * Initializes the search manager.
      */
-    void initializeSearch(AllAppsContainerView containerView);
+    void initializeSearch(ActivityAllAppsContainerView<?> containerView);
 
     /**
      * Notifies the search manager to close any active search session.
@@ -43,19 +43,45 @@ public interface SearchUiManager {
     default void preDispatchKeyEvent(KeyEvent keyEvent) {
     }
 
-    void startSearch();
+    ;
 
     /**
      * @return the edit text object
      */
     @Nullable
-    default ExtendedEditText getEditText() {
-        return null;
+    ExtendedEditText getEditText();
+
+    /**
+     * Sets whether EditText background should be visible
+     *
+     * @param maxAlpha defines the maximum alpha the background should animates to
+     */
+    default void setBackgroundVisibility(boolean visible, float maxAlpha) {
+    }
+
+    /**
+     * Returns whether a visible background is set on EditText
+     */
+    default boolean getBackgroundVisibility() {
+        return false;
     }
 
     /**
      * sets highlight result's title
      */
     default void setFocusedResultTitle(@Nullable CharSequence title) {
+    }
+
+    /**
+     * Refresh the currently displayed list of results.
+     */
+    default void refreshResults() {
+    }
+
+    /**
+     * Returns whether search is in zero state.
+     */
+    default boolean inZeroState() {
+        return false;
     }
 }

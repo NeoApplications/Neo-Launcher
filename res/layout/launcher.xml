@@ -19,11 +19,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.saggitt.omega.views.OmegaBackgroundView
-        android:id="@+id/omega_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <com.android.launcher3.dragndrop.DragLayer
         android:id="@+id/drag_layer"
         android:layout_width="match_parent"
@@ -36,11 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/home_screen" />
-
-        <View
-            android:id="@+id/dummy_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
 
         <!-- The workspace contains 5 screens of cells -->
         <!-- DO NOT CHANGE THE ID -->
@@ -57,10 +47,6 @@
             android:id="@+id/hotseat"
             layout="@layout/hotseat" />
 
-        <include
-            android:id="@+id/options_view"
-            layout="@layout/longpress_options_menu" />
-
         <!-- Keep these behind the workspace so that they are not visible when
          we go into AllApps -->
         <com.android.launcher3.pageindicators.WorkspacePageIndicator
@@ -74,7 +60,7 @@
             android:id="@+id/drop_target_bar"
             layout="@layout/drop_target_bar" />
 
-        <com.saggitt.omega.blur.BlurScrimView
+        <com.android.launcher3.views.ScrimView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/scrim_view"

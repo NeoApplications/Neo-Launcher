@@ -30,12 +30,8 @@ import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.search.SearchAlgorithm;
 import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
-import com.saggitt.omega.search.SearchProvider;
-import com.saggitt.omega.search.SearchProviderController;
-import com.saggitt.omega.search.WebSearchProvider;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controller for a search bar with an edit text and a cancel button.
@@ -91,7 +87,7 @@ public class WidgetsSearchBarController implements TextWatcher,
     }
 
     @Override
-    public void onSearchResult(String query, ArrayList<WidgetsListBaseEntry> items, List<String> suggestions) {
+    public void onSearchResult(String query, ArrayList<WidgetsListBaseEntry> items) {
         if (DEBUG) {
             Log.d(TAG, "onSearchResult query: " + query + " items: " + items);
         }
@@ -99,24 +95,9 @@ public class WidgetsSearchBarController implements TextWatcher,
     }
 
     @Override
-    public void onAppendSearchResult(String query, ArrayList<WidgetsListBaseEntry> items) {
-        // Not needed.
-    }
-
-    @Override
     public void clearSearchResult() {
         // Any existing search session will be cancelled by setting text to empty.
         mInput.setText("");
-    }
-
-    @Override
-    public boolean onSubmitSearch(String query) {
-        SearchProvider provider = SearchProviderController.Companion.getInstance(mCancelButton.getContext()).getSearchProvider();
-        if (provider instanceof WebSearchProvider) {
-            ((WebSearchProvider) provider).openResults(query);
-            return true;
-        }
-        return false;
     }
 
     /**

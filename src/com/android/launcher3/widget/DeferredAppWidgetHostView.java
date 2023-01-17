@@ -25,6 +25,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.android.launcher3.R;
@@ -55,6 +56,11 @@ public class DeferredAppWidgetHostView extends LauncherAppWidgetHostView {
     }
 
     @Override
+    public void addView(View child) {
+        // Not allowed
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -63,8 +69,11 @@ public class DeferredAppWidgetHostView extends LauncherAppWidgetHostView {
             return;
         }
 
-        // Use double padding so that there is extra space between background and text
+        // Use double padding so that there is extra space between background and text if possible.
         int availableWidth = getMeasuredWidth() - 2 * (getPaddingLeft() + getPaddingRight());
+        if (availableWidth <= 0) {
+            availableWidth = getMeasuredWidth() - (getPaddingLeft() + getPaddingRight());
+        }
         if (mSetupTextLayout != null && mSetupTextLayout.getText().equals(info.label)
                 && mSetupTextLayout.getWidth() == availableWidth) {
             return;
@@ -76,7 +85,7 @@ public class DeferredAppWidgetHostView extends LauncherAppWidgetHostView {
     @Override
     protected void onDraw(Canvas canvas) {
         if (mSetupTextLayout != null) {
-            canvas.translate(getPaddingLeft() * 2,
+            canvas.translate((getWidth() - mSetupTextLayout.getWidth()) / 2,
                     (getHeight() - mSetupTextLayout.getHeight()) / 2);
             mSetupTextLayout.draw(canvas);
         }

@@ -61,14 +61,12 @@
             android:id="@+id/text_and_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/popupColorPrimary"
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:paddingTop="@dimen/notification_padding"
             android:paddingBottom="@dimen/notification_padding"
             android:paddingEnd="@dimen/notification_padding"
             android:paddingStart="@dimen/notification_main_text_padding_start">
-
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
@@ -97,5 +95,6 @@
             android:layout_gravity="start"
             android:layout_marginTop="@dimen/notification_padding"
             android:layout_marginStart="@dimen/notification_icon_padding" />
+
     </FrameLayout>
-    </com.android.launcher3.notification.NotificationMainView>
+</com.android.launcher3.notification.NotificationMainView>

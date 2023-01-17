@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Process;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.Launcher;
@@ -191,7 +192,7 @@ public class LauncherAppWidgetInfo extends ItemInfo {
     }
 
     @Override
-    public void onAddToDatabase(ContentWriter writer) {
+    public void onAddToDatabase(@NonNull ContentWriter writer) {
         super.onAddToDatabase(writer);
         writer.put(LauncherSettings.Favorites.APPWIDGET_ID, appWidgetId)
                 .put(LauncherSettings.Favorites.APPWIDGET_PROVIDER, providerName.flattenToString())
@@ -250,13 +251,13 @@ public class LauncherAppWidgetInfo extends ItemInfo {
         if (ATLEAST_S && providerInfo.previewLayout != Resources.ID_NULL) {
             widgetFeatures |= FEATURE_PREVIEW_LAYOUT;
         }
-        if (ATLEAST_S && providerInfo.targetCellWidth > 0 || ATLEAST_S && providerInfo.targetCellHeight > 0) {
+        if (ATLEAST_S && providerInfo.targetCellWidth > 0 || providerInfo.targetCellHeight > 0) {
             widgetFeatures |= FEATURE_TARGET_CELL_SIZE;
         }
         if (providerInfo.minResizeWidth > 0 || providerInfo.minResizeHeight > 0) {
             widgetFeatures |= FEATURE_MIN_SIZE;
         }
-        if (ATLEAST_S && providerInfo.maxResizeWidth > 0 || ATLEAST_S && providerInfo.maxResizeHeight > 0) {
+        if (ATLEAST_S && providerInfo.maxResizeWidth > 0 || providerInfo.maxResizeHeight > 0) {
             widgetFeatures |= FEATURE_MAX_SIZE;
         }
         if (hostView instanceof LauncherAppWidgetHostView &&
@@ -283,12 +284,13 @@ public class LauncherAppWidgetInfo extends ItemInfo {
         }
     }
 
+    @NonNull
     @Override
-    public LauncherAtom.ItemInfo buildProto(FolderInfo folderInfo) {
+    public LauncherAtom.ItemInfo buildProto(@Nullable FolderInfo folderInfo) {
         LauncherAtom.ItemInfo info = super.buildProto(folderInfo);
         return info.toBuilder()
                 .setWidget(info.getWidget().toBuilder().setWidgetFeatures(widgetFeatures))
-                .setAttribute(getAttribute(sourceContainer))
+                .addItemAttributes(getAttribute(sourceContainer))
                 .build();
     }
 }

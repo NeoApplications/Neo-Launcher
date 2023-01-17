@@ -17,8 +17,9 @@
 package com.android.launcher3;
 
 import static android.animation.ValueAnimator.areAnimatorsEnabled;
-import static com.android.launcher3.Utilities.getBoundsForViewInDragLayer;
 import static com.android.launcher3.anim.Interpolators.DEACCEL_1_5;
+import static com.android.launcher3.dragndrop.DraggableView.DRAGGABLE_ICON;
+import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -37,7 +38,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.ArrayMap;
@@ -61,8 +61,10 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.accessibility.DragAndDropAccessibilityDelegate;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.dragndrop.DraggableView;
 import com.android.launcher3.folder.PreviewBackground;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.util.CellAndSpan;
 import com.android.launcher3.util.GridOccupancy;
 import com.android.launcher3.util.ParcelableSparseArray;
@@ -93,7 +95,7 @@ public class CellLayout extends ViewGroup {
     private int mFixedCellWidth;
     private int mFixedCellHeight;
     @ViewDebug.ExportedProperty(category = "launcher")
-    private final int mBorderSpacing;
+    private Point mBorderSpace;
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private int mCountX;
@@ -154,7 +156,6 @@ public class CellLayout extends ViewGroup {
     private boolean mVisualizeDropLocation = true;
     private RectF mVisualizeGridRect = new RectF();
     private Paint mVisualizeGridPaint = new Paint();
-    private int mGridVisualizationPadding;
     private int mGridVisualizationRoundingRadius;
     private float mGridAlpha = 0f;
     private int mGridColor = 0;
@@ -174,7 +175,6 @@ public class CellLayout extends ViewGroup {
     @IntDef({WORKSPACE, HOTSEAT, FOLDER})
     public @interface ContainerType {
     }
-
     public static final int WORKSPACE = 0;
     public static final int HOTSEAT = 1;
     public static final int FOLDER = 2;
@@ -248,12 +248,7 @@ public class CellLayout extends ViewGroup {
         mActivity = ActivityContext.lookupContext(context);
         DeviceProfile deviceProfile = mActivity.getDeviceProfile();
 
-        mBorderSpacing = mContainerType == FOLDER
-                ? deviceProfile.folderCellLayoutBorderSpacingPx
-                : deviceProfile.cellLayoutBorderSpacingPx;
-
-        mCellWidth = mCellHeight = -1;
-        mFixedCellWidth = mFixedCellHeight = -1;
+        resetCellSizeInternal(deviceProfile);
 
         mCountX = deviceProfile.inv.numColumns;
         mCountY = deviceProfile.inv.numRows;
@@ -275,8 +270,6 @@ public class CellLayout extends ViewGroup {
         mBackground.setAlpha(0);
 
         mGridColor = Themes.getAttrColor(getContext(), R.attr.workspaceAccentColor);
-        mGridVisualizationPadding =
-                res.getDimensionPixelSize(R.dimen.grid_visualization_cell_spacing);
         mGridVisualizationRoundingRadius =
                 res.getDimensionPixelSize(R.dimen.grid_visualization_rounding_radius);
         mReorderPreviewAnimationMagnitude = (REORDER_PREVIEW_MAGNITUDE * deviceProfile.iconSizePx);
@@ -302,7 +295,7 @@ public class CellLayout extends ViewGroup {
 
         for (int i = 0; i < mDragOutlineAnims.length; i++) {
             final InterruptibleInOutAnimator anim =
-                new InterruptibleInOutAnimator(duration, fromAlphaValue, toAlphaValue);
+                    new InterruptibleInOutAnimator(duration, fromAlphaValue, toAlphaValue);
             anim.getAnimator().setInterpolator(mEaseOutInterpolator);
             final int thisIndex = i;
             anim.getAnimator().addUpdateListener(new AnimatorUpdateListener() {
@@ -320,7 +313,7 @@ public class CellLayout extends ViewGroup {
 
         mShortcutsAndWidgets = new ShortcutAndWidgetContainer(context, mContainerType);
         mShortcutsAndWidgets.setCellDimensions(mCellWidth, mCellHeight, mCountX, mCountY,
-                mBorderSpacing);
+                mBorderSpace);
         addView(mShortcutsAndWidgets);
     }
 
@@ -376,11 +369,44 @@ public class CellLayout extends ViewGroup {
         return mShortcutsAndWidgets.getLayerType() == LAYER_TYPE_HARDWARE;
     }
 
+    /**
+     * Change sizes of cells
+     *
+     * @param width  the new width of the cells
+     * @param height the new height of the cells
+     */
     public void setCellDimensions(int width, int height) {
         mFixedCellWidth = mCellWidth = width;
         mFixedCellHeight = mCellHeight = height;
         mShortcutsAndWidgets.setCellDimensions(mCellWidth, mCellHeight, mCountX, mCountY,
-                mBorderSpacing);
+                mBorderSpace);
+    }
+
+    private void resetCellSizeInternal(DeviceProfile deviceProfile) {
+        switch (mContainerType) {
+            case FOLDER:
+                mBorderSpace = new Point(deviceProfile.folderCellLayoutBorderSpacePx);
+                break;
+            case HOTSEAT:
+                mBorderSpace = new Point(deviceProfile.hotseatBorderSpace,
+                        deviceProfile.hotseatBorderSpace);
+                break;
+            case WORKSPACE:
+            default:
+                mBorderSpace = new Point(deviceProfile.cellLayoutBorderSpacePx);
+                break;
+        }
+
+        mCellWidth = mCellHeight = -1;
+        mFixedCellWidth = mFixedCellHeight = -1;
+    }
+
+    /**
+     * Reset the cell sizes and border space
+     */
+    public void resetCellSize(DeviceProfile deviceProfile) {
+        resetCellSizeInternal(deviceProfile);
+        requestLayout();
     }
 
     public void setGridSize(int x, int y) {
@@ -390,7 +416,7 @@ public class CellLayout extends ViewGroup {
         mTmpOccupied = new GridOccupancy(mCountX, mCountY);
         mTempRectStack.clear();
         mShortcutsAndWidgets.setCellDimensions(mCellWidth, mCellHeight, mCountX, mCountY,
-                mBorderSpacing);
+                mBorderSpace);
         requestLayout();
     }
 
@@ -454,18 +480,43 @@ public class CellLayout extends ViewGroup {
         }
 
         if (DEBUG_VISUALIZE_OCCUPIED) {
-            int[] pt = new int[2];
-            ColorDrawable cd = new ColorDrawable(Color.RED);
-            cd.setBounds(0, 0, mCellWidth, mCellHeight);
-            for (int i = 0; i < mCountX; i++) {
-                for (int j = 0; j < mCountY; j++) {
-                    if (mOccupied.cells[i][j]) {
-                        cellToPoint(i, j, pt);
-                        canvas.save();
-                        canvas.translate(pt[0], pt[1]);
-                        cd.draw(canvas);
-                        canvas.restore();
+            Rect cellBounds = new Rect();
+            // Will contain the bounds of the cell including spacing between cells.
+            Rect cellBoundsWithSpacing = new Rect();
+            int[] targetCell = new int[2];
+            int[] cellCenter = new int[2];
+            Paint debugPaint = new Paint();
+            debugPaint.setStrokeWidth(Utilities.dpToPx(1));
+            for (int x = 0; x < mCountX; x++) {
+                for (int y = 0; y < mCountY; y++) {
+                    if (!mOccupied.cells[x][y]) {
+                        continue;
                     }
+                    targetCell[0] = x;
+                    targetCell[1] = y;
+
+                    boolean canCreateFolder = canCreateFolder(getChildAt(x, y));
+                    cellToRect(x, y, 1, 1, cellBounds);
+                    cellBoundsWithSpacing.set(cellBounds);
+                    cellBoundsWithSpacing.inset(-mBorderSpace.x / 2, -mBorderSpace.y / 2);
+                    getWorkspaceCellVisualCenter(x, y, cellCenter);
+
+                    canvas.save();
+                    canvas.clipRect(cellBoundsWithSpacing);
+
+                    // Draw reorder drag target.
+                    debugPaint.setColor(Color.RED);
+                    canvas.drawCircle(cellCenter[0], cellCenter[1],
+                            getReorderRadius(targetCell, 1, 1), debugPaint);
+
+                    // Draw folder creation drag target.
+                    if (canCreateFolder) {
+                        debugPaint.setColor(Color.GREEN);
+                        canvas.drawCircle(cellCenter[0], cellCenter[1],
+                                getFolderCreationRadius(targetCell), debugPaint);
+                    }
+
+                    canvas.restore();
                 }
             }
         }
@@ -494,6 +545,14 @@ public class CellLayout extends ViewGroup {
     }
 
     /**
+     * Returns whether dropping an icon on the given View can create (or add to) a folder.
+     */
+    private boolean canCreateFolder(View child) {
+        return child instanceof DraggableView
+                && ((DraggableView) child).getViewType() == DRAGGABLE_ICON;
+    }
+
+    /**
      * Indicates the progress of the Workspace entering the SpringLoaded state; allows the
      * CellLayout to update various visuals for this state.
      *
@@ -509,7 +568,6 @@ public class CellLayout extends ViewGroup {
 
     /**
      * See setSpringLoadedProgress
-     *
      * @return progress
      */
     public float getSpringLoadedProgress() {
@@ -541,8 +599,8 @@ public class CellLayout extends ViewGroup {
 
     protected void visualizeGrid(Canvas canvas) {
         DeviceProfile dp = mActivity.getDeviceProfile();
-        int paddingX = (int) Math.min((mCellWidth - dp.iconSizePx) / 2, mGridVisualizationPadding);
-        int paddingY = (int) Math.min((mCellHeight - dp.iconSizePx) / 2, mGridVisualizationPadding);
+        int paddingX = Math.min((mCellWidth - dp.iconSizePx) / 2, dp.gridVisualizationPaddingX);
+        int paddingY = Math.min((mCellHeight - dp.iconSizePx) / 2, dp.gridVisualizationPaddingY);
         mVisualizeGridRect.set(paddingX, paddingY,
                 mCellWidth - paddingX,
                 mCellHeight - paddingY);
@@ -554,9 +612,9 @@ public class CellLayout extends ViewGroup {
         if (mVisualizeCells) {
             for (int i = 0; i < mCountX; i++) {
                 for (int j = 0; j < mCountY; j++) {
-                    int transX = i * mCellWidth + (i * mBorderSpacing) + getPaddingLeft()
+                    int transX = i * mCellWidth + (i * mBorderSpace.x) + getPaddingLeft()
                             + paddingX;
-                    int transY = j * mCellHeight + (j * mBorderSpacing) + getPaddingTop()
+                    int transY = j * mCellHeight + (j * mBorderSpace.y) + getPaddingTop()
                             + paddingY;
 
                     mVisualizeGridRect.offsetTo(transX, transY);
@@ -580,12 +638,12 @@ public class CellLayout extends ViewGroup {
 
                 // TODO b/194414754 clean this up, reconcile with cellToRect
                 mVisualizeGridRect.set(paddingX, paddingY,
-                        mCellWidth * spanX + mBorderSpacing * (spanX - 1) - paddingX,
-                        mCellHeight * spanY + mBorderSpacing * (spanY - 1) - paddingY);
+                        mCellWidth * spanX + mBorderSpace.x * (spanX - 1) - paddingX,
+                        mCellHeight * spanY + mBorderSpace.y * (spanY - 1) - paddingY);
 
-                int transX = x * mCellWidth + (x * mBorderSpacing)
+                int transX = x * mCellWidth + (x * mBorderSpace.x)
                         + getPaddingLeft() + paddingX;
-                int transY = y * mCellHeight + (y * mBorderSpacing)
+                int transY = y * mCellHeight + (y * mBorderSpace.y)
                         + getPaddingTop() + paddingY;
 
                 mVisualizeGridRect.offsetTo(transX, transY);
@@ -781,8 +839,8 @@ public class CellLayout extends ViewGroup {
         final int hStartPadding = getPaddingLeft();
         final int vStartPadding = getPaddingTop();
 
-        result[0] = (x - hStartPadding) / mCellWidth;
-        result[1] = (y - vStartPadding) / mCellHeight;
+        result[0] = (x - hStartPadding) / (mCellWidth + mBorderSpace.x);
+        result[1] = (y - vStartPadding) / (mCellHeight + mBorderSpace.y);
 
         final int xAxis = mCountX;
         final int yAxis = mCountY;
@@ -791,16 +849,6 @@ public class CellLayout extends ViewGroup {
         if (result[0] >= xAxis) result[0] = xAxis - 1;
         if (result[1] < 0) result[1] = 0;
         if (result[1] >= yAxis) result[1] = yAxis - 1;
-    }
-
-    /**
-     * Given a point, return the cell that most closely encloses that point
-     * @param x X coordinate of the point
-     * @param y Y coordinate of the point
-     * @param result Array of 2 ints to hold the x and y coordinate of the cell
-     */
-    void pointToCellRounded(int x, int y, int[] result) {
-        pointToCellExact(x + (mCellWidth / 2), y + (mCellHeight / 2), result);
     }
 
     /**
@@ -830,11 +878,10 @@ public class CellLayout extends ViewGroup {
     }
 
     /**
-     * Given a cell coordinate and span return the point that represents the center of the regio
+     * Given a cell coordinate and span return the point that represents the center of the region
      *
-     * @param cellX X coordinate of the cell
-     * @param cellY Y coordinate of the cell
-     *
+     * @param cellX  X coordinate of the cell
+     * @param cellY  Y coordinate of the cell
      * @param result Array of 2 ints to hold the x and y coordinate of the point
      */
     void regionToCenterPoint(int cellX, int cellY, int spanX, int spanY, int[] result) {
@@ -843,9 +890,63 @@ public class CellLayout extends ViewGroup {
         result[1] = mTempRect.centerY();
     }
 
-    public float getDistanceFromCell(float x, float y, int[] cell) {
-        cellToCenterPoint(cell[0], cell[1], mTmpPoint);
+    /**
+     * Returns the distance between the given coordinate and the visual center of the given cell.
+     */
+    public float getDistanceFromWorkspaceCellVisualCenter(float x, float y, int[] cell) {
+        getWorkspaceCellVisualCenter(cell[0], cell[1], mTmpPoint);
         return (float) Math.hypot(x - mTmpPoint[0], y - mTmpPoint[1]);
+    }
+
+    private void getWorkspaceCellVisualCenter(int cellX, int cellY, int[] outPoint) {
+        View child = getChildAt(cellX, cellY);
+        if (child instanceof DraggableView) {
+            DraggableView draggableChild = (DraggableView) child;
+            if (draggableChild.getViewType() == DRAGGABLE_ICON) {
+                cellToPoint(cellX, cellY, outPoint);
+                draggableChild.getWorkspaceVisualDragBounds(mTempRect);
+                mTempRect.offset(outPoint[0], outPoint[1]);
+                outPoint[0] = mTempRect.centerX();
+                outPoint[1] = mTempRect.centerY();
+                return;
+            }
+        }
+        cellToCenterPoint(cellX, cellY, outPoint);
+    }
+
+    /**
+     * Returns the max distance from the center of a cell that can accept a drop to create a folder.
+     */
+    public float getFolderCreationRadius(int[] targetCell) {
+        DeviceProfile grid = mActivity.getDeviceProfile();
+        float iconVisibleRadius = ICON_VISIBLE_AREA_FACTOR * grid.iconSizePx / 2;
+        // Halfway between reorder radius and icon.
+        return (getReorderRadius(targetCell, 1, 1) + iconVisibleRadius) / 2;
+    }
+
+    /**
+     * Returns the max distance from the center of a cell that will start to reorder on drag over.
+     */
+    public float getReorderRadius(int[] targetCell, int spanX, int spanY) {
+        int[] centerPoint = mTmpPoint;
+        getWorkspaceCellVisualCenter(targetCell[0], targetCell[1], centerPoint);
+
+        Rect cellBoundsWithSpacing = mTempRect;
+        cellToRect(targetCell[0], targetCell[1], spanX, spanY, cellBoundsWithSpacing);
+        cellBoundsWithSpacing.inset(-mBorderSpace.x / 2, -mBorderSpace.y / 2);
+
+        if (canCreateFolder(getChildAt(targetCell[0], targetCell[1]))) {
+            // Take only the circle in the smaller dimension, to ensure we don't start reordering
+            // too soon before accepting a folder drop.
+            int minRadius = centerPoint[0] - cellBoundsWithSpacing.left;
+            minRadius = Math.min(minRadius, centerPoint[1] - cellBoundsWithSpacing.top);
+            minRadius = Math.min(minRadius, cellBoundsWithSpacing.right - centerPoint[0]);
+            minRadius = Math.min(minRadius, cellBoundsWithSpacing.bottom - centerPoint[1]);
+            return minRadius;
+        }
+        // Take up the entire cell, including space between this cell and the adjacent ones.
+        return (float) Math.hypot(cellBoundsWithSpacing.width() / 2f,
+                cellBoundsWithSpacing.height() / 2f);
     }
 
     public int getCellWidth() {
@@ -871,15 +972,15 @@ public class CellLayout extends ViewGroup {
         int childHeightSize = heightSize - (getPaddingTop() + getPaddingBottom());
 
         if (mFixedCellWidth < 0 || mFixedCellHeight < 0) {
-            int cw = DeviceProfile.calculateCellWidth(childWidthSize, mBorderSpacing,
+            int cw = DeviceProfile.calculateCellWidth(childWidthSize, mBorderSpace.x,
                     mCountX);
-            int ch = DeviceProfile.calculateCellHeight(childHeightSize, mBorderSpacing,
+            int ch = DeviceProfile.calculateCellHeight(childHeightSize, mBorderSpace.y,
                     mCountY);
             if (cw != mCellWidth || ch != mCellHeight) {
                 mCellWidth = cw;
                 mCellHeight = ch;
                 mShortcutsAndWidgets.setCellDimensions(mCellWidth, mCellHeight, mCountX, mCountY,
-                        mBorderSpacing);
+                        mBorderSpace);
             }
         }
 
@@ -933,7 +1034,7 @@ public class CellLayout extends ViewGroup {
      */
     public int getUnusedHorizontalSpace() {
         return getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - (mCountX * mCellWidth)
-                - ((mCountX - 1) * mBorderSpacing);
+                - ((mCountX - 1) * mBorderSpace.x);
     }
 
     @Override
@@ -1085,18 +1186,10 @@ public class CellLayout extends ViewGroup {
         // Apply local extracted color if the DragView is an AppWidgetHostViewDrawable.
         View view = dragObject.dragView.getContentView();
         if (view instanceof LauncherAppWidgetHostView) {
-            Launcher launcher = Launcher.getLauncher(dragObject.dragView.getContext());
-            Workspace workspace = launcher.getWorkspace();
-            int screenId = workspace.getIdForScreen(this);
-            int pageId = workspace.getPageIndexForScreenId(screenId);
+            int screenId = getWorkspace().getIdForScreen(this);
             cellToRect(targetCell[0], targetCell[1], spanX, spanY, mTempRect);
 
-            // Now get the rect in drag layer coordinates.
-            getBoundsForViewInDragLayer(launcher.getDragLayer(), this, mTempRect, true,
-                    mTmpFloatArray, mTempRectF);
-            Utilities.setRect(mTempRectF, mTempRect);
-
-            ((LauncherAppWidgetHostView) view).handleDrag(mTempRect, pageId);
+            ((LauncherAppWidgetHostView) view).handleDrag(mTempRect, this, screenId);
         }
     }
 
@@ -1106,9 +1199,23 @@ public class CellLayout extends ViewGroup {
             return getContext().getString(R.string.move_to_hotseat_position,
                     Math.max(cellX, cellY) + 1);
         } else {
-            return getContext().getString(R.string.move_to_empty_cell,
-                    cellY + 1, cellX + 1);
+            Workspace<?> workspace = getWorkspace();
+            int row = cellY + 1;
+            int col = workspace.mIsRtl ? mCountX - cellX : cellX + 1;
+            int panelCount = workspace.getPanelCount();
+            int screenId = workspace.getIdForScreen(this);
+            int pageIndex = workspace.getPageIndexForScreenId(screenId);
+            if (panelCount > 1) {
+                // Increment the column if the target is on the right side of a two panel home
+                col += (pageIndex % panelCount) * mCountX;
+            }
+            return getContext().getString(R.string.move_to_empty_cell_description, row, col,
+                    workspace.getPageDescription(pageIndex));
         }
+    }
+
+    private Workspace<?> getWorkspace() {
+        return Launcher.cast(mActivity).getWorkspace();
     }
 
     public void clearDragOutlines() {
@@ -1134,7 +1241,7 @@ public class CellLayout extends ViewGroup {
      */
     int[] findNearestVacantArea(int pixelX, int pixelY, int minSpanX, int minSpanY, int spanX,
             int spanY, int[] result, int[] resultSpan) {
-        return findNearestArea(pixelX, pixelY, minSpanX, minSpanY, spanX, spanY, true,
+        return findNearestArea(pixelX, pixelY, minSpanX, minSpanY, spanX, spanY, false,
                 result, resultSpan);
     }
 
@@ -1157,27 +1264,29 @@ public class CellLayout extends ViewGroup {
      * Find a vacant area that will fit the given bounds nearest the requested
      * cell location. Uses Euclidean distance to score multiple vacant areas.
      *
-     * @param pixelX The X location at which you want to search for a vacant area.
-     * @param pixelY The Y location at which you want to search for a vacant area.
-     * @param minSpanX The minimum horizontal span required
-     * @param minSpanY The minimum vertical span required
-     * @param spanX Horizontal span of the object.
-     * @param spanY Vertical span of the object.
+     * @param relativeXPos   The X location relative to the Cell layout at which you want to search
+     *                       for a vacant area.
+     * @param relativeYPos   The Y location relative to the Cell layout at which you want to search
+     *                       for a vacant area.
+     * @param minSpanX       The minimum horizontal span required
+     * @param minSpanY       The minimum vertical span required
+     * @param spanX          Horizontal span of the object.
+     * @param spanY          Vertical span of the object.
      * @param ignoreOccupied If true, the result can be an occupied cell
-     * @param result Array in which to place the result, or null (in which case a new array will
-     *        be allocated)
+     * @param result         Array in which to place the result, or null (in which case a new array will
+     *                       be allocated)
      * @return The X, Y cell of a vacant area that can contain this object,
-     *         nearest the requested location.
+     * nearest the requested location.
      */
-    private int[] findNearestArea(int pixelX, int pixelY, int minSpanX, int minSpanY, int spanX,
-            int spanY, boolean ignoreOccupied, int[] result, int[] resultSpan) {
+    private int[] findNearestArea(int relativeXPos, int relativeYPos, int minSpanX, int minSpanY,
+                                  int spanX, int spanY, boolean ignoreOccupied, int[] result, int[] resultSpan) {
         lazyInitTempRectStack();
 
-        // For items with a spanX / spanY > 1, the passed in point (pixelX, pixelY) corresponds
-        // to the center of the item, but we are searching based on the top-left cell, so
-        // we translate the point over to correspond to the top-left.
-        pixelX -= mCellWidth * (spanX - 1) / 2f;
-        pixelY -= mCellHeight * (spanY - 1) / 2f;
+        // For items with a spanX / spanY > 1, the passed in point (relativeXPos, relativeYPos)
+        // corresponds to the center of the item, but we are searching based on the top-left cell,
+        // so we translate the point over to correspond to the top-left.
+        relativeXPos = (int) (relativeXPos - (mCellWidth + mBorderSpace.x) * (spanX - 1) / 2f);
+        relativeYPos = (int) (relativeYPos - (mCellHeight + mBorderSpace.y) * (spanY - 1) / 2f);
 
         // Keep track of best-scoring drop area
         final int[] bestXY = result != null ? result : new int[2];
@@ -1198,7 +1307,7 @@ public class CellLayout extends ViewGroup {
             for (int x = 0; x < countX - (minSpanX - 1); x++) {
                 int ySize = -1;
                 int xSize = -1;
-                if (ignoreOccupied) {
+                if (!ignoreOccupied) {
                     // First, let's see if this thing fits anywhere
                     for (int i = 0; i < minSpanX; i++) {
                         for (int j = 0; j < minSpanY; j++) {
@@ -1262,7 +1371,7 @@ public class CellLayout extends ViewGroup {
                     }
                 }
                 validRegions.push(currentRect);
-                double distance = Math.hypot(cellXY[0] - pixelX,  cellXY[1] - pixelY);
+                double distance = Math.hypot(cellXY[0] - relativeXPos, cellXY[1] - relativeYPos);
 
                 if ((distance <= bestDistance && !contained) ||
                         currentRect.contains(bestRect)) {
@@ -2163,10 +2272,10 @@ public class CellLayout extends ViewGroup {
         mShakeAnimators.clear();
     }
 
-    private void commitTempPlacement() {
+    private void commitTempPlacement(View dragView) {
         mTmpOccupied.copyTo(mOccupied);
 
-        int screenId = Launcher.cast(mActivity).getWorkspace().getIdForScreen(this);
+        int screenId = getWorkspace().getIdForScreen(this);
         int container = Favorites.CONTAINER_DESKTOP;
 
         if (mContainerType == HOTSEAT) {
@@ -2181,7 +2290,7 @@ public class CellLayout extends ViewGroup {
             ItemInfo info = (ItemInfo) child.getTag();
             // We do a null check here because the item info can be null in the case of the
             // AllApps button in the hotseat.
-            if (info != null) {
+            if (info != null && child != dragView) {
                 final boolean requiresDbUpdate = (info.cellX != lp.tmpCellX
                         || info.cellY != lp.tmpCellY || info.spanX != lp.cellHSpan
                         || info.spanY != lp.cellVSpan);
@@ -2343,7 +2452,7 @@ public class CellLayout extends ViewGroup {
             animateItemsToSolution(swapSolution, dragView, commit);
 
             if (commit) {
-                commitTempPlacement();
+                commitTempPlacement(null);
                 completeAndClearReorderPreviewAnimations();
                 setItemPlacementDirty(false);
             } else {
@@ -2368,7 +2477,7 @@ public class CellLayout extends ViewGroup {
         // direction vector, since we want the solution to match the preview, and it's possible
         // that the exact position of the item has changed to result in a new reordering outcome.
         if ((mode == MODE_ON_DROP || mode == MODE_ON_DROP_EXTERNAL || mode == MODE_ACCEPT_DROP)
-               && mPreviousReorderDirection[0] != INVALID_DIRECTION) {
+                && mPreviousReorderDirection[0] != INVALID_DIRECTION) {
             mDirectionVector[0] = mPreviousReorderDirection[0];
             mDirectionVector[1] = mPreviousReorderDirection[1];
             // We reset this vector after drop
@@ -2384,7 +2493,7 @@ public class CellLayout extends ViewGroup {
 
         // Find a solution involving pushing / displacing any items in the way
         ItemConfiguration swapSolution = findReorderSolution(pixelX, pixelY, minSpanX, minSpanY,
-                 spanX,  spanY, mDirectionVector, dragView,  true,  new ItemConfiguration());
+                spanX, spanY, mDirectionVector, dragView, true, new ItemConfiguration());
 
         // We attempt the approach which doesn't shuffle views at all
         ItemConfiguration noShuffleSolution = findConfigurationNoShuffle(pixelX, pixelY, minSpanX,
@@ -2437,7 +2546,8 @@ public class CellLayout extends ViewGroup {
 
                 if (!DESTRUCTIVE_REORDER &&
                         (mode == MODE_ON_DROP || mode == MODE_ON_DROP_EXTERNAL)) {
-                    commitTempPlacement();
+                    // Since the temp solution didn't update dragView, don't commit it either
+                    commitTempPlacement(dragView);
                     completeAndClearReorderPreviewAnimations();
                     setItemPlacementDirty(false);
                 } else {
@@ -2523,7 +2633,7 @@ public class CellLayout extends ViewGroup {
      *         nearest the requested location.
      */
     public int[] findNearestArea(int pixelX, int pixelY, int spanX, int spanY, int[] result) {
-        return findNearestArea(pixelX, pixelY, spanX, spanY, spanX, spanY, false, result, null);
+        return findNearestArea(pixelX, pixelY, spanX, spanY, spanX, spanY, true, result, null);
     }
 
     boolean existsEmptyCell() {
@@ -2613,22 +2723,34 @@ public class CellLayout extends ViewGroup {
                 + (int) Math.ceil(getUnusedHorizontalSpace() / 2f);
         final int vStartPadding = getPaddingTop();
 
-        int x = hStartPadding + (cellX * mBorderSpacing) + (cellX * cellWidth);
-        int y = vStartPadding + (cellY * mBorderSpacing) + (cellY * cellHeight);
+        int x = hStartPadding + (cellX * mBorderSpace.x) + (cellX * cellWidth);
+        int y = vStartPadding + (cellY * mBorderSpace.y) + (cellY * cellHeight);
 
-        int width = cellHSpan * cellWidth + ((cellHSpan - 1) * mBorderSpacing);
-        int height = cellVSpan * cellHeight + ((cellVSpan - 1) * mBorderSpacing);
+        int width = cellHSpan * cellWidth + ((cellHSpan - 1) * mBorderSpace.x);
+        int height = cellVSpan * cellHeight + ((cellVSpan - 1) * mBorderSpace.y);
 
         resultRect.set(x, y, x + width, y + height);
     }
 
     public void markCellsAsOccupiedForView(View view) {
+        if (view instanceof LauncherAppWidgetHostView
+                && view.getTag() instanceof LauncherAppWidgetInfo) {
+            LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) view.getTag();
+            mOccupied.markCells(info.cellX, info.cellY, info.spanX, info.spanY, true);
+            return;
+        }
         if (view == null || view.getParent() != mShortcutsAndWidgets) return;
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         mOccupied.markCells(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, true);
     }
 
     public void markCellsAsUnoccupiedForView(View view) {
+        if (view instanceof LauncherAppWidgetHostView
+                && view.getTag() instanceof LauncherAppWidgetInfo) {
+            LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) view.getTag();
+            mOccupied.markCells(info.cellX, info.cellY, info.spanX, info.spanY, false);
+            return;
+        }
         if (view == null || view.getParent() != mShortcutsAndWidgets) return;
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
         mOccupied.markCells(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, false);
@@ -2636,21 +2758,19 @@ public class CellLayout extends ViewGroup {
 
     public int getDesiredWidth() {
         return getPaddingLeft() + getPaddingRight() + (mCountX * mCellWidth)
-                + ((mCountX - 1) * mBorderSpacing);
+                + ((mCountX - 1) * mBorderSpace.x);
     }
 
     public int getDesiredHeight() {
         return getPaddingTop() + getPaddingBottom() + (mCountY * mCellHeight)
-                + ((mCountY - 1) * mBorderSpacing);
+                + ((mCountY - 1) * mBorderSpace.y);
     }
 
     public boolean isOccupied(int x, int y) {
         if (x < mCountX && y < mCountY) {
             return mOccupied.cells[x][y];
         } else {
-            return false;
-            // TODO manage changing grid sizes better
-            // throw new RuntimeException("Position exceeds the bound of this CellLayout");
+            throw new RuntimeException("Position exceeds the bound of this CellLayout");
         }
     }
 
@@ -2759,20 +2879,20 @@ public class CellLayout extends ViewGroup {
         }
 
         public void setup(int cellWidth, int cellHeight, boolean invertHorizontally, int colCount,
-                          int rowCount, int borderSpacing, @Nullable Rect inset) {
+                          int rowCount, Point borderSpace, @Nullable Rect inset) {
             setup(cellWidth, cellHeight, invertHorizontally, colCount, rowCount, 1.0f, 1.0f,
-                    borderSpacing, inset);
+                    borderSpace, inset);
         }
 
         /**
-         * Use this method, as opposed to {@link #setup(int, int, boolean, int, int, int, Rect)},
+         * Use this method, as opposed to {@link #setup(int, int, boolean, int, int, Point, Rect)},
          * if the view needs to be scaled.
-         * <p>
+         *
          * ie. In multi-window mode, we setup widgets so that they are measured and laid out
          * using their full/invariant device profile sizes.
          */
         public void setup(int cellWidth, int cellHeight, boolean invertHorizontally, int colCount,
-                          int rowCount, float cellScaleX, float cellScaleY, int borderSpacing,
+                          int rowCount, float cellScaleX, float cellScaleY, Point borderSpace,
                           @Nullable Rect inset) {
             if (isLockedToGrid) {
                 final int myCellHSpan = cellHSpan;
@@ -2784,16 +2904,16 @@ public class CellLayout extends ViewGroup {
                     myCellX = colCount - myCellX - cellHSpan;
                 }
 
-                int hBorderSpacing = (myCellHSpan - 1) * borderSpacing;
-                int vBorderSpacing = (myCellVSpan - 1) * borderSpacing;
+                int hBorderSpacing = (myCellHSpan - 1) * borderSpace.x;
+                int vBorderSpacing = (myCellVSpan - 1) * borderSpace.y;
 
                 float myCellWidth = ((myCellHSpan * cellWidth) + hBorderSpacing) / cellScaleX;
                 float myCellHeight = ((myCellVSpan * cellHeight) + vBorderSpacing) / cellScaleY;
 
                 width = Math.round(myCellWidth) - leftMargin - rightMargin;
                 height = Math.round(myCellHeight) - topMargin - bottomMargin;
-                x = leftMargin + (myCellX * cellWidth) + (myCellX * borderSpacing);
-                y = topMargin + (myCellY * cellHeight) + (myCellY * borderSpacing);
+                x = leftMargin + (myCellX * cellWidth) + (myCellX * borderSpace.x);
+                y = topMargin + (myCellY * cellHeight) + (myCellY * borderSpace.y);
 
                 if (inset != null) {
                     x -= inset.left;
@@ -2895,7 +3015,7 @@ public class CellLayout extends ViewGroup {
                 directionVector, null, false, configuration).isSolution) {
             if (commitConfig) {
                 copySolutionToTempState(configuration, null);
-                commitTempPlacement();
+                commitTempPlacement(null);
                 // undo marking cells occupied since there is actually nothing being placed yet.
                 mOccupied.markCells(0, mCountY - 1, mCountX, 1, false);
             }

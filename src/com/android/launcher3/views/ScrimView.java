@@ -20,7 +20,6 @@ import static com.android.launcher3.util.SystemUiController.UI_STATE_SCRIM_VIEW;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
@@ -39,13 +38,12 @@ import java.util.ArrayList;
  * Simple scrim which draws a flat color
  */
 public class ScrimView extends View implements Insettable {
-    protected static final float STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.9f;
+    private static final float STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.9f;
 
     private final ArrayList<Runnable> mOpaquenessListeners = new ArrayList<>(1);
     private SystemUiController mSystemUiController;
-
     private ScrimDrawingController mDrawingController;
-    protected int mBackgroundColor;
+    private int mBackgroundColor;
     private boolean mIsVisible = true;
     private boolean mLastDispatchedOpaqueness;
 
@@ -90,7 +88,7 @@ public class ScrimView extends View implements Insettable {
     }
 
     @Override
-    public void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mDrawingController != null) {
             mDrawingController.drawOnScrim(canvas);
@@ -103,7 +101,7 @@ public class ScrimView extends View implements Insettable {
         updateSysUiColors();
     }
 
-    protected void updateSysUiColors() {
+    private void updateSysUiColors() {
         // Use a light system UI (dark icons) if all apps is behind at least half of the
         // status bar.
         final float threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD;
@@ -128,14 +126,14 @@ public class ScrimView extends View implements Insettable {
         }
     }
 
-    protected SystemUiController getSystemUiController() {
+    private SystemUiController getSystemUiController() {
         if (mSystemUiController == null) {
             mSystemUiController = BaseActivity.fromContext(getContext()).getSystemUiController();
         }
         return mSystemUiController;
     }
 
-    protected boolean isScrimDark() {
+    private boolean isScrimDark() {
         if (!(getBackground() instanceof ColorDrawable)) {
             throw new IllegalStateException(
                     "ScrimView must have a ColorDrawable background, this one has: "
@@ -157,7 +155,6 @@ public class ScrimView extends View implements Insettable {
 
     /**
      * Registers a listener to be notified of whether the scrim is occluding other UI elements.
-     *
      * @see #isFullyOpaque()
      */
     public void addOpaquenessListener(@NonNull Runnable listener) {
@@ -166,18 +163,10 @@ public class ScrimView extends View implements Insettable {
 
     /**
      * Removes previously registered listener.
-     *
      * @see #addOpaquenessListener(Runnable)
      */
     public void removeOpaquenessListener(@NonNull Runnable listener) {
         mOpaquenessListeners.remove(listener);
-    }
-
-    protected void onDrawFlatColor(Canvas canvas) {
-    }
-
-    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, Paint paint) {
-
     }
 
     /**

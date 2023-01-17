@@ -19,7 +19,7 @@ package com.android.launcher3.tapl;
 import androidx.annotation.NonNull;
 import androidx.test.uiautomator.UiObject2;
 
-import com.android.launcher3.testing.TestProtocol;
+import com.android.launcher3.testing.shared.TestProtocol;
 
 /**
  * View containing overview actions
@@ -34,27 +34,6 @@ public class OverviewActions {
     }
 
     /**
-     * Clicks content push button.
-     */
-    @NonNull
-    public Overview clickAndDismissContentPush() {
-        if (mLauncher.overviewContentPushEnabled()) {
-            try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
-                 LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
-                         "want to click content push button and exit screenshot ui")) {
-                UiObject2 exo = mLauncher.waitForObjectInContainer(mOverviewActions,
-                        "action_content_push");
-                mLauncher.clickLauncherObject(exo);
-                try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
-                        "clicked content push button")) {
-                    return new Overview(mLauncher);
-                }
-            }
-        }
-        return new Overview(mLauncher);
-    }
-
-    /**
      * Clicks screenshot button and closes screenshot ui.
      */
     @NonNull
@@ -62,6 +41,8 @@ public class OverviewActions {
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
              LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                      "want to click screenshot button and exit screenshot ui")) {
+            mLauncher.setIndefiniteAccessibilityInteractiveUiTimeout(true);
+
             UiObject2 screenshot = mLauncher.waitForObjectInContainer(mOverviewActions,
                     "action_screenshot");
 
@@ -69,7 +50,7 @@ public class OverviewActions {
             try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
                     "clicked screenshot button")) {
                 UiObject2 closeScreenshot = mLauncher.waitForSystemUiObject(
-                        "global_screenshot_dismiss_image");
+                        "screenshot_dismiss_image");
                 if (mLauncher.getNavigationModel()
                         != LauncherInstrumentation.NavigationModel.THREE_BUTTON) {
                     mLauncher.expectEvent(TestProtocol.SEQUENCE_TIS,
@@ -83,36 +64,9 @@ public class OverviewActions {
                     return new Overview(mLauncher);
                 }
             }
+        } finally {
+            mLauncher.setIndefiniteAccessibilityInteractiveUiTimeout(false);
         }
-    }
-
-    /**
-     * Click share button, then drags sharesheet down to remove it.
-     *
-     * Share is currently hidden behind flag, test is kept in case share becomes a default feature.
-     * If share is completely removed then remove this test as well.
-     */
-    @NonNull
-    public Overview clickAndDismissShare() {
-        if (mLauncher.overviewShareEnabled()) {
-            try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
-                 LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
-                         "want to click share button and dismiss sharesheet")) {
-                UiObject2 share = mLauncher.waitForObjectInContainer(mOverviewActions,
-                        "action_share");
-                mLauncher.clickLauncherObject(share);
-                try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
-                        "clicked share button")) {
-                    mLauncher.waitForAndroidObject("contentPanel");
-                    mLauncher.getDevice().pressBack();
-                    try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer(
-                            "dismissed sharesheet")) {
-                        return new Overview(mLauncher);
-                    }
-                }
-            }
-        }
-        return new Overview(mLauncher);
     }
 
     /**
@@ -132,7 +86,6 @@ public class OverviewActions {
                     "clicked select button")) {
                 return getSelectModeButtons();
             }
-
         }
     }
 
@@ -147,6 +100,24 @@ public class OverviewActions {
                 "want to get select mode buttons")) {
             UiObject2 selectModeButtons = mLauncher.waitForLauncherObject("select_mode_buttons");
             return new SelectModeButtons(selectModeButtons, mLauncher);
+        }
+    }
+
+    /**
+     * Clicks split button and enters split select mode.
+     */
+    @NonNull
+    public SplitScreenSelect clickSplit() {
+        try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
+             LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                     "want to click split button to enter split select mode")) {
+            UiObject2 split = mLauncher.waitForObjectInContainer(mOverviewActions,
+                    "action_split");
+            mLauncher.clickLauncherObject(split);
+            try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer(
+                    "clicked split")) {
+                return new SplitScreenSelect(mLauncher);
+            }
         }
     }
 }

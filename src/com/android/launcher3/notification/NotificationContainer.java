@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * Class to manage the notification UI in a {@link PopupContainerWithArrow}.
- * <p>
+ *
  * - Has two {@link NotificationMainView} that represent the top two notifications
  * - Handles dismissing a notification
  */
@@ -161,7 +161,6 @@ public class NotificationContainer extends FrameLayout implements SingleAxisSwip
 
     /**
      * Trims the notifications.
-     *
      * @param notificationKeys List of all valid notification keys.
      */
     public void trimNotifications(final List<String> notificationKeys) {

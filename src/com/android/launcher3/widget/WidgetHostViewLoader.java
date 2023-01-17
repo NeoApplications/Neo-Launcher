@@ -16,7 +16,7 @@ import com.android.launcher3.util.Thunk;
 
 public class WidgetHostViewLoader implements DragController.DragListener {
     private static final String TAG = "WidgetHostViewLoader";
-    private static final boolean LOGD = true;
+    private static final boolean LOGD = false;
 
     /* Runnables to handle inflation and binding. */
     @Thunk Runnable mInflateWidgetRunnable = null;

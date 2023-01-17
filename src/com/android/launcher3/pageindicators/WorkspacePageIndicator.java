@@ -24,7 +24,7 @@ import com.android.launcher3.Insettable;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.saggitt.omega.theme.ThemeManager;
+import com.android.launcher3.util.Themes;
 
 /**
  * A PageIndicator that briefly shows a fraction of a line when moving between pages
@@ -59,7 +59,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
     private int mCurrentScroll;
     private int mTotalScroll;
     private Paint mLinePaint;
-    private int mLineHeight;
+    private final int mLineHeight;
 
     private static final Property<WorkspacePageIndicator, Integer> PAINT_ALPHA
             = new Property<WorkspacePageIndicator, Integer>(Integer.class, "paint_alpha") {
@@ -121,18 +121,11 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         mLinePaint.setAlpha(0);
 
         mLauncher = Launcher.getLauncher(context);
-        updateLineHeight();
-        //mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
+        mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
 
-        boolean darkText = ThemeManager.Companion.getInstance(context).getSupportsDarkText();
+        boolean darkText = Themes.getAttrBoolean(mLauncher, R.attr.isWorkspaceDarkText);
         mActiveAlpha = darkText ? BLACK_ALPHA : WHITE_ALPHA;
         mLinePaint.setColor(darkText ? Color.BLACK : Color.WHITE);
-    }
-
-    public void updateLineHeight() {
-        boolean show = Utilities.getOmegaPrefs(getContext()).getDockShowPageIndicator().onGetValue();
-        mLineHeight = !show ? 0 : getResources()
-                .getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
     }
 
     @Override
@@ -194,6 +187,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         }
     }
 
+    @Override
     public void setShouldAutoHide(boolean shouldAutoHide) {
         mShouldAutoHide = shouldAutoHide;
         if (shouldAutoHide && mLinePaint.getAlpha() > 0) {
@@ -243,6 +237,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
     /**
      * Pauses all currently running animations.
      */
+    @Override
     public void pauseAnimations() {
         for (int i = 0; i < ANIMATOR_COUNT; i++) {
             if (mAnimators[i] != null) {
@@ -254,6 +249,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
     /**
      * Force-ends all currently running or paused animations.
      */
+    @Override
     public void skipAnimationsToEnd() {
         for (int i = 0; i < ANIMATOR_COUNT; i++) {
             if (mAnimators[i] != null) {
@@ -275,9 +271,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         } else {
             lp.leftMargin = lp.rightMargin = 0;
             lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            lp.bottomMargin = grid.isTaskbarPresent
-                    ? grid.workspacePadding.bottom + grid.taskbarSize
-                    : grid.hotseatBarSizePx + insets.bottom;
+            lp.bottomMargin = grid.hotseatBarSizePx;
         }
         setLayoutParams(lp);
     }

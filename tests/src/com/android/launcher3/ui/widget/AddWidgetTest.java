@@ -19,18 +19,21 @@ import static com.android.launcher3.ui.TaplTestsLauncher3.getAppPackageName;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.platform.test.annotations.IwTest;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.tapl.Widget;
+import com.android.launcher3.tapl.WidgetResizeFrame;
 import com.android.launcher3.ui.AbstractLauncherUiTest;
 import com.android.launcher3.ui.TestViewHelpers;
 import com.android.launcher3.util.rule.ShellCommandRule;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 
 import org.junit.Rule;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -43,7 +46,8 @@ public class AddWidgetTest extends AbstractLauncherUiTest {
     @Rule
     public ShellCommandRule mGrantWidgetRule = ShellCommandRule.grantWidgetBind();
 
-    @org.junit.jupiter.api.Test
+    @IwTest(focusArea = "launcher")
+    @Test
     @PortraitLandscape
     public void testDragIcon() throws Throwable {
         clearHomescreen();
@@ -52,18 +56,19 @@ public class AddWidgetTest extends AbstractLauncherUiTest {
         final LauncherAppWidgetProviderInfo widgetInfo =
                 TestViewHelpers.findWidgetProvider(this, false /* hasConfigureScreen */);
 
-        mLauncher.
+        WidgetResizeFrame resizeFrame = mLauncher.
                 getWorkspace().
                 openAllWidgets().
                 getWidget(widgetInfo.getLabel(mTargetContext.getPackageManager())).
-                dragToWorkspace(false, false);
-        // Dismiss widget resize frame.
-        mDevice.pressHome();
+                dragWidgetToWorkspace();
 
         assertTrue(mActivityMonitor.itemExists(
                 (info, view) -> info instanceof LauncherAppWidgetInfo &&
                         ((LauncherAppWidgetInfo) info).providerName.getClassName().equals(
                                 widgetInfo.provider.getClassName())).call());
+
+        assertNotNull("Widget resize frame not shown after widget add", resizeFrame);
+        resizeFrame.dismiss();
 
         final Widget widget = mLauncher.getWorkspace().tryGetWidget(widgetInfo.label,
                 DEFAULT_UI_TIMEOUT);

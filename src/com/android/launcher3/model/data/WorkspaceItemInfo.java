@@ -21,22 +21,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.IconCache;
-import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.ContentWriter;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -73,8 +68,14 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     public static final int FLAG_SUPPORTS_WEB_UI = 1 << 3;
 
     /**
+     *
+     */
+    public static final int FLAG_START_FOR_RESULT = 1 << 4;
+
+    /**
      * The intent used to start the application.
      */
+    @NonNull
     public Intent intent;
 
     /**
@@ -91,16 +92,14 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
     public int status;
 
-    public CharSequence customTitle;
-    public Bitmap customIcon;
-    public String swipeUpAction;
-
     /**
      * A set of person's Id associated with the WorkspaceItemInfo, this is only used if the item
      * represents a deep shortcut.
      */
     @NonNull
     private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
+
+    public int options;
 
 
     public WorkspaceItemInfo() {
@@ -135,10 +134,11 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     @Override
-    public void onAddToDatabase(ContentWriter writer) {
+    public void onAddToDatabase(@NonNull ContentWriter writer) {
         super.onAddToDatabase(writer);
         writer.put(Favorites.TITLE, title)
                 .put(Favorites.INTENT, getIntent())
+                .put(Favorites.OPTIONS, options)
                 .put(Favorites.RESTORED, status);
 
         if (!usingLowResIcon()) {
@@ -151,6 +151,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     @Override
+    @NonNull
     public Intent getIntent() {
         return intent;
     }
@@ -168,7 +169,8 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         return isPromise() && !hasStatusFlag(FLAG_SUPPORTS_WEB_UI);
     }
 
-    public void updateFromDeepShortcutInfo(ShortcutInfo shortcutInfo, Context context) {
+    public void updateFromDeepShortcutInfo(@NonNull final ShortcutInfo shortcutInfo,
+                                           @NonNull final Context context) {
         // {@link ShortcutInfo#getActivity} can change during an update. Recreate the intent
         intent = ShortcutKey.makeIntent(shortcutInfo);
         title = shortcutInfo.getShortLabel();
@@ -184,10 +186,23 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
             runtimeStatusFlags |= FLAG_DISABLED_BY_PUBLISHER;
         }
         disabledMessage = shortcutInfo.getDisabledMessage();
+        if (Utilities.ATLEAST_P
+                && shortcutInfo.getDisabledReason() == ShortcutInfo.DISABLED_REASON_VERSION_LOWER) {
+            runtimeStatusFlags |= FLAG_DISABLED_VERSION_LOWER;
+        } else {
+            runtimeStatusFlags &= ~FLAG_DISABLED_VERSION_LOWER;
+        }
 
         Person[] persons = ApiWrapper.getPersons(shortcutInfo);
         personKeys = persons.length == 0 ? Utilities.EMPTY_STRING_ARRAY
                 : Arrays.stream(persons).map(Person::getKey).sorted().toArray(String[]::new);
+    }
+
+    /**
+     * {@code true} if the shortcut is disabled due to its app being a lower version.
+     */
+    public boolean isDisabledVersionLower() {
+        return (runtimeStatusFlags & FLAG_DISABLED_VERSION_LOWER) != 0;
     }
 
     /**
@@ -218,20 +233,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     @Override
-    public ItemInfoWithIcon clone() {
+    public WorkspaceItemInfo clone() {
         return new WorkspaceItemInfo(this);
-    }
-
-    private void updateDatabase(Context context, boolean reload) {
-        ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
-    }
-
-    public void onLoadCustomizations(String swipeUpAction) {
-        this.swipeUpAction = swipeUpAction;
-    }
-
-    public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
-        swipeUpAction = action;
-        updateDatabase(context, true);
     }
 }

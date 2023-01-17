@@ -17,6 +17,7 @@ package com.android.launcher3.touch;
 
 import static com.android.launcher3.Launcher.REQUEST_BIND_PENDING_APPWIDGET;
 import static com.android.launcher3.Launcher.REQUEST_RECONFIGURE_APPWIDGET;
+import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_SEARCHINAPP_LAUNCH;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_APP_LAUNCH_TAP;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_FOLDER_OPEN;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_BY_PUBLISHER;
@@ -42,10 +43,13 @@ import android.widget.Toast;
 
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.logging.InstanceId;
+import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.FolderInfo;
@@ -55,17 +59,18 @@ import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.SearchActionItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.InstallSessionHelper;
+import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.testing.TestLogging;
-import com.android.launcher3.testing.TestProtocol;
-import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.testing.shared.TestProtocol;
+import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.FloatingIconView;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
-import com.saggitt.omega.data.AppTrackerRepository;
-import com.saggitt.omega.util.Config;
+
+import java.util.Collections;
 
 /**
  * Class for handling clicks on workspace and all-apps items
@@ -78,7 +83,6 @@ public class ItemClickHandler {
      * Instance used for click handling on items
      */
     public static final OnClickListener INSTANCE = ItemClickHandler::onClick;
-    public static final OnClickListener FOLDER_COVER_INSTANCE = ItemClickHandler::onClickFolderCover;
 
     private static void onClick(View v) {
         // Make sure that rogue clicks don't get through while allapps is launching, or after the
@@ -96,9 +100,6 @@ public class ItemClickHandler {
                 onClickFolderIcon(v);
             }
         } else if (tag instanceof AppInfo) {
-            if (Utilities.getOmegaPrefs(launcher).getDrawerSortModeNew().onGetValue() == Config.SORT_MOST_USED) {
-                Utilities.getOmegaPrefs(launcher).reloadApps();
-            }
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
@@ -106,22 +107,6 @@ public class ItemClickHandler {
             }
         } else if (tag instanceof SearchActionItemInfo) {
             onClickSearchAction(launcher, (SearchActionItemInfo) tag);
-        }
-    }
-
-    private static void onClickFolderCover(View v) {
-        if (v.getWindowToken() == null) {
-            return;
-        }
-
-        Launcher launcher = Launcher.getLauncher(v.getContext());
-        if (!launcher.getWorkspace().isFinishedSwitchingState()) {
-            return;
-        }
-
-        Object tag = v.getTag();
-        if (tag instanceof FolderInfo) {
-            onClickAppShortcut(v, ((FolderInfo) tag).getCoverInfo(), launcher);
         }
     }
 
@@ -190,7 +175,9 @@ public class ItemClickHandler {
                         (d, i) -> startMarketIntentForPackage(v, launcher, packageName))
                 .setNeutralButton(R.string.abandoned_clean_this,
                         (d, i) -> launcher.getWorkspace()
-                                .removeAbandonedPromise(packageName, user))
+                                .persistRemoveItemsByMatcher(ItemInfoMatcher.ofPackages(
+                                                Collections.singleton(packageName), user),
+                                        "user explicitly removes the promise app icon"))
                 .create().show();
     }
 
@@ -224,6 +211,12 @@ public class ItemClickHandler {
     public static boolean handleDisabledItemClicked(WorkspaceItemInfo shortcut, Context context) {
         final int disabledFlags = shortcut.runtimeStatusFlags
                 & WorkspaceItemInfo.FLAG_DISABLED_MASK;
+        // Handle the case where the disabled reason is DISABLED_REASON_VERSION_LOWER.
+        // Show an AlertDialog for the user to choose either updating the app or cancel the launch.
+        if (maybeCreateAlertDialogForShortcut(shortcut, context)) {
+            return true;
+        }
+
         if ((disabledFlags
                 & ~FLAG_DISABLED_SUSPENDED
                 & ~FLAG_DISABLED_QUIET_USER) == 0) {
@@ -247,6 +240,44 @@ public class ItemClickHandler {
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
             return true;
         }
+    }
+
+    private static boolean maybeCreateAlertDialogForShortcut(final WorkspaceItemInfo shortcut,
+                                                             Context context) {
+        try {
+            final Launcher launcher = Launcher.getLauncher(context);
+            if (shortcut.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
+                    && shortcut.isDisabledVersionLower()) {
+                final Intent marketIntent = shortcut.getMarketIntent(context);
+                // No market intent means no target package for the shortcut, which should be an
+                // issue. Falling back to showing toast messages.
+                if (marketIntent == null) {
+                    return false;
+                }
+
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.dialog_update_title)
+                        .setMessage(R.string.dialog_update_message)
+                        .setPositiveButton(R.string.dialog_update, (d, i) -> {
+                            // Direct the user to the play store to update the app
+                            context.startActivity(marketIntent);
+                        })
+                        .setNeutralButton(R.string.dialog_remove, (d, i) -> {
+                            // Remove the icon if launcher is successfully initialized
+                            launcher.getWorkspace().persistRemoveItemsByMatcher(ItemInfoMatcher
+                                            .ofShortcutKeys(Collections.singleton(ShortcutKey
+                                                    .fromItemInfo(shortcut))),
+                                    "user explicitly removes disabled shortcut");
+                        })
+                        .create()
+                        .show();
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating alert dialog", e);
+        }
+
+        return false;
     }
 
     /**
@@ -306,7 +337,13 @@ public class ItemClickHandler {
                         Toast.LENGTH_SHORT).show();
             }
         }
-        launcher.getStatsLogManager().logger().withItemInfo(itemInfo).log(LAUNCHER_APP_LAUNCH_TAP);
+        if (itemInfo.hasFlags(SearchActionItemInfo.FLAG_SEARCH_IN_APP)) {
+            launcher.getStatsLogManager().logger().withItemInfo(itemInfo).log(
+                    LAUNCHER_ALLAPPS_SEARCHINAPP_LAUNCH);
+        } else {
+            launcher.getStatsLogManager().logger().withItemInfo(itemInfo).log(
+                    LAUNCHER_APP_LAUNCH_TAP);
+        }
     }
 
     private static void startAppShortcutOrInfoActivity(View v, ItemInfo item, Launcher launcher) {
@@ -325,7 +362,6 @@ public class ItemClickHandler {
         if (intent == null) {
             throw new IllegalArgumentException("Input must have a valid intent");
         }
-        boolean isProtected = false;
         if (item instanceof WorkspaceItemInfo) {
             WorkspaceItemInfo si = (WorkspaceItemInfo) item;
             if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)
@@ -337,27 +373,17 @@ public class ItemClickHandler {
                 intent = new Intent(intent);
                 intent.setPackage(null);
             }
-            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
-                    new ComponentKey(si.getTargetComponent(), si.user)) &&
-                    Utilities.getOmegaPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().onGetValue();
+            if ((si.options & WorkspaceItemInfo.FLAG_START_FOR_RESULT) != 0) {
+                launcher.startActivityForResult(item.getIntent(), 0);
+                InstanceId instanceId = new InstanceIdSequence().newInstanceId();
+                launcher.logAppLaunch(launcher.getStatsLogManager(), item, instanceId);
+                return;
+            }
         }
         if (v != null && launcher.supportsAdaptiveIconAnimation(v)) {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
-        if (item instanceof AppInfo) {
-            AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
-            repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
-
-            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
-                    ((AppInfo) item).toComponentKey()) &&
-                    Utilities.getOmegaPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().onGetValue();
-        }
-
-        if (isProtected && Utilities.ATLEAST_R) {
-            launcher.startActivitySafelyAuth(v, intent, item);
-        } else {
-            launcher.startActivitySafely(v, intent, item);
-        }
+        launcher.startActivitySafely(v, intent, item);
     }
 }

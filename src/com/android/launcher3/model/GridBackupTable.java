@@ -23,14 +23,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
 import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
 
 import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.pm.UserCache;
 
 /**
@@ -88,49 +86,6 @@ public class GridBackupTable {
     }
 
     /**
-     * Create a backup from current workspace layout if one isn't created already (Note backup
-     * created this way is always sanitized). Otherwise restore from the backup instead.
-     */
-    public boolean backupOrRestoreAsNeeded() {
-        // Check if backup table exists
-        if (!tableExists(mDb, BACKUP_TABLE_NAME)) {
-            if (Settings.call(mContext.getContentResolver(), Settings.METHOD_WAS_EMPTY_DB_CREATED)
-                    .getBoolean(Settings.EXTRA_VALUE, false)) {
-                // No need to copy if empty DB was created.
-                return false;
-            }
-            doBackup(UserCache.INSTANCE.get(mContext).getSerialNumberForUser(
-                    Process.myUserHandle()), 0);
-            return false;
-        }
-        return restoreIfBackupExists(Favorites.TABLE_NAME);
-    }
-
-    public boolean restoreToPreviewIfBackupExists() {
-        if (!tableExists(mDb, BACKUP_TABLE_NAME)) {
-            return false;
-        }
-
-        return restoreIfBackupExists(Favorites.PREVIEW_TABLE_NAME);
-    }
-
-    private boolean restoreIfBackupExists(String toTableName) {
-        if (loadDBProperties() != STATE_SANITIZED) {
-            return false;
-        }
-        long userSerial = UserCache.INSTANCE.get(mContext).getSerialNumberForUser(
-                Process.myUserHandle());
-        copyTable(mDb, BACKUP_TABLE_NAME, toTableName, userSerial);
-        Log.d(TAG, "Backup table found");
-        return true;
-    }
-
-    public int getRestoreHotseatAndGridSize(Point outGridSize) {
-        outGridSize.set(mRestoredGridX, mRestoredGridY);
-        return mRestoredHotseatSize;
-    }
-
-    /**
      * Creates a new table and populates with copy of Favorites.TABLE_NAME
      */
     public void createCustomBackupTable(String tableName) {
@@ -156,7 +111,6 @@ public class GridBackupTable {
             dropTable(mDb, tableName);
         }
     }
-
     /**
      * Copy valid grid entries from one table to another.
      */
@@ -180,8 +134,7 @@ public class GridBackupTable {
     /**
      * Load DB properties from grid backup table.
      */
-    public @BackupState
-    int loadDBProperties() {
+    public @BackupState int loadDBProperties() {
         try (Cursor c = mDb.query(BACKUP_TABLE_NAME, new String[]{
                         KEY_DB_VERSION,     // 0
                         KEY_GRID_X_SIZE,    // 1

@@ -118,7 +118,6 @@ public class PersistedItemArray<T extends ItemInfo> {
 
     /**
      * Reads the items from the disk
-     *
      * @param userFn method to provide user handle for a given user serial
      */
     @WorkerThread

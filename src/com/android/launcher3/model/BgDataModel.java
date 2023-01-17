@@ -16,7 +16,7 @@
 package com.android.launcher3.model;
 
 import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_GET_KEY_FIELDS_ONLY;
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
+import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_SHORTCUTS;
 import static com.android.launcher3.shortcuts.ShortcutRequest.PINNED;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -28,6 +28,9 @@ import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
@@ -46,10 +49,8 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.IntSparseArrayMap;
-import com.android.launcher3.util.ItemInfoMatcher;
-import com.android.launcher3.util.ViewOnDrawExecutor;
+import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
-import com.saggitt.omega.OmegaApp;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -63,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,6 +113,11 @@ public class BgDataModel {
     public final WidgetsModel widgetsModel = new WidgetsModel();
 
     /**
+     * Cache for strings used in launcher
+     */
+    public final StringCache stringCache = new StringCache();
+
+    /**
      * Id when the model was last bound
      */
     public int lastBindId = 0;
@@ -137,7 +144,7 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if (FeatureFlags.showQSbOnFirstScreen(OmegaApp.getInstance()) || screenSet.isEmpty()) {
+        if (FeatureFlags.QSB_ON_FIRST_SCREEN || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);
         }
         return screenSet.getArray();
@@ -214,6 +221,18 @@ public class BgDataModel {
     }
 
     public synchronized void addItem(Context context, ItemInfo item, boolean newItem) {
+        addItem(context, item, newItem, null);
+    }
+
+    public synchronized void addItem(
+            Context context, ItemInfo item, boolean newItem, @Nullable LoaderMemoryLogger logger) {
+        if (logger != null) {
+            logger.addLog(
+                    Log.DEBUG,
+                    TAG,
+                    String.format("Adding item to ID map: %s", item.toString()),
+                    /* stackTrace= */ null);
+        }
         itemsIdMap.put(item.id, item);
         switch (item.itemType) {
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
@@ -235,7 +254,7 @@ public class BgDataModel {
                             Log.e(TAG, msg);
                         }
                     } else {
-                        findOrMakeFolder(item.container).add((WorkspaceItemInfo) item,false);
+                        findOrMakeFolder(item.container).add((WorkspaceItemInfo) item, false);
                     }
 
                 }
@@ -265,7 +284,7 @@ public class BgDataModel {
      * shortcuts and unpinning any extra shortcuts.
      */
     public synchronized void updateShortcutPinnedState(Context context, UserHandle user) {
-        if (GO_DISABLE_WIDGETS) {
+        if (GO_DISABLE_SHORTCUTS) {
             return;
         }
 
@@ -285,12 +304,12 @@ public class BgDataModel {
         forAllWorkspaceItemInfos(user, itemStream::accept);
         // Map of packageName to shortcutIds that are currently in our model
         Map<String, Set<String>> modelMap = Stream.concat(
-                // Model shortcuts
-                itemStream.build()
-                        .filter(wi -> wi.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT)
-                        .map(ShortcutKey::fromItemInfo),
-                // Pending shortcuts
-                ItemInstallQueue.INSTANCE.get(context).getPendingShortcuts(user))
+                        // Model shortcuts
+                        itemStream.build()
+                                .filter(wi -> wi.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT)
+                                .map(ShortcutKey::fromItemInfo),
+                        // Pending shortcuts
+                        ItemInstallQueue.INSTANCE.get(context).getPendingShortcuts(user))
                 .collect(groupingBy(ShortcutKey::getPackageName,
                         mapping(ShortcutKey::getId, Collectors.toSet())));
 
@@ -445,47 +464,71 @@ public class BgDataModel {
         int FLAG_QUIET_MODE_CHANGE_PERMISSION = 1 << 2;
 
         /**
-         * Returns the page number to bind first, synchronously if possible or -1
+         * Returns an IntSet of page ids to bind first, synchronously if possible
+         * or an empty IntSet
+         *
+         * @param orderedScreenIds All the page ids to be bound
          */
-        int getPageToBindSynchronously();
+        @NonNull
+        default IntSet getPagesToBindSynchronously(IntArray orderedScreenIds) {
+            return new IntSet();
+        }
 
-        void clearPendingBinds();
+        default void clearPendingBinds() {
+        }
 
-        void startBinding();
+        default void startBinding() {
+        }
 
-        void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons);
+        default void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons) {
+        }
 
-        void bindScreens(IntArray orderedScreenIds);
+        default void bindScreens(IntArray orderedScreenIds) {
+        }
 
-        void finishFirstPageBind(ViewOnDrawExecutor executor);
+        default void finishBindingItems(IntSet pagesBoundFirst) {
+        }
 
-        void finishBindingItems(int pageBoundFirst);
+        default void preAddApps() {
+        }
 
-        void preAddApps();
+        default void bindAppsAdded(IntArray newScreens,
+                                   ArrayList<ItemInfo> addNotAnimated, ArrayList<ItemInfo> addAnimated) {
+        }
 
-        void bindAppsAdded(IntArray newScreens,
-                           ArrayList<ItemInfo> addNotAnimated, ArrayList<ItemInfo> addAnimated);
+        /**
+         * Called when some persistent property of an item is modified
+         */
+        default void bindItemsModified(List<ItemInfo> items) {
+        }
 
         /**
          * Binds updated incremental download progress
          */
-        void bindIncrementalDownloadProgressUpdated(AppInfo app);
+        default void bindIncrementalDownloadProgressUpdated(AppInfo app) {
+        }
 
-        void bindWorkspaceItemsChanged(List<WorkspaceItemInfo> updated);
+        default void bindWorkspaceItemsChanged(List<WorkspaceItemInfo> updated) {
+        }
 
-        void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets);
+        default void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets) {
+        }
 
-        void bindRestoreItemsChange(HashSet<ItemInfo> updates);
+        default void bindRestoreItemsChange(HashSet<ItemInfo> updates) {
+        }
 
-        void bindWorkspaceComponentsRemoved(ItemInfoMatcher matcher);
+        default void bindWorkspaceComponentsRemoved(Predicate<ItemInfo> matcher) {
+        }
 
-        void bindAllWidgets(List<WidgetsListBaseEntry> widgets);
+        default void bindAllWidgets(List<WidgetsListBaseEntry> widgets) {
+        }
 
-        void onPageBoundSynchronously(int page);
+        default void onInitialBindComplete(IntSet boundPages, RunnableList pendingTasks) {
+            pendingTasks.executeAllAndDestroy();
+        }
 
-        void executeOnNextDraw(ViewOnDrawExecutor executor);
-
-        void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap);
+        default void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) {
+        }
 
         /**
          * Binds extra item provided any external source
@@ -493,6 +536,13 @@ public class BgDataModel {
         default void bindExtraContainerItems(FixedContainerItems item) {
         }
 
-        void bindAllApplications(AppInfo[] apps, int flags);
+        default void bindAllApplications(AppInfo[] apps, int flags) {
+        }
+
+        /**
+         * Binds the cache of string resources
+         */
+        default void bindStringCache(StringCache cache) {
+        }
     }
 }

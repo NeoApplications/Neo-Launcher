@@ -27,22 +27,20 @@ public class AllAppsFastScrollHelper {
     private int mTargetFastScrollPosition = NO_POSITION;
 
     private AllAppsRecyclerView mRv;
-    private AlphabeticalAppsList mApps;
     private ViewHolder mLastSelectedViewHolder;
 
-    public AllAppsFastScrollHelper(AllAppsRecyclerView rv, AlphabeticalAppsList apps) {
+    public AllAppsFastScrollHelper(AllAppsRecyclerView rv) {
         mRv = rv;
-        mApps = apps;
     }
 
     /**
      * Smooth scrolls the recycler view to the given section.
      */
     public void smoothScrollToSection(FastScrollSectionInfo info) {
-        if (mTargetFastScrollPosition == info.fastScrollToItem.position) {
+        if (mTargetFastScrollPosition == info.position) {
             return;
         }
-        mTargetFastScrollPosition = info.fastScrollToItem.position;
+        mTargetFastScrollPosition = info.position;
         mRv.getLayoutManager().startSmoothScroll(new MyScroller(mTargetFastScrollPosition));
     }
 

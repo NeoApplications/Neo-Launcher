@@ -19,6 +19,7 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 import static android.os.Process.myUserHandle;
 import static com.android.launcher3.pm.InstallSessionHelper.getUserHandle;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 
@@ -29,13 +30,18 @@ import android.content.pm.PackageInstaller.SessionInfo;
 import android.os.UserHandle;
 import android.util.Log;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.WorkerThread;
+
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
+import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.PackageUserKey;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,6 +82,7 @@ public class FirstScreenBroadcast {
      * Sends a broadcast to all package installers that have items with active sessions on the users
      * first screen.
      */
+    @WorkerThread
     public void sendBroadcasts(Context context, List<ItemInfo> firstScreenItems) {
         UserHandle myUser = myUserHandle();
         mSessionInfoForPackage
@@ -93,6 +100,7 @@ public class FirstScreenBroadcast {
      * @param packages             List of packages with active sessions for this package installer.
      * @param firstScreenItems     List of items on the first screen.
      */
+    @WorkerThread
     private void sendBroadcastToInstaller(Context context, String installerPackageName,
                                           Set<String> packages, List<ItemInfo> firstScreenItems) {
         Set<String> folderItems = new HashSet<>();
@@ -104,7 +112,7 @@ public class FirstScreenBroadcast {
             if (info instanceof FolderInfo) {
                 FolderInfo folderInfo = (FolderInfo) info;
                 String folderItemInfoPackage;
-                for (ItemInfo folderItemInfo : folderInfo.contents) {
+                for (ItemInfo folderItemInfo : cloneOnMainThread(folderInfo.contents)) {
                     folderItemInfoPackage = getPackageName(folderItemInfo);
                     if (folderItemInfoPackage != null
                             && packages.contains(folderItemInfoPackage)) {
@@ -133,6 +141,13 @@ public class FirstScreenBroadcast {
             printList(installerPackageName, "Widget item", widgetItems);
         }
 
+        if (folderItems.isEmpty()
+                && workspaceItems.isEmpty()
+                && hotseatItems.isEmpty()
+                && widgetItems.isEmpty()) {
+            // Avoid sending broadcast if there is nothing to send.
+            return;
+        }
         context.sendBroadcast(new Intent(ACTION_FIRST_SCREEN_ACTIVE_INSTALLS)
                 .setPackage(installerPackageName)
                 .putStringArrayListExtra(FOLDER_ITEM_EXTRA, new ArrayList<>(folderItems))
@@ -150,7 +165,7 @@ public class FirstScreenBroadcast {
             if (widgetInfo.providerName != null) {
                 packageName = widgetInfo.providerName.getPackageName();
             }
-        } else if (info.getTargetComponent() != null){
+        } else if (info.getTargetComponent() != null) {
             packageName = info.getTargetComponent().getPackageName();
         }
         return packageName;
@@ -159,6 +174,19 @@ public class FirstScreenBroadcast {
     private static void printList(String packageInstaller, String label, Set<String> packages) {
         for (String pkg : packages) {
             Log.d(TAG, packageInstaller + ":" + label + ":" + pkg);
+        }
+    }
+
+    /**
+     * Clone the provided list on UI thread. This is used for {@link FolderInfo#contents} which
+     * is always modified on UI thread.
+     */
+    @AnyThread
+    private static List<WorkspaceItemInfo> cloneOnMainThread(ArrayList<WorkspaceItemInfo> list) {
+        try {
+            return MAIN_EXECUTOR.submit(() -> new ArrayList(list)).get();
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
     }
 }

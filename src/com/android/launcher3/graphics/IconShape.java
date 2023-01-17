@@ -37,21 +37,15 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.SparseArray;
-import android.util.TypedValue;
 import android.util.Xml;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.annotation.Nullable;
-
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.views.ClipPathView;
-import com.saggitt.omega.icons.CustomAdaptiveIconDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -66,22 +60,10 @@ import java.util.List;
 public abstract class IconShape {
 
     private static IconShape sInstance = new Circle();
-    private static Path sShapePath;
     private static float sNormalizationScale = ICON_VISIBLE_AREA_FACTOR;
-    protected SparseArray<TypedValue> mAttrs;
 
-    public static final int DEFAULT_PATH_SIZE = 100;
     public static IconShape getShape() {
         return sInstance;
-    }
-
-    public static Path getShapePath() {
-        if (sShapePath == null) {
-            Path p = new Path();
-            getShape().addToPath(p, 0, 0, DEFAULT_PATH_SIZE * 0.5f);
-            sShapePath = p;
-        }
-        return sShapePath;
     }
 
     public static float getNormalizationScale() {
@@ -92,6 +74,8 @@ public abstract class IconShape {
         return false;
     }
 
+    ;
+
     public abstract void drawShape(Canvas canvas, float offsetX, float offsetY, float radius,
                                    Paint paint);
 
@@ -99,11 +83,6 @@ public abstract class IconShape {
 
     public abstract <T extends View & ClipPathView> Animator createRevealAnimator(T target,
                                                                                   Rect startRect, Rect endRect, float endRadius, boolean isReversed);
-
-    @Nullable
-    public TypedValue getAttrValue(int attr) {
-        return mAttrs == null ? null : mAttrs.get(attr);
-    }
 
     /**
      * Abstract shape where the reveal animation is a derivative of a round rect animation
@@ -177,25 +156,6 @@ public abstract class IconShape {
 
             return va;
         }
-    }
-
-    /**
-     * Initializes the shape which is closest to the {@link AdaptiveIconDrawable}
-     */
-    public static void init(Context context) {
-        if (Utilities.ATLEAST_OREO) {
-            sInstance = new AdaptiveIconShape(context);
-            final int size = 200;
-
-            AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
-                    new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
-            drawable.setBounds(0, 0, size, size);
-
-            // Initialize shape properties
-            sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
-            return;
-        }
-        pickBestShape(context);
     }
 
     public static final class Circle extends PathShape {
@@ -417,43 +377,11 @@ public abstract class IconShape {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    protected static void pickBestShape(Context context) {
-        // Pick any large size
-        final int size = 200;
-
-        Region full = new Region(0, 0, size, size);
-        Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
-                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
-        drawable.setBounds(0, 0, size, size);
-        iconR.setPath(drawable.getIconMask(), full);
-
-        Path shapePath = new Path();
-        Region shapeR = new Region();
-
-        // Find the shape with minimum area of divergent region.
-        int minArea = Integer.MAX_VALUE;
-        IconShape closestShape = null;
-        for (IconShape shape : getAllShapes(context)) {
-            shapePath.reset();
-            shape.addToPath(shapePath, 0, 0, size / 2f);
-            shapeR.setPath(shapePath, full);
-            shapeR.op(iconR, Op.XOR);
-
-            int area = GraphicsUtils.getArea(shapeR);
-            if (area < minArea) {
-                minArea = area;
-                closestShape = shape;
-            }
-        }
-
-        if (closestShape != null) {
-            sInstance = closestShape;
-        }
-
-        // Initialize shape properties
-        sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
+    /**
+     * Initializes the shape which is closest to the {@link AdaptiveIconDrawable}
+     */
+    public static void init(Context context) {
+        pickBestShape(context);
     }
 
     private static IconShape getShapeDefinition(String type, float radius) {
@@ -502,40 +430,42 @@ public abstract class IconShape {
         return result;
     }
 
-    public static final class AdaptiveIconShape extends PathShape {
+    @TargetApi(Build.VERSION_CODES.O)
+    protected static void pickBestShape(Context context) {
+        // Pick any large size
+        final int size = 200;
 
-        private final com.saggitt.omega.icons.IconShape mIconShape;
+        Region full = new Region(0, 0, size, size);
+        Region iconR = new Region();
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
+        drawable.setBounds(0, 0, size, size);
+        iconR.setPath(drawable.getIconMask(), full);
 
-        public AdaptiveIconShape(Context context) {
-            mIconShape = com.saggitt.omega.icons.IconShape.Companion
-                    .fromString(Utilities.getOmegaPrefs(context).getThemeIconShapeX().onGetValue());
-            mAttrs = new SparseArray<>();
-            int qsbEdgeRadius = mIconShape.getQsbEdgeRadius();
-            if (qsbEdgeRadius != 0) {
-                TypedValue value = new TypedValue();
-                context.getResources().getValue(qsbEdgeRadius, value, false);
-                mAttrs.append(R.attr.qsbEdgeRadius, value);
+        Path shapePath = new Path();
+        Region shapeR = new Region();
+
+        // Find the shape with minimum area of divergent region.
+        int minArea = Integer.MAX_VALUE;
+        IconShape closestShape = null;
+        for (IconShape shape : getAllShapes(context)) {
+            shapePath.reset();
+            shape.addToPath(shapePath, 0, 0, size / 2f);
+            shapeR.setPath(shapePath, full);
+            shapeR.op(iconR, Op.XOR);
+
+            int area = GraphicsUtils.getArea(shapeR);
+            if (area < minArea) {
+                minArea = area;
+                closestShape = shape;
             }
         }
 
-        @Override
-        public void addToPath(Path path, float offsetX, float offsetY, float radius) {
-            mIconShape.addShape(path, offsetX, offsetY, radius);
+        if (closestShape != null) {
+            sInstance = closestShape;
         }
 
-        @Override
-        protected AnimatorUpdateListener newUpdateListener(Rect startRect, Rect endRect, float endRadius, Path outPath) {
-            float startRadius = startRect.width() / 2f;
-            float[] start = new float[]{startRect.left, startRect.top, startRect.right, startRect.bottom};
-            float[] end = new float[]{endRect.left, endRect.top, endRect.right, endRect.bottom};
-            FloatArrayEvaluator evaluator = new FloatArrayEvaluator();
-            return animation -> {
-                float progress = (float) animation.getAnimatedValue();
-                float[] values = evaluator.evaluate(progress, start, end);
-                mIconShape.addToPath(outPath,
-                        values[0], values[1], values[2], values[3],
-                        startRadius, endRadius, progress);
-            };
-        }
+        // Initialize shape properties
+        sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
     }
 }

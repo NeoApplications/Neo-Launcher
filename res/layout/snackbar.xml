@@ -16,7 +16,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <TextView
         android:id="@+id/label"
         android:layout_height="@dimen/snackbar_content_height"
@@ -30,7 +29,6 @@
         android:textSize="@dimen/snackbar_max_text_size"
         android:textColor="?android:attr/textColorPrimary"
         style="@style/TextTitle" />
-
     <TextView
         android:id="@+id/action"
         android:layout_height="@dimen/snackbar_content_height"

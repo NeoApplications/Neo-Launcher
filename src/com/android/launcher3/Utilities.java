@@ -16,16 +16,14 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ICON_BADGED;
-import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_READ_CONTACTS;
-import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
+import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
+import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT;
+import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
 
-import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Person;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
@@ -42,8 +40,6 @@ import android.content.pm.ShortcutInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
@@ -52,19 +48,17 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.os.Process;
 import android.os.TransactionTooLargeException;
-import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -79,45 +73,36 @@ import android.view.ViewConfiguration;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.GridCustomizationsProvider;
 import com.android.launcher3.graphics.TintedDrawableSpan;
-import com.android.launcher3.icons.BitmapInfo;
-import com.android.launcher3.icons.FastBitmapDrawable;
-import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.icons.ShortcutCachingLogic;
-import com.android.launcher3.model.data.FolderInfo;
+import com.android.launcher3.icons.ThemedIconDrawable;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
+import com.android.launcher3.model.data.SearchActionItemInfo;
 import com.android.launcher3.pm.ShortcutConfigActivityInfo;
-import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
-import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.PackageManagerHelper;
+import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
+import com.android.launcher3.util.Themes;
+import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.preferences.OmegaPreferences;
-import com.saggitt.omega.util.Config;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -132,8 +117,6 @@ public final class Utilities {
     private static final Pattern sTrimPattern =
             Pattern.compile("^[\\s|\\p{javaSpaceChar}]*(.*)[\\s|\\p{javaSpaceChar}]*$");
 
-    private static final float[] sTmpFloatArray = new float[4];
-
     private static final int[] sLoc0 = new int[2];
     private static final int[] sLoc1 = new int[2];
     private static final Matrix sMatrix = new Matrix();
@@ -142,16 +125,20 @@ public final class Utilities {
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final Person[] EMPTY_PERSON_ARRAY = new Person[0];
 
-    // TODO replace usage with  OmegApp.sdk
-    public static final boolean ATLEAST_OREO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    public static final boolean ATLEAST_OREO_MR1 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
+    @ChecksSdkIntAtLeast(api = VERSION_CODES.P)
     public static final boolean ATLEAST_P = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
 
+    @ChecksSdkIntAtLeast(api = VERSION_CODES.Q)
     public static final boolean ATLEAST_Q = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
+    @ChecksSdkIntAtLeast(api = VERSION_CODES.R)
     public static final boolean ATLEAST_R = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
 
+    @ChecksSdkIntAtLeast(api = VERSION_CODES.S)
     public static final boolean ATLEAST_S = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+
+    @ChecksSdkIntAtLeast(api = VERSION_CODES.TIRAMISU, codename = "T")
+    public static final boolean ATLEAST_T = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
 
     /**
      * Set on a motion event dispatched from the nav bar. See {@link MotionEvent#setEdgeFlags(int)}.
@@ -255,7 +242,7 @@ public final class Utilities {
             offsetPoints(coord, v.getLeft(), v.getTop());
             scale *= v.getScaleX();
 
-            v = (View) v.getParent();
+            v = v.getParent() instanceof View ? (View) v.getParent() : null;
         }
         return scale;
     }
@@ -285,6 +272,16 @@ public final class Utilities {
                 Math.min(points[1], points[3]),
                 Math.max(points[0], points[2]),
                 Math.max(points[1], points[3]));
+    }
+
+    /**
+     * Similar to {@link #mapCoordInSelfToDescendant(View descendant, View root, float[] coord)}
+     * but accepts a Rect instead of float[].
+     */
+    public static void mapRectInSelfToDescendant(View descendant, View root, Rect rect) {
+        float[] coords = new float[]{rect.left, rect.top, rect.right, rect.bottom};
+        mapCoordInSelfToDescendant(descendant, root, coords);
+        rect.set((int) coords[0], (int) coords[1], (int) coords[2], (int) coords[3]);
     }
 
     /**
@@ -408,6 +405,21 @@ public final class Utilities {
     }
 
     /**
+     * Similar to {@link #scaleRectAboutCenter(Rect, float)} except this allows different scales
+     * for X and Y
+     */
+    public static void scaleRectFAboutCenter(RectF r, float scaleX, float scaleY) {
+        float px = r.centerX();
+        float py = r.centerY();
+        r.offset(-px, -py);
+        r.left = r.left * scaleX;
+        r.top = r.top * scaleY;
+        r.right = r.right * scaleX;
+        r.bottom = r.bottom * scaleY;
+        r.offset(px, py);
+    }
+
+    /**
      * Maps t from one range to another range.
      *
      * @param t       The value to map.
@@ -472,9 +484,10 @@ public final class Utilities {
      * Trims the string, removing all whitespace at the beginning and end of the string.
      * Non-breaking whitespaces are also removed.
      */
+    @NonNull
     public static String trim(CharSequence s) {
         if (s == null) {
-            return null;
+            return "";
         }
 
         // Just strip any sequence of whitespace or java space characters from the beginning and end
@@ -496,6 +509,13 @@ public final class Utilities {
         return res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
+    /**
+     * Converts a pixel value (px) to scale pixel value (SP) for the current device.
+     */
+    public static float pxToSp(float size) {
+        return size / Resources.getSystem().getDisplayMetrics().scaledDensity;
+    }
+
     public static float dpiFromPx(float size, int densityDpi) {
         float densityRatio = (float) densityDpi / DisplayMetrics.DENSITY_DEFAULT;
         return (size / densityRatio);
@@ -514,9 +534,10 @@ public final class Utilities {
     }
 
     public static int pxFromSp(float size, DisplayMetrics metrics, float scale) {
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                size, metrics) * scale);
+        float value = scale * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, metrics);
+        return ResourceUtils.roundPxValueFromFloat(value);
     }
+
 
     public static String createDbSelectionQuery(String columnName, IntArray values) {
         return String.format(Locale.ENGLISH, "%s IN (%s)", columnName, values.toConcatString());
@@ -541,6 +562,18 @@ public final class Utilities {
     }
 
     /**
+     * Using the view's bounds and icon size, calculate where the icon bounds will
+     * be if it was positioned at the center of the view.
+     */
+    public static void setRectToViewCenter(View iconView, int iconSize, Rect outBounds) {
+        int top = (iconView.getHeight() - iconSize) / 2;
+        int left = (iconView.getWidth() - iconSize) / 2;
+        int right = left + iconSize;
+        int bottom = top + iconSize;
+        outBounds.set(left, top, right, bottom);
+    }
+
+    /**
      * Ensures that a value is within given bounds. Specifically:
      * If value is less than lowerBound, return lowerBound; else if value is greater than upperBound,
      * return upperBound; else return value unchanged.
@@ -561,15 +594,6 @@ public final class Utilities {
      */
     public static long boundToRange(long value, long lowerBound, long upperBound) {
         return Math.max(lowerBound, Math.min(value, upperBound));
-    }
-
-    /**
-     * Returns an intent for starting the default home activity
-     */
-    public static Intent createHomeIntent() {
-        return new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     /**
@@ -612,6 +636,10 @@ public final class Utilities {
                 LauncherFiles.DEVICE_PREFERENCES_KEY, Context.MODE_PRIVATE);
     }
 
+    public static boolean isWallpaperSupported(Context context) {
+        return context.getSystemService(WallpaperManager.class).isWallpaperSupported();
+    }
+
     public static boolean isWallpaperAllowed(Context context) {
         return context.getSystemService(WallpaperManager.class).isSetWallpaperAllowed();
     }
@@ -641,7 +669,7 @@ public final class Utilities {
                 // We need to get the application info to get the component's default state
                 try {
                     PackageInfo packageInfo = pm.getPackageInfo(pkgName,
-                            PackageManager.GET_PROVIDERS | PackageManager.MATCH_DISABLED_COMPONENTS);
+                            PackageManager.GET_PROVIDERS | PackageManager.GET_DISABLED_COMPONENTS);
 
                     if (packageInfo.providers != null) {
                         return Arrays.stream(packageInfo.providers).anyMatch(
@@ -666,21 +694,6 @@ public final class Utilities {
         handler.sendMessage(msg);
     }
 
-    /**
-     * Parses a string encoded using {@link #getPointString(int, int)}
-     */
-    public static Point parsePoint(String point) {
-        String[] split = point.split(",");
-        return new Point(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-    }
-
-    /**
-     * Encodes a point to string to that it can be persisted atomically.
-     */
-    public static String getPointString(int x, int y) {
-        return String.format(Locale.ENGLISH, "%d,%d", x, y);
-    }
-
     public static void unregisterReceiverSafely(Context context, BroadcastReceiver receiver) {
         try {
             context.unregisterReceiver(receiver);
@@ -691,37 +704,38 @@ public final class Utilities {
     /**
      * Returns the full drawable for info without any flattening or pre-processing.
      *
-     * @param outObj this is set to the internal data associated with {@param info},
-     *               eg {@link LauncherActivityInfo} or {@link ShortcutInfo}.
+     * @param shouldThemeIcon If true, will theme icons when applicable
+     * @param outObj          this is set to the internal data associated with {@code info},
+     *                        eg {@link LauncherActivityInfo} or {@link ShortcutInfo}.
      */
-    public static Drawable getFullDrawable(Launcher launcher, ItemInfo info, int width, int height,
-                                           Object[] outObj) {
-        Drawable icon = loadFullDrawableWithoutTheme(launcher, info, width, height, outObj);
-        if (icon instanceof BitmapInfo.Extender) {
-            icon = ((BitmapInfo.Extender) icon).getThemedDrawable(launcher);
+    @TargetApi(VERSION_CODES.TIRAMISU)
+    public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
+                                           boolean shouldThemeIcon, Object[] outObj) {
+        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
+        if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
+            AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon.mutate();
+            Drawable mono = aid.getMonochrome();
+            if (mono != null && Themes.isThemedIconEnabled(context)) {
+                int[] colors = ThemedIconDrawable.getColors(context);
+                mono = mono.mutate();
+                mono.setTint(colors[1]);
+                return new AdaptiveIconDrawable(new ColorDrawable(colors[0]), mono);
+            }
         }
         return icon;
     }
 
-    public static Drawable getFullDrawable(Launcher launcher, ItemInfo info, int width, int height,
-                                           Object[] outObj, boolean useTheme) {
-        Drawable icon = loadFullDrawableWithoutTheme(launcher, info, width, height, outObj);
-        if (useTheme && icon instanceof BitmapInfo.Extender) {
-            icon = ((BitmapInfo.Extender) icon).getThemedDrawable(launcher);
-        }
-        return icon;
-    }
-
-    public static Drawable loadFullDrawableWithoutTheme(Launcher launcher, ItemInfo info,
-                                                        int width, int height, Object[] outObj) {
-        LauncherAppState appState = LauncherAppState.getInstance(launcher);
+    private static Drawable loadFullDrawableWithoutTheme(Context context, ItemInfo info,
+                                                         int width, int height, Object[] outObj) {
+        ActivityContext activity = ActivityContext.lookupContext(context);
+        LauncherAppState appState = LauncherAppState.getInstance(context);
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
-            LauncherActivityInfo activityInfo = launcher.getSystemService(LauncherApps.class)
+            LauncherActivityInfo activityInfo = context.getSystemService(LauncherApps.class)
                     .resolveActivity(info.getIntent(), info.user);
             outObj[0] = activityInfo;
-            return activityInfo == null ? null : LauncherAppState.getInstance(launcher)
-                    .getIconProvider()
-                    .getIcon(activityInfo, launcher.getDeviceProfile().inv.fillResIconDpi);
+            return activityInfo == null ? null : LauncherAppState.getInstance(context)
+                    .getIconProvider().getIcon(
+                            activityInfo, activity.getDeviceProfile().inv.fillResIconDpi);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             if (info instanceof PendingAddShortcutInfo) {
                 ShortcutConfigActivityInfo activityInfo =
@@ -730,27 +744,26 @@ public final class Utilities {
                 return activityInfo.getFullResIcon(appState.getIconCache());
             }
             List<ShortcutInfo> si = ShortcutKey.fromItemInfo(info)
-                    .buildRequest(launcher)
+                    .buildRequest(context)
                     .query(ShortcutRequest.ALL);
             if (si.isEmpty()) {
                 return null;
             } else {
                 outObj[0] = si.get(0);
-                return ShortcutCachingLogic.getIcon(launcher, si.get(0),
+                return ShortcutCachingLogic.getIcon(context, si.get(0),
                         appState.getInvariantDeviceProfile().fillResIconDpi);
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            FolderInfo folderInfo = (FolderInfo) info;
-            if (folderInfo.isCoverMode()) {
-                return getFullDrawable(launcher, folderInfo.getCoverInfo(), width, height, outObj);
-            }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
-                    launcher, info.id, new Point(width, height));
+                    activity, info.id, new Point(width, height));
             if (icon == null) {
                 return null;
             }
             outObj[0] = icon;
             return icon;
+        } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_SEARCH_ACTION
+                && info instanceof SearchActionItemInfo) {
+            return ((SearchActionItemInfo) info).bitmap.newIcon(context);
         } else {
             return null;
         }
@@ -763,31 +776,25 @@ public final class Utilities {
      * badge. When dragged from workspace or folder, it may contain app AND/OR work profile badge
      **/
     @TargetApi(Build.VERSION_CODES.O)
-    public static Drawable getBadge(Launcher launcher, ItemInfo info, Object obj) {
-        LauncherAppState appState = LauncherAppState.getInstance(launcher);
-        int iconSize = appState.getInvariantDeviceProfile().iconBitmapSize;
+    public static Drawable getBadge(Context context, ItemInfo info, Object obj) {
+        LauncherAppState appState = LauncherAppState.getInstance(context);
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             boolean iconBadged = (info instanceof ItemInfoWithIcon)
                     && (((ItemInfoWithIcon) info).runtimeStatusFlags & FLAG_ICON_BADGED) > 0;
             if ((info.id == ItemInfo.NO_ID && !iconBadged)
                     || !(obj instanceof ShortcutInfo)) {
                 // The item is not yet added on home screen.
-                return new FixedSizeEmptyDrawable(iconSize);
+                return new ColorDrawable(Color.TRANSPARENT);
             }
             ShortcutInfo si = (ShortcutInfo) obj;
-            Bitmap badge = LauncherAppState.getInstance(appState.getContext())
-                    .getIconCache().getShortcutInfoBadge(si).icon;
-            float badgeSize = LauncherIcons.getBadgeSizeForIconSize(iconSize);
-            float insetFraction = (iconSize - badgeSize) / iconSize;
-            return new InsetDrawable(new FastBitmapDrawable(badge),
-                    insetFraction, insetFraction, 0, 0);
+            return LauncherAppState.getInstance(appState.getContext())
+                    .getIconCache().getShortcutInfoBadge(si).newIcon(context, FLAG_THEMED);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            FolderInfo folderInfo = (FolderInfo) info;
-            if (folderInfo.isCoverMode()) return getBadge(launcher, folderInfo.getCoverInfo(), obj);
             return ((FolderAdaptiveIcon) obj).getBadge();
         } else {
-            return launcher.getPackageManager()
-                    .getUserBadgedIcon(new FixedSizeEmptyDrawable(iconSize), info.user);
+            return Process.myUserHandle().equals(info.user)
+                    ? new ColorDrawable(Color.TRANSPARENT)
+                    : context.getDrawable(R.drawable.ic_work_app_badge);
         }
     }
 
@@ -864,7 +871,7 @@ public final class Utilities {
     /**
      * Make a color filter that blends a color into the destination based on a scalable amout.
      *
-     * @param color      to blend in.
+     * @param color to blend in.
      * @param tintAmount [0-1] 0 no tinting, 1 full color.
      * @return ColorFilter for tinting, or {@code null} if no filter is needed.
      */
@@ -888,274 +895,52 @@ public final class Utilities {
         view.setLayoutParams(lp);
     }
 
-    public static int pxFromDp(float size, DisplayMetrics metrics) {
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                size, metrics));
+    public static Rect getViewBounds(@NonNull View v) {
+        int[] pos = new int[2];
+        v.getLocationOnScreen(pos);
+        return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
     }
 
-    public static boolean isPowerSaverPreventingAnimation(Context context) {
-        if (ATLEAST_P) {
-            // Battery saver mode no longer prevents animations.
-            return false;
-        }
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        return powerManager.isPowerSaveMode();
-    }
-
-    public static void restartLauncher(Context context) {
-        PackageManager pm = context.getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ComponentName componentName = intent.resolveActivity(pm);
-        if (!context.getPackageName().equals(componentName.getPackageName())) {
-            intent = pm.getLaunchIntentForPackage(context.getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        }
-
-        restartLauncher(context, intent);
-    }
-
-    public static void restartLauncher(Context context, Intent intent) {
-        context.startActivity(intent);
-
-        // Create a pending intent so the application is restarted after System.exit(0) was called.
-        // We use an AlarmManager to call this intent in 100ms
-        PendingIntent mPendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-
-        // Kill the application
-        killLauncher();
-    }
-
-    public static void killLauncher() {
-        System.exit(0);
-    }
-
-    public static int setFlag(int flags, int flag, boolean value) {
-        if (value) {
-            return flags | flag;
+    /**
+     * Returns a list of screen-splitting options depending on the device orientation (split top for
+     * portrait, split left for landscape, split left and right for landscape tablets, etc.)
+     */
+    public static List<SplitPositionOption> getSplitPositionOptions(
+            DeviceProfile dp) {
+        List<SplitPositionOption> options = new ArrayList<>();
+        // Add both left and right options if we're in tablet mode
+        if (dp.isTablet && dp.isLandscape) {
+            options.add(new SplitPositionOption(
+                    R.drawable.ic_split_left, R.string.split_screen_position_left,
+                    STAGE_POSITION_TOP_OR_LEFT, STAGE_TYPE_MAIN));
+            options.add(new SplitPositionOption(
+                    R.drawable.ic_split_right, R.string.split_screen_position_right,
+                    STAGE_POSITION_BOTTOM_OR_RIGHT, STAGE_TYPE_MAIN));
         } else {
-            return flags & ~flag;
-        }
-    }
-
-    public static boolean hasPermission(Context context, String permission) {
-        return ContextCompat.checkSelfPermission(context, permission)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasStoragePermission(Context context) {
-        return hasPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-    }
-
-    public static void requestStoragePermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_STORAGE_ACCESS);
-    }
-
-    public static void requestLocationPermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, Config.REQUEST_PERMISSION_LOCATION_ACCESS);
-    }
-
-    public static void requestPeoplePermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_CONTACTS},
-                REQUEST_PERMISSION_READ_CONTACTS);
-    }
-
-    /**
-     * @param bitmap                the Bitmap to be scaled
-     * @param threshold             the maxium dimension (either width or height) of the scaled bitmap
-     * @param isNecessaryToKeepOrig is it necessary to keep the original bitmap? If not recycle the original bitmap to prevent memory leak.
-     *                              <p>
-     *                              Credit: https://gist.github.com/vxhviet/873d142b41217739a1302d337b7285ba
-     */
-    public static Bitmap getScaledDownBitmap(Bitmap bitmap, int threshold, boolean isNecessaryToKeepOrig) {
-        if (bitmap == null) return null;
-
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int newWidth = width;
-        int newHeight = height;
-
-        if (width > height && width > threshold) {
-            newWidth = threshold;
-            newHeight = (int) (height * (float) newWidth / width);
-        }
-
-        if (width > height && width <= threshold) {
-            //the bitmap is already smaller than our required dimension, no need to resize it
-            return bitmap;
-        }
-
-        if (width < height && height > threshold) {
-            newHeight = threshold;
-            newWidth = (int) (width * (float) newHeight / height);
-        }
-
-        if (width < height && height <= threshold) {
-            //the bitmap is already smaller than our required dimension, no need to resize it
-            return bitmap;
-        }
-
-        if (width == height && width > threshold) {
-            newWidth = threshold;
-            newHeight = newWidth;
-        }
-
-        if (width == height && width <= threshold) {
-            //the bitmap is already smaller than our required dimension, no need to resize it
-            return bitmap;
-        }
-
-        return getResizedBitmap(bitmap, newWidth, newHeight, isNecessaryToKeepOrig);
-    }
-
-    private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean isNecessaryToKeepOrig) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        if (!isNecessaryToKeepOrig) {
-            bm.recycle();
-        }
-        return resizedBitmap;
-    }
-
-    public static OmegaPreferences getOmegaPrefs(Context context) {
-        return OmegaPreferences.getInstance(context);
-    }
-
-    /**
-     * Creates a new component key from an encoded component key string in the form of
-     * [flattenedComponentString#userId].  If the userId is not present, then it defaults
-     * to the current user.
-     */
-    public static ComponentKey makeComponentKey(Context context, String componentKeyStr) {
-        ComponentName componentName;
-        UserHandle user;
-        int userDelimiterIndex = componentKeyStr.indexOf("#");
-        if (userDelimiterIndex != -1) {
-            String componentStr = componentKeyStr.substring(0, userDelimiterIndex);
-            long componentUser = Long.parseLong(componentKeyStr.substring(userDelimiterIndex + 1, componentKeyStr.length()));
-            componentName = ComponentName.unflattenFromString(componentStr);
-            user = Utilities.notNullOrDefault(UserCache.INSTANCE.get(context)
-                    .getUserForSerialNumber(componentUser), Process.myUserHandle());
-        } else {
-            // No user provided, default to the current user
-            componentName = ComponentName.unflattenFromString(componentKeyStr);
-            user = Process.myUserHandle();
-        }
-        try {
-            return new ComponentKey(componentName, user);
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Trying to create invalid component key: " + componentKeyStr);
-        }
-    }
-
-    public static String readTextfileFromRawRes(@RawRes int rawResId, Context context, String linePrefix, String linePostfix) {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader br = null;
-        String line;
-
-        linePrefix = linePrefix == null ? "" : linePrefix;
-        linePostfix = linePostfix == null ? "" : linePostfix;
-
-        try {
-            br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(rawResId)));
-            while ((line = br.readLine()) != null) {
-                sb.append(linePrefix);
-                sb.append(line);
-                sb.append(linePostfix);
-                sb.append("\n");
-            }
-        } catch (Exception ignored) {
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-        return sb.toString();
-    }
-
-    public static <T> T notNullOrDefault(T value, T defValue) {
-        return (value == null) ? defValue : value;
-    }
-
-    // These values are same as that in {@link AsyncTask}.
-    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-    private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-    private static final int KEEP_ALIVE = 1;
-    /**
-     * An {@link Executor} to be used with async task with no limit on the queue size.
-     */
-    public static final Executor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
-            CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-
-    @Nullable
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        return Utilities.drawableToBitmap(drawable, true);
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
-        return drawableToBitmap(drawable, forceCreate, 0);
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
-        if (!forceCreate && drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-
-        if (width <= 0 || height <= 0) {
-            if (fallbackSize > 0) {
-                width = height = fallbackSize;
+            if (dp.isSeascape()) {
+                // Add left/right options
+                options.add(new SplitPositionOption(
+                        R.drawable.ic_split_right, R.string.split_screen_position_right,
+                        STAGE_POSITION_BOTTOM_OR_RIGHT, STAGE_TYPE_MAIN));
+            } else if (dp.isLandscape) {
+                options.add(new SplitPositionOption(
+                        R.drawable.ic_split_left, R.string.split_screen_position_left,
+                        STAGE_POSITION_TOP_OR_LEFT, STAGE_TYPE_MAIN));
             } else {
-                return null;
+                // Only add top option
+                options.add(new SplitPositionOption(
+                        R.drawable.ic_split_top, R.string.split_screen_position_top,
+                        STAGE_POSITION_TOP_OR_LEFT, STAGE_TYPE_MAIN));
             }
         }
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+        return options;
     }
 
-    private static class FixedSizeEmptyDrawable extends ColorDrawable {
+    public static boolean bothNull(@Nullable Object a, @Nullable Object b) {
+        return a == null && b == null;
+    }
 
-        private final int mSize;
-
-        public FixedSizeEmptyDrawable(int size) {
-            super(Color.TRANSPARENT);
-            mSize = size;
-        }
-
-        @Override
-        public int getIntrinsicHeight() {
-            return mSize;
-        }
-
-        @Override
-        public int getIntrinsicWidth() {
-            return mSize;
-        }
+    public static boolean bothNonNull(@Nullable Object a, @Nullable Object b) {
+        return a != null && b != null;
     }
 }

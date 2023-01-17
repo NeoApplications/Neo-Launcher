@@ -20,7 +20,6 @@ import static com.android.launcher3.touch.SingleAxisSwipeDetector.DIRECTION_NEGA
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.DIRECTION_POSITIVE;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.HORIZONTAL;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.VERTICAL;
-
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -30,6 +29,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
@@ -40,8 +40,8 @@ import androidx.test.runner.AndroidJUnit4;
 
 import com.android.launcher3.testcomponent.TouchEventGenerator;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -58,6 +58,7 @@ public class SingleAxisSwipeDetectorTest {
     private TouchEventGenerator mGenerator;
     private SingleAxisSwipeDetector mDetector;
     private int mTouchSlop;
+    Context mContext;
 
     @Mock
     private SingleAxisSwipeDetector.Listener mMockListener;
@@ -65,16 +66,17 @@ public class SingleAxisSwipeDetectorTest {
     @Mock
     private ViewConfiguration mMockConfig;
 
-    @BeforeEach
+    @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mGenerator = new TouchEventGenerator((ev) -> mDetector.onTouchEvent(ev));
-        ViewConfiguration orgConfig = ViewConfiguration
-                .get(InstrumentationRegistry.getTargetContext());
+        mContext = InstrumentationRegistry.getTargetContext();
+        ViewConfiguration orgConfig = ViewConfiguration.get(mContext);
         doReturn(orgConfig.getScaledMaximumFlingVelocity()).when(mMockConfig)
                 .getScaledMaximumFlingVelocity();
 
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, VERTICAL, false);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, VERTICAL, false);
         mDetector.setDetectableScrollConditions(DIRECTION_BOTH, false);
         mTouchSlop = orgConfig.getScaledTouchSlop();
         doReturn(mTouchSlop).when(mMockConfig).getScaledTouchSlop();
@@ -84,7 +86,8 @@ public class SingleAxisSwipeDetectorTest {
 
     @Test
     public void testDragStart_verticalPositive() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, VERTICAL, false);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, VERTICAL, false);
         mDetector.setDetectableScrollConditions(DIRECTION_POSITIVE, false);
         mGenerator.put(0, 100, 100);
         mGenerator.move(0, 100, 100 - mTouchSlop);
@@ -94,7 +97,8 @@ public class SingleAxisSwipeDetectorTest {
 
     @Test
     public void testDragStart_verticalNegative() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, VERTICAL, false);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, VERTICAL, false);
         mDetector.setDetectableScrollConditions(DIRECTION_NEGATIVE, false);
         mGenerator.put(0, 100, 100);
         mGenerator.move(0, 100, 100 + mTouchSlop);
@@ -112,7 +116,8 @@ public class SingleAxisSwipeDetectorTest {
 
     @Test
     public void testDragStart_horizontalPositive() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, HORIZONTAL, false);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, HORIZONTAL, false);
         mDetector.setDetectableScrollConditions(DIRECTION_POSITIVE, false);
 
         mGenerator.put(0, 100, 100);
@@ -123,7 +128,8 @@ public class SingleAxisSwipeDetectorTest {
 
     @Test
     public void testDragStart_horizontalNegative() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, HORIZONTAL, false);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, HORIZONTAL, false);
         mDetector.setDetectableScrollConditions(DIRECTION_NEGATIVE, false);
 
         mGenerator.put(0, 100, 100);
@@ -134,7 +140,8 @@ public class SingleAxisSwipeDetectorTest {
 
     @Test
     public void testDragStart_horizontalRtlPositive() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, HORIZONTAL, true);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, HORIZONTAL, true);
         mDetector.setDetectableScrollConditions(DIRECTION_POSITIVE, false);
 
         mGenerator.put(0, 100, 100);
@@ -143,9 +150,10 @@ public class SingleAxisSwipeDetectorTest {
         verify(mMockListener).onDragStart(anyBoolean(), anyFloat());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testDragStart_horizontalRtlNegative() {
-        mDetector = new SingleAxisSwipeDetector(mMockConfig, mMockListener, HORIZONTAL, true);
+        mDetector = new SingleAxisSwipeDetector(mContext,
+                mMockConfig, mMockListener, HORIZONTAL, true);
         mDetector.setDetectableScrollConditions(DIRECTION_NEGATIVE, false);
 
         mGenerator.put(0, 100, 100);
@@ -154,7 +162,7 @@ public class SingleAxisSwipeDetectorTest {
         verify(mMockListener).onDragStart(anyBoolean(), anyFloat());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testDrag() {
         mGenerator.put(0, 100, 100);
         mGenerator.move(0, 100, 100 + mTouchSlop);
@@ -172,7 +180,7 @@ public class SingleAxisSwipeDetectorTest {
         verify(mMockListener).onDragEnd(anyFloat());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testInterleavedSetState() {
         doAnswer(invocationOnMock -> {
             // Sets state to IDLE. (Normally onDragEnd() will have state SETTLING.)

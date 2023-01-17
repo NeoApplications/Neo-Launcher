@@ -30,8 +30,6 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
-import com.android.launcher3.Utilities;
-
 /**
  * A drawable for a very specific purpose. Used for the caret arrow on a rounded rectangle popup
  * bubble.
@@ -80,6 +78,32 @@ public class RoundedArrowDrawable extends Drawable {
         mPath.transform(pathTransform);
     }
 
+    /**
+     * Constructor for an arrow that points to the left or right.
+     *
+     * @param width          of the arrow.
+     * @param height         of the arrow.
+     * @param radius         of the tip of the arrow.
+     * @param isPointingLeft or not.
+     * @param color          to draw the triangle.
+     */
+    public RoundedArrowDrawable(float width, float height, float radius, boolean isPointingLeft,
+                                int color) {
+        mPath = new Path();
+        mPaint = new Paint();
+        mPaint.setColor(color);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
+
+        // Make the drawable with the triangle pointing down...
+        addDownPointingRoundedTriangleToPath(width, height, radius, mPath);
+
+        // ... then rotate it to the side it needs to point.
+        Matrix pathTransform = new Matrix();
+        pathTransform.setRotate(isPointingLeft ? 90 : -90, width * 0.5f, height * 0.5f);
+        mPath.transform(pathTransform);
+    }
+
     @Override
     public void draw(Canvas canvas) {
         canvas.drawPath(mPath, mPaint);
@@ -87,15 +111,7 @@ public class RoundedArrowDrawable extends Drawable {
 
     @Override
     public void getOutline(Outline outline) {
-        if (Utilities.ATLEAST_R) {
-            outline.setPath(mPath);
-        } else {
-            try {
-                outline.setConvexPath(mPath);
-            } catch (Exception e) {
-                // ignore
-            }
-        }
+        outline.setPath(mPath);
     }
 
     @Override

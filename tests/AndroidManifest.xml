@@ -15,11 +15,11 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.android.launcher3.test">
+    package="com.android.launcher3.tests">
 
     <uses-sdk
-        android:minSdkVersion="26"
-        android:targetSdkVersion="31"
+        android:targetSdkVersion="29"
+        android:minSdkVersion="25"
         tools:overrideLibrary="android.support.test.uiautomator.v18" />
 
     <application android:debuggable="true">
@@ -27,8 +27,8 @@
     </application>
 
     <instrumentation
-        android:name="androidx.test.runner.AndroidJUnitRunner"
         android:functionalTest="false"
         android:handleProfiling="false"
-        android:targetPackage="com.android.launcher3" />
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.android.launcher3"></instrumentation>
 </manifest>

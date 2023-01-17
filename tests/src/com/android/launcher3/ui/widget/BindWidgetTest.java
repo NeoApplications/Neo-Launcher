@@ -16,7 +16,7 @@
 package com.android.launcher3.ui.widget;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.android.launcher3.common.WidgetUtils.createWidgetInfo;
+import static com.android.launcher3.util.WidgetUtils.createWidgetInfo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -47,10 +47,10 @@ import com.android.launcher3.util.rule.ShellCommandRule;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.WidgetManagerHelper;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashSet;
@@ -76,7 +76,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
     private int mSessionId = -1;
 
     @Override
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -88,7 +88,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
                 LauncherSettings.Settings.METHOD_CLEAR_EMPTY_DB_FLAG);
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
         if (mCursor != null) {
             mCursor.close();
@@ -193,7 +193,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         assertNull(mLauncher.getWorkspace().tryGetPendingWidget(100));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testPendingWidget_notRestored_removed() {
         LauncherAppWidgetInfo item = getInvalidWidgetInfo();
         item.restoreStatus = LauncherAppWidgetInfo.FLAG_ID_NOT_VALID

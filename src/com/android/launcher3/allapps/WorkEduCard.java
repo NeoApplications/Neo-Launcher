@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip.getTabWidth;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,17 +24,21 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
-import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.model.StringCache;
+import com.android.launcher3.views.ActivityContext;
 
 /**
  * Work profile toggle switch shown at the bottom of AllApps work tab
  */
-public class WorkEduCard extends FrameLayout implements View.OnClickListener,
+public class WorkEduCard extends FrameLayout implements
+        View.OnClickListener,
         Animation.AnimationListener {
 
-    private final Launcher mLauncher;
+    private final ActivityContext mActivityContext;
     Animation mDismissAnim;
     private int mPosition = -1;
 
@@ -46,7 +52,7 @@ public class WorkEduCard extends FrameLayout implements View.OnClickListener,
 
     public WorkEduCard(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mLauncher = Launcher.getLauncher(getContext());
+        mActivityContext = ActivityContext.lookupContext(getContext());
         mDismissAnim = AnimationUtils.loadAnimation(context, android.R.anim.fade_out);
         mDismissAnim.setDuration(500);
         mDismissAnim.setAnimationListener(this);
@@ -68,14 +74,19 @@ public class WorkEduCard extends FrameLayout implements View.OnClickListener,
     protected void onFinishInflate() {
         super.onFinishInflate();
         findViewById(R.id.action_btn).setOnClickListener(this);
-        MarginLayoutParams lp = ((MarginLayoutParams) findViewById(R.id.wrapper).getLayoutParams());
-        lp.width = mLauncher.getAppsView().getActiveRecyclerView().getTabWidth();
+
+        StringCache cache = mActivityContext.getStringCache();
+        if (cache != null) {
+            TextView title = findViewById(R.id.work_apps_paused_title);
+            title.setText(cache.workProfileEdu);
+        }
     }
 
     @Override
     public void onClick(View view) {
         startAnimation(mDismissAnim);
-        mLauncher.getSharedPrefs().edit().putInt(WorkAdapterProvider.KEY_WORK_EDU_STEP, 1).apply();
+        Utilities.getPrefs(getContext()).edit().putInt(WorkProfileManager.KEY_WORK_EDU_STEP,
+                1).apply();
     }
 
     @Override
@@ -85,27 +96,31 @@ public class WorkEduCard extends FrameLayout implements View.OnClickListener,
 
     @Override
     public void onAnimationRepeat(Animation animation) {
-
     }
 
     @Override
     public void onAnimationStart(Animation animation) {
-
     }
 
     private void removeCard() {
         if (mPosition == -1) {
             if (getParent() != null) ((ViewGroup) getParent()).removeView(WorkEduCard.this);
         } else {
-            AllAppsRecyclerView rv = mLauncher.getAppsView()
-                    .mAH[AllAppsContainerView.AdapterHolder.WORK].recyclerView;
+            AllAppsRecyclerView rv = mActivityContext.getAppsView().mAH.get(
+                    ActivityAllAppsContainerView.AdapterHolder.WORK).mRecyclerView;
             rv.getApps().getAdapterItems().remove(mPosition);
             rv.getAdapter().notifyItemRemoved(mPosition);
         }
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int size = MeasureSpec.getSize(widthMeasureSpec);
+        findViewById(R.id.wrapper).getLayoutParams().width = getTabWidth(getContext(), size);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     public void setPosition(int position) {
         mPosition = position;
     }
-
 }

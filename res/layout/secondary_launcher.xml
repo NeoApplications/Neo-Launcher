@@ -16,6 +16,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drag_layer"
+    android:clipChildren="false"
     android:padding="@dimen/dynamic_grid_edge_margin">
 
     <GridView
@@ -39,7 +40,8 @@
         android:contentDescription="@string/all_apps_button_label"
         android:onClick="onAppsButtonClicked" />
 
-    <com.android.launcher3.allapps.AllAppsContainerView
+    <view
+        class="com.android.launcher3.allapps.SecondaryLauncherAllAppsContainerView"
         android:id="@+id/apps_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,8 +51,15 @@
         android:saveEnabled="false"
         android:layout_gravity="bottom|end"
         android:background="@drawable/round_rect_primary"
-        android:elevation="2dp"
         android:visibility="invisible">
+
+        <include
+            layout="@layout/all_apps_bottom_sheet_background"
+            android:visibility="gone" />
+
+        <include
+            layout="@layout/search_results_rv_layout"
+            android:visibility="gone" />
 
         <include
             layout="@layout/all_apps_rv_layout"
@@ -65,65 +74,35 @@
             android:paddingTop="@dimen/all_apps_header_top_padding"
             android:orientation="vertical">
 
-            <com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/all_apps_header_pill_height"
-                android:orientation="horizontal"
-                style="@style/TextHeadline">
+            <include layout="@layout/floating_header_content" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/tab_personal"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:text="@string/all_apps_personal_tab"
-                    android:textAllCaps="true"
-                    android:textColor="?colorControlNormal"
-                    android:textSize="14sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/tab_work"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:text="@string/all_apps_work_tab"
-                    android:textAllCaps="true"
-                    android:textColor="?colorControlNormal"
-                    android:textSize="14sp" />
-            </com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip>
+            <include layout="@layout/all_apps_personal_work_tabs" />
         </com.android.launcher3.allapps.FloatingHeaderView>
 
         <com.android.launcher3.allapps.search.AppsSearchContainerLayout
             android:id="@id/search_container_all_apps"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/all_apps_search_bar_field_height"
             android:layout_centerHorizontal="true"
             android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="24dp"
             android:background="@drawable/bg_all_apps_searchbox"
             android:elevation="1dp"
             android:focusableInTouchMode="true"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:hint="@string/all_apps_search_bar_hint"
             android:imeOptions="actionSearch|flagNoExtractUi"
+            android:importantForAutofill="no"
             android:inputType="text|textNoSuggestions|textCapWords"
             android:maxLines="1"
-            android:paddingVertical="12dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="0dp"
-            android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_allapps_search"
+            android:padding="8dp"
             android:saveEnabled="false"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="?android:attr/textColorSecondary"
-            android:textColorHint="?android:attr/textColorSecondary"
+            android:textColorHint="@drawable/all_apps_search_hint"
             android:textSize="16sp" />
 
         <include layout="@layout/all_apps_fast_scroller" />
-    </com.android.launcher3.allapps.AllAppsContainerView>
+    </view>
 </com.android.launcher3.secondarydisplay.SecondaryDragLayer>

@@ -27,7 +27,7 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.Utilities;
-import com.android.launcher3.testing.TestProtocol;
+import com.android.launcher3.testing.shared.TestProtocol;
 
 public class AccessibilityManagerCompat {
 
@@ -86,6 +86,24 @@ public class AccessibilityManagerCompat {
         if (accessibilityManager == null) return;
 
         sendEventToTest(accessibilityManager, context, TestProtocol.PAUSE_DETECTED_MESSAGE, null);
+    }
+
+    public static void sendDismissAnimationEndsEventToTest(Context context) {
+        final AccessibilityManager accessibilityManager = getAccessibilityManagerForTest(context);
+        if (accessibilityManager == null) return;
+
+        sendEventToTest(accessibilityManager, context, TestProtocol.DISMISS_ANIMATION_ENDS_MESSAGE,
+                null);
+    }
+
+    /**
+     * Notify running tests of a folder opened.
+     */
+    public static void sendFolderOpenedEventToTest(Context context) {
+        final AccessibilityManager accessibilityManager = getAccessibilityManagerForTest(context);
+        if (accessibilityManager == null) return;
+
+        sendEventToTest(accessibilityManager, context, TestProtocol.FOLDER_OPENED_MESSAGE, null);
     }
 
     private static void sendEventToTest(

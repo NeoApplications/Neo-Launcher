@@ -22,41 +22,28 @@ import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Process;
-import android.text.TextUtils;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.folder.Folder;
-import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.folder.FolderNameInfos;
-import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.Attribute;
+import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
-import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
+
 
 /**
  * Represents a folder containing shortcuts or apps.
@@ -81,8 +68,6 @@ public class FolderInfo extends ItemInfo {
     public static final int FLAG_MULTI_PAGE_ANIMATION = 0x00000004;
 
     public static final int FLAG_MANUAL_FOLDER_NAME = 0x00000008;
-
-    public static final int FLAG_COVER_MODE = 0x00000010;
 
     /**
      * Different states of folder label.
@@ -119,16 +104,11 @@ public class FolderInfo extends ItemInfo {
      */
     public ArrayList<WorkspaceItemInfo> contents = new ArrayList<>();
 
-    public String swipeUpAction;
     private ArrayList<FolderListener> mListeners = new ArrayList<>();
-    public FirstItemProvider firstItemProvider = new FirstItemProvider(this);
-    private Drawable cached;
-    private String cachedIcon;
 
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
         user = Process.myUserHandle();
-        swipeUpAction = "";
     }
 
     /**
@@ -161,13 +141,6 @@ public class FolderInfo extends ItemInfo {
         removeAll(Collections.singletonList(item), animate);
     }
 
-    public void setTitle(CharSequence title) {
-        this.title = title;
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onTitleChanged(title);
-        }
-    }
-
     /**
      * Remove all matching app or shortcut. Does not change the DB.
      */
@@ -180,7 +153,7 @@ public class FolderInfo extends ItemInfo {
     }
 
     @Override
-    public void onAddToDatabase(ContentWriter writer) {
+    public void onAddToDatabase(@NonNull ContentWriter writer) {
         super.onAddToDatabase(writer);
         writer.put(LauncherSettings.Favorites.TITLE, title)
                 .put(LauncherSettings.Favorites.OPTIONS, options);
@@ -202,16 +175,8 @@ public class FolderInfo extends ItemInfo {
 
     public interface FolderListener {
         void onAdd(WorkspaceItemInfo item, int rank);
-
         void onRemove(List<WorkspaceItemInfo> item);
-
         void onItemsChanged(boolean animate);
-
-        void onTitleChanged(CharSequence title);
-
-        default void onIconChanged() {
-            // do nothing
-        }
     }
 
     public boolean hasOption(int optionFlag) {
@@ -235,68 +200,23 @@ public class FolderInfo extends ItemInfo {
         }
     }
 
-    public boolean isCoverMode() {
-        return hasOption(FLAG_COVER_MODE);
-    }
-
-    public void setCoverMode(boolean enable, ModelWriter modelWriter) {
-        setOption(FLAG_COVER_MODE, enable, modelWriter);
-    }
-
-    public WorkspaceItemInfo getCoverInfo() {
-        return firstItemProvider.getFirstItem();
-    }
-
-    public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
-        swipeUpAction = action;
-        ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, true);
-    }
-
-    public CharSequence getIconTitle(Folder folder) {
-        if(!isCoverMode()){
-            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
-                return title;
-            }else {
-                return folder.getDefaultFolderName();
-            }
-        }
-        else{
-            WorkspaceItemInfo info = getCoverInfo();
-            if (info.customTitle != null) {
-                return info.customTitle;
-            }
-            return info.title;
-        }
-    }
-
-    public ComponentKey toComponentKey() {
-        return new ComponentKey(new ComponentName("com.saggitt.omega.folder", String.valueOf(id)), Process.myUserHandle());
-    }
-
-    /**
-     * DO NOT USE OUTSIDE CUSTOMINFOPROVIDER
-     */
-    public void onIconChanged() {
-        for (FolderListener listener : mListeners) {
-            listener.onIconChanged();
-        }
-    }
-
     @Override
     protected String dumpProperties() {
         return String.format("%s; labelState=%s", super.dumpProperties(), getLabelState());
     }
 
+    @NonNull
     @Override
-    public LauncherAtom.ItemInfo buildProto(FolderInfo fInfo) {
-        LauncherAtom.FolderIcon.Builder folderIcon = LauncherAtom.FolderIcon.newBuilder().setCardinality(contents.size());
+    public LauncherAtom.ItemInfo buildProto(@Nullable FolderInfo fInfo) {
+        FolderIcon.Builder folderIcon = FolderIcon.newBuilder()
+                .setCardinality(contents.size());
         if (LabelState.SUGGESTED.equals(getLabelState())) {
             folderIcon.setLabelInfo(title.toString());
         }
         return getDefaultItemInfoBuilder()
                 .setFolderIcon(folderIcon)
                 .setRank(rank)
-                .setAttribute(getLabelState().mLogAttribute)
+                .addItemAttributes(getLabelState().mLogAttribute)
                 .setContainerInfo(getContainerInfo())
                 .build();
     }
@@ -341,6 +261,7 @@ public class FolderInfo extends ItemInfo {
                         : LabelState.SUGGESTED;
     }
 
+    @NonNull
     @Override
     public ItemInfo makeShallowCopy() {
         FolderInfo folderInfo = new FolderInfo();
@@ -352,6 +273,7 @@ public class FolderInfo extends ItemInfo {
     /**
      * Returns {@link LauncherAtom.FolderIcon} wrapped as {@link LauncherAtom.ItemInfo} for logging.
      */
+    @NonNull
     @Override
     public LauncherAtom.ItemInfo buildProto() {
         return buildProto(null);
@@ -400,12 +322,6 @@ public class FolderInfo extends ItemInfo {
             return LauncherAtom.ToState.TO_STATE_UNSPECIFIED;
         }
 
-        if (!FeatureFlags.FOLDER_NAME_SUGGEST.get()) {
-            return title.length() > 0
-                    ? LauncherAtom.ToState.TO_CUSTOM_WITH_SUGGESTIONS_DISABLED
-                    : LauncherAtom.ToState.TO_EMPTY_WITH_SUGGESTIONS_DISABLED;
-        }
-
         // TODO: if suggestedFolderNames is null then it infrastructure issue, not
         // ranking issue. We should log these appropriately.
         if (suggestedFolderNames == null || !suggestedFolderNames.hasSuggestions()) {
@@ -442,35 +358,5 @@ public class FolderInfo extends ItemInfo {
                 // fall through
         }
         return LauncherAtom.ToState.TO_STATE_UNSPECIFIED;
-    }
-
-    public boolean useIconMode(Context context) {
-        return isCoverMode();
-    }
-
-    public boolean usingCustomIcon(Context context) {
-        return !isCoverMode();
-    }
-
-    public Drawable getIcon(Context context) {
-        Launcher launcher = Launcher.getLauncher(context);
-        if (isCoverMode()) return getCoverInfo().newIcon(context);
-        return getFolderIcon(launcher);
-    }
-
-    public Drawable getFolderIcon(Launcher launcher) {
-        int iconSize = launcher.getDeviceProfile().iconSizePx;
-        FrameLayout dummy = new FrameLayout(launcher, null);
-        FolderIcon icon = FolderIcon.inflateIcon(R.layout.folder_icon, launcher, dummy, this);
-        icon.isCustomIcon = false;
-        icon.getFolderBackground().setStartOpacity(1f);
-        Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
-            out.translate(iconSize / 2f, 0);
-            // TODO: make folder icons more visible in front of the bottom sheet
-            // out.drawColor(Color.RED);
-            icon.draw(out);
-        });
-        icon.unbind();
-        return new BitmapDrawable(launcher.getResources(), b);
     }
 }

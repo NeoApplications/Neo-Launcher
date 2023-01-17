@@ -155,7 +155,7 @@ public class CustomWidgetManager implements PluginListener<CustomWidgetPlugin>, 
     private static CustomAppWidgetProviderInfo newInfo(int providerId, CustomWidgetPlugin plugin,
                                                        Parcel parcel, Context context) {
         CustomAppWidgetProviderInfo info = new CustomAppWidgetProviderInfo(
-                parcel, false, providerId, false);
+                parcel, false, providerId);
         info.provider = new ComponentName(
                 context.getPackageName(), CLS_CUSTOM_WIDGET_PREFIX + providerId);
 

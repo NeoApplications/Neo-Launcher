@@ -39,7 +39,6 @@ public interface Reorderable {
      * Set the scale related to reorder hint and "bounce" animations
      */
     void setReorderBounceScale(float scale);
-
     float getReorderBounceScale();
 
     /**

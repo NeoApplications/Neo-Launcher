@@ -23,10 +23,15 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
+import com.android.launcher3.LauncherModel.CallbackTask;
 import com.android.launcher3.LauncherProvider;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
@@ -34,6 +39,7 @@ import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.logging.FileLog;
+import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
@@ -47,7 +53,9 @@ import com.android.launcher3.widget.LauncherAppWidgetHost;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -64,6 +72,9 @@ public class ModelWriter {
     private final BgDataModel mBgDataModel;
     private final LooperExecutor mUiExecutor;
 
+    @Nullable
+    private final Callbacks mOwner;
+
     private final boolean mHasVerticalHotseat;
     private final boolean mVerifyChanges;
 
@@ -72,12 +83,14 @@ public class ModelWriter {
     private boolean mPreparingToUndo;
 
     public ModelWriter(Context context, LauncherModel model, BgDataModel dataModel,
-                       boolean hasVerticalHotseat, boolean verifyChanges) {
+                       boolean hasVerticalHotseat, boolean verifyChanges,
+                       @Nullable Callbacks owner) {
         mContext = context;
         mModel = model;
         mBgDataModel = dataModel;
         mHasVerticalHotseat = hasVerticalHotseat;
         mVerifyChanges = verifyChanges;
+        mOwner = owner;
         mUiExecutor = Executors.MAIN_EXECUTOR;
     }
 
@@ -154,6 +167,8 @@ public class ModelWriter {
     public void moveItemInDatabase(final ItemInfo item,
                                    int container, int screenId, int cellX, int cellY) {
         updateItemInfoProps(item, container, screenId, cellX, cellY);
+        notifyItemModified(item);
+
         enqueueDeleteRunnable(new UpdateItemRunnable(item, () ->
                 new ContentWriter(mContext)
                         .put(Favorites.CONTAINER, item.container)
@@ -170,6 +185,7 @@ public class ModelWriter {
     public void moveItemsInDatabase(final ArrayList<ItemInfo> items, int container, int screen) {
         ArrayList<ContentValues> contentValues = new ArrayList<>();
         int count = items.size();
+        notifyOtherCallbacks(c -> c.bindItemsModified(items));
 
         for (int i = 0; i < count; i++) {
             ItemInfo item = items.get(i);
@@ -195,6 +211,8 @@ public class ModelWriter {
         updateItemInfoProps(item, container, screenId, cellX, cellY);
         item.spanX = spanX;
         item.spanY = spanY;
+        notifyItemModified(item);
+
         MODEL_EXECUTOR.execute(new UpdateItemRunnable(item, () ->
                 new ContentWriter(mContext)
                         .put(Favorites.CONTAINER, item.container)
@@ -206,30 +224,20 @@ public class ModelWriter {
                         .put(Favorites.SCREEN, item.screenId)));
     }
 
-    public static void modifyItemInDatabase(Context context, final ItemInfo item, String swipeUpAction, boolean reload) {
-        LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, () -> {
-            final ContentWriter writer = new ContentWriter(context);
-            writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
-            return writer;
-        });
-        if (reload) {
-            LauncherAppState.getInstance(context).getModel().forceReload();
-        }
-    }
-
-    private void executeUpdateItem(ItemInfo item, Supplier<ContentWriter> writer) {
-        MODEL_EXECUTOR.execute(new UpdateItemRunnable(item, writer));
-    }
-
     /**
      * Update an item to the database in a specified container.
      */
     public void updateItemInDatabase(ItemInfo item) {
+        notifyItemModified(item);
         MODEL_EXECUTOR.execute(new UpdateItemRunnable(item, () -> {
             ContentWriter writer = new ContentWriter(mContext);
             item.onAddToDatabase(writer);
             return writer;
         }));
+    }
+
+    private void notifyItemModified(ItemInfo item) {
+        notifyOtherCallbacks(c -> c.bindItemsModified(Collections.singletonList(item)));
     }
 
     /**
@@ -242,6 +250,7 @@ public class ModelWriter {
 
         final ContentResolver cr = mContext.getContentResolver();
         item.id = Settings.call(cr, Settings.METHOD_NEW_ITEM_ID).getInt(Settings.EXTRA_VALUE);
+        notifyOtherCallbacks(c -> c.bindItems(Collections.singletonList(item), false));
 
         ModelVerifier verifier = new ModelVerifier();
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
@@ -265,28 +274,31 @@ public class ModelWriter {
     /**
      * Removes the specified item from the database
      */
-    public void deleteItemFromDatabase(ItemInfo item) {
-        deleteItemsFromDatabase(Arrays.asList(item));
+    public void deleteItemFromDatabase(ItemInfo item, @Nullable final String reason) {
+        deleteItemsFromDatabase(Arrays.asList(item), reason);
     }
 
     /**
      * Removes all the items from the database matching {@param matcher}.
      */
-    public void deleteItemsFromDatabase(ItemInfoMatcher matcher) {
+    public void deleteItemsFromDatabase(@NonNull final Predicate<ItemInfo> matcher,
+                                        @Nullable final String reason) {
         deleteItemsFromDatabase(StreamSupport.stream(mBgDataModel.itemsIdMap.spliterator(), false)
-                .filter(matcher::matchesInfo)
-                .collect(Collectors.toList()));
+                .filter(matcher).collect(Collectors.toList()), reason);
     }
 
     /**
      * Removes the specified items from the database
      */
-    public void deleteItemsFromDatabase(final Collection<? extends ItemInfo> items) {
+    public void deleteItemsFromDatabase(final Collection<? extends ItemInfo> items,
+                                        @Nullable final String reason) {
         ModelVerifier verifier = new ModelVerifier();
         FileLog.d(TAG, "removing items from db " + items.stream().map(
                 (item) -> item.getTargetComponent() == null ? ""
                         : item.getTargetComponent().getPackageName()).collect(
-                Collectors.joining(",")), new Exception());
+                Collectors.joining(","))
+                + ". Reason: [" + (TextUtils.isEmpty(reason) ? "unknown" : reason) + "]");
+        notifyDelete(items);
         enqueueDeleteRunnable(() -> {
             for (ItemInfo item : items) {
                 final Uri uri = Favorites.getContentUri(item.id);
@@ -303,6 +315,7 @@ public class ModelWriter {
      */
     public void deleteFolderAndContentsFromDatabase(final FolderInfo info) {
         ModelVerifier verifier = new ModelVerifier();
+        notifyDelete(Collections.singleton(info));
 
         enqueueDeleteRunnable(() -> {
             ContentResolver cr = mContext.getContentResolver();
@@ -320,13 +333,19 @@ public class ModelWriter {
     /**
      * Deletes the widget info and the widget id.
      */
-    public void deleteWidgetInfo(final LauncherAppWidgetInfo info, LauncherAppWidgetHost host) {
+    public void deleteWidgetInfo(final LauncherAppWidgetInfo info, LauncherAppWidgetHost host,
+                                 @Nullable final String reason) {
+        notifyDelete(Collections.singleton(info));
         if (host != null && !info.isCustomWidget() && info.isWidgetIdAllocated()) {
             // Deleting an app widget ID is a void call but writes to disk before returning
             // to the caller...
             enqueueDeleteRunnable(() -> host.deleteAppWidgetId(info.appWidgetId));
         }
-        deleteItemFromDatabase(info);
+        deleteItemFromDatabase(info, reason);
+    }
+
+    private void notifyDelete(Collection<? extends ItemInfo> items) {
+        notifyOtherCallbacks(c -> c.bindWorkspaceComponentsRemoved(ItemInfoMatcher.ofItems(items)));
     }
 
     /**
@@ -375,6 +394,20 @@ public class ModelWriter {
         // We do a full reload here instead of just a rebind because Folders change their internal
         // state when dragging an item out, which clobbers the rebind unless we load from the DB.
         mModel.forceReload();
+    }
+
+    private void notifyOtherCallbacks(CallbackTask task) {
+        if (mOwner == null) {
+            // If the call is happening from a model, it will take care of updating the callbacks
+            return;
+        }
+        mUiExecutor.execute(() -> {
+            for (Callbacks c : mModel.getCallbacks()) {
+                if (c != mOwner) {
+                    task.execute(c);
+                }
+            }
+        });
     }
 
     private class UpdateItemRunnable extends UpdateItemBaseRunnable {

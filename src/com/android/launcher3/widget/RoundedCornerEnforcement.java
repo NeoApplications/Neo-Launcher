@@ -27,7 +27,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,6 @@ import java.util.List;
  * Utilities to compute the enforced the use of rounded corners on App Widgets.
  */
 public class RoundedCornerEnforcement {
-    public static boolean sRoundedCornerEnabled;
     // This class is only a namespace and not meant to be instantiated.
     private RoundedCornerEnforcement() {
     }
@@ -64,7 +65,7 @@ public class RoundedCornerEnforcement {
     }
 
     /**
-     * Check if the app widget is in the deny list.
+     * Check whether the app widget has opted out of the enforcement.
      */
     public static boolean hasAppWidgetOptedOut(@NonNull View appWidget, @NonNull View background) {
         return background.getId() == android.R.id.background && background.getClipToOutline();
@@ -74,16 +75,16 @@ public class RoundedCornerEnforcement {
      * Check if the app widget is in the deny list.
      */
     public static boolean isRoundedCornerEnabled() {
-        return sRoundedCornerEnabled;
+        return Utilities.ATLEAST_S && FeatureFlags.ENABLE_ENFORCED_ROUNDED_CORNERS.get();
     }
 
     /**
      * Computes the rounded rectangle needed for this app widget.
      *
-     * @param appWidget View onto which the rounded rectangle will be applied.
+     * @param appWidget  View onto which the rounded rectangle will be applied.
      * @param background Background view. This must be either {@code appWidget} or a descendant
-     *                  of {@code appWidget}.
-     * @param outRect  Rectangle set to the rounded rectangle coordinates, in the reference frame
+     *                   of {@code appWidget}.
+     * @param outRect    Rectangle set to the rounded rectangle coordinates, in the reference frame
      *                   of {@code appWidget}.
      */
     public static void computeRoundedRectangle(@NonNull View appWidget, @NonNull View background,
@@ -103,13 +104,13 @@ public class RoundedCornerEnforcement {
      * in the given context.
      */
     public static float computeEnforcedRadius(@NonNull Context context) {
-        Resources res = context.getResources();
         if (!Utilities.ATLEAST_S) {
-            return Utilities.getOmegaPrefs(context).getDesktopWidgetRadius().getValueInPixels();
+            return 0;
         }
+        Resources res = context.getResources();
         float systemRadius = res.getDimension(android.R.dimen.system_app_widget_background_radius);
-        float configuredRadius = Utilities.getOmegaPrefs(context).getDesktopWidgetRadius().getValueInPixels();
-        return Math.min(configuredRadius, systemRadius);
+        float defaultRadius = res.getDimension(R.dimen.enforced_rounded_corner_max_radius);
+        return Math.min(defaultRadius, systemRadius);
     }
 
     private static List<View> findViewsWithId(View view, @IdRes int viewId) {

@@ -18,10 +18,11 @@ package com.android.launcher3.model;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.util.InstantAppResolver;
@@ -34,14 +35,16 @@ import java.util.List;
  */
 public class PackageInstallStateChangedTask extends BaseModelUpdateTask {
 
+    @NonNull
     private final PackageInstallInfo mInstallInfo;
 
-    public PackageInstallStateChangedTask(PackageInstallInfo installInfo) {
+    public PackageInstallStateChangedTask(@NonNull final PackageInstallInfo installInfo) {
         mInstallInfo = installInfo;
     }
 
     @Override
-    public void execute(LauncherAppState app, BgDataModel dataModel, AllAppsList apps) {
+    public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
+                        @NonNull final AllAppsList apps) {
         if (mInstallInfo.state == PackageInstallInfo.STATUS_INSTALLED) {
             try {
                 // For instant apps we do not get package-add. Use setting events to update
@@ -73,13 +76,7 @@ public class PackageInstallStateChangedTask extends BaseModelUpdateTask {
             dataModel.forAllWorkspaceItemInfos(mInstallInfo.user, si -> {
                 if (si.hasPromiseIconUi()
                         && mInstallInfo.packageName.equals(si.getTargetPackage())) {
-                    int installProgress = mInstallInfo.progress;
-
-                    si.setProgressLevel(installProgress, PackageInstallInfo.STATUS_INSTALLING);
-                    if (mInstallInfo.state == PackageInstallInfo.STATUS_FAILED) {
-                        // Mark this info as broken.
-                        si.runtimeStatusFlags &= ~ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE;
-                    }
+                    si.setProgressLevel(mInstallInfo);
                     updates.add(si);
                 }
             });

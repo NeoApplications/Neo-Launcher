@@ -15,9 +15,8 @@
  */
 package com.android.launcher3.allapps.search;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_FOCUSED_ITEM_SELECTED_WITH_IME;
+import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_QUICK_SEARCH_WITH_IME;
 
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
@@ -28,20 +27,16 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.allapps.AllAppsGridAdapter.AdapterItem;
+import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.search.SearchAlgorithm;
 import com.android.launcher3.search.SearchCallback;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import com.android.launcher3.views.ActivityContext;
 
 /**
  * An interface to a search box that AllApps can command.
@@ -50,13 +45,14 @@ public class AllAppsSearchBarController
         implements TextWatcher, OnEditorActionListener, ExtendedEditText.OnBackKeyListener,
         OnFocusChangeListener {
 
-    protected BaseDraggingActivity mLauncher;
+    protected ActivityContext mLauncher;
     protected SearchCallback<AdapterItem> mCallback;
     protected ExtendedEditText mInput;
     protected String mQuery;
     private String[] mTextConversions;
+
     protected SearchAlgorithm<AdapterItem> mSearchAlgorithm;
-    protected ImageButton mCancelButton;
+
     public void setVisibility(int visibility) {
         mInput.setVisibility(visibility);
     }
@@ -66,8 +62,7 @@ public class AllAppsSearchBarController
      */
     public final void initialize(
             SearchAlgorithm<AdapterItem> searchAlgorithm, ExtendedEditText input,
-            ImageButton cancelButton,
-            BaseDraggingActivity launcher, SearchCallback<AdapterItem> callback) {
+            ActivityContext launcher, SearchCallback<AdapterItem> callback) {
         mCallback = callback;
         mLauncher = launcher;
 
@@ -76,14 +71,8 @@ public class AllAppsSearchBarController
         mInput.setOnEditorActionListener(this);
         mInput.setOnBackKeyListener(this);
         mInput.setOnFocusChangeListener(this);
-        mCancelButton = cancelButton;
-        mCancelButton.setOnClickListener(v -> reset());
         mSearchAlgorithm = searchAlgorithm;
-
     }
-
-    private final long DELAY = 250;
-    private Timer timer = new Timer();
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -92,33 +81,7 @@ public class AllAppsSearchBarController
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        // Do nothing
         mTextConversions = extractTextConversions(s);
-        if (timer != null)
-            timer.cancel();
-    }
-    @Override
-    public void afterTextChanged(final Editable s) {
-        mQuery = s.toString();
-        if (mQuery.isEmpty()) {
-            mSearchAlgorithm.cancel(true);
-            mCallback.clearSearchResult();
-            mCancelButton.setVisibility(GONE);
-        } else {
-            mSearchAlgorithm.cancel(false);
-            mSearchAlgorithm.doSearch(mQuery, mTextConversions, mCallback);
-            mCancelButton.setVisibility(VISIBLE);
-
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mCallback.setShowWebResult(true);
-                    mSearchAlgorithm.doSearch(mQuery, mTextConversions, mCallback);
-                }
-
-            }, DELAY);
-        }
     }
 
     private static String[] extractTextConversions(CharSequence text) {
@@ -134,14 +97,25 @@ public class AllAppsSearchBarController
         return null;
     }
 
+    @Override
+    public void afterTextChanged(final Editable s) {
+        mQuery = s.toString();
+        if (mQuery.isEmpty()) {
+            mSearchAlgorithm.cancel(true);
+            mCallback.clearSearchResult();
+        } else {
+            mSearchAlgorithm.cancel(false);
+            mSearchAlgorithm.doSearch(mQuery, mTextConversions, mCallback);
+        }
+    }
+
     public void refreshSearchResult() {
         if (TextUtils.isEmpty(mQuery)) {
-            mCancelButton.setVisibility(GONE);
             return;
         }
         // If play store continues auto updating an app, we want to show partial result.
         mSearchAlgorithm.cancel(false);
-        mSearchAlgorithm.doSearch(mQuery, mTextConversions, mCallback);
+        mSearchAlgorithm.doSearch(mQuery, mCallback);
     }
 
     @Override
@@ -149,10 +123,11 @@ public class AllAppsSearchBarController
 
         if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_GO) {
             mLauncher.getStatsLogManager().logger()
-                    .log(LAUNCHER_ALLAPPS_FOCUSED_ITEM_SELECTED_WITH_IME);
+                    .log(actionId == EditorInfo.IME_ACTION_SEARCH
+                            ? LAUNCHER_ALLAPPS_QUICK_SEARCH_WITH_IME
+                            : LAUNCHER_ALLAPPS_FOCUSED_ITEM_SELECTED_WITH_IME);
             // selectFocusedView should return SearchTargetEvent that is passed onto onClick
-            //return Launcher.getLauncher(mLauncher).getAppsView().launchHighlightedItem();
-            return mCallback.onSubmitSearch(v.getText().toString());
+            return mLauncher.getAppsView().getMainAdapterProvider().launchHighlightedItem();
         }
         return false;
     }
@@ -161,7 +136,7 @@ public class AllAppsSearchBarController
     public boolean onBackKey() {
         // Only hide the search field if there is no query
         String query = Utilities.trim(mInput.getEditableText().toString());
-        if (!query.isEmpty()) {
+        if (query.isEmpty()) {
             reset();
             return true;
         }
@@ -182,7 +157,6 @@ public class AllAppsSearchBarController
         mCallback.clearSearchResult();
         mInput.reset();
         mQuery = null;
-        mCancelButton.setVisibility(GONE);
     }
 
     /**

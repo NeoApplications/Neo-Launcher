@@ -95,6 +95,12 @@ public class LauncherSettings {
         public static final int ITEM_TYPE_DEEP_SHORTCUT = 6;
 
         /**
+         * The favroite is a search action
+         */
+        public static final int ITEM_TYPE_SEARCH_ACTION = 7;
+
+
+        /**
          * Type of the item is recents task.
          * TODO(hyunyoungs): move constants not related to Favorites DB to a better location.
          */
@@ -173,6 +179,7 @@ public class LauncherSettings {
          * The content:// style URL for a given row, identified by its id.
          *
          * @param id The row id.
+         *
          * @return The unique content URL for the specified row.
          */
         public static Uri getContentUri(int id) {
@@ -198,6 +205,7 @@ public class LauncherSettings {
         public static final int CONTAINER_WIDGETS_TRAY = -105;
         public static final int CONTAINER_BOTTOM_WIDGETS_TRAY = -112;
         public static final int CONTAINER_PIN_WIDGETS = -113;
+        public static final int CONTAINER_WALLPAPERS = -114;
         // Represents search results view.
         public static final int CONTAINER_SEARCH_RESULTS = -106;
         public static final int CONTAINER_SHORTCUTS = -107;
@@ -332,14 +340,6 @@ public class LauncherSettings {
          */
         public static final String APPWIDGET_SOURCE = "appWidgetSource";
 
-        public static final String TITLE_ALIAS = "titleAlias";
-
-        public static final String SWIPE_UP_ACTION = "swipeUpAction";
-
-        public static final String CUSTOM_ICON = "customIcon";
-
-        public static final String CUSTOM_ICON_ENTRY = "customIconEntry";
-
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional) {
             addTableToDb(db, myProfileId, optional, TABLE_NAME);
         }
@@ -349,29 +349,25 @@ public class LauncherSettings {
             String ifNotExists = optional ? " IF NOT EXISTS " : "";
             db.execSQL("CREATE TABLE " + ifNotExists + tableName + " (" +
                     "_id INTEGER PRIMARY KEY," +
-                    TITLE + " TEXT," +
-                    INTENT + " TEXT," +
-                    CONTAINER + " INTEGER," +
-                    SCREEN + " INTEGER," +
-                    CELLX + " INTEGER," +
-                    CELLY + " INTEGER," +
-                    SPANX + " INTEGER," +
-                    SPANY + " INTEGER," +
-                    ITEM_TYPE + " INTEGER," +
-                    APPWIDGET_ID + " INTEGER NOT NULL DEFAULT -1," +
-                    ICON_PACKAGE + " TEXT," +
-                    ICON_RESOURCE + " TEXT," +
-                    ICON + " BLOB," +
-                    CUSTOM_ICON + " BLOB," +
-                    CUSTOM_ICON_ENTRY + " TEXT," +
-                    TITLE_ALIAS + " TEXT," +
-                    SWIPE_UP_ACTION + " TEXT," +
-                    APPWIDGET_PROVIDER + " TEXT," +
-                    MODIFIED + " INTEGER NOT NULL DEFAULT 0," +
-                    RESTORED + " INTEGER NOT NULL DEFAULT 0," +
-                    PROFILE_ID + " INTEGER DEFAULT " + myProfileId + "," +
-                    RANK + " INTEGER NOT NULL DEFAULT 0," +
-                    OPTIONS + " INTEGER NOT NULL DEFAULT 0," +
+                    "title TEXT," +
+                    "intent TEXT," +
+                    "container INTEGER," +
+                    "screen INTEGER," +
+                    "cellX INTEGER," +
+                    "cellY INTEGER," +
+                    "spanX INTEGER," +
+                    "spanY INTEGER," +
+                    "itemType INTEGER," +
+                    "appWidgetId INTEGER NOT NULL DEFAULT -1," +
+                    "iconPackage TEXT," +
+                    "iconResource TEXT," +
+                    "icon BLOB," +
+                    "appWidgetProvider TEXT," +
+                    "modified INTEGER NOT NULL DEFAULT 0," +
+                    "restored INTEGER NOT NULL DEFAULT 0," +
+                    "profileId INTEGER DEFAULT " + myProfileId + "," +
+                    "rank INTEGER NOT NULL DEFAULT 0," +
+                    "options INTEGER NOT NULL DEFAULT 0," +
                     APPWIDGET_SOURCE + " INTEGER NOT NULL DEFAULT " + CONTAINER_UNKNOWN +
                     ");");
         }
@@ -395,6 +391,12 @@ public class LauncherSettings {
 
         public static final String METHOD_CREATE_EMPTY_DB = "create_empty_db";
 
+        public static final String METHOD_SET_USE_TEST_WORKSPACE_LAYOUT_FLAG =
+                "set_use_test_workspace_layout_flag";
+
+        public static final String METHOD_CLEAR_USE_TEST_WORKSPACE_LAYOUT_FLAG =
+                "clear_use_test_workspace_layout_flag";
+
         public static final String METHOD_LOAD_DEFAULT_FAVORITES = "load_default_favorites";
 
         public static final String METHOD_REMOVE_GHOST_WIDGETS = "remove_ghost_widgets";
@@ -408,8 +410,6 @@ public class LauncherSettings {
         public static final String METHOD_RESTORE_BACKUP_TABLE = "restore_backup_table";
 
         public static final String METHOD_UPDATE_CURRENT_OPEN_HELPER = "update_current_open_helper";
-
-        public static final String METHOD_RE_INITIALIZE_IDS = "re_initialize_ids";
 
         public static final String METHOD_PREP_FOR_PREVIEW = "prep_for_preview";
 

@@ -2,6 +2,15 @@
 <issues format="5" by="lint 4.1.0" client="cli" variant="all" version="4.1.0">
 
     <issue id="NewApi"
+        message="Call requires API level 28 (current min is 26): `android.os.UserManager#requestQuietModeEnabled`"
+        errorLine1="            showConfirm |= !userManager.requestQuietModeEnabled(!toState, userProfile);"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="packages/apps/Launcher3/src/com/android/launcher3/allapps/WorkModeSwitch.java"
+            line="110" column="41" />
+    </issue>
+
+    <issue id="NewApi"
         message="Call requires API level R (current min is 26): `android.view.View#getWindowInsetsController`"
         errorLine1="        getWindowInsetsController().hide(WindowInsets.Type.ime());"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -451,11 +460,11 @@
 
     <issue id="NewApi"
         message="Call requires API level 31 (current min is 26): `android.appwidget.AppWidgetHostView#setColorResources`"
-        errorLine1="            view.setColorResources(mWallpaperColorResources);"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~">
+        errorLine1="                setColorResources(mWallpaperColorResources);"
+        errorLine2="                ~~~~~~~~~~~~~~~~~">
         <location
             file="packages/apps/Launcher3/src/com/android/launcher3/graphics/LauncherPreviewRenderer.java"
-            line="381" column="18" />
+            line="528" column="17" />
     </issue>
 
     <issue id="NewApi"
@@ -464,7 +473,7 @@
         errorLine2="                                                            ~~~~~~~~~~~~~~~~~~">
         <location
             file="packages/apps/Launcher3/src/com/android/launcher3/graphics/LauncherPreviewRenderer.java"
-            line="270" column="61" />
+            line="288" column="61" />
     </issue>
 
 </issues>

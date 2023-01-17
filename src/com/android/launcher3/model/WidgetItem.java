@@ -51,7 +51,7 @@ public class WidgetItem extends ComponentKey {
     /**
      * Returns {@code true} if this {@link WidgetItem} has the same type as the given
      * {@code otherItem}.
-     * <p>
+     *
      * For example, both items are widgets or both items are shortcuts.
      */
     public boolean hasSameType(WidgetItem otherItem) {

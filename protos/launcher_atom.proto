@@ -23,6 +23,8 @@ import "launcher_atom_extension.proto";
 //
 // ItemInfos
 message ItemInfo {
+  reserved 8;
+
   oneof Item {
     Application application = 1;
     Task task = 2;
@@ -42,7 +44,14 @@ message ItemInfo {
   optional ContainerInfo container_info = 7;
 
   // Stores the origin of the Item
-  optional Attribute attribute = 8;
+  repeated Attribute item_attributes = 12;
+}
+
+message LauncherAttributes{
+
+  // Integer value of item attribute enum
+  // (e.g. SUGGESTED_LABEL, ALL_APPS_SEARCH_RESULT_SETTING etc)
+  repeated int32 item_attributes = 1;
 }
 
 // Represents various launcher surface where items are placed.
@@ -59,12 +68,17 @@ message ContainerInfo {
     SettingsContainer settings_container = 9;
     PredictedHotseatContainer predicted_hotseat_container = 10;
     TaskSwitcherContainer task_switcher_container = 11;
+    TaskBarContainer task_bar_container = 12;
+    WallpapersContainer wallpapers_container = 13;
     ExtendedContainers extended_containers = 20;
   }
 }
 
 // Represents the apps list sorted alphabetically inside the all-apps view.
 message AllAppsContainer {
+  oneof ParentContainer {
+    TaskBarContainer taskbar_container = 1;
+  }
 }
 
 message WidgetsContainer {
@@ -72,6 +86,9 @@ message WidgetsContainer {
 
 // Represents the predicted apps row(top row) in the all-apps view.
 message PredictionContainer {
+  oneof ParentContainer {
+    TaskBarContainer taskbar_container = 1;
+  }
 }
 
 // Represents the apps container within search results.
@@ -100,6 +117,17 @@ message SettingsContainer {
 message TaskSwitcherContainer {
 }
 
+// Container for taskbar.
+// Configured to show up on large screens(tablet-sized) such as foldables in expanded state, within
+// an app view(not in launcher screen).
+message TaskBarContainer {
+  optional int32 index = 1;
+
+  // Bit encoded value to capture pinned and predicted taskbar positions.
+  optional int32 cardinality = 2;
+}
+
+// Next value 40
 enum Attribute {
   UNKNOWN = 0;
   DEFAULT_LAYOUT = 1;       // icon automatically placed in workspace, folder, hotseat
@@ -141,6 +169,20 @@ enum Attribute {
   ALL_APPS_SEARCH_RESULT_NAVVYSITE = 25;
   ALL_APPS_SEARCH_RESULT_TIPS = 26;
   ALL_APPS_SEARCH_RESULT_PEOPLE_TILE = 27;
+  ALL_APPS_SEARCH_RESULT_LEGACY_SHORTCUT = 30;
+  ALL_APPS_SEARCH_RESULT_ASSISTANT_MEMORY = 31;
+
+  // Web suggestions provided by AGA
+  ALL_APPS_SEARCH_RESULT_WEB_SUGGEST = 39;
+
+  // Suggestion Type provided by AGA
+  WEB_SEARCH_RESULT_QUERY = 32;
+  WEB_SEARCH_RESULT_TRENDING = 33;
+  WEB_SEARCH_RESULT_ENTITY = 34;
+  WEB_SEARCH_RESULT_ANSWER = 35;
+  WEB_SEARCH_RESULT_PERSONAL = 36;
+  WEB_SEARCH_RESULT_CALCULATOR = 37;
+  WEB_SEARCH_RESULT_URL = 38;
 
   WIDGETS_BOTTOM_TRAY = 28;
   WIDGETS_TRAY_PREDICTION = 29;
@@ -230,7 +272,14 @@ message FolderContainer {
   oneof ParentContainer {
     WorkspaceContainer workspace = 4;
     HotseatContainer hotseat = 5;
+    TaskBarContainer taskbar = 6;
   }
+}
+
+// Represents wallpapers container for quick switching.
+message WallpapersContainer {
+  // Number of wallpapers in the container.
+  optional int32 cardinality = 1;
 }
 
 // Represents state of EditText field before update.

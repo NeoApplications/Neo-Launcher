@@ -32,7 +32,6 @@ import android.util.TypedValue;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.GraphicsUtils;
 
 /**
@@ -56,10 +55,17 @@ public class Themes {
     }
 
     public static int getActivityThemeRes(Context context, int wallpaperColorHints) {
+        boolean supportsDarkText = Utilities.ATLEAST_S
+                && (wallpaperColorHints & HINT_SUPPORTS_DARK_TEXT) != 0;
+        boolean isMainColorDark = Utilities.ATLEAST_S
+                && (wallpaperColorHints & HINT_SUPPORTS_DARK_THEME) != 0;
+
         if (Utilities.isDarkTheme(context)) {
-            return R.style.AppTheme_Dark;
+            return supportsDarkText ? R.style.AppTheme_Dark_DarkText
+                    : isMainColorDark ? R.style.AppTheme_Dark_DarkMainColor : R.style.AppTheme_Dark;
         } else {
-            return R.style.AppTheme_Light;
+            return supportsDarkText ? R.style.AppTheme_DarkText
+                    : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme;
         }
     }
 
@@ -67,8 +73,7 @@ public class Themes {
      * Returns true if workspace icon theming is enabled
      */
     public static boolean isThemedIconEnabled(Context context) {
-        return FeatureFlags.ENABLE_THEMED_ICONS.get()
-                && Utilities.getPrefs(context).getBoolean(KEY_THEMED_ICONS, false);
+        return Utilities.getPrefs(context).getBoolean(KEY_THEMED_ICONS, false);
     }
 
     public static String getDefaultBodyFont(Context context) {
@@ -130,23 +135,6 @@ public class Themes {
     public static int getAttrInteger(Context context, int attr) {
         TypedArray ta = context.obtainStyledAttributes(new int[]{attr});
         int value = ta.getInteger(0, 0);
-        ta.recycle();
-        return value;
-    }
-
-    /**
-     * Returns the alpha corresponding to the theme attribute {@param attr}, in the range [0, 255].
-     */
-    public static int getAlpha(Context context, int attr) {
-        return (int) (255 * getFloat(context, attr, 0) + 0.5f);
-    }
-
-    /**
-     * Returns the alpha corresponding to the theme attribute {@param attr}
-     */
-    public static float getFloat(Context context, int attr, float defValue) {
-        TypedArray ta = context.obtainStyledAttributes(new int[]{attr});
-        float value = ta.getFloat(0, defValue);
         ta.recycle();
         return value;
     }

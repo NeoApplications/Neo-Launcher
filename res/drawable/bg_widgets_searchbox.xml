@@ -14,6 +14,6 @@
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="?popupColorPrimary" />
+    <solid android:color="@color/surface" />
     <corners android:radius="24dp" />
 </shape>

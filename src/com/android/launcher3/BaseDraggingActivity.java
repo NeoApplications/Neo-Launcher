@@ -16,61 +16,44 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_APP_LAUNCH_TAP;
 import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
-import android.app.ActivityOptions;
-import android.content.ActivityNotFoundException;
+import android.app.WallpaperColors;
+import android.app.WallpaperManager;
+import android.app.WallpaperManager.OnColorsChangedListener;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.LauncherApps;
 import android.content.res.Configuration;
-import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Process;
-import android.os.StrictMode;
-import android.os.UserHandle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowInsets.Type;
-import android.view.WindowMetrics;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.allapps.AllAppsContainerView;
+import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.allapps.search.DefaultSearchAdapterProvider;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
-import com.android.launcher3.logging.InstanceId;
-import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.touch.ItemClickHandler;
-import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.ActivityOptionsWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.DisplayInfoChangeListener;
 import com.android.launcher3.util.DisplayController.Info;
-import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.util.WindowBounds;
-import com.saggitt.omega.theme.ThemeOverride;
 
 /**
  * Extension of BaseActivity allowing support for drag-n-drop
  */
+@SuppressWarnings("NewApi")
 public abstract class BaseDraggingActivity extends BaseActivity
-        implements WallpaperColorInfo.OnChangeListener, DisplayInfoChangeListener {
+        implements OnColorsChangedListener, DisplayInfoChangeListener {
 
     private static final String TAG = "BaseDraggingActivity";
 
@@ -84,7 +67,7 @@ public abstract class BaseDraggingActivity extends BaseActivity
     private Runnable mOnStartCallback;
     private RunnableList mOnResumeCallbacks = new RunnableList();
 
-    private int mThemeRes = R.style.AppTheme_Light;
+    private int mThemeRes = R.style.AppTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,25 +78,29 @@ public abstract class BaseDraggingActivity extends BaseActivity
         DisplayController.INSTANCE.get(this).addChangeListener(this);
 
         // Update theme
-        WallpaperColorInfo.getInstance(this).addOnChangeListener(this);
+        if (Utilities.ATLEAST_P) {
+            getSystemService(WallpaperManager.class)
+                    .addOnColorsChangedListener(this, MAIN_EXECUTOR.getHandler());
+        }
         int themeRes = Themes.getActivityThemeRes(this);
         if (themeRes != mThemeRes) {
             mThemeRes = themeRes;
             setTheme(themeRes);
         }
-
-        // Register theme override
-        ThemeOverride themeOverride = new ThemeOverride(getLauncherThemeSet(), this);
-        themeOverride.applyTheme(this);
-    }
-
-    @NonNull
-    protected ThemeOverride.ThemeSet getLauncherThemeSet() {
-        return new ThemeOverride.Launcher();
     }
 
     @Override
-    public void onExtractedColorsChanged(WallpaperColorInfo wallpaperColorInfo) {
+    protected void onResume() {
+        super.onResume();
+        mOnResumeCallbacks.executeAllAndClear();
+    }
+
+    public void addOnResumeCallback(Runnable callback) {
+        mOnResumeCallbacks.add(callback);
+    }
+
+    @Override
+    public void onColorsChanged(WallpaperColors wallpaperColors, int which) {
         updateTheme();
     }
 
@@ -127,16 +114,6 @@ public abstract class BaseDraggingActivity extends BaseActivity
         if (mThemeRes != Themes.getActivityThemeRes(this)) {
             recreate();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mOnResumeCallbacks.executeAllAndClear();
-    }
-
-    public void addOnResumeCallback(Runnable callback) {
-        mOnResumeCallbacks.add(callback);
     }
 
     @Override
@@ -168,117 +145,12 @@ public abstract class BaseDraggingActivity extends BaseActivity
         // no-op
     }
 
-    public Rect getViewBounds(View v) {
-        int[] pos = new int[2];
-        v.getLocationOnScreen(pos);
-        return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
-    }
-
-    public final Bundle getActivityLaunchOptionsAsBundle(View v) {
-        ActivityOptions activityOptions = getActivityLaunchOptions(v);
-        return activityOptions == null ? null : activityOptions.toBundle();
-    }
-
-    public abstract ActivityOptions getActivityLaunchOptions(View v);
-
+    @Override
     @NonNull
     public ActivityOptionsWrapper getActivityLaunchOptions(View v, @Nullable ItemInfo item) {
-        int left = 0, top = 0;
-        int width = v.getMeasuredWidth(), height = v.getMeasuredHeight();
-        if (v instanceof BubbleTextView) {
-            // Launch from center of icon, not entire view
-            Drawable icon = ((BubbleTextView) v).getIcon();
-            if (icon != null) {
-                Rect bounds = icon.getBounds();
-                left = (width - bounds.width()) / 2;
-                top = v.getPaddingTop();
-                width = bounds.width();
-                height = bounds.height();
-            }
-        }
-        ActivityOptions options =
-                ActivityOptions.makeClipRevealAnimation(v, left, top, width, height);
-        RunnableList callback = new RunnableList();
-        addOnResumeCallback(callback::executeAllAndDestroy);
-        return new ActivityOptionsWrapper(options, callback);
-    }
-
-    public boolean startActivitySafely(View v, Intent intent, @Nullable ItemInfo item) {
-        if (mIsSafeModeEnabled && !PackageManagerHelper.isSystemApp(this, intent)) {
-            Toast.makeText(this, R.string.safemode_shortcut_error, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        Bundle optsBundle = (v != null) ? getActivityLaunchOptions(v, item).toBundle() : null;
-        UserHandle user = item == null ? null : item.user;
-
-        // Prepare intent
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (v != null) {
-            intent.setSourceBounds(getViewBounds(v));
-        }
-        try {
-            boolean isShortcut = (item instanceof WorkspaceItemInfo)
-                    && (item.itemType == Favorites.ITEM_TYPE_SHORTCUT
-                    || item.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT)
-                    && !((WorkspaceItemInfo) item).isPromise();
-            if (isShortcut) {
-                // Shortcuts need some special checks due to legacy reasons.
-                startShortcutIntentSafely(intent, optsBundle, item);
-            } else if (user == null || user.equals(Process.myUserHandle())) {
-                // Could be launching some bookkeeping activity
-                startActivity(intent, optsBundle);
-            } else {
-                getSystemService(LauncherApps.class).startMainActivity(
-                        intent.getComponent(), user, intent.getSourceBounds(), optsBundle);
-            }
-            if (item != null) {
-                InstanceId instanceId = new InstanceIdSequence().newInstanceId();
-                logAppLaunch(item, instanceId);
-            }
-            return true;
-        } catch (NullPointerException | ActivityNotFoundException | SecurityException e) {
-            Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Unable to launch. tag=" + item + " intent=" + intent, e);
-        }
-        return false;
-    }
-
-    protected void logAppLaunch(ItemInfo info, InstanceId instanceId) {
-        getStatsLogManager().logger().withItemInfo(info).withInstanceId(instanceId)
-                .log(LAUNCHER_APP_LAUNCH_TAP);
-    }
-
-    private void startShortcutIntentSafely(Intent intent, Bundle optsBundle, ItemInfo info) {
-        try {
-            StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
-            try {
-                // Temporarily disable deathPenalty on all default checks. For eg, shortcuts
-                // containing file Uri's would cause a crash as penaltyDeathOnFileUriExposure
-                // is enabled by default on NYC.
-                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
-                        .penaltyLog().build());
-
-                if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
-                    String id = ((WorkspaceItemInfo) info).getDeepShortcutId();
-                    String packageName = intent.getPackage();
-                    startShortcut(packageName, id, intent.getSourceBounds(), optsBundle, info.user);
-                } else {
-                    // Could be launching some bookkeeping activity
-                    startActivity(intent, optsBundle);
-                }
-            } finally {
-                StrictMode.setVmPolicy(oldPolicy);
-            }
-        } catch (SecurityException e) {
-            if (!onErrorStartingShortcut(intent, info)) {
-                throw e;
-            }
-        }
-    }
-
-    protected boolean onErrorStartingShortcut(Intent intent, ItemInfo info) {
-        return false;
+        ActivityOptionsWrapper wrapper = super.getActivityLaunchOptions(v, item);
+        addOnResumeCallback(wrapper.onEndCallback::executeAllAndDestroy);
+        return wrapper;
     }
 
     @Override
@@ -294,7 +166,9 @@ public abstract class BaseDraggingActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        WallpaperColorInfo.getInstance(this).removeOnChangeListener(this);
+        if (Utilities.ATLEAST_P) {
+            getSystemService(WallpaperManager.class).removeOnColorsChangedListener(this);
+        }
         DisplayController.INSTANCE.get(this).removeChangeListener(this);
     }
 
@@ -319,7 +193,8 @@ public abstract class BaseDraggingActivity extends BaseActivity
         }
     }
 
-    public OnClickListener getItemOnClickListener() {
+    @Override
+    public View.OnClickListener getItemOnClickListener() {
         return ItemClickHandler.INSTANCE;
     }
 
@@ -327,11 +202,7 @@ public abstract class BaseDraggingActivity extends BaseActivity
 
     protected WindowBounds getMultiWindowDisplaySize() {
         if (Utilities.ATLEAST_R) {
-            WindowMetrics wm = getWindowManager().getCurrentWindowMetrics();
-
-            Insets insets = wm.getWindowInsets().getInsets(Type.systemBars());
-            return new WindowBounds(wm.getBounds(),
-                    new Rect(insets.left, insets.top, insets.right, insets.bottom));
+            return WindowBounds.fromWindowMetrics(getWindowManager().getCurrentWindowMetrics());
         }
         // Note: Calls to getSize() can't rely on our cached DefaultDisplay since it can return
         // the app window size
@@ -345,7 +216,14 @@ public abstract class BaseDraggingActivity extends BaseActivity
      * Creates and returns {@link SearchAdapterProvider} for build variant specific search result
      * views
      */
-    public SearchAdapterProvider createSearchAdapterProvider(AllAppsContainerView allapps) {
-        return new DefaultSearchAdapterProvider(this, allapps);
+    @Override
+    public SearchAdapterProvider<?> createSearchAdapterProvider(
+            ActivityAllAppsContainerView<?> allApps) {
+        return new DefaultSearchAdapterProvider(this);
+    }
+
+    @Override
+    public boolean isAppBlockedForSafeMode() {
+        return mIsSafeModeEnabled;
     }
 }

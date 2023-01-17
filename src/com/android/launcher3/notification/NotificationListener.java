@@ -30,11 +30,12 @@ import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
+import android.util.ArraySet;
 import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
@@ -67,8 +68,8 @@ public class NotificationListener extends NotificationListenerService {
     private static final int MSG_RANKING_UPDATE = 5;
 
     private static NotificationListener sNotificationListenerInstance = null;
-    private static NotificationsChangedListener sNotificationsChangedListener;
-    private static StatusBarNotificationsChangedListener sStatusBarNotificationsChangedListener;
+    private static final ArraySet<NotificationsChangedListener> sNotificationsChangedListeners =
+            new ArraySet<>();
     private static boolean sIsConnected;
 
     private final Handler mWorkerHandler;
@@ -98,13 +99,15 @@ public class NotificationListener extends NotificationListenerService {
         sNotificationListenerInstance = this;
     }
 
-    public static @Nullable
-    NotificationListener getInstanceIfConnected() {
+    public static @Nullable NotificationListener getInstanceIfConnected() {
         return sIsConnected ? sNotificationListenerInstance : null;
     }
 
-    public static void setNotificationsChangedListener(NotificationsChangedListener listener) {
-        sNotificationsChangedListener = listener;
+    public static void addNotificationsChangedListener(NotificationsChangedListener listener) {
+        if (listener == null) {
+            return;
+        }
+        sNotificationsChangedListeners.add(listener);
 
         NotificationListener notificationListener = getInstanceIfConnected();
         if (notificationListener != null) {
@@ -117,19 +120,10 @@ public class NotificationListener extends NotificationListenerService {
         }
     }
 
-    @Keep
-    public static void setStatusBarNotificationsChangedListener
-            (StatusBarNotificationsChangedListener listener) {
-        sStatusBarNotificationsChangedListener = listener;
-    }
-
-    public static void removeNotificationsChangedListener() {
-        sNotificationsChangedListener = null;
-    }
-
-    @Keep
-    public static void removeStatusBarNotificationsChangedListener() {
-        sStatusBarNotificationsChangedListener = null;
+    public static void removeNotificationsChangedListener(NotificationsChangedListener listener) {
+        if (listener != null) {
+            sNotificationsChangedListeners.remove(listener);
+        }
     }
 
     private boolean handleWorkerMessage(Message message) {
@@ -167,14 +161,9 @@ public class NotificationListener extends NotificationListenerService {
             case MSG_NOTIFICATION_FULL_REFRESH:
                 List<StatusBarNotification> activeNotifications = null;
                 if (sIsConnected) {
-                    try {
-                        activeNotifications = Arrays.stream(getActiveNotifications())
-                                .filter(this::notificationIsValidForUI)
-                                .collect(Collectors.toList());
-                    } catch (SecurityException ex) {
-                        Log.e(TAG, "SecurityException: failed to fetch notifications");
-                        activeNotifications = new ArrayList<>();
-                    }
+                    activeNotifications = Arrays.stream(getActiveNotificationsSafely(null))
+                            .filter(this::notificationIsValidForUI)
+                            .collect(Collectors.toList());
                 } else {
                     activeNotifications = new ArrayList<>();
                 }
@@ -188,7 +177,7 @@ public class NotificationListener extends NotificationListenerService {
             }
             case MSG_RANKING_UPDATE: {
                 String[] keys = ((RankingMap) message.obj).getOrderedKeys();
-                for (StatusBarNotification sbn : getActiveNotifications(keys)) {
+                for (StatusBarNotification sbn : getActiveNotificationsSafely(keys)) {
                     updateGroupKeyIfNecessary(sbn);
                 }
                 return true;
@@ -200,27 +189,41 @@ public class NotificationListener extends NotificationListenerService {
     private boolean handleUiMessage(Message message) {
         switch (message.what) {
             case MSG_NOTIFICATION_POSTED:
-                if (sNotificationsChangedListener != null) {
+                if (sNotificationsChangedListeners.size() > 0) {
                     Pair<PackageUserKey, NotificationKeyData> msg = (Pair) message.obj;
-                    sNotificationsChangedListener.onNotificationPosted(
-                            msg.first, msg.second);
+                    for (NotificationsChangedListener listener : sNotificationsChangedListeners) {
+                        listener.onNotificationPosted(msg.first, msg.second);
+                    }
                 }
                 break;
             case MSG_NOTIFICATION_REMOVED:
-                if (sNotificationsChangedListener != null) {
+                if (sNotificationsChangedListeners.size() > 0) {
                     Pair<PackageUserKey, NotificationKeyData> msg = (Pair) message.obj;
-                    sNotificationsChangedListener.onNotificationRemoved(
-                            msg.first, msg.second);
+                    for (NotificationsChangedListener listener : sNotificationsChangedListeners) {
+                        listener.onNotificationRemoved(msg.first, msg.second);
+                    }
                 }
                 break;
             case MSG_NOTIFICATION_FULL_REFRESH:
-                if (sNotificationsChangedListener != null) {
-                    sNotificationsChangedListener.onNotificationFullRefresh(
-                            (List<StatusBarNotification>) message.obj);
+                if (sNotificationsChangedListeners.size() > 0) {
+                    for (NotificationsChangedListener listener : sNotificationsChangedListeners) {
+                        listener.onNotificationFullRefresh(
+                                (List<StatusBarNotification>) message.obj);
+                    }
                 }
                 break;
         }
         return true;
+    }
+
+    private @NonNull StatusBarNotification[] getActiveNotificationsSafely(@Nullable String[] keys) {
+        StatusBarNotification[] result = null;
+        try {
+            result = getActiveNotifications(keys);
+        } catch (SecurityException e) {
+            Log.e(TAG, "SecurityException: failed to fetch notifications");
+        }
+        return result == null ? new StatusBarNotification[0] : result;
     }
 
     @Override
@@ -246,9 +249,6 @@ public class NotificationListener extends NotificationListenerService {
 
     private void onNotificationFullRefresh() {
         mWorkerHandler.obtainMessage(MSG_NOTIFICATION_FULL_REFRESH).sendToTarget();
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationFullRefresh();
-        }
     }
 
     @Override
@@ -264,18 +264,12 @@ public class NotificationListener extends NotificationListenerService {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_POSTED, sbn).sendToTarget();
         }
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationPosted(sbn);
-        }
     }
 
     @Override
     public void onNotificationRemoved(final StatusBarNotification sbn) {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_REMOVED, sbn).sendToTarget();
-        }
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationRemoved(sbn);
         }
     }
 
@@ -331,9 +325,8 @@ public class NotificationListener extends NotificationListenerService {
      */
     @WorkerThread
     public List<StatusBarNotification> getNotificationsForKeys(List<NotificationKeyData> keys) {
-        StatusBarNotification[] notifications = getActiveNotifications(
-                keys.stream().map(n -> n.notificationKey).toArray(String[]::new));
-        return notifications == null ? Collections.emptyList() : Arrays.asList(notifications);
+        return Arrays.asList(getActiveNotificationsSafely(
+                keys.stream().map(n -> n.notificationKey).toArray(String[]::new)));
     }
 
     /**
@@ -376,13 +369,5 @@ public class NotificationListener extends NotificationListenerService {
                                    NotificationKeyData notificationKey);
 
         void onNotificationFullRefresh(List<StatusBarNotification> activeNotifications);
-    }
-
-    public interface StatusBarNotificationsChangedListener {
-        void onNotificationPosted(StatusBarNotification sbn);
-
-        void onNotificationRemoved(StatusBarNotification sbn);
-
-        void onNotificationFullRefresh();
     }
 }

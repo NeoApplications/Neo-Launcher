@@ -39,6 +39,7 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <!-- for rotating surface by arbitrary degree -->
     <uses-permission android:name="android.permission.ROTATE_SURFACE_FLINGER" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
     Permissions required for read/write access to the workspace data. These permission name
@@ -47,26 +48,25 @@
     -->
     <permission
         android:name="${packageName}.permission.READ_SETTINGS"
-        android:description="@string/permdesc_read_settings"
+        android:protectionLevel="signatureOrSystem"
         android:label="@string/permlab_read_settings"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signatureOrSystem" />
+        android:description="@string/permdesc_read_settings" />
     <permission
         android:name="${packageName}.permission.WRITE_SETTINGS"
-        android:description="@string/permdesc_write_settings"
+        android:protectionLevel="signatureOrSystem"
         android:label="@string/permlab_write_settings"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signatureOrSystem" />
+        android:description="@string/permdesc_write_settings" />
 
     <uses-permission android:name="${packageName}.permission.READ_SETTINGS" />
     <uses-permission android:name="${packageName}.permission.WRITE_SETTINGS" />
 
     <application
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
+        android:fullBackupOnly="true"
         android:backupInForeground="true"
         android:fullBackupContent="@xml/backupscheme"
-        android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher_home"
         android:label="@string/derived_app_name"
         android:largeHeap="@bool/config_largeHeap"
         android:restoreAnyVersion="true"
@@ -92,8 +92,8 @@
 
         <service
             android:name="com.android.launcher3.notification.NotificationListener"
-            android:exported="true"
             android:label="@string/notification_dots_service_title"
+            android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -102,15 +102,14 @@
 
         <meta-data
             android:name="android.nfc.disable_beam_default"
-            android:exported="true"
             android:value="true" />
 
         <activity
             android:name="com.android.launcher3.dragndrop.AddItemActivity"
-            android:autoRemoveFromRecents="true"
+            android:theme="@style/AddItemActivityTheme"
             android:excludeFromRecents="true"
-            android:exported="true"
-            android:theme="@style/AddItemActivityTheme">
+            android:autoRemoveFromRecents="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT" />
                 <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET" />
@@ -126,30 +125,28 @@
             android:name="com.android.launcher3.LauncherProvider"
             android:authorities="${packageName}.settings"
             android:exported="true"
-            android:readPermission="${packageName}.permission.READ_SETTINGS"
-            android:writePermission="${packageName}.permission.WRITE_SETTINGS" />
+            android:writePermission="${packageName}.permission.WRITE_SETTINGS"
+            android:readPermission="${packageName}.permission.READ_SETTINGS" />
 
         <!--
         The content provider for exposing various launcher grid options.
+        TODO: Add proper permissions
         -->
         <provider
             android:name="com.android.launcher3.graphics.GridCustomizationsProvider"
             android:authorities="${packageName}.grid_control"
-            android:exported="true"
-            android:readPermission="${packageName}.permission.READ_SETTINGS"
-            android:writePermission="${packageName}.permission.WRITE_SETTINGS" />
+            android:exported="true" />
 
         <!--
         The settings activity. To extend point settings_fragment_name to appropriate fragment class
         -->
-
         <activity
             android:name="com.android.launcher3.settings.SettingsActivity"
-            android:autoRemoveFromRecents="true"
-            android:exported="true"
             android:label="@string/settings_button_text"
-            android:theme="@style/HomeSettings.Theme">
-            <intent-filter android:priority="-1">
+            android:theme="@style/HomeSettings.Theme"
+            android:exported="true"
+            android:autoRemoveFromRecents="true">
+            <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -158,20 +155,20 @@
         <provider
             android:name="com.android.launcher3.testing.TestInformationProvider"
             android:authorities="${packageName}.TestInfo"
-            android:enabled="false"
-            android:exported="true"
             android:readPermission="android.permission.WRITE_SECURE_SETTINGS"
-            android:writePermission="android.permission.WRITE_SECURE_SETTINGS" />
+            android:writePermission="android.permission.WRITE_SECURE_SETTINGS"
+            android:exported="true"
+            android:enabled="false" />
 
         <!--
         Launcher activity for secondary display
         -->
         <activity
             android:name="com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher"
-            android:enabled="true"
-            android:exported="true"
+            android:theme="@style/AppTheme"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Light">
+            android:exported="true"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -179,6 +176,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <!-- [b/197780098] Disable eager initialization of Jetpack libraries. -->
         <provider
             android:name="androidx.startup.InitializationProvider"

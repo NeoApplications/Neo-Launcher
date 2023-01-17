@@ -53,9 +53,7 @@ public final class WidgetSections {
     private static SparseArray<WidgetSection> sWidgetSections;
     private static Map<ComponentName, IntSet> sWidgetsToCategories;
 
-    /**
-     * Returns a list of widget sections that are shown in the widget picker.
-     */
+    /** Returns a list of widget sections that are shown in the widget picker. */
     public static synchronized SparseArray<WidgetSection> getWidgetSections(Context context) {
         if (sWidgetSections != null) {
             return sWidgetSections;
@@ -64,9 +62,7 @@ public final class WidgetSections {
         return sWidgetSections;
     }
 
-    /**
-     * Returns a map which maps app widget providers to app widget categories.
-     */
+    /** Returns a map which maps app widget providers to app widget categories. */
     public static synchronized Map<ComponentName, IntSet> getWidgetsToCategory(
             Context context) {
         if (sWidgetsToCategories != null) {
@@ -124,9 +120,7 @@ public final class WidgetSections {
         }
     }
 
-    /**
-     * A data class which contains a widget section's information.
-     */
+    /** A data class which contains a widget section's information. */
     public static final class WidgetSection {
         public final int mCategory;
         @StringRes

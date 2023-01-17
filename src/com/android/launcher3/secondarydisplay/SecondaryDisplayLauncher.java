@@ -17,7 +17,6 @@ package com.android.launcher3.secondarydisplay;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -30,28 +29,24 @@ import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
-import com.android.launcher3.allapps.AllAppsContainerView;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.model.BgDataModel;
+import com.android.launcher3.model.StringCache;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
-import com.android.launcher3.model.data.LauncherAppWidgetInfo;
-import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.popup.PopupDataProvider;
 import com.android.launcher3.util.ComponentKey;
-import com.android.launcher3.util.IntArray;
-import com.android.launcher3.util.ItemInfoMatcher;
+import com.android.launcher3.util.IntSet;
+import com.android.launcher3.util.OnboardingPrefs;
 import com.android.launcher3.util.Themes;
-import com.android.launcher3.util.ViewOnDrawExecutor;
 import com.android.launcher3.views.BaseDragLayer;
-import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * Launcher activity for secondary displays
@@ -62,17 +57,24 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     private LauncherModel mModel;
 
     private BaseDragLayer mDragLayer;
-    private AllAppsContainerView mAppsView;
+    private ActivityAllAppsContainerView<SecondaryDisplayLauncher> mAppsView;
     private View mAppsButton;
 
     private PopupDataProvider mPopupDataProvider;
 
     private boolean mAppDrawerShown = false;
 
+    private StringCache mStringCache;
+    private OnboardingPrefs<?> mOnboardingPrefs;
+    private boolean mBindingItems = false;
+    private SecondaryDisplayPredictions mSecondaryDisplayPredictions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mModel = LauncherAppState.getInstance(this).getModel();
+        mOnboardingPrefs = new OnboardingPrefs<>(this, Utilities.getPrefs(this));
+        mSecondaryDisplayPredictions = SecondaryDisplayPredictions.newInstance(this);
         if (getWindow().getDecorView().isAttachedToWindow()) {
             initUi();
         }
@@ -153,7 +155,8 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
         return mAppDrawerShown;
     }
 
-    public AllAppsContainerView getAppsView() {
+    @Override
+    public ActivityAllAppsContainerView<SecondaryDisplayLauncher> getAppsView() {
         return mAppsView;
     }
 
@@ -168,11 +171,6 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     }
 
     @Override
-    public ActivityOptions getActivityLaunchOptions(View v) {
-        return null;
-    }
-
-    @Override
     protected void reapplyUi() {
     }
 
@@ -182,78 +180,8 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     }
 
     @Override
-    public int getPageToBindSynchronously() {
-        return 0;
-    }
-
-    @Override
-    public void clearPendingBinds() {
-    }
-
-    @Override
-    public void startBinding() {
-    }
-
-    @Override
-    public void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons) {
-    }
-
-    @Override
-    public void bindScreens(IntArray orderedScreenIds) {
-    }
-
-    @Override
-    public void finishFirstPageBind(ViewOnDrawExecutor executor) {
-        if (executor != null) {
-            executor.onLoadAnimationCompleted();
-        }
-    }
-
-    @Override
-    public void finishBindingItems(int pageBoundFirst) {
-    }
-
-    @Override
-    public void preAddApps() {
-    }
-
-    @Override
-    public void bindAppsAdded(IntArray newScreens, ArrayList<ItemInfo> addNotAnimated,
-                              ArrayList<ItemInfo> addAnimated) {
-    }
-
-    @Override
     public void bindIncrementalDownloadProgressUpdated(AppInfo app) {
         mAppsView.getAppsStore().updateProgressBar(app);
-    }
-
-    @Override
-    public void bindWorkspaceItemsChanged(List<WorkspaceItemInfo> updated) {
-    }
-
-    @Override
-    public void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets) {
-    }
-
-    @Override
-    public void bindRestoreItemsChange(HashSet<ItemInfo> updates) {
-    }
-
-    @Override
-    public void bindWorkspaceComponentsRemoved(ItemInfoMatcher matcher) {
-    }
-
-    @Override
-    public void bindAllWidgets(List<WidgetsListBaseEntry> widgets) {
-    }
-
-    @Override
-    public void onPageBoundSynchronously(int page) {
-    }
-
-    @Override
-    public void executeOnNextDraw(ViewOnDrawExecutor executor) {
-        executor.attachTo(getDragLayer(), false, null);
     }
 
     /**
@@ -286,6 +214,7 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
             mAppDrawerShown = true;
             mAppsView.setVisibility(View.VISIBLE);
             mAppsButton.setVisibility(View.INVISIBLE);
+            mSecondaryDisplayPredictions.updateAppDivider();
         } else {
             mAppDrawerShown = false;
             animator.addListener(new AnimatorListenerAdapter() {
@@ -301,6 +230,26 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     }
 
     @Override
+    public OnboardingPrefs<?> getOnboardingPrefs() {
+        return mOnboardingPrefs;
+    }
+
+    @Override
+    public void startBinding() {
+        mBindingItems = true;
+    }
+
+    @Override
+    public boolean isBindingItems() {
+        return mBindingItems;
+    }
+
+    @Override
+    public void finishBindingItems(IntSet pagesBoundFirst) {
+        mBindingItems = false;
+    }
+
+    @Override
     public void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) {
         mPopupDataProvider.setDeepShortcutMap(deepShortcutMap);
     }
@@ -309,6 +258,23 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     public void bindAllApplications(AppInfo[] apps, int flags) {
         mAppsView.getAppsStore().setApps(apps, flags);
         PopupContainerWithArrow.dismissInvalidPopup(this);
+    }
+
+    @Override
+    public void bindExtraContainerItems(BgDataModel.FixedContainerItems item) {
+        if (item.containerId == LauncherSettings.Favorites.CONTAINER_PREDICTION) {
+            mSecondaryDisplayPredictions.setPredictedApps(item);
+        }
+    }
+
+    @Override
+    public StringCache getStringCache() {
+        return mStringCache;
+    }
+
+    @Override
+    public void bindStringCache(StringCache cache) {
+        mStringCache = cache;
     }
 
     public PopupDataProvider getPopupDataProvider() {

@@ -18,8 +18,6 @@ package com.android.launcher3.folder;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_FOLDER_CONVERTED_TO_ICON;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -38,10 +36,7 @@ import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
-import com.android.launcher3.views.BaseDragLayer.LayoutParams;
-import com.android.launcher3.widget.LocalColorExtractor;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -51,8 +46,6 @@ import java.util.function.Consumer;
 public class LauncherDelegate {
 
     private final Launcher mLauncher;
-    private final Rect mTempRect = new Rect();
-    private final RectF mTempRectF = new RectF();
 
     private LauncherDelegate(Launcher launcher) {
         mLauncher = launcher;
@@ -84,57 +77,52 @@ public class LauncherDelegate {
         return mLauncher;
     }
 
-    void addRectForColorExtraction(BaseDragLayer.LayoutParams lp, LocalColorExtractor target) {
-        mTempRect.set(lp.x, lp.y, lp.x + lp.width, lp.y + lp.height);
-        target.getExtractedRectForViewRect(mLauncher,
-                mLauncher.getWorkspace().getCurrentPage(), mTempRect, mTempRectF);
-        if (!mTempRectF.isEmpty()) {
-            target.addLocation(Arrays.asList(mTempRectF));
-        }
-    }
-
-    void replaceFolderWithFinalItem(Folder folder) {
+    boolean replaceFolderWithFinalItem(Folder folder) {
         // Add the last remaining child to the workspace in place of the folder
-        Runnable onCompleteRunnable = () -> {
-            int itemCount = folder.getItemCount();
-            FolderInfo info = folder.mInfo;
-            if (itemCount <= 1) {
-                View newIcon = null;
-                WorkspaceItemInfo finalItem = null;
+        Runnable onCompleteRunnable = new Runnable() {
+            @Override
+            public void run() {
+                int itemCount = folder.getItemCount();
+                FolderInfo info = folder.mInfo;
+                if (itemCount <= 1) {
+                    View newIcon = null;
+                    WorkspaceItemInfo finalItem = null;
 
-                if (itemCount == 1) {
-                    // Move the item from the folder to the workspace, in the position of the
-                    // folder
-                    CellLayout cellLayout = mLauncher.getCellLayout(info.container,
-                            info.screenId);
-                    finalItem = info.contents.remove(0);
-                    newIcon = mLauncher.createShortcut(cellLayout, finalItem);
-                    mLauncher.getModelWriter().addOrMoveItemInDatabase(finalItem,
-                            info.container, info.screenId, info.cellX, info.cellY);
-                }
+                    if (itemCount == 1) {
+                        // Move the item from the folder to the workspace, in the position of the
+                        // folder
+                        CellLayout cellLayout = mLauncher.getCellLayout(info.container,
+                                info.screenId);
+                        finalItem = info.contents.remove(0);
+                        newIcon = mLauncher.createShortcut(cellLayout, finalItem);
+                        mLauncher.getModelWriter().addOrMoveItemInDatabase(finalItem,
+                                info.container, info.screenId, info.cellX, info.cellY);
+                    }
 
-                // Remove the folder
-                mLauncher.removeItem(folder.mFolderIcon, info, true /* deleteFromDb */);
-                if (folder.mFolderIcon instanceof DropTarget) {
-                    folder.mDragController.removeDropTarget((DropTarget) folder.mFolderIcon);
-                }
+                    // Remove the folder
+                    mLauncher.removeItem(folder.mFolderIcon, info, true /* deleteFromDb */,
+                            "folder removed because there's only 1 item in it");
+                    if (folder.mFolderIcon instanceof DropTarget) {
+                        folder.mDragController.removeDropTarget((DropTarget) folder.mFolderIcon);
+                    }
 
-                if (newIcon != null) {
-                    // We add the child after removing the folder to prevent both from existing
-                    // at the same time in the CellLayout.  We need to add the new item with
-                    // addInScreenFromBind() to ensure that hotseat items are placed correctly.
-                    mLauncher.getWorkspace().addInScreenFromBind(newIcon, info);
+                    if (newIcon != null) {
+                        // We add the child after removing the folder to prevent both from existing
+                        // at the same time in the CellLayout.  We need to add the new item with
+                        // addInScreenFromBind() to ensure that hotseat items are placed correctly.
+                        mLauncher.getWorkspace().addInScreenFromBind(newIcon, info);
 
-                    // Focus the newly created child
-                    newIcon.requestFocus();
-                }
-                if (finalItem != null) {
-                    StatsLogger logger = mLauncher.getStatsLogManager().logger()
-                            .withItemInfo(finalItem);
-                    ((Optional<InstanceId>) folder.mDragController.getLogInstanceId())
-                            .map(logger::withInstanceId)
-                            .orElse(logger)
-                            .log(LAUNCHER_FOLDER_CONVERTED_TO_ICON);
+                        // Focus the newly created child
+                        newIcon.requestFocus();
+                    }
+                    if (finalItem != null) {
+                        StatsLogger logger = mLauncher.getStatsLogManager().logger()
+                                .withItemInfo(finalItem);
+                        ((Optional<InstanceId>) folder.mDragController.getLogInstanceId())
+                                .map(logger::withInstanceId)
+                                .orElse(logger)
+                                .log(LAUNCHER_FOLDER_CONVERTED_TO_ICON);
+                    }
                 }
             }
         };
@@ -144,6 +132,7 @@ public class LauncherDelegate {
         } else {
             onCompleteRunnable.run();
         }
+        return true;
     }
 
 
@@ -189,7 +178,7 @@ public class LauncherDelegate {
         ModelWriter getModelWriter() {
             if (mWriter == null) {
                 mWriter = LauncherAppState.getInstance((Context) mContext).getModel()
-                        .getWriter(false, false);
+                        .getWriter(false, false, null);
             }
             return mWriter;
         }
@@ -204,17 +193,14 @@ public class LauncherDelegate {
         }
 
         @Override
-        void replaceFolderWithFinalItem(Folder folder) {
+        boolean replaceFolderWithFinalItem(Folder folder) {
+            return false;
         }
 
         @Override
         boolean interceptOutsideTouch(MotionEvent ev, BaseDragLayer dl, Folder folder) {
             folder.close(true);
             return true;
-        }
-
-        @Override
-        void addRectForColorExtraction(LayoutParams lp, LocalColorExtractor target) {
         }
     }
 

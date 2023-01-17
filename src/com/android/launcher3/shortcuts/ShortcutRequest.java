@@ -16,7 +16,7 @@
 
 package com.android.launcher3.shortcuts;
 
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
+import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_SHORTCUTS;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -46,7 +46,7 @@ public class ShortcutRequest {
             | ShortcutQuery.FLAG_MATCH_MANIFEST;
     public static final int PINNED = ShortcutQuery.FLAG_MATCH_PINNED;
 
-    private final ShortcutQuery mQuery = GO_DISABLE_WIDGETS ? null : new ShortcutQuery();
+    private final ShortcutQuery mQuery = GO_DISABLE_SHORTCUTS ? null : new ShortcutQuery();
 
     private final Context mContext;
     private final UserHandle mUserHandle;
@@ -77,7 +77,7 @@ public class ShortcutRequest {
      * @return A list of ShortcutInfo's associated with the given package.
      */
     public ShortcutRequest forPackage(String packageName, @Nullable List<String> shortcutIds) {
-        if (!GO_DISABLE_WIDGETS && packageName != null) {
+        if (!GO_DISABLE_SHORTCUTS && packageName != null) {
             mQuery.setPackage(packageName);
             mQuery.setShortcutIds(shortcutIds);
         }
@@ -85,7 +85,7 @@ public class ShortcutRequest {
     }
 
     public ShortcutRequest withContainer(@Nullable ComponentName activity) {
-        if (!GO_DISABLE_WIDGETS) {
+        if (!GO_DISABLE_SHORTCUTS) {
             if (activity == null) {
                 mFailed = true;
             } else {
@@ -96,27 +96,23 @@ public class ShortcutRequest {
     }
 
     public QueryResult query(int flags) {
-        if (GO_DISABLE_WIDGETS || mFailed) {
+        if (GO_DISABLE_SHORTCUTS || mFailed) {
             return QueryResult.DEFAULT;
         }
         mQuery.setQueryFlags(flags);
 
-        if (mContext.getSystemService(LauncherApps.class).hasShortcutHostPermission()) try {
-            return new QueryResult(mContext
-                    .getSystemService(LauncherApps.class)
-                    .getShortcuts(mQuery, mUserHandle)
-            );
+        try {
+            return new QueryResult(mContext.getSystemService(LauncherApps.class)
+                    .getShortcuts(mQuery, mUserHandle));
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Failed to query for shortcuts", e);
             return QueryResult.DEFAULT;
         }
-        else
-            return QueryResult.DEFAULT;
     }
 
     public static class QueryResult extends ArrayList<ShortcutInfo> {
 
-        static final QueryResult DEFAULT = new QueryResult(GO_DISABLE_WIDGETS);
+        static final QueryResult DEFAULT = new QueryResult(GO_DISABLE_SHORTCUTS);
 
         private final boolean mWasSuccess;
 

@@ -37,6 +37,7 @@ import androidx.core.content.ContextCompat;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.dragndrop.DragLayer;
@@ -56,6 +57,7 @@ public class ArrowTipView extends AbstractFloatingView {
     protected final BaseDraggingActivity mActivity;
     private final Handler mHandler = new Handler();
     private final int mArrowWidth;
+    private final int mArrowMinOffset;
     private boolean mIsPointingUp;
     private Runnable mOnClosed;
     private View mArrowView;
@@ -69,6 +71,8 @@ public class ArrowTipView extends AbstractFloatingView {
         mActivity = BaseDraggingActivity.fromContext(context);
         mIsPointingUp = isPointingUp;
         mArrowWidth = context.getResources().getDimensionPixelSize(R.dimen.arrow_toast_arrow_width);
+        mArrowMinOffset = context.getResources().getDimensionPixelSize(
+                R.dimen.dynamic_grid_cell_border_spacing);
         init(context);
     }
 
@@ -133,31 +137,53 @@ public class ArrowTipView extends AbstractFloatingView {
      * @return The tooltip.
      */
     public ArrowTipView show(String text, int gravity, int arrowMarginStart, int top) {
+        return show(text, gravity, arrowMarginStart, top, true);
+    }
+
+    /**
+     * Show the ArrowTipView (tooltip) center, start, or end aligned.
+     *
+     * @param text             The text to be shown in the tooltip.
+     * @param gravity          The gravity aligns the tooltip center, start, or end.
+     * @param arrowMarginStart The margin from start to place arrow (ignored if center)
+     * @param top              The Y coordinate of the bottom of tooltip.
+     * @param shouldAutoClose  If Tooltip should be auto close.
+     * @return The tooltip.
+     */
+    public ArrowTipView show(
+            String text, int gravity, int arrowMarginStart, int top, boolean shouldAutoClose) {
         ((TextView) findViewById(R.id.text)).setText(text);
         ViewGroup parent = mActivity.getDragLayer();
         parent.addView(this);
 
+        DeviceProfile grid = mActivity.getDeviceProfile();
+
         DragLayer.LayoutParams params = (DragLayer.LayoutParams) getLayoutParams();
         params.gravity = gravity;
+        params.leftMargin = mArrowMinOffset + grid.getInsets().left;
+        params.rightMargin = mArrowMinOffset + grid.getInsets().right;
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mArrowView.getLayoutParams();
+
         lp.gravity = gravity;
 
         if (parent.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
             arrowMarginStart = parent.getMeasuredWidth() - arrowMarginStart;
         }
         if (gravity == Gravity.END) {
-            lp.setMarginEnd(parent.getMeasuredWidth() - arrowMarginStart - mArrowWidth);
+            lp.setMarginEnd(Math.max(mArrowMinOffset,
+                    parent.getMeasuredWidth() - params.rightMargin - arrowMarginStart
+                            - mArrowWidth / 2));
         } else if (gravity == Gravity.START) {
-            lp.setMarginStart(arrowMarginStart - mArrowWidth / 2);
+            lp.setMarginStart(Math.max(mArrowMinOffset,
+                    arrowMarginStart - params.leftMargin - mArrowWidth / 2));
         }
         requestLayout();
-
-        params.leftMargin = mActivity.getDeviceProfile().workspacePadding.left;
-        params.rightMargin = mActivity.getDeviceProfile().workspacePadding.right;
         post(() -> setY(top - (mIsPointingUp ? 0 : getHeight())));
 
         mIsOpen = true;
-        mHandler.postDelayed(() -> handleClose(true), AUTO_CLOSE_TIMEOUT_MILLIS);
+        if (shouldAutoClose) {
+            mHandler.postDelayed(() -> handleClose(true), AUTO_CLOSE_TIMEOUT_MILLIS);
+        }
         setAlpha(0);
         animate()
                 .alpha(1f)
@@ -185,7 +211,30 @@ public class ArrowTipView extends AbstractFloatingView {
                 text,
                 arrowXCoord,
                 /* yCoordDownPointingTip= */ yCoord,
-                /* yCoordUpPointingTip= */ yCoord);
+                /* yCoordUpPointingTip= */ yCoord,
+                /* shouldAutoClose= */ true);
+    }
+
+    /**
+     * Show the ArrowTipView (tooltip) custom aligned. The tooltip is vertically flipped if it
+     * cannot fit on screen in the requested orientation.
+     *
+     * @param text            The text to be shown in the tooltip.
+     * @param arrowXCoord     The X coordinate for the arrow on the tooltip. The arrow is usually in the
+     *                        center of tooltip unless the tooltip goes beyond screen margin.
+     * @param yCoord          The Y coordinate of the pointed tip end of the tooltip.
+     * @param shouldAutoClose If Tooltip should be auto close.
+     * @return The tool tip view. {@code null} if the tip can not be shown.
+     */
+    @Nullable
+    public ArrowTipView showAtLocation(
+            String text, @Px int arrowXCoord, @Px int yCoord, boolean shouldAutoClose) {
+        return showAtLocation(
+                text,
+                arrowXCoord,
+                /* yCoordDownPointingTip= */ yCoord,
+                /* yCoordUpPointingTip= */ yCoord,
+                /* shouldAutoClose= */ shouldAutoClose);
     }
 
     /**
@@ -206,7 +255,8 @@ public class ArrowTipView extends AbstractFloatingView {
                 text,
                 arrowXCoord,
                 /* yCoordDownPointingTip= */ rect.top - margin,
-                /* yCoordUpPointingTip= */ rect.bottom + margin);
+                /* yCoordUpPointingTip= */ rect.bottom + margin,
+                /* shouldAutoClose= */ true);
     }
 
     /**
@@ -220,11 +270,12 @@ public class ArrowTipView extends AbstractFloatingView {
      *                              tooltip is placed pointing downwards.
      * @param yCoordUpPointingTip   The Y coordinate of the pointed tip end of the tooltip when the
      *                              tooltip is placed pointing upwards.
+     * @param shouldAutoClose       If Tooltip should be auto close.
      * @return The tool tip view. {@code null} if the tip can not be shown.
      */
     @Nullable
     private ArrowTipView showAtLocation(String text, @Px int arrowXCoord,
-                                        @Px int yCoordDownPointingTip, @Px int yCoordUpPointingTip) {
+                                        @Px int yCoordDownPointingTip, @Px int yCoordUpPointingTip, boolean shouldAutoClose) {
         ViewGroup parent = mActivity.getDragLayer();
         @Px int parentViewWidth = parent.getWidth();
         @Px int parentViewHeight = parent.getHeight();
@@ -282,7 +333,9 @@ public class ArrowTipView extends AbstractFloatingView {
         });
 
         mIsOpen = true;
-        mHandler.postDelayed(() -> handleClose(true), AUTO_CLOSE_TIMEOUT_MILLIS);
+        if (shouldAutoClose) {
+            mHandler.postDelayed(() -> handleClose(true), AUTO_CLOSE_TIMEOUT_MILLIS);
+        }
         setAlpha(0);
         animate()
                 .alpha(1f)

@@ -29,11 +29,12 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.IconCache;
@@ -51,7 +52,6 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
-import com.saggitt.omega.preferences.OmegaPreferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +59,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Handles updates due to changes in package manager (app installed/updated/removed)
@@ -79,17 +82,23 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
     public static final int OP_USER_AVAILABILITY_CHANGE = 7; // user available/unavailable
 
     private final int mOp;
+
+    @NonNull
     private final UserHandle mUser;
+
+    @NonNull
     private final String[] mPackages;
 
-    public PackageUpdatedTask(int op, UserHandle user, String... packages) {
+    public PackageUpdatedTask(final int op, @NonNull final UserHandle user,
+                              @NonNull final String... packages) {
         mOp = op;
         mUser = user;
         mPackages = packages;
     }
 
     @Override
-    public void execute(LauncherAppState app, BgDataModel dataModel, AllAppsList appsList) {
+    public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
+                        @NonNull final AllAppsList appsList) {
         final Context context = app.getContext();
         final IconCache iconCache = app.getIconCache();
 
@@ -97,7 +106,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
         final int N = packages.length;
         final FlagOp flagOp;
         final HashSet<String> packageSet = new HashSet<>(Arrays.asList(packages));
-        final ItemInfoMatcher matcher = mOp == OP_USER_AVAILABILITY_CHANGE
+        final Predicate<ItemInfo> matcher = mOp == OP_USER_AVAILABILITY_CHANGE
                 ? ItemInfoMatcher.ofUser(mUser) // We want to update all packages for this user
                 : ItemInfoMatcher.ofPackages(packageSet, mUser);
         final HashSet<ComponentName> removedComponents = new HashSet<>();
@@ -114,7 +123,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                     activitiesLists.put(
                             packages[i], appsList.addPackage(context, packages[i], mUser));
                 }
-                flagOp = FlagOp.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
+                flagOp = FlagOp.NO_OP.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
                 break;
             }
             case OP_UPDATE:
@@ -125,12 +134,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                         iconCache.updateIconsForPkg(packages[i], mUser);
                         activitiesLists.put(
                                 packages[i], appsList.updatePackage(context, packages[i], mUser));
-                        app.getWidgetCache().removePackage(packages[i], mUser);
-
-                        //Reload SystemIconPack map
-                        if (Utilities.getOmegaPrefs(context).getThemeIconPackGlobal().onGetValue().equals("")) {
-                            Utilities.getOmegaPrefs(context).reloadApps();
-                        }
 
                         // The update may have changed which shortcuts/widgets are available.
                         // Refresh the widgets for the package if we have an activity running.
@@ -142,16 +145,12 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                     }
                 }
                 // Since package was just updated, the target must be available now.
-                flagOp = FlagOp.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
+                flagOp = FlagOp.NO_OP.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
                 break;
             case OP_REMOVE: {
                 for (int i = 0; i < N; i++) {
                     FileLog.d(TAG, "Removing app icon" + packages[i]);
                     iconCache.removeIconsForPkg(packages[i], mUser);
-                    OmegaPreferences prefs = Utilities.getOmegaPrefs(context);
-                    if (packages[i].equals(prefs.getThemeIconPackGlobal().onGetValue())) {
-                        prefs.getThemeIconPackGlobal().onSetValue("");
-                    }
                 }
                 // Fall through
             }
@@ -159,15 +158,13 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 for (int i = 0; i < N; i++) {
                     if (DEBUG) Log.d(TAG, "mAllAppsList.removePackage " + packages[i]);
                     appsList.removePackage(packages[i], mUser);
-                    app.getWidgetCache().removePackage(packages[i], mUser);
                 }
-                flagOp = FlagOp.addFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
+                flagOp = FlagOp.NO_OP.addFlag(WorkspaceItemInfo.FLAG_DISABLED_NOT_AVAILABLE);
                 break;
             case OP_SUSPEND:
             case OP_UNSUSPEND:
-                flagOp = mOp == OP_SUSPEND ?
-                        FlagOp.addFlag(WorkspaceItemInfo.FLAG_DISABLED_SUSPENDED) :
-                        FlagOp.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_SUSPENDED);
+                flagOp = FlagOp.NO_OP.setFlag(
+                        WorkspaceItemInfo.FLAG_DISABLED_SUSPENDED, mOp == OP_SUSPEND);
                 if (DEBUG) Log.d(TAG, "mAllAppsList.(un)suspend " + N);
                 appsList.updateDisabledFlags(matcher, flagOp);
                 break;
@@ -175,9 +172,8 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 UserManagerState ums = new UserManagerState();
                 ums.init(UserCache.INSTANCE.get(context),
                         context.getSystemService(UserManager.class));
-                flagOp = ums.isUserQuiet(mUser)
-                        ? FlagOp.addFlag(WorkspaceItemInfo.FLAG_DISABLED_QUIET_USER)
-                        : FlagOp.removeFlag(WorkspaceItemInfo.FLAG_DISABLED_QUIET_USER);
+                flagOp = FlagOp.NO_OP.setFlag(
+                        WorkspaceItemInfo.FLAG_DISABLED_QUIET_USER, ums.isUserQuiet(mUser));
                 appsList.updateDisabledFlags(matcher, flagOp);
 
                 // We are not synchronizing here, as int operations are atomic
@@ -221,7 +217,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                     }
 
                     ComponentName cn = si.getTargetComponent();
-                    if (cn != null && matcher.matches(si, cn)) {
+                    if (cn != null && matcher.test(si)) {
                         String packageName = cn.getPackageName();
 
                         if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)) {
@@ -325,7 +321,9 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
 
             bindUpdatedWorkspaceItems(updatedWorkspaceItems);
             if (!removedShortcuts.isEmpty()) {
-                deleteAndBindComponentsRemoved(ItemInfoMatcher.ofItemIds(removedShortcuts));
+                deleteAndBindComponentsRemoved(
+                        ItemInfoMatcher.ofItemIds(removedShortcuts),
+                        "removed because the target component is invalid");
             }
 
             if (!widgets.isEmpty()) {
@@ -351,10 +349,16 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
         }
 
         if (!removedPackages.isEmpty() || !removedComponents.isEmpty()) {
-            ItemInfoMatcher removeMatch = ItemInfoMatcher.ofPackages(removedPackages, mUser)
+            Predicate<ItemInfo> removeMatch = ItemInfoMatcher.ofPackages(removedPackages, mUser)
                     .or(ItemInfoMatcher.ofComponents(removedComponents, mUser))
                     .and(ItemInfoMatcher.ofItemIds(forceKeepShortcuts).negate());
-            deleteAndBindComponentsRemoved(removeMatch);
+            deleteAndBindComponentsRemoved(removeMatch,
+                    "removed because the corresponding package or component is removed. "
+                            + "mOp=" + mOp + " removedPackages=" + removedPackages.stream().collect(
+                            Collectors.joining(",", "[", "]"))
+                            + " removedComponents=" + removedComponents.stream()
+                            .filter(Objects::nonNull).map(ComponentName::toShortString)
+                            .collect(Collectors.joining(",", "[", "]")));
 
             // Remove any queued items from the install queue
             ItemInstallQueue.INSTANCE.get(context)
