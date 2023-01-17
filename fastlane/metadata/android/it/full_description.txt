@@ -1,4 +1,5 @@
-Neo Launcher è un fork del launcher di AOSP per utenti esperti. È altamente configurabile e offre molte funzionalità. Alcune sono:
+Neo Launcher è un fork del launcher di AOSP per utenti esperti.
+È altamente configurabile e offre molte funzionalità. Alcune sono:
 
 - Il _trattino_basso_.
 - Supporto per temi ricchi.
