@@ -1,9 +1,9 @@
 name: Omega CI
 on:
   push:
-    branches: [ A-12 ]
+    branches: [ A-13 ]
   pull_request:
-    branches: [ A-12 ]
+    branches: [ A-13 ]
 
 jobs:
 #  send-start-notification:
