@@ -153,7 +153,7 @@
     <string name="smartspace_widget_provider_not_found">获取 Google 应用。</string>
     <string name="name_provider_alarm_events">即将到来的警报</string>
     <string name="resuable_text_alarm">警报</string>
-    <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
+    <string name="smartspace_provider_bridge">无根像素桥</string>
     <string name="title_smartspace_feed_theme">信息源主题</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_now">现在</string>
@@ -472,4 +472,6 @@
     <string name="tap_to_enable">点击项目以启用</string>
     <string name="folder_opacity">文件夹不透明度</string>
     <string name="reset_custom_icon">移除定制图标</string>
+    <string name="show_top_shadow">显示顶部阴影</string>
+    <string name="title_themed_icons">主题图标</string>
 </resources>
