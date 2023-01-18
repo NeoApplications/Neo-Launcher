@@ -36,12 +36,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Compile with Gradle
-        run: ./gradlew assembleAospWithQuickstepOmega
+        run: ./gradlew assembleAospOmega
 
       - name: Save name of our Artifact
         id: set-result-artifact
         run: |
-          ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospWithQuickstepOmega/debug/*.apk | head -n 1)
+          ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
           ARTIFACT_NAME_APK=$(basename $ARTIFACT_PATHNAME_APK)
           echo "ARTIFACT_NAME_APK is " ${ARTIFACT_NAME_APK}
           echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $GITHUB_ENV
