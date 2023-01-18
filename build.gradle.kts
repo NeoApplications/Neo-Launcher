@@ -1,29 +1,28 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
+import java.util.*
 
-val vCompose = "1.3.0"
-val vComposeCompiler = "1.3.2"
+buildscript {
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.4.0")
+    }
+}
+val vCompose = "1.3.1"
+val vComposeCompiler = "1.4.0-alpha02"
 val vAccompanist = "0.27.0"
 val vRoom = "2.5.0-beta01"
 
 plugins {
-    id("com.android.application").version("7.3.1")
-    id("org.jetbrains.kotlin.android").version("1.7.20")
-    kotlin("kapt").version("1.7.20")
-    id("org.jetbrains.kotlin.plugin.parcelize").version("1.7.20")
-    id("org.jetbrains.kotlin.plugin.serialization").version("1.7.20")
-    id("com.google.devtools.ksp").version("1.7.20-1.0.8")
-    id("com.google.protobuf").version("0.8.19")
+    id("com.android.application").version("7.4.0")
+    kotlin("android").version("1.7.21")
+    kotlin("plugin.parcelize").version("1.7.21")
+    kotlin("plugin.serialization").version("1.7.21")
+    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+    id("com.google.protobuf").version("0.9.1")
 }
 
 allprojects {
-    tasks.withType<KotlinCompile> {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
         }
@@ -107,7 +106,6 @@ android {
     buildFeatures {
         compose = true
         dataBinding = true
-        viewBinding = true
     }
 
     composeOptions {
@@ -174,6 +172,22 @@ android {
             java.srcDirs(listOf("Omega/src"))
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
+
+        protobuf {
+            // Configure the protoc executable
+            protoc {
+                artifact = "com.google.protobuf:protoc:3.21.12"
+            }
+            generateProtoTasks {
+                all().forEach { task ->
+                    task.builtins {
+                        create("java") {
+                            option("lite")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     lint {
@@ -185,6 +199,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
+    implementation(kotlin("stdlib", "1.7.21"))
 
     //UI
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -197,27 +212,28 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0-rc01")
 
     //Libs
-    implementation("com.google.protobuf:protobuf-javalite:3.21.7")
+    implementation("com.google.protobuf:protobuf-javalite:3.21.12")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
-    implementation(kotlin("stdlib", "1.7.20"))
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
-    implementation("androidx.compose.foundation:foundation:$vCompose")
-    implementation("androidx.compose.material3:material3:1.0.0")
     implementation("androidx.compose.runtime:runtime:$vCompose")
-    implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
+    implementation("androidx.compose.ui:ui:$vCompose")
+    implementation("androidx.compose.ui:ui-tooling:$vCompose")
+    implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
+    implementation("androidx.compose.foundation:foundation:$vCompose")
+    implementation("androidx.compose.material3:material3:1.0.1")
 
     //Accompanist
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
     implementation("androidx.room:room-ktx:$vRoom")
-    kapt("androidx.room:room-compiler:$vRoom")
+    ksp("androidx.room:room-compiler:$vRoom")
 
+    // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
 
@@ -231,8 +247,8 @@ dependencies {
     implementation("junit:junit:4.13.2")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
 
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
 
     androidTestImplementation("org.mockito:mockito-core:4.6.1")
@@ -240,24 +256,8 @@ dependencies {
     androidTestImplementation("com.google.dexmaker:dexmaker-mockito:1.2")
     androidTestImplementation("androidx.annotation:annotation:1.5.0")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("com.android.support.test:rules:1.0.0")
-    androidTestImplementation("com.android.support.test.uiautomator:uiautomator-v18:2.1.2")
-}
-
-protobuf {
-    // Configure the protoc executable
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.21.1"
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                create("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
+    androidTestImplementation("com.android.support.test:rules:1.0.2")
+    androidTestImplementation("com.android.support.test.uiautomator:uiautomator-v18:2.1.3")
 }
 
 // using a task as a preBuild dependency instead of a function that takes some time insures that it runs
