@@ -194,7 +194,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
 
-    implementation("com.google.android.material:material:1.8.0-alpha01")
+    implementation("com.google.android.material:material:1.8.0-rc01")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:3.21.7")
@@ -204,8 +204,12 @@ dependencies {
     implementation(kotlin("stdlib", "1.7.20"))
 
     //Compose
+    implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
+    implementation("androidx.compose.foundation:foundation:$vCompose")
+    implementation("androidx.compose.material3:material3:1.0.0")
     implementation("androidx.compose.runtime:runtime:$vCompose")
+    implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
 
     //Accompanist
 
