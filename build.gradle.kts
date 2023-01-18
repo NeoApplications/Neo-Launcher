@@ -15,6 +15,7 @@ val vRoom = "2.5.0-beta01"
 plugins {
     id("com.android.application").version("7.3.1")
     id("org.jetbrains.kotlin.android").version("1.7.20")
+    kotlin("kapt").version("1.7.20")
     id("org.jetbrains.kotlin.plugin.parcelize").version("1.7.20")
     id("org.jetbrains.kotlin.plugin.serialization").version("1.7.20")
     id("com.google.devtools.ksp").version("1.7.20-1.0.8")
@@ -209,6 +210,9 @@ dependencies {
     //Accompanist
 
     //Room
+    implementation("androidx.room:room-runtime:$vRoom")
+    implementation("androidx.room:room-ktx:$vRoom")
+    kapt("androidx.room:room-compiler:$vRoom")
 
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
