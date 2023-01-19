@@ -19,12 +19,15 @@ package com.saggitt.omega
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import org.chickenhook.restrictionbypass.Unseal
 
 class OmegaApp : Application() {
     private val TAG = "OmegaApp"
+    var accessibilityService: OmegaAccessibilityService? = null
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -38,4 +41,29 @@ class OmegaApp : Application() {
             }
         }
     }
+
+    fun performGlobalAction(action: Int): Boolean {
+        return if (accessibilityService != null) {
+            accessibilityService!!.performGlobalAction(action)
+        } else {
+            startActivity(
+                Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            false
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        var instance: OmegaApp? = null
+            private set
+
+        fun minSDK(sdk: Int): Boolean {
+            return Build.VERSION.SDK_INT >= sdk
+        }
+    }
 }
+
+
+val Context.omegaApp get() = applicationContext as OmegaApp
