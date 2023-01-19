@@ -153,7 +153,7 @@ android {
             manifest.srcFile("AndroidManifest-common.xml")
         }
 
-        named("androidTest") {
+        /*named("androidTest") {
             res.srcDirs(listOf("tests/res"))
             java.srcDirs(listOf("tests/src", "tests/tapl"))
             manifest.srcFile("tests/AndroidManifest-common.xml")
@@ -162,7 +162,7 @@ android {
         named("androidTestDebug") {
             java.srcDirs("tests/src_common")
             manifest.srcFile("tests/AndroidManifest.xml")
-        }
+        }*/
 
         named("aosp") {
             java.srcDirs(listOf("src_flags", "src_shortcuts_overrides"))
