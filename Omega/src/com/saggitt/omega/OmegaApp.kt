@@ -18,7 +18,24 @@
 package com.saggitt.omega
 
 import android.app.Application
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import org.chickenhook.restrictionbypass.Unseal
 
 class OmegaApp : Application() {
     private val TAG = "OmegaApp"
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                Unseal.unseal()
+                Log.i(TAG, "Unseal success!")
+            } catch (e: Exception) {
+                Log.e(TAG, "Unseal fail!")
+                e.printStackTrace()
+            }
+        }
+    }
 }
