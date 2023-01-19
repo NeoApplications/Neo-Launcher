@@ -16,7 +16,6 @@
 package com.android.launcher3.model
 
 import android.content.Context
-import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Point
 import android.os.Process
@@ -175,8 +174,11 @@ class GridSizeMigrationTaskV2Test {
         val cellYIndex = c.getColumnIndex(CELLY)
         val locMap = HashMap<String, Point>()
         while (c.moveToNext()) {
-            locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
-                Point(c.getInt(cellXIndex), c.getInt(cellYIndex))
+            c.getString(intentIndex)?.let {
+                locMap[it] = Point(c.getInt(cellXIndex), c.getInt(cellYIndex))
+            }
+            //locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
+            //    Point(c.getInt(cellXIndex), c.getInt(cellYIndex))
         }
         c.close()
         // Expected dest grid icons
@@ -352,8 +354,10 @@ class GridSizeMigrationTaskV2Test {
         // Get in which screen the icon is
         val locMap = HashMap<String, Int>()
         while (c.moveToNext()) {
-            locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
-                c.getInt(screenIndex)
+            c.getString(intentIndex)?.let { locMap[it] = c.getInt(screenIndex) }
+
+            // locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
+            //     c.getInt(screenIndex)
         }
         c.close()
         assertThat(locMap.size).isEqualTo(5)
@@ -413,8 +417,9 @@ class GridSizeMigrationTaskV2Test {
         // Get in which screen the icon is
         val locMap = HashMap<String, Int>()
         while (c.moveToNext()) {
-            locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
-                c.getInt(screenIndex)
+            c.getString(intentIndex)?.let { locMap[it] = c.getInt(screenIndex) }
+            //locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
+            //    c.getInt(screenIndex)
         }
         c.close()
 
@@ -473,8 +478,8 @@ class GridSizeMigrationTaskV2Test {
         // Get in which screen the icon is
         val locMap = HashMap<String, Int>()
         while (c.moveToNext()) {
-            locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =
-                c.getInt(screenIndex)
+            c.getString(intentIndex)?.let { locMap[it] = c.getInt(screenIndex) }
+            //locMap[Intent.parseUri(c.getString(intentIndex), 0).getPackage()] =  c.getInt(screenIndex)
         }
         c.close()
 

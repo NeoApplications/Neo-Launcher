@@ -36,7 +36,7 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyZeroInteractions
+import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.MockitoAnnotations
 import org.mockito.Mockito.`when` as whenever
 
@@ -113,7 +113,7 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
         val addedItems = testAddItems(nonEmptyScreenIds, itemToAdd)
 
         assertThat(addedItems.size).isEqualTo(0)
-        verifyZeroInteractions(mWorkspaceItemSpaceFinder, mDataModelCallbacks)
+        verifyNoInteractions(mWorkspaceItemSpaceFinder, mDataModelCallbacks)
     }
 
     @Test

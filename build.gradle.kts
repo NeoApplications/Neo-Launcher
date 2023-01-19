@@ -1,6 +1,7 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.TimeZone
 
 buildscript {
     dependencies {
@@ -169,7 +170,7 @@ android {
 
         named("omega") {
             res.srcDirs(listOf("Omega/res"))
-            java.srcDirs(listOf("Omega/src"))
+            java.srcDirs(listOf("Omega/src", "Omega/src_overrides"))
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
 
@@ -247,11 +248,13 @@ dependencies {
     implementation("junit:junit:4.13.2")
     androidTestImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
 
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
 
-    androidTestImplementation("org.mockito:mockito-core:4.6.1")
+    androidTestImplementation("com.google.truth:truth:0.40")
+    androidTestImplementation("org.mockito:mockito-core:5.0.0")
     androidTestImplementation("com.google.dexmaker:dexmaker:1.2")
     androidTestImplementation("com.google.dexmaker:dexmaker-mockito:1.2")
     androidTestImplementation("androidx.annotation:annotation:1.5.0")

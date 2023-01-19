@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
@@ -116,7 +116,7 @@ public final class WidgetsDiffReporterTest {
         mWidgetsDiffReporter.process(currentList, currentList, COMPARATOR);
 
         // THEN there is no adaptor callback.
-        verifyZeroInteractions(mAdapter);
+        verifyNoInteractions(mAdapter);
         // THEN the current list contains the same entries.
         assertThat(currentList).containsExactly(mHeaderA, mHeaderB, mHeaderC);
     }
