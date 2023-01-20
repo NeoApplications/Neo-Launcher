@@ -234,6 +234,9 @@ dependencies {
     implementation("androidx.room:room-ktx:$vRoom")
     ksp("androidx.room:room-compiler:$vRoom")
 
+    //DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
