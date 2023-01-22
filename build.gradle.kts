@@ -216,9 +216,12 @@ dependencies {
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     //Compose
+    implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
     implementation("androidx.compose.runtime:runtime:$vCompose")
     implementation("androidx.compose.ui:ui:$vCompose")
