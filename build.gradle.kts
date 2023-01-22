@@ -228,9 +228,15 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:$vCompose")
     implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
     implementation("androidx.compose.foundation:foundation:$vCompose")
+    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("io.github.fornewid:material-motion-compose-core:0.9.0")
+    implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
+
+    implementation("androidx.compose.material:material:$vCompose")
     implementation("androidx.compose.material3:material3:1.0.1")
 
     //Accompanist
+    implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
