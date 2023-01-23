@@ -237,6 +237,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.0.1")
 
     //Accompanist
+    implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
     implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
 
     //Room
