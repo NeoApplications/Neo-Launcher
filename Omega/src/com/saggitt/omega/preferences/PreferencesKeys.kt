@@ -18,9 +18,13 @@
 
 package com.saggitt.omega.preferences
 
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 
 object PreferencesKeys {
+    //UI
+    val PREFS_WINDOW_CORNER_RADIUS = floatPreferencesKey("pref_custom_window_corner_radius")
+
     // DRAWER PREFS
     val PREFS_SORT_MODE = intPreferencesKey("pref_sort_mode")
 }
