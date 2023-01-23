@@ -17,7 +17,6 @@ package com.android.launcher3.allapps;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
@@ -241,7 +240,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
 
     private Comparator<? super AppInfo> getSortComparator() {
         int sortMode = prefs.getDrawerSortMode().getValue();
-        Log.d("AlphabeticalAppsList", "sortMode: " + sortMode);
         if (sortMode == Config.SORT_AZ) {
             return mAppNameComparator;
         } else if (sortMode == Config.SORT_ZA) {
