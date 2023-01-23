@@ -132,6 +132,11 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      */
     private int mProgressLevel = 100;
 
+    /**
+     * Dominant color in the icon.
+     */
+    public int iconColor;
+
     protected ItemInfoWithIcon() {
     }
 
