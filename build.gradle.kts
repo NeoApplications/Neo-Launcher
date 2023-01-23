@@ -207,6 +207,7 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
+    implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
 
