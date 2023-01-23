@@ -97,6 +97,7 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.preferences.OmegaPreferences;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -942,5 +943,13 @@ public final class Utilities {
 
     public static boolean bothNonNull(@Nullable Object a, @Nullable Object b) {
         return a != null && b != null;
+    }
+
+    public static OmegaPreferences getOmegaPrefs(Context context) {
+        return OmegaPreferences.getInstance(context);
+    }
+
+    public static void killLauncher() {
+        System.exit(0);
     }
 }

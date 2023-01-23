@@ -69,6 +69,7 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
+import com.saggitt.omega.data.AppTrackerRepository;
 
 import java.util.Collections;
 
@@ -384,6 +385,11 @@ public class ItemClickHandler {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
+        if (item instanceof AppInfo) {
+            AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
+            repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
+        }
+
         launcher.startActivitySafely(v, intent, item);
     }
 }

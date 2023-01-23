@@ -31,11 +31,11 @@ class Config {
         const val SORT_BY_INSTALL_DATE = 4
 
         val drawerSortOptions = mutableMapOf(
-            Config.SORT_AZ to R.string.title__sort_alphabetical_az,
-            Config.SORT_ZA to R.string.title__sort_alphabetical_za,
-            Config.SORT_MOST_USED to R.string.title__sort_most_used,
-            Config.SORT_BY_COLOR to R.string.title__sort_by_color,
-            Config.SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
+            SORT_AZ to R.string.title__sort_alphabetical_az,
+            SORT_ZA to R.string.title__sort_alphabetical_za,
+            SORT_MOST_USED to R.string.title__sort_most_used,
+            SORT_BY_COLOR to R.string.title__sort_by_color,
+            SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
         )
     }
 }

@@ -23,7 +23,6 @@
         android:name="com.saggitt.omega.OmegaApp"
         android:networkSecurityConfig="@xml/network_security_config"
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
-        android:fullBackupContent="@xml/backupscheme"
         android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
         android:icon="${appIcon}"
@@ -65,8 +64,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY" />
                 <category android:name="android.intent.category.LAUNCHER_APP" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
 
             <meta-data
                 android:name="com.android.launcher3.grid.control"
@@ -75,6 +74,21 @@
             <meta-data
                 android:name="com.android.launcher3.themedicon.option"
                 android:value="${packageName}.grid_control" />
+        </activity>
+        <activity
+            android:name="com.android.launcher3.settings.SettingsActivity"
+            android:exported="true"
+            tools:node="remove" />
+        <activity
+            android:name="com.saggitt.omega.compose.PreferenceActivity"
+            android:autoRemoveFromRecents="true"
+            android:exported="true"
+            android:label="@string/settings_button_text"
+            android:theme="@style/SettingsTheme.Dark">
+            <intent-filter android:priority="-1">
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>
