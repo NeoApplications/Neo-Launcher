@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of Omega Launcher
+  ~  Copyright (c) 2021   Saul Henriquez
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as
+  ~  published by the Free Software Foundation, either version 3 of the
+  ~  License, or (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="38dp"
+    android:height="38dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path
+        android:fillAlpha="0.10"
+        android:fillColor="?colorAccent"
+        android:pathData="M16,16m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:strokeAlpha="0.10" />
+    <group
+        android:scaleX="0.09"
+        android:scaleY="0.09"
+        android:translateX="4.5"
+        android:translateY="4.5">
+        <path
+            android:fillColor="?colorAccent"
+            android:pathData="M203.574,51.035A107.948,107.948 0,1 0,92.028 229.861,36.002 36.002,0 0,0 140,195.902L140,192a12.013,12.013 0,0 1,12 -12h46.209a35.799,35.799 0,0 0,35.105 -27.985,108.514 108.514,0 0,0 2.681,-24.939A107.179,107.179 0,0 0,203.574 51.035ZM209.913,146.694h-0A11.922,11.922 0,0 1,198.209 156L152,156a36.041,36.041 0,0 0,-36 36v3.902a12.002,12.002 0,0 1,-15.98 11.328A84.015,84.015 0,0 1,127.134 44.004q0.429,-0.004 0.858,-0.004a84.33,84.33 0,0 1,84.005 83.276A84.508,84.508 0,0 1,209.913 146.694ZM144,76a16,16 0,1 1,-16 -16A16,16 0,0 1,144 76ZM96.821,109.999A15.997,15.997 0,1 1,90.965 88.146,15.997 15.997,0 0,1 96.821,109.999ZM96.821,146.001A15.997,15.997 0,1 1,74.968 140.146,15.997 15.997,0 0,1 96.821,146.001ZM186.887,94.001A15.997,15.997 0,1 1,165.035 88.146,15.997 15.997,0 0,1 186.887,94.001Z" />
+    </group>
+</vector>

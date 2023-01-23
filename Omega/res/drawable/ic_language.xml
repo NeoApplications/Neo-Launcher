@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of Omega Launcher
+  ~  Copyright (c) 2021   Saul Henriquez
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as
+  ~  published by the Free Software Foundation, either version 3 of the
+  ~  License, or (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="38dp"
+    android:height="38dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path
+        android:fillAlpha="0.10"
+        android:fillColor="?colorAccent"
+        android:pathData="M16,16m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:strokeAlpha="0.10" />
+    <group
+        android:scaleX="0.09"
+        android:scaleY="0.09"
+        android:translateX="4.5"
+        android:translateY="4.5">
+        <path
+            android:fillColor="?colorAccent"
+            android:pathData="M242.715,210.634l-56,-112a11.999,11.999 0,0 0,-21.466 0l-20.503,41.006a84.114,84.114 0,0 1,-38.76 -13.441A107.568,107.568 0,0 0,131.312 68h20.67a12,12 0,0 0,0 -24h-52V32a12,12 0,0 0,-24 0V44h-52a12,12 0,0 0,0 24h83.129a83.665,83.665 0,0 1,-19.142 42.332A83.593,83.593 0,0 1,75.601 90.991a12,12 0,0 0,-21.809 10.02,107.462 107.462,0 0,0 16.199,25.216A83.489,83.489 0,0 1,23.982 140a12,12 0,1 0,0 24,107.423 107.423,0 0,0 64.031,-21.085 108.427,108.427 0,0 0,45.386 19.42l-24.149,48.299a12,12 0,1 0,21.466 10.732L143.399,196h65.168l12.683,25.366a12,12 0,1 0,21.466 -10.732ZM155.399,172l20.584,-41.167L196.566,172Z" />
+    </group>
+</vector>
