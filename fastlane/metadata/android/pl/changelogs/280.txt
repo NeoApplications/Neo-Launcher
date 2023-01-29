@@ -1,0 +1,12 @@
+<ul>
+  <li>Dodano: Wyszukiwarkę Brave (Brave Search)</li>.
+</li>  <li>Dodano: Preferencje dotyczące gestu powrotu</li>.
+  <li>Dodano: Preferencje dotyczące gestu "Home"</li>.
+  <li>Dodano: Tryb pulpitu (Desktop Mode)</li>.
+  <li>Naprawiono: Kolor tekstu w selektorze widgetów dla jasnego motywu</li>.
+  <li>Naprawiono: Wyszukiwanie ukrytych aplikacji</li>
+  <li>Naprawiono: Ikona folderu w trybie okładki</li>.
+  <li>Przywrócono: widżet smartspace</li>
+  <li>Przywrócono: ikonę zegara adaptacyjnego (Google)</li>.
+  <li>Przywrócono ikonę kalendarza adaptacyjnego (Google)</li>.
+</ul>
