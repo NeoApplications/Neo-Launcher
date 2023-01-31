@@ -18,13 +18,81 @@
 
 package com.saggitt.omega.preferences
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.android.launcher3.SessionCommitReceiver.ADD_ICON_PREFERENCE_KEY
+import com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY
 
+// TODO specialized keys e.g. colorInt?
 object PreferencesKeys {
-    //UI
-    val PREFS_WINDOW_CORNER_RADIUS = floatPreferencesKey("pref_custom_window_corner_radius")
+    // Profile
+    val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
+    val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")
+    val PROFILE_GLOBAL_PRIMARY_COLOR = intPreferencesKey("profile_launcher_accent")
+    val PROFILE_ICON_PACK = stringPreferencesKey("profile_icon_pack")
+    val PROFILE_ICON_SHAPE = stringPreferencesKey("profile_icon_shape")
+    val PROFILE_ICON_SHAPELESS = booleanPreferencesKey("profile_icon_shapeless")
+    val PROFILE_ICON_COLORED_BG = booleanPreferencesKey("profile_icon_colored_background")
+    val PROFILE_ICON_ADAPTIFY = booleanPreferencesKey("profile_icon_adaptify")
+    val PROFILE_ICON_RESET_CUSTOM = stringPreferencesKey("profile_icon_reset_custom")
+    val PROFILE_BLUR_ENABLED = booleanPreferencesKey("profile_blur_enabled")
+    val PROFILE_BLUR_RADIUS = floatPreferencesKey("profile_blur_radius")
+    val PROFILE_WINDOW_CORNER_RADIUS = floatPreferencesKey("profile_custom_window_corner_radius")
+    val PROFILE_STATUSBAR_SHADOW = booleanPreferencesKey("profile_status_bar_shadow")
 
-    // DRAWER PREFS
-    val PREFS_SORT_MODE = intPreferencesKey("pref_sort_mode")
+    // moved from Desktop
+    val PROFILE_ROTATION_ALLOW = booleanPreferencesKey(ALLOW_ROTATION_PREFERENCE_KEY)
+
+    // Desktop
+    val DESKTOP_ICON_SCALE = floatPreferencesKey("desktop_icon_scale")
+    val DESKTOP_LABELS_HIDE = booleanPreferencesKey("desktop_labels_hide")
+    val DESKTOP_LABELS_MULTILINE = booleanPreferencesKey("desktop_labels_multiline")
+    val DESKTOP_LABELS_SCALE = floatPreferencesKey("desktop_labels_scale")
+    val DESKTOP_POPUP_OPTIONS = stringSetPreferencesKey("desktop_popup_options")
+    val DESKTOP_GRID_COLUMNS = intPreferencesKey("desktop_grid_columns")
+    val DESKTOP_GRID_ROWS = intPreferencesKey("desktop_grid_rows")
+    val DESKTOP_ICON_ADD_INSTALLED = booleanPreferencesKey(ADD_ICON_PREFERENCE_KEY)
+    val DESKTOP_WIDGETS_FULL_WIDTH = booleanPreferencesKey("desktop_full_width_widgets")
+    val DESKTOP_WIDGETS_CORNER_RADIUS = floatPreferencesKey("desktop_widget_corner_radius")
+    val DESKTOP_EMPTY_SCREENS_ALLOW = booleanPreferencesKey("desktop_allow_empty_screens")
+    val DESKTOP_FOLDER_CORNER_RADIUS = floatPreferencesKey("desktop_folder_corner_radius")
+    val DESKTOP_FOLDER_COLUMNS = intPreferencesKey("desktop_folder_columns")
+    val DESKTOP_FOLDER_ROWS = intPreferencesKey("desktop_folder_rows")
+    val DESKTOP_FOLDER_BG_CUSTOM = booleanPreferencesKey("desktop_folder_custom_background")
+    val DESKTOP_FOLDER_BG_COLOR = intPreferencesKey("desktop_folder_custom_background_color")
+    val DESKTOP_FOLDER_BG_OPACITY = floatPreferencesKey("desktop_folder_custom_background_opacity")
+    val DESKTOP_STATUS_BAR_HIDE = booleanPreferencesKey("desktop_hide_status_bar")
+    val DESKTOP_LOCK_CHANGES = booleanPreferencesKey("desktop_lock")
+
+    // Dock
+    val DOCK_ENABLED = booleanPreferencesKey("dock_enabled")
+    val DOCK_BG_CUSTOM = booleanPreferencesKey("dock_custom_background")
+    val DOCK_BG_COLOR = intPreferencesKey("dock_custom_background_color")
+    val DOCK_BG_OPACITY = floatPreferencesKey("dock_custom_background_opacity")
+    val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
+    val DOCK_SCALE = floatPreferencesKey("dock_scale")
+    val DOCK_COLUMNS = intPreferencesKey("dock_columns")
+
+    // Drawer
+    val DRAWER_ICON_SCALE = floatPreferencesKey("drawer_icon_scale")
+    val DRAWER_LABELS_HIDE = booleanPreferencesKey("drawer_labels_hide")
+    val DRAWER_LABELS_MULTILINE = booleanPreferencesKey("drawer_labels_multiline")
+    val DRAWER_LABELS_SCALE = floatPreferencesKey("drawer_labels_scale")
+    val DRAWER_POPUP_OPTIONS = stringSetPreferencesKey("drawer_popup_options")
+    val DRAWER_GRID_COLUMNS = intPreferencesKey("drawer_grid_columns")
+    val DRAWER_GRID_ROWS = intPreferencesKey("drawer_grid_rows")
+    val DRAWER_SORT_MODE = intPreferencesKey("drawer_sort_mode")
+    val DRAWER_GROUPS_MODE = stringPreferencesKey("drawer_groups_mode")
+    val DRAWER_WORK_APPS_SEPARATE = booleanPreferencesKey("drawer_separate_work_apps")
+    val DRAWER_CELL_HEIGHT_SCALE = floatPreferencesKey("drawer_cell_height_scale")
+    val DRAWER_SCROLL_POSITION_SAVE = booleanPreferencesKey("drawer_save_scroll_position")
+    val DRAWER_HIDDEN_APPS_LIST = stringSetPreferencesKey("drawer_hidden_apps")
+    val DRAWER_PROTECTED_APPS_ENABLED = booleanPreferencesKey("drawer_protected_apps_enabled")
+    val DRAWER_PROTECTED_APPS_LIST = stringSetPreferencesKey("drawer_protected_apps")
+    val DRAWER_BG_CUSTOM = booleanPreferencesKey("drawer_custom_background")
+    val DRAWER_BG_COLOR = intPreferencesKey("drawer_custom_background_color")
+    val DRAWER_BG_OPACITY = floatPreferencesKey("drawer_custom_background_opacity")
 }

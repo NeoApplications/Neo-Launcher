@@ -24,7 +24,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.saggitt.omega.preferences.PreferencesKeys.PREFS_WINDOW_CORNER_RADIUS
 import com.saggitt.omega.util.Config
 import kotlin.math.roundToInt
 
@@ -38,7 +37,7 @@ class OmegaPreferences private constructor(private val context: Context) {
     var themeCornerRadius = FloatPref(
         titleId = R.string.title_override_corner_radius_value,
         dataStore = dataStore,
-        key = PREFS_WINDOW_CORNER_RADIUS,
+        key = PreferencesKeys.PROFILE_WINDOW_CORNER_RADIUS,
         defaultValue = 8f,
         maxValue = 24f,
         minValue = -1f,
@@ -55,7 +54,7 @@ class OmegaPreferences private constructor(private val context: Context) {
     var drawerSortMode = IntSelectionPref(
         titleId = R.string.title__sort_mode,
         dataStore = dataStore,
-        key = PreferencesKeys.PREFS_SORT_MODE,
+        key = PreferencesKeys.DRAWER_SORT_MODE,
         defaultValue = Config.SORT_AZ,
         entries = Config.drawerSortOptions,
     )
