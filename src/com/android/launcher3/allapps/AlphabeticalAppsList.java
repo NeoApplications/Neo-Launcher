@@ -33,7 +33,7 @@ import com.saggitt.omega.allapps.AppUsageComparator;
 import com.saggitt.omega.allapps.InstallTimeComparator;
 import com.saggitt.omega.data.AppTracker;
 import com.saggitt.omega.data.AppTrackerRepository;
-import com.saggitt.omega.preferences.OmegaPreferences;
+import com.saggitt.omega.preferences.NLPrefs;
 import com.saggitt.omega.util.Config;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
     private final BaseDraggingActivity mLauncher;
-    private final OmegaPreferences prefs;
+    private final NLPrefs prefs;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
                                 WorkProfileManager workProfileManager) {

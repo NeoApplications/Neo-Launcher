@@ -29,11 +29,11 @@ import kotlin.math.roundToInt
 
 private const val USER_PREFERENCES_NAME = "neo_launcher"
 
-class OmegaPreferences private constructor(private val context: Context) {
+class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES_NAME)
     private val dataStore: DataStore<Preferences> = context.dataStore
 
-    //THEME PREFS
+    // Profile
     var themeCornerRadius = FloatPref(
         titleId = R.string.title_override_corner_radius_value,
         dataStore = dataStore,
@@ -45,12 +45,12 @@ class OmegaPreferences private constructor(private val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
 
-    //DRAWER PREFS
+    // Drawer
     var drawerSortMode = IntSelectionPref(
         titleId = R.string.title__sort_mode,
         dataStore = dataStore,
@@ -61,7 +61,7 @@ class OmegaPreferences private constructor(private val context: Context) {
 
 
     companion object {
-        private val INSTANCE = MainThreadInitializedObject(::OmegaPreferences)
+        private val INSTANCE = MainThreadInitializedObject(::NLPrefs)
 
         @JvmStatic
         fun getInstance(context: Context) = INSTANCE.get(context)!!

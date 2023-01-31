@@ -97,7 +97,7 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.preferences.OmegaPreferences;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -945,8 +945,8 @@ public final class Utilities {
         return a != null && b != null;
     }
 
-    public static OmegaPreferences getOmegaPrefs(Context context) {
-        return OmegaPreferences.getInstance(context);
+    public static NLPrefs getOmegaPrefs(Context context) {
+        return NLPrefs.getInstance(context);
     }
 
     public static void killLauncher() {
