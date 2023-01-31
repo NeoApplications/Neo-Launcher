@@ -37,7 +37,7 @@ class OmegaPreferences private constructor(private val context: Context) {
     var themeCornerRadius = FloatPref(
         titleId = R.string.title_override_corner_radius_value,
         dataStore = dataStore,
-        key = PreferencesKeys.PROFILE_WINDOW_CORNER_RADIUS,
+        key = PrefKey.PROFILE_WINDOW_CORNER_RADIUS,
         defaultValue = 8f,
         maxValue = 24f,
         minValue = -1f,
@@ -54,7 +54,7 @@ class OmegaPreferences private constructor(private val context: Context) {
     var drawerSortMode = IntSelectionPref(
         titleId = R.string.title__sort_mode,
         dataStore = dataStore,
-        key = PreferencesKeys.DRAWER_SORT_MODE,
+        key = PrefKey.DRAWER_SORT_MODE,
         defaultValue = Config.SORT_AZ,
         entries = Config.drawerSortOptions,
     )

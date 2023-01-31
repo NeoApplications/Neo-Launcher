@@ -27,7 +27,7 @@ import com.android.launcher3.SessionCommitReceiver.ADD_ICON_PREFERENCE_KEY
 import com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY
 
 // TODO specialized keys e.g. colorInt?
-object PreferencesKeys {
+object PrefKey {
     // Profile
     val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
     val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")
