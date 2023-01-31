@@ -95,4 +95,55 @@ object PreferencesKeys {
     val DRAWER_BG_CUSTOM = booleanPreferencesKey("drawer_custom_background")
     val DRAWER_BG_COLOR = intPreferencesKey("drawer_custom_background_color")
     val DRAWER_BG_OPACITY = floatPreferencesKey("drawer_custom_background_opacity")
+
+    // Widgets
+    val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")
+    val WIDGETS_SMARTSPACE_DATE = booleanPreferencesKey("widgets_smartspace_date")
+    val WIDGETS_SMARTSPACE_TIME = booleanPreferencesKey("widgets_smartspace_date")
+    val WIDGETS_SMARTSPACE_TIME_LARGE = booleanPreferencesKey("widgets_smartspace_large_clock")
+    val WIDGETS_SMARTSPACE_TIME_24H = booleanPreferencesKey("widgets_smartspace_24h_clock")
+    val WIDGETS_SMARTSPACE_PILL_STYLE = booleanPreferencesKey("widgets_smartspace_pill_style")
+    val WIDGETS_SMARTSPACE_EVENTS_PROVIDER =
+        stringSetPreferencesKey("widgets_smartspace_events_provider")
+    val WIDGETS_SMARTSPACE_WEATHER_UNIT = stringPreferencesKey("widgets_smartspace_weather_unit")
+    val WIDGETS_SMARTSPACE_WEATHER_PROVIDER =
+        stringPreferencesKey("widgets_smartspace_weather_provider")
+    val WIDGETS_SMARTSPACE_WEATHER_API_KEY = stringPreferencesKey("widgets_smartspace_weather_api")
+    val WIDGETS_SMARTSPACE_WEATHER_CITY = stringPreferencesKey("widgets_smartspace_weather_city")
+
+    // Notification
+    //// TODO handle the special notification badging intent
+    val NOTIFICATION_DOTS_ENABLED = booleanPreferencesKey("notification_dots_enable")
+    val NOTIFICATION_DOTS_CUSTOM = booleanPreferencesKey("notification_dots_custom")
+    val NOTIFICATION_DOTS_COLOR = booleanPreferencesKey("notification_dots_color")
+    val NOTIFICATION_DOTS_COUNT = booleanPreferencesKey("notification_dots_count")
+
+    // Search
+    val SEARCH_PROVIDER = stringPreferencesKey("search_provider")
+    val SEARCH_SHOW_MIC = booleanPreferencesKey("search_bar_show_mic")
+    val SEARCH_SHOW_ASSISTANT = booleanPreferencesKey("search_bar_show_assistant")
+    val SEARCH_GLOBAL_ENABLED = booleanPreferencesKey("search_global_enable") // is it needed?
+    val SEARCH_HIDDEN_APPS_ENABLED = booleanPreferencesKey("search_hidden_apps_enable")
+    val SEARCH_CONTACTS_ENABLED = booleanPreferencesKey("search_contacts_enable")
+    val SEARCH_FUZZY_ENABLED = booleanPreferencesKey("search_bar_show_assistant")
+    val SEARCH_CORNER_RADIUS = floatPreferencesKey("search_bar_corner_radius")
+    val SEARCH_DRAWER_ENABLED = booleanPreferencesKey("search_bar_drawer_enable")
+    val SEARCH_DOCK_ENABLED = booleanPreferencesKey("search_bar_dock_enable")
+
+    // Feed
+    val FEED_PROVIDER = stringPreferencesKey("feed_provider")
+
+    // Gestures
+    val GESTURES_DOUBLE_TAP = stringPreferencesKey("gesture_double_tap")
+    val GESTURES_LONG_TAP = stringPreferencesKey("gesture_long_tap")
+    val GESTURES_HOME_PRESS = stringPreferencesKey("gesture_press_home")
+    val GESTURES_BACK_PRESS = stringPreferencesKey("gesture_press_back")
+    val GESTURES_SWIPE_UP = stringPreferencesKey("gesture_swipe_up")
+    val GESTURES_SWIPE_DOWN = stringPreferencesKey("gesture_swipe_down")
+    val GESTURES_SWIPE_UP_DOCK = stringPreferencesKey("gesture_swipe_up_on_dock")
+    val GESTURES_ASSISTANT = stringPreferencesKey("gesture_launch_assistant")
+
+    // Dash
+    val DASH_LINE_SIZE = floatPreferencesKey("dash_line_size")
+    val DASH_EDIT = stringPreferencesKey("dash_edit")
 }
