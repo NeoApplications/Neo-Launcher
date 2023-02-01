@@ -5,6 +5,26 @@ import com.android.launcher3.R
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
 const val PREFS_LANGUAGE_DEFAULT_CODE = "en"
 
+// TODO revamp theming management
+const val THEME_USE_BLACK = 0b00010
+const val THEME_LIGHT = 0
+const val THEME_DARK = 0b00001
+const val THEME_BLACK = THEME_DARK or THEME_USE_BLACK
+const val THEME_WALLPAPER = 0b00100
+const val THEME_WALLPAPER_BLACK = THEME_WALLPAPER or THEME_USE_BLACK
+const val THEME_SYSTEM = 0b01000
+const val THEME_SYSTEM_BLACK = THEME_SYSTEM or THEME_USE_BLACK
+
+val themeItems = mutableMapOf(
+    THEME_LIGHT to R.string.theme_light,
+    THEME_DARK to R.string.theme_dark,
+    THEME_BLACK to R.string.theme_black,
+    THEME_SYSTEM to R.string.theme_auto_night_mode,
+    THEME_SYSTEM_BLACK to R.string.theme_auto_night_mode_black,
+    THEME_WALLPAPER to R.string.theme_dark_theme_mode_follow_wallpaper,
+    THEME_WALLPAPER_BLACK to R.string.theme_dark_theme_mode_follow_wallpaper_black,
+)
+
 const val PREFS_DESKTOP_POPUP_EDIT = "desktop_popup_edit"
 const val PREFS_DESKTOP_POPUP_REMOVE = "desktop_popup_remove"
 
