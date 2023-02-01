@@ -25,7 +25,9 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.Themes
+import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.languageOptions
 import kotlin.math.roundToInt
 
 private const val USER_PREFERENCES_NAME = "neo_launcher"
@@ -35,9 +37,75 @@ class NLPrefs private constructor(private val context: Context) {
     private val dataStore: DataStore<Preferences> = context.dataStore
 
     // Profile
-    var themeCornerRadius = FloatPref(
-        titleId = R.string.title_override_corner_radius_value,
+    // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
+    val profileAllowRotation = BooleanPref(
         dataStore = dataStore,
+        key = PrefKey.PROFILE_ROTATION_ALLOW,
+        titleId = R.string.allow_rotation_title,
+        summaryId = R.string.allow_rotation_desc,
+        defaultValue = false,
+    )
+
+    var profileLanguage = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_GLOBAL_LANGUAGE,
+        titleId = R.string.title__advanced_language,
+        defaultValue = "",
+        entries = context.languageOptions(),
+    )
+
+    var profileTheme = IntSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_GLOBAL_THEME,
+        titleId = R.string.title__general_theme,
+        defaultValue = if (OmegaApp.minSDK(31)) THEME_SYSTEM else THEME_WALLPAPER,
+        entries = themeItems,
+    )
+
+    var profileBlurEnable = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_BLUR_ENABLED,
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
+        defaultValue = false,
+    )
+
+    var profileBlurRadius = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_BLUR_RADIUS,
+        titleId = R.string.title__theme_blur_radius,
+        defaultValue = 0.75f,
+        maxValue = 1.5f,
+        minValue = 0.1f,
+        steps = 27,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    var profileIconColoredBackground = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_COLORED_BG,
+        titleId = R.string.title_colored_backgrounds,
+        summaryId = R.string.summary_colored_backgrounds,
+        defaultValue = false,
+    )
+
+    var profileIconAdaptify = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_ADAPTIFY,
+        titleId = R.string.title_adaptify_pack,
+        defaultValue = false,
+    )
+    var profileIconForceShapeless = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_SHAPELESS,
+        titleId = R.string.title_force_shapeless,
+        summaryId = R.string.summary_force_shapeless,
+        defaultValue = false,
+    )
+
+    var profileWindowCornerRadius = FloatPref(
+        dataStore = dataStore,
+        titleId = R.string.title_override_corner_radius_value,
         key = PrefKey.PROFILE_WINDOW_CORNER_RADIUS,
         defaultValue = 8f,
         maxValue = 24f,

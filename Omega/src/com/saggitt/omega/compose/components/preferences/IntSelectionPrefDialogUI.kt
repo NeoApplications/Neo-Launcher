@@ -67,7 +67,7 @@ fun IntSelectionPrefDialogUI(
     SideEffect {
         coroutineScope.launch {
             selected = pref.get().first()
-            themeCornerRadius = prefs.themeCornerRadius.get().first()
+            themeCornerRadius = prefs.profileWindowCornerRadius.get().first()
         }
     }
 
