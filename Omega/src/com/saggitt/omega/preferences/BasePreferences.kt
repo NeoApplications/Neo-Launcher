@@ -51,6 +51,10 @@ open class IntPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Int>,
     private val defaultValue: Int = -1,
+    minValue: Int = 0,
+    maxValue: Int = "FFFFFF".toInt(16),
+    steps: Int = 1,
+    specialOutputs: ((Int) -> String) = Int::toString,
 ) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Int> {
