@@ -113,6 +113,56 @@ open class IntSelectionPref(
     }
 }
 
+open class StringSelectionPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+    val entries: Map<String, String>,
+) :
+    PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    fun getValue(): String {
+        return runBlocking(Dispatchers.IO) {
+            get().firstOrNull() ?: defaultValue
+        }
+    }
+
+    override suspend fun set(value: String) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
+open class StringMultiSelectionPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<Set<String>>,
+    val defaultValue: Set<String> = emptySet(),
+    val entries: Map<String, Int>,
+) :
+    PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
+
+    override fun get(): Flow<Set<String>> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    fun getValue(): Set<String> {
+        return runBlocking(Dispatchers.IO) {
+            get().firstOrNull() ?: defaultValue
+        }
+    }
+
+    override suspend fun set(value: Set<String>) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
 abstract class PrefDelegate<T : Any>(
     @StringRes var titleId: Int,
     @StringRes var summaryId: Int = -1,
