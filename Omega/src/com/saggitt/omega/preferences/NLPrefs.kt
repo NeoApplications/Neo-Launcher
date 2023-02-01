@@ -386,6 +386,17 @@ class NLPrefs private constructor(private val context: Context) {
         entries = Config.drawerSortOptions,
     )
 
+    // Dash
+    // TODO dash_providers, dashEdit?
+    var dashLineSize = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DASH_LINE_SIZE,
+        titleId = R.string.dash_line_size,
+        defaultValue = 6,
+        maxValue = 6,
+        minValue = 4,
+        steps = 1,
+    )
 
     companion object {
         private val INSTANCE = MainThreadInitializedObject(::NLPrefs)

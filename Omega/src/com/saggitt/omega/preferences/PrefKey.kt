@@ -145,6 +145,7 @@ object PrefKey {
     val GESTURES_ASSISTANT = stringPreferencesKey("gesture_launch_assistant")
 
     // Dash
-    val DASH_LINE_SIZE = floatPreferencesKey("dash_line_size")
+    val DASH_LINE_SIZE = intPreferencesKey("dash_line_size")
     val DASH_EDIT = stringPreferencesKey("dash_edit")
+    val DASH_PROVIDERS = stringSetPreferencesKey("dash_providers")
 }
