@@ -2,6 +2,8 @@ package com.saggitt.omega.preferences
 
 import com.android.launcher3.R
 
+const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
+const val PREFS_LANGUAGE_DEFAULT_CODE = "en"
 
 const val PREFS_DESKTOP_POPUP_EDIT = "desktop_popup_edit"
 const val PREFS_DESKTOP_POPUP_REMOVE = "desktop_popup_remove"
