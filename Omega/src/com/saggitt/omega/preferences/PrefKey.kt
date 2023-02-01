@@ -74,6 +74,7 @@ object PrefKey {
     val DOCK_BG_OPACITY = floatPreferencesKey("dock_custom_background_opacity")
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
+    val DOCK_ICON_SCALE = floatPreferencesKey("dock_icon_scale")
     val DOCK_COLUMNS = intPreferencesKey("dock_columns")
 
     // Drawer

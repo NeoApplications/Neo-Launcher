@@ -236,6 +236,79 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
+    // Dock
+    var dockHide = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_ENABLED,
+        titleId = R.string.title__dock_hide,
+        defaultValue = false,
+    )
+
+    val dockIconScale = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_ICON_SCALE,
+        titleId = R.string.title__dock_icon_size,
+        defaultValue = 1f,
+        maxValue = 2f,
+        minValue = 0.5f,
+        steps = 150,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    var dockScale = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_SCALE,
+        titleId = R.string.title__dock_scale,
+        defaultValue = 1f,
+        maxValue = 1.75f,
+        minValue = 0.70f,
+        steps = 100,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    val dockCustomBackground = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_BG_CUSTOM,
+        titleId = R.string.title_dock_fill,
+        defaultValue = false
+    )
+
+    // TODO ColorPref?
+    val dockBackgroundColor = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_BG_COLOR,
+        titleId = R.string.title_dock_background_color,
+        defaultValue = (0xff101010).toInt(),
+        //withAlpha = false,
+    )
+
+    // TODO AlphaPref?
+    var dockBackgroundOpacity = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_BG_OPACITY,
+        titleId = R.string.title_opacity,
+        defaultValue = 0.9f,
+        minValue = 0f,
+        maxValue = 1f,
+        steps = 100,
+    )
+
+    val dockShowPageIndicator = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_PAGE_INDICATOR,
+        titleId = R.string.hotseat_show_page_indicator,
+        defaultValue = true,
+    )
+
+    val dockNumIcons = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_COLUMNS,
+        titleId = R.string.num_hotseat_icons_pref_title,
+        minValue = 2,
+        maxValue = 16,
+        steps = 15
+    )
+
     // Drawer
     var drawerSortMode = IntSelectionPref(
         titleId = R.string.title__sort_mode,
