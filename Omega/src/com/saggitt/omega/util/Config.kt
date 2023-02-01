@@ -18,9 +18,34 @@
 
 package com.saggitt.omega.util
 
+import android.content.Context
+import android.content.res.Resources
+import android.text.TextUtils
 import com.android.launcher3.R
+import java.util.*
 
-class Config {
+class Config(val context: Context) {
+
+    //TODO: Use ContextWrapper instead of UpdateConfiguration
+    fun setAppLanguage(languageCode: String) {
+        val locale = getLocaleByAndroidCode(languageCode)
+        val config = context.resources.configuration
+        val mLocale =
+            if (languageCode.isNotEmpty()) locale else Resources.getSystem().configuration.locales[0]
+        config.setLocale(mLocale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
+
+    fun getLocaleByAndroidCode(languageCode: String): Locale {
+        return if (!TextUtils.isEmpty(languageCode)) {
+            if (languageCode.contains("-r")) Locale(
+                languageCode.substring(0, 2),
+                languageCode.substring(4, 6)
+            ) // de-rAt
+            else Locale(languageCode) // de
+        } else Resources.getSystem().configuration.locales[0]
+    }
+
     companion object {
 
         //APP DRAWER SORT MODE
