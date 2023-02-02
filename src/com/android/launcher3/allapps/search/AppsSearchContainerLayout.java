@@ -164,6 +164,11 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     }
 
     @Override
+    public void startSearch() {
+        // TODO
+    }
+
+    @Override
     public void onSearchResult(String query, ArrayList<AdapterItem> items) {
         if (items != null) {
             mAppsView.setSearchResults(items);
