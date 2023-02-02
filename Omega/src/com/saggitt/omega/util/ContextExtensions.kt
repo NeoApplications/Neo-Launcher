@@ -19,7 +19,11 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import java.util.*
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }
 }
+
+val Context.locale: Locale
+    get() = this.resources.configuration.locales[0]
