@@ -1,7 +1,13 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import com.android.launcher3.BuildConfig
+import com.android.launcher3.R
 import com.saggitt.omega.preferences.PREFS_LANGUAGE_DEFAULT_CODE
 import com.saggitt.omega.preferences.PREFS_LANGUAGE_DEFAULT_NAME
 import java.util.*
@@ -70,3 +76,42 @@ private fun summarizeLocale(locale: Locale, localeAndroidCode: String): String {
     }
     return ret
 }
+
+fun Context.getFeedProviders(): Map<String, String> {
+    val feeds = listOf(
+        ProviderInfo(getString(R.string.none), "", getIcon())
+    ) + availableFeedProviders().map {
+        ProviderInfo(
+            it.loadLabel(packageManager).toString(),
+            it.packageName,
+            it.loadIcon(packageManager)
+        )
+    }
+
+    val entries = feeds.map { it.displayName }.toTypedArray()
+    val entryValues = feeds.map { it.packageName }.toTypedArray()
+    return entryValues.zip(entries).toMap()
+}
+
+fun Context.availableFeedProviders(): List<ApplicationInfo> {
+    val packageManager = packageManager
+    val intent = Intent("com.android.launcher3.WINDOW_OVERLAY")
+        .setData(Uri.parse("app://$packageName"))
+    val feedList: MutableList<ApplicationInfo> = ArrayList()
+    for (resolveInfo in packageManager.queryIntentServices(
+        intent,
+        PackageManager.GET_RESOLVED_FILTER
+    )) {
+        if (resolveInfo.serviceInfo != null) {
+            val applicationInfo = resolveInfo.serviceInfo.applicationInfo
+            feedList.add(applicationInfo)
+        }
+    }
+    return feedList
+}
+
+data class ProviderInfo(
+    val displayName: String,
+    val packageName: String,
+    val icon: Drawable?,
+)
