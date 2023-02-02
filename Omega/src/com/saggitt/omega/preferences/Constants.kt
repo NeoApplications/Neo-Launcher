@@ -1,6 +1,7 @@
 package com.saggitt.omega.preferences
 
 import com.android.launcher3.R
+import com.saggitt.omega.widget.Temperature
 
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
 const val PREFS_LANGUAGE_DEFAULT_CODE = "en"
@@ -39,6 +40,15 @@ val desktopPopupOptions = mutableMapOf(
 val drawerPopupOptions = mutableMapOf(
     PREFS_DRAWER_POPUP_UNINSTALL to R.string.uninstall_drop_target_label,
     PREFS_DRAWER_POPUP_EDIT to R.string.action_preferences,
+)
+
+val temperatureUnitOptions = listOfNotNull(
+    Temperature.Unit.Celsius,
+    Temperature.Unit.Fahrenheit,
+    Temperature.Unit.Kelvin,
+).associateBy(
+    keySelector = { it.toString() },
+    valueTransform = { "${it.name} (${it.suffix})" }
 )
 
 val iconIds = mapOf(
