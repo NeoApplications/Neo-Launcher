@@ -66,6 +66,7 @@ public class LauncherAppState implements SafeCloseable {
     private final IconCache mIconCache;
     private final InvariantDeviceProfile mInvariantDeviceProfile;
     private final RunnableList mOnTerminateCallback = new RunnableList();
+    private Launcher mLauncher;
 
     public static LauncherAppState getInstance(final Context context) {
         return INSTANCE.get(context);
@@ -77,6 +78,14 @@ public class LauncherAppState implements SafeCloseable {
 
     public Context getContext() {
         return mContext;
+    }
+
+    public void setLauncher(Launcher launcher) {
+        mLauncher = launcher;
+    }
+
+    public Launcher getLauncher() {
+        return mLauncher;
     }
 
     public LauncherAppState(Context context) {

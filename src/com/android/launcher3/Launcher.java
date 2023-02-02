@@ -463,6 +463,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         super.onCreate(savedInstanceState);
 
         LauncherAppState app = LauncherAppState.getInstance(this);
+        app.setLauncher(this);
         mModel = app.getModel();
 
         mRotationHelper = new RotationHelper(this);
