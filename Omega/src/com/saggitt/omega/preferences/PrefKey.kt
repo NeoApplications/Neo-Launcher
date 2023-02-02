@@ -117,8 +117,9 @@ object PrefKey {
     //// TODO handle the special notification badging intent
     val NOTIFICATION_DOTS_ENABLED = booleanPreferencesKey("notification_dots_enable")
     val NOTIFICATION_DOTS_CUSTOM = booleanPreferencesKey("notification_dots_custom")
-    val NOTIFICATION_DOTS_COLOR = booleanPreferencesKey("notification_dots_color")
+    val NOTIFICATION_DOTS_COLOR = intPreferencesKey("notification_dots_color")
     val NOTIFICATION_DOTS_COUNT = booleanPreferencesKey("notification_dots_count")
+    val NOTIFICATION_DOTS_FOLDER_ENABLED = booleanPreferencesKey("notification_dots_folder_enable")
 
     // Search
     val SEARCH_PROVIDER = stringPreferencesKey("search_provider")

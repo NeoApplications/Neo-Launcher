@@ -28,6 +28,8 @@ import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.search.getSearchProvidersMap
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.KEY_A400
+import com.saggitt.omega.util.PINK
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import kotlin.math.roundToInt
@@ -502,6 +504,38 @@ class NLPrefs private constructor(private val context: Context) {
         maxValue = 1f,
         minValue = 0f,
         steps = 10,
+    )
+
+    // Notifications
+    // TODO notificationDots
+    val notificationCount = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_COUNT,
+        titleId = R.string.title__notification_count,
+        defaultValue = false,
+    )
+
+    val notificationCustomColor = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
+        titleId = R.string.notification_custom_color,
+        defaultValue = false
+    )
+
+    // TODO ColorPref?
+    val notificationBackground = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_COLOR,
+        titleId = R.string.title__notification_background,
+        defaultValue = PINK.getValue(KEY_A400).toInt(),
+        //withAlpha = true,
+    )
+
+    val notificationCountFolder = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_FOLDER_ENABLED,
+        titleId = R.string.title__folder_badge_count,
+        defaultValue = true,
     )
 
     // Search & Feed
