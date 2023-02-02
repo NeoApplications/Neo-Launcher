@@ -26,7 +26,9 @@ import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
+import com.saggitt.omega.search.getSearchProvidersMap
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import kotlin.math.roundToInt
 
@@ -500,6 +502,100 @@ class NLPrefs private constructor(private val context: Context) {
         maxValue = 1f,
         minValue = 0f,
         steps = 10,
+    )
+
+    // Search & Feed
+    val searchDrawerEnabled = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_DRAWER_ENABLED,
+        titleId = R.string.title_all_apps_search,
+        defaultValue = true,
+    )
+
+    val searchDockEnabled = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_DOCK_ENABLED,
+        titleId = R.string.title_all_apps_search,
+        defaultValue = false,
+    )
+
+    // TODO DimensionPref?
+    var searchBarRadius = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_CORNER_RADIUS,
+        titleId = R.string.title__search_bar_radius,
+        defaultValue = -1f,
+        maxValue = 24f,
+        minValue = -1f,
+        steps = 24,
+        specialOutputs = {
+            when {
+                it < 0f -> context.getString(R.string.automatic_short)
+                else    -> "${it.roundToInt()}dp"
+            }
+        },
+    )
+
+    var searchProvider = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_PROVIDER,
+        titleId = R.string.title_search_provider,
+        defaultValue = "",
+        entries = getSearchProvidersMap(context),
+    )
+
+    val searchShowMic = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_SHOW_MIC,
+        titleId = R.string.title__search_show_assistant,
+        defaultValue = false
+    )
+
+    val searchShowAssistant = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_SHOW_ASSISTANT,
+        titleId = R.string.title__search_action_assistant,
+        summaryId = R.string.summary__search_show_as_assistant_summary,
+        defaultValue = false
+    )
+
+    val searchHiddenApps = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_HIDDEN_APPS_ENABLED,
+        titleId = R.string.title_search_hidden_apps,
+        summaryId = R.string.summary_search_hidden_apps,
+        defaultValue = false
+    )
+
+    val searchFuzzy = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_FUZZY_ENABLED,
+        titleId = R.string.title_fuzzy_search,
+        summaryId = R.string.summary_fuzzy_search,
+        defaultValue = false,
+    )
+
+    var searchGlobal = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_GLOBAL_ENABLED,
+        titleId = R.string.title_all_apps_google_search,
+        summaryId = R.string.summary_all_apps_google_search,
+        defaultValue = true,
+    )
+
+    var searchContacts = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SEARCH_CONTACTS_ENABLED,
+        titleId = R.string.title_search_contacts,
+        defaultValue = false,
+    )
+
+    var feedProvider = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.FEED_PROVIDER,
+        titleId = R.string.title_feed_provider,
+        defaultValue = "",
+        entries = context.getFeedProviders(),
     )
 
     // Dash
