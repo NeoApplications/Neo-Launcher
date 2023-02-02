@@ -378,12 +378,128 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     // Drawer
+    // TODO drawerLayout, drawerProtectedAppSet, drawerHiddenAppSet, drawerGroupsMode, drawerGridRows?
     var drawerSortMode = IntSelectionPref(
-        titleId = R.string.title__sort_mode,
         dataStore = dataStore,
+        titleId = R.string.title__sort_mode,
         key = PrefKey.DRAWER_SORT_MODE,
         defaultValue = Config.SORT_AZ,
         entries = Config.drawerSortOptions,
+    )
+
+    var drawerPopup = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_POPUP_OPTIONS,
+        titleId = R.string.title__drawer_icon_popup_menu,
+        defaultValue = setOf(PREFS_DRAWER_POPUP_EDIT),
+        entries = drawerPopupOptions,
+        //withIcons = true,
+    )
+
+    // TODO Show lock screen when the app is enabled and is clicked
+    var drawerEnableProtectedApps = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
+        titleId = R.string.enable_protected_apps,
+        defaultValue = false
+    )
+
+    var drawerIconScale = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_ICON_SCALE,
+        titleId = R.string.title__drawer_icon_size,
+        defaultValue = 1f,
+        maxValue = 2f,
+        minValue = 0.5f,
+        steps = 150,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    val drawerLabelScale = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_LABELS_SCALE,
+        titleId = R.string.title_desktop_text_size,
+        defaultValue = 1f,
+        maxValue = 1.8f,
+        minValue = 0.3f,
+        steps = 150,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    val drawerHideLabels = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_LABELS_HIDE,
+        titleId = R.string.title__drawer_hide_icon_labels,
+        defaultValue = false,
+    )
+
+    val drawerMultilineLabel = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_LABELS_MULTILINE,
+        titleId = R.string.title__multiline_labels,
+        defaultValue = false,
+    )
+
+    val drawerRowHeightScale = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_CELL_HEIGHT_SCALE,
+        titleId = R.string.title_drawer_row_height,
+        defaultValue = 1F,
+        maxValue = 2f,
+        minValue = 0.5f,
+        steps = 150,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+    )
+
+    val drawerSeparateWorkApps = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_WORK_APPS_SEPARATE,
+        titleId = R.string.title_separate_work_apps,
+        defaultValue = false,
+    )
+
+    val drawerSaveScrollPosition = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_SCROLL_POSITION_SAVE,
+        titleId = R.string.title_all_apps_keep_scroll_state,
+        defaultValue = false,
+    )
+
+    val drawerGridColumns = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_GRID_COLUMNS,
+        titleId = R.string.title__drawer_columns,
+        defaultValue = 5,
+        minValue = 2,
+        maxValue = 16,
+        steps = 15
+    )
+
+    val drawerCustomBackground = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_BG_CUSTOM,
+        titleId = R.string.title_drawer_enable_background,
+        defaultValue = false,
+    )
+
+    // TODO ColorPref?
+    val drawerBackgroundColor = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_BG_COLOR,
+        titleId = R.string.title_dock_background_color,
+        defaultValue = (0xff101010).toInt(),
+        //withAlpha = false,
+    )
+
+    // TODO AlphaPref?
+    val drawerBackgroundOpacity = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_BG_OPACITY,
+        titleId = R.string.title_opacity,
+        defaultValue = 1f,
+        maxValue = 1f,
+        minValue = 0f,
+        steps = 10,
     )
 
     // Dash
