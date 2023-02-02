@@ -506,8 +506,8 @@ class NLPrefs private constructor(private val context: Context) {
         steps = 10,
     )
 
-    // Notifications
-    // TODO notificationDots
+    // Notifications & Widgets/Smartspace
+    // TODO notificationDots, Smartspace
     val notificationCount = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COUNT,
@@ -632,8 +632,8 @@ class NLPrefs private constructor(private val context: Context) {
         entries = context.getFeedProviders(),
     )
 
-    // Dash
-    // TODO dash_providers, dashEdit?
+    // GESTURES & Dash
+    // TODO GesturePref, dash_providers, dashEdit?
     var dashLineSize = IntPref(
         dataStore = dataStore,
         key = PrefKey.DASH_LINE_SIZE,
