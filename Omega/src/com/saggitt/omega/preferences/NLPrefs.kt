@@ -32,6 +32,10 @@ import com.saggitt.omega.util.KEY_A400
 import com.saggitt.omega.util.PINK
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
+import com.saggitt.omega.widget.Temperature
+import com.saggitt.omega.widget.WidgetConstants
+import com.saggitt.omega.widget.weatherprovider.BlankDataProvider
+import com.saggitt.omega.widget.weatherprovider.PEWeatherDataProvider
 import kotlin.math.roundToInt
 
 private const val USER_PREFERENCES_NAME = "neo_launcher"
@@ -520,6 +524,108 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
         titleId = R.string.notification_custom_color,
         defaultValue = false
+    )
+
+    val smartspaceEnable = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_ENABLED,
+        titleId = R.string.title_smartspace,
+        defaultValue = false,
+    )
+
+    var smartspaceWidgetId = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_WIDGET_ID,
+        titleId = -1,
+        defaultValue = -1,
+    )
+
+    var smartspaceUsePillQsb = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_PILL_STYLE,
+        titleId = R.string.title_use_pill_qsb,
+        defaultValue = false,
+    )
+
+    val smartspaceTime = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_TIME,
+        titleId = R.string.title_smartspace_time,
+        defaultValue = false,
+    )
+
+    val smartspaceDate = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_DATE,
+        titleId = R.string.title_smartspace_date,
+        defaultValue = true,
+    )
+
+    val smartspaceTimeLarge = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_TIME_LARGE,
+        titleId = R.string.title_smartspace_time_above,
+        defaultValue = false,
+    )
+    val smartspaceTime24H = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_TIME_24H,
+        titleId = R.string.title_smartspace_time_24_h,
+        defaultValue = false,
+    )
+
+    var smartspaceWeatherApiKey = StringTextPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_API_KEY,
+        titleId = R.string.weather_api_key,
+        defaultValue = context.getString(R.string.default_owm_key),
+    )
+
+    var smartspaceWeatherCity = StringTextPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_CITY,
+        titleId = R.string.weather_city,
+        defaultValue = context.getString(R.string.default_city),
+    )
+
+    val smartspaceWeatherUnit = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_UNIT,
+        titleId = R.string.title_smartspace_weather_units,
+        defaultValue = Temperature.Unit.Celsius.toString(),
+        entries = temperatureUnitOptions,
+    )
+
+    var smartspaceWeatherProvider = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
+        titleId = R.string.title_smartspace_widget_provider,
+        defaultValue = BlankDataProvider::class.java.name, //SmartSpaceDataWidget::class.java.name,
+        entries = listOfNotNull(
+            BlankDataProvider::class.java.name,
+            //SmartSpaceDataWidget::class.java.name,
+            //OWMWeatherDataProvider::class.java.name,
+            if (PEWeatherDataProvider.isAvailable(context)) PEWeatherDataProvider::class.java.name else null
+        ).associateBy(
+            keySelector = { it },
+            valueTransform = { WidgetConstants.getDisplayName(context, it) }
+        )
+    )
+
+    // TODO does order have a function? if so, customize dialog to respect it?
+    var smartspaceEventProvidersNew = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
+        titleId = R.string.title_smartspace_event_providers,
+        defaultValue = setOf(
+            //SmartSpaceDataWidget::class.java.name,
+            //NotificationUnreadProvider::class.java.name,
+            //NowPlayingProvider::class.java.name,
+            //BatteryStatusProvider::class.java.name,
+            //PersonalityProvider::class.java.name
+        ),
+        entries = emptyMap(), // smartspaceProviderOptions,
+        //withIcons = true,
     )
 
     // TODO ColorPref?
