@@ -65,6 +65,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -3152,6 +3153,11 @@ public class Launcher extends StatefulActivity<LauncherState>
     public void returnToHomescreen() {
         super.returnToHomescreen();
         getStateManager().goToState(LauncherState.NORMAL);
+    }
+
+    @Override
+    public ActivityOptions getActivityLaunchOptions(View v) {
+        return null;
     }
 
     private void closeOpenViews() {

@@ -19,6 +19,7 @@ package com.android.launcher3;
 import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
+import android.app.ActivityOptions;
 import android.app.WallpaperColors;
 import android.app.WallpaperManager;
 import android.app.WallpaperManager.OnColorsChangedListener;
@@ -144,6 +145,14 @@ public abstract class BaseDraggingActivity extends BaseActivity
     public void returnToHomescreen() {
         // no-op
     }
+
+
+    public final Bundle getActivityLaunchOptionsAsBundle(View v) {
+        ActivityOptions activityOptions = getActivityLaunchOptions(v);
+        return activityOptions == null ? null : activityOptions.toBundle();
+    }
+
+    public abstract ActivityOptions getActivityLaunchOptions(View v);
 
     @Override
     @NonNull
