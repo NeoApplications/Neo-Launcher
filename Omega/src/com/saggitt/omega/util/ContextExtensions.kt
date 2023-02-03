@@ -19,6 +19,8 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import com.saggitt.omega.preferences.NLPrefs
 import java.util.*
 
@@ -31,3 +33,16 @@ val Context.locale: Locale
 
 val Context.prefs: NLPrefs
     get() = NLPrefs.getInstance(this)
+
+fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
+    try {
+        val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+        info.requestedPermissions.forEachIndexed { index, s ->
+            if (s == permissionName) {
+                return info.requestedPermissionsFlags[index].hasFlag(PackageInfo.REQUESTED_PERMISSION_GRANTED)
+            }
+        }
+    } catch (_: PackageManager.NameNotFoundException) {
+    }
+    return false
+}

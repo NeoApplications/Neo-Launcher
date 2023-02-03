@@ -9,3 +9,5 @@ fun <T> JSONArray.toArrayList(): ArrayList<T> {
     }
     return arrayList
 }
+
+infix fun Int.hasFlag(flag: Int) = (this and flag) != 0
