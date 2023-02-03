@@ -40,6 +40,8 @@ import android.content.pm.ShortcutInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
@@ -49,6 +51,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -943,6 +946,39 @@ public final class Utilities {
 
     public static boolean bothNonNull(@Nullable Object a, @Nullable Object b) {
         return a != null && b != null;
+    }
+
+    @Nullable
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        return Utilities.drawableToBitmap(drawable, true);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
+        return drawableToBitmap(drawable, forceCreate, 0);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
+        if (!forceCreate && drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+
+        if (width <= 0 || height <= 0) {
+            if (fallbackSize > 0) {
+                width = height = fallbackSize;
+            } else {
+                return null;
+            }
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
     public static NLPrefs getOmegaPrefs(Context context) {
