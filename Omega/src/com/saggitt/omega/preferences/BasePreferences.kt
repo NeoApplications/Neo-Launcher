@@ -75,7 +75,7 @@ open class FloatPref(
     val minValue: Float,
     val maxValue: Float,
     val steps: Int,
-    val specialOutputs: ((Float) -> String) = Float::toString
+    val specialOutputs: ((Float) -> String) = Float::toString,
 ) : PrefDelegate<Float>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Float> {
@@ -93,23 +93,12 @@ open class IntSelectionPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Int>,
     val defaultValue: Int = 0,
-    val entries: Map<Int, Int>
+    val entries: Map<Int, Int>,
 ) :
     PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Int> {
         return dataStore.data.map { it[key] ?: defaultValue }
-    }
-
-    fun getValue(): Int {
-        var value = defaultValue
-        /*CoroutineScope(Dispatchers.IO).launch {
-            value = get().first()
-        }*/
-        runBlocking(Dispatchers.IO) {
-            value = get().firstOrNull()!!
-        }
-        return value
     }
 
     override suspend fun set(value: Int) {
@@ -131,12 +120,6 @@ open class StringSelectionPref(
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
-    fun getValue(): String {
-        return runBlocking(Dispatchers.IO) {
-            get().firstOrNull() ?: defaultValue
-        }
-    }
-
     override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
     }
@@ -156,12 +139,6 @@ open class StringMultiSelectionPref(
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
-    fun getValue(): Set<String> {
-        return runBlocking(Dispatchers.IO) {
-            get().firstOrNull() ?: defaultValue
-        }
-    }
-
     override suspend fun set(value: Set<String>) {
         dataStore.edit { it[key] = value }
     }
@@ -174,6 +151,11 @@ abstract class PrefDelegate<T : Any>(
     private val key: Preferences.Key<T>,
     private val defaultValue: T,
 ) {
+    val value: T
+        get() = runBlocking(Dispatchers.IO) {
+            get().firstOrNull() ?: defaultValue
+        }
+
     abstract fun get(): Flow<T>
 
     abstract suspend fun set(value: T)
