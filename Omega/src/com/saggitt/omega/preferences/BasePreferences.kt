@@ -106,6 +106,25 @@ open class IntSelectionPref(
     }
 }
 
+open class StringTextPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+    val predicate: (String) -> Boolean = { true },
+) :
+    PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: String) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
 open class StringSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
