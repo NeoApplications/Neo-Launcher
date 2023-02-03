@@ -19,6 +19,7 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import com.saggitt.omega.preferences.NLPrefs
 import java.util.*
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
@@ -27,3 +28,6 @@ fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
 
 val Context.locale: Locale
     get() = this.resources.configuration.locales[0]
+
+val Context.prefs: NLPrefs
+    get() = NLPrefs.getInstance(this)
