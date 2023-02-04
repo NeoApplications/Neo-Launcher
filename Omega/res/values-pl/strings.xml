@@ -465,4 +465,13 @@
     <string name="summary__general_dock">Ikony hotseat, pasek wyszukiwania</string>
     <string name="show_top_shadow">Pokaż cień na górze</string>
     <string name="title_themed_icons">Ikony tematyczne</string>
+    <string name="gesture_press_home">Naciśnięcie przycisku strony głównej</string>
+    <string name="web_search_metager">Metager (Web)</string>
+    <string name="title_fuzzy_search">Wyszukiwanie rozmyte</string>
+    <string name="dt2s_admin_hint">W celu używania podwójnego stuknięcia do uśpienia oraz do przyznania uprawnienia administratora.</string>
+    <string name="title_override_corner_radius_value">Globalny promień narożników</string>
+    <string name="folder_opacity">Nieprzezroczystość folderów</string>
+    <string name="section_web">Sieć</string>
+    <string name="tap_to_enable">Naciśnij pozycję, aby włączyć</string>
+    <string name="home_widget">Widżet \"W skrócie\"</string>
 </resources>
