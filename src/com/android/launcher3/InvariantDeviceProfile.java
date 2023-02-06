@@ -432,10 +432,14 @@ public class InvariantDeviceProfile {
         mChangeListeners.remove(listener);
     }
 
-
     public void setCurrentGrid(Context context, String gridName) {
         Context appContext = context.getApplicationContext();
         Utilities.getPrefs(appContext).edit().putString(KEY_IDP_GRID_NAME, gridName).apply();
+        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
+    }
+
+    public void onPreferencesChanged(Context context) {
+        Context appContext = context.getApplicationContext();
         MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
     }
 
