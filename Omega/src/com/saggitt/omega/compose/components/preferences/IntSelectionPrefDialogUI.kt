@@ -50,6 +50,7 @@ import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.StringSelectionPref
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -127,20 +128,20 @@ fun IntSelectionPrefDialogUI(
         }
     }
 }
-/*
+
 @Composable
 fun StringSelectionPrefDialogUI(
-    pref: BasePreferences.StringSelectionPref,
+    pref: StringSelectionPref,
     openDialogCustom: MutableState<Boolean>
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    var selected by remember { mutableStateOf(pref.onGetValue()) }
+    var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
     var radius = 16.dp
-    if (prefs.themeCornerRadius.onGetValue() > -1) {
-        radius = prefs.themeCornerRadius.onGetValue().dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
 
@@ -186,7 +187,7 @@ fun StringSelectionPrefDialogUI(
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
                     onClick = {
-                        pref.onSetValue(selected)
+                        pref.setValue(selected)
                         openDialogCustom.value = false
                     }
                 )
@@ -194,7 +195,7 @@ fun StringSelectionPrefDialogUI(
         }
     }
 }
-
+/*
 @Composable
 fun StringMultiSelectionPrefDialogUI(
     pref: BasePreferences.StringMultiSelectionPref,

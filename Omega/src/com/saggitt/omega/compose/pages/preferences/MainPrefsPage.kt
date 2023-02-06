@@ -47,7 +47,7 @@ fun MainPrefsPage() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
     val uiPrefs = listOf(
-        //PageItem.PrefsProfile,
+        PageItem.PrefsProfile,
         //PageItem.PrefsDesktop,
         //PageItem.PrefsDock,
         PageItem.PrefsDrawer

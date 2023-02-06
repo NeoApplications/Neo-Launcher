@@ -38,9 +38,11 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.data.IconOverrideRepository
+import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.collectAsStateBlocking
 
@@ -97,11 +99,11 @@ fun ProfilePrefsPage() {
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        /*is BasePreferences.IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as BasePreferences.IntSelectionPref,
+                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+                            pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
-
+                        /*
                         is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as BasePreferences.StringSelectionPref,
                             openDialogCustom = openDialog

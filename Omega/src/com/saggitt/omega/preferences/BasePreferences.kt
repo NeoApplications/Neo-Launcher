@@ -170,10 +170,17 @@ abstract class PrefDelegate<T : Any>(
     private val key: Preferences.Key<T>,
     private val defaultValue: T,
 ) {
-    val value: T
-        get() = runBlocking(Dispatchers.IO) {
+    fun getValue(): T {
+        return runBlocking(Dispatchers.IO) {
             get().firstOrNull() ?: defaultValue
         }
+    }
+
+    fun setValue(value: T) {
+        return runBlocking(Dispatchers.IO) {
+            set(value)
+        }
+    }
 
     abstract fun get(): Flow<T>
 
