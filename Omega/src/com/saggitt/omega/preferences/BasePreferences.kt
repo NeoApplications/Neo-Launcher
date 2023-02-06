@@ -150,6 +150,7 @@ open class StringMultiSelectionPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
+    val withIcons: Boolean = false,
     val entries: Map<String, Int>,
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
 

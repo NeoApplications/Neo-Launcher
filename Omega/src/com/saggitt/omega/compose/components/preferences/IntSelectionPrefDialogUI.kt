@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,11 +46,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
+import com.saggitt.omega.compose.components.MultiSelectionListItem
 import com.saggitt.omega.compose.components.SingleSelectionListItem
+import com.saggitt.omega.data.IconOverrideRepository
+import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -195,20 +201,20 @@ fun StringSelectionPrefDialogUI(
         }
     }
 }
-/*
+
 @Composable
 fun StringMultiSelectionPrefDialogUI(
-    pref: BasePreferences.StringMultiSelectionPref,
+    pref: StringMultiSelectionPref,
     openDialogCustom: MutableState<Boolean>
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    var selected by remember { mutableStateOf(pref.onGetValue()) }
+    var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
     var radius = 16.dp
-    if (prefs.themeCornerRadius.onGetValue() > -1) {
-        radius = prefs.themeCornerRadius.onGetValue().dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
 
@@ -259,7 +265,7 @@ fun StringMultiSelectionPrefDialogUI(
                 DialogPositiveButton(
                     cornerRadius = cornerRadius,
                     onClick = {
-                        pref.onSetValue(selected)
+                        pref.setValue(selected)
                         openDialogCustom.value = false
                     }
                 )
@@ -270,7 +276,7 @@ fun StringMultiSelectionPrefDialogUI(
 
 @Composable
 fun AlertDialogUI(
-    pref: BasePreferences.DialogPref,
+    pref: DialogPref,
     openDialogCustom: MutableState<Boolean>
 ) {
     val context = LocalContext.current
@@ -278,8 +284,8 @@ fun AlertDialogUI(
     val scope = rememberCoroutineScope()
 
     var radius = 16.dp
-    if (prefs.themeCornerRadius.onGetValue() > -1) {
-        radius = prefs.themeCornerRadius.onGetValue().dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
 
@@ -325,4 +331,4 @@ fun AlertDialogUI(
             }
         }
     }
-}*/
+}
