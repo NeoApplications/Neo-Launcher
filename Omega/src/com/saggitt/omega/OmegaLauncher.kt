@@ -19,10 +19,18 @@ package com.saggitt.omega
 
 import android.os.Bundle
 import com.android.launcher3.Launcher
+import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.util.Config
 
 class OmegaLauncher : Launcher() {
+
+    val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        val config = Config(this)
+        config.setAppLanguage(prefs.profileLanguage.value)
     }
 }
