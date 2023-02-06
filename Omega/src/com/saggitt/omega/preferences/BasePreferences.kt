@@ -151,14 +151,30 @@ open class StringMultiSelectionPref(
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
     val entries: Map<String, Int>,
-) :
-    PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
+) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Set<String>> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
     override suspend fun set(value: Set<String>) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
+open class DialogPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
     }
 }
