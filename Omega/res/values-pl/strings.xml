@@ -455,4 +455,14 @@
     <string name="protected_apps">Chronione aplikacje</string>
     <string name="protected_app_selected">Chronione aplikacje (%1$d)</string>
     <string name="title_feed_provider">Dostawca kanału</string>
+    <string name="reset_custom_icon">Usuń niestandardowe ikony</string>
+    <string name="summary_full_width_widgets">Pozwól widżetom rozciągać się na całą szerokość bez wypełnienia</string>
+    <string name="title_desktop_icon_popup_menu">Elementy menu podręcznego</string>
+    <string name="title_dock_search">Pasek wyszukiwania w doku</string>
+    <string name="summary_dock_search">Pokaż w dolnym doku</string>
+    <string name="cat_dock_search">Szuflada aplikacji i dok</string>
+    <string name="title__general_gestures_dash">Gesty &amp; Panel Dash</string>
+    <string name="summary__general_dock">Ikony hotseat, pasek wyszukiwania</string>
+    <string name="show_top_shadow">Pokaż cień na górze</string>
+    <string name="title_themed_icons">Ikony tematyczne</string>
 </resources>

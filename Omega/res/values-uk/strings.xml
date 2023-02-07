@@ -474,4 +474,5 @@
     <string name="action_open_recents">Відкрити нещодавні</string>
     <string name="search_no_results">Немає результатів</string>
     <string name="show_top_shadow">Показати верхню тінь</string>
+    <string name="title_override_corner_radius_value">Глобальний радіус кута</string>
 </resources>
