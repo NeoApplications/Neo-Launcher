@@ -31,6 +31,6 @@ class OmegaLauncher : Launcher() {
 
 
         val config = Config(this)
-        config.setAppLanguage(prefs.profileLanguage.value)
+        config.setAppLanguage(prefs.profileLanguage.getValue())
     }
 }
