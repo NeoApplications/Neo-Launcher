@@ -81,8 +81,8 @@ fun MainPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -112,14 +112,14 @@ fun MainPrefsPage() {
 
 fun NavGraphBuilder.mainPrefsGraph(route: String) {
     preferenceGraph(route, { MainPrefsPage() }) { subRoute ->
-        /*profilePrefsGraph(route = subRoute(Routes.PREFS_PROFILE))
-        preferenceGraph(route = subRoute(Routes.PREFS_DESKTOP), { DesktopPrefsPage() })
+        profilePrefsGraph(route = subRoute(Routes.PREFS_PROFILE))
+        /*preferenceGraph(route = subRoute(Routes.PREFS_DESKTOP), { DesktopPrefsPage() })
         preferenceGraph(route = subRoute(Routes.PREFS_DOCK), { DockPrefsPage() })
         */
         drawerPrefsGraph(route = subRoute(Routes.PREFS_DRAWER))
-        /*preferenceGraph(route = subRoute(Routes.PREFS_WIDGETS), { WidgetsPrefsPage() })
+        /*preferenceGraph(route = subRoute(Routes.PREFS_WIDGETS), { WidgetsPrefsPage() })*/
         preferenceGraph(route = subRoute(Routes.PREFS_SEARCH), { SearchPrefsPage() })
-        preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefPage() })
+        /*preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefPage() })
         preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() }) // TODO
         preferenceGraph(route = subRoute(Routes.PREFS_DEV), { DevPrefPage() })
         gesturesPrefGraph(route = subRoute(Routes.PREFS_GESTURES))
