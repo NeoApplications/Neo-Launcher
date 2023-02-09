@@ -44,13 +44,11 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
-import com.saggitt.omega.util.collectAsStateBlocking
 
 @Composable
 fun ProfilePrefsPage() {
@@ -63,15 +61,13 @@ fun ProfilePrefsPage() {
         openDialog.value = true
     }
 
-    val overrideRepo = IconOverrideRepository.INSTANCE.get(LocalContext.current)
-    val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
-
     val profilePrefs = listOf(
         prefs.profileLanguage
     )
 
     val others = listOf(
-        prefs.profileShowTopShadow
+            prefs.profileWindowCornerRadius,
+            prefs.profileShowTopShadow
     )
 
     OmegaAppTheme {
@@ -80,8 +76,8 @@ fun ProfilePrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
