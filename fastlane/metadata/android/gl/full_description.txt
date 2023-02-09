@@ -1,12 +1,13 @@
-Neo Launcher é un fork do launcher de AOSP para usuarios avanzados. É altamente configurable, e ofrecelle un montón de funcions. Algunas delas: 
- 
-- O _Dash_. 
-- Soporte temático rico. 
-- Buscadores persoalizados. 
-- Apoio xestual. 
-- Un so widget persoalizado. 
-- Categorías ou cartafoles no caixón da aplicación. 
-- Soporte de formas e paquetes de iconas. 
-- Ocultar aplicacións. 
- 
-Sempre atoparas novas funcións en proceso, así que estade atentos…
+Neo Launcher é un fork do lanzador AOSP para usuarios avanzados.
+É altamente configurable e ofrécelle moitas funcionalidades. Algúns son:
+
+- O _Dash_.
+- Soporte temático rico.
+- Buscadores personalizados.
+- Apoio aos xestos.
+- Un único widget persoalizado.
+- Categorías ou cartafoles no caixón da aplicación.
+- Soporte para formas e paquetes de iconas.
+- Ocultar aplicacións.
+
+Sempre hai novas funcións en proceso, así que estade atentos…
