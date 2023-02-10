@@ -162,7 +162,6 @@ fun SwitchPreference(
                 checked = checked.value,
                 onCheckedChange = {
                     onCheckedChange(it)
-                    check(it)
                     coroutineScope.launch { pref.set(it) }
                 },
                 enabled = isEnabled,
