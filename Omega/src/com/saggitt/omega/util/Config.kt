@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
+import com.saggitt.omega.theme.ThemeOverride
 import java.util.Locale
 
 class Config(val context: Context) {
@@ -67,5 +68,17 @@ class Config(val context: Context) {
             SORT_BY_COLOR to R.string.title__sort_by_color,
             SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
         )
+
+        fun getCurrentTheme(context: Context): Int {
+            val themeSet = ThemeOverride.Settings()
+            var currentTheme = THEME_LIGHT
+            if (themeSet.getTheme(context) == R.style.SettingsTheme_Dark) {
+                currentTheme = THEME_DARK
+            } else if (themeSet.getTheme(context) == R.style.SettingsTheme_Black) {
+                currentTheme = THEME_BLACK
+            }
+            return currentTheme
+        }
+
     }
 }
