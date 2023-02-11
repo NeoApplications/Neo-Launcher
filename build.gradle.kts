@@ -239,8 +239,11 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.0.1")
 
     //Accompanist
+    implementation("com.google.accompanist:accompanist-flowlayout:$vAccompanist")
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
     implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
     implementation("com.google.accompanist:accompanist-pager:$vAccompanist")
     implementation("com.google.accompanist:accompanist-pager-indicators:$vAccompanist")
 
