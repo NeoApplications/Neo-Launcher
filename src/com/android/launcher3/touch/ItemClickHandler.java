@@ -70,6 +70,7 @@ import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
 import com.saggitt.omega.data.AppTrackerRepository;
+import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 
@@ -101,6 +102,9 @@ public class ItemClickHandler {
                 onClickFolderIcon(v);
             }
         } else if (tag instanceof AppInfo) {
+            if (Utilities.getOmegaPrefs(launcher).getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
+                Utilities.getOmegaPrefs(launcher).reloadApps();
+            }
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
