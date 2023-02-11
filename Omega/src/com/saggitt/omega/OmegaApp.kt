@@ -17,16 +17,19 @@
  */
 package com.saggitt.omega
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import org.chickenhook.restrictionbypass.Unseal
 
 class OmegaApp : Application() {
     private val TAG = "OmegaApp"
+    val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
 
     override fun attachBaseContext(base: Context?) {
@@ -51,6 +54,42 @@ class OmegaApp : Application() {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
             false
+        }
+    }
+
+    class ActivityHandler : ActivityLifecycleCallbacks {
+
+        val activities = HashSet<Activity>()
+        var foregroundActivity: Activity? = null
+
+        fun finishAll(recreateLauncher: Boolean = true) {
+            HashSet(activities).forEach { if (recreateLauncher && it is OmegaLauncher) it.recreate() else it.finish() }
+        }
+
+        override fun onActivityPaused(activity: Activity) {
+        }
+
+        override fun onActivityResumed(activity: Activity) {
+            foregroundActivity = activity
+        }
+
+        override fun onActivityStarted(activity: Activity) {
+        }
+
+        override fun onActivityDestroyed(activity: Activity) {
+            if (activity == foregroundActivity)
+                foregroundActivity = null
+            activities.remove(activity)
+        }
+
+        override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {
+        }
+
+        override fun onActivityStopped(activity: Activity) {
+        }
+
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+            activities.add(activity)
         }
     }
 
