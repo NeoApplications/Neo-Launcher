@@ -19,9 +19,13 @@
 package com.saggitt.omega.compose.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
@@ -82,5 +86,15 @@ fun PrefsComposeView(navController: NavHostController) {
         ) {
             mainPrefsGraph(route = "/")
         }
+    }
+}
+
+@Composable
+fun BlankScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxHeight()
+    ) {
     }
 }
