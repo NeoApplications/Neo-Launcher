@@ -19,7 +19,9 @@
 package com.saggitt.omega.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DropdownMenuItem
@@ -35,11 +37,13 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
+import com.saggitt.omega.compose.navigation.BlankScreen
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.objects.PageItem
+import com.saggitt.omega.compose.screens.preferences.aboutPrefsGraph
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
@@ -48,11 +52,22 @@ fun MainPrefsPage() {
     val prefs = Utilities.getOmegaPrefs(context)
     val uiPrefs = listOf(
         PageItem.PrefsProfile,
-        //PageItem.PrefsDesktop,
-        //PageItem.PrefsDock,
+        PageItem.PrefsDesktop,
+        PageItem.PrefsDock,
         PageItem.PrefsDrawer
     )
-
+    val featuresPrefs = listOf(
+        PageItem.PrefsWidgetsNotifications,
+        PageItem.PrefsSearchFeed,
+        PageItem.PrefsGesturesDash
+    )
+    val otherPrefs = listOfNotNull(
+        PageItem.PrefsBackup,
+        PageItem.PrefsDesktopMode,
+        if (prefs.developerOptionsEnabled.getValue()) PageItem.PrefsDeveloper
+        else null,
+        PageItem.PrefsAbout
+    )
     val navController = LocalNavController.current
     val destination = subRoute(Routes.PREFS_DEV)
 
@@ -81,8 +96,8 @@ fun MainPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -92,7 +107,7 @@ fun MainPrefsPage() {
                         prefs = uiPrefs
                     )
                 }
-                /*item {
+                item {
                     PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__features),
                         prefs = featuresPrefs
@@ -104,25 +119,23 @@ fun MainPrefsPage() {
                         prefs = otherPrefs
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                }*/
+                }
             }
         }
     }
 }
-
 fun NavGraphBuilder.mainPrefsGraph(route: String) {
     preferenceGraph(route, { MainPrefsPage() }) { subRoute ->
         profilePrefsGraph(route = subRoute(Routes.PREFS_PROFILE))
-        /*preferenceGraph(route = subRoute(Routes.PREFS_DESKTOP), { DesktopPrefsPage() })
-        preferenceGraph(route = subRoute(Routes.PREFS_DOCK), { DockPrefsPage() })
-        */
+        preferenceGraph(route = subRoute(Routes.PREFS_DESKTOP), { DesktopPrefPage() })
+        preferenceGraph(route = subRoute(Routes.PREFS_DOCK), { DockPrefPage() })
         drawerPrefsGraph(route = subRoute(Routes.PREFS_DRAWER))
-        /*preferenceGraph(route = subRoute(Routes.PREFS_WIDGETS), { WidgetsPrefsPage() })*/
+        preferenceGraph(route = subRoute(Routes.PREFS_WIDGETS), { WidgetsPrefPage() })
         preferenceGraph(route = subRoute(Routes.PREFS_SEARCH), { SearchPrefsPage() })
-        /*preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefPage() })
-        preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() }) // TODO
+        preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefPage() })
+        preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() })
         preferenceGraph(route = subRoute(Routes.PREFS_DEV), { DevPrefPage() })
         gesturesPrefGraph(route = subRoute(Routes.PREFS_GESTURES))
-        aboutPrefsGraph(route = subRoute(Routes.ABOUT))*/
+        aboutPrefsGraph(route = subRoute(Routes.ABOUT))
     }
 }

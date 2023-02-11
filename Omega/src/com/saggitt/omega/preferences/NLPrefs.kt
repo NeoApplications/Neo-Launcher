@@ -22,6 +22,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.Themes
@@ -43,6 +44,12 @@ private const val USER_PREFERENCES_NAME = "neo_launcher"
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES_NAME)
     private val dataStore: DataStore<Preferences> = context.dataStore
+
+    fun reloadApps() {
+        val las = LauncherAppState.getInstance(context)
+        val idp = las.invariantDeviceProfile
+        idp.onPreferencesChanged(context)
+    }
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
@@ -748,6 +755,14 @@ class NLPrefs private constructor(private val context: Context) {
         maxValue = 6,
         minValue = 4,
         steps = 1,
+    )
+
+    //Dev options
+    var developerOptionsEnabled = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.SHOW_DEV_OPTIONS,
+        titleId = R.string.title__dev_show_Dev,
+        defaultValue = false
     )
 
     companion object {
