@@ -21,8 +21,11 @@ package com.saggitt.omega.util
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NLPrefs
-import java.util.*
+import java.util.Locale
+
+val Context.omegaPrefs: NLPrefs get() = Utilities.getOmegaPrefs(this)
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }
