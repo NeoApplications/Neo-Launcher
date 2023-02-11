@@ -91,7 +91,7 @@ public final class FeatureFlags {
             "ENABLE_DEVICE_SEARCH", true, "Allows on device search in all apps");
 
     public static final BooleanFlag ENABLE_FLOATING_SEARCH_BAR =
-            getDebugFlag("ENABLE_FLOATING_SEARCH_BAR", true,
+            getDebugFlag("ENABLE_FLOATING_SEARCH_BAR", false,
                     "Keep All Apps search bar at the bottom (but above keyboard if open)");
 
     public static final BooleanFlag ENABLE_QUICK_SEARCH = new DeviceFlag("ENABLE_QUICK_SEARCH",
@@ -177,7 +177,7 @@ public final class FeatureFlags {
             "Shows user a tutorial on how to get to All Apps after X amount of attempts.");
 
     public static final BooleanFlag SEPARATE_RECENTS_ACTIVITY = getDebugFlag(
-            "SEPARATE_RECENTS_ACTIVITY", false,
+            "SEPARATE_RECENTS_ACTIVITY", true,
             "Uses a separate recents activity instead of using the integrated recents+Launcher UI");
 
     public static final BooleanFlag ENABLE_MINIMAL_DEVICE = getDebugFlag(
@@ -275,7 +275,7 @@ public final class FeatureFlags {
             "Use inbuilt monochrome icons if app doesn't provide one");
 
     public static final BooleanFlag ENABLE_DISMISS_PREDICTION_UNDO = getDebugFlag(
-            "ENABLE_DISMISS_PREDICTION_UNDO", false,
+            "ENABLE_DISMISS_PREDICTION_UNDO", true,
             "Show an 'Undo' snackbar when users dismiss a predicted hotseat item");
 
     public static void initialize(Context context) {
