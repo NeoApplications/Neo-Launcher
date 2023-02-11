@@ -151,7 +151,6 @@
     <style name="AppTheme.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor" />
     <style name="AppTheme.DarkText" parent="@style/LauncherTheme.DarkText" />
 
-    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor" />
 
     <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText" />

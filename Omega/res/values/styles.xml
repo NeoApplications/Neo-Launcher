@@ -17,10 +17,22 @@
   -->
 <resources>
 
-    <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar"></style>
+    <style name="AppTheme.Light" parent="@style/LauncherTheme" />
 
-    <style name="SettingsTheme.Dark" parent="Theme.Material3.Dark.NoActionBar"></style>
+    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
 
-    <style name="SettingsTheme.Black" parent="SettingsTheme.Dark"></style>
+    <style name="AppTheme.Black" parent="AppTheme.Dark" />
+
+    <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar" />
+
+    <style name="SettingsTheme.Dark" parent="Theme.Material3.Dark.NoActionBar" />
+
+    <style name="SettingsTheme.Black" parent="SettingsTheme.Dark" />
+
+    <style name="AlertDialog.Light" parent="Theme.Material3.Light.Dialog.Alert" />
+
+    <style name="AlertDialog.Dark" parent="Theme.Material3.Dark.Dialog.Alert" />
+
+    <style name="AlertDialog.Black" parent="Theme.Material3.Dark.Dialog.Alert" />
 </resources>
 
