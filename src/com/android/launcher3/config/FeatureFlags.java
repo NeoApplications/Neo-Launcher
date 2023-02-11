@@ -76,7 +76,7 @@ public final class FeatureFlags {
 
     // When enabled the promise icon is visible in all apps while installation an app.
     public static final BooleanFlag PROMISE_APPS_IN_ALL_APPS = getDebugFlag(
-            "PROMISE_APPS_IN_ALL_APPS", false, "Add promise icon in all-apps");
+            "PROMISE_APPS_IN_ALL_APPS", true, "Add promise icon in all-apps");
 
     // TODO: b/206508141: Long pressing on some icons on home screen cause launcher to crash.
     public static final BooleanFlag ENABLE_LOCAL_COLOR_POPUPS = getDebugFlag(
