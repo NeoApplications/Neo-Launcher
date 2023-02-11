@@ -83,7 +83,7 @@ public final class FeatureFlags {
             "ENABLE_LOCAL_COLOR_POPUPS", false, "Enable local color extraction for popups.");
 
     public static final BooleanFlag KEYGUARD_ANIMATION = getDebugFlag(
-            "KEYGUARD_ANIMATION", false, "Enable animation for keyguard going away on wallpaper");
+            "KEYGUARD_ANIMATION", true, "Enable animation for keyguard going away on wallpaper");
 
     public static final BooleanFlag ENABLE_QUICKSTEP_LIVE_TILE = getDebugFlag(
             "ENABLE_QUICKSTEP_LIVE_TILE", true, "Enable live tile in Quickstep overview");
@@ -92,7 +92,7 @@ public final class FeatureFlags {
             "ENABLE_DEVICE_SEARCH", true, "Allows on device search in all apps");
 
     public static final BooleanFlag ENABLE_FLOATING_SEARCH_BAR =
-            getDebugFlag("ENABLE_FLOATING_SEARCH_BAR", false,
+            getDebugFlag("ENABLE_FLOATING_SEARCH_BAR", true,
                     "Keep All Apps search bar at the bottom (but above keyboard if open)");
 
     public static final BooleanFlag ENABLE_HIDE_HEADER = new DeviceFlag("ENABLE_HIDE_HEADER",
@@ -102,10 +102,10 @@ public final class FeatureFlags {
             "ENABLE_HIDE_HEADER_STATIC", false, "Hide keyboard suggestion strip");
 
     public static final BooleanFlag COLLECT_SEARCH_HISTORY = new DeviceFlag(
-            "COLLECT_SEARCH_HISTORY", false, "Allow launcher to collect search history for log");
+            "COLLECT_SEARCH_HISTORY", true, "Allow launcher to collect search history for log");
 
     public static final BooleanFlag ENABLE_TWOLINE_ALLAPPS = getDebugFlag(
-            "ENABLE_TWOLINE_ALLAPPS", false, "Enables two line label inside all apps.");
+            "ENABLE_TWOLINE_ALLAPPS", true, "Enables two line label inside all apps.");
 
     public static final BooleanFlag ENABLE_DEVICE_SEARCH_PERFORMANCE_LOGGING = new DeviceFlag(
             "ENABLE_DEVICE_SEARCH_PERFORMANCE_LOGGING", false,
@@ -115,7 +115,7 @@ public final class FeatureFlags {
             "IME_STICKY_SNACKBAR_EDU", true, "Show sticky IME edu in AllApps");
 
     public static final BooleanFlag ENABLE_PEOPLE_TILE_PREVIEW = getDebugFlag(
-            "ENABLE_PEOPLE_TILE_PREVIEW", false,
+            "ENABLE_PEOPLE_TILE_PREVIEW", true,
             "Experimental: Shows conversation shortcuts on home screen as search results");
 
     public static final BooleanFlag FOLDER_NAME_MAJORITY_RANKING = getDebugFlag(
@@ -148,7 +148,7 @@ public final class FeatureFlags {
             "Show indicators for content on Overview to share with top people. ");
 
     public static final BooleanFlag ENABLE_DATABASE_RESTORE = getDebugFlag(
-            "ENABLE_DATABASE_RESTORE", false,
+            "ENABLE_DATABASE_RESTORE", true,
             "Enable database restore when new restore session is created");
 
     public static final BooleanFlag ENABLE_SMARTSPACE_DISMISS = getDebugFlag(
@@ -208,7 +208,7 @@ public final class FeatureFlags {
             "Sends a notification whenever launcher encounters an uncaught exception.");
 
     public static final BooleanFlag ENABLE_WALLPAPER_SCRIM = getDebugFlag(
-            "ENABLE_WALLPAPER_SCRIM", false,
+            "ENABLE_WALLPAPER_SCRIM", true,
             "Enables scrim over wallpaper for text protection.");
 
     public static final BooleanFlag WIDGETS_IN_LAUNCHER_PREVIEW = getDebugFlag(
