@@ -22,13 +22,10 @@ import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import android.app.WallpaperColors;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
-import android.database.Cursor;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.util.Size;
-import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.SurfaceControlViewHost;
@@ -37,8 +34,6 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -131,45 +126,6 @@ public class PreviewSurfaceRenderer {
     }
 
     /**
-     * A function that queries for the launcher app widget span info
-     *
-     * @param context The context to get the content resolver from, should be related to launcher
-     * @return A SparseArray with the app widget id being the key and the span info being the values
-     */
-    @WorkerThread
-    @Nullable
-    public SparseArray<Size> getLoadedLauncherWidgetInfo(
-            @NonNull final Context context) {
-        final SparseArray<Size> widgetInfo = new SparseArray<>();
-        final String query = LauncherSettings.Favorites.ITEM_TYPE + " = "
-                + LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
-
-        try (Cursor c = context.getContentResolver().query(LauncherSettings.Favorites.CONTENT_URI,
-                new String[]{
-                        LauncherSettings.Favorites.APPWIDGET_ID,
-                        LauncherSettings.Favorites.SPANX,
-                        LauncherSettings.Favorites.SPANY
-                }, query, null, null)) {
-            final int appWidgetIdIndex = c.getColumnIndexOrThrow(
-                    LauncherSettings.Favorites.APPWIDGET_ID);
-            final int spanXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANX);
-            final int spanYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANY);
-            while (c.moveToNext()) {
-                final int appWidgetId = c.getInt(appWidgetIdIndex);
-                final int spanX = c.getInt(spanXIndex);
-                final int spanY = c.getInt(spanYIndex);
-
-                widgetInfo.append(appWidgetId, new Size(spanX, spanY));
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error querying for launcher widget info", e);
-            return null;
-        }
-
-        return widgetInfo;
-    }
-
-    /**
      * Generates the preview in background
      */
     public void loadAsync() {
@@ -220,11 +176,8 @@ public class PreviewSurfaceRenderer {
                     loadWorkspace(new ArrayList<>(), LauncherSettings.Favorites.PREVIEW_CONTENT_URI,
                             query);
 
-                    final SparseArray<Size> spanInfo =
-                            getLoadedLauncherWidgetInfo(previewContext.getBaseContext());
-
                     MAIN_EXECUTOR.execute(() -> {
-                        renderView(previewContext, mBgDataModel, mWidgetProvidersMap, spanInfo);
+                        renderView(previewContext, mBgDataModel, mWidgetProvidersMap);
                         mOnDestroyCallbacks.add(previewContext::onDestroy);
                     });
                 }
@@ -232,8 +185,7 @@ public class PreviewSurfaceRenderer {
         } else {
             LauncherAppState.getInstance(inflationContext).getModel().loadAsync(dataModel -> {
                 if (dataModel != null) {
-                    MAIN_EXECUTOR.execute(() -> renderView(inflationContext, dataModel, null,
-                            null));
+                    MAIN_EXECUTOR.execute(() -> renderView(inflationContext, dataModel, null));
                 } else {
                     Log.e(TAG, "Model loading failed");
                 }
@@ -251,13 +203,12 @@ public class PreviewSurfaceRenderer {
 
     @UiThread
     private void renderView(Context inflationContext, BgDataModel dataModel,
-                            Map<ComponentKey, AppWidgetProviderInfo> widgetProviderInfoMap,
-                            @Nullable final SparseArray<Size> launcherWidgetSpanInfo) {
+                            Map<ComponentKey, AppWidgetProviderInfo> widgetProviderInfoMap) {
         if (mDestroyed) {
             return;
         }
-        View view = new LauncherPreviewRenderer(inflationContext, mIdp, mWallpaperColors,
-                launcherWidgetSpanInfo).getRenderedView(dataModel, widgetProviderInfoMap);
+        View view = new LauncherPreviewRenderer(inflationContext, mIdp, mWallpaperColors)
+                .getRenderedView(dataModel, widgetProviderInfoMap);
         // This aspect scales the view to fit in the surface and centers it
         final float scale = Math.min(mWidth / (float) view.getMeasuredWidth(),
                 mHeight / (float) view.getMeasuredHeight());

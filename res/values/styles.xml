@@ -65,8 +65,6 @@
         <item name="workspaceAccentColor">@color/workspace_accent_color_light</item>
         <item name="dropTargetHoverTextColor">@color/workspace_text_color_dark</item>
         <item name="overviewScrimColor">@color/overview_scrim</item>
-        <item name="preloadIconAccentColor">@color/preload_icon_accent_color_light</item>
-        <item name="preloadIconBackgroundColor">@color/preload_icon_background_color_light</item>
 
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
@@ -125,8 +123,6 @@
         <item name="workProfileOverlayTextColor">@android:color/white</item>
         <item name="eduHalfSheetBGColor">#DD000000</item>
         <item name="overviewScrimColor">@color/overview_scrim_dark</item>
-        <item name="preloadIconAccentColor">@color/preload_icon_accent_color_dark</item>
-        <item name="preloadIconBackgroundColor">@color/preload_icon_background_color_dark</item>
     </style>
 
     <style name="LauncherTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark">
@@ -151,8 +147,8 @@
     <style name="AppTheme.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor" />
     <style name="AppTheme.DarkText" parent="@style/LauncherTheme.DarkText" />
 
+    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor" />
-
     <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText" />
 
     <style name="HomeSettings.Theme" parent="@android:style/Theme.DeviceDefault.Settings">
@@ -187,7 +183,6 @@
         <item name="android:textColorSecondary">?android:attr/textColorPrimary</item>
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
     </style>
-
     <style name="WidgetContainerTheme.Dark" parent="AppTheme.Dark">
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
         <item name="android:colorPrimaryDark">#616161</item> <!-- Gray 700 -->
@@ -274,7 +269,7 @@
     </style>
 
     <!-- Drop targets -->
-    <style name="DropTargetButtonBase" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+    <style name="DropTargetButtonBase" parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:drawablePadding">@dimen/drop_target_button_drawable_padding</item>
         <item name="android:padding">14dp</item>
         <item name="android:textColor">@color/drop_target_text</item>
@@ -291,6 +286,18 @@
     <style name="PrimaryHeadline" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle" />
 
     <style name="TextTitle" parent="@android:style/TextAppearance.DeviceDefault" />
+
+    <style name="AllAppsEmptySearchBackground">
+        <item name="android:colorPrimary">#E0E0E0</item>
+        <item name="android:colorControlHighlight">#19BDBDBD</item>
+        <item name="android:colorForeground">@color/all_apps_bg_hand_fill</item>
+    </style>
+
+    <style name="AllAppsEmptySearchBackground.Dark">
+        <item name="android:colorPrimary">#9AA0A6</item>
+        <item name="android:colorControlHighlight">#19DFE1E5</item>
+        <item name="android:colorForeground">@color/all_apps_bg_hand_fill_dark</item>
+    </style>
 
     <style name="Button.TopRounded.Bordered" parent="@android:style/Widget.Material.Button">
         <item name="android:background">@drawable/button_top_rounded_bordered_ripple</item>

@@ -17,7 +17,6 @@ package com.android.launcher3.allapps;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.ArrayMap;
@@ -42,7 +41,6 @@ import com.android.systemui.plugins.AllAppsRow.OnHeightUpdatedListener;
 import com.android.systemui.plugins.PluginListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 public class FloatingHeaderView extends LinearLayout implements
@@ -69,7 +67,7 @@ public class FloatingHeaderView extends LinearLayout implements
                         mAnimator.cancel();
                     }
 
-                    int current = -mCurrentRV.computeVerticalScrollOffset();
+                    int current = -mCurrentRV.getCurrentScrollY();
                     boolean headerCollapsed = mHeaderCollapsed;
                     moved(current);
                     applyVerticalMove();
@@ -84,15 +82,16 @@ public class FloatingHeaderView extends LinearLayout implements
     protected final Map<AllAppsRow, PluginHeaderRow> mPluginRows = new ArrayMap<>();
 
     // These two values are necessary to ensure that the header protection is drawn correctly.
-    private final int mTabsAdditionalPaddingTop;
-    private final int mTabsAdditionalPaddingBottom;
-    private boolean mHeaderProtectionSupported;
+    private final int mHeaderTopAdjustment;
+    private final int mHeaderBottomAdjustment;
+    private final boolean mHeaderProtectionSupported;
 
     protected ViewGroup mTabLayout;
     private AllAppsRecyclerView mMainRV;
     private AllAppsRecyclerView mWorkRV;
     private SearchRecyclerView mSearchRV;
     private AllAppsRecyclerView mCurrentRV;
+    public boolean mHeaderCollapsed;
     protected int mSnappedScrolledY;
     private int mTranslationY;
 
@@ -101,12 +100,7 @@ public class FloatingHeaderView extends LinearLayout implements
     protected boolean mTabsHidden;
     protected int mMaxTranslation;
 
-    // Whether the header has been scrolled off-screen.
-    private boolean mHeaderCollapsed;
-    // Whether floating rows like predicted apps are hidden.
-    private boolean mFloatingRowsCollapsed;
-    // Total height of all current floating rows. Collapsed rows == 0 height.
-    private int mFloatingRowsHeight;
+    private boolean mCollapsed = false;
 
     // This is initialized once during inflation and stays constant after that. Fixed views
     // cannot be added or removed dynamically.
@@ -123,19 +117,14 @@ public class FloatingHeaderView extends LinearLayout implements
 
     public FloatingHeaderView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mTabsAdditionalPaddingTop = context.getResources()
+        mHeaderTopAdjustment = context.getResources()
                 .getDimensionPixelSize(R.dimen.all_apps_header_top_adjustment);
-        mTabsAdditionalPaddingBottom = context.getResources()
+        mHeaderBottomAdjustment = context.getResources()
                 .getDimensionPixelSize(R.dimen.all_apps_header_bottom_adjustment);
         mHeaderProtectionSupported = context.getResources().getBoolean(
-                R.bool.config_header_protection_supported);
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mHeaderProtectionSupported = getContext().getResources().getBoolean(
-                R.bool.config_header_protection_supported);
+                R.bool.config_header_protection_supported)
+                // TODO(b/208599118) Support header protection for bottom sheet.
+                && !ActivityContext.lookupContext(context).getDeviceProfile().isTablet;
     }
 
     @Override
@@ -154,7 +143,6 @@ public class FloatingHeaderView extends LinearLayout implements
         }
         mFixedRows = rows.toArray(new FloatingHeaderRow[rows.size()]);
         mAllRows = mFixedRows;
-        updateFloatingRowsHeight();
     }
 
     @Override
@@ -186,7 +174,6 @@ public class FloatingHeaderView extends LinearLayout implements
                 count++;
             }
         }
-        updateFloatingRowsHeight();
     }
 
     @Override
@@ -203,7 +190,7 @@ public class FloatingHeaderView extends LinearLayout implements
         int oldMaxHeight = mMaxTranslation;
         updateExpectedHeight();
 
-        if (mMaxTranslation != oldMaxHeight || mFloatingRowsCollapsed) {
+        if (mMaxTranslation != oldMaxHeight || mCollapsed) {
             BaseAllAppsContainerView<?> parent = (BaseAllAppsContainerView<?>) getParent();
             if (parent != null) {
                 parent.setupHeader();
@@ -256,9 +243,7 @@ public class FloatingHeaderView extends LinearLayout implements
         return mMainRV != null;
     }
 
-    /**
-     * Set the active AllApps RV which will adjust the alpha of the header when scrolled.
-     */
+    /** Set the active AllApps RV which will adjust the alpha of the header when scrolled. */
     void setActiveRV(int rvType) {
         if (mCurrentRV != null) {
             mCurrentRV.removeOnScrollListener(mOnScrollListener);
@@ -270,20 +255,20 @@ public class FloatingHeaderView extends LinearLayout implements
     }
 
     private void updateExpectedHeight() {
-        updateFloatingRowsHeight();
         mMaxTranslation = 0;
-        if (mFloatingRowsCollapsed) {
+        if (mCollapsed) {
             return;
         }
-        mMaxTranslation += mFloatingRowsHeight;
+        for (FloatingHeaderRow row : mAllRows) {
+            mMaxTranslation += row.getExpectedHeight();
+        }
         if (!mTabsHidden) {
-            mMaxTranslation += mTabsAdditionalPaddingBottom
-                    + getResources().getDimensionPixelSize(R.dimen.all_apps_tabs_margin_top);
+            mMaxTranslation += mHeaderBottomAdjustment;
         }
     }
 
-    int getMaxTranslation() {
-        if (mMaxTranslation == 0 && (mTabsHidden || mFloatingRowsCollapsed)) {
+    public int getMaxTranslation() {
+        if (mMaxTranslation == 0 && mTabsHidden) {
             return getResources().getDimensionPixelSize(R.dimen.all_apps_search_bar_bottom_padding);
         } else if (mMaxTranslation > 0 && mTabsHidden) {
             return mMaxTranslation + getPaddingTop();
@@ -324,7 +309,7 @@ public class FloatingHeaderView extends LinearLayout implements
         int uncappedTranslationY = mTranslationY;
         mTranslationY = Math.max(mTranslationY, -mMaxTranslation);
 
-        if (mFloatingRowsCollapsed || uncappedTranslationY < mTranslationY - getPaddingTop()) {
+        if (mCollapsed || uncappedTranslationY < mTranslationY - getPaddingTop()) {
             // we hide it completely if already capped (for opening search anim)
             for (FloatingHeaderRow row : mAllRows) {
                 row.setVerticalScroll(0, true /* isScrolledOut */);
@@ -337,12 +322,11 @@ public class FloatingHeaderView extends LinearLayout implements
 
         mTabLayout.setTranslationY(mTranslationY);
 
-        int clipTop = getPaddingTop() - mTabsAdditionalPaddingTop;
+        int clipTop = getPaddingTop() - mHeaderTopAdjustment;
         if (mTabsHidden) {
-            // Add back spacing that is otherwise covered by the tabs.
-            clipTop += mTabsAdditionalPaddingTop;
+            clipTop += getPaddingBottom() - mHeaderBottomAdjustment;
         }
-        mRVClip.top = mTabsHidden || mFloatingRowsCollapsed ? clipTop : 0;
+        mRVClip.top = mTabsHidden ? clipTop : 0;
         mHeaderClip.top = clipTop;
         // clipping on a draw might cause additional redraw
         setClipBounds(mHeaderClip);
@@ -360,12 +344,10 @@ public class FloatingHeaderView extends LinearLayout implements
     /**
      * Hides all the floating rows
      */
-    public void setFloatingRowsCollapsed(boolean collapsed) {
-        if (mFloatingRowsCollapsed == collapsed) {
-            return;
-        }
+    public void setCollapsed(boolean collapse) {
+        if (mCollapsed == collapse) return;
 
-        mFloatingRowsCollapsed = collapsed;
+        mCollapsed = collapse;
         onHeightUpdated();
     }
 
@@ -389,40 +371,6 @@ public class FloatingHeaderView extends LinearLayout implements
 
     public boolean isExpanded() {
         return !mHeaderCollapsed;
-    }
-
-    /**
-     * Returns true if personal/work tabs are currently in use.
-     */
-    public boolean usingTabs() {
-        return !mTabsHidden;
-    }
-
-    ViewGroup getTabLayout() {
-        return mTabLayout;
-    }
-
-    /**
-     * Calculates the combined height of any floating rows (e.g. predicted apps, app divider).
-     */
-    private void updateFloatingRowsHeight() {
-        mFloatingRowsHeight =
-                Arrays.stream(mAllRows).mapToInt(FloatingHeaderRow::getExpectedHeight).sum();
-    }
-
-    /**
-     * Gets the combined height of any floating rows (e.g. predicted apps, app divider).
-     */
-    int getFloatingRowsHeight() {
-        return mFloatingRowsHeight;
-    }
-
-    int getTabsAdditionalPaddingTop() {
-        return mTabsAdditionalPaddingTop;
-    }
-
-    int getTabsAdditionalPaddingBottom() {
-        return mTabsAdditionalPaddingBottom;
     }
 
     @Override
@@ -489,17 +437,16 @@ public class FloatingHeaderView extends LinearLayout implements
     /**
      * Returns visible height of FloatingHeaderView contents requiring header protection
      */
-    int getPeripheralProtectionHeight() {
+    public int getPeripheralProtectionHeight() {
         if (!mHeaderProtectionSupported) {
             return 0;
         }
 
         // we only want to show protection when work tab is available and header is either
         // collapsed or animating to/from collapsed state
-        if (mTabsHidden || mFloatingRowsCollapsed || !mHeaderCollapsed) {
+        if (mTabsHidden || !mHeaderCollapsed) {
             return 0;
         }
-        return Math.max(0,
-                getTabLayout().getBottom() - getPaddingTop() + getPaddingBottom() + mTranslationY);
+        return Math.max(getHeight() - getPaddingTop() + mTranslationY, 0);
     }
 }

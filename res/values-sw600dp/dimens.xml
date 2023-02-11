@@ -15,7 +15,7 @@
 -->
 
 <resources>
-    <!-- PagedView-->
+<!-- PagedView-->
     <dimen name="min_page_snap_velocity">3000dp</dimen>
 
     <!-- DragController -->

@@ -43,7 +43,6 @@ import com.android.launcher3.CheckLongPressHelper;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
@@ -86,7 +85,7 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     private Runnable mAutoAdvanceRunnable;
 
     private long mDeferUpdatesUntilMillis = 0;
-    RemoteViews mLastRemoteViews;
+    private RemoteViews mDeferredRemoteViews;
     private boolean mHasDeferredColorChange = false;
     private @Nullable SparseIntArray mDeferredColorChange = null;
 
@@ -96,9 +95,7 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
      * The drag content width which is only set when the drag content scale is not 1f.
      */
     private int mDragContentWidth = 0;
-    /**
-     * The drag content height which is only set when the drag content scale is not 1f.
-     */
+    /** The drag content height which is only set when the drag content scale is not 1f. */
     private int mDragContentHeight = 0;
 
     private boolean mTrackingWidgetUpdate = false;
@@ -155,18 +152,11 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
                     TRACE_METHOD_NAME + getAppWidgetInfo().provider, getAppWidgetId());
             mTrackingWidgetUpdate = false;
         }
-        if (FeatureFlags.ENABLE_CACHED_WIDGET.get()) {
-            mLastRemoteViews = remoteViews;
-            if (isDeferringUpdates()) {
-                return;
-            }
-        } else {
-            if (isDeferringUpdates()) {
-                mLastRemoteViews = remoteViews;
-                return;
-            }
-            mLastRemoteViews = null;
+        if (isDeferringUpdates()) {
+            mDeferredRemoteViews = remoteViews;
+            return;
         }
+        mDeferredRemoteViews = null;
 
         super.updateAppWidget(remoteViews);
 
@@ -230,7 +220,8 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
         SparseIntArray deferredColors;
         boolean hasDeferredColors;
         mDeferUpdatesUntilMillis = 0;
-        remoteViews = mLastRemoteViews;
+        remoteViews = mDeferredRemoteViews;
+        mDeferredRemoteViews = null;
         deferredColors = mDeferredColorChange;
         hasDeferredColors = mHasDeferredColorChange;
         mDeferredColorChange = null;
@@ -328,9 +319,7 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
         }
     }
 
-    /**
-     * Starts the drag mode.
-     */
+    /** Starts the drag mode. */
     public void startDrag() {
         mIsInDragMode = true;
         // In the case of dragging a scaled preview from widgets picker, we should reuse the
@@ -343,18 +332,14 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
         }
     }
 
-    /**
-     * Handles a drag event occurred on a workspace page corresponding to the {@code screenId}.
-     */
+    /** Handles a drag event occurred on a workspace page corresponding to the {@code screenId}. */
     public void handleDrag(Rect rectInView, View view, int screenId) {
         if (mIsInDragMode) {
             mColorExtractor.setWorkspaceLocation(rectInView, view, screenId);
         }
     }
 
-    /**
-     * Ends the drag mode.
-     */
+    /** Ends the drag mode. */
     public void endDrag() {
         mIsInDragMode = false;
         mDragContentWidth = 0;

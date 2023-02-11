@@ -29,6 +29,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -52,6 +53,14 @@ public class Themes {
             colorHints = 0;
         }
         return getActivityThemeRes(context, colorHints);
+    }
+
+    public static Context createWidgetPreviewContext(Context context) {
+        if (Utilities.isDarkTheme(context)) {
+            return new ContextThemeWrapper(context, R.style.AppTheme_Dark);
+        } else {
+            return new ContextThemeWrapper(context, R.style.AppTheme_DarkText);
+        }
     }
 
     public static int getActivityThemeRes(Context context, int wallpaperColorHints) {

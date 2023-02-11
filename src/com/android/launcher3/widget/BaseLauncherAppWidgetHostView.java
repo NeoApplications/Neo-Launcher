@@ -114,9 +114,7 @@ public abstract class BaseLauncherAppWidgetHostView extends NavigableAppWidgetHo
         return mEnforcedCornerRadius;
     }
 
-    /**
-     * Returns true if the corner radius are enforced for this App Widget.
-     */
+    /** Returns true if the corner radius are enforced for this App Widget. */
     public boolean hasEnforcedCornerRadius() {
         return getClipToOutline();
     }

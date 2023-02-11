@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.launcher3.uioverrides;
 
 import android.app.Person;
+import android.content.Context;
 import android.content.pm.ShortcutInfo;
 
 import com.android.launcher3.Utilities;
 
 public class ApiWrapper {
-
     public static final boolean TASKBAR_DRAWN_IN_PROCESS = false;
 
     public static Person[] getPersons(ShortcutInfo si) {
         return Utilities.EMPTY_PERSON_ARRAY;
+    }
+
+    /**
+     * Returns the minimum space that should be left empty at the end of hotseat
+     */
+    public static int getHotseatEndOffset(Context context) {
+        return 0;
     }
 }

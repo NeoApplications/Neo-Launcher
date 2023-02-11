@@ -58,6 +58,7 @@
     <string name="all_apps_search_bar_hint" msgid="1390553134053255246">"بحث في التطبيقات"</string>
     <string name="all_apps_loading_message" msgid="5813968043155271636">"جارٍ تحميل التطبيقات…"</string>
     <string name="all_apps_no_search_results" msgid="3200346862396363786">"لم يتم العثور على أي تطبيقات تتطابق مع \"<xliff:g id="QUERY">%1$s</xliff:g>\""</string>
+    <string name="all_apps_search_market_message" msgid="1366263386197059176">"البحث عن مزيد من التطبيقات"</string>
     <string name="label_application" msgid="8531721983832654978">"تطبيق"</string>
     <string name="all_apps_label" msgid="5015784846527570951">"جميع التطبيقات"</string>
     <string name="notifications_header" msgid="1404149926117359025">"الإشعارات"</string>
@@ -100,7 +101,7 @@
     <string name="folder_name_format_exact" msgid="8626242716117004803">"المجلد: <xliff:g id="NAME">%1$s</xliff:g>، <xliff:g id="SIZE">%2$d</xliff:g> عنصر"</string>
     <string name="folder_name_format_overflow" msgid="4270108890534995199">"المجلد: <xliff:g id="NAME">%1$s</xliff:g>، <xliff:g id="SIZE">%2$d</xliff:g> عنصر أو أكثر"</string>
     <string name="wallpaper_button_text" msgid="8404103075899945851">"الخلفيات"</string>
-    <string name="styles_wallpaper_button_text" msgid="8216961355289236794">"الخلفية والأسلوب"</string>
+    <string name="styles_wallpaper_button_text" msgid="8216961355289236794">"الخلفية والنمط"</string>
     <string name="settings_button_text" msgid="8873672322605444408">"إعدادات الشاشة الرئيسية"</string>
     <string name="msg_disabled_by_admin" msgid="6898038085516271325">"أوقف المشرف هذه الميزة"</string>
     <string name="allow_rotation_title" msgid="7222049633713050106">"السماح بتدوير الشاشة الرئيسية"</string>
@@ -135,7 +136,7 @@
     <string name="item_removed" msgid="851119963877842327">"تمّت إزالة العنصر."</string>
     <string name="undo" msgid="4151576204245173321">"تراجع"</string>
     <string name="action_move" msgid="4339390619886385032">"نقل العنصر"</string>
-    <string name="move_to_empty_cell_description" msgid="5254852678218206889">"انتقل إلى الصف <xliff:g id="NUMBER_0">%1$s</xliff:g> العمود <xliff:g id="NUMBER_1">%2$s</xliff:g> في <xliff:g id="STRING">%3$s</xliff:g>."</string>
+    <string name="move_to_empty_cell" msgid="2833711483015685619">"نقل إلى الصف <xliff:g id="NUMBER_0">%1$s</xliff:g> العمود <xliff:g id="NUMBER_1">%2$s</xliff:g>"</string>
     <string name="move_to_position" msgid="6750008980455459790">"نقل إلى الموضع <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
     <string name="move_to_hotseat_position" msgid="6295412897075147808">"نقل إلى الموضع المفضل <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
     <string name="item_moved" msgid="4606538322571412879">"تم نقل العنصر"</string>

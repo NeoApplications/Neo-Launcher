@@ -256,10 +256,12 @@ public class LoaderTask implements Runnable {
                     mApp.getModel()::onPackageIconsUpdated);
             logASplit(logger, "update icon cache");
 
-            verifyNotStopped();
-            logASplit(logger, "save shortcuts in icon cache");
-            updateHandler.updateIcons(allShortcuts, new ShortcutCachingLogic(),
-                    mApp.getModel()::onPackageIconsUpdated);
+            if (FeatureFlags.ENABLE_DEEP_SHORTCUT_ICON_CACHE.get()) {
+                verifyNotStopped();
+                logASplit(logger, "save shortcuts in icon cache");
+                updateHandler.updateIcons(allShortcuts, new ShortcutCachingLogic(),
+                        mApp.getModel()::onPackageIconsUpdated);
+            }
 
             // Take a break
             waitForIdle();
@@ -274,11 +276,13 @@ public class LoaderTask implements Runnable {
             mResults.bindDeepShortcuts();
             logASplit(logger, "bindDeepShortcuts");
 
-            verifyNotStopped();
-            logASplit(logger, "save deep shortcuts in icon cache");
-            updateHandler.updateIcons(allDeepShortcuts,
-                    new ShortcutCachingLogic(), (pkgs, user) -> {
-                    });
+            if (FeatureFlags.ENABLE_DEEP_SHORTCUT_ICON_CACHE.get()) {
+                verifyNotStopped();
+                logASplit(logger, "save deep shortcuts in icon cache");
+                updateHandler.updateIcons(allDeepShortcuts,
+                        new ShortcutCachingLogic(), (pkgs, user) -> {
+                        });
+            }
 
             // Take a break
             waitForIdle();
@@ -301,7 +305,9 @@ public class LoaderTask implements Runnable {
             logASplit(logger, "save widgets in icon cache");
 
             // fifth step
-            loadFolderNames();
+            if (FeatureFlags.FOLDER_NAME_SUGGEST.get()) {
+                loadFolderNames();
+            }
 
             verifyNotStopped();
             updateHandler.finish();

@@ -15,9 +15,8 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.allapps.BaseAllAppsContainerView.AdapterHolder.SEARCH;
-
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -33,9 +32,11 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.AppLauncher;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * All apps container view with search support for use in a dragging activity.
@@ -44,11 +45,6 @@ import java.util.ArrayList;
  */
 public class ActivityAllAppsContainerView<T extends Context & AppLauncher
         & DeviceProfileListenable> extends BaseAllAppsContainerView<T> {
-
-    private static final long DEFAULT_SEARCH_TRANSITION_DURATION_MS = 300;
-
-    // Used to animate Search results out and A-Z apps in, or vice-versa.
-    private final SearchTransitionController mSearchTransitionController;
 
     protected SearchUiManager mSearchUiManager;
     /**
@@ -60,7 +56,6 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
      * {@code true} when rendered view is in search state instead of the scroll state.
      */
     private boolean mIsSearching;
-    private boolean mRebindAdaptersAfterSearchAnimation;
 
     public ActivityAllAppsContainerView(Context context) {
         this(context, null);
@@ -72,8 +67,6 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
 
     public ActivityAllAppsContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        mSearchTransitionController = new SearchTransitionController(this);
     }
 
     public SearchUiManager getSearchUiManager() {
@@ -85,56 +78,42 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
     }
 
     /**
+     * Updates all apps container with the latest search query.
+     */
+    public void setLastSearchQuery(String query) {
+        Intent marketSearchIntent = PackageManagerHelper.getMarketSearchIntent(
+                mActivityContext, query);
+        OnClickListener marketSearchClickListener = (v) -> mActivityContext.startActivitySafely(v,
+                marketSearchIntent, null);
+        for (int i = 0; i < mAH.size(); i++) {
+            mAH.get(i).mAdapter.setLastSearchQuery(query, marketSearchClickListener);
+        }
+        mIsSearching = true;
+        rebindAdapters();
+        mHeader.setCollapsed(true);
+    }
+
+    /**
      * Invoke when the current search session is finished.
      */
     public void onClearSearchResult() {
-        getMainAdapterProvider().clearHighlightedItem();
-        animateToSearchState(false);
+        mIsSearching = false;
+        mHeader.setCollapsed(false);
         rebindAdapters();
+        mHeader.reset(false);
     }
 
     /**
      * Sets results list for search
      */
     public void setSearchResults(ArrayList<AdapterItem> results) {
-        getMainAdapterProvider().clearHighlightedItem();
         if (getSearchResultList().setSearchResults(results)) {
-            getSearchRecyclerView().onSearchResultsChanged();
+            for (int i = 0; i < mAH.size(); i++) {
+                if (mAH.get(i).mRecyclerView != null) {
+                    mAH.get(i).mRecyclerView.onSearchResultsChanged();
+                }
+            }
         }
-        if (results != null) {
-            animateToSearchState(true);
-        }
-    }
-
-    private void animateToSearchState(boolean goingToSearch) {
-        animateToSearchState(goingToSearch, DEFAULT_SEARCH_TRANSITION_DURATION_MS);
-    }
-
-    private void animateToSearchState(boolean goingToSearch, long durationMs) {
-        if (!mSearchTransitionController.isRunning() && goingToSearch == isSearching()) {
-            return;
-        }
-        if (goingToSearch) {
-            // Fade out the button to pause work apps.
-            mWorkManager.onActivePageChanged(SEARCH);
-        }
-        mSearchTransitionController.animateToSearchState(goingToSearch, durationMs,
-                /* onEndRunnable = */ () -> {
-                    mIsSearching = goingToSearch;
-                    updateSearchResultsVisibility();
-                    int previousPage = getCurrentPage();
-                    if (mRebindAdaptersAfterSearchAnimation) {
-                        rebindAdapters(false);
-                        mRebindAdaptersAfterSearchAnimation = false;
-                    }
-                    if (!goingToSearch) {
-                        setSearchResults(null);
-                        if (mViewPager != null) {
-                            mViewPager.setCurrentPage(previousPage);
-                        }
-                        onActivePageChanged(previousPage);
-                    }
-                });
     }
 
     @Override
@@ -157,8 +136,6 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
         super.reset(animate);
         // Reset the search bar after transitioning home.
         mSearchUiManager.resetSearch();
-        // Animate to A-Z with 0 time to reset the animation with proper state management.
-        animateToSearchState(false, 0);
     }
 
     @Override
@@ -185,35 +162,31 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
     }
 
     @Override
+    protected boolean shouldShowTabs() {
+        return super.shouldShowTabs() && !isSearching();
+    }
+
+    @Override
     public boolean isSearching() {
         return mIsSearching;
     }
 
     @Override
-    public void onActivePageChanged(int currentActivePage) {
-        if (mSearchTransitionController.isRunning()) {
-            // Will be called at the end of the animation.
-            return;
-        }
-        super.onActivePageChanged(currentActivePage);
-    }
-
-    @Override
     protected void rebindAdapters(boolean force) {
-        if (mSearchTransitionController.isRunning()) {
-            mRebindAdaptersAfterSearchAnimation = true;
-            return;
-        }
         super.rebindAdapters(force);
         if (!FeatureFlags.ENABLE_DEVICE_SEARCH.get()
-                || getMainAdapterProvider().getDecorator() == null
-                || getSearchRecyclerView() == null) {
+                || getMainAdapterProvider().getDecorator() == null) {
             return;
         }
 
         RecyclerView.ItemDecoration decoration = getMainAdapterProvider().getDecorator();
-        getSearchRecyclerView().removeItemDecoration(decoration); // In case it is already added.
-        getSearchRecyclerView().addItemDecoration(decoration);
+        mAH.stream()
+                .map(adapterHolder -> adapterHolder.mRecyclerView)
+                .filter(Objects::nonNull)
+                .forEach(v -> {
+                    v.removeItemDecoration(decoration); // Remove in case it is already added.
+                    v.addItemDecoration(decoration);
+                });
     }
 
     @Override

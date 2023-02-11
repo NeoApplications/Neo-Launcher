@@ -56,9 +56,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (mScrollbar == null || !mScrollbar.hasRecyclerView()) {
-            bindFastScrollbar();
-        }
+        bindFastScrollbar();
     }
 
     public void bindFastScrollbar() {
@@ -88,19 +86,15 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
      * Returns the available scroll height:
      * AvailableScrollHeight = Total height of the all items - last page height
      */
-    protected int getAvailableScrollHeight() {
-        // AvailableScrollHeight = Total height of the all items - first page height
-        int firstPageHeight = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
-        int availableScrollHeight = computeVerticalScrollRange() - firstPageHeight;
-        return Math.max(0, availableScrollHeight);
-    }
+    protected abstract int getAvailableScrollHeight();
 
     /**
      * Returns the available scroll bar height:
-     * AvailableScrollBarHeight = Total height of the visible view - thumb height
+     *   AvailableScrollBarHeight = Total height of the visible view - thumb height
      */
     protected int getAvailableScrollBarHeight() {
-        return getScrollbarTrackHeight() - mScrollbar.getThumbHeight();
+        int availableScrollBarHeight = getScrollbarTrackHeight() - mScrollbar.getThumbHeight();
+        return availableScrollBarHeight;
     }
 
     /**
@@ -130,7 +124,6 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
 
     /**
      * Returns whether the view itself will handle the touch event or not.
-     *
      * @param ev MotionEvent in {@param eventSource}
      */
     public boolean shouldContainerScroll(MotionEvent ev, View eventSource) {
@@ -145,7 +138,10 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
 
         // IF scroller is at the very top OR there is no scroll bar because there is probably not
         // enough items to scroll, THEN it's okay for the container to be pulled down.
-        return computeVerticalScrollOffset() == 0;
+        if (getCurrentScrollY() == 0) {
+            return true;
+        }
+        return getAdapter() == null || getAdapter().getItemCount() == 0;
     }
 
     /**
@@ -154,6 +150,14 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
     public boolean supportsFastScrolling() {
         return true;
     }
+
+    /**
+     * Maps the touch (from 0..1) to the adapter position that should be visible.
+     * <p>Override in each subclass of this base class.
+     *
+     * @return the scroll top of this recycler view.
+     */
+    public abstract int getCurrentScrollY();
 
     /**
      * Maps the touch (from 0..1) to the adapter position that should be visible.

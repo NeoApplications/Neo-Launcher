@@ -45,6 +45,7 @@ import com.android.launcher3.icons.RoundDrawableWrapper;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.widget.dragndrop.AppWidgetHostViewDragListener;
 import com.android.launcher3.widget.util.WidgetSizes;
+import com.saggitt.omega.widget.CustomAppWidgetHostView;
 
 /**
  * Extension of {@link DragPreviewProvider} with logic specific to pending widgets/shortcuts
@@ -85,6 +86,9 @@ public class PendingItemDragHelper extends DragPreviewProvider {
     public void setAppWidgetHostViewPreview(
             @Nullable NavigableAppWidgetHostView appWidgetHostViewPreview) {
         mAppWidgetHostViewPreview = appWidgetHostViewPreview;
+        if (appWidgetHostViewPreview instanceof CustomAppWidgetHostView) {
+            ((CustomAppWidgetHostView) appWidgetHostViewPreview).disablePreviewMode();
+        }
     }
 
     /**
@@ -123,7 +127,7 @@ public class PendingItemDragHelper extends DragPreviewProvider {
             int[] previewSizeBeforeScale = new int[1];
 
             if (mRemoteViewsPreview != null) {
-                mAppWidgetHostViewPreview = new LauncherAppWidgetHostView(launcher);
+                mAppWidgetHostViewPreview = new CustomAppWidgetHostView(launcher);
                 mAppWidgetHostViewPreview.setAppWidget(/* appWidgetId= */ -1,
                         ((PendingAddWidgetInfo) mAddInfo).info);
                 DeviceProfile deviceProfile = launcher.getDeviceProfile();
