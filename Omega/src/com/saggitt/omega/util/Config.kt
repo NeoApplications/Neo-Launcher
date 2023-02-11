@@ -22,7 +22,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
-import java.util.*
+import java.util.Locale
 
 class Config(val context: Context) {
 
@@ -54,6 +54,11 @@ class Config(val context: Context) {
         const val SORT_MOST_USED = 2
         const val SORT_BY_COLOR = 3
         const val SORT_BY_INSTALL_DATE = 4
+
+        //COMPOSE THEME COLORS
+        const val THEME_LIGHT = 0
+        const val THEME_DARK = 1
+        const val THEME_BLACK = 2
 
         val drawerSortOptions = mutableMapOf(
             SORT_AZ to R.string.title__sort_alphabetical_az,
