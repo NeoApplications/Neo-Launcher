@@ -241,6 +241,8 @@ dependencies {
     //Accompanist
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
     implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-pager:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-pager-indicators:$vAccompanist")
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
