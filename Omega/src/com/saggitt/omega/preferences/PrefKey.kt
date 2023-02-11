@@ -151,4 +151,7 @@ object PrefKey {
     val DASH_LINE_SIZE = intPreferencesKey("dash_line_size")
     val DASH_EDIT = stringPreferencesKey("dash_edit")
     val DASH_PROVIDERS = stringSetPreferencesKey("dash_providers")
+
+    //DEVELOPER
+    val SHOW_DEV_OPTIONS = booleanPreferencesKey("pref_show_dev_options")
 }
