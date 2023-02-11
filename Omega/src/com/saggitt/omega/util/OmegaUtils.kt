@@ -21,7 +21,6 @@ package com.saggitt.omega.util
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
@@ -29,18 +28,10 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.launcher3.R
-import com.android.launcher3.allapps.AppInfoComparator
-import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.saggitt.omega.allapps.AppColorComparator
-import com.saggitt.omega.allapps.AppUsageComparator
-import com.saggitt.omega.allapps.InstallTimeComparator
-import com.saggitt.omega.data.AppTrackerRepository
-import java.text.Collator
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
-import java.util.stream.Stream
 
 fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
     return { it ->
@@ -93,31 +84,5 @@ fun openURLinBrowser(context: Context, url: String?, sourceBounds: Rect?, option
         }
     } catch (exc: ActivityNotFoundException) {
         Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
-    }
-}
-
-fun Stream<AppInfo>.sortApps(context: Context, sortType: Int) {
-    val pm: PackageManager = context.packageManager
-    when (sortType) {
-        Config.SORT_ZA              -> sorted(compareBy(Collator.getInstance().reversed()) {
-            it.title.toString().lowercase()
-        })
-
-        Config.SORT_MOST_USED       -> {
-            val repository = AppTrackerRepository.INSTANCE[context]
-            val appsCounter = repository.getAppsCount()
-            val mostUsedComparator = AppUsageComparator(appsCounter)
-            sorted(mostUsedComparator)
-        }
-
-        Config.SORT_BY_COLOR        -> sorted(AppColorComparator(context))
-
-        Config.SORT_BY_INSTALL_DATE -> sorted(InstallTimeComparator(pm))
-
-        Config.SORT_AZ              -> sorted(compareBy(Collator.getInstance()) {
-            it.title.toString().lowercase()
-        })
-
-        else                        -> sorted(AppInfoComparator(context))
     }
 }
