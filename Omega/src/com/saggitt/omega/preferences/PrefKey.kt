@@ -101,8 +101,9 @@ object PrefKey {
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")
     val WIDGETS_SMARTSPACE_WIDGET_ID = intPreferencesKey("widgets_smartspace_id")
+    val WIDGETS_SMARTSPACE_CALENDAR = stringPreferencesKey("widgets_smartspace_calendar")
     val WIDGETS_SMARTSPACE_DATE = booleanPreferencesKey("widgets_smartspace_date")
-    val WIDGETS_SMARTSPACE_TIME = booleanPreferencesKey("widgets_smartspace_date")
+    val WIDGETS_SMARTSPACE_TIME = booleanPreferencesKey("widgets_smartspace_time")
     val WIDGETS_SMARTSPACE_TIME_LARGE = booleanPreferencesKey("widgets_smartspace_large_clock")
     val WIDGETS_SMARTSPACE_TIME_24H = booleanPreferencesKey("widgets_smartspace_24h_clock")
     val WIDGETS_SMARTSPACE_PILL_STYLE = booleanPreferencesKey("widgets_smartspace_pill_style")
@@ -121,6 +122,7 @@ object PrefKey {
     val NOTIFICATION_DOTS_COLOR = intPreferencesKey("notification_dots_color")
     val NOTIFICATION_DOTS_COUNT = booleanPreferencesKey("notification_dots_count")
     val NOTIFICATION_DOTS_FOLDER_ENABLED = booleanPreferencesKey("notification_dots_folder_enable")
+    val NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners"
 
     // Search
     val SEARCH_PROVIDER = stringPreferencesKey("search_provider")

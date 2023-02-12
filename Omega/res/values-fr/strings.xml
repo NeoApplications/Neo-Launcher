@@ -219,8 +219,6 @@
     <string name="icu_abbrev_date">dd MMMM</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_time">HH:mm</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEE d MMM</string>
-    <string name="full_wday_month_day_no_year">EEEE d MMMM</string>
     <string name="battery_status">État de la batterie</string>
     <string name="event_provider_unread_notifications">Notifications</string>
     <string name="event_provider_now_playing">En cours de lecture</string>

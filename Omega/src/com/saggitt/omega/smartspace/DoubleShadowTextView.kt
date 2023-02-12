@@ -6,11 +6,12 @@ import android.util.AttributeSet
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
 import com.android.launcher3.R
+import com.android.launcher3.views.DoubleShadowBubbleTextView.ShadowInfo
 
 open class DoubleShadowTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : TextView(context, attrs) {
-
+    private val shadowInfo = ShadowInfo(context, attrs, 0)
     private var mDrawShadow = true
     private var mAmbientShadowBlur =
         context.resources.getDimensionPixelSize(R.dimen.ambient_text_shadow_radius)
@@ -28,10 +29,15 @@ open class DoubleShadowTextView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
+        if (shadowInfo.skipDoubleShadow(this)) {
+            super.onDraw(canvas)
+            return
+        }
+
         if (!this.mDrawShadow) {
             paint.clearShadowLayer();
             super.onDraw(canvas);
-            return;
+            return
         }
         paint.setShadowLayer(mAmbientShadowBlur.toFloat(), 0.0f, 0.0f, this.mAmbientShadowColor);
         super.onDraw(canvas);
@@ -39,7 +45,9 @@ open class DoubleShadowTextView @JvmOverloads constructor(
         canvas.clipRect(scrollX, extendedPaddingTop + scrollY, width + scrollX, height + scrollY);
         paint.setShadowLayer(
             mKeyShadowBlur.toFloat(),
-            mKeyShadowOffsetX.toFloat(), mKeyShadowOffsetY.toFloat(), this.mKeyShadowColor
+            mKeyShadowOffsetX.toFloat(),
+            mKeyShadowOffsetY.toFloat(),
+            mKeyShadowColor
         );
         super.onDraw(canvas);
         canvas.restore();

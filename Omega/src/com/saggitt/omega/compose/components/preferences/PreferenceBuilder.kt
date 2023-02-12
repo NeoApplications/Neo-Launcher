@@ -22,15 +22,16 @@ import androidx.compose.runtime.Composable
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.IntentLauncherPref
 
 val PreferenceBuilder =
     @Composable { pref: Any, onDialogPref: (Any) -> Unit, index: Int, size: Int ->
         when (pref) {
-            /*is BasePreferences.IntentLauncherPref -> IntentLauncherPreference(
+            is IntentLauncherPref -> IntentLauncherPreference(
                 pref = pref,
                 index = index,
                 groupSize = size
-            ) { onDialogPref(pref) }
+            ) { onDialogPref(pref) }/*
             is GridSize2D -> GridSize2DPreference(
                 pref = pref,
                 index = index,

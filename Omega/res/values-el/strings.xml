@@ -18,7 +18,5 @@
     <string name="summary__general_dock">Εικονίδια Μπάρας εφαρμογών, γραμμή αναζήτησης</string>
     <string name="title__general_profile">Προφίλ</string>
     <string name="title__general_gestures_dash">Χειρονομίες &amp; Ταμπλό</string>
-    <string name="full_wday_month_day_no_year">EEEE, d MMMM</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEdMMM</string>
     <string name="icu_abbrev_date">d MMMM</string>
 </resources>

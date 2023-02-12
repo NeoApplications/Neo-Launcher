@@ -337,7 +337,6 @@
     <string name="wallpaper_pick">Tomar papel de pared</string>
     <string name="dash_media_player_description">Muestra u oculta los controles del reproductor de sonido</string>
     <string name="edit_dash_summary">Activar o desactivar los accesos directos</string>
-    <string name="icu_abbrev_wday_month_day_no_year">d-MMM-EEEE</string>
     <string name="button_organize_screens">Organizar páginas</string>
     <string name="developer_options_enabled">Opciones del desarrollador en</string>
     <string name="about_copyright">© 2020–2021</string>
@@ -353,7 +352,6 @@
     <string name="trust_apps_manager_name">Apps ocultas y protegidas</string>
     <string name="enable_protected_apps">Activar aplicaciones protegidas</string>
     <string name="theme_dark_theme_mode_follow_daylight_black">Seguir la luz del día (Oscura)</string>
-    <string name="full_wday_month_day_no_year">d/MMMM/EEEE</string>
     <string name="action_open_drawer">Abrir cajón de app</string>
     <string name="onboarding_swipe_up">Cambiar para abrir el cajón.</string>
     <string name="weather_provider_pe">Experiencia Pixelar</string>

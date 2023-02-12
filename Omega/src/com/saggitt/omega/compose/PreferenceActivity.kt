@@ -33,7 +33,7 @@ import com.saggitt.omega.compose.navigation.PrefsComposeView
 import com.saggitt.omega.theme.OmegaAppTheme
 
 class PreferenceActivity : AppCompatActivity() {
-    lateinit var navController: NavHostController
+    private lateinit var navController: NavHostController
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {

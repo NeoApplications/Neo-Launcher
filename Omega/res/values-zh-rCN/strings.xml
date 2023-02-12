@@ -292,8 +292,6 @@
     <string name="icu_abbrev_date">dd MMMM</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_time">HH:mm</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="onbording_settings_title">设置 %s</string>
     <string name="smartspace_in_time">在 %1$s</string>
     <string name="title_dock_two_row">显示第二行</string>

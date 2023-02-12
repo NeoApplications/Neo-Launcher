@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
+import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.theme.ThemeOverride
 import java.util.Locale
 
@@ -67,6 +69,25 @@ class Config(val context: Context) {
             SORT_MOST_USED to R.string.title__sort_most_used,
             SORT_BY_COLOR to R.string.title__sort_by_color,
             SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
+        )
+
+        fun smartspaceProviderOptions(context: Context) = listOf(
+            NowPlayingProvider(context),
+            BatteryStatusProvider(context),
+            /*NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
+            PersonalityProvider::class.java.name to R.string.personality_provider,
+            CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
+            SmartSpaceDataWidget::class.java.name to R.string.title_smartspace_widget_provider,
+            AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events*/
+        )
+
+        fun calendarOptions(context: Context) = mapOf(
+            context.resources.getString(R.string.smartspace_calendar_gregorian) to context.resources.getString(
+                R.string.title_calendar_gregorian
+            ),
+            context.resources.getString(R.string.smartspace_calendar_persian) to context.resources.getString(
+                R.string.title_calendar_persian
+            )
         )
 
         fun getCurrentTheme(context: Context): Int {

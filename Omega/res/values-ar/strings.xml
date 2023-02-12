@@ -145,8 +145,6 @@
     <string name="icu_abbrev_date">يوم شهر</string>
     <string name="icu_abbrev_time_12h">ساعة:دقيقة صباح</string>
     <string name="icu_abbrev_time">ساعة:دقيقة</string>
-    <string name="icu_abbrev_wday_month_day_no_year">سنة شهر يوم</string>
-    <string name="full_wday_month_day_no_year">سنة, شهر يوم</string>
     <string name="battery_status">حالة البطارية</string>
     <string name="event_provider_unread_notifications">اﻷشعارات</string>
     <string name="event_provider_now_playing">يتم تشغيله الان</string>

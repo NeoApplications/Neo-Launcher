@@ -301,8 +301,6 @@
     <string name="action_sleep_timeout">Dvalgang ved bruk av skjermtidsavbrudd</string>
     <string name="action_global_search">Start globalt søk</string>
     <string name="icu_abbrev_time_12h">hh mm aa</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEdMMM</string>
-    <string name="full_wday_month_day_no_year">EEEE, d MMMM</string>
     <string name="onbording">Førstegangsveivisning</string>
     <string name="title_use_pill_qsb">Vis pillesøke-snarvei</string>
     <string name="title_force_shapeless">Påtving formløse ikoner</string>

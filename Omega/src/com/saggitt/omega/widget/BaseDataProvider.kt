@@ -195,12 +195,13 @@ abstract class BaseDataProvider(protected val context: Context) {
         override fun onClick(v: View) {
             if (pendingIntent == null) return
             val launcher = Launcher.getLauncher(v.context)
-            val opts = launcher.getActivityLaunchOptionsAsBundle(v)
+            //val opts = launcher.getActivityLaunchOptions(v).toBundle()
             try {
                 launcher.startIntentSender(
                     pendingIntent.intentSender, null,
                     Intent.FLAG_ACTIVITY_NEW_TASK,
-                    Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts
+                    //Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts
+                    Intent.FLAG_ACTIVITY_NEW_TASK, 0
                 )
             } catch (e: ActivityNotFoundException) {
                 // ignored

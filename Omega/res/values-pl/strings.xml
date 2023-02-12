@@ -77,8 +77,6 @@
     <string name="battery_status">Poziom baterii</string>
     <string name="weather_provider_oneplus_weather">OnePlus Weather</string>
     <string name="event_provider_now_playing">Teraz odtwarzane</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="units_metric">Celsjusz</string>
     <string name="units_imperial">Fahrenheit</string>

@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.preferences
 
+import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -62,6 +63,25 @@ open class IntPref(
     }
 
     override suspend fun set(value: Int) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
+open class IntentLauncherPref(
+    private val dataStore: DataStore<Preferences>,
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val key: Preferences.Key<Boolean>,
+    @StringRes val positiveAnswerId: Int = -1,
+    val defaultValue: Boolean = false,
+    val intent: () -> Intent,
+    val getter: () -> Boolean,
+) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<Boolean> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: Boolean) {
         dataStore.edit { it[key] = value }
     }
 }

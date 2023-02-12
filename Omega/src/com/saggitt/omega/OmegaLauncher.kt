@@ -20,6 +20,7 @@ package com.saggitt.omega
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Bundle
+import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
@@ -48,3 +49,6 @@ class OmegaLauncher : Launcher() {
         }
     }
 }
+
+val Context.launcher: OmegaLauncher
+    get() = BaseActivity.fromContext(this)

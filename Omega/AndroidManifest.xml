@@ -19,6 +19,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="com.saggitt.omega.OmegaApp"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -90,5 +92,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.saggitt.omega.BlankActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Transparent" />
     </application>
 </manifest>

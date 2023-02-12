@@ -181,8 +181,6 @@
     <string name="units_metric">Celsius</string>
     <string name="icu_abbrev_date">dd. MMMM</string>
     <string name="icu_abbrev_time">HH:mm</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEdMMM</string>
-    <string name="full_wday_month_day_no_year">EEEE, d. MMMM</string>
     <string name="weather_provider_oneplus_weather">OnePlus Wetter</string>
     <string name="weather_provider_pe">Pixel-Erlebnis</string>
     <string name="onbording">Onboarding</string>

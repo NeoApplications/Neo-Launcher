@@ -18,13 +18,20 @@
 
 package com.saggitt.omega.preferences
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.provider.Settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
+import com.android.launcher3.notification.NotificationListener
+import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.search.getSearchProvidersMap
@@ -37,19 +44,34 @@ import com.saggitt.omega.widget.Temperature
 import com.saggitt.omega.widget.WidgetConstants
 import com.saggitt.omega.widget.weatherprovider.BlankDataProvider
 import com.saggitt.omega.widget.weatherprovider.PEWeatherDataProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 private const val USER_PREFERENCES_NAME = "neo_launcher"
 
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES_NAME)
     private val dataStore: DataStore<Preferences> = context.dataStore
+    private val _changePoker = MutableSharedFlow<Int>()
+    val changePoker = _changePoker.asSharedFlow()
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
         val idp = las.invariantDeviceProfile
         idp.onPreferencesChanged(context)
     }
+
+    fun pokeChange() {
+        CoroutineScope(Dispatchers.Default).launch {
+            _changePoker.emit(Random.nextInt())
+        }
+    }
+
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
@@ -518,7 +540,65 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     // Notifications & Widgets/Smartspace
-    // TODO notificationDots, Smartspace
+    val notificationDots = IntentLauncherPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_COUNT,
+        titleId = R.string.notification_dots_title,
+        summaryId = run {
+            val enabledListeners = Settings.Secure.getString(
+                context.contentResolver,
+                PrefKey.NOTIFICATION_ENABLED_LISTENERS
+            )
+            val myListener = ComponentName(context, NotificationListener::class.java)
+            val serviceEnabled = enabledListeners != null &&
+                    (enabledListeners.contains(myListener.flattenToString()) ||
+                            enabledListeners.contains(myListener.flattenToShortString()))
+            if (serviceEnabled) R.string.notification_dots_disabled
+            else R.string.notification_dots_missing_notification_access
+        },
+        positiveAnswerId = R.string.title_change_settings,
+        defaultValue = false,
+        getter = {
+            val enabledListeners = Settings.Secure.getString(
+                context.contentResolver,
+                PrefKey.NOTIFICATION_ENABLED_LISTENERS
+            )
+            val myListener = ComponentName(context, NotificationListener::class.java)
+            val serviceEnabled = enabledListeners != null &&
+                    (enabledListeners.contains(myListener.flattenToString()) ||
+                            enabledListeners.contains(myListener.flattenToShortString()))
+            serviceEnabled && SettingsCache.INSTANCE[context]
+                .getValue(SettingsCache.NOTIFICATION_BADGING_URI)
+        },
+        intent = {
+            val enabledListeners = Settings.Secure.getString(
+                context.contentResolver,
+                PrefKey.NOTIFICATION_ENABLED_LISTENERS
+            )
+            val myListener = ComponentName(context, NotificationListener::class.java)
+            val serviceEnabled = enabledListeners != null &&
+                    (enabledListeners.contains(myListener.flattenToString()) ||
+                            enabledListeners.contains(myListener.flattenToShortString()))
+            if (serviceEnabled) {
+                val extras = Bundle()
+                extras.putString(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, "notification_badging")
+                Intent("android.settings.NOTIFICATION_SETTINGS")
+                    .putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGS, extras)
+            } else {
+                val cn = ComponentName(context, NotificationListener::class.java)
+                val showFragmentArgs = Bundle()
+                showFragmentArgs.putString(
+                    SettingsActivity.EXTRA_FRAGMENT_ARG_KEY,
+                    cn.flattenToString()
+                )
+                Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, cn.flattenToString())
+                    .putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGS, showFragmentArgs)
+            }
+        }
+    )
+
     val notificationCount = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COUNT,
@@ -554,17 +634,24 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
-    val smartspaceTime = BooleanPref(
+    val smartspaceCalendar = StringSelectionPref(
         dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_TIME,
-        titleId = R.string.title_smartspace_time,
-        defaultValue = false,
+        key = PrefKey.WIDGETS_SMARTSPACE_CALENDAR,
+        titleId = R.string.title_smartspace_calendar,
+        defaultValue = context.getString(R.string.smartspace_calendar_gregorian),
+        entries = Config.calendarOptions(context)
     )
 
     val smartspaceDate = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
+        defaultValue = true,
+    )
+    val smartspaceTime = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_TIME,
+        titleId = R.string.title_smartspace_time,
         defaultValue = true,
     )
 
@@ -620,7 +707,7 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     // TODO does order have a function? if so, customize dialog to respect it?
-    var smartspaceEventProvidersNew = StringMultiSelectionPref(
+    var smartspaceEventProviders = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
         titleId = R.string.title_smartspace_event_providers,

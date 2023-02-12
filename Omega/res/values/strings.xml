@@ -261,7 +261,7 @@
     <string name="title_smartspace">Show Smartspace</string>
     <string name="title_smartspace_time">Show Time</string>
     <string name="title_smartspace_date">Show Date</string>
-    <string name="title_smartspace_time_24_h">Use 24-Hour Format</string>
+    <string name="title_smartspace_calendar">Select Calendar</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>
     <string name="title_smartspace_widget_provider">Weather source</string>
     <string name="title_smartspace_weather_units">Temperature unit</string>
@@ -269,6 +269,13 @@
     <string name="category__behavior_weather">Weather</string>
     <string name="google_app" translatable="false">Google app</string>
     <string name="pref_shelf_summary">To the left of the main Home screen</string>
+    <string name="accessibility_smartspace_page">Page %1$d of %2$d</string>
+
+    <string name="smartspace_calendar_gregorian" translatable="false">gregorian</string>
+    <string name="title_calendar_gregorian">Gregorian</string>
+    <string name="smartspace_calendar_persian" translatable="false">persian</string>
+    <string name="title_calendar_persian">Persian</string>
+
     <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>
     <string name="smartspace_add_to_home">Add to Desktop</string>
@@ -286,6 +293,8 @@
     <string name="battery_charging">Charging</string>
     <string name="battery_full">Charged</string>
     <string name="battery_low">Battery Low</string>
+    <string name="battery_charging_percentage_charging_time">"%1$d%% — Full in %2$s"</string>
+    <string name="n_percent">%1$d%%</string>
     <string name="event_provider_missing_notification_access">Turn on notifications from <xliff:g example="My App" id="name">“%2$s” to use </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="event_provider_missing_notification_dots">Turn on notification dots to use <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
     <string name="permission_iplocate">Approximate Location</string>
@@ -308,8 +317,14 @@
     <string name="event_provider_unread_notifications">Notifications</string>
     <string name="battery_status">Battery Status</string>
     <string name="week_day_format" translatable="false">%1$s, %2$s</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
+    <string name="smartspace_icu_date_pattern_gregorian_wday_month_day_no_year" translatable="false">EEEMMMd</string>
+    <string name="smartspace_icu_date_pattern_gregorian_time" translatable="false">HH:mm</string>
+    <string name="smartspace_icu_date_pattern_gregorian_time_12h" translatable="false">hh:mm aa</string>
+    <string name="smartspace_icu_date_pattern_gregorian_date" translatable="false"> dd MMMM</string>
+    <string name="smartspace_icu_date_pattern_persian_wday_month_day_no_year" translatable="false">l، j F</string>
+    <string name="smartspace_icu_date_pattern_persian_time" translatable="false">H:i</string>
+    <string name="smartspace_icu_date_pattern_persian_time_12h" translatable="false">g:i a</string>
+    <string name="smartspace_icu_date_pattern_persian_date" translatable="false">"j F، "</string>
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_date"> dd MMMM</string>
@@ -325,6 +340,14 @@
     <string name="default_city">San Salvador, SV</string>
     <string name="weather_api_key">OWM API Key</string>
     <string name="weather_city">City</string>
+    <string name="smartspace_icu_date_pattern">EEEMMMd</string>
+    <string name="smartspace_flight_qr_code">QR code</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Next alarm at %s</string>
+    <string name="smartspace_time_follow_system">Follow System</string>
+    <string name="smartspace_time_12_hour_format">12-Hour Format</string>
+    <string name="title_smartspace_time_24_h">24-Hour Format</string>
+    <string name="smartspace_widget_placeholder_date">Fri, Mar 3</string>
     <!-- Folder name format -->
     <string name="folder_name_format">Folder: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
     <string-array name="greetings_morning">

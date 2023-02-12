@@ -391,8 +391,6 @@
     <string name="dash_bluetooth_summary">Bluetooth\'u açın veya kapatın</string>
     <string name="dash_location">Konum</string>
     <string name="dash_torch">El feneri</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
     <string name="dash_wifi">Wi-Fi</string>
     <string name="dash_bluetooth">Bluetooth</string>
     <string name="dash_auto_rotation_summary">Otomatik döndürmeyi açın veya kapatın.</string>

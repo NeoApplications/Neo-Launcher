@@ -156,7 +156,6 @@
     <string name="permission_iplocate_twilight_explanation">Dopustiti pristup tvojoj približnoj lokaciji\? To omogućuje točnije izračunavanje dnevnog svjetla.</string>
     <string name="onbording">Postavljanje</string>
     <string name="onbording_settings_summary">Dodirni i zadrži pritisnuto na radnoj površini.</string>
-    <string name="full_wday_month_day_no_year">EEEE, d. MMMM</string>
     <string name="title__gesture_swipe_down">Povuci prstom prema dolje</string>
     <string name="action_open_settings">Otvori postavke pokretača</string>
     <string name="action_open_overview">Prikaži pregled radne površine</string>
@@ -353,7 +352,6 @@
     <string name="action_open_drawer">Otvori ladicu programa</string>
     <string name="action_open_app">Otvori program</string>
     <string name="action_open_app_select_app">Odaberi program</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEE, d. MMM</string>
     <string name="icu_abbrev_date">dd. MMMM</string>
     <string name="action_open_notifications">Otvori obavijesti</string>
     <string name="action_overlay">Otvori Google Feed</string>

@@ -48,10 +48,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
 
@@ -221,5 +223,28 @@ fun PagePreference(
         groupSize = groupSize,
         isEnabled = isEnabled,
         onClick = { navController.navigate(destination) }
+    )
+}
+
+@Composable
+fun IntentLauncherPreference(
+    modifier: Modifier = Modifier,
+    pref: IntentLauncherPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    val summaryId = if (pref.getValue()) R.string.notification_dots_desc_on
+    else R.string.notification_dots_desc_off
+
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
     )
 }

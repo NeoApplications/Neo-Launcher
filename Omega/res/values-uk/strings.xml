@@ -139,7 +139,6 @@
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
     <string name="weather_provider_pe">Pixel Experience</string>
     <string name="battery_status">Стан батареї</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_date">dd MMMM</string>
     <string name="units_metric">Цельсій</string>
@@ -310,7 +309,6 @@
     <string name="summary_white_only_treatment">Розфарбуйте всі адаптивні фони значків.</string>
     <string name="personality_provider">Вітання</string>
     <string name="onbording_settings_summary">Торкніться та утримуйте на робочому столі.</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="units_reaumur">Реомюр</string>
     <string name="units_newton">Ньютон</string>

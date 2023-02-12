@@ -18,17 +18,35 @@
 
 package com.saggitt.omega.util
 
+import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
+import android.text.format.DateFormat
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import com.android.launcher3.R
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -49,6 +67,100 @@ fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
         }
     }
 }
+
+val mainHandler by lazy { makeBasicHandler() }
+val uiWorkerHandler: Handler by lazy { UI_HELPER_EXECUTOR.handler }
+fun runOnUiWorkerThread(r: () -> Unit) {
+    runOnThread(uiWorkerHandler, r)
+}
+
+fun runOnMainThread(r: () -> Unit) {
+    runOnThread(mainHandler, r)
+}
+
+fun runOnThread(handler: Handler, r: () -> Unit) {
+    if (handler.looper.thread.id == Looper.myLooper()?.thread?.id) {
+        r()
+    } else {
+        handler.post(r)
+    }
+}
+
+fun View.repeatOnAttached(block: suspend CoroutineScope.() -> Unit) {
+    var launchedJob: Job? = null
+
+    val mutext = Mutex()
+    observeAttachedState { isAttached ->
+        if (isAttached) {
+            launchedJob = MainScope().launch(
+                context = Dispatchers.Main.immediate,
+                start = CoroutineStart.UNDISPATCHED
+            ) {
+                mutext.withLock {
+                    coroutineScope {
+                        block()
+                    }
+                }
+            }
+            return@observeAttachedState
+        }
+        launchedJob?.cancel()
+        launchedJob = null
+    }
+}
+
+private val pendingIntentTagId =
+    Resources.getSystem().getIdentifier("pending_intent_tag", "id", "android")
+
+val View?.pendingIntent get() = this?.getTag(pendingIntentTagId) as? PendingIntent
+
+val ViewGroup.recursiveChildren: Sequence<View>
+    get() = children.flatMap {
+        if (it is ViewGroup) {
+            it.recursiveChildren + sequenceOf(it)
+        } else sequenceOf(it)
+    }
+
+fun formatTime(calendar: Calendar, context: Context? = null): String {
+    return when (context) {
+        null -> String.format(
+            "%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.HOUR_OF_DAY)
+        )
+
+        else -> if (DateFormat.is24HourFormat(context)) String.format(
+            "%02d:%02d", calendar.get(
+                Calendar.HOUR_OF_DAY
+            ), calendar.get(Calendar.MINUTE)
+        ) else String.format(
+            "%02d:%02d %s",
+            if (calendar.get(
+                    Calendar.HOUR_OF_DAY
+                ) % 12 == 0
+            ) 12 else calendar.get(
+                Calendar.HOUR_OF_DAY
+            ) % 12,
+            calendar.get(
+                Calendar.MINUTE
+            ),
+            if (calendar.get(
+                    Calendar.HOUR_OF_DAY
+                ) < 12
+            ) "AM" else "PM"
+        )
+    }
+}
+
+inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
+inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
+
+@JvmOverloads
+fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback? = null): Handler =
+    if (preferMyLooper)
+        Handler(Looper.myLooper() ?: Looper.getMainLooper(), callback)
+    else
+        Handler(Looper.getMainLooper(), callback)
+
 
 fun String.toTitleCase(): String = splitToSequence(" ").map {
     it.replaceFirstChar { ch ->

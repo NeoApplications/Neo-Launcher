@@ -73,8 +73,6 @@
     <string name="title__multiline_labels">Nome app su più righe</string>
     <string name="title_desktop_keep_empty">Consenti pagine vuote</string>
     <string name="icu_abbrev_date">MMMM dd</string>
-    <string name="icu_abbrev_wday_month_day_no_year">dMMMEEEE</string>
-    <string name="full_wday_month_day_no_year">EEEE d MMMM</string>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d App</item>
         <item quantity="many">%1$d App</item>

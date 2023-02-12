@@ -238,8 +238,6 @@
     <string name="icu_abbrev_date">dd MMMM</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_time">HH:mm</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="onbording">Integrando</string>
     <string name="action_open_recents">Abrir recentes</string>
     <string name="event_provider_missing_notification_dots">Ative os pontos de notificação para usar <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>

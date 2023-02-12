@@ -350,8 +350,6 @@
     <string name="pref_app_groups_edit_tip">タップで編集、ドラッグで並べ替え</string>
     <string name="tab_type_custom_desc">ショートカットを手動で選択する</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
-    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="edit_dash_summary">ショートカットの有効／無効</string>
     <string name="dash_bluetooth">Bluetooth</string>
     <string name="customize">カスタマイズ</string>
