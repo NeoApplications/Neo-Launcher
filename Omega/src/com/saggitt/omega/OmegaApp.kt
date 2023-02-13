@@ -25,13 +25,14 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
 
 class OmegaApp : Application() {
     private val TAG = "OmegaApp"
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
-
+    val smartspace by lazy { OmegaSmartSpaceController(this) }
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

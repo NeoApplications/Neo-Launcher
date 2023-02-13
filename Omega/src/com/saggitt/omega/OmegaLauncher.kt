@@ -24,6 +24,7 @@ import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
+import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
 
@@ -36,6 +37,14 @@ class OmegaLauncher : Launcher() {
 
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
+        mOverlayManager = defaultOverlay
+    }
+
+    override fun getDefaultOverlay(): LauncherOverlayManager {
+        if (mOverlayManager == null) {
+            mOverlayManager = OverlayCallbackImpl(this)
+        }
+        return mOverlayManager
     }
 
     companion object {
