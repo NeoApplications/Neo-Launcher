@@ -43,7 +43,6 @@ import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.objects.PageItem
-import com.saggitt.omega.compose.screens.preferences.aboutPrefsGraph
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
