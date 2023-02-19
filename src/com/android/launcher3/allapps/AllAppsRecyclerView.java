@@ -21,6 +21,7 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_VERTICAL_SWIPE_END;
 import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 import static com.android.launcher3.util.UiThreadHelper.hideKeyboardAsync;
+import static com.android.launcher3.views.RecyclerViewFastScroller.PositionThumbInfo;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -221,11 +222,11 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     /**
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      */
-    @Override
-    public String scrollToPositionAtProgress(float touchFraction) {
+
+    public PositionThumbInfo scrollToPositionAtProgress(float touchFraction) {
         int rowCount = mApps.getNumAppRows();
         if (rowCount == 0) {
-            return "";
+            return new PositionThumbInfo("", 0);
         }
 
         // Find the fastscroll section that maps to this touch fraction
@@ -233,12 +234,12 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
                 mApps.getFastScrollerSections();
         int count = fastScrollSections.size();
         if (count == 0) {
-            return "";
+            return new PositionThumbInfo("", 0);
         }
         int index = Utilities.boundToRange((int) (touchFraction * count), 0, count - 1);
         AlphabeticalAppsList.FastScrollSectionInfo section = fastScrollSections.get(index);
         mFastScrollHelper.smoothScrollToSection(section);
-        return section.sectionName;
+        return new PositionThumbInfo(section.sectionName, section.color);
     }
 
     @Override

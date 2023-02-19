@@ -157,4 +157,5 @@ object PrefKey {
 
     //DEVELOPER
     val SHOW_DEV_OPTIONS = booleanPreferencesKey("pref_show_dev_options")
+    val DEBUG_MODE = booleanPreferencesKey("pref_debug_mode")
 }

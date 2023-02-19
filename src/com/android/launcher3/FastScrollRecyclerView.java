@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.compat.AccessibilityManagerCompat;
 import com.android.launcher3.views.RecyclerViewFastScroller;
+import com.android.launcher3.views.RecyclerViewFastScroller.PositionThumbInfo;
 
 
 /**
@@ -163,7 +164,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      * <p>Override in each subclass of this base class.
      */
-    public abstract String scrollToPositionAtProgress(float touchFraction);
+    public abstract PositionThumbInfo scrollToPositionAtProgress(float touchFraction);
 
     /**
      * Updates the bounds for the scrollbar.

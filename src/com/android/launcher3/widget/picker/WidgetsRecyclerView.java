@@ -31,6 +31,7 @@ import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.FastScrollRecyclerView;
 import com.android.launcher3.R;
 import com.android.launcher3.views.ActivityContext;
+import com.android.launcher3.views.RecyclerViewFastScroller.PositionThumbInfo;
 import com.android.launcher3.widget.model.WidgetListSpaceEntry;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 import com.android.launcher3.widget.model.WidgetsListContentEntry;
@@ -98,10 +99,10 @@ public class WidgetsRecyclerView extends FastScrollRecyclerView implements OnIte
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      */
     @Override
-    public String scrollToPositionAtProgress(float touchFraction) {
+    public PositionThumbInfo scrollToPositionAtProgress(float touchFraction) {
         // Skip early if widgets are not bound.
         if (isModelNotReady()) {
-            return "";
+            return new PositionThumbInfo("", 0);
         }
 
         // Stop the scroller if it is scrolling
@@ -114,7 +115,7 @@ public class WidgetsRecyclerView extends FastScrollRecyclerView implements OnIte
         layoutManager.scrollToPositionWithOffset(0, (int) -(availableScrollHeight * touchFraction));
 
         int posInt = (int) ((touchFraction == 1) ? pos - 1 : pos);
-        return mAdapter.getSectionName(posInt);
+        return new PositionThumbInfo(mAdapter.getSectionName(posInt), 0);
     }
 
     /**

@@ -63,7 +63,6 @@ class NLPrefs private constructor(private val context: Context) {
     private val dataStore: DataStore<Preferences> = context.dataStore
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
-    val pokeChange = { pokeChange() }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -75,7 +74,7 @@ class NLPrefs private constructor(private val context: Context) {
         OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
     }
 
-    fun pokeChange() {
+    private fun pokeChange() {
         CoroutineScope(Dispatchers.Default).launch {
             _changePoker.emit(Random.nextInt())
         }
@@ -858,6 +857,13 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.SHOW_DEV_OPTIONS,
         titleId = R.string.title__dev_show_Dev,
+        defaultValue = false
+    )
+
+    val showDebugInfo = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DEBUG_MODE,
+        titleId = R.string.title__dev_show_debug_info,
         defaultValue = false
     )
 
