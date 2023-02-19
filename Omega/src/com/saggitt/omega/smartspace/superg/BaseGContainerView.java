@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.smartspace;
+package com.saggitt.omega.smartspace.superg;
 
 import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;

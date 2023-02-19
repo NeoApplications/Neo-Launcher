@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.smartspace;
+package com.saggitt.omega.smartspace.superg;
 
 
 import android.content.ComponentName;
@@ -42,7 +42,9 @@ import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
 import com.saggitt.omega.OmegaAppKt;
 import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.smartspace.OmegaSmartSpaceController;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
+import com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut;
 import com.saggitt.omega.util.ContextExtensionsKt;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.widget.Temperature;
