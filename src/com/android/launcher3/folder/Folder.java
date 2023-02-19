@@ -24,6 +24,7 @@ import static com.android.launcher3.config.FeatureFlags.ALWAYS_USE_HARDWARE_OPTI
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_FOLDER_LABEL_UPDATED;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ITEM_DROP_COMPLETED;
 import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
+import static java.lang.Math.round;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -34,6 +35,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -58,7 +60,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Alarm;
@@ -72,6 +73,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.OnAlarmListener;
 import com.android.launcher3.R;
+import com.android.launcher3.ResourceUtils;
 import com.android.launcher3.ShortcutAndWidgetContainer;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.accessibility.AccessibleDragListenerAdapter;
@@ -82,6 +84,7 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragController.DragListener;
 import com.android.launcher3.dragndrop.DragOptions;
+import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.logging.StatsLogManager;
@@ -94,11 +97,13 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -237,6 +242,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private KeyboardInsetAnimationCallback mKeyboardInsetAnimationCallback;
 
     private GradientDrawable mBackground;
+    private final NLPrefs prefs;
+    private final Launcher mLauncher;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -258,6 +265,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         // click).
         setFocusableInTouchMode(true);
 
+        prefs = Utilities.getOmegaPrefs(context);
+        mLauncher = Launcher.getLauncher(context);
     }
 
     @Override
@@ -271,8 +280,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         final DeviceProfile dp = mActivityContext.getDeviceProfile();
         final int paddingLeftRight = dp.folderContentPaddingLeftRight;
 
-        mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
-                R.drawable.round_rect_folder, getContext().getTheme());
+        //mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
+        //        R.drawable.round_rect_folder, getContext().getTheme());
+
+        customizeFolder();
 
         mContent = findViewById(R.id.folder_content);
         mContent.setPadding(paddingLeftRight, dp.folderContentPaddingTop, paddingLeftRight, 0);
@@ -297,6 +308,37 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (Utilities.ATLEAST_R) {
             mKeyboardInsetAnimationCallback = new KeyboardInsetAnimationCallback(this);
             setWindowInsetsAnimationCallback(mKeyboardInsetAnimationCallback);
+        }
+    }
+
+    private void customizeFolder() {
+        int bgColor;
+        if (prefs.getDesktopCustomFolderBackground().getValue()) {
+            bgColor = prefs.getDesktopFolderBackgroundColor().getValue();
+        } else {
+            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
+        }
+        mBackground = new GradientDrawable();
+        mBackground.setShape(GradientDrawable.RECTANGLE);
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
+
+        mBackground.setCornerRadius(getCornerRadius());
+    }
+
+    public float getCornerRadius() {
+        if (prefs.getDesktopFolderCornerRadius().getValue() >= 0) {
+            return round(prefs.getDesktopFolderCornerRadius().getValue());
+        } else {
+            if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
+                return round(prefs.getProfileWindowCornerRadius().getValue());
+            } else {
+                TypedValue edgeRadius = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius);
+                if (edgeRadius != null) {
+                    return edgeRadius.getDimension(mLauncher.getApplicationContext().getResources().getDisplayMetrics());
+                } else {
+                    return ResourceUtils.pxFromDp(8, getResources().getDisplayMetrics());
+                }
+            }
         }
     }
 

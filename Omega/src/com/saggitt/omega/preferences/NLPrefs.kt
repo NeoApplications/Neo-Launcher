@@ -238,7 +238,6 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
-    // TODO DimensionPref?
     var desktopWidgetCornerRadius = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_WIDGETS_CORNER_RADIUS,
@@ -256,7 +255,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title_desktop_icon_popup_menu,
         defaultValue = setOf(PREFS_DESKTOP_POPUP_EDIT),
         entries = desktopPopupOptions,
-        //withIcons = true,
+        withIcons = true,
     )
 
     // TODO DimensionPref?
@@ -306,8 +305,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface),
-        //withAlpha = true,
+        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface)
     )
 
     val desktopFolderColumns = IntPref(

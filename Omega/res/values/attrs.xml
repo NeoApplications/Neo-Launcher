@@ -18,5 +18,7 @@
 
 <resources>
     <attr name="settingsBackground" format="color" />
+    <attr name="bottomSheetNavBarColor" format="color" />
+    <attr name="folderFillColor" format="color" />
     <attr name="qsbEdgeRadius" format="dimension" />
 </resources>
