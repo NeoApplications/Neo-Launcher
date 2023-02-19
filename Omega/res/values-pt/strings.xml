@@ -127,10 +127,10 @@
     <string name="action_open_notifications">Abrir as notificações</string>
     <string name="action_sleep_timeout">Adormecer usando o templo limite do ecrã</string>
     <string name="gesture_long_press">Toque e segure</string>
-    <string name="gesture_swipe_up">Deslizar pra cima</string>
+    <string name="gesture_swipe_up">Deslizar para cima</string>
     <string name="omega_actions">Ações</string>
     <string name="dt2s_admin_hint">Para adormecer com toque duplo, garanta a permissão de administrador.</string>
-    <string name="dt2s_admin_warning">O toque duplo pra adormecer será desativado.</string>
+    <string name="dt2s_admin_warning">O toque duplo para adormecer será desativado.</string>
     <string name="title__search_action_assistant">Abrir o assistente</string>
     <string name="title_search_contacts">Procurar contatos</string>
     <string name="title__search_show_assistant">Mostrar botão de pesquisa por voz</string>
@@ -319,7 +319,7 @@
     <string name="action_close_notifications">Fechar as notificações</string>
     <string name="action_global_search">Executar a Pesquisa Global</string>
     <string name="gesture_double_tap">Toque duplo</string>
-    <string name="gesture_dock_swipe_up">Deslizar pra cima a partir da dock</string>
+    <string name="gesture_dock_swipe_up">Deslizar para cima a partir da dock</string>
     <string name="gesture_press_home">Toque no botão Iniciar</string>
     <string name="gesture_press_back">Botão voltar</string>
     <string name="title_search_provider">Mecanismo de pesquisa</string>
@@ -392,7 +392,7 @@
     <string name="icon_shape_corner_round">Redondo</string>
     <string name="folder_name_format">Pasta: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
     <string name="title__notification_background">Cor de fundo da Notificação</string>
-    <string name="title__gesture_swipe_down">Deslizar pra baixo</string>
+    <string name="title__gesture_swipe_down">Deslizar para baixo</string>
     <string name="action_open_app">Abrir a app</string>
     <string name="dash_media_player_description">Mostrar ou ocultar os controles do reprodutor de áudio</string>
     <string name="dash_location">Localização</string>
