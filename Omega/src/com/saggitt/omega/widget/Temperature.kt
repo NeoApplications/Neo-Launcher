@@ -44,30 +44,30 @@ class Temperature(val value: Int, val unit: Unit) {
             return when (this) {
                 Celsius    -> "metric"
                 Fahrenheit -> "imperial"
-                Kelvin     -> "kelvin"
-                Rakine     -> "rakine"
-                Delisle    -> "delisle"
-                Newton     -> "newton"
-                Reaumur    -> "reaumur"
-                Romer      -> "romer"
+                Kelvin -> "kelvin"
+                Rakine -> "rakine"
+                Delisle -> "delisle"
+                Newton -> "newton"
+                Reaumur -> "reaumur"
+                Romer -> "romer"
+            }
+        }
+    }
+
+    companion object {
+        fun unitFromString(unit: String): Unit {
+            return when (unit) {
+                "", "metric" -> Unit.Celsius
+                "imperial" -> Unit.Fahrenheit
+                "kelvin" -> Unit.Kelvin
+                "rakine" -> Unit.Rakine
+                "delisle" -> Unit.Delisle
+                "newton" -> Unit.Newton
+                "reaumur" -> Unit.Reaumur
+                "romer" -> Unit.Romer
+                else -> throw IllegalArgumentException("unknown unit $unit")
             }
         }
 
-        companion object {
-            fun unitFromString(unit: String): Unit {
-                return when (unit) {
-                    "", "metric" -> Celsius
-                    "imperial"   -> Fahrenheit
-                    "kelvin"     -> Kelvin
-                    "rakine"     -> Rakine
-                    "delisle"    -> Delisle
-                    "newton"     -> Newton
-                    "reaumur"    -> Reaumur
-                    "romer"      -> Romer
-                    else         -> throw IllegalArgumentException("unknown unit $unit")
-                }
-            }
-
-        }
     }
 }

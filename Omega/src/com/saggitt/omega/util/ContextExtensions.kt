@@ -21,11 +21,20 @@ package com.saggitt.omega.util
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import androidx.annotation.ColorInt
+import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NLPrefs
 import java.util.Locale
 
 val Context.omegaPrefs: NLPrefs get() = Utilities.getOmegaPrefs(this)
+fun Context.getLauncherOrNull(): Launcher? {
+    return try {
+        Launcher.getLauncher(this)
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+}
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }
@@ -48,4 +57,17 @@ fun Context.checkPackagePermission(packageName: String, permissionName: String):
     } catch (_: PackageManager.NameNotFoundException) {
     }
     return false
+}
+
+fun Context.checkLocationAccess(): Boolean {
+    return Utilities.hasPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
+            Utilities.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+}
+
+@ColorInt
+fun Context.getColorAttr(attr: Int): Int {
+    val ta = obtainStyledAttributes(intArrayOf(attr))
+    @ColorInt val colorAccent = ta.getColor(0, 0)
+    ta.recycle()
+    return colorAccent
 }

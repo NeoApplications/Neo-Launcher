@@ -42,7 +42,6 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.TestProtocol;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
-import com.saggitt.omega.widget.CustomAppWidgetHostView;
 
 import java.util.ArrayList;
 import java.util.function.IntConsumer;
@@ -97,7 +96,7 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
             view = mPendingViews.get(appWidgetId);
             mPendingViews.remove(appWidgetId);
         } else {
-            view = new CustomAppWidgetHostView(context);
+            view = new LauncherAppWidgetHostView(context);
         }
         mViews.put(appWidgetId, view);
         return view;
@@ -217,7 +216,7 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
     public AppWidgetHostView createView(Context context, int appWidgetId,
                                         LauncherAppWidgetProviderInfo appWidget) {
         if (appWidget.isCustomWidget()) {
-            LauncherAppWidgetHostView lahv = new CustomAppWidgetHostView(context);
+            LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
             lahv.setAppWidget(0, appWidget);
             CustomWidgetManager.INSTANCE.get(context).onViewCreated(lahv);
             return lahv;

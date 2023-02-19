@@ -65,6 +65,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -2062,6 +2063,11 @@ public class Launcher extends StatefulActivity<LauncherState>
         mStateManager.getState().onBackPressed(this);
     }
 
+    @Override
+    public ActivityOptions getActivityLaunchOptions(View v) {
+        return null;
+    }
+
     protected void onScreenOff() {
         // Reset AllApps to its initial state only if we are not in the middle of
         // processing a multi-step drop
@@ -3153,7 +3159,11 @@ public class Launcher extends StatefulActivity<LauncherState>
      * @see LauncherState#getOverviewScaleAndOffset(Launcher)
      */
     public float[] getNormalOverviewScaleAndOffset() {
-        return new float[] {NO_SCALE, NO_OFFSET};
+        return new float[]{NO_SCALE, NO_OFFSET};
+    }
+
+    public boolean useVerticalBarLayout() {
+        return mDeviceProfile.isVerticalBarLayout();
     }
 
     public static Launcher getLauncher(Context context) {

@@ -34,5 +34,10 @@
 
     <color name="ambient_text_shadow_color">#40000000</color>
     <color name="key_text_shadow_color">#89000000</color>
+
+    <!-- Pixel 1 -->
+    <color name="qsb_background">#ffffffff</color>
+    <color name="qsb_connector_gradient_end_color">#66ffffff</color>
+    <color name="colorAccent">#FF00668B</color>
 </resources>
 

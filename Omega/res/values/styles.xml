@@ -47,6 +47,15 @@
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
     </style>
 
+    <style name="SmartspaceTextHeadline">
+        <item name="android:textColor">?attr/workspaceTextColor</item>
+        <item name="android:letterSpacing">@dimen/smartspaceLetterSpacing</item>
+        <item name="ambientShadowBlur">@dimen/ambient_text_shadow_radius</item>
+        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
+        <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
+        <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
+        <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+    </style>
 
     <style name="EnhancedSmartspaceTextSubtitle" parent="@style/EnhancedSmartspaceTextTitle">
         <item name="android:textSize">@dimen/enhanced_smartspace_subtitle_size</item>
@@ -72,6 +81,14 @@
         <item name="keyShadowColor">?attr/workspaceAmbientShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_dx</item>
         <item name="keyShadowOffsetY">@dimen/key_text_shadow_dy</item>
+    </style>
+
+    <style name="WeatherWidget" />
+
+    <style name="WeatherWidget.Text">
+        <item name="android:shadowRadius">3.0</item>
+        <item name="android:shadowDy">0.5</item>
+        <item name="android:shadowColor">#33000000</item>
     </style>
 </resources>
 

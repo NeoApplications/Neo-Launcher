@@ -18,21 +18,23 @@
 
 package com.saggitt.omega.util
 
+import android.app.PendingIntent
+import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.children
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-fun ViewGroup.getAllChildren() = ArrayList<View>().also { getAllChildren(it) }
-
-fun ViewGroup.getAllChildren(list: MutableList<View>) {
-    for (i in (0 until childCount)) {
-        val child = getChildAt(i)
-        if (child is ViewGroup) {
-            child.getAllChildren(list)
-        } else {
-            list.add(child)
-        }
-    }
-}
+private val pendingIntentTagId =
+    Resources.getSystem().getIdentifier("pending_intent_tag", "id", "android")
 
 fun OnAttachStateChangeListener(callback: (isAttached: Boolean) -> Unit) =
     object : View.OnAttachStateChangeListener {
@@ -53,4 +55,48 @@ fun View.observeAttachedState(callback: (isAttached: Boolean) -> Unit): () -> Un
         listener.onViewAttachedToWindow(this)
     }
     return { removeOnAttachStateChangeListener(listener) }
+}
+
+val View?.pendingIntent get() = this?.getTag(pendingIntentTagId) as? PendingIntent
+fun View.repeatOnAttached(block: suspend CoroutineScope.() -> Unit) {
+    var launchedJob: Job? = null
+
+    val mutext = Mutex()
+    observeAttachedState { isAttached ->
+        if (isAttached) {
+            launchedJob = MainScope().launch(
+                context = Dispatchers.Main.immediate,
+                start = CoroutineStart.UNDISPATCHED
+            ) {
+                mutext.withLock {
+                    coroutineScope {
+                        block()
+                    }
+                }
+            }
+            return@observeAttachedState
+        }
+        launchedJob?.cancel()
+        launchedJob = null
+    }
+}
+
+val ViewGroup.recursiveChildren: Sequence<View>
+    get() = children.flatMap {
+        if (it is ViewGroup) {
+            it.recursiveChildren + sequenceOf(it)
+        } else sequenceOf(it)
+    }
+
+fun ViewGroup.getAllChildren() = ArrayList<View>().also { getAllChildren(it) }
+
+fun ViewGroup.getAllChildren(list: MutableList<View>) {
+    for (i in (0 until childCount)) {
+        val child = getChildAt(i)
+        if (child is ViewGroup) {
+            child.getAllChildren(list)
+        } else {
+            list.add(child)
+        }
+    }
 }

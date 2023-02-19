@@ -34,16 +34,20 @@ import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
-import com.saggitt.omega.search.getSearchProvidersMap
+import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.omegaApp
+import com.saggitt.omega.smartspace.OmegaSmartSpaceController
+import com.saggitt.omega.smartspace.SmartSpaceDataWidget
+import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
+import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
+import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.KEY_A400
 import com.saggitt.omega.util.PINK
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
-import com.saggitt.omega.widget.WidgetConstants
-import com.saggitt.omega.widget.weatherprovider.BlankDataProvider
-import com.saggitt.omega.widget.weatherprovider.PEWeatherDataProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -59,6 +63,7 @@ class NLPrefs private constructor(private val context: Context) {
     private val dataStore: DataStore<Preferences> = context.dataStore
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
+    val pokeChange = { pokeChange() }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -66,12 +71,15 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
+    fun updateSmartspaceProvider() {
+        OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
+    }
+
     fun pokeChange() {
         CoroutineScope(Dispatchers.Default).launch {
             _changePoker.emit(Random.nextInt())
         }
     }
-
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
@@ -646,8 +654,11 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
-        defaultValue = true,
-    )
+        defaultValue = true
+    ) {
+        pokeChange()
+    }
+
     val smartspaceTime = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_TIME,
@@ -694,32 +705,30 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
         titleId = R.string.title_smartspace_widget_provider,
-        defaultValue = BlankDataProvider::class.java.name, //SmartSpaceDataWidget::class.java.name,
-        entries = listOfNotNull(
-            BlankDataProvider::class.java.name,
-            //SmartSpaceDataWidget::class.java.name,
-            //OWMWeatherDataProvider::class.java.name,
-            if (PEWeatherDataProvider.isAvailable(context)) PEWeatherDataProvider::class.java.name else null
-        ).associateBy(
+        defaultValue = SmartSpaceDataWidget::class.java.name,
+        entries = Config.smartspaceWeatherProviders(context).associateBy(
             keySelector = { it },
-            valueTransform = { WidgetConstants.getDisplayName(context, it) }
+            valueTransform = { OmegaSmartSpaceController.getDisplayName(context, it) }
         )
-    )
+    ) {
+        updateSmartspaceProvider()
+        pokeChange()
+    }
 
-    // TODO does order have a function? if so, customize dialog to respect it?
     var smartspaceEventProviders = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
         titleId = R.string.title_smartspace_event_providers,
         defaultValue = setOf(
-            //SmartSpaceDataWidget::class.java.name,
-            //NotificationUnreadProvider::class.java.name,
-            //NowPlayingProvider::class.java.name,
-            //BatteryStatusProvider::class.java.name,
-            //PersonalityProvider::class.java.name
+            SmartSpaceDataWidget::class.java.name,
+            NotificationUnreadProvider::class.java.name,
+            NowPlayingProvider::class.java.name,
+            BatteryStatusProvider::class.java.name,
+            PersonalityProvider::class.java.name
         ),
-        entries = emptyMap(), // smartspaceProviderOptions,
-        //withIcons = true,
+        entries = Config.smartspaceEventProviders,
+        withIcons = true,
+        onChange = ::updateSmartspaceProvider
     )
 
     // TODO ColorPref?
@@ -770,13 +779,13 @@ class NLPrefs private constructor(private val context: Context) {
         },
     )
 
-    var searchProvider = StringSelectionPref(
+    /*var searchProvider = StringSelectionPref(
         dataStore = dataStore,
         key = PrefKey.SEARCH_PROVIDER,
         titleId = R.string.title_search_provider,
         defaultValue = "",
         entries = getSearchProvidersMap(context),
-    )
+    )*/
 
     val searchShowMic = BooleanPref(
         dataStore = dataStore,

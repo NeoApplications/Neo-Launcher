@@ -18,34 +18,33 @@
 
 package com.saggitt.omega.util
 
-import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.service.notification.StatusBarNotification
 import android.text.format.DateFormat
+import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
+import androidx.core.content.ContextCompat
+import androidx.preference.Preference
+import androidx.preference.PreferenceGroup
+import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import com.android.launcher3.views.OptionsPopupView
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -86,41 +85,6 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
     }
 }
 
-fun View.repeatOnAttached(block: suspend CoroutineScope.() -> Unit) {
-    var launchedJob: Job? = null
-
-    val mutext = Mutex()
-    observeAttachedState { isAttached ->
-        if (isAttached) {
-            launchedJob = MainScope().launch(
-                context = Dispatchers.Main.immediate,
-                start = CoroutineStart.UNDISPATCHED
-            ) {
-                mutext.withLock {
-                    coroutineScope {
-                        block()
-                    }
-                }
-            }
-            return@observeAttachedState
-        }
-        launchedJob?.cancel()
-        launchedJob = null
-    }
-}
-
-private val pendingIntentTagId =
-    Resources.getSystem().getIdentifier("pending_intent_tag", "id", "android")
-
-val View?.pendingIntent get() = this?.getTag(pendingIntentTagId) as? PendingIntent
-
-val ViewGroup.recursiveChildren: Sequence<View>
-    get() = children.flatMap {
-        if (it is ViewGroup) {
-            it.recursiveChildren + sequenceOf(it)
-        } else sequenceOf(it)
-    }
-
 fun formatTime(calendar: Calendar, context: Context? = null): String {
     return when (context) {
         null -> String.format(
@@ -154,6 +118,12 @@ fun formatTime(calendar: Calendar, context: Context? = null): String {
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
 
+fun StatusBarNotification.loadSmallIcon(context: Context): Drawable? {
+    return notification.smallIcon?.loadDrawable(context)
+}
+
+operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
+
 @JvmOverloads
 fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback? = null): Handler =
     if (preferMyLooper)
@@ -161,6 +131,30 @@ fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback
     else
         Handler(Looper.getMainLooper(), callback)
 
+fun openPopupMenu(view: View, rect: RectF?, vararg items: OptionsPopupView.OptionItem) {
+    val launcher = Launcher.getLauncher(view.context)
+    OptionsPopupView.show(
+        launcher,
+        rect ?: RectF(launcher.getViewBounds(view)),
+        items.toList(),
+        true
+    )
+}
+
+fun createRipplePill(context: Context, color: Int, radius: Float): Drawable {
+    return RippleDrawable(
+        ContextCompat.getColorStateList(context, R.color.focused_background)!!,
+        createPill(color, radius), createPill(color, radius)
+    )
+}
+
+fun createPill(color: Int, radius: Float): Drawable {
+    return GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        setColor(color)
+        cornerRadius = radius
+    }
+}
 
 fun String.toTitleCase(): String = splitToSequence(" ").map {
     it.replaceFirstChar { ch ->
@@ -197,4 +191,16 @@ fun openURLinBrowser(context: Context, url: String?, sourceBounds: Rect?, option
     } catch (exc: ActivityNotFoundException) {
         Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
     }
+}
+
+fun dpToPx(size: Float): Float {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        size,
+        Resources.getSystem().displayMetrics
+    )
+}
+
+fun pxToDp(size: Float): Float {
+    return size / dpToPx(1f)
 }

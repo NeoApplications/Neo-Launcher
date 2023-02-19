@@ -50,6 +50,7 @@ import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
+import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
@@ -67,15 +68,19 @@ fun WidgetsPrefPage() {
             *listOfNotNull(
                 prefs.smartspaceEnable,
                 prefs.smartspaceDate,
+                if (prefs.smartspaceDate.getValue()) {
+                    prefs.smartspaceCalendar
+                } else {
+                    null
+                },
                 prefs.smartspaceTime,
                 prefs.smartspaceTime24H,
+                prefs.smartspaceUsePillQsb,
                 prefs.smartspaceWeatherProvider,
-                /*if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherDataProvider::class.java.name) {
-                    prefs.smartspaceWeatherApiKey
-                } else null,
                 if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherDataProvider::class.java.name) {
+                    prefs.smartspaceWeatherApiKey
                     prefs.smartspaceWeatherCity
-                } else null,*/
+                } else null,
                 prefs.smartspaceWeatherUnit,
                 prefs.smartspaceEventProviders
             ).toTypedArray()
@@ -108,7 +113,6 @@ fun WidgetsPrefPage() {
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // TODO Add Smartspace preview
                 item {
                     PreferenceGroup(
                         stringResource(id = R.string.title__general_smartspace),

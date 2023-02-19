@@ -114,6 +114,7 @@ object PrefKey {
         stringPreferencesKey("widgets_smartspace_weather_provider")
     val WIDGETS_SMARTSPACE_WEATHER_API_KEY = stringPreferencesKey("widgets_smartspace_weather_api")
     val WIDGETS_SMARTSPACE_WEATHER_CITY = stringPreferencesKey("widgets_smartspace_weather_city")
+    val NOTIFICATION_BADGING = "notification_badging"
 
     // Notification
     //// TODO handle the special notification badging intent

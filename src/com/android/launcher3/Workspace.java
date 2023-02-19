@@ -570,8 +570,16 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         if (mQsb == null) {
             // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
             // edges, we do not need a full width QSB.
+            int layout = 0;
+
+            if (Utilities.getOmegaPrefs(getContext()).getSmartspaceUsePillQsb().getValue()) {
+                layout = R.layout.qsb_container_preview;
+            } else {
+                layout = R.layout.search_container_workspace;
+            }
+
             mQsb = LayoutInflater.from(getContext())
-                    .inflate(R.layout.search_container_workspace, firstPage, false);
+                    .inflate(layout, firstPage, false);
         }
 
         int cellVSpan = FeatureFlags.EXPANDED_SMARTSPACE.get()

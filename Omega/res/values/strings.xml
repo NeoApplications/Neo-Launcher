@@ -317,6 +317,7 @@
     <string name="event_provider_unread_notifications">Notifications</string>
     <string name="battery_status">Battery Status</string>
     <string name="week_day_format" translatable="false">%1$s, %2$s</string>
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
     <string name="smartspace_icu_date_pattern_gregorian_wday_month_day_no_year" translatable="false">EEEMMMd</string>
     <string name="smartspace_icu_date_pattern_gregorian_time" translatable="false">HH:mm</string>
     <string name="smartspace_icu_date_pattern_gregorian_time_12h" translatable="false">hh:mm aa</string>

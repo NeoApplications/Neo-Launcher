@@ -23,6 +23,9 @@ import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.StringMultiSelectionPref
+import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.preferences.StringTextPref
 
 val PreferenceBuilder =
     @Composable { pref: Any, onDialogPref: (Any) -> Unit, index: Int, size: Int ->
@@ -74,25 +77,27 @@ val PreferenceBuilder =
                     index = index,
                     groupSize = size
                 ) { onDialogPref(pref) }
-            /*
-                        is BasePreferences.StringSelectionPref ->
-                            StringSelectionPreference(
-                                pref = pref,
-                                index = index,
-                                groupSize = size
-                            ) { onDialogPref(pref) }
-                        is BasePreferences.StringTextPref ->
-                            StringTextPreference(
-                                pref = pref,
-                                index = index,
-                                groupSize = size
-                            ) { onDialogPref(pref) }
-                        is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPreference(
-                            pref = pref,
-                            index = index,
-                            groupSize = size
-                        ) { onDialogPref(pref) }
-                        */
+
+            is StringSelectionPref ->
+                StringSelectionPreference(
+                    pref = pref,
+                    index = index,
+                    groupSize = size
+                ) { onDialogPref(pref) }
+
+            is StringTextPref ->
+                StringTextPreference(
+                    pref = pref,
+                    index = index,
+                    groupSize = size
+                ) { onDialogPref(pref) }
+
+            is StringMultiSelectionPref -> StringMultiSelectionPreference(
+                pref = pref,
+                index = index,
+                groupSize = size
+            ) { onDialogPref(pref) }
+
             is PageItem ->
                 PagePreference(
                     titleId = pref.titleId,

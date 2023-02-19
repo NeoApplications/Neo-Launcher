@@ -97,7 +97,6 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.LocalColorExtractor;
 import com.android.launcher3.widget.NavigableAppWidgetHostView;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
-import com.saggitt.omega.widget.CustomAppWidgetHostView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -530,10 +529,6 @@ public class LauncherPreviewRenderer extends ContextWrapper
         }
 
         private void inflateCustomView(AppWidgetProviderInfo info) {
-            mCustomView = CustomAppWidgetHostView.inflateCustomView(getContext(), info, false);
-            if (mCustomView == null) {
-                return;
-            }
             removeAllViews();
             addView(mCustomView, MATCH_PARENT, MATCH_PARENT);
         }

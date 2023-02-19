@@ -35,6 +35,7 @@ open class BooleanPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Boolean>,
     private val defaultValue: Boolean = false,
+    onChange: () -> Unit = {}
 ) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Boolean> {
@@ -152,6 +153,7 @@ open class StringSelectionPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val entries: Map<String, String>,
+    onChange: () -> Unit = { }
 ) :
     PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
@@ -172,14 +174,30 @@ open class StringMultiSelectionPref(
     val defaultValue: Set<String> = emptySet(),
     val withIcons: Boolean = false,
     val entries: Map<String, Int>,
+    onChange: () -> Unit = { }
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
 
+    private val valueList = arrayListOf<String>()
     override fun get(): Flow<Set<String>> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
     override suspend fun set(value: Set<String>) {
         dataStore.edit { it[key] = value }
+    }
+
+    fun getAll(): List<String> = valueList
+
+    fun setAll(value: List<String>) {
+        valueList.clear()
+        valueList.addAll(value)
+        return runBlocking(Dispatchers.IO) {
+            saveChanges()
+        }
+    }
+
+    private suspend fun saveChanges() {
+        dataStore.edit { it[key] = valueList.toSet() }
     }
 }
 
@@ -205,7 +223,7 @@ abstract class PrefDelegate<T : Any>(
     @StringRes var summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<T>,
-    private val defaultValue: T,
+    private val defaultValue: T
 ) {
     fun getValue(): T {
         return runBlocking(Dispatchers.IO) {

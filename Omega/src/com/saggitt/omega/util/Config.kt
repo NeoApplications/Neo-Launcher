@@ -22,8 +22,16 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
-import com.saggitt.omega.smartspace.provider.NowPlayingProvider
+import com.saggitt.omega.smartspace.BlankDataProvider
+import com.saggitt.omega.smartspace.SmartSpaceDataWidget
+import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
+import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.eventprovider.CalendarEventProvider
+import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
+import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
+import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
+import com.saggitt.omega.smartspace.weather.PEWeatherDataProvider
 import com.saggitt.omega.theme.ThemeOverride
 import java.util.Locale
 
@@ -50,6 +58,12 @@ class Config(val context: Context) {
     }
 
     companion object {
+        //PERMISSION FLAGS
+        const val REQUEST_PERMISSION_STORAGE_ACCESS = 666
+        const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
+        const val REQUEST_PERMISSION_READ_CONTACTS = 668
+
+        const val GOOGLE_QSB = "com.google.android.googlequicksearchbox"
 
         //APP DRAWER SORT MODE
         const val SORT_AZ = 0
@@ -71,14 +85,21 @@ class Config(val context: Context) {
             SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
         )
 
-        fun smartspaceProviderOptions(context: Context) = listOf(
-            NowPlayingProvider(context),
-            BatteryStatusProvider(context),
-            /*NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
+        val smartspaceEventProviders = mapOf(
+            NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
+            NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
+            BatteryStatusProvider::class.java.name to R.string.battery_status,
             PersonalityProvider::class.java.name to R.string.personality_provider,
             CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
             SmartSpaceDataWidget::class.java.name to R.string.title_smartspace_widget_provider,
-            AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events*/
+            AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events
+        )
+
+        fun smartspaceWeatherProviders(context: Context) = listOfNotNull(
+            BlankDataProvider::class.java.name,
+            SmartSpaceDataWidget::class.java.name,
+            OWMWeatherDataProvider::class.java.name,
+            if (PEWeatherDataProvider.isAvailable(context)) PEWeatherDataProvider::class.java.name else null
         )
 
         fun calendarOptions(context: Context) = mapOf(

@@ -23,6 +23,7 @@ import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITIO
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Person;
 import android.app.WallpaperManager;
@@ -79,6 +80,8 @@ import android.widget.LinearLayout;
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
@@ -101,6 +104,7 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.util.Config;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -990,5 +994,14 @@ public final class Utilities {
 
     public static void killLauncher() {
         System.exit(0);
+    }
+
+    public static boolean hasPermission(Context context, String permission) {
+        return ContextCompat.checkSelfPermission(context, permission)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void requestLocationPermission(Activity activity) {
+        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, Config.REQUEST_PERMISSION_LOCATION_ACCESS);
     }
 }

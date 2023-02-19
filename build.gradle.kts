@@ -171,6 +171,7 @@ android {
         named("omega") {
             res.srcDirs(listOf("Omega/res"))
             java.srcDirs(listOf("Omega/src", "Omega/src_overrides"))
+            aidl.srcDirs(listOf("Omega/aidl"))
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
 
@@ -222,6 +223,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
     implementation("com.github.samanzamani:PersianDate:1.5.4")
+    implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.0.1") {
+        exclude("com.android.support", "support-compat")
+        exclude("com.android.support", "appcompat-v7")
+    }
+
 
     //Compose
     implementation("androidx.activity:activity-compose:1.6.1")

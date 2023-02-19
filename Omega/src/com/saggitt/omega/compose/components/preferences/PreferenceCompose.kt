@@ -39,6 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,9 @@ import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.StringMultiSelectionPref
+import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.preferences.StringTextPref
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
 
@@ -142,7 +147,7 @@ fun SwitchPreference(
     isEnabled: Boolean = true,
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
-    val checked = pref.get().collectAsState(initial = false)
+    val (checked, check) = remember(pref) { mutableStateOf(pref.getValue()) }
     val coroutineScope = rememberCoroutineScope()
 
     BasePreference(
@@ -153,17 +158,18 @@ fun SwitchPreference(
         groupSize = groupSize,
         isEnabled = isEnabled,
         onClick = {
-            onCheckedChange(!checked.value)
-            check(!checked.value)
-            coroutineScope.launch { pref.set(!checked.value) }
+            onCheckedChange(!checked)
+            check(!checked)
+            coroutineScope.launch { pref.set(!checked) }
         },
         endWidget = {
             Switch(
                 modifier = Modifier
                     .height(24.dp),
-                checked = checked.value,
+                checked = checked,
                 onCheckedChange = {
                     onCheckedChange(it)
+                    check(it)
                     coroutineScope.launch { pref.set(it) }
                 },
                 enabled = isEnabled,
@@ -187,6 +193,73 @@ fun IntSelectionPreference(
         titleId = pref.titleId,
         summaryId = pref.summaryId,
         summary = pref.entries[value.value]?.let { stringResource(id = it) },
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun StringSelectionPreference(
+    modifier: Modifier = Modifier,
+    pref: StringSelectionPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        summary = pref.entries[pref.getValue()],
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun StringMultiSelectionPreference(
+    modifier: Modifier = Modifier,
+    pref: StringMultiSelectionPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        summary = pref.entries
+            .filter { pref.getValue().contains(it.key) }
+            .values.let {
+                it.map { stringResource(id = it) }.joinToString(separator = ", ")
+            },
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun StringTextPreference(
+    modifier: Modifier = Modifier,
+    pref: StringTextPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        summary = pref.getValue(),
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,

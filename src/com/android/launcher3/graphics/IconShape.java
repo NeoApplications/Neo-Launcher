@@ -37,9 +37,13 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.util.TypedValue;
 import android.util.Xml;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
@@ -59,6 +63,7 @@ import java.util.List;
  */
 public abstract class IconShape {
 
+    protected SparseArray<TypedValue> mAttrs;
     private static IconShape sInstance = new Circle();
     private static float sNormalizationScale = ICON_VISIBLE_AREA_FACTOR;
 
@@ -74,7 +79,10 @@ public abstract class IconShape {
         return false;
     }
 
-    ;
+    @Nullable
+    public TypedValue getAttrValue(int attr) {
+        return mAttrs == null ? null : mAttrs.get(attr);
+    }
 
     public abstract void drawShape(Canvas canvas, float offsetX, float offsetY, float radius,
                                    Paint paint);

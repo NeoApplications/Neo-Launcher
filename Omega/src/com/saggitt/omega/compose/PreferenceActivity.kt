@@ -25,19 +25,30 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.ui.graphics.Color
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.saggitt.omega.compose.navigation.PrefsComposeView
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.theme.ThemeManager
+import com.saggitt.omega.theme.ThemeOverride
 
-class PreferenceActivity : AppCompatActivity() {
+class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
     private lateinit var navController: NavHostController
+    override var currentTheme = 0
+    override var currentAccent = 0
+    private lateinit var themeOverride: ThemeOverride
+    private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        themeOverride = ThemeOverride(themeSet, this)
+        themeOverride.applyTheme(this)
+        currentTheme = themeOverride.getTheme(this)
+        currentAccent = Color.Green.hashCode() //omegaPrefs.themeAccentColor.onGetValue()
         setContent {
             OmegaAppTheme {
                 navController = rememberAnimatedNavController()
@@ -45,6 +56,8 @@ class PreferenceActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onThemeChanged(forceUpdate: Boolean) {}
 
     companion object {
         fun createIntent(context: Context, destination: String): Intent {

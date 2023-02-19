@@ -9,9 +9,9 @@ import android.os.SystemClock
 import android.text.format.DateFormat.is24HourFormat
 import android.util.AttributeSet
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.smartspace.model.SmartspaceCalendar
-import com.saggitt.omega.smartspace.model.SmartspaceTimeFormat
 import com.saggitt.omega.util.broadcastReceiverFlow
 import com.saggitt.omega.util.repeatOnAttached
 import com.saggitt.omega.util.subscribeBlocking
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import saman.zamani.persiandate.PersianDate
 import saman.zamani.persiandate.PersianDateFormat
-import java.util.*
+import java.util.Locale
 
 typealias FormatterFunction = (Long) -> String
 
@@ -29,7 +29,7 @@ class IcuDateTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : DoubleShadowTextView(context, attrs) {
 
-    private val prefs = NLPrefs.getInstance(context)
+    private val prefs = Utilities.getOmegaPrefs(context)
     private var calendar: SmartspaceCalendar? = null
     private lateinit var dateTimeOptions: DateTimeOptions
     private var formatterFunction: FormatterFunction? = null
@@ -37,14 +37,14 @@ class IcuDateTextView @JvmOverloads constructor(
 
     init {
         repeatOnAttached {
-            val calendarSelectionEnabled = true
+            val calendarSelectionEnabled = prefs.smartspaceDate.getValue()
             val calendarFlow =
-                if (calendarSelectionEnabled) prefs.smartspaceCalendar.get()
-                else flowOf(prefs.smartspaceCalendar.defaultValue)
+                if (calendarSelectionEnabled) flowOf(SmartspaceCalendar.fromString(prefs.smartspaceCalendar.getValue()))
+                else flowOf(SmartspaceCalendar.fromString(prefs.smartspaceCalendar.defaultValue))
             val optionsFlow = DateTimeOptions.fromPrefs(prefs)
             combine(calendarFlow, optionsFlow) { calendar, options -> calendar to options }
                 .subscribeBlocking(this) {
-                    calendar = SmartspaceCalendar.fromString(it.first)
+                    calendar = it.first
                     dateTimeOptions = it.second
                     onTimeChanged(true)
                 }
@@ -85,7 +85,7 @@ class IcuDateTextView @JvmOverloads constructor(
         return calendar == SmartspaceCalendar.Persian && !shouldNotAlignToEnd
     }
 
-    private fun getTimeText(updateFormatter: Boolean): String {
+    fun getTimeText(updateFormatter: Boolean): String {
         val formatter = getFormatterFunction(updateFormatter)
         return formatter(System.currentTimeMillis())
     }
