@@ -477,4 +477,5 @@
     <string name="tap_to_enable">Toque el elemento para activarlo</string>
     <string name="show_top_shadow">Mostrar la sombra superior</string>
     <string name="title_override_corner_radius_value">Radio global de las esquinas</string>
+    <string name="dash_line_size">Tamaño de la línea de trazos</string>
 </resources>

@@ -492,4 +492,5 @@
     <string name="tap_to_enable">Tocca elemento per abilitarlo</string>
     <string name="show_top_shadow">Mostra ombra superiore</string>
     <string name="title_override_corner_radius_value">Raggio d\'angolo globale</string>
+    <string name="dash_line_size">Dimensione linea pannello</string>
 </resources>

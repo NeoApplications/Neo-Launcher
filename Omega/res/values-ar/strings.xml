@@ -483,4 +483,5 @@
     <string name="tap_to_enable">انقر على العنصر لتمكينه</string>
     <string name="show_top_shadow">إظهار الظل العلوي</string>
     <string name="title_override_corner_radius_value">نصف قطر الزاوية الشامل</string>
+    <string name="dash_line_size">حجم خط الشرطة</string>
 </resources>
