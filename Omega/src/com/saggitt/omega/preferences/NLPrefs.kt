@@ -616,7 +616,9 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
         titleId = R.string.notification_custom_color,
         defaultValue = false
-    )
+    ) {
+        pokeChange()
+    }
 
     val smartspaceEnable = BooleanPref(
         dataStore = dataStore,

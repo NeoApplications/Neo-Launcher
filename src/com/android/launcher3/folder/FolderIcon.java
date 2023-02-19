@@ -79,6 +79,7 @@ import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -617,6 +618,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
+            NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
             Rect iconBounds = mDotParams.iconBounds;
 
             Utilities.setRectToViewCenter(this, mActivity.getDeviceProfile().iconSizePx,
@@ -627,7 +629,15 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
             // If we are animating to the accepting state, animate the dot out.
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getScaleProgress());
-            mDotParams.dotColor = mBackground.getDotColor();
+            if (prefs.getNotificationCustomColor().getValue()) {
+                mDotParams.dotColor = prefs.getNotificationBackground().getValue();
+            } else {
+                mDotParams.dotColor = mBackground.getDotColor();
+            }
+
+            mDotParams.count = mDotInfo.getNotificationCount();
+            if (prefs.getNotificationCount().getValue())
+                mDotParams.showCount = true;
             mDotRenderer.draw(canvas, mDotParams);
         }
     }

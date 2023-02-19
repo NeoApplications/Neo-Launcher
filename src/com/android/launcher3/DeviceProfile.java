@@ -429,11 +429,18 @@ public class DeviceProfile {
         qsbWidth = calculateQsbWidth();
         flingToDeleteThresholdVelocity = res.getDimensionPixelSize(
                 R.dimen.drag_flingToDeleteMinVelocity);
+
+        // This is done last, after iconSizePx is calculated above.
+        float dotSize = 0.38f;
+        if (!Utilities.getOmegaPrefs(context).getNotificationCount().getValue()) {
+            dotSize = 0.228f;
+        }
+
         // This is done last, after iconSizePx is calculated above.
         Path dotPath = GraphicsUtils.getShapePath(DEFAULT_DOT_SIZE);
-        mDotRendererWorkSpace = new DotRenderer(iconSizePx, dotPath, DEFAULT_DOT_SIZE);
+        mDotRendererWorkSpace = new DotRenderer(iconSizePx, dotPath, dotSize);
         mDotRendererAllApps = iconSizePx == allAppsIconSizePx ? mDotRendererWorkSpace :
-                new DotRenderer(allAppsIconSizePx, dotPath, DEFAULT_DOT_SIZE);
+                new DotRenderer(allAppsIconSizePx, dotPath, dotSize);
     }
 
     /**
