@@ -99,7 +99,7 @@ public class SmartSpaceController implements Handler.Callback {
         return sInstance;
     }
 
-    public void onNewCard(final NewCardInfo newCardInfo) {
+    public void onNewCard(final CardInfo newCardInfo) {
         if (newCardInfo != null) {
             if (newCardInfo.getUserId() != mCurrentUserId) {
                 return;
@@ -278,7 +278,7 @@ public class SmartSpaceController implements Handler.Callback {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    private void df(NewCardInfo newCardInfo, SmartSpaceController.Store controller) {
+    private void df(CardInfo newCardInfo, SmartSpaceController.Store controller) {
         Message.obtain(mWorker, 2, controller.ordinal(), 0, newCardInfo).sendToTarget();
     }
 

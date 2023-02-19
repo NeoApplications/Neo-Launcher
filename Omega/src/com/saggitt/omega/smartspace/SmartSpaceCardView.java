@@ -83,7 +83,7 @@ public class SmartSpaceCardView {
         return null;
     }
 
-    public static CardWrapper cQ(Context context, NewCardInfo card) {
+    public static CardWrapper cQ(Context context, CardInfo card) {
         if (card == null) {
             return null;
         }
@@ -91,7 +91,7 @@ public class SmartSpaceCardView {
         final Bitmap ci = card.retrieveIcon(context);
         Bitmap cp;
         if (ci != null && builder.getIsIconGrayscale()) {
-            if (card.mIsPrimary) {
+            if (card.isPrimary()) {
                 cp = cP(ci, -1);
             } else {
                 cp = ci;
@@ -107,11 +107,11 @@ public class SmartSpaceCardView {
         }
         builder.setIcon(ByteString.copyFrom(flattenBitmap));
         builder.setIsIconGrayscale(cp != null && new ColorManipulation().dB(cp));
-        builder.setCard(card.mCard);
-        builder.setPublishTime(card.mPublishTime);
-        if (card.mPackageInfo != null) {
-            builder.setGsaVersionCode(card.mPackageInfo.versionCode);
-            builder.setGsaUpdateTime(card.mPackageInfo.lastUpdateTime);
+        builder.setCard(card.getCard());
+        builder.setPublishTime(card.getPublishTime());
+        if (card.getPackageInfo() != null) {
+            builder.setGsaVersionCode(card.getPackageInfo().versionCode);
+            builder.setGsaUpdateTime(card.getPackageInfo().lastUpdateTime);
         }
         return builder.build();
     }
