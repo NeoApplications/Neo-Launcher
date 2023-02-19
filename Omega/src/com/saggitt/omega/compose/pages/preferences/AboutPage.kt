@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.saggitt.omega.compose.screens.preferences
+package com.saggitt.omega.compose.pages.preferences
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
