@@ -274,7 +274,7 @@ public class WidgetsModel {
 
         WidgetValidityCheck(LauncherAppState app) {
             mIdp = app.getInvariantDeviceProfile();
-            mAppFilter = new AppFilter(app.getContext());
+            mAppFilter = AppFilter.newInstance(app.getContext());
         }
 
         @Override
@@ -295,7 +295,7 @@ public class WidgetsModel {
                     return false;
                 }
             }
-            if (!mAppFilter.shouldShowApp(item.componentName)) {
+            if (!mAppFilter.shouldShowApp(item.componentName, item.user)) {
                 if (DEBUG) {
                     Log.d(TAG, String.format("%s is filtered and not added to the widget tray.",
                             item.componentName));
