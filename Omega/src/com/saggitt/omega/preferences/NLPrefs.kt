@@ -35,6 +35,7 @@ import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
@@ -427,6 +428,16 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DRAWER_SORT_MODE,
         defaultValue = Config.SORT_AZ,
         entries = Config.drawerSortOptions,
+    )
+
+    var drawerHiddenAppSet = StringSetPref(
+        key = PrefKey.DRAWER_HIDDEN_APPS_LIST,
+        titleId = R.string.title__drawer_hide_apps,
+        summaryId = R.string.summary__drawer_hide_apps,
+        dataStore = dataStore,
+        defaultValue = setOf(),
+        navRoute = Routes.HIDDEN_APPS,
+        onChange = { reloadApps() }
     )
 
     var drawerPopup = StringMultiSelectionPref(
