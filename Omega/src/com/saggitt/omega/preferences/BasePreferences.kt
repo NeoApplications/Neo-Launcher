@@ -166,6 +166,40 @@ open class StringSelectionPref(
     }
 }
 
+open class StringSetPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<Set<String>>,
+    val defaultValue: Set<String> = emptySet(),
+    val navRoute: String = "",
+    onChange: () -> Unit = {}
+) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
+    private val valueList = arrayListOf<String>()
+    override fun get(): Flow<Set<String>> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: Set<String>) {
+        dataStore.edit { it[key] = value }
+    }
+
+    fun getAll(): List<String> = valueList
+
+    fun setAll(value: List<String>) {
+        valueList.clear()
+        valueList.addAll(value)
+        return runBlocking(Dispatchers.IO) {
+            saveChanges()
+        }
+    }
+
+    private suspend fun saveChanges() {
+        dataStore.edit { it[key] = valueList.toSet() }
+    }
+}
+
+
 open class StringMultiSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
