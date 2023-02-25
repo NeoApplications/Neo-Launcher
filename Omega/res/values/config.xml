@@ -33,8 +33,8 @@
     <string name="default_owm_key" translatable="false">22415ba03480f0f2d271d4d5b9109652</string>
 
     <string-array name="filtered_components">
-        <string>com.google.android.googlequicksearchbox/.VoiceSearchActivity</string>
-        <string>com.google.android.launcher/.StubApp</string>
-        <string>com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity</string>
+        <item>com.google.android.googlequicksearchbox/.VoiceSearchActivity</item>
+        <item>com.google.android.launcher/.StubApp</item>
+        <item>com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity</item>
     </string-array>
 </resources>
