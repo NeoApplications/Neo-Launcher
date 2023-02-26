@@ -43,6 +43,7 @@ fun ViewWithActionBar(
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     onBackAction: () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -75,6 +76,7 @@ fun ViewWithActionBar(
             )
         },
         floatingActionButton = floatingActionButton,
-        content = content
+        content = content,
+        bottomBar = bottomBar
     )
 }
