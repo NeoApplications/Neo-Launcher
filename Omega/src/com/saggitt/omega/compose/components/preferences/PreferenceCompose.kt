@@ -20,6 +20,7 @@ package com.saggitt.omega.compose.components.preferences
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +49,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,8 +59,10 @@ import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
+import com.saggitt.omega.preferences.ColorIntPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
@@ -136,6 +143,71 @@ fun BasePreference(
             }
         }
     }
+}
+
+@Composable
+fun NavigationPreference(
+    modifier: Modifier = Modifier,
+    pref: NavigationPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+) {
+    val navController = LocalNavController.current
+    val route = subRoute(pref.navRoute)
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = {
+            if (pref.navRoute != "") {
+                navController.navigate(route)
+            } else {
+                pref.onClick?.invoke()
+            }
+        }
+    )
+}
+
+@Composable
+fun ColorIntPreference(
+    modifier: Modifier = Modifier,
+    pref: ColorIntPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+) {
+    val navController = LocalNavController.current
+    val route = subRoute(pref.navRoute)
+
+    val currentColor by remember(pref) { mutableStateOf(pref.getValue()) }
+
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = {
+            if (pref.navRoute != "") {
+                navController.navigate(route)
+            }
+        },
+        endWidget = {
+            Canvas(
+                modifier = Modifier
+                    .size(40.dp),
+                onDraw = {
+                    drawCircle(color = Color.Black, style = Stroke(width = 1.dp.toPx()))
+                    drawCircle(color = Color(currentColor))
+                }
+            )
+        }
+    )
 }
 
 @Composable

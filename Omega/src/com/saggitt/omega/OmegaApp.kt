@@ -33,6 +33,11 @@ class OmegaApp : Application() {
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
     val smartspace by lazy { OmegaSmartSpaceController(this) }
+    override fun onCreate() {
+        super.onCreate()
+        instance = this
+    }
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -104,6 +109,5 @@ class OmegaApp : Application() {
         }
     }
 }
-
 
 val Context.omegaApp get() = applicationContext as OmegaApp

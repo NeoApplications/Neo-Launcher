@@ -238,6 +238,7 @@
     <string name="reset_custom_icons">Remove Custom Icons</string>
     <string name="reset_custom_icons_confirmation">Revert to default icons from this Icon Pack? This can’t be undone.</string>
     <string name="color_presets">Presets</string>
+    <string name="color_dynamic">Dynamic</string>
     <string name="title_adaptify_pack">Create adaptive icons for icon pack</string>
     <string name="title_force_shapeless">Force shapeless icons</string>
     <string name="title_themed_icons">Themed Icons</string>
@@ -577,6 +578,7 @@
     <string name="label_voice_search">Voice search</string>
     <string name="customize">Customize</string>
     <!-- TABS -->
+    <string name="button_apply">Apply</string>
     <string name="tab_bottom_sheet_save">Save</string>
     <string name="tab_hide_from_main">Hide from main tab</string>
     <string name="tab_color">Tab color</string>

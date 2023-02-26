@@ -47,6 +47,7 @@ fun SingleSelectionListItem(
     text: String,
     isSelected: Boolean,
     isEnabled: Boolean = true,
+    endWidget: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -66,10 +67,17 @@ fun SingleSelectionListItem(
             )
         )
         Text(
+            modifier = Modifier
+                .weight(1f),
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
+        if (endWidget != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+            endWidget()
+            Spacer(modifier = Modifier.width(8.dp))
+        }
     }
 }
 

@@ -1,127 +1,26 @@
 package com.saggitt.omega.util
 
-const val KEY_50 = "50"
-const val KEY_100 = "100"
-const val KEY_200 = "200"
-const val KEY_300 = "300"
-const val KEY_400 = "400"
-const val KEY_500 = "500"
-const val KEY_600 = "600"
-const val KEY_700 = "700"
-const val KEY_800 = "800"
-const val KEY_900 = "900"
-const val KEY_A100 = "A100"
-const val KEY_A200 = "A200"
-const val KEY_A400 = "A400"
-const val KEY_A700 = "A700"
+import com.saggitt.omega.theme.AccentColorOption
 
-val RED = mapOf(
-    KEY_50 to 0xFFFFEBEE,
-    KEY_100 to 0xFFFFCDD2,
-    KEY_200 to 0xFFEF9A9A,
-    KEY_300 to 0xFFE57373,
-    KEY_400 to 0xFFEF5350,
-    KEY_500 to 0xFFF44336,
-    KEY_600 to 0xFFE53935,
-    KEY_700 to 0xFFD32F2F,
-    KEY_800 to 0xFFC62828,
-    KEY_900 to 0xFFB71C1C,
-    KEY_A100 to 0xFFFF8A80,
-    KEY_A200 to 0xFFFF5252,
-    KEY_A400 to 0xFFFF1744,
-    KEY_A700 to 0xFFD50000,
-).withDefault { 0xFFF44336 }
-val REDS = RED.values
+val staticColors = listOf(
+    AccentColorOption.CustomColor(0xFFF32020),
+    AccentColorOption.CustomColor(0xFFF20D69),
+    AccentColorOption.CustomColor(0xFFEF5350),
+    AccentColorOption.CustomColor(0xFF2C41C9),
+    AccentColorOption.CustomColor(0xFF00BAD6),
+    AccentColorOption.CustomColor(0xFF00796B),
+    AccentColorOption.CustomColor(0xFF47B84F),
+    AccentColorOption.CustomColor(0xFFFFBB00),
+    AccentColorOption.CustomColor(0xFF512DA8),
+    AccentColorOption.CustomColor(0xFF7C5445),
+    AccentColorOption.CustomColor(0xFF67818E)
+)
 
-val PINK = mapOf(
-    KEY_50 to 0xFFFCE4EC,
-    KEY_100 to 0xFFF8BBD0,
-    KEY_200 to 0xFFF48FB1,
-    KEY_300 to 0xFFF06292,
-    KEY_400 to 0xFFEC407A,
-    KEY_500 to 0xFFE91E63,
-    KEY_600 to 0xFFD81B60,
-    KEY_700 to 0xFFC2185B,
-    KEY_800 to 0xFFAD1457,
-    KEY_900 to 0xFF880E4F,
-    KEY_A100 to 0xFFFF80AB,
-    KEY_A200 to 0xFFFF4081,
-    KEY_A400 to 0xFFF50057,
-    KEY_A700 to 0xFFC51162,
-).withDefault { 0xFFE91E63 }
-val PINKS = PINK.values
+val dynamicColors = listOf(AccentColorOption.SystemAccent, AccentColorOption.WallpaperPrimary)
+    .filter(AccentColorOption::isSupported)
 
-val PURPLE = mapOf(
-    KEY_50 to 0xFFF3E5F5,
-    KEY_100 to 0xFFE1BEE7,
-    KEY_200 to 0xFFCE93D8,
-    KEY_300 to 0xFFBA68C8,
-    KEY_400 to 0xFFAB47BC,
-    KEY_500 to 0xFF9C27B0,
-    KEY_600 to 0xFF8E24AA,
-    KEY_700 to 0xFF7B1FA2,
-    KEY_800 to 0xFF6A1B9A,
-    KEY_900 to 0xFF4A148C,
-    KEY_A100 to 0xFFEA80FC,
-    KEY_A200 to 0xFFE040FB,
-    KEY_A400 to 0xFFD500F9,
-    KEY_A700 to 0xFFAA00FF,
-).withDefault { 0xFF9C27B0 }
-val PURPLES = PURPLE.values
+/*
 
-val DEEP_PURPLE = mapOf(
-    KEY_50 to 0xFFEDE7F6,
-    KEY_100 to 0xFFD1C4E9,
-    KEY_200 to 0xFFB39DDB,
-    KEY_300 to 0xFF9575CD,
-    KEY_400 to 0xFF7E57C2,
-    KEY_500 to 0xFF673AB7,
-    KEY_600 to 0xFF5E35B1,
-    KEY_700 to 0xFF512DA8,
-    KEY_800 to 0xFF4527A0,
-    KEY_900 to 0xFF311B92,
-    KEY_A100 to 0xFFB388FF,
-    KEY_A200 to 0xFF7C4DFF,
-    KEY_A400 to 0xFF651FFF,
-    KEY_A700 to 0xFF6200EA,
-).withDefault { 0xFF673AB7 }
-val DEEP_PURPLES = DEEP_PURPLE.values
-
-val INDIGO = mapOf(
-    KEY_50 to 0xFFE8EAF6,
-    KEY_100 to 0xFFC5CAE9,
-    KEY_200 to 0xFF9FA8DA,
-    KEY_300 to 0xFF7986CB,
-    KEY_400 to 0xFF5C6BC0,
-    KEY_500 to 0xFF3F51B5,
-    KEY_600 to 0xFF3949AB,
-    KEY_700 to 0xFF303F9F,
-    KEY_800 to 0xFF283593,
-    KEY_900 to 0xFF1A237E,
-    KEY_A100 to 0xFF8C9EFF,
-    KEY_A200 to 0xFF536DFE,
-    KEY_A400 to 0xFF3D5AFE,
-    KEY_A700 to 0xFF304FFE,
-).withDefault { 0xFF3F51B5 }
-val INDIGOS = INDIGO.values
-
-val BLUE = mapOf(
-    KEY_50 to 0xFFE3F2FD,
-    KEY_100 to 0xFFBBDEFB,
-    KEY_200 to 0xFF90CAF9,
-    KEY_300 to 0xFF64B5F6,
-    KEY_400 to 0xFF42A5F5,
-    KEY_500 to 0xFF2196F3,
-    KEY_600 to 0xFF1E88E5,
-    KEY_700 to 0xFF1976D2,
-    KEY_800 to 0xFF1565C0,
-    KEY_900 to 0xFF0D47A1,
-    KEY_A100 to 0xFF82B1FF,
-    KEY_A200 to 0xFF448AFF,
-    KEY_A400 to 0xFF2979FF,
-    KEY_A700 to 0xFF2962FF,
-).withDefault { 0xFF2196F3 }
-val BLUES = BLUE.values
 
 val LIGHT_BLUE = mapOf(
     KEY_50 to 0xFFE1F5FE,
@@ -141,24 +40,6 @@ val LIGHT_BLUE = mapOf(
 ).withDefault { 0xFF03A9F4 }
 val LIGHT_BLUES = LIGHT_BLUE.values
 
-
-val CYAN = mapOf(
-    KEY_50 to 0xFFE0F7FA,
-    KEY_100 to 0xFFB2EBF2,
-    KEY_200 to 0xFF80DEEA,
-    KEY_300 to 0xFF4DD0E1,
-    KEY_400 to 0xFF26C6DA,
-    KEY_500 to 0xFF00BCD4,
-    KEY_600 to 0xFF00ACC1,
-    KEY_700 to 0xFF0097A7,
-    KEY_800 to 0xFF00838F,
-    KEY_900 to 0xFF006064,
-    KEY_A100 to 0xFF84FFFF,
-    KEY_A200 to 0xFF18FFFF,
-    KEY_A400 to 0xFF00E5FF,
-    KEY_A700 to 0xFF00B8D4,
-).withDefault { 0xFF00BCD4 }
-val CYANS = CYAN.values
 
 val TEAL = mapOf(
     KEY_50 to 0xFFE0F2F1,
@@ -355,4 +236,4 @@ val MATERIAL_COLOR_MAPS = listOf(
 val ALL_MATERIAL_COLORS =
     REDS + PINKS + PURPLES + DEEP_PURPLES + INDIGOS + BLUES + LIGHT_BLUES + CYANS + TEALS +
             GREENS + LIGHT_GREENS + LIMES + YELLOWS + AMBERS + ORANGES + DEEP_ORANGES +
-            BROWNS + GREYS + BLUE_GREYS
+            BROWNS + GREYS + BLUE_GREYS*/

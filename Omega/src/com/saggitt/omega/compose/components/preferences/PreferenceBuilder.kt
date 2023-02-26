@@ -21,8 +21,10 @@ package com.saggitt.omega.compose.components.preferences
 import androidx.compose.runtime.Composable
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.preferences.BooleanPref
+import com.saggitt.omega.preferences.ColorIntPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
@@ -48,18 +50,18 @@ val PreferenceBuilder =
 
             */
             is BooleanPref -> SwitchPreference(pref = pref, index = index, groupSize = size)
-            /*
-            is StringPref ->
-                StringPreference(pref = pref, index = index, groupSize = size)
 
+            is NavigationPref ->
+                NavigationPreference(pref = pref, index = index, groupSize = size)
+
+            is ColorIntPref ->
+                ColorIntPreference(pref = pref, index = index, groupSize = size)
+            /*
             is StringSetPref ->
                 StringSetPreference(pref = pref, index = index, groupSize = size)
 
             is FloatPref ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)
-
-            is ColorIntPref ->
-                ColorIntPreference(pref = pref, index = index, groupSize = size)
 
             is IdpIntPref ->
                 IntSeekBarPreference(pref = pref, index = index, groupSize = size)

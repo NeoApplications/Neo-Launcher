@@ -61,6 +61,7 @@ object Routes {
     const val CATEGORIZE_APPS = "categorize_apps"
     const val EDIT_DASH = "edit_dash"
     const val ICON_SHAPE = "icon_shape"
+    const val COLOR_ACCENT = "color_accent"
 }
 
 val LocalNavController = staticCompositionLocalOf<NavController> {

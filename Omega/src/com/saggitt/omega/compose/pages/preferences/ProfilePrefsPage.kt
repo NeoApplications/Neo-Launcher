@@ -43,6 +43,7 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
+import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
@@ -62,7 +63,9 @@ fun ProfilePrefsPage() {
     }
 
     val profilePrefs = listOf(
-        prefs.profileLanguage
+        prefs.profileLanguage,
+        prefs.profileTheme,
+        prefs.profileAccentColor,
     )
 
     val others = listOf(
@@ -76,8 +79,8 @@ fun ProfilePrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -135,5 +138,6 @@ fun ProfilePrefsPage() {
 fun NavGraphBuilder.profilePrefsGraph(route: String) {
     preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
         //preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
+        preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage() })
     }
 }

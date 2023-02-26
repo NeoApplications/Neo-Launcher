@@ -44,8 +44,6 @@ import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
 import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.KEY_A400
-import com.saggitt.omega.util.PINK
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
@@ -71,7 +69,7 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
-    fun updateSmartspaceProvider() {
+    private fun updateSmartspaceProvider() {
         OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
     }
 
@@ -105,6 +103,13 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__general_theme,
         defaultValue = if (OmegaApp.minSDK(31)) THEME_SYSTEM else THEME_WALLPAPER,
         entries = themeItems,
+    )
+
+    var profileAccentColor = ColorIntPref(
+        dataStore = dataStore,
+        titleId = R.string.title__theme_accent_color,
+        key = PrefKey.PROFILE_ACCENT_COLOR,
+        navRoute = Routes.COLOR_ACCENT
     )
 
     var profileBlurEnable = BooleanPref(
@@ -746,7 +751,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COLOR,
         titleId = R.string.title__notification_background,
-        defaultValue = PINK.getValue(KEY_A400).toInt(),
+        defaultValue = 0xFFF32020.toInt(),
         //withAlpha = true,
     )
 
