@@ -212,7 +212,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
 
-    implementation("com.google.android.material:material:1.8.0-rc01")
+    implementation("com.google.android.material:material:1.9.0-alpha01")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
@@ -227,7 +227,7 @@ dependencies {
         exclude("com.android.support", "support-compat")
         exclude("com.android.support", "appcompat-v7")
     }
-
+    implementation("com.raedapps:alwan:1.0.0")
 
     //Compose
     implementation("androidx.activity:activity-compose:1.6.1")
