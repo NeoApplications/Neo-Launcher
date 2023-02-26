@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.compose
+package com.saggitt.omega.compose.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
