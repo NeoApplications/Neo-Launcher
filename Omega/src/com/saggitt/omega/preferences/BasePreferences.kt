@@ -127,6 +127,41 @@ open class IntSelectionPref(
     }
 }
 
+open class ColorIntPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    val defaultValue: Int = -1,
+    private val key: Preferences.Key<Int>,
+    val navRoute: String = ""
+) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<Int> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: Int) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
+open class NavigationPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+    val onClick: (() -> Unit)? = null,
+    val navRoute: String = ""
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: String) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
 open class StringTextPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
