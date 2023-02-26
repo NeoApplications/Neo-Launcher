@@ -31,6 +31,7 @@ object PrefKey {
     // Profile
     val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
     val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")
+    val PROFILE_ACCENT_COLOR = intPreferencesKey("profile_accent_color")
     val PROFILE_GLOBAL_PRIMARY_COLOR = intPreferencesKey("profile_launcher_accent")
     val PROFILE_ICON_PACK = stringPreferencesKey("profile_icon_pack")
     val PROFILE_ICON_SHAPE = stringPreferencesKey("profile_icon_shape")
