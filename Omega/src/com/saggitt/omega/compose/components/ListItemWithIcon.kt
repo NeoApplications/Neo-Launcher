@@ -69,7 +69,12 @@ fun ListItemWithIcon(
             modifier = modifier
                 .fillMaxWidth()
                 .addIf(applyPaddings) {
-                    padding(horizontal = horizontalPadding, vertical = verticalPadding)
+                    padding(
+                        start = 16.dp,
+                        end = horizontalPadding,
+                        top = verticalPadding,
+                        bottom = verticalPadding
+                    )
                 }
         ) {
             startIcon?.let {
