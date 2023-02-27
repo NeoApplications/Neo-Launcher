@@ -472,4 +472,6 @@
     <string name="reset_custom_icon">移除定制图标</string>
     <string name="show_top_shadow">显示顶部阴影</string>
     <string name="title_themed_icons">主题图标</string>
+    <string name="dash_line_size">阴影线尺寸</string>
+    <string name="title_override_corner_radius_value">全局圆角半径</string>
 </resources>
