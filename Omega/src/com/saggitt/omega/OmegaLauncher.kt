@@ -23,7 +23,9 @@ import android.os.Bundle
 import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.NLPrefs
@@ -33,6 +35,7 @@ class OmegaLauncher : Launcher() {
 
     val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
+    val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

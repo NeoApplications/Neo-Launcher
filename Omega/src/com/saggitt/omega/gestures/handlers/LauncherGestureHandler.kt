@@ -30,6 +30,7 @@ import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
+import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
@@ -54,6 +55,27 @@ class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
         controller.launcher.startActivity(Intent(Intent.ACTION_APPLICATION_PREFERENCES).apply {
             `package` = controller.launcher.packageName
         })
+    }
+}
+
+@Keep
+class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName: String = context.getString(R.string.action_open_overview)
+    override val displayNameRes: Int = R.string.action_open_overview
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_empty_recents)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_drag_handle
+        )
+    }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        Log.d("OpenOverviewGestureHandler", "onGestureTrigger from $view")
+        controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
     }
 }
 

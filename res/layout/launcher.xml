@@ -47,6 +47,10 @@
             android:id="@+id/hotseat"
             layout="@layout/hotseat" />
 
+        <include
+            android:id="@+id/options_view"
+            layout="@layout/longpress_options_menu" />
+
         <!-- Keep these behind the workspace so that they are not visible when
          we go into AllApps -->
         <com.android.launcher3.pageindicators.WorkspacePageIndicator

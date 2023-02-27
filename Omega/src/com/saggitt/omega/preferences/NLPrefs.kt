@@ -36,6 +36,7 @@ import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
@@ -868,6 +869,14 @@ class NLPrefs private constructor(private val context: Context) {
             null
         ).toString(), //OpenDashGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
+    )
+
+    var gestureLongPress = GesturePref(
+        titleId = R.string.gesture_long_press,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_LONG_TAP,
+        defaultValue = OpenOverviewGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_LONG_TAP.name}"
     )
 
     var dashLineSize = IntPref(
