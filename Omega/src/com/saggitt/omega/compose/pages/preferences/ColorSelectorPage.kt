@@ -81,9 +81,7 @@ fun ColorSelectorPage() {
     val navController = LocalNavController.current
     val currentAccentColor = remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
     val dynamicColors = dynamicColors
-
     val presetColors = staticColors
-
 
     val defaultTabIndex = when {
         presetColors.any { it.accentColor == currentAccentColor.value } -> 0
@@ -136,7 +134,8 @@ fun ColorSelectorPage() {
                     ) {
                         Text(
                             text = stringResource(id = R.string.button_apply),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -273,7 +272,7 @@ fun DynamicPage(
     onSelectColor: (Int) -> Unit,
     isColorSelected: (Int) -> Boolean
 ) {
-    val groupSize = com.saggitt.omega.util.dynamicColors.size
+    val groupSize = dynamicColors.size
     Column(
         modifier = Modifier
             .fillMaxWidth()
