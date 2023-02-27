@@ -18,7 +18,10 @@
 
 package com.saggitt.omega.util
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -203,4 +206,23 @@ fun dpToPx(size: Float): Float {
 
 fun pxToDp(size: Float): Float {
     return size / dpToPx(1f)
+}
+
+fun Activity.recreateAnimated() = startActivity(
+    Intent.makeRestartActivityTask(
+        ComponentName(this, this::class.java)
+    ), ActivityOptions.makeCustomAnimation(
+        this, android.R.anim.fade_in, android.R.anim.fade_out
+    ).toBundle()
+)
+
+fun <T, U : Comparable<U>> comparing(extractKey: (T) -> U): Comparator<T> {
+    return Comparator { o1, o2 -> extractKey(o1).compareTo(extractKey(o2)) }
+}
+
+fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<T> {
+    return kotlin.Comparator { o1, o2 ->
+        val res = compare(o1, o2)
+        if (res != 0) res else extractKey(o1).compareTo(extractKey(o2))
+    }
 }

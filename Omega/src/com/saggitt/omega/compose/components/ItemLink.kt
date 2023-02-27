@@ -21,7 +21,6 @@ package com.saggitt.omega.compose.components
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,10 +63,11 @@ fun ItemLink(
                 }
             }
     ) {
-        Image(
+        Icon(
             painterResource(id = iconResId),
             contentDescription = null,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(32.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.requiredHeight(4.dp))
         Text(

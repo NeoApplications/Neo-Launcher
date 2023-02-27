@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.smartspace.BlankDataProvider
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
@@ -120,6 +122,13 @@ class Config(val context: Context) {
                 currentTheme = THEME_BLACK
             }
             return currentTheme
+        }
+
+        fun gesturePrefs(context: Context): List<NavigationPref> {
+            val prefs = Utilities.getOmegaPrefs(context)
+            return listOf(
+                prefs.gestureDoubleTap
+            )
         }
 
     }

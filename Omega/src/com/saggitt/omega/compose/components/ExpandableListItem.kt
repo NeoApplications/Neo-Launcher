@@ -68,6 +68,7 @@ fun ExpandableListItem(
         verticalArrangement = Arrangement.Center
     ) {
         Row(
+            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(

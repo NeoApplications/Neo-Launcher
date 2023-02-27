@@ -148,7 +148,7 @@ open class NavigationPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
-    private val key: Preferences.Key<String>,
+    val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
     val navRoute: String = ""
@@ -169,8 +169,7 @@ open class StringTextPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val predicate: (String) -> Boolean = { true },
-) :
-    PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }

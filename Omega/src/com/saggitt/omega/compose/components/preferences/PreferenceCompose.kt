@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.components.preferences
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
@@ -164,6 +165,7 @@ fun NavigationPreference(
         isEnabled = isEnabled,
         onClick = {
             if (pref.navRoute != "") {
+                Log.d("NavigationPreference", "Navigating to $route")
                 navController.navigate(route)
             } else {
                 pref.onClick?.invoke()

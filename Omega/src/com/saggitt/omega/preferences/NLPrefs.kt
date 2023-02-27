@@ -36,6 +36,7 @@ import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
@@ -59,7 +60,7 @@ private const val USER_PREFERENCES_NAME = "neo_launcher"
 
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES_NAME)
-    private val dataStore: DataStore<Preferences> = context.dataStore
+    val dataStore: DataStore<Preferences> = context.dataStore
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
 
@@ -858,6 +859,17 @@ class NLPrefs private constructor(private val context: Context) {
 
     // GESTURES & Dash
     // TODO GesturePref, dash_providers, dashEdit?
+    var gestureDoubleTap = NavigationPref(
+        titleId = R.string.gesture_double_tap,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_DOUBLE_TAP,
+        defaultValue = OpenSettingsGestureHandler(
+            context,
+            null
+        ).toString(), //OpenDashGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
+    )
+
     var dashLineSize = IntPref(
         dataStore = dataStore,
         key = PrefKey.DASH_LINE_SIZE,

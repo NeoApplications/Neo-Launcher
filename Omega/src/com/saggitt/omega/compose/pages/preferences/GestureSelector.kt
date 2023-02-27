@@ -18,124 +18,208 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
+import android.util.Log
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.TabRow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.NavigationRailItemDefaults
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.android.launcher3.R
+import com.android.launcher3.Utilities
+import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
+import com.saggitt.omega.compose.components.ExpandableListItem
+import com.saggitt.omega.compose.components.ListItemWithIcon
+import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.data.AppItemWithShortcuts
+import com.saggitt.omega.gestures.GestureController
+import com.saggitt.omega.gestures.handlers.StartAppGestureHandler
+import com.saggitt.omega.preferences.NavigationPref
+import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.appsList
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.gesturesPageGraph(route: String) {
     preferenceGraph(route, { }) { subRoute ->
         composable(
-            route = subRoute("{titleId}/{key}/{default}"),
+            route = subRoute("{key}"),
             arguments = listOf(
-                navArgument("titleId") { type = NavType.IntType },
-                navArgument("key") { type = NavType.StringType },
-                navArgument("default") { type = NavType.StringType }
+                navArgument("key") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val args = backStackEntry.arguments!!
-            val title = args.getInt("titleId")
-            val key = args.getString("key") ?: ""
-            val default = args.getString("default") ?: ""
-            GestureSelector(titleId = title, key = key, default = default)
+            val key = stringPreferencesKey(args.getString("key")!!)
+            val prefs = Config.gesturePrefs(LocalContext.current)
+            Log.d("GestureSelector", "key: $key")
+            val gesture = prefs.first { it.key == key }
+            GestureSelector(prefs = gesture)
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun GestureSelector(titleId: Int, key: String, default: String) {
-    ViewWithActionBar(
-        title = stringResource(titleId),
-    ) {
-        //MainGesturesScreen(key, default)
-    }
-}
+fun GestureSelector(prefs: NavigationPref) {
 
-/*
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun MainGesturesScreen(key: String, default: String) {
+    val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
-    val prefs = Utilities.getOmegaPrefs(LocalContext.current)
-    val selectedOption = remember {
-        mutableStateOf(
-            prefs.sharedPrefs.getString(key, default)
-        )
-    }
+
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val currentOption = remember { mutableStateOf(prefs.getValue()) }
 
     val tabs = listOf(
         TabItem(R.drawable.ic_assistant, R.string.tab_launcher) {
-            LauncherScreen(
-                prefs,
-                selectedOption,
-                key
-            )
+            LauncherScreen(selectedOption = currentOption, onSelect = {
+                prefs.setValue(it)
+                backDispatcher?.onBackPressed()
+            })
         },
-        TabItem(R.drawable.ic_apps, R.string.apps_label) { AppsScreen(prefs, selectedOption, key) },
+        TabItem(R.drawable.ic_apps, R.string.apps_label) {
+            AppsScreen(selectedOption = currentOption, onSelect = {
+                prefs.setValue(it)
+                backDispatcher?.onBackPressed()
+            })
+        },
         TabItem(R.drawable.ic_edit_dash, R.string.tab_shortcuts) {
-            ShortcutsScreen(
-                prefs,
-                selectedOption,
-                key
-            )
+            ShortcutsScreen(selectedOption = currentOption, onSelect = {
+                prefs.setValue(it)
+                backDispatcher?.onBackPressed()
+            })
         }
     )
 
-    Scaffold(
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) }
+    ViewWithActionBar(
+        title = stringResource(prefs.titleId),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(
+                    top = it.calculateTopPadding() - 1.dp,
+                    start = 8.dp,
+                    end = 8.dp
                 )
-                Tabs(tabs = tabs, pagerState = pagerState)
+        ) {
+            TabRow(
+                selectedTabIndex = pagerState.currentPage,
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
+                backgroundColor = MaterialTheme.colorScheme.background
+            ) {
+                tabs.forEachIndexed { index, tab ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(id = tab.title),
+                                color = if (pagerState.currentPage == index)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onPrimary
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = tab.icon),
+                                contentDescription = stringResource(id = tab.title),
+                                tint = if (pagerState.currentPage == index)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                    )
+                }
             }
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            TabsContent(tabs = tabs, pagerState = pagerState)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                HorizontalPager(state = pagerState, count = tabs.size) { page ->
+                    tabs[page].screen()
+                }
+            }
         }
     }
 }
 
 @Composable
-fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?>, key: String) {
+fun LauncherScreen(
+    selectedOption: MutableState<String>,
+    onSelect: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val launcherItems = GestureController.getGestureHandlers(context, true, true)
+
+    val groupSize = launcherItems.size
+    val colors = RadioButtonDefaults.colors(
+        selectedColor = MaterialTheme.colorScheme.primary,
+        unselectedColor = MaterialTheme.colorScheme.onPrimary
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
     ) {
-        val context = LocalContext.current
-        val launcherItems = GestureController.getGestureHandlers(context, true, true)
-        val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-        val colors = RadioButtonDefaults.colors(
-            selectedColor = MaterialTheme.colorScheme.onPrimary,
-            unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        val groupSize = launcherItems.size
-
         PreferenceGroup {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -158,12 +242,7 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
                                 else MaterialTheme.colorScheme.surface
                             )
                             .clickable {
-                                selectedOption.value = item.toString()
-                                prefs.sharedPrefs
-                                    .edit()
-                                    .putString(key, selectedOption.value)
-                                    .apply()
-                                backDispatcher?.onBackPressed()
+                                onSelect(item.toString())
                             },
                         summary = "",
                         startIcon = {
@@ -179,16 +258,13 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
                             RadioButton(
                                 selected = (item.toString() == selectedOption.value),
                                 onClick = {
-                                    selectedOption.value = item.toString()
-                                    prefs.sharedPrefs.edit()
-                                        .putString(key, selectedOption.value)
-                                        .apply()
-                                    backDispatcher?.onBackPressed()
+                                    onSelect(item.toString())
                                 },
                                 colors = colors
                             )
                         },
-                        verticalPadding = 4.dp
+                        horizontalPadding = 0.dp,
+                        verticalPadding = 8.dp
                     )
                 }
             }
@@ -197,23 +273,21 @@ fun LauncherScreen(prefs: OmegaPreferences, selectedOption: MutableState<String?
 }
 
 @Composable
-fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, key: String) {
+fun AppsScreen(
+    selectedOption: MutableState<String>,
+    onSelect: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
     ) {
         val context = LocalContext.current
         val apps = appsList().value
-        val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
         val colors = RadioButtonDefaults.colors(
             selectedColor = MaterialTheme.colorScheme.onPrimary,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-
-        val selectedOption = remember {
-            mutableStateOf(selectedHandler.value)
-        }
         val groupSize = apps.size
 
         PreferenceGroup {
@@ -248,12 +322,7 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
                                 else MaterialTheme.colorScheme.surface
                             )
                             .clickable {
-                                selectedOption.value = appGestureHandler.toString()
-                                prefs.sharedPrefs
-                                    .edit()
-                                    .putString(key, selectedOption.value)
-                                    .apply()
-                                backDispatcher?.onBackPressed()
+                                onSelect(appGestureHandler.toString())
                             },
                         summary = "",
                         startIcon = {
@@ -267,16 +336,13 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
                             RadioButton(
                                 selected = (appGestureHandler.toString() == selectedOption.value),
                                 onClick = {
-                                    selectedOption.value = appGestureHandler.toString()
-                                    prefs.sharedPrefs.edit()
-                                        .putString(key, selectedOption.value)
-                                        .apply()
-                                    backDispatcher?.onBackPressed()
+                                    onSelect(appGestureHandler.toString())
                                 },
                                 colors = colors
                             )
                         },
-                        verticalPadding = 4.dp
+                        horizontalPadding = 0.dp,
+                        verticalPadding = 8.dp
                     )
                 }
             }
@@ -285,182 +351,130 @@ fun AppsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, 
 }
 
 @Composable
-fun ShortcutsScreen(prefs: OmegaPreferences, selectedHandler: MutableState<String?>, key: String) {
+fun ShortcutsScreen(
+    selectedOption: MutableState<String>,
+    onSelect: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
     ) {
         val context = LocalContext.current
         val apps = appsList().value
-            .sortedBy { it.label.toString() }
+            .sortedBy { it.label }
             .map { AppItemWithShortcuts(context, it) }
-        val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
         val colors = RadioButtonDefaults.colors(
             selectedColor = MaterialTheme.colorScheme.onPrimary,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        val selectedOption = remember {
-            mutableStateOf(selectedHandler.value)
-        }
-        val appsNum = apps.size
 
+        val appsWithShortcuts = apps.filter { it.hasShortcuts }
+
+        val appsSize = appsWithShortcuts.size
         PreferenceGroup {
             LazyColumn {
-                itemsIndexed(apps) { index, app ->
-                    if (app.hasShortcuts) {
-                        var expanded by remember { mutableStateOf(false) }
+                itemsIndexed(appsWithShortcuts) { appIndex, app ->
+                    var expanded by remember { mutableStateOf(false) }
 
-                        ExpandableListItem(
-                            modifier = Modifier
-                                .clip(
-                                    RoundedCornerShape(
-                                        topStart = if (index == 0) 16.dp else 6.dp,
-                                        topEnd = if (index == 0) 16.dp else 6.dp,
-                                        bottomStart = if (index == appsNum - 1) 16.dp else 6.dp,
-                                        bottomEnd = if (index == appsNum - 1) 16.dp else 6.dp
-                                    )
+                    val rank = (appIndex + 1f) / appsSize
+                    val base = appIndex.toFloat() / appsSize
+                    ExpandableListItem(
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = if (base == 0f) 16.dp else 6.dp,
+                                    topEnd = if (base == 0f) 16.dp else 6.dp,
+                                    bottomStart = if (rank == 1f) 16.dp else 6.dp,
+                                    bottomEnd = if (rank == 1f) 16.dp else 6.dp
                                 )
-                                .background(
-                                    if (expanded) MaterialTheme.colorScheme.background
-                                    else MaterialTheme.colorScheme.surface
-                                ),
-                            title = app.info.label,
-                            icon = app.info.icon,
-                            onClick = { expanded = !expanded }
-                        ) {
-                            val groupSize = app.shortcuts.size
+                            )
+                            .background(
+                                if (expanded) MaterialTheme.colorScheme.background
+                                else MaterialTheme.colorScheme.surface
+                            ),
+                        title = app.info.label,
+                        icon = app.info.icon,
+                        onClick = { expanded = !expanded }
+                    ) {
+                        val groupSize = app.shortcuts.size
 
-                            app.shortcuts.forEachIndexed { iIndex, it ->
+                        app.shortcuts.forEachIndexed { index, it ->
 
-                                val config = JSONObject("{}")
-                                config.apply {
-                                    put("appName", it.label.toString())
-                                    put("packageName", it.info.`package`)
-                                    put("intent", ShortcutKey.makeIntent(it.info).toUri(0))
-                                    put("user", 0)
-                                    put("id", it.info.id)
-                                    put("type", "shortcut")
-                                }
-                                val appGestureHandler = StartAppGestureHandler(context, config)
-                                appGestureHandler.apply {
-                                    appName = it.label.toString()
-                                }
-                                ListItemWithIcon(
-                                    title = it.label.toString(),
-                                    modifier = Modifier
-                                        .clip(
-                                            RoundedCornerShape(
-                                                topStart = if (iIndex == 0) 16.dp else 6.dp,
-                                                topEnd = if (iIndex == 0) 16.dp else 6.dp,
-                                                bottomStart = if (iIndex == groupSize - 1) 16.dp else 6.dp,
-                                                bottomEnd = if (iIndex == groupSize - 1) 16.dp else 6.dp
-                                            )
-                                        )
-                                        .background(
-                                            color = if (appGestureHandler.toString() == selectedOption.value)
-                                                MaterialTheme.colorScheme.primary.copy(0.4f)
-                                            else MaterialTheme.colorScheme.surface
-                                        )
-                                        .clickable {
-                                            selectedOption.value = appGestureHandler.toString()
-                                            prefs.sharedPrefs
-                                                .edit()
-                                                .putString(key, selectedOption.value)
-                                                .apply()
-                                            backDispatcher?.onBackPressed()
-                                        },
-                                    summary = "",
-                                    startIcon = {
-                                        Image(
-                                            painter = BitmapPainter(
-                                                it.iconDrawable.toBitmap(
-                                                    32,
-                                                    32,
-                                                    null
-                                                ).asImageBitmap()
-                                            ),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(32.dp)
-                                        )
-                                    },
-                                    verticalPadding = 4.dp,
-                                    horizontalPadding = 8.dp,
-                                    endCheckbox = {
-                                        RadioButton(
-                                            selected = (appGestureHandler.toString() == selectedOption.value),
-                                            onClick = {
-                                                selectedOption.value = appGestureHandler.toString()
-                                                prefs.sharedPrefs.edit()
-                                                    .putString(key, selectedOption.value)
-                                                    .apply()
-                                                backDispatcher?.onBackPressed()
-                                            },
-                                            colors = colors
-                                        )
-                                    }
-                                )
-                                if (iIndex < groupSize - 1) Spacer(modifier = Modifier.height(4.dp))
+                            val config = JSONObject("{}")
+                            config.apply {
+                                put("appName", it.label.toString())
+                                put("packageName", it.info.`package`)
+                                put("intent", ShortcutKey.makeIntent(it.info).toUri(0))
+                                put("user", 0)
+                                put("id", it.info.id)
+                                put("type", "shortcut")
                             }
+                            val appGestureHandler = StartAppGestureHandler(context, config)
+                            appGestureHandler.apply {
+                                appName = it.label.toString()
+                            }
+                            ListItemWithIcon(
+                                title = it.label.toString(),
+                                modifier = Modifier
+                                    .clip(
+                                        RoundedCornerShape(
+                                            topStart = if (index == 0) 16.dp else 6.dp,
+                                            topEnd = if (index == 0) 16.dp else 6.dp,
+                                            bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
+                                            bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
+                                        )
+                                    )
+                                    .background(
+                                        color = if (appGestureHandler.toString() == selectedOption.value)
+                                            MaterialTheme.colorScheme.primary.copy(0.4f)
+                                        else MaterialTheme.colorScheme.surface
+                                    )
+                                    .clickable {
+                                        onSelect(appGestureHandler.toString())
+                                    },
+                                summary = "",
+                                startIcon = {
+                                    Image(
+                                        painter = BitmapPainter(
+                                            it.iconDrawable.toBitmap(
+                                                32,
+                                                32,
+                                                null
+                                            ).asImageBitmap()
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                },
+                                horizontalPadding = 0.dp,
+                                verticalPadding = 8.dp,
+                                endCheckbox = {
+                                    RadioButton(
+                                        selected = (appGestureHandler.toString() == selectedOption.value),
+                                        onClick = {
+                                            onSelect(appGestureHandler.toString())
+                                        },
+                                        colors = colors
+                                    )
+                                }
+                            )
+                            if (index < groupSize - 1) Spacer(modifier = Modifier.height(4.dp))
                         }
-                        if (index < appsNum - 1) Spacer(modifier = Modifier.height(4.dp))
                     }
+                    if (appIndex < appsSize - 1) Spacer(modifier = Modifier.height(4.dp))
                 }
+
             }
         }
     }
 }
-*/
-@OptIn(ExperimentalPagerApi::class)
+
 @Composable
-fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
-    val scope = rememberCoroutineScope()
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = Color.White,
-        indicator = {},
-        divider = {}
-    ) {
-        tabs.forEachIndexed { index, tab ->
-            NavigationRailItem(
-                selected = pagerState.currentPage == index,
-                onClick = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(index)
-                    }
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = tab.icon),
-                        contentDescription = ""
-                    )
-                },
-                label = {
-                    Text(text = stringResource(id = tab.title))
-                },
-                colors = NavigationRailItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    indicatorColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                    unselectedTextColor = MaterialTheme.colorScheme.onBackground,
-                ),
-            )
-        }
-    }
+@Preview
+fun GestureSelectorPreview() {
+    val context = LocalContext.current
+    val prefs = Utilities.getOmegaPrefs(context)
+    GestureSelector(prefs.gestureDoubleTap)
 }
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun TabsContent(tabs: List<TabItem>, pagerState: PagerState) {
-    HorizontalPager(state = pagerState, count = tabs.size) { page ->
-        tabs[page].screen()
-    }
-}
-
-typealias ComposableFun = @Composable () -> Unit
-
-class TabItem(var icon: Int, var title: Int, var screen: ComposableFun)
