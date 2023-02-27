@@ -859,7 +859,7 @@ class NLPrefs private constructor(private val context: Context) {
 
     // GESTURES & Dash
     // TODO GesturePref, dash_providers, dashEdit?
-    var gestureDoubleTap = NavigationPref(
+    var gestureDoubleTap = GesturePref(
         titleId = R.string.gesture_double_tap,
         dataStore = dataStore,
         key = PrefKey.GESTURES_DOUBLE_TAP,

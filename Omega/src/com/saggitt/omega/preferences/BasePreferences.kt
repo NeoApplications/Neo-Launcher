@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import kotlin.reflect.KProperty
 
 open class BooleanPref(
     @StringRes titleId: Int,
@@ -162,6 +163,32 @@ open class NavigationPref(
     }
 }
 
+class GesturePref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<String>,
+    defaultValue: String = "",
+    onClick: (() -> Unit)? = null,
+    navRoute: String = ""
+) : NavigationPref(
+    titleId = titleId,
+    summaryId = summaryId,
+    dataStore = dataStore,
+    key = key,
+    defaultValue = defaultValue,
+    onClick = onClick,
+    navRoute = navRoute
+) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+        return getValue()
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+        setValue(value)
+    }
+}
+
 open class StringTextPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
@@ -191,6 +218,24 @@ open class StringSelectionPref(
 ) :
     PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: String) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
+class StringBasedPref<T : Any>(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+    private val fromString: (String) -> T,
+    private val toString: (T) -> String
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
