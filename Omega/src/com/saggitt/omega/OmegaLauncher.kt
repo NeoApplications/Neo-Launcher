@@ -25,12 +25,14 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
+import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
 
 class OmegaLauncher : Launcher() {
 
     val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
+    val gestureController by lazy { GestureController(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

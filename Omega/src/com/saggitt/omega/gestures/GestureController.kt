@@ -19,9 +19,11 @@ package com.saggitt.omega.gestures
 
 import android.content.Context
 import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.gestures.handlers.SleepGestureHandler
@@ -30,7 +32,8 @@ import org.json.JSONObject
 
 class GestureController(val launcher: OmegaLauncher) : TouchController {
 
-    val blankGestureHandler = BlankGestureHandler(launcher, null)
+    private val blankGestureHandler = BlankGestureHandler(launcher, null)
+    private val doubleTapGesture by lazy { DoubleTapGesture(this) }
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
         return false
@@ -38,6 +41,10 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
     override fun onControllerTouchEvent(ev: MotionEvent): Boolean {
         return false
+    }
+
+    fun attachDoubleTapListener(gestureDetector: GestureDetector) {
+        gestureDetector.setOnDoubleTapListener(doubleTapGesture.createDoubleTapListener())
     }
 
     fun createGestureHandler(jsonString: String) =
@@ -77,6 +84,20 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
                 }
             }
             return fallback
+        }
+
+        fun getClassName(jsonString: String): String {
+            val config: JSONObject? = try {
+                JSONObject(jsonString)
+            } catch (e: JSONException) {
+                null
+            }
+            val className = config?.getString("class") ?: jsonString
+            return if (className in LEGACY_SLEEP_HANDLERS) {
+                SleepGestureHandler::class.java.name
+            } else {
+                className
+            }
         }
 
         fun getGestureHandlers(context: Context, isSwipeUp: Boolean, hasBlank: Boolean) =

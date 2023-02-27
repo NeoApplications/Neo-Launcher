@@ -48,10 +48,31 @@ import com.android.launcher3.R
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.views.OptionsPopupView
+import java.lang.reflect.Field
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
+import kotlin.reflect.KProperty
+
+@Suppress("UNCHECKED_CAST")
+class JavaField<T>(
+    private val targetObject: Any,
+    fieldName: String,
+    targetClass: Class<*> = targetObject::class.java
+) {
+    private val field: Field = targetClass.getDeclaredField(fieldName).apply { isAccessible = true }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = field.get(targetObject) as T
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+        field.set(targetObject, value)
+}
+
+@JvmOverloads
+fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback? = null): Handler =
+    if (preferMyLooper)
+        Handler(Looper.myLooper() ?: Looper.getMainLooper(), callback)
+    else
+        Handler(Looper.getMainLooper(), callback)
 
 fun <T, A> ensureOnMainThread(creator: (A) -> T): (A) -> T {
     return { it ->
@@ -126,13 +147,6 @@ fun StatusBarNotification.loadSmallIcon(context: Context): Drawable? {
 }
 
 operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
-
-@JvmOverloads
-fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback? = null): Handler =
-    if (preferMyLooper)
-        Handler(Looper.myLooper() ?: Looper.getMainLooper(), callback)
-    else
-        Handler(Looper.getMainLooper(), callback)
 
 fun openPopupMenu(view: View, rect: RectF?, vararg items: OptionsPopupView.OptionItem) {
     val launcher = Launcher.getLauncher(view.context)
