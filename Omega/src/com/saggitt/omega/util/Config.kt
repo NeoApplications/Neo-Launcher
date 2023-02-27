@@ -127,7 +127,8 @@ class Config(val context: Context) {
         fun gesturePrefs(context: Context): List<NavigationPref> {
             val prefs = Utilities.getOmegaPrefs(context)
             return listOf(
-                prefs.gestureDoubleTap
+                prefs.gestureDoubleTap,
+                prefs.gestureLongPress
             )
         }
 

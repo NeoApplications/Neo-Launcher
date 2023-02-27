@@ -63,8 +63,8 @@ fun GesturesPrefPage() {
     val blankGestureHandler = BlankGestureHandler(context, null)
     val gesturesPrefs = listOf(
         prefs.gestureDoubleTap,
-        /*prefs.gestureLongPress,
-        prefs.gestureSwipeDown,
+        prefs.gestureLongPress,
+        /*prefs.gestureSwipeDown,
         prefs.gestureSwipeUp,
         prefs.gestureDockSwipeUp,
         prefs.gestureHomePress,
