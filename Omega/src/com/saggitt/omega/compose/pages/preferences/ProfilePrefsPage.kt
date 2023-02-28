@@ -45,11 +45,13 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.collectAsStateBlocking
 
 @Composable
 fun ProfilePrefsPage() {
@@ -62,10 +64,16 @@ fun ProfilePrefsPage() {
         openDialog.value = true
     }
 
+    val overrideRepo = IconOverrideRepository.INSTANCE.get(LocalContext.current)
+    val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
     val profilePrefs = listOf(
         prefs.profileLanguage,
         prefs.profileTheme,
         prefs.profileAccentColor,
+        if (customIconsCount > 0) {
+            prefs.profileResetCustomIcons
+        } else {
+        },
     )
 
     val others = listOf(

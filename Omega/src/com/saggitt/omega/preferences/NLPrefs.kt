@@ -177,6 +177,11 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.show_top_shadow,
         defaultValue = true,
     )
+    val profileResetCustomIcons = DialogPref(
+        titleId = R.string.reset_custom_icons,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_RESET_CUSTOM
+    )
 
     // Desktop
     // TODO desktop_rows, desktop_columns,
