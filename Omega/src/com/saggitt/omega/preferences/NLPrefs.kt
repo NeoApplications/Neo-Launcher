@@ -120,6 +120,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
+        defaultValue = Themes.getAttrColor(context, R.attr.colorAccent),
         navRoute = Routes.COLOR_ACCENT
     )
 
@@ -361,12 +362,12 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false
     )
 
-    // TODO ColorPref?
-    val desktopFolderBackgroundColor = IntPref(
+    val desktopFolderBackgroundColor = ColorIntPref(
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface)
+        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface),
+        navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
     )
 
     val desktopFolderColumns = IntPref(
@@ -444,13 +445,12 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false
     )
 
-    // TODO ColorPref?
-    val dockBackgroundColor = IntPref(
+    val dockBackgroundColor = ColorIntPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_COLOR,
         titleId = R.string.title_dock_background_color,
         defaultValue = (0xff101010).toInt(),
-        //withAlpha = false,
+        navRoute = Routes.COLOR_BG_DOCK,
     )
 
     // TODO AlphaPref?
@@ -595,13 +595,12 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
-    // TODO ColorPref?
-    val drawerBackgroundColor = IntPref(
+    val drawerBackgroundColor = ColorIntPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_COLOR,
         titleId = R.string.title_dock_background_color,
         defaultValue = (0xff101010).toInt(),
-        //withAlpha = false,
+        navRoute = Routes.COLOR_BG_DRAWER,
     )
 
     // TODO AlphaPref?
@@ -801,13 +800,12 @@ class NLPrefs private constructor(private val context: Context) {
         onChange = ::updateSmartspaceProvider
     )
 
-    // TODO ColorPref?
-    val notificationBackground = IntPref(
+    val notificationBackground = ColorIntPref(
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COLOR,
         titleId = R.string.title__notification_background,
         defaultValue = 0xFFF32020.toInt(),
-        //withAlpha = true,
+        navRoute = Routes.COLOR_DOTS_NOTIFICATION,
     )
 
     val notificationCountFolder = BooleanPref(

@@ -29,9 +29,8 @@ import androidx.annotation.ColorInt
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NLPrefs
-import java.util.Locale
+import java.util.*
 
-val Context.omegaPrefs: NLPrefs get() = Utilities.getOmegaPrefs(this)
 fun Context.getLauncherOrNull(): Launcher? {
     return try {
         Launcher.getLauncher(this)

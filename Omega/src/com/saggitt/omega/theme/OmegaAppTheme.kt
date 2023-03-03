@@ -26,22 +26,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.saggitt.omega.util.isBlackTheme
-import com.saggitt.omega.util.omegaPrefs
+import com.saggitt.omega.util.prefs
 
 @Composable
 fun OmegaAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     blackTheme: Boolean = isBlackTheme,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = when {
             darkTheme && blackTheme -> BlackColors
-            darkTheme -> DarkColors
-            else -> LightColors
+            darkTheme               -> DarkColors
+            else                    -> LightColors
         }.copy(
-            primary = Color(LocalContext.current.omegaPrefs.profileAccentColor.getValue()),
-            surfaceTint = Color(LocalContext.current.omegaPrefs.profileAccentColor.getValue())
+            primary = Color(LocalContext.current.prefs.profileAccentColor.getValue()),
+            surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getValue())
         ),
         content = content
     )

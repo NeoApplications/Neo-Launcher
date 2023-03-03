@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
@@ -42,17 +41,17 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.gestures.BlankGestureHandler
-import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.prefs
 
 @Composable
-fun GesturesPrefPage() {
+fun DockPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
@@ -60,33 +59,13 @@ fun GesturesPrefPage() {
         openDialog.value = true
     }
 
-    val blankGestureHandler = BlankGestureHandler(context, null)
-    val gesturesPrefs = listOf(
-        prefs.gestureDoubleTap,
-        prefs.gestureLongPress,
-        /*prefs.gestureSwipeDown,
-        prefs.gestureSwipeUp,
-        prefs.gestureDockSwipeUp,
-        prefs.gestureHomePress,
-        prefs.gestureBackPress,
-        prefs.gestureLaunchAssistant*/
+    val dockPrefs = listOf(
+        prefs.dockBackgroundColor,
     )
-    //Set summary for each preference
-
-    gesturesPrefs.forEach {
-        val handler =
-            GestureController.createGestureHandler(context, it.getValue(), blankGestureHandler)
-        it.summaryId = handler.displayNameRes
-    }
-
-    /*val dashPrefs = listOf(
-        prefs.dashLineSize,
-        prefs.dashEdit
-    )*/
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_gestures_dash)
+            title = stringResource(R.string.title__general_desktop)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -97,30 +76,21 @@ fun GesturesPrefPage() {
             ) {
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.pref_category__gestures),
-                        prefs = gesturesPrefs,
+                        prefs = dockPrefs,
                         onPrefDialog = onPrefDialog
                     )
                 }
-                /*item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.pref_category__dash),
-                        prefs = dashPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }*/
             }
 
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
+                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
                         )
@@ -129,6 +99,10 @@ fun GesturesPrefPage() {
                             pref = dialogPref as StringMultiSelectionPref,
                             openDialogCustom = openDialog
                         )
+                        /*is GridSize -> GridSizePrefDialogUI(
+                            pref = dialogPref as GridSize,
+                            openDialogCustom = openDialog
+                        )*/
                     }
                 }
             }
@@ -136,9 +110,10 @@ fun GesturesPrefPage() {
     }
 }
 
-fun NavGraphBuilder.gesturesPrefGraph(route: String) {
-    preferenceGraph(route, { GesturesPrefPage() }) { subRoute ->
-        gesturesPageGraph(route = subRoute(Routes.GESTURE_SELECTOR))
-        preferenceGraph(route = subRoute(Routes.EDIT_DASH), { EditDashPage() })
+fun NavGraphBuilder.dockPrefsGraph(route: String) {
+    preferenceGraph(route, { DockPrefsPage() }) { subRoute ->
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_BG_DOCK),
+            { ColorSelectorPage(PrefKey.DOCK_BG_COLOR) })
     }
 }

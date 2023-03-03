@@ -789,7 +789,6 @@ public final class Utilities {
      * can only be applied. For deep shortcuts, when dragged from the pop up container, there's no
      * badge. When dragged from workspace or folder, it may contain app AND/OR work profile badge
      **/
-    @TargetApi(Build.VERSION_CODES.O)
     public static Drawable getBadge(Context context, ItemInfo info, Object obj) {
         LauncherAppState appState = LauncherAppState.getInstance(context);
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
@@ -885,7 +884,7 @@ public final class Utilities {
     /**
      * Make a color filter that blends a color into the destination based on a scalable amout.
      *
-     * @param color to blend in.
+     * @param color      to blend in.
      * @param tintAmount [0-1] 0 no tinting, 1 full color.
      * @return ColorFilter for tinting, or {@code null} if no filter is needed.
      */

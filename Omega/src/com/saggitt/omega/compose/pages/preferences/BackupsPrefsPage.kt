@@ -21,5 +21,5 @@ package com.saggitt.omega.compose.pages.preferences
 import androidx.compose.runtime.Composable
 
 @Composable
-fun DockPrefPage() {
+fun BackupsPrefsPage() {
 }

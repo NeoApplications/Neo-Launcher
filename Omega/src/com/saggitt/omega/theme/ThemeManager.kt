@@ -27,7 +27,7 @@ import com.saggitt.omega.omegaApp
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.hasFlag
-import com.saggitt.omega.util.omegaPrefs
+import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.useApplicationContext
 import com.saggitt.omega.util.usingNightMode
 
@@ -36,7 +36,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
     private val app = context.omegaApp
     private val wallpaperColorInfo = WallpaperColorInfo.getInstance(context)!!
     private val listeners = HashSet<ThemeOverride>()
-    private val prefs = context.omegaPrefs
+    private val prefs = context.prefs
     private var themeFlags = 0
     private var usingNightMode = context.resources.configuration.usingNightMode
         set(value) {
@@ -93,8 +93,8 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
         val theme = prefs.profileTheme.getValue()
         val isDark = when {
             theme.hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
-            theme.hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperColorInfo.isDark
-            else -> theme.hasFlag(THEME_DARK)
+            theme.hasFlag(THEME_FOLLOW_WALLPAPER)  -> wallpaperColorInfo.isDark
+            else                                   -> theme.hasFlag(THEME_DARK)
         }
         val isBlack = isBlack(theme) && isDark
 

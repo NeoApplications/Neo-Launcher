@@ -48,15 +48,17 @@ import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.collectAsStateBlocking
+import com.saggitt.omega.util.prefs
 
 @Composable
 fun ProfilePrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
@@ -149,6 +151,8 @@ fun ProfilePrefsPage() {
 fun NavGraphBuilder.profilePrefsGraph(route: String) {
     preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
         preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
-        preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage() })
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_ACCENT),
+            { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

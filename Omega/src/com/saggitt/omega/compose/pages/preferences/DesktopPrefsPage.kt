@@ -19,7 +19,9 @@
 package com.saggitt.omega.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -49,7 +51,7 @@ import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.prefs
 
 @Composable
-fun DrawerPrefsPage() {
+fun DesktopPrefsPage() {
     val context = LocalContext.current
     val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
@@ -59,16 +61,23 @@ fun DrawerPrefsPage() {
         openDialog.value = true
     }
 
+    val iconPrefs = listOf(
+        prefs.desktopPopup,
+    )
     val gridPrefs = listOf(
-        prefs.drawerSortMode,
+        prefs.desktopWidgetCornerRadius,
+    )
+    val folderPrefs = listOf(
+        prefs.desktopFolderBackgroundColor,
+        prefs.desktopFolderCornerRadius,
     )
     val otherPrefs = listOf(
-        prefs.drawerBackgroundColor,
+        prefs.desktopHideStatusBar,
     )
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_drawer)
+            title = stringResource(R.string.title__general_desktop)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -79,55 +88,67 @@ fun DrawerPrefsPage() {
             ) {
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.cat_drawer_grid),
+                        stringResource(id = R.string.cat_drawer_icons),
+                        prefs = iconPrefs,
+                        onPrefDialog = onPrefDialog
+                    )
+                }
+                item {
+                    PreferenceGroup(
+                        stringResource(id = R.string.cat_desktop_grid),
                         prefs = gridPrefs,
                         onPrefDialog = onPrefDialog
                     )
+                }
+                item {
+                    PreferenceGroup(
+                        stringResource(id = R.string.app_categorization_folders),
+                        prefs = folderPrefs,
+                        onPrefDialog = onPrefDialog
+                    )
+                }
+                item {
                     PreferenceGroup(
                         stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs,
                         onPrefDialog = onPrefDialog
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-        }
-        if (openDialog.value) {
-            BaseDialog(openDialogCustom = openDialog) {
-                when (dialogPref) {
-                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
-                        pref = dialogPref as IntSelectionPref,
-                        openDialogCustom = openDialog
-                    )
 
-                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
-                        pref = dialogPref as StringSelectionPref,
-                        openDialogCustom = openDialog
-                    )
+            if (openDialog.value) {
+                BaseDialog(openDialogCustom = openDialog) {
+                    when (dialogPref) {
+                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                            pref = dialogPref as IntSelectionPref,
+                            openDialogCustom = openDialog
+                        )
 
-                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                        pref = dialogPref as StringMultiSelectionPref,
-                        openDialogCustom = openDialog
-                    )
+                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                            pref = dialogPref as StringSelectionPref,
+                            openDialogCustom = openDialog
+                        )
 
-                    /*is GridSize -> GridSizePrefDialogUI(
-                        pref = dialogPref as GridSize,
-                        openDialogCustom = openDialog
-                    )*/
+                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                            pref = dialogPref as StringMultiSelectionPref,
+                            openDialogCustom = openDialog
+                        )
+                        /*is GridSize -> GridSizePrefDialogUI(
+                            pref = dialogPref as GridSize,
+                            openDialogCustom = openDialog
+                        )*/
+                    }
                 }
             }
         }
     }
 }
 
-
-fun NavGraphBuilder.drawerPrefsGraph(route: String) {
-    preferenceGraph(route, { DrawerPrefsPage() }) { subRoute ->
-        /*preferenceGraph(route = subRoute(Routes.HIDDEN_APPS), { HiddenAppsPage() })
-        preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
-        preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })
-        preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })*/
+fun NavGraphBuilder.desktopPrefsGraph(route: String) {
+    preferenceGraph(route, { DesktopPrefsPage() }) { subRoute ->
         preferenceGraph(
-            route = subRoute(Routes.COLOR_BG_DRAWER),
-            { ColorSelectorPage(PrefKey.DRAWER_BG_COLOR) })
+            route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
+            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
     }
 }

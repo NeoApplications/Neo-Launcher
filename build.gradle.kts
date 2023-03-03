@@ -1,24 +1,24 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
+import java.util.*
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.0")
+        classpath("com.android.tools.build:gradle:7.4.2")
     }
 }
+val vKotlin = "1.8.10"
 val vCompose = "1.3.1"
-val vComposeCompiler = "1.4.0-alpha02"
+val vComposeCompiler = "1.4.3"
 val vAccompanist = "0.27.0"
 val vRoom = "2.5.0-beta01"
 
 plugins {
-    id("com.android.application").version("7.4.0")
-    kotlin("android").version("1.7.21")
-    kotlin("plugin.parcelize").version("1.7.21")
-    kotlin("plugin.serialization").version("1.7.21")
-    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+    id("com.android.application").version("7.4.2")
+    kotlin("android").version("1.8.10")
+    kotlin("plugin.parcelize").version("1.8.10")
+    kotlin("plugin.serialization").version("1.8.10")
+    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
     id("com.google.protobuf").version("0.9.1")
 }
 
@@ -113,13 +113,13 @@ android {
         kotlinCompilerExtensionVersion = vComposeCompiler
     }
 
-    kotlinOptions {
-        jvmTarget = compileOptions.sourceCompatibility.toString()
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    kotlinOptions {
+        jvmTarget = compileOptions.sourceCompatibility.toString()
     }
 
     packagingOptions {
@@ -201,7 +201,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
-    implementation(kotlin("stdlib", "1.7.21"))
+    implementation(kotlin("stdlib", vKotlin))
 
     //UI
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -212,7 +212,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
 
-    implementation("com.google.android.material:material:1.9.0-alpha01")
+    implementation("com.google.android.material:material:1.9.0-alpha02")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:3.21.12")
@@ -274,7 +274,7 @@ dependencies {
     //Test
     testImplementation("junit:junit:4.13.2")
     implementation("junit:junit:4.13.2")
-    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:runner:1.5.2")
@@ -285,7 +285,7 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:5.0.0")
     androidTestImplementation("com.google.dexmaker:dexmaker:1.2")
     androidTestImplementation("com.google.dexmaker:dexmaker-mockito:1.2")
-    androidTestImplementation("androidx.annotation:annotation:1.5.0")
+    androidTestImplementation("androidx.annotation:annotation:1.6.0")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
     androidTestImplementation("com.android.support.test.uiautomator:uiautomator-v18:2.1.3")
