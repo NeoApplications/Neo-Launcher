@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
@@ -41,7 +42,10 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
+import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
@@ -57,9 +61,16 @@ fun DesktopPrefPage() {
         openDialog.value = true
     }
 
-    val iconPrefs = listOf(prefs.desktopPopup)
-    val gridPrefs = listOf(prefs.desktopWidgetCornerRadius)
-    val folderPrefs = listOf(prefs.desktopFolderCornerRadius)
+    val iconPrefs = listOf(
+        prefs.desktopPopup,
+    )
+    val gridPrefs = listOf(
+        prefs.desktopWidgetCornerRadius,
+    )
+    val folderPrefs = listOf(
+        prefs.desktopFolderBackgroundColor,
+        prefs.desktopFolderCornerRadius,
+    )
     val otherPrefs = listOf(
         prefs.desktopHideStatusBar,
     )
@@ -131,5 +142,13 @@ fun DesktopPrefPage() {
                 }
             }
         }
+    }
+}
+
+fun NavGraphBuilder.desktopPrefsGraph(route: String) {
+    preferenceGraph(route, { DesktopPrefPage() }) { subRoute ->
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
+            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
     }
 }
