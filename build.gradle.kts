@@ -114,8 +114,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
@@ -228,6 +228,7 @@ dependencies {
         exclude("com.android.support", "appcompat-v7")
     }
     implementation("com.raedapps:alwan:1.0.0")
+    implementation("io.github.hokofly:hoko-blur:1.3.7")
 
     //Compose
     implementation("androidx.activity:activity-compose:1.6.1")
