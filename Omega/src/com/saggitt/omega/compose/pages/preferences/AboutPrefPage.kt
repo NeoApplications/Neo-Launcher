@@ -75,7 +75,7 @@ import java.io.InputStream
 
 @OptIn(ExperimentalCoilApi::class)
 fun NavGraphBuilder.aboutPrefsGraph(route: String) {
-    preferenceGraph(route, { AboutPage() }) { subRoute ->
+    preferenceGraph(route, { AboutPrefPage() }) { subRoute ->
         licenseGraph(route = subRoute(Routes.LICENSE))
         translatorsGraph(route = subRoute(Routes.TRANSLATORS))
         changelogGraph(route = subRoute(Routes.CHANGELOG))
@@ -96,7 +96,7 @@ fun NavGraphBuilder.changelogGraph(route: String) {
 
 @ExperimentalCoilApi
 @Composable
-fun AboutPage() {
+fun AboutPrefPage() {
     ViewWithActionBar(
         title = stringResource(R.string.title__general_about),
     ) { paddingValues ->
