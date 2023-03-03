@@ -19,7 +19,6 @@
 package com.saulhdev.neolauncher.icons
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 
 class IconPreferences(context: Context) {
     //private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
@@ -54,7 +53,7 @@ class IconPreferences(context: Context) {
     }*/
 
     companion object {
-        val THEMED_ICON = booleanPreferencesKey("profile_themed_icons")
-        val TRANSPARENT_ICON = booleanPreferencesKey("profile_transparent_icon")
+        //val THEMED_ICON = booleanPreferencesKey("profile_themed_icons")
+        //val TRANSPARENT_ICON = booleanPreferencesKey("profile_transparent_icon")
     }
 }
