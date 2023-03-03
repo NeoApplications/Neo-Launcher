@@ -15,16 +15,28 @@
  */
 package com.android.launcher3.icons;
 
+import static com.android.launcher3.icons.GraphicsUtils.getExpectedBitmapSize;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.UserHandle;
+import android.util.Log;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.icons.ThemedIconDrawable.ThemedBitmapInfo;
+import com.android.launcher3.icons.cache.BaseIconCache;
 import com.android.launcher3.util.FlagOp;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class BitmapInfo {
 
@@ -48,14 +60,18 @@ public class BitmapInfo {
     public @interface DrawableCreationFlags {
     }
 
+
     public static final Bitmap LOW_RES_ICON = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
     public static final BitmapInfo LOW_RES_INFO = fromBitmap(LOW_RES_ICON);
 
     public static final String TAG = "BitmapInfo";
 
+    protected static final byte TYPE_DEFAULT = 1;
+    protected static final byte TYPE_THEMED = 2;
+    protected static final byte TYPE_THEMED_V2 = 3;
+
     public final Bitmap icon;
     public final int color;
-
     @Nullable
     protected Bitmap mMono;
     protected Bitmap mWhiteShadowLayer;
@@ -127,6 +143,34 @@ public class BitmapInfo {
     }
 
     /**
+     * Returns a serialized version of BitmapInfo
+     */
+    @Nullable
+    public byte[] toByteArray() {
+        if (isNullOrLowRes()) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream(getExpectedBitmapSize(icon) + 1);
+        try {
+            out.write(TYPE_DEFAULT);
+            icon.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+            return out.toByteArray();
+        } catch (IOException e) {
+            Log.w(TAG, "Could not write bitmap");
+            return null;
+        }
+    }
+
+    /**
+     * Returns a new icon based on the theme of the context
+     */
+    public FastBitmapDrawable newThemedIcon(Context context) {
+        return newIcon(context);
+    }
+
+    /**
      * Creates a drawable for the provided BitmapInfo
      */
     public FastBitmapDrawable newIcon(Context context) {
@@ -163,6 +207,34 @@ public class BitmapInfo {
         }
     }
 
+
+    /**
+     * Returns a BitmapInfo previously serialized using {@link #toByteArray()};
+     */
+    @NonNull
+    public static BitmapInfo fromByteArray(byte[] data, int color, UserHandle user,
+                                           BaseIconCache iconCache, Context context) {
+        if (data == null) {
+            return null;
+        }
+        BitmapFactory.Options decodeOptions;
+        if (BitmapRenderer.USE_HARDWARE_BITMAP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            decodeOptions = new BitmapFactory.Options();
+            decodeOptions.inPreferredConfig = Bitmap.Config.HARDWARE;
+        } else {
+            decodeOptions = null;
+        }
+        if (data[0] == TYPE_DEFAULT) {
+            return BitmapInfo.of(
+                    BitmapFactory.decodeByteArray(data, 1, data.length - 1, decodeOptions),
+                    color);
+        } else if (data[0] == TYPE_THEMED_V2) {
+            return ThemedBitmapInfo.decode(data, color, decodeOptions, user, iconCache, context);
+        } else {
+            return null;
+        }
+    }
+
     public static BitmapInfo fromBitmap(@NonNull Bitmap bitmap) {
         return of(bitmap, 0);
     }
@@ -180,11 +252,16 @@ public class BitmapInfo {
          * Called for creating a custom BitmapInfo
          */
         BitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                                   BaseIconFactory iconFactory, float normalizationScale);
+                                   BaseIconFactory iconFactory, float normalizationScale, UserHandle user);
 
         /**
          * Called to draw the UI independent of any runtime configurations like time or theme
          */
         void drawForPersistence(Canvas canvas);
+
+        /**
+         * Returns a new icon with theme applied
+         */
+        Drawable getThemedDrawable(Context context);
     }
 }

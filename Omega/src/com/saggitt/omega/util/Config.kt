@@ -19,6 +19,7 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.text.TextUtils
 import com.android.launcher3.R
@@ -85,6 +86,20 @@ class Config(val context: Context) {
             SORT_MOST_USED to R.string.title__sort_most_used,
             SORT_BY_COLOR to R.string.title__sort_by_color,
             SORT_BY_INSTALL_DATE to R.string.title__sort_last_installed,
+        )
+
+        const val LAWNICONS_PACKAGE_NAME = "app.lawnchair.lawnicons"
+        const val THEME_ICON_THEMED = "themed"
+
+        val ICON_INTENTS = arrayOf(
+            Intent("com.novalauncher.THEME"),
+            Intent("org.adw.launcher.THEMES"),
+            Intent("org.adw.launcher.icons.ACTION_PICK_ICON"),
+            Intent("com.anddoes.launcher.THEME"),
+            Intent("com.teslacoilsw.launcher.THEME"),
+            Intent("com.fede.launcher.THEME_ICONPACK"),
+            Intent("com.gau.go.launcherex.theme"),
+            Intent("com.dlto.atom.launcher.THEME"),
         )
 
         val smartspaceEventProviders = mapOf(

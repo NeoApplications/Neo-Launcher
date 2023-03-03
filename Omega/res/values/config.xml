@@ -20,6 +20,7 @@
     <string name="launcher_activity_logic_class" translatable="false">com.saggitt.omega.util.CustomActivityCachingLogic</string>
     <string name="app_filter_class" translatable="false">com.saggitt.omega.allapps.CustomAppFilter</string>
     <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.webproviders.DDGWebSearchProvider</string>
+    <string name="calendar_component_name" translatable="false">com.google.android.calendar/com.android.calendar.AllInOneActivity</string>
 
     <!-- Out of 100, the percent to shrink the workspace during options mode. -->
     <integer name="config_workspaceOptionsShrinkPercentage">70</integer>

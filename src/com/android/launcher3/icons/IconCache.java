@@ -66,6 +66,7 @@ import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.widget.WidgetSections;
 import com.android.launcher3.widget.WidgetSections.WidgetSection;
+import com.saggitt.omega.icons.CustomIconProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +100,7 @@ public class IconCache extends BaseIconCache {
     private int mPendingIconRequestCount = 0;
 
     public IconCache(Context context, InvariantDeviceProfile idp) {
-        this(context, idp, LauncherFiles.APP_ICONS_DB, new IconProvider(context));
+        this(context, idp, LauncherFiles.APP_ICONS_DB, new CustomIconProvider(context));
     }
 
     public IconCache(Context context, InvariantDeviceProfile idp, String dbFileName,

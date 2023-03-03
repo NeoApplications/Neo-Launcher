@@ -32,11 +32,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -46,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -54,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
@@ -61,6 +66,7 @@ import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
+import com.saggitt.omega.preferences.FloatPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
@@ -208,6 +214,53 @@ fun ColorIntPreference(
                     drawCircle(color = Color(currentColor))
                 }
             )
+        }
+    )
+}
+
+
+@Composable
+fun SeekBarPreference(
+    modifier: Modifier = Modifier,
+    pref: FloatPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onValueChange: ((Float) -> Unit) = {},
+) {
+    var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
+
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        bottomWidget = {
+            Row {
+                Text(
+                    text = pref.specialOutputs(currentValue),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.widthIn(min = 52.dp)
+                )
+                Spacer(modifier = Modifier.requiredWidth(8.dp))
+                Slider(
+                    modifier = Modifier
+                        .requiredHeight(24.dp)
+                        .weight(1f),
+                    value = currentValue,
+                    valueRange = pref.minValue..pref.maxValue,
+                    onValueChange = { currentValue = it },
+                    steps = pref.steps,
+                    onValueChangeFinished = {
+                        pref.setValue(currentValue)
+                        onValueChange(currentValue)
+                    },
+                    enabled = isEnabled
+                )
+            }
         }
     )
 }

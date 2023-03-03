@@ -152,7 +152,8 @@ open class NavigationPref(
     val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
-    val navRoute: String = ""
+    val navRoute: String = "",
+    onChange: () -> Unit = { }
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -215,8 +216,7 @@ open class StringSelectionPref(
     val defaultValue: String = "",
     val entries: Map<String, String>,
     onChange: () -> Unit = { }
-) :
-    PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }

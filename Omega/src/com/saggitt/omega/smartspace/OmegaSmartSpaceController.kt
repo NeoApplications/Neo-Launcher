@@ -57,7 +57,7 @@ import com.saggitt.omega.util.checkPackagePermission
 import com.saggitt.omega.util.hasFlag
 import com.saggitt.omega.util.isAppEnabled
 import com.saggitt.omega.util.omegaPrefs
-import com.saggitt.omega.util.openURLinBrowser
+import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.widget.Temperature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -261,7 +261,7 @@ class OmegaSmartSpaceController(val context: Context) {
             }
 
             else -> {
-                openURLinBrowser(
+                openURLInBrowser(
                     launcher, data.forecastUrl,
                     launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v)?.toBundle()
                 )

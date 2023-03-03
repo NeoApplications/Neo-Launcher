@@ -59,4 +59,8 @@
     <dimen name="qsb_min_width_portrait">96dp</dimen>
     <dimen name="qsb_min_width_with_mic">124dp</dimen>
     <dimen name="qsb_mic_width">48dp</dimen>
+    <dimen name="qsb_radius_square">8dp</dimen>
+    <dimen name="qsb_radius_squircle">16dp</dimen>
+
+    <dimen name="theme_icon_size">24dp</dimen>
 </resources>

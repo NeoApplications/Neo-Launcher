@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.android.launcher3.compat.AlphabeticIndexCompat
 import com.saggitt.omega.data.IconPickerItem
-import com.saggitt.omega.icons.ClockMetadata
+import com.saulhdev.neolauncher.icons.ClockMetadata
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Semaphore

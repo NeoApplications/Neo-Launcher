@@ -48,4 +48,6 @@ dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.21")
     implementation("androidx.annotation:annotation:1.5.0")
+    //DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

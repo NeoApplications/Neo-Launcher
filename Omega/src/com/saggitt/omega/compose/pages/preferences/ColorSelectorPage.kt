@@ -101,7 +101,9 @@ fun ColorSelectorPage() {
         TabItem(title = R.string.custom) {
             CustomPage(
                 initialColor = Color(currentAccentColor.value),
-                onSelectColor = { currentAccentColor.value = it }
+                onSelectColor = {
+                    currentAccentColor.value = it
+                }
             )
         },
         TabItem(title = R.string.color_dynamic) {

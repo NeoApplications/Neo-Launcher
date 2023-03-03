@@ -372,7 +372,7 @@ public class PreloadIconDrawable extends FastBitmapDrawable {
                 int indicatorColor,
                 int[] preloadColors,
                 boolean isDarkMode) {
-            super(bitmap, iconColor);
+            super(bitmap, iconColor, false);
             mInfo = info;
             mIndicatorColor = indicatorColor;
             mPreloadColors = preloadColors;

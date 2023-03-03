@@ -189,11 +189,11 @@ inline fun <T> listWhileNotNull(generator: () -> T?): List<T> = mutableListOf<T>
 
 val isBlackTheme: Boolean = false //TODO add black theme support
 
-fun openURLinBrowser(context: Context, url: String?) {
-    openURLinBrowser(context, url, null, null)
+fun openURLInBrowser(context: Context, url: String?) {
+    openURLInBrowser(context, url, null, null)
 }
 
-fun openURLinBrowser(context: Context, url: String?, sourceBounds: Rect?, options: Bundle?) {
+fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, options: Bundle?) {
     try {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         if (context !is AppCompatActivity) {

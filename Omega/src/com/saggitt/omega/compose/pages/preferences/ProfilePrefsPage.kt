@@ -66,19 +66,22 @@ fun ProfilePrefsPage() {
 
     val overrideRepo = IconOverrideRepository.INSTANCE.get(LocalContext.current)
     val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
-    val profilePrefs = listOf(
+    val profilePrefs = listOfNotNull(
         prefs.profileLanguage,
         prefs.profileTheme,
         prefs.profileAccentColor,
+        prefs.profileIconPack,
+        prefs.profileIconShape,
         if (customIconsCount > 0) {
             prefs.profileResetCustomIcons
         } else {
-        },
+            null
+        }
     )
 
-    val others = listOf(
-            prefs.profileWindowCornerRadius,
-            prefs.profileShowTopShadow
+    val others = listOfNotNull(
+        prefs.profileWindowCornerRadius,
+        prefs.profileShowTopShadow
     )
 
     OmegaAppTheme {
@@ -145,7 +148,7 @@ fun ProfilePrefsPage() {
 
 fun NavGraphBuilder.profilePrefsGraph(route: String) {
     preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
-        //preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
+        preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
         preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage() })
     }
 }

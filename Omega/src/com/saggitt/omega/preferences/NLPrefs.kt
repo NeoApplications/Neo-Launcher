@@ -26,8 +26,10 @@ import android.provider.Settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.MainThreadInitializedObject
@@ -38,6 +40,9 @@ import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
+import com.saggitt.omega.iconpack.IconPackInfo
+import com.saggitt.omega.iconpack.IconPackProvider
+import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
@@ -49,6 +54,7 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,13 +63,16 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-private const val USER_PREFERENCES_NAME = "neo_launcher"
-
 class NLPrefs private constructor(private val context: Context) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES_NAME)
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
     val dataStore: DataStore<Preferences> = context.dataStore
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
+    val idp: InvariantDeviceProfile get() = InvariantDeviceProfile.INSTANCE.get(context)
+
+    private val reloadIcons = {
+        idp.onPreferencesChanged(context)
+    }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -112,6 +121,45 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
         navRoute = Routes.COLOR_ACCENT
+    )
+
+    var profileIconPack = StringSelectionPref(
+        titleId = R.string.title_theme_icon_packs,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_PACK,
+        defaultValue = "",
+        entries = IconPackProvider.INSTANCE.get(context)
+            .getIconPackList()
+            .associateBy(IconPackInfo::packageName, IconPackInfo::name),
+        onChange = reloadIcons
+    )
+
+    var profileIconShape = NavigationPref(
+        titleId = R.string.title__theme_icon_shape,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_SHAPE,
+        defaultValue = IconShape.Circle.toString(),
+        navRoute = Routes.ICON_SHAPE,
+        onChange = {
+            initializeIconShape()
+            com.android.launcher3.graphics.IconShape.init(context)
+            LauncherAppState.getInstance(context).refreshAndReloadLauncher()
+        }
+    )
+
+    var profileThemedIcons = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_THEMED_ICONS,
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
+        defaultValue = Utilities.ATLEAST_T,
+    )
+    var profileTransparentBgIcons = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
+        defaultValue = Utilities.ATLEAST_T,
     )
 
     var profileBlurEnable = BooleanPref(
@@ -908,6 +956,17 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__dev_show_debug_info,
         defaultValue = false
     )
+
+    init {
+        initializeIconShape()
+    }
+
+    private fun initializeIconShape() {
+        val shape = IconShape.fromString(profileIconShape.getValue())
+        CustomAdaptiveIconDrawable.sInitialized = true
+        CustomAdaptiveIconDrawable.sMaskId = shape?.getHashString()
+        CustomAdaptiveIconDrawable.sMask = shape?.getMaskPath()
+    }
 
     companion object {
         private val INSTANCE = MainThreadInitializedObject(::NLPrefs)

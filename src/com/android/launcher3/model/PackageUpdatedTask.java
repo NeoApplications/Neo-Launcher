@@ -35,6 +35,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.IconCache;
@@ -52,6 +53,7 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,6 +137,11 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                         activitiesLists.put(
                                 packages[i], appsList.updatePackage(context, packages[i], mUser));
 
+                        //Reload SystemIconPack map
+                        if (Utilities.getOmegaPrefs(context).getProfileIconPack().getValue().equals("")) {
+                            Utilities.getOmegaPrefs(context).reloadApps();
+                        }
+
                         // The update may have changed which shortcuts/widgets are available.
                         // Refresh the widgets for the package if we have an activity running.
                         Launcher launcher = Launcher.ACTIVITY_TRACKER.getCreatedActivity();
@@ -151,6 +158,10 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 for (int i = 0; i < N; i++) {
                     FileLog.d(TAG, "Removing app icon" + packages[i]);
                     iconCache.removeIconsForPkg(packages[i], mUser);
+                    NLPrefs prefs = Utilities.getOmegaPrefs(context);
+                    if (packages[i].equals(prefs.getProfileIconPack().getValue())) {
+                        prefs.getProfileIconPack().setValue("");
+                    }
                 }
                 // Fall through
             }
