@@ -38,8 +38,14 @@ import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
+import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
+import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
+import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.PrefKey
+import com.saggitt.omega.preferences.StringMultiSelectionPref
+import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
@@ -53,7 +59,12 @@ fun DrawerPrefsPage() {
         openDialog.value = true
     }
 
-    val gridPrefs = listOf(prefs.drawerSortMode)
+    val gridPrefs = listOf(
+        prefs.drawerSortMode,
+    )
+    val otherPrefs = listOf(
+        prefs.drawerBackgroundColor,
+    )
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -70,6 +81,11 @@ fun DrawerPrefsPage() {
                     PreferenceGroup(
                         stringResource(id = R.string.cat_drawer_grid),
                         prefs = gridPrefs,
+                        onPrefDialog = onPrefDialog
+                    )
+                    PreferenceGroup(
+                        stringResource(id = R.string.pref_category__others),
+                        prefs = otherPrefs,
                         onPrefDialog = onPrefDialog
                     )
                 }
@@ -110,5 +126,6 @@ fun NavGraphBuilder.drawerPrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
         preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })
         preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })*/
+        preferenceGraph(route = subRoute(Routes.COLOR_BG_DRAWER), { ColorSelectorPage(PrefKey.DRAWER_BG_COLOR) })
     }
 }
