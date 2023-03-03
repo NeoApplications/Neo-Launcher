@@ -1,58 +1,59 @@
 ## Development Progress
 
-- [x] Rebase on A12
+- [ ] Rebase on A13
 
-- [X] Port the features back from 0.8.2
+- [ ] Port the features back from 0.9.x
 
-- [X] Restructure settings (less complex and sharper separation)
+- [ ] Theming
 
-## Progress on 0.9.0/1.0.0
+- [ ] Sorting
 
-- [x] Theming
+  - [ ] Alphabetical
 
-- [X] Gestures
+  - [ ] By Usage
 
-  - [x] All except swipe ups
+- [ ] Dock
 
-  - [X] Swipe ups
+  - [ ] Theming
 
-- [X] Sorting
+  - [ ] Search bar
 
-  - [x] Alphabetical
+- [ ] Desktop
 
-  - [x] By Usage
+  - [ ] Size and naming
 
-- [X] Dock
+  - [ ] Allow rotation
 
-  - [x] Theming
+  - [ ] Apply pref directly
 
-  - [X] Search bar
+- [ ] Search engines
 
-- [X] Desktop
+- [ ] Edit app's icons
 
-  - [x] Size and naming
 
-  - [x] Allow rotation
+- [ ] Folder cover mode
 
-  - [X] Apply pref directly
+- [ ] Categories
 
-- [x] Get Widgets working
+  - [ ] Tabs
 
-- [X] Search engines
+  - [ ] Folders
 
-- [X] Edit app's icons
+- [ ] Backup & restore
+
+- [ ] Categories
+
+  - [ ] Tabs & Folders
+
+- [ ] Backup & restore
+
+## Progress on 1.0.0
 
 - [x] Use icon packs
-
-- [X] Folder cover mode
-
-- [X] Categories
-
-  - [X] Tabs
-
-  - [X] Folders
-
-- [X] Backup & restore
+- [X] Get Widgets working
+- [X] Gestures
+  - [x] Double Tap
+  - [X] Long Press
 
 ## Low Priority/ Future nice-to-haves
 
@@ -64,12 +65,5 @@
 
   - [ ] Paged Vertical
 
-- [X] Add custom search provider
-
-- [X] Categories
-
-  - [X] Tabs & Folders
-
-- [X] Backup & restore
-
+- [ ] Add custom search provider
 - [ ] Simpler coloring themes
