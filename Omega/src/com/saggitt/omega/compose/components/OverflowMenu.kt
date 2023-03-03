@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,8 @@ fun OverflowMenu(block: @Composable OverflowMenuScope.() -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Rounded.MoreVert,
-                contentDescription = stringResource(id = R.string.action_open_settings)
+                contentDescription = stringResource(id = R.string.action_open_settings),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
