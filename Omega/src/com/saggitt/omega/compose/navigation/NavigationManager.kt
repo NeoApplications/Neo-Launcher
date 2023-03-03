@@ -62,6 +62,10 @@ object Routes {
     const val EDIT_DASH = "edit_dash"
     const val ICON_SHAPE = "icon_shape"
     const val COLOR_ACCENT = "color_accent"
+    const val COLOR_BG_DESKTOP_FOLDER = "color_bg_desktop_folder"
+    const val COLOR_BG_DOCK = "color_bg_dock"
+    const val COLOR_BG_DRAWER = "color_bg_drawer"
+    const val COLOR_DOTS_NOTIFICATION = "color_dots_notification"
 }
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
