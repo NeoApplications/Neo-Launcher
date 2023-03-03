@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -67,19 +68,28 @@ import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.navigation.LocalNavController
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
+import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ColorSelectorPage() {
+fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val coroutineScope = rememberCoroutineScope()
-    val prefs = Utilities.getOmegaPrefs(LocalContext.current)
+    val prefs = LocalContext.current.prefs
+    val pref = when (prefKey) {
+        PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor
+        PrefKey.DOCK_BG_COLOR           -> prefs.dockBackgroundColor
+        PrefKey.DRAWER_BG_COLOR         -> prefs.drawerBackgroundColor
+        PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
+        else                            -> prefs.profileAccentColor // PrefKey.PROFILE_ACCENT_COLOR
+    }
     val navController = LocalNavController.current
-    val currentAccentColor = remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
+    val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
 
@@ -128,7 +138,7 @@ fun ColorSelectorPage() {
                             .padding(start = 8.dp, end = 8.dp)
                             .fillMaxWidth(),
                         onClick = {
-                            prefs.profileAccentColor.setValue(currentAccentColor.value)
+                            pref.setValue(currentAccentColor.value)
                             navController.popBackStack()
                         }
                     ) {
