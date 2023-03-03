@@ -237,7 +237,7 @@ class OmegaSmartSpaceController(val context: Context) {
         val data = weatherData ?: return
         val launcher = Launcher.getLauncher(v.context)
         when {
-            data.pendingIntent != null -> {
+            data.pendingIntent != null                                 -> {
                 val opts = launcher.getActivityLaunchOptionsAsBundle(v)
                 launcher.startIntentSender(
                     data.pendingIntent.intentSender, null,
@@ -246,7 +246,7 @@ class OmegaSmartSpaceController(val context: Context) {
                 )
             }
 
-            data.forecastIntent != null -> {
+            data.forecastIntent != null                                -> {
                 launcher.startActivitySafely(v, data.forecastIntent, null)
             }
 
@@ -260,7 +260,7 @@ class OmegaSmartSpaceController(val context: Context) {
                 launcher.startActivitySafely(v, intent, null)
             }
 
-            else -> {
+            else                                                       -> {
                 openURLinBrowser(
                     launcher, data.forecastUrl,
                     launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v)?.toBundle()
@@ -475,7 +475,7 @@ class OmegaSmartSpaceController(val context: Context) {
         private val temperature: Temperature,
         val forecastUrl: String? = "https://www.google.com/search?q=weather",
         val forecastIntent: Intent? = null,
-        val pendingIntent: PendingIntent? = null
+        val pendingIntent: PendingIntent? = null,
     ) {
 
         fun getTitle(unit: Temperature.Unit): String {
@@ -487,21 +487,21 @@ class OmegaSmartSpaceController(val context: Context) {
         val icon: Bitmap? = null,
         val lines: List<Line>,
         val onClickListener: View.OnClickListener? = null,
-        val forceSingleLine: Boolean = false
+        val forceSingleLine: Boolean = false,
     ) {
 
         constructor(
             icon: Bitmap? = null,
             lines: List<Line>,
             intent: PendingIntent? = null,
-            forceSingleLine: Boolean = false
+            forceSingleLine: Boolean = false,
         ) :
                 this(icon, lines, intent?.let { PendingIntentClickListener(it) }, forceSingleLine)
 
         constructor(
             icon: Bitmap? = null,
             lines: List<Line>,
-            forceSingleLine: Boolean = false
+            forceSingleLine: Boolean = false,
         ) :
                 this(icon, lines, null as View.OnClickListener?, forceSingleLine)
 
@@ -511,7 +511,7 @@ class OmegaSmartSpaceController(val context: Context) {
             titleEllipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END,
             subtitle: CharSequence,
             subtitleEllipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END,
-            pendingIntent: PendingIntent? = null
+            pendingIntent: PendingIntent? = null,
         )
                 : this(
             icon,
@@ -582,7 +582,7 @@ class OmegaSmartSpaceController(val context: Context) {
 
     data class Line @JvmOverloads constructor(
         val text: CharSequence,
-        val ellipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.MARQUEE
+        val ellipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.MARQUEE,
     ) {
 
         constructor(context: Context, textRes: Int) : this(context.getString(textRes))

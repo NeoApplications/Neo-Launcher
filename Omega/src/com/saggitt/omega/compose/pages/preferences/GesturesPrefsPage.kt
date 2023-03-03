@@ -19,9 +19,7 @@
 package com.saggitt.omega.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -35,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
@@ -44,16 +41,18 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.gestures.BlankGestureHandler
+import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.IntSelectionPref
-import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.prefs
 
 @Composable
-fun DesktopPrefPage() {
+fun GesturesPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
@@ -61,23 +60,33 @@ fun DesktopPrefPage() {
         openDialog.value = true
     }
 
-    val iconPrefs = listOf(
-        prefs.desktopPopup,
+    val blankGestureHandler = BlankGestureHandler(context, null)
+    val gesturesPrefs = listOf(
+        prefs.gestureDoubleTap,
+        prefs.gestureLongPress,
+        /*prefs.gestureSwipeDown,
+        prefs.gestureSwipeUp,
+        prefs.gestureDockSwipeUp,
+        prefs.gestureHomePress,
+        prefs.gestureBackPress,
+        prefs.gestureLaunchAssistant*/
     )
-    val gridPrefs = listOf(
-        prefs.desktopWidgetCornerRadius,
-    )
-    val folderPrefs = listOf(
-        prefs.desktopFolderBackgroundColor,
-        prefs.desktopFolderCornerRadius,
-    )
-    val otherPrefs = listOf(
-        prefs.desktopHideStatusBar,
-    )
+    //Set summary for each preference
+
+    gesturesPrefs.forEach {
+        val handler =
+            GestureController.createGestureHandler(context, it.getValue(), blankGestureHandler)
+        it.summaryId = handler.displayNameRes
+    }
+
+    /*val dashPrefs = listOf(
+        prefs.dashLineSize,
+        prefs.dashEdit
+    )*/
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_desktop)
+            title = stringResource(R.string.title__general_gestures_dash)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -88,44 +97,30 @@ fun DesktopPrefPage() {
             ) {
                 item {
                     PreferenceGroup(
-                        stringResource(id = R.string.cat_drawer_icons),
-                        prefs = iconPrefs,
+                        stringResource(id = R.string.pref_category__gestures),
+                        prefs = gesturesPrefs,
                         onPrefDialog = onPrefDialog
                     )
                 }
-                item {
+                /*item {
                     PreferenceGroup(
-                        stringResource(id = R.string.cat_desktop_grid),
-                        prefs = gridPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.app_categorization_folders),
-                        prefs = folderPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.pref_category__others),
-                        prefs = otherPrefs,
+                        stringResource(id = R.string.pref_category__dash),
+                        prefs = dashPrefs,
                         onPrefDialog = onPrefDialog
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                }
+                }*/
             }
 
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
+                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
                         )
@@ -134,10 +129,6 @@ fun DesktopPrefPage() {
                             pref = dialogPref as StringMultiSelectionPref,
                             openDialogCustom = openDialog
                         )
-                        /*is GridSize -> GridSizePrefDialogUI(
-                            pref = dialogPref as GridSize,
-                            openDialogCustom = openDialog
-                        )*/
                     }
                 }
             }
@@ -145,10 +136,9 @@ fun DesktopPrefPage() {
     }
 }
 
-fun NavGraphBuilder.desktopPrefsGraph(route: String) {
-    preferenceGraph(route, { DesktopPrefPage() }) { subRoute ->
-        preferenceGraph(
-            route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
-            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
+fun NavGraphBuilder.gesturesPrefsGraph(route: String) {
+    preferenceGraph(route, { GesturesPrefsPage() }) { subRoute ->
+        gesturesPageGraph(route = subRoute(Routes.GESTURE_SELECTOR))
+        preferenceGraph(route = subRoute(Routes.EDIT_DASH), { EditDashPage() })
     }
 }

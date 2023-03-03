@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
@@ -47,11 +46,12 @@ import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.prefs
 
 @Composable
 fun DrawerPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
@@ -94,22 +94,22 @@ fun DrawerPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
                         pref = dialogPref as IntSelectionPref,
                         openDialogCustom = openDialog
                     )
 
-                    /*is BasePreferences.StringSelectionPref -> StringSelectionPrefDialogUI(
-                        pref = dialogPref as BasePreferences.StringSelectionPref,
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
                         openDialogCustom = openDialog
                     )
 
-                    is BasePreferences.StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                        pref = dialogPref as BasePreferences.StringMultiSelectionPref,
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                        pref = dialogPref as StringMultiSelectionPref,
                         openDialogCustom = openDialog
                     )
 
-                    is GridSize -> GridSizePrefDialogUI(
+                    /*is GridSize -> GridSizePrefDialogUI(
                         pref = dialogPref as GridSize,
                         openDialogCustom = openDialog
                     )*/
@@ -126,6 +126,8 @@ fun NavGraphBuilder.drawerPrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
         preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })
         preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })*/
-        preferenceGraph(route = subRoute(Routes.COLOR_BG_DRAWER), { ColorSelectorPage(PrefKey.DRAWER_BG_COLOR) })
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_BG_DRAWER),
+            { ColorSelectorPage(PrefKey.DRAWER_BG_COLOR) })
     }
 }

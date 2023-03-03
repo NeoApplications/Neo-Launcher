@@ -32,13 +32,13 @@ import com.saggitt.omega.util.prefs
 fun OmegaAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     blackTheme: Boolean = isBlackTheme,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = when {
             darkTheme && blackTheme -> BlackColors
-            darkTheme -> DarkColors
-            else -> LightColors
+            darkTheme               -> DarkColors
+            else                    -> LightColors
         }.copy(
             primary = Color(LocalContext.current.prefs.profileAccentColor.getValue()),
             surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getValue())

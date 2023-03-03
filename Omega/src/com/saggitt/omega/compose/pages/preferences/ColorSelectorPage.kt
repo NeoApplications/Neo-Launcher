@@ -209,7 +209,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
 fun PresetsPage(
     presetColors: List<AccentColorOption>,
     onSelectColor: (Int) -> Unit,
-    isColorSelected: (Int) -> Boolean
+    isColorSelected: (Int) -> Boolean,
 ) {
     Column(
         modifier = Modifier
@@ -243,7 +243,7 @@ fun PresetsPage(
 @Composable
 fun CustomPage(
     initialColor: Color,
-    onSelectColor: (Int) -> Unit
+    onSelectColor: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -280,7 +280,7 @@ fun CustomPage(
 fun DynamicPage(
     dynamicColors: List<AccentColorOption>,
     onSelectColor: (Int) -> Unit,
-    isColorSelected: (Int) -> Boolean
+    isColorSelected: (Int) -> Boolean,
 ) {
     val groupSize = dynamicColors.size
     Column(

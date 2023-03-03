@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.AlertDialogUI
@@ -51,11 +50,12 @@ import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.prefs
 
 @Composable
 fun ProfilePrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->
@@ -70,8 +70,8 @@ fun ProfilePrefsPage() {
     )
 
     val others = listOf(
-            prefs.profileWindowCornerRadius,
-            prefs.profileShowTopShadow
+        prefs.profileWindowCornerRadius,
+        prefs.profileShowTopShadow
     )
 
     OmegaAppTheme {
@@ -105,12 +105,12 @@ fun ProfilePrefsPage() {
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
+                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
                         )
@@ -120,7 +120,7 @@ fun ProfilePrefsPage() {
                             openDialogCustom = openDialog
                         )
 
-                        is DialogPref -> AlertDialogUI(
+                        is DialogPref               -> AlertDialogUI(
                             pref = dialogPref as DialogPref,
                             openDialogCustom = openDialog
                         )
@@ -139,6 +139,8 @@ fun ProfilePrefsPage() {
 fun NavGraphBuilder.profilePrefsGraph(route: String) {
     preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
         //preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
-        preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_ACCENT),
+            { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

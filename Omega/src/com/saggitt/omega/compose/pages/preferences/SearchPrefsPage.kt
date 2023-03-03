@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
@@ -44,11 +43,12 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.prefs
 
 @Composable
 fun SearchPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = context.prefs
 
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
@@ -58,18 +58,18 @@ fun SearchPrefsPage() {
     }
 
     val feedPrefs = listOf(
-            prefs.feedProvider,
+        prefs.feedProvider,
     )
     OmegaAppTheme {
         ViewWithActionBar(
-                title = stringResource(R.string.title__general_search_feed)
+            title = stringResource(R.string.title__general_search_feed)
         ) { paddingValues ->
             LazyColumn(
-                    modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 8.dp),
-                    contentPadding = paddingValues,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                contentPadding = paddingValues,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 /*item {
                     PreferenceGroup(
@@ -87,9 +87,9 @@ fun SearchPrefsPage() {
                 }*/
                 item {
                     PreferenceGroup(
-                            stringResource(id = R.string.title_feed_provider),
-                            prefs = feedPrefs,
-                            onPrefDialog = onPrefDialog
+                        stringResource(id = R.string.title_feed_provider),
+                        prefs = feedPrefs,
+                        onPrefDialog = onPrefDialog
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -98,19 +98,19 @@ fun SearchPrefsPage() {
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
-                                pref = dialogPref as IntSelectionPref,
-                                openDialogCustom = openDialog
+                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                            pref = dialogPref as IntSelectionPref,
+                            openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
-                                pref = dialogPref as StringSelectionPref,
-                                openDialogCustom = openDialog
+                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                            pref = dialogPref as StringSelectionPref,
+                            openDialogCustom = openDialog
                         )
 
                         is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                                pref = dialogPref as StringMultiSelectionPref,
-                                openDialogCustom = openDialog
+                            pref = dialogPref as StringMultiSelectionPref,
+                            openDialogCustom = openDialog
                         )
                     }
                 }
