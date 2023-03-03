@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.AlertDialogUI
@@ -45,6 +44,7 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.compose.pages.ColorSelectorPage
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
@@ -82,6 +82,8 @@ fun ProfilePrefsPage() {
     )
 
     val others = listOfNotNull(
+        prefs.profileBlurEnable,
+        prefs.profileBlurRadius,
         prefs.profileWindowCornerRadius,
         prefs.profileShowTopShadow
     )

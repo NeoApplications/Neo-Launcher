@@ -47,6 +47,7 @@ import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialo
 import com.saggitt.omega.compose.components.preferences.StringTextPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.compose.pages.ColorSelectorPage
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.PrefKey

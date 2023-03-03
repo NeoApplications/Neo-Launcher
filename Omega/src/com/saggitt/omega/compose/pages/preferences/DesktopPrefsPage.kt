@@ -43,6 +43,7 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.compose.pages.ColorSelectorPage
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref

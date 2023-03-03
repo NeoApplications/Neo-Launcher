@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.compose.pages.preferences
+package com.saggitt.omega.compose.pages
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
