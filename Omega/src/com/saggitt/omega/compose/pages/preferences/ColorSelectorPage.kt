@@ -56,7 +56,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -86,7 +85,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
         PrefKey.DOCK_BG_COLOR           -> prefs.dockBackgroundColor
         PrefKey.DRAWER_BG_COLOR         -> prefs.drawerBackgroundColor
         PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
-        else                            -> prefs.profileAccentColor // PrefKey.PROFILE_ACCENT_COLOR
+        else -> prefs.profileAccentColor
     }
     val navController = LocalNavController.current
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
@@ -127,7 +126,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__theme_accent_color),
+            title = stringResource(pref.titleId),
             bottomBar = {
                 BottomAppBar(
                     modifier = Modifier
