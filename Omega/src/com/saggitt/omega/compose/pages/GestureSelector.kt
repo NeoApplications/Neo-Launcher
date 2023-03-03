@@ -1,6 +1,6 @@
 /*
  * This file is part of Neo Launcher
- * Copyright (c) 2022   Neo Launcher Team
+ * Copyright (c) 2023   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.compose.pages.preferences
+package com.saggitt.omega.compose.pages
 
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -130,10 +130,13 @@ fun GestureSelector(prefs: NavigationPref) {
             })
         },
         TabItem(R.drawable.ic_edit_dash, R.string.tab_shortcuts) {
-            ShortcutsScreen(selectedOption = currentOption, onSelect = {
-                prefs.setValue(it)
-                backDispatcher?.onBackPressed()
-            })
+            ShortcutsScreen(
+                selectedOption = currentOption,
+                onSelect = {
+                    prefs.setValue(it)
+                    backDispatcher?.onBackPressed()
+                }
+            )
         }
     )
 
@@ -465,7 +468,6 @@ fun ShortcutsScreen(
                     }
                     if (appIndex < appsSize - 1) Spacer(modifier = Modifier.height(4.dp))
                 }
-
             }
         }
     }
