@@ -21,6 +21,21 @@
     <string name="app_filter_class" translatable="false">com.saggitt.omega.allapps.CustomAppFilter</string>
     <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.webproviders.DDGWebSearchProvider</string>
     <string name="calendar_component_name" translatable="false">com.google.android.calendar/com.android.calendar.AllInOneActivity</string>
+    <string-array name="dynamic_calendar_components_name">
+        <item>com.android.calendar</item>
+        <item>com.blackberry.calendar</item>
+        <item>com.huawei.calendar</item>
+        <item>com.mi.calendar.agenda</item>
+        <item>com.oneplus.calendar</item>
+        <item>com.samsung.android.calendar</item>
+        <item>com.simplemobiletools.calendar.pro</item>
+        <item>com.xiaomi.calendar</item>
+        <item>org.lineageos.etar</item>
+        <item>org.withouthat.acalendarplus</item>
+        <item>org.withouthat.acalendar</item>
+        <item>ws.xsoh.etar</item>
+    </string-array>
+    <string name="clock_component_name" translatable="false">com.google.android.deskclock/com.android.deskclock.DeskClock</string>
 
     <!-- Out of 100, the percent to shrink the workspace during options mode. -->
     <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
