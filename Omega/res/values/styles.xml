@@ -17,9 +17,13 @@
   -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme.Light" parent="@style/LauncherTheme" />
+    <style name="AppTheme.Light" parent="@style/LauncherTheme" >
+        <item name="allAppsInterimScrimAlpha">46</item>
+    </style>
 
-    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
+    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" >
+        <item name="allAppsInterimScrimAlpha">102</item>
+    </style>
 
     <style name="AppTheme.Black" parent="AppTheme.Dark" />
 
