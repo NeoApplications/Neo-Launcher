@@ -56,8 +56,8 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.checkPackagePermission
 import com.saggitt.omega.util.hasFlag
 import com.saggitt.omega.util.isAppEnabled
-import com.saggitt.omega.util.omegaPrefs
 import com.saggitt.omega.util.openURLinBrowser
+import com.saggitt.omega.util.prefs
 import com.saggitt.omega.widget.Temperature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +71,7 @@ class OmegaSmartSpaceController(val context: Context) {
     private var cardData: CardData? = null
     private val listeners = ArrayList<Listener>()
     private val weatherProviderPref = Utilities.getOmegaPrefs(context).smartspaceWeatherProvider
-    private val eventProvidersPref = context.omegaPrefs.smartspaceEventProviders
+    private val eventProvidersPref = context.prefs.smartspaceEventProviders
     private var weatherDataProvider = BlankDataProvider(this) as DataProvider
     private val eventDataProviders = mutableListOf<DataProvider>()
     private val eventDataMap = mutableMapOf<DataProvider, CardData?>()
