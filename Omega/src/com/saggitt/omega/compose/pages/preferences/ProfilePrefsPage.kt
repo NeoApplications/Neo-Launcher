@@ -47,6 +47,7 @@ import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.theme.OmegaAppTheme
@@ -138,6 +139,6 @@ fun ProfilePrefsPage() {
 fun NavGraphBuilder.profilePrefsGraph(route: String) {
     preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
         //preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
-        preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage() })
+        preferenceGraph(route = subRoute(Routes.COLOR_ACCENT), { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }
