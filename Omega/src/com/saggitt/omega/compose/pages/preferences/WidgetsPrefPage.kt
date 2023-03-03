@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
@@ -45,8 +46,11 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringTextPrefDialogUI
+import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
@@ -161,5 +165,13 @@ fun WidgetsPrefPage() {
                 }
             }
         }
+    }
+}
+
+fun NavGraphBuilder.widgetsPrefsGraph(route: String) {
+    preferenceGraph(route, { WidgetsPrefPage() }) { subRoute ->
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_DOTS_NOTIFICATION),
+            { ColorSelectorPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
     }
 }
