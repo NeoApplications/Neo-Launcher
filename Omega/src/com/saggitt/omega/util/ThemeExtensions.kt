@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.util
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
@@ -27,6 +28,8 @@ import android.widget.ImageView
 import android.widget.RadioButton
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
+import com.android.launcher3.R
+import com.android.launcher3.Utilities
 
 /*fun AlertDialog.applyAccent() {
     val color = Utilities.getOmegaPrefs(context).themeAccentColor.onGetValue()
@@ -71,15 +74,15 @@ val Configuration.usingNightMode get() = uiMode and Configuration.UI_MODE_NIGHT_
 val Int.luminance get() = ColorUtils.calculateLuminance(this)
 
 val Int.isDark get() = luminance < 0.5f
-/*
+
 fun getWindowCornerRadius(context: Context): Float {
     val prefs = Utilities.getOmegaPrefs(context)
-    if (prefs.themeCornerRadius.onGetValue() > -1) {
-        return prefs.themeCornerRadius.onGetValue()
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        return prefs.profileWindowCornerRadius.getValue()
     }
-    return QuickStepContract.getWindowCornerRadius(context.resources)
+    return context.resources.getDimension(R.dimen.enforced_rounded_corner_max_radius)
 }
-
+/*
 fun supportsRoundedCornersOnWindows(context: Context): Boolean {
     val pref = Utilities.getOmegaPrefs(context)
     if (!Utilities.ATLEAST_R || pref.themeCornerRadius.onGetValue() > -1) {

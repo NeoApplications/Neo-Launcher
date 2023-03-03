@@ -22,10 +22,12 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NLPrefs
@@ -38,6 +40,13 @@ fun Context.getLauncherOrNull(): Launcher? {
         null
     }
 }
+
+fun Context.getIcon(): Drawable = packageManager.getApplicationIcon(applicationInfo)
+
+val Context.hasStoragePermission
+    get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
+        this, android.Manifest.permission.READ_EXTERNAL_STORAGE
+    )
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }

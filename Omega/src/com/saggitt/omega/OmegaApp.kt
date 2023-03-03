@@ -25,6 +25,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
 
@@ -36,6 +37,7 @@ class OmegaApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        BlurWallpaperProvider.getInstance(this).updateAsync()
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -49,6 +51,11 @@ class OmegaApp : Application() {
                 e.printStackTrace()
             }
         }
+    }
+
+    fun onLauncherAppStateCreated() {
+        registerActivityLifecycleCallbacks(activityHandler)
+        BlurWallpaperProvider.getInstance(this)
     }
 
     fun performGlobalAction(action: Int): Boolean {

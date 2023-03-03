@@ -63,4 +63,5 @@
     <dimen name="qsb_radius_squircle">16dp</dimen>
 
     <dimen name="theme_icon_size">24dp</dimen>
+    <dimen name="all_apps_scrim_blur">4dp</dimen>
 </resources>

@@ -27,6 +27,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
+import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config

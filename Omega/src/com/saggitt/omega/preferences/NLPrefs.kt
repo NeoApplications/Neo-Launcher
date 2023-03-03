@@ -603,7 +603,6 @@ class NLPrefs private constructor(private val context: Context) {
         navRoute = Routes.COLOR_BG_DRAWER,
     )
 
-    // TODO AlphaPref?
     val drawerBackgroundOpacity = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_OPACITY,

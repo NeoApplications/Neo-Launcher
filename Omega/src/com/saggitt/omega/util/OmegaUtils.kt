@@ -53,6 +53,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
+import kotlin.math.ceil
 import kotlin.reflect.KProperty
 
 @Suppress("UNCHECKED_CAST")
@@ -107,6 +108,12 @@ fun runOnThread(handler: Handler, r: () -> Unit) {
     } else {
         handler.post(r)
     }
+}
+
+inline fun <T> Iterable<T>.safeForEach(action: (T) -> Unit) {
+    val tmp = ArrayList<T>()
+    tmp.addAll(this)
+    for (element in tmp) action(element)
 }
 
 fun formatTime(calendar: Calendar, context: Context? = null): String {
@@ -209,6 +216,8 @@ fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, option
         Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
     }
 }
+
+fun Float.ceilToInt() = ceil(this).toInt()
 
 fun dpToPx(size: Float): Float {
     return TypedValue.applyDimension(

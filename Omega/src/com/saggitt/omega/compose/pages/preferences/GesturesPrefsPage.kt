@@ -41,6 +41,8 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
+import com.saggitt.omega.compose.pages.EditDashPage
+import com.saggitt.omega.compose.pages.gesturesPageGraph
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.IntSelectionPref
