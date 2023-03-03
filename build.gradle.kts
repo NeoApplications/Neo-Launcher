@@ -8,6 +8,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.4.2")
     }
 }
+val vKotlin = "1.8.10"
 val vCompose = "1.3.1"
 val vComposeCompiler = "1.4.0-alpha02"
 val vAccompanist = "0.27.0"
@@ -15,10 +16,10 @@ val vRoom = "2.5.0-beta01"
 
 plugins {
     id("com.android.application").version("7.4.2")
-    kotlin("android").version("1.7.21")
-    kotlin("plugin.parcelize").version("1.7.21")
-    kotlin("plugin.serialization").version("1.7.21")
-    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+    kotlin("android").version("1.8.10")
+    kotlin("plugin.parcelize").version("1.8.10")
+    kotlin("plugin.serialization").version("1.8.10")
+    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
     id("com.google.protobuf").version("0.9.1")
 }
 
@@ -113,13 +114,13 @@ android {
         kotlinCompilerExtensionVersion = vComposeCompiler
     }
 
-    kotlinOptions {
-        jvmTarget = compileOptions.sourceCompatibility.toString()
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    kotlinOptions {
+        jvmTarget = compileOptions.sourceCompatibility.toString()
     }
 
     packagingOptions {
@@ -201,7 +202,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
-    implementation(kotlin("stdlib", "1.7.21"))
+    implementation(kotlin("stdlib", vKotlin))
 
     //UI
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
