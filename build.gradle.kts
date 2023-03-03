@@ -5,7 +5,7 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.0")
+        classpath("com.android.tools.build:gradle:7.4.2")
     }
 }
 val vCompose = "1.3.1"
@@ -14,7 +14,7 @@ val vAccompanist = "0.27.0"
 val vRoom = "2.5.0-beta01"
 
 plugins {
-    id("com.android.application").version("7.4.0")
+    id("com.android.application").version("7.4.2")
     kotlin("android").version("1.7.21")
     kotlin("plugin.parcelize").version("1.7.21")
     kotlin("plugin.serialization").version("1.7.21")
