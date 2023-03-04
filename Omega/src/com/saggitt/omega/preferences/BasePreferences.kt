@@ -331,6 +331,24 @@ open class DialogPref(
     }
 }
 
+open class StringPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<String>,
+    val defaultValue: String = "",
+    val onClick: (() -> Unit)? = null,
+    onChange: () -> Unit = {}
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<String> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: String) {
+        dataStore.edit { it[key] = value }
+    }
+}
+
 abstract class PrefDelegate<T : Any>(
     @StringRes var titleId: Int,
     @StringRes var summaryId: Int = -1,

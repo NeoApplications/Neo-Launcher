@@ -978,6 +978,13 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     //Dev options
+    var restartLauncher = StringPref(
+        titleId = R.string.title__restart_launcher,
+        summaryId = R.string.summary__dev_restart,
+        dataStore = dataStore,
+        key = PrefKey.KILL_LAUNCHER,
+        onClick = { Utilities.killLauncher() }
+    )
     var developerOptionsEnabled = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.SHOW_DEV_OPTIONS,
