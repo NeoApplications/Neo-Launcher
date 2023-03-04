@@ -32,14 +32,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.util.addIf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,9 +80,6 @@ fun ViewWithActionBar(
         },
         floatingActionButton = floatingActionButton,
         content = content,
-        bottomBar = bottomBar,
-        modifier = Modifier.addIf(prefs.profileBlurEnable.getValue()) {
-            blur(prefs.profileBlurRadius.getValue().dp)
-        }
+        bottomBar = bottomBar
     )
 }
