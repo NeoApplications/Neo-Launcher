@@ -86,6 +86,7 @@ fun ProfilePrefsPage() {
         prefs.profileBlurEnable,
         prefs.profileBlurRadius,
         prefs.profileWindowCornerRadius,
+        //prefs.profileAllowRotation, TODO: Add compatiblity for sharedPreferences
         prefs.profileShowTopShadow
     )
 
@@ -139,11 +140,6 @@ fun ProfilePrefsPage() {
                             pref = dialogPref as DialogPref,
                             openDialogCustom = openDialog
                         )
-
-                        /*is GridSize -> GridSizePrefDialogUI(
-                            pref = dialogPref as GridSize,
-                            openDialogCustom = openDialog
-                        )*/
                     }
                 }
             }

@@ -102,13 +102,6 @@ class NLPrefs private constructor(private val context: Context) {
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
-    val profileAllowRotation = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ROTATION_ALLOW,
-        titleId = R.string.allow_rotation_title,
-        summaryId = R.string.allow_rotation_desc,
-        defaultValue = false,
-    )
 
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
@@ -155,37 +148,37 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     var profileThemedIcons = BooleanPref(
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
         dataStore = dataStore,
         key = PrefKey.PROFILE_THEMED_ICONS,
-        titleId = R.string.title__theme_blur,
-        summaryId = R.string.summary__theme_blur,
-        defaultValue = Utilities.ATLEAST_T,
+        defaultValue = Utilities.ATLEAST_T
     )
     var profileTransparentBgIcons = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,
-        defaultValue = Utilities.ATLEAST_T,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
+        defaultValue = Utilities.ATLEAST_T
     )
 
     var profileBlurEnable = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_BLUR_ENABLED,
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,
-        defaultValue = false,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_BLUR_ENABLED,
+        defaultValue = false
     )
 
     var profileBlurRadius = FloatPref(
-        dataStore = dataStore,
         key = PrefKey.PROFILE_BLUR_RADIUS,
         titleId = R.string.title__theme_blur_radius,
+        dataStore = dataStore,
         defaultValue = 0.75f,
         maxValue = 1.5f,
         minValue = 0.1f,
         steps = 27,
-        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var profileIconColoredBackground = BooleanPref(
@@ -221,9 +214,17 @@ class NLPrefs private constructor(private val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
+    )
+
+    val profileAllowRotation = BooleanPref(
+        titleId = R.string.allow_rotation_title,
+        summaryId = R.string.allow_rotation_desc,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ROTATION_ALLOW,
+        defaultValue = false
     )
 
     val profileShowTopShadow = BooleanPref(
