@@ -143,7 +143,10 @@ class Config(val context: Context) {
             val prefs = Utilities.getOmegaPrefs(context)
             return listOf(
                 prefs.gestureDoubleTap,
-                prefs.gestureLongPress
+                prefs.gestureLongPress,
+                prefs.gestureSwipeDown,
+                prefs.gestureSwipeUp,
+                prefs.gestureDockSwipeUp
             )
         }
 

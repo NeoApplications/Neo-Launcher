@@ -60,6 +60,7 @@ import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.SQLiteCacheHelper;
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
@@ -192,7 +193,8 @@ public abstract class BaseIconCache {
     private Drawable getFullResIcon(@Nullable final Resources resources, final int iconId) {
         if (resources != null && iconId != 0) {
             try {
-                return resources.getDrawableForDensity(iconId, mIconDpi);
+                Drawable icon = resources.getDrawableForDensity(iconId, mIconDpi);
+                return CustomAdaptiveIconDrawable.wrap(icon);
             } catch (Resources.NotFoundException e) {
             }
         }

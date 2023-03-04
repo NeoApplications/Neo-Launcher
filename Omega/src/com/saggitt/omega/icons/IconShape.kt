@@ -18,16 +18,18 @@
 
 package com.saggitt.omega.icons
 
+import android.content.Context
 import android.graphics.Path
 import android.graphics.PointF
+import android.util.Log
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 open class IconShape(
-    val topLeft: Corner,
-    val topRight: Corner,
-    val bottomLeft: Corner,
-    val bottomRight: Corner
+    private val topLeft: Corner,
+    private val topRight: Corner,
+    private val bottomLeft: Corner,
+    private val bottomRight: Corner
 ) {
 
     constructor(
@@ -230,6 +232,21 @@ open class IconShape(
         override fun toString() = "square"
     }
 
+    object SharpSquare : IconShape(
+        IconCornerShape.arc,
+        IconCornerShape.arc,
+        IconCornerShape.arc,
+        IconCornerShape.arc,
+        0f, 0f, 0f, 0f
+    ) {
+
+        override val windowTransitionRadius = 0f
+
+        override fun toString(): String {
+            return "sharpSquare"
+        }
+    }
+
     object RoundedSquare : IconShape(
         IconCornerShape.arc,
         IconCornerShape.arc,
@@ -339,30 +356,29 @@ open class IconShape(
 
     companion object {
 
-        fun fromString(value: String): IconShape? {
-            return when (value) {
-                "", "system" -> try {
-                    IconShapeManager.INSTANCE.noCreate.systemIconShape
-                } catch (e: Exception) {
-                    Circle
-                }
-
-                "circle" -> Circle
-                "square" -> Square
-                "rounded" -> RoundedSquare
-                "squircle" -> Squircle
-                "sammy" -> Sammy
-                "teardrop" -> Teardrop
-                "cylinder" -> Cylinder
-                "cupertino" -> Cupertino
-                "octagon" -> Octagon
-                "egg" -> Egg
-                else -> try {
-                    parseCustomShape(value)
-                } catch (ex: Exception) {
-                    null
+        fun fromString(context: Context, value: String): IconShape {
+            if (value == "system") {
+                runCatching {
+                    return IconShapeManager.getSystemIconShape(context = context)
                 }
             }
+            return fromString(value = value)
+        }
+
+        private fun fromString(value: String): IconShape = when (value) {
+            "circle" -> Circle
+            "square" -> Square
+            "sharpSquare" -> SharpSquare
+            "roundedSquare" -> RoundedSquare
+            "squircle" -> Squircle
+            "sammy" -> Sammy
+            "teardrop" -> Teardrop
+            "cylinder" -> Cylinder
+            "cupertino" -> Cupertino
+            "octagon" -> Octagon
+            "egg" -> Egg
+            "" -> Circle
+            else -> runCatching { parseCustomShape(value) }.getOrDefault(Circle)
         }
 
         private fun parseCustomShape(value: String): IconShape {
@@ -375,6 +391,16 @@ open class IconShape(
                 Corner.fromString(parts[3]),
                 Corner.fromString(parts[4])
             )
+        }
+
+        fun isCustomShape(iconShape: IconShape): Boolean {
+            return try {
+                parseCustomShape(iconShape.toString())
+                true
+            } catch (e: Exception) {
+                Log.e("IconShape", "Error creating shape $iconShape", e)
+                false
+            }
         }
     }
 }

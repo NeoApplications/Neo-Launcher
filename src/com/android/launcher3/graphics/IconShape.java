@@ -51,6 +51,7 @@ import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.views.ClipPathView;
+import com.saggitt.omega.preferences.NLPrefs;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -391,17 +392,19 @@ public abstract class IconShape {
      * Initializes the shape which is closest to the {@link AdaptiveIconDrawable}
      */
     public static void init(Context context) {
-        sInstance = new AdaptiveIconShape(context);
-        final int size = 200;
+        if (Utilities.ATLEAST_OREO) {
+            sInstance = new AdaptiveIconShape(context);
+            final int size = 200;
 
-        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
-                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
-        drawable.setBounds(0, 0, size, size);
+            AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
+                    new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
+            drawable.setBounds(0, 0, size, size);
 
-        // Initialize shape properties
-        sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
-        return;
-        //pickBestShape(context);
+            // Initialize shape properties
+            sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
+            return;
+        }
+        pickBestShape(context);
     }
 
     private static IconShape getShapeDefinition(String type, float radius) {
@@ -457,7 +460,7 @@ public abstract class IconShape {
 
         Region full = new Region(0, 0, size, size);
         Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);
         iconR.setPath(drawable.getIconMask(), full);
@@ -494,8 +497,9 @@ public abstract class IconShape {
         private final com.saggitt.omega.icons.IconShape mIconShape;
 
         public AdaptiveIconShape(Context context) {
+            String iconShape = NLPrefs.getInstance(context).getProfileIconShape().getValue();
             mIconShape = com.saggitt.omega.icons.IconShape.Companion
-                    .fromString(Utilities.getOmegaPrefs(context).getProfileIconShape().getValue());
+                    .fromString(context, iconShape);
             mAttrs = new SparseArray<>();
             int qsbEdgeRadius = mIconShape.getQsbEdgeRadius();
             if (qsbEdgeRadius != 0) {

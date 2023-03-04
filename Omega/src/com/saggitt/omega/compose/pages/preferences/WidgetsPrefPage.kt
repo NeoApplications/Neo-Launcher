@@ -56,6 +56,7 @@ import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.prefs
 
 @Composable
@@ -97,7 +98,7 @@ fun WidgetsPrefsPage() {
             *listOfNotNull(
                 prefs.notificationDots,
                 prefs.notificationCustomColor,
-                if (prefs.notificationCustomColor.getValue()) {
+                if (prefs.notificationCustomColor.get().firstBlocking()) {
                     prefs.notificationBackground
                 } else {
                     null
