@@ -37,7 +37,7 @@
     <color name="text_color_secondary_dark">@android:color/system_neutral2_200</color>
     <color name="text_color_tertiary_dark">@android:color/system_neutral2_400</color>
 
-    <color name="wallpaper_popup_scrim">@android:color/system_neutral1_900</color>
+    <color name="wallpaper_popup_scrim">@color/colorAccent</color>
 
     <color name="folder_dot_color">@android:color/system_accent3_100</color>
     <color name="folder_pagination_color_light">@android:color/system_accent1_600</color>

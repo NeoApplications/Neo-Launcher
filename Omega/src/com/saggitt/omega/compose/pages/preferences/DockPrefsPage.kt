@@ -66,7 +66,7 @@ fun DockPrefsPage() {
 
     OmegaAppTheme {
         ViewWithActionBar(
-            title = stringResource(R.string.title__general_desktop)
+            title = stringResource(R.string.title__general_dock)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
