@@ -143,7 +143,7 @@ public class DeviceProfile {
     // In portrait: size = height, in landscape: size = width
     public int hotseatBarSizePx;
     public int hotseatBarTopPaddingPx;
-    public final int hotseatBarBottomPaddingPx;
+    public int hotseatBarBottomPaddingPx;
     public int springLoadedHotseatBarTopMarginPx;
     // Start is the side next to the nav bar, end is the side next to the workspace
     public final int hotseatBarSidePaddingStartPx;
@@ -428,6 +428,7 @@ public class DeviceProfile {
                         R.dimen.cell_layout_padding);
         cellLayoutPaddingPx = new Rect(cellLayoutPadding, cellLayoutPadding, cellLayoutPadding,
                 cellLayoutPadding);
+        updateHotseatScale(res);
         updateWorkspacePadding();
         // Hotseat and QSB width depends on updated cellSize and workspace padding
         hotseatBorderSpace = calculateHotseatBorderSpace();
@@ -886,6 +887,32 @@ public class DeviceProfile {
         return new Point(workspacePadding.left + workspacePadding.right,
                 workspacePadding.top + workspacePadding.bottom);
     }
+
+    private void updateHotseatScale(Resources res) {
+        float targetDockScale = prefs.getDockScale().getValue();
+
+        int previousDockSize = hotseatBarSizePx;
+        int previousDockBottomPadding = hotseatBarBottomPaddingPx;
+        if (prefs.getDockHide().getValue()) {
+            hotseatBarSizePx = 0;
+            updateAvailableDimensions(res);
+        } else if (targetDockScale > 0f && !isVerticalBarLayout()) {
+            int extraSpace = (int) (targetDockScale * previousDockSize - hotseatBarSizePx);
+            if (extraSpace != 0) {
+                hotseatBarSizePx += extraSpace;
+
+                int dockTopSpace = workspacePageIndicatorHeight - mWorkspacePageIndicatorOverlapWorkspace;
+                int dockBottomSpace =
+                        Math.max(hotseatBarBottomPaddingPx - previousDockBottomPadding, dockTopSpace);
+                int dockVerticalSpace = dockTopSpace + dockBottomSpace;
+
+                hotseatBarBottomPaddingPx += extraSpace * ((float) dockBottomSpace / dockVerticalSpace);
+
+                updateAvailableDimensions(res);
+            }
+        }
+    }
+
     /**
      * Updates {@link #workspacePadding} as a result of any internal value change to reflect the
      * new workspace padding
