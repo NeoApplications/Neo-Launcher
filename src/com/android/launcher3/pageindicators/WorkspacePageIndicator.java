@@ -121,7 +121,8 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         mLinePaint.setAlpha(0);
 
         mLauncher = Launcher.getLauncher(context);
-        mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
+        boolean show = Utilities.getOmegaPrefs(getContext()).getDockShowPageIndicator().getValue();
+        mLineHeight = show ? res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height) : 0;
 
         boolean darkText = Themes.getAttrBoolean(mLauncher, R.attr.isWorkspaceDarkText);
         mActiveAlpha = darkText ? BLACK_ALPHA : WHITE_ALPHA;
