@@ -28,8 +28,14 @@ import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenOverlayGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenWidgetsGestureHandler
+import com.saggitt.omega.gestures.handlers.PressBackGestureHandler
 import com.saggitt.omega.gestures.handlers.SleepGestureHandler
+import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -117,15 +123,15 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
         fun getGestureHandlers(context: Context, isSwipeUp: Boolean, hasBlank: Boolean) =
             mutableListOf(
-                /*PressBackGestureHandler(context, null),
+                PressBackGestureHandler(context, null),
                 SleepGestureHandler(context, null),
-                OpenDashGestureHandler(context, null),
+                //OpenDashGestureHandler(context, null),
                 OpenDrawerGestureHandler(context, null),
-                OpenWidgetsGestureHandler(context, null),*/
+                OpenWidgetsGestureHandler(context, null),
                 NotificationsOpenGestureHandler(context, null),
-                /*OpenOverlayGestureHandler(context, null),
+                OpenOverlayGestureHandler(context, null),
                 OpenOverviewGestureHandler(context, null),
-                StartGlobalSearchGestureHandler(context, null),*/
+                StartGlobalSearchGestureHandler(context, null),
                 OpenSettingsGestureHandler(context, null)
             ).apply {
                 if (hasBlank) {

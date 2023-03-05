@@ -35,10 +35,12 @@ import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.gestures.ui.SelectAppActivity
 import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
 import org.json.JSONObject
 
@@ -250,6 +252,26 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
 }
 
 @Keep
+class OpenWidgetsGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName: String = context.getString(R.string.action_open_widgets)
+    override val displayNameRes: Int = R.string.action_open_widgets
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_widget)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_widget
+        )
+    }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        WidgetsFullSheet.show(controller.launcher, true)
+    }
+}
+
+@Keep
 class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
@@ -270,6 +292,30 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
                 Log.e("LauncherGestureHandler", "Failed to start global search", e)
             }
         }
+    }
+}
+
+@Keep
+class OpenOverlayGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName: String = context.getString(R.string.action_overlay)
+    override val displayNameRes: Int = R.string.action_overlay
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_super_g_color)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_super_g_color
+        )
+    }
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        controller.launcher.startActivity(
+            Intent(Intent.ACTION_MAIN).setClassName(
+                Config.GOOGLE_QSB,
+                "${Config.GOOGLE_QSB}.SearchActivity"
+            )
+        )
     }
 }
 

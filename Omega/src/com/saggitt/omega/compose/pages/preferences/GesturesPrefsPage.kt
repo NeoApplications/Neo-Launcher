@@ -70,8 +70,7 @@ fun GesturesPrefsPage() {
         prefs.gestureSwipeUp,
         prefs.gestureDockSwipeUp,
         prefs.gestureHomePress,
-        /*prefs.gestureBackPress,
-        prefs.gestureLaunchAssistant*/
+        prefs.gestureBackPress
     )
 
     gesturesPrefs.forEach {

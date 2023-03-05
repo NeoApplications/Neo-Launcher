@@ -151,7 +151,6 @@ object PrefKey {
     val GESTURES_SWIPE_UP = stringPreferencesKey("gesture_swipe_up")
     val GESTURES_SWIPE_DOWN = stringPreferencesKey("gesture_swipe_down")
     val GESTURES_SWIPE_UP_DOCK = stringPreferencesKey("gesture_swipe_up_on_dock")
-    val GESTURES_ASSISTANT = stringPreferencesKey("gesture_launch_assistant")
 
     // Dash
     val DASH_LINE_SIZE = intPreferencesKey("dash_line_size")

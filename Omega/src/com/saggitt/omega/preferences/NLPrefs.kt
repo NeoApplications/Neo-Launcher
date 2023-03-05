@@ -42,6 +42,7 @@ import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
+import com.saggitt.omega.gestures.handlers.PressBackGestureHandler
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
@@ -972,6 +973,15 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = OpenDrawerGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP_DOCK.name}"
     )
+
+    var gestureBackPress = GesturePref(
+        titleId = R.string.gesture_press_back,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_BACK_PRESS,
+        defaultValue = PressBackGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_BACK_PRESS.name}"
+    )
+
     var dashLineSize = IntPref(
         dataStore = dataStore,
         key = PrefKey.DASH_LINE_SIZE,

@@ -146,7 +146,9 @@ class Config(val context: Context) {
                 prefs.gestureLongPress,
                 prefs.gestureSwipeDown,
                 prefs.gestureSwipeUp,
-                prefs.gestureDockSwipeUp
+                prefs.gestureDockSwipeUp,
+                prefs.gestureHomePress,
+                prefs.gestureBackPress,
             )
         }
 
