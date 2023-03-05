@@ -44,6 +44,7 @@ import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -208,12 +209,16 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
+    private final NLPrefs prefs;
+
     /**
      * TODO: Once we fully migrate to staged split, remove "isMultiWindowMode"
      */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
                   boolean isMultiWindowMode, boolean transposeLayoutWithOrientation,
                   boolean useTwoPanels, boolean isGestureMode) {
+        prefs = Utilities.getOmegaPrefs(context);
+
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -476,7 +481,9 @@ public class DeviceProfile {
     private void updateHotseatIconSize(int hotseatIconSizePx) {
         // Ensure there is enough space for folder icons, which have a slightly larger radius.
         hotseatCellHeightPx = (int) Math.ceil(hotseatIconSizePx * ICON_OVERLAP_FACTOR);
-        if (isVerticalBarLayout()) {
+        if (prefs.getDockHide().getValue()) {
+            hotseatBarSizePx = 0;
+        } else if (isVerticalBarLayout()) {
             hotseatBarSizePx = hotseatIconSizePx + hotseatBarSidePaddingStartPx
                     + hotseatBarSidePaddingEndPx;
         } else {
