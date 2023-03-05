@@ -44,6 +44,7 @@ import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -142,7 +143,7 @@ public class DeviceProfile {
     // In portrait: size = height, in landscape: size = width
     public int hotseatBarSizePx;
     public int hotseatBarTopPaddingPx;
-    public final int hotseatBarBottomPaddingPx;
+    public int hotseatBarBottomPaddingPx;
     public int springLoadedHotseatBarTopMarginPx;
     // Start is the side next to the nav bar, end is the side next to the workspace
     public final int hotseatBarSidePaddingStartPx;
@@ -208,12 +209,16 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
+    private final NLPrefs prefs;
+
     /**
      * TODO: Once we fully migrate to staged split, remove "isMultiWindowMode"
      */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
                   boolean isMultiWindowMode, boolean transposeLayoutWithOrientation,
                   boolean useTwoPanels, boolean isGestureMode) {
+        prefs = Utilities.getOmegaPrefs(context);
+
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -423,6 +428,7 @@ public class DeviceProfile {
                         R.dimen.cell_layout_padding);
         cellLayoutPaddingPx = new Rect(cellLayoutPadding, cellLayoutPadding, cellLayoutPadding,
                 cellLayoutPadding);
+        updateHotseatScale(res);
         updateWorkspacePadding();
         // Hotseat and QSB width depends on updated cellSize and workspace padding
         hotseatBorderSpace = calculateHotseatBorderSpace();
@@ -476,7 +482,9 @@ public class DeviceProfile {
     private void updateHotseatIconSize(int hotseatIconSizePx) {
         // Ensure there is enough space for folder icons, which have a slightly larger radius.
         hotseatCellHeightPx = (int) Math.ceil(hotseatIconSizePx * ICON_OVERLAP_FACTOR);
-        if (isVerticalBarLayout()) {
+        if (prefs.getDockHide().getValue()) {
+            hotseatBarSizePx = 0;
+        } else if (isVerticalBarLayout()) {
             hotseatBarSizePx = hotseatIconSizePx + hotseatBarSidePaddingStartPx
                     + hotseatBarSidePaddingEndPx;
         } else {
@@ -612,6 +620,8 @@ public class DeviceProfile {
             updateIconSize(scale, res);
             extraHeight = Math.max(0, maxHeight - getCellLayoutHeightSpecification());
         }
+        if (prefs.getDrawerIconScaleEnforce().getValue())
+            updateIconSize(prefs.getDrawerIconScale().getValue(), res); // TODO fix applying to all icons
         updateAvailableFolderCellDimensions(res);
         return Math.round(extraHeight);
     }
@@ -879,6 +889,32 @@ public class DeviceProfile {
         return new Point(workspacePadding.left + workspacePadding.right,
                 workspacePadding.top + workspacePadding.bottom);
     }
+
+    private void updateHotseatScale(Resources res) {
+        float targetDockScale = prefs.getDockScale().getValue();
+
+        int previousDockSize = hotseatBarSizePx;
+        int previousDockBottomPadding = hotseatBarBottomPaddingPx;
+        if (prefs.getDockHide().getValue()) {
+            hotseatBarSizePx = 0;
+            updateAvailableDimensions(res);
+        } else if (targetDockScale > 0f && !isVerticalBarLayout()) {
+            int extraSpace = (int) (targetDockScale * previousDockSize - hotseatBarSizePx);
+            if (extraSpace != 0) {
+                hotseatBarSizePx += extraSpace;
+
+                int dockTopSpace = workspacePageIndicatorHeight - mWorkspacePageIndicatorOverlapWorkspace;
+                int dockBottomSpace =
+                        Math.max(hotseatBarBottomPaddingPx - previousDockBottomPadding, dockTopSpace);
+                int dockVerticalSpace = dockTopSpace + dockBottomSpace;
+
+                hotseatBarBottomPaddingPx += extraSpace * ((float) dockBottomSpace / dockVerticalSpace);
+
+                updateAvailableDimensions(res);
+            }
+        }
+    }
+
     /**
      * Updates {@link #workspacePadding} as a result of any internal value change to reflect the
      * new workspace padding

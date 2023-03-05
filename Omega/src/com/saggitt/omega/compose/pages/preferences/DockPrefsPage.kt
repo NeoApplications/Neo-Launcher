@@ -61,7 +61,11 @@ fun DockPrefsPage() {
     }
 
     val dockPrefs = listOf(
+        prefs.dockHide,
+        prefs.dockScale,
+        prefs.dockCustomBackground,
         prefs.dockBackgroundColor,
+        prefs.dockShowPageIndicator,
     )
 
     OmegaAppTheme {

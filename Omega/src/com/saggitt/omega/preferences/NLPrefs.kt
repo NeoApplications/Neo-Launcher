@@ -215,7 +215,7 @@ class NLPrefs private constructor(private val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -247,6 +247,13 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_ICON_ADD_INSTALLED,
         titleId = R.string.auto_add_shortcuts_label,
         summaryId = R.string.auto_add_shortcuts_description,
+        defaultValue = false,
+    )
+
+    var desktopIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
         defaultValue = false,
     )
 
@@ -424,6 +431,13 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
+    var dockIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
+        defaultValue = false,
+    )
+
     val dockIconScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_ICON_SCALE,
@@ -459,17 +473,6 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title_dock_background_color,
         defaultValue = (0xff101010).toInt(),
         navRoute = Routes.COLOR_BG_DOCK,
-    )
-
-    // TODO AlphaPref?
-    var dockBackgroundOpacity = FloatPref(
-        dataStore = dataStore,
-        key = PrefKey.DOCK_BG_OPACITY,
-        titleId = R.string.title_opacity,
-        defaultValue = 0.9f,
-        minValue = 0f,
-        maxValue = 1f,
-        steps = 100,
     )
 
     val dockShowPageIndicator = BooleanPref(
@@ -523,6 +526,13 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
         titleId = R.string.enable_protected_apps,
         defaultValue = false
+    )
+
+    var drawerIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
+        defaultValue = false,
     )
 
     var drawerIconScale = FloatPref(
