@@ -37,7 +37,6 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
-import com.saggitt.omega.compose.navigation.BlankScreen
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
@@ -133,7 +132,7 @@ fun NavGraphBuilder.mainPrefsGraph(route: String) {
         widgetsPrefsGraph(route = subRoute(Routes.PREFS_WIDGETS))
         preferenceGraph(route = subRoute(Routes.PREFS_SEARCH), { SearchPrefsPage() })
         preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefsPage() })
-        preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() })
+        //preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() })
         preferenceGraph(route = subRoute(Routes.PREFS_DEV), { DevPrefsPage() })
         gesturesPrefsGraph(route = subRoute(Routes.PREFS_GESTURES))
         aboutPrefsGraph(route = subRoute(Routes.ABOUT))

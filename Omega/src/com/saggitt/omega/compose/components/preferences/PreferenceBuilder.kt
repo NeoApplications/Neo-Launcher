@@ -27,6 +27,7 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
+import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
 
@@ -37,7 +38,8 @@ val PreferenceBuilder =
                 pref = pref,
                 index = index,
                 groupSize = size
-            ) { onDialogPref(pref) }/*
+            ) { onDialogPref(pref) }
+            /*
             is GridSize2D -> GridSize2DPreference(
                 pref = pref,
                 index = index,
@@ -57,10 +59,10 @@ val PreferenceBuilder =
 
             is ColorIntPref ->
                 ColorIntPreference(pref = pref, index = index, groupSize = size)
-            /*
-            is StringSetPref ->
-                StringSetPreference(pref = pref, index = index, groupSize = size)
-            */
+
+            is StringPref ->
+                StringPreference(pref = pref, index = index, groupSize = size)
+
             is FloatPref ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)
             /*

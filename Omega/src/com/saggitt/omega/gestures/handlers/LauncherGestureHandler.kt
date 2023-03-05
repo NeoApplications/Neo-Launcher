@@ -28,17 +28,50 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.Keep
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.gestures.ui.SelectAppActivity
+import com.saggitt.omega.search.SearchProviderController
+import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
 import org.json.JSONObject
+
+@Keep
+open class OpenDrawerGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config),
+    VerticalSwipeGestureHandler, StateChangeGestureHandler {
+
+    override val displayName: String = context.getString(R.string.action_open_drawer)
+    override val displayNameRes: Int = R.string.action_open_drawer
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_apps)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_apps
+        )
+    }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        controller.launcher.stateManager.goToState(LauncherState.ALL_APPS)
+    }
+
+    open fun getOnCompleteRunnable(controller: GestureController): Runnable? {
+        return Runnable { }
+    }
+
+    override fun getTargetState(): LauncherState {
+        return LauncherState.ALL_APPS
+    }
+}
 
 @Keep
 class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
@@ -183,13 +216,13 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
     }
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        /*if (view == null) {
+        if (view == null) {
             val down = controller.touchDownPoint
             controller.launcher.prepareDummyView(down.x.toInt(), down.y.toInt()) {
                 onGestureTrigger(controller, controller.launcher.dummyView)
             }
             return
-        }*/
+        }
 
         val opts = view.let { controller.launcher.getActivityLaunchOptionsAsBundle(it) }
 
@@ -216,4 +249,82 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             }
         }
     }
+}
+
+@Keep
+class OpenWidgetsGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName: String = context.getString(R.string.action_open_widgets)
+    override val displayNameRes: Int = R.string.action_open_widgets
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_widget)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_widget
+        )
+    }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        WidgetsFullSheet.show(controller.launcher, true)
+    }
+}
+
+@Keep
+class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    private val searchProvider get() = SearchProviderController.getInstance(context).searchProvider
+    override val displayName: String = context.getString(R.string.action_global_search)
+    override val displayNameRes: Int = R.string.action_global_search
+    override val icon: Drawable? by lazy { searchProvider.icon }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        searchProvider.startSearch {
+            try {
+                if (context !is AppCompatActivity) {
+                    it.flags = it.flags or Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(it)
+            } catch (e: Exception) {
+                Log.e("LauncherGestureHandler", "Failed to start global search", e)
+            }
+        }
+    }
+}
+
+@Keep
+class OpenOverlayGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName: String = context.getString(R.string.action_overlay)
+    override val displayNameRes: Int = R.string.action_overlay
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_super_g_color)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.ic_super_g_color
+        )
+    }
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        controller.launcher.startActivity(
+            Intent(Intent.ACTION_MAIN).setClassName(
+                Config.GOOGLE_QSB,
+                "${Config.GOOGLE_QSB}.SearchActivity"
+            )
+        )
+    }
+}
+
+interface VerticalSwipeGestureHandler {
+    fun onDragStart(start: Boolean) {}
+    fun onDrag(displacement: Float, velocity: Float) {}
+    fun onDragEnd(velocity: Float, fling: Boolean) {}
+}
+
+interface StateChangeGestureHandler {
+    fun getTargetState(): LauncherState
 }

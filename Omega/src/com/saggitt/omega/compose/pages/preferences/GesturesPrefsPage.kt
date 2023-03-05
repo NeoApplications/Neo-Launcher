@@ -66,14 +66,12 @@ fun GesturesPrefsPage() {
     val gesturesPrefs = listOf(
         prefs.gestureDoubleTap,
         prefs.gestureLongPress,
-        /*prefs.gestureSwipeDown,
+        prefs.gestureSwipeDown,
         prefs.gestureSwipeUp,
         prefs.gestureDockSwipeUp,
         prefs.gestureHomePress,
-        prefs.gestureBackPress,
-        prefs.gestureLaunchAssistant*/
+        prefs.gestureBackPress
     )
-    //Set summary for each preference
 
     gesturesPrefs.forEach {
         val handler =

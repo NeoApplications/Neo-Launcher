@@ -38,12 +38,16 @@ import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.gestures.BlankGestureHandler
+import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
-import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
+import com.saggitt.omega.gestures.handlers.PressBackGestureHandler
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.omegaApp
+import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
 import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
@@ -51,17 +55,24 @@ import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
 import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
@@ -92,13 +103,6 @@ class NLPrefs private constructor(private val context: Context) {
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
-    val profileAllowRotation = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ROTATION_ALLOW,
-        titleId = R.string.allow_rotation_title,
-        summaryId = R.string.allow_rotation_desc,
-        defaultValue = false,
-    )
 
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
@@ -139,47 +143,43 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__theme_icon_shape,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE,
-        defaultValue = IconShape.Circle.toString(),
+        defaultValue = "system",
         navRoute = Routes.ICON_SHAPE,
-        onChange = {
-            initializeIconShape()
-            com.android.launcher3.graphics.IconShape.init(context)
-            LauncherAppState.getInstance(context).refreshAndReloadLauncher()
-        }
+        onChange = { }
     )
 
     var profileThemedIcons = BooleanPref(
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
         dataStore = dataStore,
         key = PrefKey.PROFILE_THEMED_ICONS,
-        titleId = R.string.title__theme_blur,
-        summaryId = R.string.summary__theme_blur,
-        defaultValue = Utilities.ATLEAST_T,
+        defaultValue = Utilities.ATLEAST_T
     )
     var profileTransparentBgIcons = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,
-        defaultValue = Utilities.ATLEAST_T,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
+        defaultValue = Utilities.ATLEAST_T
     )
 
     var profileBlurEnable = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_BLUR_ENABLED,
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,
-        defaultValue = false,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_BLUR_ENABLED,
+        defaultValue = false
     )
 
     var profileBlurRadius = FloatPref(
-        dataStore = dataStore,
         key = PrefKey.PROFILE_BLUR_RADIUS,
         titleId = R.string.title__theme_blur_radius,
+        dataStore = dataStore,
         defaultValue = 0.75f,
         maxValue = 1.5f,
         minValue = 0.1f,
         steps = 27,
-        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var profileIconColoredBackground = BooleanPref(
@@ -215,9 +215,17 @@ class NLPrefs private constructor(private val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
+    )
+
+    val profileAllowRotation = BooleanPref(
+        titleId = R.string.allow_rotation_title,
+        summaryId = R.string.allow_rotation_desc,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ROTATION_ALLOW,
+        defaultValue = false
     )
 
     val profileShowTopShadow = BooleanPref(
@@ -681,13 +689,21 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     val notificationCustomColor = BooleanPref(
+        titleId = R.string.notification_custom_color,
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
-        titleId = R.string.notification_custom_color,
         defaultValue = false
     ) {
         pokeChange()
     }
+
+    val notificationBackground = ColorIntPref(
+        dataStore = dataStore,
+        key = PrefKey.NOTIFICATION_DOTS_COLOR,
+        titleId = R.string.title__notification_background,
+        defaultValue = 0xFFF32020.toInt(),
+        navRoute = Routes.COLOR_DOTS_NOTIFICATION,
+    )
 
     val smartspaceEnable = BooleanPref(
         dataStore = dataStore,
@@ -799,14 +815,6 @@ class NLPrefs private constructor(private val context: Context) {
         onChange = ::updateSmartspaceProvider
     )
 
-    val notificationBackground = ColorIntPref(
-        dataStore = dataStore,
-        key = PrefKey.NOTIFICATION_DOTS_COLOR,
-        titleId = R.string.title__notification_background,
-        defaultValue = 0xFFF32020.toInt(),
-        navRoute = Routes.COLOR_DOTS_NOTIFICATION,
-    )
-
     val notificationCountFolder = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_FOLDER_ENABLED,
@@ -827,6 +835,15 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.SEARCH_DOCK_ENABLED,
         titleId = R.string.title_all_apps_search,
         defaultValue = false,
+    )
+
+    var searchProvider = StringSelectionPref(
+        dataStore = dataStore,
+        titleId = R.string.title_search_provider,
+        key = PrefKey.SEARCH_PROVIDER,
+        defaultValue = "",
+        entries = SearchProviderController.getSearchProvidersMap(context),
+        onChange = { SearchProviderController.getInstance(context).onSearchProviderChanged() }
     )
 
     // TODO DimensionPref?
@@ -914,10 +931,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.gesture_double_tap,
         dataStore = dataStore,
         key = PrefKey.GESTURES_DOUBLE_TAP,
-        defaultValue = OpenSettingsGestureHandler(
-            context,
-            null
-        ).toString(), //OpenDashGestureHandler(context, null).toString(),
+        defaultValue = BlankGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
     )
 
@@ -927,6 +941,45 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.GESTURES_LONG_TAP,
         defaultValue = OpenOverviewGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_LONG_TAP.name}"
+    )
+
+    var gestureHomePress = GesturePref(
+        titleId = R.string.gesture_press_home,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_HOME_PRESS,
+        defaultValue = BlankGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_HOME_PRESS.name}"
+    )
+
+    var gestureSwipeDown = GesturePref(
+        titleId = R.string.title__gesture_swipe_down,
+        key = PrefKey.GESTURES_SWIPE_DOWN,
+        dataStore = dataStore,
+        defaultValue = NotificationsOpenGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_DOWN.name}"
+    )
+
+    var gestureSwipeUp = GesturePref(
+        titleId = R.string.gesture_swipe_up,
+        key = PrefKey.GESTURES_SWIPE_UP,
+        dataStore = dataStore,
+        defaultValue = NotificationsOpenGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP.name}"
+    )
+    var gestureDockSwipeUp = GesturePref(
+        titleId = R.string.gesture_dock_swipe_up,
+        key = PrefKey.GESTURES_SWIPE_UP_DOCK,
+        dataStore = dataStore,
+        defaultValue = OpenDrawerGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP_DOCK.name}"
+    )
+
+    var gestureBackPress = GesturePref(
+        titleId = R.string.gesture_press_back,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_BACK_PRESS,
+        defaultValue = PressBackGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_BACK_PRESS.name}"
     )
 
     var dashLineSize = IntPref(
@@ -940,6 +993,13 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     //Dev options
+    var restartLauncher = StringPref(
+        titleId = R.string.title__restart_launcher,
+        summaryId = R.string.summary__dev_restart,
+        dataStore = dataStore,
+        key = PrefKey.KILL_LAUNCHER,
+        onClick = { Utilities.killLauncher() }
+    )
     var developerOptionsEnabled = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.SHOW_DEV_OPTIONS,
@@ -954,15 +1014,26 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false
     )
 
+    private val scope = MainScope()
+
     init {
-        initializeIconShape()
+        val iconShape = IconShape.fromString(context, profileIconShape.get().firstBlocking())
+        initializeIconShape(iconShape)
+        profileIconShape.get()
+            .drop(1)
+            .distinctUntilChanged()
+            .onEach { shape ->
+                initializeIconShape(IconShape.fromString(context, shape))
+                L3IconShape.init(context)
+                LauncherAppState.getInstance(context).refreshAndReloadLauncher()
+            }
+            .launchIn(scope)
     }
 
-    private fun initializeIconShape() {
-        val shape = IconShape.fromString(profileIconShape.getValue())
+    private fun initializeIconShape(shape: IconShape) {
         CustomAdaptiveIconDrawable.sInitialized = true
-        CustomAdaptiveIconDrawable.sMaskId = shape?.getHashString()
-        CustomAdaptiveIconDrawable.sMask = shape?.getMaskPath()
+        CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
+        CustomAdaptiveIconDrawable.sMask = shape.getMaskPath()
     }
 
     companion object {

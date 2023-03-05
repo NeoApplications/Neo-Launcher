@@ -39,7 +39,7 @@ class IconPreferences(context: Context) {
     }*/
 
     fun getThemedIcons(): Boolean {
-        return true
+        return false
     }
 
     /*fun getThemedIcons(): Boolean {

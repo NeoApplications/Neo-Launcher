@@ -32,7 +32,6 @@ object PrefKey {
     val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
     val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")
     val PROFILE_ACCENT_COLOR = intPreferencesKey("profile_accent_color")
-    val PROFILE_GLOBAL_PRIMARY_COLOR = intPreferencesKey("profile_launcher_accent")
     val PROFILE_ICON_PACK = stringPreferencesKey("profile_icon_pack")
     val PROFILE_ICON_SHAPE = stringPreferencesKey("profile_icon_shape")
     val PROFILE_ICON_LEGACY = stringPreferencesKey("profile_override_icon_shape")
@@ -152,7 +151,6 @@ object PrefKey {
     val GESTURES_SWIPE_UP = stringPreferencesKey("gesture_swipe_up")
     val GESTURES_SWIPE_DOWN = stringPreferencesKey("gesture_swipe_down")
     val GESTURES_SWIPE_UP_DOCK = stringPreferencesKey("gesture_swipe_up_on_dock")
-    val GESTURES_ASSISTANT = stringPreferencesKey("gesture_launch_assistant")
 
     // Dash
     val DASH_LINE_SIZE = intPreferencesKey("dash_line_size")
@@ -161,5 +159,6 @@ object PrefKey {
 
     //DEVELOPER
     val SHOW_DEV_OPTIONS = booleanPreferencesKey("pref_show_dev_options")
+    val KILL_LAUNCHER = stringPreferencesKey("pref_kill_launcher")
     val DEBUG_MODE = booleanPreferencesKey("pref_debug_mode")
 }

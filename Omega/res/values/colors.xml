@@ -19,7 +19,7 @@
 
     <color name="ic_allapps_background">#fffafafa</color>
     <color name="ic_launcher_background">#F3FBFF</color>
-    <color name="ic_launcher_background_debug">#0F111A</color>
+    <color name="ic_launcher_background_debug">#FF0F111A</color>
     <color name="ic_launcher_foreground">#0988d1</color>
 
     <color name="system_accent2_50">#ffedeeff</color>

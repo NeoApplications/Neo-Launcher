@@ -32,10 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +46,6 @@ fun ViewWithActionBar(
     bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val prefs = Utilities.getOmegaPrefs(LocalContext.current)
     Scaffold(
         topBar = {
             TopAppBar(

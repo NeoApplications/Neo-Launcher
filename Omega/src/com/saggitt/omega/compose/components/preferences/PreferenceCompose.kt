@@ -71,6 +71,7 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
+import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
 import com.saggitt.omega.util.addIf
@@ -150,6 +151,27 @@ fun BasePreference(
             }
         }
     }
+}
+
+@Composable
+fun StringPreference(
+    modifier: Modifier = Modifier,
+    pref: StringPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = {
+            pref.onClick?.invoke()
+        }
+    )
 }
 
 @Composable
