@@ -29,12 +29,8 @@ import androidx.core.view.isVisible
 import com.android.launcher3.Hotseat
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
-import com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound
 import com.android.launcher3.icons.ShadowGenerator
-import com.android.launcher3.util.Themes
 import com.saggitt.omega.graphics.NinePatchDrawHelper
-import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.dpToPx
 import com.saggitt.omega.util.getWindowCornerRadius
 import com.saggitt.omega.util.prefs
@@ -43,13 +39,13 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class CustomHotseat @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) :
     Hotseat(context, attrs, defStyleAttr),
     BlurWallpaperProvider.Listener {
 
     private val launcher = Launcher.getLauncher(context)
-    private val prefs by lazy { Utilities.getOmegaPrefs(context) }
+    private val prefs by lazy { context.prefs }
 
     private var bgEnabled = prefs.dockCustomBackground.getValue()
     private var radius = getWindowCornerRadius(context)
@@ -76,12 +72,7 @@ class CustomHotseat @JvmOverloads constructor(
             setBgColor()
         }
     private var bgColor = 0
-    private var bgAlpha = 0f
-        private set(value) {
-            field = value
-            setBgColor()
-        }
-    private var noAlphaBgColor = prefs.dockBackgroundColor
+    private var customBgColor = prefs.dockBackgroundColor
         set(value) {
             field = value
             setBgColor()
@@ -128,8 +119,6 @@ class CustomHotseat @JvmOverloads constructor(
         bgEnabled = prefs.dockCustomBackground.getValue()
         radius = dpToPx(getWindowCornerRadius(context))
         shadow = true //prefs.dockShadow
-        bgAlpha = (prefs.dockBackgroundOpacity.getValue().takeIf { it >= 0 }?.times(255)
-            ?: Themes.getAttrInteger(context, R.attr.allAppsInterimScrimAlpha)).toFloat() / 255f
         shadowBitmap = generateShadowBitmap()
         setWillNotDraw(!bgEnabled || launcher.useVerticalBarLayout())
         createBlurDrawable()
@@ -181,11 +170,7 @@ class CustomHotseat @JvmOverloads constructor(
     }
 
     private fun setBgColor() {
-        bgColor =
-            setColorAlphaBound(
-                noAlphaBgColor.getValue(),
-                (bgAlpha * viewAlpha * 255).roundToInt()
-            )
+        bgColor = customBgColor.getValue()
         paint.color = bgColor
         invalidate()
     }
