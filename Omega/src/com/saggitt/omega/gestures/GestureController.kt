@@ -26,7 +26,9 @@ import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
+import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
+import com.saggitt.omega.gestures.gestures.VerticalSwipeGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverlayGestureHandler
@@ -44,9 +46,12 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
     private val pressHomeGesture by lazy { PressHomeGesture(this) }
+    private val pressBackGesture by lazy { PressBackGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
+    val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
 
     var touchDownPoint = PointF()
+    private var swipeUpOverride: Pair<GestureHandler, Long>? = null
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
         return false
@@ -67,6 +72,28 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     fun onPressHome() {
         pressHomeGesture.isEnabled && pressHomeGesture.onEvent()
     }
+
+    fun onPressBack() {
+        pressBackGesture.isEnabled && pressBackGesture.onEvent()
+    }
+
+    fun setSwipeUpOverride(handler: GestureHandler, downTime: Long) {
+        if (swipeUpOverride?.second != downTime) {
+            swipeUpOverride = Pair(handler, downTime)
+        }
+    }
+
+    fun getSwipeUpOverride(downTime: Long): GestureHandler? {
+        swipeUpOverride?.let {
+            if (it.second == downTime) {
+                return it.first
+            } else {
+                swipeUpOverride = null
+            }
+        }
+        return null
+    }
+
 
     fun createGestureHandler(jsonString: String) =
         createGestureHandler(launcher, jsonString, blankGestureHandler)

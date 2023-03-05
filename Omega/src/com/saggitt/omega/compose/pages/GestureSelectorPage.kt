@@ -59,6 +59,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavGraphBuilder
@@ -67,6 +68,7 @@ import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -101,14 +103,14 @@ fun NavGraphBuilder.gesturesPageGraph(route: String) {
             val prefs = Config.gesturePrefs(LocalContext.current)
             Log.d("GestureSelector", "key: $key")
             val gesture = prefs.first { it.key == key }
-            GestureSelector(prefs = gesture)
+            GestureSelectorPage(prefs = gesture)
         }
     }
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun GestureSelector(prefs: NavigationPref) {
+fun GestureSelectorPage(prefs: NavigationPref) {
 
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
@@ -249,13 +251,14 @@ fun LauncherScreen(
                             },
                         summary = "",
                         startIcon = {
-                            val bitmap = item.icon?.toBitmap(32, 32, null)
-                            if (bitmap != null) Icon(
-                                bitmap = bitmap.asImageBitmap(),
+                            Icon(
+                                painter = rememberDrawablePainter(drawable = item.icon),
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .zIndex(1f),
+                                tint = MaterialTheme.colorScheme.primary
                             )
-                            else Spacer(modifier = Modifier.size(32.dp))
                         },
                         endCheckbox = {
                             RadioButton(
@@ -478,5 +481,5 @@ fun ShortcutsScreen(
 fun GestureSelectorPreview() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    GestureSelector(prefs.gestureDoubleTap)
+    GestureSelectorPage(prefs.gestureDoubleTap)
 }
