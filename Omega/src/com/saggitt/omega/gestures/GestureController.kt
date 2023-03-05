@@ -26,6 +26,7 @@ import com.android.launcher3.util.TouchController
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
+import com.saggitt.omega.gestures.gestures.PressHomeGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.gestures.handlers.SleepGestureHandler
@@ -36,6 +37,7 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
     private val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
+    private val pressHomeGesture by lazy { PressHomeGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
 
     var touchDownPoint = PointF()
@@ -54,6 +56,10 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
 
     fun onLongPress() {
         longPressGesture.isEnabled && longPressGesture.onEvent()
+    }
+
+    fun onPressHome() {
+        pressHomeGesture.isEnabled && pressHomeGesture.onEvent()
     }
 
     fun createGestureHandler(jsonString: String) =

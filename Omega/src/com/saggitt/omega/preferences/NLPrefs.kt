@@ -38,10 +38,10 @@ import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
-import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
@@ -930,10 +930,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.gesture_double_tap,
         dataStore = dataStore,
         key = PrefKey.GESTURES_DOUBLE_TAP,
-        defaultValue = OpenSettingsGestureHandler(
-            context,
-            null
-        ).toString(), //OpenDashGestureHandler(context, null).toString(),
+        defaultValue = BlankGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
     )
 
@@ -943,6 +940,14 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.GESTURES_LONG_TAP,
         defaultValue = OpenOverviewGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_LONG_TAP.name}"
+    )
+
+    var gestureHomePress = GesturePref(
+        titleId = R.string.gesture_press_home,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_HOME_PRESS,
+        defaultValue = BlankGestureHandler(context, null).toString(),
+        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_HOME_PRESS.name}"
     )
 
     var gestureSwipeDown = GesturePref(
