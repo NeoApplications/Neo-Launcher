@@ -344,7 +344,7 @@ public abstract class BaseIconCache {
     public synchronized BitmapInfo getDefaultIcon(@NonNull final UserHandle user) {
         if (mDefaultIcon == null) {
             try (BaseIconFactory li = getIconFactory()) {
-                mDefaultIcon = li.makeDefaultIcon();
+                mDefaultIcon = li.makeDefaultIcon(user);
             }
         }
         return mDefaultIcon.withFlags(getUserFlagOpLocked(user));

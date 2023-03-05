@@ -6,6 +6,7 @@ import static android.graphics.Paint.FILTER_BITMAP_FLAG;
 import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_INSTANT;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_WORK;
+import static com.android.launcher3.icons.IconProvider.ICON_TYPE_DEFAULT;
 import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
 
 import android.annotation.TargetApi;
@@ -36,8 +37,9 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.icons.BitmapInfo.Extender;
 import com.android.launcher3.util.FlagOp;
-
-import java.util.Objects;
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
+import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable;
+import com.saulhdev.neolauncher.icons.IconPreferences;
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside
@@ -146,7 +148,10 @@ public class BaseIconFactory implements AutoCloseable {
             if (resources != null) {
                 final int id = resources.getIdentifier(iconRes.resourceName, null, null);
                 // do not stamp old legacy shortcuts as the app may have already forgotten about it
-                return createBadgedIconBitmap(resources.getDrawableForDensity(id, mFillResIconDpi));
+                return createBadgedIconBitmap(
+                        resources.getDrawableForDensity(id, mFillResIconDpi),
+                        Process.myUserHandle() /* only available on primary user */,
+                        false /* do not apply legacy treatment */);
             }
         } catch (Exception e) {
             // Icon not found.
@@ -162,11 +167,18 @@ public class BaseIconFactory implements AutoCloseable {
      * @return
      */
     public BitmapInfo createIconBitmap(String placeholder, int color) {
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+        if (!ATLEAST_OREO) return null;
+
+        Bitmap placeholderBitmap = Bitmap.createBitmap(mIconBitmapSize, mIconBitmapSize,
+                Bitmap.Config.ARGB_8888);
+        mTextPaint.setColor(color);
+        Canvas canvas = new Canvas(placeholderBitmap);
+        canvas.drawText(placeholder, mIconBitmapSize / 2, mIconBitmapSize * 5 / 8, mTextPaint);
+        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
                 new ColorDrawable(PLACEHOLDER_BACKGROUND_COLOR),
-                new CenterTextDrawable(placeholder, color));
+                new BitmapDrawable(mContext.getResources(), placeholderBitmap));
         Bitmap icon = createIconBitmap(drawable, IconNormalizer.ICON_VISIBLE_AREA_FACTOR);
-        return BitmapInfo.of(icon, color);
+        return BitmapInfo.of(icon, extractColor(icon));
     }
 
     public BitmapInfo createIconBitmap(Bitmap icon) {
@@ -175,6 +187,17 @@ public class BaseIconFactory implements AutoCloseable {
         }
 
         return BitmapInfo.of(icon, extractColor(icon));
+    }
+
+    public BitmapInfo createShapedIconBitmap(Bitmap icon, UserHandle user) {
+        Drawable d = new FixedSizeBitmapDrawable(icon);
+        if (ATLEAST_OREO) {
+            float inset = AdaptiveIconDrawable.getExtraInsetFraction();
+            inset = inset / (1 + 2 * inset);
+            d = new CustomAdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
+                    new InsetDrawable(d, inset, inset, inset, inset));
+        }
+        return createBadgedIconBitmap(d, user, true);
     }
 
     /**
@@ -396,30 +419,45 @@ public class BaseIconFactory implements AutoCloseable {
     }
 
     @Nullable
-    protected Drawable normalizeAndWrapToAdaptiveIcon(@Nullable Drawable icon,
-                                                      final boolean shrinkNonAdaptiveIcons, @Nullable final RectF outIconBounds,
-                                                      @NonNull final float[] outScale) {
+    private Drawable normalizeAndWrapToAdaptiveIcon(@NonNull Drawable icon,
+                                                    boolean shrinkNonAdaptiveIcons, RectF outIconBounds, float[] outScale) {
+        IconPreferences prefs = new IconPreferences(mContext);
+        if (shrinkNonAdaptiveIcons) {
+            boolean isFromIconPack = ExtendedBitmapDrawable.isFromIconPack(icon);
+            shrinkNonAdaptiveIcons = !isFromIconPack && prefs.shouldWrapAdaptive(mContext);
+        }
+
         if (icon == null) {
             return null;
         }
         float scale = 1f;
 
-        if (shrinkNonAdaptiveIcons && !(icon instanceof AdaptiveIconDrawable)) {
+        if (shrinkNonAdaptiveIcons && ATLEAST_OREO) {
             if (mWrapperIcon == null) {
-                mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
-                        .mutate();
+                Drawable background = new ColorDrawable(mContext.getColor(R.color.legacy_icon_background));
+                Drawable foreground = new FixedScaleDrawable();
+                mWrapperIcon = new CustomAdaptiveIconDrawable(background, foreground);
             }
             AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
             dr.setBounds(0, 0, 1, 1);
             boolean[] outShape = new boolean[1];
             scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
-            if (!outShape[0]) {
+            if (!(icon instanceof AdaptiveIconDrawable) && !outShape[0]) {
+                ThemedIconDrawable.ThemeData themeData = null;
+                if (icon instanceof ThemedIconDrawable.ThemedBitmapIcon) {
+                    themeData = ((ThemedIconDrawable.ThemedBitmapIcon) icon).mThemeData;
+                }
+                int wrapperBackgroundColor = prefs.getWrapperBackgroundColor(mContext, icon);
+
                 FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
                 fsd.setDrawable(icon);
                 fsd.setScale(scale);
                 icon = dr;
+                if (themeData != null) {
+                    icon = themeData.wrapDrawable(icon, ICON_TYPE_DEFAULT);
+                }
                 scale = getNormalizer().getScale(icon, outIconBounds, null, null);
-                ((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
+                ((ColorDrawable) dr.getBackground()).setColor(wrapperBackgroundColor);
             }
         } else {
             scale = getNormalizer().getScale(icon, outIconBounds, null, null);
@@ -537,15 +575,17 @@ public class BaseIconFactory implements AutoCloseable {
         clear();
     }
 
-    @NonNull
-    public BitmapInfo makeDefaultIcon() {
-        return createBadgedIconBitmap(getFullResDefaultActivityIcon(mFillResIconDpi));
+
+    public BitmapInfo makeDefaultIcon(UserHandle user) {
+        return createBadgedIconBitmap(getFullResDefaultActivityIcon(mFillResIconDpi),
+                user, Build.VERSION.SDK_INT);
     }
 
     @NonNull
     public static Drawable getFullResDefaultActivityIcon(final int iconDpi) {
-        return Objects.requireNonNull(Resources.getSystem().getDrawableForDensity(
-                android.R.drawable.sym_def_app_icon, iconDpi));
+        Drawable icon = Resources.getSystem().getDrawableForDensity(
+                android.R.drawable.sym_def_app_icon, iconDpi);
+        return CustomAdaptiveIconDrawable.wrapNonNull(icon);
     }
 
     private int extractColor(@NonNull final Bitmap bitmap) {
