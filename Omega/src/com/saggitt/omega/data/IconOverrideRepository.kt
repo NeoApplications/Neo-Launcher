@@ -10,6 +10,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class IconOverrideRepository(private val context: Context) {
 
@@ -17,6 +18,7 @@ class IconOverrideRepository(private val context: Context) {
     private val dao = NeoLauncherDb.INSTANCE.get(context).iconOverrideDao()
     private var _overridesMap = mapOf<ComponentKey, IconPickerItem>()
     val overridesMap get() = _overridesMap
+    private val updatePackageQueue = ConcurrentLinkedQueue<ComponentKey>()
 
     init {
         scope.launch {
@@ -27,6 +29,10 @@ class IconOverrideRepository(private val context: Context) {
                         keySelector = { it.target },
                         valueTransform = { it.iconPickerItem }
                     )
+                    while (updatePackageQueue.isNotEmpty()) {
+                        val target = updatePackageQueue.poll() ?: continue
+                        updatePackageIcons(target)
+                    }
                 }
         }
     }
@@ -47,6 +53,11 @@ class IconOverrideRepository(private val context: Context) {
     suspend fun deleteAll() {
         dao.deleteAll()
         reloadIcons()
+    }
+
+    private fun updatePackageIcons(target: ComponentKey) {
+        val model = LauncherAppState.getInstance(context).model
+        model.onPackageChanged(target.componentName.packageName, target.user)
     }
 
     private fun reloadIcons() {
