@@ -60,6 +60,10 @@ fun DrawerPrefsPage() {
         openDialog.value = true
     }
 
+    val iconPrefs = listOf(
+        prefs.drawerIconScaleEnforce,
+        prefs.drawerIconScale,
+    )
     val gridPrefs = listOf(
         prefs.drawerSortMode,
     )
@@ -79,6 +83,11 @@ fun DrawerPrefsPage() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
+                    PreferenceGroup(
+                        stringResource(id = R.string.cat_drawer_icons),
+                        prefs = iconPrefs,
+                        onPrefDialog = onPrefDialog
+                    )
                     PreferenceGroup(
                         stringResource(id = R.string.cat_drawer_grid),
                         prefs = gridPrefs,

@@ -620,6 +620,8 @@ public class DeviceProfile {
             updateIconSize(scale, res);
             extraHeight = Math.max(0, maxHeight - getCellLayoutHeightSpecification());
         }
+        if (prefs.getDrawerIconScaleEnforce().getValue())
+            updateIconSize(prefs.getDrawerIconScale().getValue(), res); // TODO fix applying to all icons
         updateAvailableFolderCellDimensions(res);
         return Math.round(extraHeight);
     }
