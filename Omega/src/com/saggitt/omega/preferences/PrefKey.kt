@@ -75,7 +75,6 @@ object PrefKey {
     val DOCK_ENABLED = booleanPreferencesKey("dock_enabled")
     val DOCK_BG_CUSTOM = booleanPreferencesKey("dock_custom_background")
     val DOCK_BG_COLOR = intPreferencesKey("dock_custom_background_color")
-    val DOCK_BG_OPACITY = floatPreferencesKey("dock_custom_background_opacity")
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
     val DOCK_ICON_SCALE_ENFORCE = booleanPreferencesKey("dock_icon_scale_enforce")

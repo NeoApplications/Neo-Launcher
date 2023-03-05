@@ -215,7 +215,7 @@ class NLPrefs private constructor(private val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -473,17 +473,6 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title_dock_background_color,
         defaultValue = (0xff101010).toInt(),
         navRoute = Routes.COLOR_BG_DOCK,
-    )
-
-    // TODO AlphaPref?
-    var dockBackgroundOpacity = FloatPref(
-        dataStore = dataStore,
-        key = PrefKey.DOCK_BG_OPACITY,
-        titleId = R.string.title_opacity,
-        defaultValue = 0.9f,
-        minValue = 0f,
-        maxValue = 1f,
-        steps = 100,
     )
 
     val dockShowPageIndicator = BooleanPref(
