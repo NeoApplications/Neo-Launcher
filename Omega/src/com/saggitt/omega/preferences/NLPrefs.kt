@@ -250,6 +250,13 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
+    var desktopIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
+        defaultValue = false,
+    )
+
     val desktopIconScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_ICON_SCALE,
@@ -424,6 +431,13 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
+    var dockIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
+        defaultValue = false,
+    )
+
     val dockIconScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_ICON_SCALE,
@@ -523,6 +537,13 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
         titleId = R.string.enable_protected_apps,
         defaultValue = false
+    )
+
+    var drawerIconScaleEnforce = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_ICON_SCALE_ENFORCE,
+        titleId = R.string.title__dock_icon_size_enforce,
+        defaultValue = false,
     )
 
     var drawerIconScale = FloatPref(

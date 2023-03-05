@@ -50,6 +50,7 @@ object PrefKey {
     val PROFILE_ROTATION_ALLOW = booleanPreferencesKey(ALLOW_ROTATION_PREFERENCE_KEY)
 
     // Desktop
+    val DESKTOP_ICON_SCALE_ENFORCE = booleanPreferencesKey("desktop_icon_scale_enforce")
     val DESKTOP_ICON_SCALE = floatPreferencesKey("desktop_icon_scale")
     val DESKTOP_LABELS_HIDE = booleanPreferencesKey("desktop_labels_hide")
     val DESKTOP_LABELS_MULTILINE = booleanPreferencesKey("desktop_labels_multiline")
@@ -77,10 +78,12 @@ object PrefKey {
     val DOCK_BG_OPACITY = floatPreferencesKey("dock_custom_background_opacity")
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
+    val DOCK_ICON_SCALE_ENFORCE = booleanPreferencesKey("dock_icon_scale_enforce")
     val DOCK_ICON_SCALE = floatPreferencesKey("dock_icon_scale")
     val DOCK_COLUMNS = intPreferencesKey("dock_columns")
 
     // Drawer
+    val DRAWER_ICON_SCALE_ENFORCE = booleanPreferencesKey("drawer_icon_scale_enforce")
     val DRAWER_ICON_SCALE = floatPreferencesKey("drawer_icon_scale")
     val DRAWER_LABELS_HIDE = booleanPreferencesKey("drawer_labels_hide")
     val DRAWER_LABELS_MULTILINE = booleanPreferencesKey("drawer_labels_multiline")

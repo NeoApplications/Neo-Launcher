@@ -69,6 +69,7 @@
     <string name="grid_size_width">Width</string>
     <string name="show_top_shadow">Show Top Shadow</string>
     <!-- PREFERENCES DOCK -->
+    <string name="title__dock_icon_size_enforce">Enforce custom icon size</string>
     <string name="title__dock_icon_size">Icon size</string>
     <string name="title__dock_scale">Dock scale</string>
     <string name="title_dock_fill">Show Background</string>
