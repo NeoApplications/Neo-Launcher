@@ -28,9 +28,12 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.touch.AllAppsSwipeController
+import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.gestures.GestureController
+import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
 
@@ -80,6 +83,16 @@ class OmegaLauncher : Launcher() {
         }
         dummyView.requestLayout()
         dummyView.post { callback(dummyView) }
+    }
+
+    override fun createTouchControllers(): Array<TouchController> {
+        val list = ArrayList<TouchController>()
+        list.add(dragController)
+        list.add(AllAppsSwipeController(this))
+        list.add(VerticalSwipeGestureController(this))
+
+
+        return list.toTypedArray()
     }
 
     companion object {
