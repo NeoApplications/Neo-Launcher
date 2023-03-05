@@ -38,7 +38,6 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.gestures.ui.SelectAppActivity
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
@@ -117,7 +116,6 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
     override val hasConfig = true
-    override val configIntent = Intent(context, SelectAppActivity::class.java)
     override val displayName
         get() = if (target != null)
             String.format(displayNameWithTarget, appName) else displayNameWithoutTarget

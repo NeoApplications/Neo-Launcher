@@ -84,8 +84,9 @@ import com.saggitt.omega.data.AppItemWithShortcuts
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.handlers.StartAppGestureHandler
 import com.saggitt.omega.preferences.NavigationPref
+import com.saggitt.omega.util.App
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.appsList
+import com.saggitt.omega.util.appsState
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -117,7 +118,7 @@ fun GestureSelectorPage(prefs: NavigationPref) {
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val currentOption = remember { mutableStateOf(prefs.getValue()) }
-
+    val apps = appsState().value
     val tabs = listOf(
         TabItem(R.drawable.ic_assistant, R.string.tab_launcher) {
             LauncherScreen(selectedOption = currentOption, onSelect = {
@@ -126,13 +127,18 @@ fun GestureSelectorPage(prefs: NavigationPref) {
             })
         },
         TabItem(R.drawable.ic_apps, R.string.apps_label) {
-            AppsScreen(selectedOption = currentOption, onSelect = {
-                prefs.setValue(it)
-                backDispatcher?.onBackPressed()
-            })
+            AppsScreen(
+                apps = apps,
+                selectedOption = currentOption,
+                onSelect = {
+                    prefs.setValue(it)
+                    backDispatcher?.onBackPressed()
+                }
+            )
         },
         TabItem(R.drawable.ic_edit_dash, R.string.tab_shortcuts) {
             ShortcutsScreen(
+                apps = apps,
                 selectedOption = currentOption,
                 onSelect = {
                     prefs.setValue(it)
@@ -223,7 +229,7 @@ fun LauncherScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            .padding(start = 4.dp, end = 4.dp)
     ) {
         PreferenceGroup {
             LazyColumn(
@@ -270,7 +276,7 @@ fun LauncherScreen(
                             )
                         },
                         horizontalPadding = 0.dp,
-                        verticalPadding = 8.dp
+                        verticalPadding = 4.dp
                     )
                 }
             }
@@ -280,16 +286,16 @@ fun LauncherScreen(
 
 @Composable
 fun AppsScreen(
+    apps: List<App>,
     selectedOption: MutableState<String>,
     onSelect: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp)
+            .padding(start = 4.dp, end = 4.dp)
     ) {
         val context = LocalContext.current
-        val apps = appsList().value
         val colors = RadioButtonDefaults.colors(
             selectedColor = MaterialTheme.colorScheme.onPrimary,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -348,7 +354,7 @@ fun AppsScreen(
                             )
                         },
                         horizontalPadding = 0.dp,
-                        verticalPadding = 8.dp
+                        verticalPadding = 4.dp
                     )
                 }
             }
@@ -358,25 +364,28 @@ fun AppsScreen(
 
 @Composable
 fun ShortcutsScreen(
+    apps: List<App>,
     selectedOption: MutableState<String>,
     onSelect: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp)
+            .padding(start = 4.dp, end = 4.dp)
     ) {
         val context = LocalContext.current
-        val apps = appsList().value
-            .sortedBy { it.label }
-            .map { AppItemWithShortcuts(context, it) }
+        var appsWithShortcuts by remember { mutableStateOf(emptyList<AppItemWithShortcuts>()) }
+
+        if (apps.isNotEmpty()) {
+            appsWithShortcuts = apps
+                .map { AppItemWithShortcuts(context, it) }
+                .filter { it.hasShortcuts }
+        }
 
         val colors = RadioButtonDefaults.colors(
             selectedColor = MaterialTheme.colorScheme.onPrimary,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-
-        val appsWithShortcuts = apps.filter { it.hasShortcuts }
 
         val appsSize = appsWithShortcuts.size
         PreferenceGroup {
@@ -455,7 +464,7 @@ fun ShortcutsScreen(
                                     )
                                 },
                                 horizontalPadding = 0.dp,
-                                verticalPadding = 8.dp,
+                                verticalPadding = 0.dp,
                                 endCheckbox = {
                                     RadioButton(
                                         selected = (appGestureHandler.toString() == selectedOption.value),

@@ -30,7 +30,6 @@ abstract class GestureHandler(val context: Context, val config: JSONObject?) {
     abstract val displayNameRes: Int
     open val requiresForeground: Boolean = false
     open val hasConfig = false
-    open val configIntent: Intent? = null
     open val isAvailable: Boolean = true
     open val icon: Drawable? = null
     open val iconResource: Intent.ShortcutIconResource

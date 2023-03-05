@@ -48,6 +48,6 @@ class AppItemWithShortcuts(val context: Context, val info: App) {
         val label = if (!TextUtils.isEmpty(info.longLabel)) info.longLabel else info.shortLabel
         val iconDrawable = context
             .getSystemService(LauncherApps::class.java)
-            .getShortcutIconDrawable(info, DisplayMetrics.DENSITY_DEFAULT)!!
+            .getShortcutIconDrawable(info, DisplayMetrics.DENSITY_DEFAULT)
     }
 }

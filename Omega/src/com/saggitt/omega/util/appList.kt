@@ -29,31 +29,33 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.android.launcher3.AppFilter
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
+import com.saggitt.omega.allapps.CustomAppFilter
 import java.util.Locale
 
 @Composable
-fun appsList(
+fun appsState(
+    filter: AppFilter = CustomAppFilter(LocalContext.current),
     comparator: Comparator<App> = appComparator
 ): State<List<App>> {
     val context = LocalContext.current
-    val appsState = remember { mutableStateOf(listOf<App>()) }
+    val appsState = remember { mutableStateOf(emptyList<App>()) }
     DisposableEffect(Unit) {
         Utilities.postAsyncCallback(Handler(MODEL_EXECUTOR.looper)) {
-            val appInfos = ArrayList<LauncherActivityInfo>()
-            val profiles = UserCache.INSTANCE.get(context).userProfiles
             val launcherApps = context.getSystemService(LauncherApps::class.java)
-            profiles.forEach { appInfos += launcherApps.getActivityList(null, it) }
 
-            val apps = appInfos
+            appsState.value = UserCache.INSTANCE.get(context).userProfiles.asSequence()
+                .flatMap { launcherApps.getActivityList(null, it) }
+                .filter { filter.shouldShowApp(it.componentName, it.user) }
                 .map { App(context, it) }
                 .sortedWith(comparator)
-            appsState.value = apps
+                .toList()
         }
         onDispose { }
     }
