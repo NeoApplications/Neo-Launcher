@@ -257,6 +257,9 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.auto_add_shortcuts_label,
         summaryId = R.string.auto_add_shortcuts_description,
         defaultValue = false,
+        onChange = {
+            legacyPrefs.savePreference(PrefKey.DESKTOP_ICON_ADD_INSTALLED.name, it)
+        }
     )
 
     var desktopIconScaleEnforce = BooleanPref(
@@ -474,7 +477,9 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DOCK_BG_CUSTOM,
         titleId = R.string.title_dock_fill,
         defaultValue = false
-    )
+    ) {
+        pokeChange()
+    }
 
     val dockBackgroundColor = ColorIntPref(
         dataStore = dataStore,

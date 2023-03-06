@@ -66,6 +66,7 @@ fun DesktopPrefsPage() {
         prefs.desktopPopup,
     )
     val gridPrefs = listOf(
+        prefs.desktopIconAddInstalled,
         prefs.desktopWidgetCornerRadius,
     )
     val folderPrefs = listOf(
