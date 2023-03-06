@@ -60,11 +60,15 @@ fun DockPrefsPage() {
         openDialog.value = true
     }
 
-    val dockPrefs = listOf(
+    val dockPrefs = listOfNotNull(
         prefs.dockHide,
         prefs.dockScale,
         prefs.dockCustomBackground,
-        prefs.dockBackgroundColor,
+        if (prefs.dockCustomBackground.getValue()) {
+            prefs.dockBackgroundColor
+        } else {
+            null
+        },
         prefs.dockShowPageIndicator,
     )
 
