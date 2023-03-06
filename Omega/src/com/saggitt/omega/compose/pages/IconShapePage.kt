@@ -118,8 +118,8 @@ fun IconShapePage() {
             }
 
             val iconPrefs = listOfNotNull(
-                prefs.profileIconAdaptify
-                //prefs.themeIconColoredBackground
+                prefs.profileIconAdaptify,
+                prefs.profileIconColoredBackground
             )
 
             LazyColumn(

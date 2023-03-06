@@ -20,10 +20,8 @@ import com.saggitt.omega.OmegaApp.Companion.minSDK
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
-import com.saggitt.omega.util.getThemedIconPacksInstalled
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
-import com.saulhdev.neolauncher.icons.IconPreferences
 
 class IconPackProvider(private val context: Context) {
 
@@ -33,7 +31,6 @@ class IconPackProvider(private val context: Context) {
         ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)!!
     )
 
-    val prefs = IconPreferences(context)
     fun getIconPackOrSystem(packageName: String): IconPack? {
         if (packageName.isEmpty()) return systemIconPack
         return getIconPack(packageName)
@@ -107,30 +104,22 @@ class IconPackProvider(private val context: Context) {
         iconPack.loadBlocking()
         val packageManager = context.packageManager
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
-        val themedIconPacks = packageManager.getThemedIconPacksInstalled(context)
-        val isThemedIconsEnabled =
-            prefs.getThemedIcons() && (iconEntry.packPackageName in themedIconPacks)
         val clockMetadata =
             if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
-                    if (isThemedIconsEnabled) wrapThemedData(
+                    wrapThemedData(
                         packageManager,
                         iconEntry,
                         drawable
-                    ) else drawable
+                    ) ?: drawable
                 }
             if (clockDrawable != null) {
-                return if (isThemedIconsEnabled && prefs.shouldTransparentBGIcons()) clockDrawable.foreground else CustomAdaptiveIconDrawable(
-                    clockDrawable.background,
-                    clockDrawable.foreground
-                )
+                return clockDrawable.foreground ?: clockDrawable
             }
         }
-        if (isThemedIconsEnabled) {
-            return wrapThemedData(packageManager, iconEntry, drawable)
-        }
+
         return drawable
     }
 
@@ -147,7 +136,7 @@ class IconPackProvider(private val context: Context) {
         val bg: Drawable = ColorDrawable(themedColors[0])
         val td = ThemedIconDrawable.ThemeData(res, iconEntry.packPackageName, resId)
         return if (drawable is AdaptiveIconDrawable) {
-            if (prefs.shouldTransparentBGIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }
             } else {
                 val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }

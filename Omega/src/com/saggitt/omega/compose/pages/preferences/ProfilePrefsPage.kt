@@ -86,7 +86,7 @@ fun ProfilePrefsPage() {
         prefs.profileBlurEnable,
         prefs.profileBlurRadius,
         prefs.profileWindowCornerRadius,
-        //prefs.profileAllowRotation, TODO: Add compatiblity for sharedPreferences
+        prefs.profileAllowRotation,
         prefs.profileShowTopShadow
     )
 

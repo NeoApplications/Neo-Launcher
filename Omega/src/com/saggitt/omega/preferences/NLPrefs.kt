@@ -75,7 +75,9 @@ import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
-    val dataStore: DataStore<Preferences> = context.dataStore
+    private val dataStore: DataStore<Preferences> = context.dataStore
+    private val legacyPrefs = LegacyPreferences(context)
+
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
     val idp: InvariantDeviceProfile get() = InvariantDeviceProfile.INSTANCE.get(context)
@@ -135,7 +137,7 @@ class NLPrefs private constructor(private val context: Context) {
         entries = IconPackProvider.INSTANCE.get(context)
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
-        onChange = reloadIcons
+        onChange = { reloadIcons }
     )
 
     var profileIconShape = NavigationPref(
@@ -143,8 +145,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE,
         defaultValue = "system",
-        navRoute = Routes.ICON_SHAPE,
-        onChange = { }
+        navRoute = Routes.ICON_SHAPE
     )
 
     var profileThemedIcons = BooleanPref(
@@ -187,6 +188,9 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title_colored_backgrounds,
         summaryId = R.string.summary_colored_backgrounds,
         defaultValue = false,
+        onChange = {
+            legacyPrefs.savePreference(PrefKey.PROFILE_ICON_COLORED_BG.name, it)
+        }
     )
 
     var profileIconAdaptify = BooleanPref(
@@ -194,6 +198,9 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.PROFILE_ICON_ADAPTIFY,
         titleId = R.string.title_adaptify_pack,
         defaultValue = false,
+        onChange = {
+            legacyPrefs.savePreference(PrefKey.PROFILE_ICON_ADAPTIFY.name, it)
+        }
     )
     var profileIconForceShapeless = BooleanPref(
         dataStore = dataStore,
@@ -224,7 +231,10 @@ class NLPrefs private constructor(private val context: Context) {
         summaryId = R.string.allow_rotation_desc,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ROTATION_ALLOW,
-        defaultValue = false
+        defaultValue = false,
+        onChange = {
+            legacyPrefs.savePreference(key = "pref_allowRotation", value = it)
+        }
     )
 
     val profileShowTopShadow = BooleanPref(
@@ -821,7 +831,7 @@ class NLPrefs private constructor(private val context: Context) {
         ),
         entries = Config.smartspaceEventProviders,
         withIcons = true,
-        onChange = ::updateSmartspaceProvider
+        onChange = { updateSmartspaceProvider() }
     )
 
     val notificationCountFolder = BooleanPref(

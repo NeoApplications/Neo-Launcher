@@ -36,7 +36,7 @@ open class BooleanPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Boolean>,
     private val defaultValue: Boolean = false,
-    onChange: () -> Unit = {}
+    val onChange: (Boolean) -> Unit = {}
 ) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Boolean> {
@@ -44,6 +44,7 @@ open class BooleanPref(
     }
 
     override suspend fun set(value: Boolean) {
+        onChange(value)
         dataStore.edit { it[key] = value }
     }
 }
@@ -215,7 +216,7 @@ open class StringSelectionPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val entries: Map<String, String>,
-    onChange: () -> Unit = { }
+    val onChange: () -> Unit = { }
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<String> {
@@ -223,6 +224,7 @@ open class StringSelectionPref(
     }
 
     override suspend fun set(value: String) {
+        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -252,7 +254,7 @@ open class StringSetPref(
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
     val navRoute: String = "",
-    onChange: () -> Unit = {}
+    val onChange: () -> Unit = {}
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
     private val valueList = arrayListOf<String>()
     override fun get(): Flow<Set<String>> {
@@ -260,6 +262,7 @@ open class StringSetPref(
     }
 
     override suspend fun set(value: Set<String>) {
+        onChange()
         dataStore.edit { it[key] = value }
     }
 

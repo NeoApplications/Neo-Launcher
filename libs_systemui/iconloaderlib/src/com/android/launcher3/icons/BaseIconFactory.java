@@ -424,7 +424,7 @@ public class BaseIconFactory implements AutoCloseable {
         IconPreferences prefs = new IconPreferences(mContext);
         if (shrinkNonAdaptiveIcons) {
             boolean isFromIconPack = ExtendedBitmapDrawable.isFromIconPack(icon);
-            shrinkNonAdaptiveIcons = !isFromIconPack && prefs.shouldWrapAdaptive(mContext);
+            shrinkNonAdaptiveIcons = !isFromIconPack && prefs.shouldWrapAdaptive();
         }
 
         if (icon == null) {
@@ -447,7 +447,10 @@ public class BaseIconFactory implements AutoCloseable {
                 if (icon instanceof ThemedIconDrawable.ThemedBitmapIcon) {
                     themeData = ((ThemedIconDrawable.ThemedBitmapIcon) icon).mThemeData;
                 }
-                int wrapperBackgroundColor = prefs.getWrapperBackgroundColor(mContext, icon);
+
+                if (prefs.coloredIconBackground()) {
+                    mWrapperBackgroundColor = prefs.getWrapperBackgroundColor(icon);
+                }
 
                 FixedScaleDrawable fsd = ((FixedScaleDrawable) dr.getForeground());
                 fsd.setDrawable(icon);
@@ -457,7 +460,7 @@ public class BaseIconFactory implements AutoCloseable {
                     icon = themeData.wrapDrawable(icon, ICON_TYPE_DEFAULT);
                 }
                 scale = getNormalizer().getScale(icon, outIconBounds, null, null);
-                ((ColorDrawable) dr.getBackground()).setColor(wrapperBackgroundColor);
+                ((ColorDrawable) dr.getBackground()).setColor(mWrapperBackgroundColor);
             }
         } else {
             scale = getNormalizer().getScale(icon, outIconBounds, null, null);
