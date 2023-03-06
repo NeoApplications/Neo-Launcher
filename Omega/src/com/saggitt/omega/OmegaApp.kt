@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import com.saggitt.omega.blur.BlurWallpaperProvider
+import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
 
@@ -56,6 +57,7 @@ class OmegaApp : Application() {
     fun onLauncherAppStateCreated() {
         registerActivityLifecycleCallbacks(activityHandler)
         BlurWallpaperProvider.getInstance(this)
+        Flowerpot.Manager.getInstance(this)
     }
 
     fun performGlobalAction(action: Int): Boolean {
