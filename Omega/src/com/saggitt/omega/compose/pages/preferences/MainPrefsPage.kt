@@ -61,7 +61,7 @@ fun MainPrefsPage() {
     )
     val otherPrefs = listOfNotNull(
         PageItem.PrefsBackup,
-        PageItem.PrefsDesktopMode,
+        //PageItem.PrefsDesktopMode,
         if (prefs.developerOptionsEnabled.getValue()) PageItem.PrefsDeveloper
         else null,
         PageItem.PrefsAbout
