@@ -63,6 +63,7 @@ fun DrawerPrefsPage() {
     val iconPrefs = listOf(
         prefs.drawerIconScaleEnforce,
         prefs.drawerIconScale,
+        prefs.drawerPopup,
     )
     val gridPrefs = listOf(
         prefs.drawerSortMode,

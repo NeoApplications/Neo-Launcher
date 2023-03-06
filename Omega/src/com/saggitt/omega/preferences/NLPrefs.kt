@@ -531,7 +531,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__drawer_icon_popup_menu,
         defaultValue = setOf(PREFS_DRAWER_POPUP_EDIT),
         entries = drawerPopupOptions,
-        //withIcons = true,
+        withIcons = true,
     )
 
     // TODO Show lock screen when the app is enabled and is clicked
