@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,9 +70,18 @@ fun DrawerPrefsPage() {
     val gridPrefs = listOf(
         prefs.drawerSortMode,
     )
-    val otherPrefs = listOf(
-        prefs.drawerBackgroundColor,
-    )
+    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.drawerCustomBackground,
+                if (prefs.drawerCustomBackground.getValue()) {
+                    prefs.drawerBackgroundColor
+                } else {
+                    null
+                }
+            ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -105,12 +116,12 @@ fun DrawerPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                    is IntSelectionPref -> IntSelectionPrefDialogUI(
                         pref = dialogPref as IntSelectionPref,
                         openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                    is StringSelectionPref -> StringSelectionPrefDialogUI(
                         pref = dialogPref as StringSelectionPref,
                         openDialogCustom = openDialog
                     )

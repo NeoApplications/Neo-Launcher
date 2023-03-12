@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,18 +61,21 @@ fun DockPrefsPage() {
         dialogPref = pref
         openDialog.value = true
     }
-
-    val dockPrefs = listOfNotNull(
-        prefs.dockHide,
-        prefs.dockScale,
-        prefs.dockCustomBackground,
-        if (prefs.dockCustomBackground.getValue()) {
-            prefs.dockBackgroundColor
-        } else {
-            null
-        },
-        prefs.dockShowPageIndicator,
-    )
+    val dockPrefs = remember(prefs.changePoker.collectAsState(initial = 0).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.dockHide,
+                prefs.dockScale,
+                prefs.dockCustomBackground,
+                if (prefs.dockCustomBackground.getValue()) {
+                    prefs.dockBackgroundColor
+                } else {
+                    null
+                },
+                prefs.dockShowPageIndicator
+            ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -94,12 +99,12 @@ fun DockPrefsPage() {
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        is IntSelectionPref -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        is StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
                         )

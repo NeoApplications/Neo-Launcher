@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -81,14 +83,21 @@ fun ProfilePrefsPage() {
             null
         }
     )
-
-    val others = listOfNotNull(
-        prefs.profileBlurEnable,
-        prefs.profileBlurRadius,
-        prefs.profileWindowCornerRadius,
-        prefs.profileAllowRotation,
-        prefs.profileShowTopShadow
-    )
+    val others = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.profileBlurEnable,
+                if (prefs.profileBlurEnable.getValue()) {
+                    prefs.profileBlurRadius
+                } else {
+                    null
+                },
+                prefs.profileWindowCornerRadius,
+                prefs.profileAllowRotation,
+                prefs.profileShowTopShadow
+            ).toTypedArray()
+        )
+    }
 
     OmegaAppTheme {
         ViewWithActionBar(

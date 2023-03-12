@@ -86,6 +86,15 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
+
+    private fun pokeChange() {
+        CoroutineScope(Dispatchers.Default).launch {
+            _changePoker.emit(Random.nextInt())
+        }
+    }
+
+    private val pokeChange = { pokeChange() }
+
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
         val idp = las.invariantDeviceProfile
@@ -94,12 +103,6 @@ class NLPrefs private constructor(private val context: Context) {
 
     private fun updateSmartspaceProvider() {
         OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
-    }
-
-    private fun pokeChange() {
-        CoroutineScope(Dispatchers.Default).launch {
-            _changePoker.emit(Random.nextInt())
-        }
     }
 
     // Profile
@@ -476,10 +479,9 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_CUSTOM,
         titleId = R.string.title_dock_fill,
-        defaultValue = false
-    ) {
-        pokeChange()
-    }
+        defaultValue = false,
+        onChange = { pokeChange }
+    )
 
     val dockBackgroundColor = ColorIntPref(
         dataStore = dataStore,
@@ -625,6 +627,7 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DRAWER_BG_CUSTOM,
         titleId = R.string.title_drawer_enable_background,
         defaultValue = false,
+        onChange = { pokeChange }
     )
 
     val drawerBackgroundColor = ColorIntPref(
@@ -716,10 +719,9 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.notification_custom_color,
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
-        defaultValue = false
-    ) {
-        pokeChange()
-    }
+        defaultValue = false,
+        onChange = { pokeChange }
+    )
 
     val notificationBackground = ColorIntPref(
         dataStore = dataStore,
@@ -762,10 +764,9 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
-        defaultValue = true
-    ) {
-        pokeChange()
-    }
+        defaultValue = true,
+        onChange = { pokeChange }
+    )
 
     val smartspaceTime = BooleanPref(
         dataStore = dataStore,
@@ -820,7 +821,7 @@ class NLPrefs private constructor(private val context: Context) {
         )
     ) {
         updateSmartspaceProvider()
-        pokeChange()
+        pokeChange
     }
 
     var smartspaceEventProviders = StringMultiSelectionPref(
