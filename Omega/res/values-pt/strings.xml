@@ -447,4 +447,16 @@
     <string name="event_provider_missing_notification_dots">Ative os pontos de notificação para usar <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
     <string name="permission_iplocate">Localização Aproximada</string>
     <string name="smartspace_provider_calendar">Eventos de calendário</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="default_city">San Salvador, SV</string>
+    <string name="hide_app_selected">Apps ocultos (%1$d)</string>
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d App</item>
+        <item quantity="many">%1$d Apps</item>
+        <item quantity="other">%1$d Apps</item>
+    </plurals>
+    <string name="owm_get_your_own_key">Obtenha uma chave de API em api.openweathermap.org.</string>
+    <string name="weather_api_key">Chave de API do OWM</string>
+    <string name="weather_city">Cidade</string>
+    <string name="notification_dots_missing_notification_access">Para mostrar pontos de notificação, ative o acesso às notificações da app</string>
 </resources>
