@@ -17,18 +17,24 @@
  */
 package com.saggitt.omega
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
-import android.graphics.Rect
+import android.content.pm.LauncherApps
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import com.android.launcher3.AppFilter
 import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.model.data.AppInfo
+import com.android.launcher3.pm.UserCache
 import com.android.launcher3.touch.AllAppsSwipeController
+import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -36,6 +42,10 @@ import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class OmegaLauncher : Launcher() {
 
@@ -44,12 +54,48 @@ class OmegaLauncher : Launcher() {
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
 
+    val hiddenApps = ArrayList<AppInfo>()
+    val allApps = ArrayList<AppInfo>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
+
+        //Load hidden apps to use with hidden apps preference
+        MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
+
+    }
+
+    private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
+        val mContext = this
+        CoroutineScope(Dispatchers.IO).launch {
+            val appFilter = AppFilter()
+            for (user in UserCache.INSTANCE[mContext].userProfiles) {
+                val duplicatePreventionCache: MutableList<ComponentName> = ArrayList()
+                for (info in getSystemService(
+                    LauncherApps::class.java
+                ).getActivityList(null, user)) {
+                    val key = ComponentKey(info.componentName, info.user)
+                    if (hiddenAppsSet.contains(key.toString())) {
+                        val appInfo = AppInfo(info, info.user, false)
+                        hiddenApps.add(appInfo)
+                    }
+                    if (prefs.searchHiddenApps.get().first()) {
+                        if (!appFilter.shouldShowApp(info.componentName, user)) {
+                            continue
+                        }
+                        if (!duplicatePreventionCache.contains(info.componentName)) {
+                            duplicatePreventionCache.add(info.componentName)
+                            val appInfo = AppInfo(mContext, info, user)
+                            allApps.add(appInfo)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun getDefaultOverlay(): LauncherOverlayManager {
@@ -57,12 +103,6 @@ class OmegaLauncher : Launcher() {
             mOverlayManager = OverlayCallbackImpl(this)
         }
         return mOverlayManager
-    }
-
-    inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
-        val rect = Rect()
-        dragLayer.getViewRectRelativeToSelf(view, rect)
-        prepareDummyView(rect.left, rect.top, rect.right, rect.bottom, callback)
     }
 
     inline fun prepareDummyView(left: Int, top: Int, crossinline callback: (View) -> Unit) {
