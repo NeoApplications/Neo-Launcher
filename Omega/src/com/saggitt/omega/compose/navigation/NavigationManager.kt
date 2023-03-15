@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.saggitt.omega.compose.pages.editIconGraph
+import com.saggitt.omega.compose.pages.iconPickerGraph
 import com.saggitt.omega.compose.pages.preferences.mainPrefsGraph
 import soup.compose.material.motion.materialSharedAxisX
 
@@ -90,6 +92,10 @@ fun PrefsComposeView(navController: NavHostController) {
             popExitTransition = { motionSpec.exit.transition(isRtl, density) },
         ) {
             mainPrefsGraph(route = "/")
+            preferenceGraph(route = "/", { BlankScreen() }) { subRoute ->
+                editIconGraph(route = subRoute(Routes.EDIT_ICON))
+                iconPickerGraph(route = subRoute(Routes.ICON_PICKER))
+            }
         }
     }
 }
