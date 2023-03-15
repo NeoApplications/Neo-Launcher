@@ -36,7 +36,6 @@ import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
-import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
@@ -45,7 +44,6 @@ import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
-import com.saggitt.omega.omegaApp
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
@@ -102,7 +100,7 @@ class NLPrefs private constructor(private val context: Context) {
     }
 
     private fun updateSmartspaceProvider() {
-        OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
+        //OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
     }
 
     // Profile

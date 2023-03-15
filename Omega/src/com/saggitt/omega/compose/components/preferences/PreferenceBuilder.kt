@@ -29,6 +29,7 @@ import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
 
 val PreferenceBuilder =
@@ -62,6 +63,9 @@ val PreferenceBuilder =
 
             is StringPref ->
                 StringPreference(pref = pref, index = index, groupSize = size)
+
+            is StringSetPref ->
+                StringSetPreference(pref = pref, index = index, groupSize = size)
 
             is FloatPref ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)

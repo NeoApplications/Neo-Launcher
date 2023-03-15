@@ -195,7 +195,7 @@ class OmegaSmartSpaceController(val context: Context) {
         val allProviders = providerCache.values.toSet()
         val newProviders = setOf(weatherDataProvider) + eventDataProviders
         val needsDestroy = allProviders - newProviders
-        val needsUpdate = newProviders - activeProviders
+        val needsUpdate = newProviders - activeProviders.toSet()
 
         needsDestroy.forEach {
             eventDataMap.remove(it)

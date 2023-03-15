@@ -73,6 +73,7 @@ import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
@@ -282,6 +283,31 @@ fun SeekBarPreference(
                     },
                     enabled = isEnabled
                 )
+            }
+        }
+    )
+}
+
+@Composable
+fun StringSetPreference(
+    modifier: Modifier = Modifier,
+    pref: StringSetPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+) {
+    val navController = LocalNavController.current
+    val route = subRoute(pref.navRoute)
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = {
+            if (pref.navRoute != "") {
+                navController.navigate(route)
             }
         }
     )

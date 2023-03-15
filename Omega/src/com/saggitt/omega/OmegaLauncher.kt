@@ -21,6 +21,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.LauncherApps
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -105,6 +106,12 @@ class OmegaLauncher : Launcher() {
             mOverlayManager = OverlayCallbackImpl(this)
         }
         return mOverlayManager
+    }
+
+    inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
+        val rect = Rect()
+        dragLayer.getViewRectRelativeToSelf(view, rect)
+        prepareDummyView(rect.left, rect.top, rect.right, rect.bottom, callback)
     }
 
     inline fun prepareDummyView(left: Int, top: Int, crossinline callback: (View) -> Unit) {
