@@ -91,7 +91,7 @@ fun AppSelectionPage(
             onSave(selected)
         }
     ) { paddingValues ->
-
+        //TODO: Show loading indicator while apps are being loaded
         val groupSize = allApps.size
         PreferenceGroup {
             LazyColumn(
