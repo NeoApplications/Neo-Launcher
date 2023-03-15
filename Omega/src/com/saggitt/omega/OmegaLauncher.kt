@@ -42,6 +42,7 @@ import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -51,6 +52,7 @@ class OmegaLauncher : Launcher() {
 
     val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
+    val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
 
