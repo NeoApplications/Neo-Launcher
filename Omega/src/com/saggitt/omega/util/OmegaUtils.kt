@@ -45,6 +45,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
+import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.views.OptionsPopupView
@@ -216,6 +217,9 @@ fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, option
         Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
     }
 }
+
+fun UserCache.getUserForProfileId(profileId: Int) =
+    userProfiles.find { it.toString() == "UserHandle{$profileId}" }
 
 fun Float.ceilToInt() = ceil(this).toInt()
 
