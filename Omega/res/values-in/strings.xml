@@ -13,4 +13,19 @@
     <string name="title__general_search">Cari dan Folder</string>
     <string name="title__general_notifications">Gerakan dan Notifikasi</string>
     <string name="title__general_smartspace">Widget Rumah</string>
+    <string name="title__general_search_feed">Cari &amp; Umpan</string>
+    <string name="title__general_widgets_notifications">Widget &amp; Pemberitahuan</string>
+    <string name="summary__general_desktop">Sesuaikan desktop Anda</string>
+    <string name="summary__general_dock">Ikon hotseat, bilah pencarian</string>
+    <string name="summary__general_drawer">Sesuaikan drawer anda</string>
+    <string name="summary__general_theme">Ubah warna, paket ikon, bentuk ikon</string>
+    <string name="summary__general_search">Cari Penyedia, gaya, ikon</string>
+    <string name="summary__general_smartspace">Tanggal, waktu, widget beranda</string>
+    <string name="summary__general_notifications">Jumlah lencana, warna lencana, gestur</string>
+    <string name="summary__general_advanced">Bahasa, cadangan, pengaturan pencarian</string>
+    <string name="summary__general_about">Lebih lanjut tentang Neo Launcher</string>
+    <string name="pref_category__interfaces">Antarmuka Pengguna</string>
+    <string name="pref_category__features">Fitur</string>
+    <string name="pref_category__inputs">Gestur dan Pencarian</string>
+    <string name="pref_category__others">Lainnya</string>
 </resources>
