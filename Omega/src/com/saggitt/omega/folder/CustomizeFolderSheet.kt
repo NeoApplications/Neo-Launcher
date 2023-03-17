@@ -18,6 +18,13 @@
 
 package com.saggitt.omega.folder
 
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.android.launcher3.R
+
 
 @Composable
 fun CustomizeFolderSheet(
