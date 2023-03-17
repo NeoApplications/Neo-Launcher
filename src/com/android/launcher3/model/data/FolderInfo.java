@@ -182,8 +182,16 @@ public class FolderInfo extends ItemInfo {
 
     public interface FolderListener {
         void onAdd(WorkspaceItemInfo item, int rank);
+
         void onRemove(List<WorkspaceItemInfo> item);
+
         void onItemsChanged(boolean animate);
+
+        void onTitleChanged(CharSequence title);
+
+        default void onIconChanged() {
+            // do nothing
+        }
     }
 
     public boolean hasOption(int optionFlag) {
