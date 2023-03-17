@@ -1440,6 +1440,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
     }
 
+    @Override
+    public void onTitleChanged(CharSequence title) {
+    }
+
     private View getViewForInfo(final WorkspaceItemInfo item) {
         return mContent.iterateOverItems((info, view) -> info == item);
     }
