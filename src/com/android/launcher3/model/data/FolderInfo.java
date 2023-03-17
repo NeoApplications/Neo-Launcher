@@ -22,6 +22,8 @@ import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Process;
 
 import androidx.annotation.NonNull;
@@ -36,7 +38,10 @@ import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
+import com.saggitt.omega.data.GestureItemInfo;
+import com.saggitt.omega.data.GestureItemInfoRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,10 +110,12 @@ public class FolderInfo extends ItemInfo {
     public ArrayList<WorkspaceItemInfo> contents = new ArrayList<>();
 
     private ArrayList<FolderListener> mListeners = new ArrayList<>();
+    public String swipeUpAction;
 
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
         user = Process.myUserHandle();
+        swipeUpAction = "";
     }
 
     /**
@@ -198,6 +205,23 @@ public class FolderInfo extends ItemInfo {
         if (writer != null && oldOptions != options) {
             writer.updateItemInDatabase(this);
         }
+    }
+
+    public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
+        swipeUpAction = action;
+        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
+        GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
+        if (gestureItemInfo == null || gestureItemInfo.getSwipeUp() == null) {
+            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, null);
+            repository.insert(gestureItemInfo);
+        } else {
+            gestureItemInfo.setSwipeUp(swipeUpAction);
+            repository.update(gestureItemInfo);
+        }
+    }
+
+    public ComponentKey toComponentKey() {
+        return new ComponentKey(new ComponentName("com.saggitt.omega.folder", String.valueOf(id)), Process.myUserHandle());
     }
 
     @Override

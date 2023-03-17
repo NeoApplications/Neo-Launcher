@@ -27,8 +27,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.launcher3.util.MainThreadInitializedObject
 
 @Database(
-    entities = [IconOverride::class, AppTracker::class, PeopleInfo::class],
-    version = 3,
+    entities = [IconOverride::class, AppTracker::class, PeopleInfo::class, GestureItemInfo::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +37,7 @@ abstract class NeoLauncherDb : RoomDatabase() {
     abstract fun iconOverrideDao(): IconOverrideDao
     abstract fun appTrackerDao(): AppTrackerDao
     abstract fun peopleDao(): PeopleDao
+    abstract fun gestureItemInfoDao(): GestureItemInfoDao
 
     companion object {
 
@@ -55,9 +56,24 @@ abstract class NeoLauncherDb : RoomDatabase() {
             }
         }
 
+        /*
+        * Add Migration for SwipeUp action
+        */
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE TABLE GestureItemInfo (" +
+                            "packageName TEXT not Null, " +
+                            "swipeUp TEXT NULL DEFAULT 'none', " +
+                            "swipeDown TEXT NULL DEFAULT 'none', " +
+                            "PRIMARY KEY(packageName))"
+                )
+            }
+        }
+
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
         }
     }

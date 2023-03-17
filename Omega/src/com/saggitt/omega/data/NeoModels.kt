@@ -61,3 +61,10 @@ data class PeopleInfo(
     val contactName: String,
     val contactPhone: String
 )
+
+@Entity
+data class GestureItemInfo(
+    @PrimaryKey val packageName: ComponentKey,
+    var swipeUp: String,
+    var swipeDown: String
+)

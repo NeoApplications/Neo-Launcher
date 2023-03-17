@@ -42,6 +42,8 @@ import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.objects.PageItem
+import com.saggitt.omega.compose.pages.editIconGraph
+import com.saggitt.omega.compose.pages.iconPickerGraph
 import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
@@ -136,5 +138,7 @@ fun NavGraphBuilder.mainPrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.PREFS_DEV), { DevPrefsPage() })
         gesturesPrefsGraph(route = subRoute(Routes.PREFS_GESTURES))
         aboutPrefsGraph(route = subRoute(Routes.ABOUT))
+        editIconGraph(route = subRoute(Routes.EDIT_ICON))
+        iconPickerGraph(route = subRoute(Routes.ICON_PICKER))
     }
 }
