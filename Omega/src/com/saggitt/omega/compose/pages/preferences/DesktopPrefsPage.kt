@@ -89,6 +89,7 @@ fun DesktopPrefsPage() {
     }
     val otherPrefs = listOf(
         prefs.desktopHideStatusBar,
+        prefs.desktopLock
     )
 
     OmegaAppTheme {
