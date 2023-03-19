@@ -24,17 +24,24 @@ import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABE
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Process;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.folder.FolderNameInfos;
+import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.Attribute;
-import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
@@ -42,13 +49,13 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
 import com.saggitt.omega.data.GestureItemInfo;
 import com.saggitt.omega.data.GestureItemInfoRepository;
+import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
-
 
 /**
  * Represents a folder containing shortcuts or apps.
@@ -73,6 +80,9 @@ public class FolderInfo extends ItemInfo {
     public static final int FLAG_MULTI_PAGE_ANIMATION = 0x00000004;
 
     public static final int FLAG_MANUAL_FOLDER_NAME = 0x00000008;
+
+    public static final int FLAG_COVER_MODE = 0x00000010;
+
 
     /**
      * Different states of folder label.
@@ -111,6 +121,7 @@ public class FolderInfo extends ItemInfo {
 
     private ArrayList<FolderListener> mListeners = new ArrayList<>();
     public String swipeUpAction;
+    public FirstItemProvider firstItemProvider = new FirstItemProvider(this);
 
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
@@ -215,6 +226,18 @@ public class FolderInfo extends ItemInfo {
         }
     }
 
+    public boolean isCoverMode() {
+        return hasOption(FLAG_COVER_MODE);
+    }
+
+    public void setCoverMode(boolean enable, ModelWriter modelWriter) {
+        setOption(FLAG_COVER_MODE, enable, modelWriter);
+    }
+
+    public WorkspaceItemInfo getCoverInfo() {
+        return firstItemProvider.getFirstItem();
+    }
+
     public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
         swipeUpAction = action;
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
@@ -251,6 +274,13 @@ public class FolderInfo extends ItemInfo {
                 .addItemAttributes(getLabelState().mLogAttribute)
                 .setContainerInfo(getContainerInfo())
                 .build();
+    }
+
+    public void setTitle(CharSequence title) {
+        this.title = title;
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onTitleChanged(title);
+        }
     }
 
     @Override
@@ -390,5 +420,25 @@ public class FolderInfo extends ItemInfo {
                 // fall through
         }
         return LauncherAtom.ToState.TO_STATE_UNSPECIFIED;
+    }
+
+    public Drawable getIcon(Context context) {
+        Launcher launcher = Launcher.getLauncher(context);
+        if (isCoverMode()) return getCoverInfo().newIcon(context);
+        return getFolderIcon(launcher);
+    }
+
+    public Drawable getFolderIcon(Launcher launcher) {
+        int iconSize = launcher.getDeviceProfile().iconSizePx;
+        LinearLayout dummy = new LinearLayout(launcher, null);
+        FolderIcon icon = FolderIcon.inflateIcon(R.layout.folder_icon, launcher, dummy, this);
+        icon.isCustomIcon = false;
+        icon.getFolderBackground().setStartOpacity(1f);
+        Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
+            out.translate(iconSize / 2f, 0);
+            icon.draw(out);
+        });
+        icon.unbind();
+        return new BitmapDrawable(launcher.getResources(), b);
     }
 }

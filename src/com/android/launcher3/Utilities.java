@@ -90,6 +90,7 @@ import com.android.launcher3.graphics.GridCustomizationsProvider;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.icons.ShortcutCachingLogic;
 import com.android.launcher3.icons.ThemedIconDrawable;
+import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.SearchActionItemInfo;
@@ -768,6 +769,10 @@ public final class Utilities {
                         appState.getInvariantDeviceProfile().fillResIconDpi);
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderInfo folderInfo = (FolderInfo) info;
+            if (folderInfo.isCoverMode()) {
+                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, true, outObj);
+            }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     activity, info.id, new Point(width, height));
             if (icon == null) {
@@ -803,6 +808,8 @@ public final class Utilities {
             return LauncherAppState.getInstance(appState.getContext())
                     .getIconCache().getShortcutInfoBadge(si).newIcon(context, FLAG_THEMED);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderInfo folderInfo = (FolderInfo) info;
+            if (folderInfo.isCoverMode()) return getBadge(context, folderInfo.getCoverInfo(), obj);
             return ((FolderAdaptiveIcon) obj).getBadge();
         } else {
             return Process.myUserHandle().equals(info.user)

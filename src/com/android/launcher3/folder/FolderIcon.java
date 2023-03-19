@@ -156,6 +156,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         }
     };
 
+    public boolean isCustomIcon = false;
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -229,6 +230,14 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         folderInfo.addListener(icon);
 
         return icon;
+    }
+
+    public void unbind() {
+        if (mInfo != null) {
+            mInfo.removeListener(this);
+            mInfo.removeListener(mFolder);
+            mInfo = null;
+        }
     }
 
     public void animateBgShadowAndStroke() {
@@ -867,9 +876,15 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
          * gap where the FolderIcon would be when the Folder is closed.
          */
         void drawFolderLeaveBehindForIcon(FolderIcon child);
+
         /**
          * Tells the FolderIconParent to stop drawing the "leave-behind" as the Folder is closed.
          */
         void clearFolderLeaveBehind(FolderIcon child);
     }
+
+    public boolean isCoverMode() {
+        return mInfo.isCoverMode();
+    }
+
 }
