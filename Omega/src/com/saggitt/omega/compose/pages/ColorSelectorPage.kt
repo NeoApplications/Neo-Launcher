@@ -82,7 +82,8 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
         PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor
-        PrefKey.DOCK_BG_COLOR           -> prefs.dockBackgroundColor
+        PrefKey.DESKTOP_FOLDER_STROKE_COLOR -> prefs.desktopFolderStrokeColor
+        PrefKey.DOCK_BG_COLOR -> prefs.dockBackgroundColor
         PrefKey.DRAWER_BG_COLOR         -> prefs.drawerBackgroundColor
         PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
         else -> prefs.profileAccentColor

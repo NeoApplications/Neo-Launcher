@@ -49,6 +49,7 @@ import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.views.OptionsPopupView
+import com.saggitt.omega.preferences.NLPrefs
 import java.lang.reflect.Field
 import java.util.Calendar
 import java.util.Locale
@@ -252,4 +253,9 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
         val res = compare(o1, o2)
         if (res != 0) res else extractKey(o1).compareTo(extractKey(o2))
     }
+}
+
+fun getFolderPreviewAlpha(context: Context): Int {
+    val prefs = NLPrefs.getInstance(context)
+    return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
 }

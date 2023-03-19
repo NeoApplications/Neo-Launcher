@@ -151,6 +151,5 @@ class Config(val context: Context) {
                 prefs.gestureBackPress,
             )
         }
-
     }
 }

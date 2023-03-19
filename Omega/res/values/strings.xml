@@ -447,11 +447,13 @@
     <string name="web_search_yahoo" translatable="false">Yahoo (web)</string>
     <string name="error_no_browser">Install an app to open URLs first</string>
     <string name="folder_custom_background">Use custom folder background</string>
+    <string name="folder_draw_stroke">Draw Folder Stroke</string>
     <string name="folder_background">Folder background color</string>
+    <string name="folder_stroke_color">Folder stroke color</string>
     <string name="folder_radius">Folder corner radius</string>
     <string name="folder_rows">Folder Rows</string>
     <string name="folder_columns">Folder Columns</string>
-    <string name="folder_opacity">Folder Opacity</string>
+    <string name="folder_opacity">Folder Icon Opacity</string>
     <string name="section_apps">apps</string>
     <string name="section_web">Web</string>
     <string name="section_contacts">Contacts</string>

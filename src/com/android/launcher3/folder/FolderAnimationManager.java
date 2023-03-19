@@ -21,6 +21,7 @@ import static com.android.launcher3.BubbleTextView.TEXT_ALPHA_PROPERTY;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 import static com.android.launcher3.graphics.IconShape.getShape;
+import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -44,6 +45,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.PropertyResetListener;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.List;
 
@@ -173,8 +175,9 @@ public class FolderAnimationManager {
         final float yDistance = initialY - lp.y;
 
         // Set up the Folder background.
-        final int initialColor = Themes.getAttrColor(mContext, R.attr.folderPreviewColor);
         final int finalColor = Themes.getAttrColor(mContext, R.attr.folderBackgroundColor);
+        int folderFillColor = Themes.getAttrColor(mContext, R.attr.folderPreviewColor);
+        final int initialColor = setColorAlphaBound(folderFillColor, OmegaUtilsKt.getFolderPreviewAlpha(mContext));
 
         mFolderBackground.mutate();
         mFolderBackground.setColor(mIsOpening ? initialColor : finalColor);

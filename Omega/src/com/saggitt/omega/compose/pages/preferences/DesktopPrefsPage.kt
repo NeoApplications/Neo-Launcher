@@ -79,6 +79,11 @@ fun DesktopPrefsPage() {
                     prefs.desktopFolderBackgroundColor
                 } else null,
                 prefs.desktopFolderCornerRadius,
+                prefs.desktopFolderOpacity,
+                prefs.desktopFolderStroke,
+                if (prefs.desktopFolderStroke.getValue()) {
+                    prefs.desktopFolderStrokeColor
+                } else null,
             ).toTypedArray()
         )
     }
@@ -161,5 +166,9 @@ fun NavGraphBuilder.desktopPrefsGraph(route: String) {
         preferenceGraph(
             route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
             { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
+
+        preferenceGraph(
+            route = subRoute(Routes.COLOR_STROKE_FOLDER),
+            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR) })
     }
 }

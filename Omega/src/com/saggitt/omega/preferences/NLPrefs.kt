@@ -398,6 +398,21 @@ class NLPrefs private constructor(private val context: Context) {
         navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
     )
 
+    val desktopFolderStroke = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_FOLDER_STROKE,
+        titleId = R.string.folder_draw_stroke,
+        defaultValue = false
+    )
+
+    val desktopFolderStrokeColor = ColorIntPref(
+        titleId = R.string.folder_stroke_color,
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
+        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface),
+        navRoute = Routes.COLOR_STROKE_FOLDER,
+    )
+
     val desktopFolderColumns = IntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_COLUMNS,
