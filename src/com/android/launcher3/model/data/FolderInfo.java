@@ -37,11 +37,11 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.Attribute;
+import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
@@ -431,7 +431,7 @@ public class FolderInfo extends ItemInfo {
     public Drawable getFolderIcon(Launcher launcher) {
         int iconSize = launcher.getDeviceProfile().iconSizePx;
         LinearLayout dummy = new LinearLayout(launcher, null);
-        FolderIcon icon = FolderIcon.inflateIcon(R.layout.folder_icon, launcher, dummy, this);
+        com.android.launcher3.folder.FolderIcon icon = com.android.launcher3.folder.FolderIcon.inflateIcon(R.layout.folder_icon, launcher, dummy, this);
         icon.isCustomIcon = false;
         icon.getFolderBackground().setStartOpacity(1f);
         Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {

@@ -320,7 +320,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
         mBackground = new GradientDrawable();
         mBackground.setShape(GradientDrawable.RECTANGLE);
-        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_IN);
 
         mBackground.setCornerRadius(getCornerRadius());
     }
