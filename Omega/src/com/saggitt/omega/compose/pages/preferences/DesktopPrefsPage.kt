@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,10 +71,17 @@ fun DesktopPrefsPage() {
         prefs.desktopIconAddInstalled,
         prefs.desktopWidgetCornerRadius,
     )
-    val folderPrefs = listOf(
-        prefs.desktopFolderBackgroundColor,
-        prefs.desktopFolderCornerRadius,
-    )
+    val folderPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+        mutableStateListOf(
+            *listOfNotNull(
+                prefs.desktopCustomFolderBackground,
+                if (prefs.desktopCustomFolderBackground.getValue()) {
+                    prefs.desktopFolderBackgroundColor
+                } else null,
+                prefs.desktopFolderCornerRadius,
+            ).toTypedArray()
+        )
+    }
     val otherPrefs = listOf(
         prefs.desktopHideStatusBar,
     )
@@ -122,12 +131,12 @@ fun DesktopPrefsPage() {
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     when (dialogPref) {
-                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        is IntSelectionPref -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
                         )
 
-                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        is StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
                         )
