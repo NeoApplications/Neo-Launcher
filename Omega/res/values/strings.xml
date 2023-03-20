@@ -399,6 +399,7 @@
     <string name="gesture_double_tap">Double tap</string>
     <string name="gesture_long_press">Touch and hold</string>
     <string name="gesture_swipe_up">Swipe Upwards</string>
+    <string name="folder_swipe_up">Swipe up action</string>
     <string name="gesture_dock_swipe_up">Swipe upwards from dock</string>
     <string name="gesture_press_home">Home Button Tap</string>
     <string name="gesture_press_back">Back button</string>

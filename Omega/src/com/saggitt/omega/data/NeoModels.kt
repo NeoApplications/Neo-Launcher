@@ -66,5 +66,5 @@ data class PeopleInfo(
 data class GestureItemInfo(
     @PrimaryKey val packageName: ComponentKey,
     var swipeUp: String,
-    var swipeDown: String
+    var swipeDown: String = ""
 )

@@ -126,6 +126,7 @@ public class FolderInfo extends ItemInfo {
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
         user = Process.myUserHandle();
+
         swipeUpAction = "";
     }
 
@@ -243,7 +244,7 @@ public class FolderInfo extends ItemInfo {
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
         GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
         if (gestureItemInfo == null || gestureItemInfo.getSwipeUp() == null) {
-            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, null);
+            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
             repository.insert(gestureItemInfo);
         } else {
             gestureItemInfo.setSwipeUp(swipeUpAction);

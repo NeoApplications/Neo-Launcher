@@ -18,44 +18,50 @@
 
 package com.saggitt.omega.folder
 
-
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.FolderInfo
 import com.saggitt.omega.compose.components.DialogNegativeButton
-import com.saggitt.omega.compose.components.ListItemWithIcon
+import com.saggitt.omega.compose.components.DialogPositiveButton
+import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.gestures.GestureController
+import com.saggitt.omega.gestures.GestureHandler
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FolderListDialog(
     folder: FolderInfo,
-    openDialogCustom: MutableState<Boolean>
+    openDialogCustom: MutableState<Boolean>,
+    currentGesture: GestureHandler,
+    onClose: (GestureHandler) -> Unit
 ) {
     Dialog(
         onDismissRequest = { openDialogCustom.value = false },
@@ -63,7 +69,9 @@ fun FolderListDialog(
     ) {
         FolderListDialogUI(
             folder = folder,
-            openDialogCustom = openDialogCustom
+            currentGesture = currentGesture,
+            openDialogCustom = openDialogCustom,
+            onClose = onClose
         )
     }
 }
@@ -71,7 +79,9 @@ fun FolderListDialog(
 @Composable
 fun FolderListDialogUI(
     folder: FolderInfo,
-    openDialogCustom: MutableState<Boolean>
+    currentGesture: GestureHandler,
+    openDialogCustom: MutableState<Boolean>,
+    onClose: (GestureHandler) -> Unit
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
@@ -81,69 +91,68 @@ fun FolderListDialogUI(
         radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
-    val colors = RadioButtonDefaults.colors(
-        selectedColor = MaterialTheme.colorScheme.primary,
-        unselectedColor = Color.Gray
-    )
-
+    val gestures = GestureController.getGestureHandlers(context, true, true)
+    var selected by remember { mutableStateOf(currentGesture.javaClass.name.toString()) }
+    var selectedGesture by remember { mutableStateOf(currentGesture) }
     Card(
         shape = RoundedCornerShape(cornerRadius),
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
-        Column {
-            Column(
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            Text(
+                text = stringResource(id = R.string.folder_swipe_up),
+                style = MaterialTheme.typography.titleLarge
+            )
+            LazyColumn(
                 modifier = Modifier
-                    .weight(1f)
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .weight(1f, false)
             ) {
-                val gestures = GestureController.getGestureHandlers(context, true, true)
-                val (selectedOption, onOptionSelected) = remember {
-                    mutableStateOf(folder.swipeUpAction)
-                }
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(top = 8.dp, bottom = 8.dp)
-                        .weight(1f, false)
-                ) {
-                    itemsIndexed(gestures) { _, item ->
-                        ListItemWithIcon(
-                            title = item.displayName,
-                            modifier = Modifier.clickable {
-                                folder.setSwipeUpAction(context, item.javaClass.name.toString())
-                                onOptionSelected(item.javaClass.name.toString())
-                            },
-                            endCheckbox = {
-                                RadioButton(
-                                    selected = (item.javaClass.name.toString() == selectedOption),
-                                    onClick = {
-                                        folder.setSwipeUpAction(
-                                            context,
-                                            item.javaClass.name.toString()
-                                        )
-                                        onOptionSelected(item.javaClass.name.toString())
-                                    },
-                                    colors = colors
-                                )
-                            },
-                            verticalPadding = 2.dp
-                        )
+                items(items = gestures) {
+                    val isSelected = rememberSaveable(selected) {
+                        mutableStateOf(selected == it.javaClass.name.toString())
+                    }
+
+                    SingleSelectionListItem(
+                        text = it.displayName,
+                        isSelected = isSelected.value
+                    ) {
+                        selected = it.javaClass.name.toString()
+                        selectedGesture = it
                     }
                 }
             }
-
-            //Button Rows
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                DialogNegativeButton(
-                    cornerRadius = cornerRadius,
-                    onClick = { openDialogCustom.value = false }
-                )
-            }
         }
+
+        //Button Rows
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            DialogNegativeButton(
+                cornerRadius = cornerRadius,
+                onClick = { openDialogCustom.value = false }
+            )
+            Spacer(Modifier.weight(1f))
+            DialogPositiveButton(
+                modifier = Modifier.padding(start = 16.dp),
+                cornerRadius = cornerRadius,
+                onClick = {
+                    folder.setSwipeUpAction(context, selected)
+                    onClose(selectedGesture)
+                    openDialogCustom.value = false
+                }
+            )
+        }
+
     }
 }

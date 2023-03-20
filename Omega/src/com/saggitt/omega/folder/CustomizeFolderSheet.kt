@@ -209,7 +209,11 @@ fun CustomizeFolderView(
         if (openDialogCustom.value) {
             FolderListDialog(
                 folder = folder,
-                openDialogCustom = openDialogCustom
+                openDialogCustom = openDialogCustom,
+                currentGesture = swipeUpHandler,
+                onClose = {
+                    handlerName.value = it.displayName
+                }
             )
         }
     }
