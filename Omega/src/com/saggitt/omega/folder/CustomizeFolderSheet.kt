@@ -75,7 +75,7 @@ fun CustomizeFolderSheet(
 
     val context = LocalContext.current
 
-    val infoProvider: CustomInfoProvider<ItemInfo>? =
+    val infoProvider: CustomInfoProvider<ItemInfo> =
         CustomInfoProvider.forItem(context, folder)
 
     var title by remember { mutableStateOf("") }
@@ -84,7 +84,7 @@ fun CustomizeFolderSheet(
     DisposableEffect(key1 = null) {
         title = folder.title?.toString() ?: defaultTitle
         onDispose {
-            val previousTitle = infoProvider!!.getCustomTitle(folder)
+            val previousTitle = infoProvider.getCustomTitle(folder)
             val newTitle = if (title != defaultTitle) title else null
             if (newTitle != previousTitle) {
                 folder.setTitle(newTitle)

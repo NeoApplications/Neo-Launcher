@@ -56,6 +56,7 @@ import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -103,6 +104,7 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.folder.FolderShortcut;
 import com.saggitt.omega.preferences.NLPrefs;
 
 import java.lang.annotation.Retention;
@@ -308,6 +310,22 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (Utilities.ATLEAST_R) {
             mKeyboardInsetAnimationCallback = new KeyboardInsetAnimationCallback(this);
             setWindowInsetsAnimationCallback(mKeyboardInsetAnimationCallback);
+        }
+
+        ImageView settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setColorFilter(prefs.getProfileAccentColor().getValue(), PorterDuff.Mode.SRC_IN);
+        if (prefs.getDesktopLock().getValue()) {
+            settingsButton.setVisibility(View.GONE);
+        } else {
+            settingsButton.setOnClickListener(v -> {
+                animateClosed();
+                /*if (mInfo instanceof DrawerFolderInfo) {
+                    ((DrawerFolderInfo) mInfo).showEdit(mLauncher);
+                } else {*/
+                FolderShortcut fc = new FolderShortcut(mLauncher, mInfo);
+                fc.show();
+                //}
+            });
         }
     }
 

@@ -25,6 +25,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
@@ -35,6 +36,7 @@ class OmegaApp : Application() {
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
     val smartspace by lazy { OmegaSmartSpaceController(this) }
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -58,6 +60,14 @@ class OmegaApp : Application() {
         registerActivityLifecycleCallbacks(activityHandler)
         BlurWallpaperProvider.getInstance(this)
         Flowerpot.Manager.getInstance(this)
+    }
+
+    fun restart(recreateLauncher: Boolean = true) {
+        if (recreateLauncher) {
+            activityHandler.finishAll(recreateLauncher)
+        } else {
+            Utilities.restartLauncher(this)
+        }
     }
 
     fun performGlobalAction(action: Int): Boolean {

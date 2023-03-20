@@ -15,20 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.saggitt.omega
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.LauncherApps
-import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.android.launcher3.AppFilter
 import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
+import com.android.launcher3.LauncherRootView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
@@ -49,7 +72,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class OmegaLauncher : Launcher() {
+class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
+    ActivityResultRegistryOwner {
 
     val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
@@ -57,11 +81,24 @@ class OmegaLauncher : Launcher() {
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
 
-    val hiddenApps = ArrayList<AppInfo>()
-    val allApps = ArrayList<AppInfo>()
+    private val hiddenApps = ArrayList<AppInfo>()
+    private val allApps = ArrayList<AppInfo>()
+    private var paused = false
+    private var sRestart = false
+
+    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+    override val savedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController.savedStateRegistry
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
 
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
@@ -69,6 +106,76 @@ class OmegaLauncher : Launcher() {
 
         //Load hidden apps to use with hidden apps preference
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
+    }
+
+    override fun getActivityResultRegistry() = object : ActivityResultRegistry() {
+        override fun <I : Any?, O : Any?> onLaunch(
+            requestCode: Int,
+            contract: ActivityResultContract<I, O>,
+            input: I,
+            options: ActivityOptionsCompat?
+        ) {
+            val activity = this@OmegaLauncher
+
+            // Immediate result path
+            val synchronousResult = contract.getSynchronousResult(activity, input)
+            if (synchronousResult != null) {
+                Handler(Looper.getMainLooper()).post {
+                    dispatchResult(
+                        requestCode,
+                        synchronousResult.value
+                    )
+                }
+                return
+            }
+
+            // Start activity path
+            val intent = contract.createIntent(activity, input)
+            var optionsBundle: Bundle? = null
+            // If there are any extras, we should defensively set the classLoader
+            if (intent.extras != null && intent.extras!!.classLoader == null) {
+                intent.setExtrasClassLoader(activity.classLoader)
+            }
+            if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
+                optionsBundle =
+                    intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+                intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+            } else if (options != null) {
+                optionsBundle = options.toBundle()
+            }
+            if (RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS == intent.action) {
+                // requestPermissions path
+                var permissions =
+                    intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
+                if (permissions == null) {
+                    permissions = arrayOfNulls(0)
+                }
+                ActivityCompat.requestPermissions(activity, permissions, requestCode)
+            } else if (StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
+                val request: IntentSenderRequest =
+                    intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+                try {
+                    // startIntentSenderForResult path
+                    ActivityCompat.startIntentSenderForResult(
+                        activity, request.intentSender,
+                        requestCode, request.fillInIntent, request.flagsMask,
+                        request.flagsValues, 0, optionsBundle
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                    Handler(Looper.getMainLooper()).post {
+                        dispatchResult(
+                            requestCode, RESULT_CANCELED,
+                            Intent()
+                                .setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
+                                .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e)
+                        )
+                    }
+                }
+            } else {
+                // startActivityForResult path
+                ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle)
+            }
+        }
 
     }
 
@@ -108,10 +215,55 @@ class OmegaLauncher : Launcher() {
         return mOverlayManager
     }
 
-    inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
-        val rect = Rect()
-        dragLayer.getViewRectRelativeToSelf(view, rect)
-        prepareDummyView(rect.left, rect.top, rect.right, rect.bottom, callback)
+    override fun onStart() {
+        super.onStart()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        restartIfPending()
+        paused = false
+    }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        paused = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+
+        if (sRestart) {
+            sRestart = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        savedStateRegistryController.performSave(outState)
+    }
+
+    override fun setupViews() {
+        super.setupViews()
+        findViewById<LauncherRootView>(R.id.launcher).let {
+            ViewTreeLifecycleOwner.set(it, this)
+            it.setViewTreeSavedStateRegistryOwner(this)
+        }
+    }
+
+    private fun restartIfPending() {
+        if (sRestart) {
+            omegaApp.restart(false)
+        }
     }
 
     inline fun prepareDummyView(left: Int, top: Int, crossinline callback: (View) -> Unit) {
@@ -145,7 +297,6 @@ class OmegaLauncher : Launcher() {
     }
 
     companion object {
-        var showFolderNotificationCount = false
 
         @JvmStatic
         fun getLauncher(context: Context): OmegaLauncher {
