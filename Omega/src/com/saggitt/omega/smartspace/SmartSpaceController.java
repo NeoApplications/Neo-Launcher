@@ -19,7 +19,9 @@
 package com.saggitt.omega.smartspace;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
+import static com.saggit.omega.smartspace.SmartspaceProto.CardWrapper;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +34,6 @@ import android.os.Process;
 import android.util.Log;
 
 import com.android.launcher3.Alarm;
-import com.saggit.omega.smartspace.SmartspaceProto.CardWrapper;
 import com.saggitt.omega.util.Config;
 
 import java.io.PrintWriter;
@@ -65,6 +66,7 @@ public class SmartSpaceController implements Handler.Callback {
 
     private final Alarm mAlarm;
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public SmartSpaceController(Context context) {
         mContext = context;
         mProtoStore = new ProtoStore(mContext);
@@ -99,7 +101,7 @@ public class SmartSpaceController implements Handler.Callback {
         return sInstance;
     }
 
-    public void onNewCard(final CardInfo newCardInfo) {
+    public void onNewCard(final NewCardInfo newCardInfo) {
         if (newCardInfo != null) {
             if (newCardInfo.getUserId() != mCurrentUserId) {
                 return;
@@ -235,11 +237,8 @@ public class SmartSpaceController implements Handler.Callback {
             case 101:
                 SmartSpaceCardView[] cardViews = (SmartSpaceCardView[]) message.obj;
                 if (cardViews != null) {
-                    if (cardViews.length > 0) {
-                        mData.setWeatherCard(cardViews[0]);
-                    } else {
-                        mData.setWeatherCard(null);
-                    }
+                    mData.setWeatherCard(cardViews.length > 0 ?
+                            cardViews[0] : null);
 
                     if (cardViews.length > 1) {
                         cardView = cardViews[1];
@@ -278,7 +277,7 @@ public class SmartSpaceController implements Handler.Callback {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    private void df(CardInfo newCardInfo, SmartSpaceController.Store controller) {
+    private void df(NewCardInfo newCardInfo, SmartSpaceController.Store controller) {
         Message.obtain(mWorker, 2, controller.ordinal(), 0, newCardInfo).sendToTarget();
     }
 
@@ -290,8 +289,8 @@ public class SmartSpaceController implements Handler.Callback {
     public void printWriter(final String s, final PrintWriter printWriter) {
         printWriter.println();
         printWriter.println(s + "SmartspaceController");
-        printWriter.println(s + "  weather " + mData.getWeatherCard());
-        printWriter.println(s + "  current " + mData.getCurrentCard());
+        printWriter.println(s + "  weather " + mData.getCurrentCard());
+        printWriter.println(s + "  current " + mData.getWeatherCard());
     }
 
     public boolean cY() {

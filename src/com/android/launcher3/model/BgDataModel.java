@@ -51,6 +51,7 @@ import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.IntSparseArrayMap;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
+import com.saggitt.omega.OmegaApp;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -144,7 +145,7 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if (FeatureFlags.QSB_ON_FIRST_SCREEN || screenSet.isEmpty()) {
+        if (FeatureFlags.QSbOnFirstScreen(OmegaApp.getInstance()) || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);
         }
         return screenSet.getArray();

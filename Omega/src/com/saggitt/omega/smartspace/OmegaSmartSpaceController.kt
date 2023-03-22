@@ -36,12 +36,10 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.annotation.Keep
-import androidx.core.app.ActivityCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.notification.NotificationListener
-import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.preferences.PrefKey.NOTIFICATION_BADGING
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
 import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
@@ -59,9 +57,6 @@ import com.saggitt.omega.util.isAppEnabled
 import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.widget.Temperature
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
@@ -195,7 +190,7 @@ class OmegaSmartSpaceController(val context: Context) {
         val allProviders = providerCache.values.toSet()
         val newProviders = setOf(weatherDataProvider) + eventDataProviders
         val needsDestroy = allProviders - newProviders
-        val needsUpdate = newProviders - activeProviders.toSet()
+        val needsUpdate = newProviders - activeProviders
 
         needsDestroy.forEach {
             eventDataMap.remove(it)
@@ -245,11 +240,9 @@ class OmegaSmartSpaceController(val context: Context) {
                     Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts
                 )
             }
-
             data.forecastIntent != null -> {
                 launcher.startActivitySafely(v, data.forecastIntent, null)
             }
-
             launcher.packageManager.isAppEnabled(Config.GOOGLE_QSB, 0) -> {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("dynact://velour/weather/ProxyActivity")
@@ -259,7 +252,6 @@ class OmegaSmartSpaceController(val context: Context) {
                 )
                 launcher.startActivitySafely(v, intent, null)
             }
-
             else -> {
                 openURLInBrowser(
                     launcher, data.forecastUrl,
@@ -301,11 +293,14 @@ class OmegaSmartSpaceController(val context: Context) {
                 onFinish(true)
                 return
             }
-            ActivityCompat.requestPermissions(
-                Launcher.getLauncher(context),
-                requiredPermissions.toTypedArray(), 1031
-            )
 
+            /*BlankActivity.requestPermissions(
+                context,
+                requiredPermissions.toTypedArray(),
+                1031
+            ) { _, _, results ->
+                onFinish(results.all { it == PERMISSION_GRANTED })
+            }*/
         }
 
         open fun startListening() {
@@ -437,22 +432,19 @@ class OmegaSmartSpaceController(val context: Context) {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .putExtra(":settings:fragment_args_key", cn.flattenToString())
 
-            val message: String = context.getString(
+            val msg: String = context.getString(
                 R.string.event_provider_missing_notification_dots,
                 context.getString(providerName)
             )
-            val scope = CoroutineScope(Dispatchers.IO)
-            scope.launch {
-                BlankActivity.startBlankActivityDialog(
-                    Launcher.getLauncher(context),
-                    intent,
-                    context.getString(R.string.title_missing_notification_access),
-                    message,
-                    context.getString(R.string.title_change_settings),
-                ).apply {
-                    onFinish(checkNotificationAccess())
-                }
-            }
+
+            /*BlankActivity.startActivityWithDialog(
+                context, intent, 1030,
+                context.getString(R.string.title_missing_notification_access),
+                msg,
+                context.getString(R.string.title_change_settings)
+            ) {
+                onFinish(checkNotificationAccess())
+            }*/
         }
 
         private fun checkNotificationAccess(): Boolean {

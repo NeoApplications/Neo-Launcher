@@ -395,7 +395,7 @@ public class GridSizeMigrationTaskV2 {
             mTrgX = trgX;
             mTrgY = trgY;
             mNextStartX = 0;
-            mNextStartY = mScreenId == 0 && FeatureFlags.QSB_ON_FIRST_SCREEN
+            mNextStartY = mScreenId == 0 && FeatureFlags.QSbOnFirstScreen(mContext)
                     ? 1 /* smartspace */ : 0;
             List<DbEntry> existedEntries = mDestReader.mWorkspaceEntriesByScreenId.get(screenId);
             if (existedEntries != null) {

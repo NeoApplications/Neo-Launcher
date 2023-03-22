@@ -46,6 +46,7 @@ import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.applyAccent
 import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.runOnMainThread
 import com.saggitt.omega.widget.Temperature
@@ -282,6 +283,7 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
                             .setMessage(R.string.smartspace_widget_provider_not_found)
                             .setNegativeButton(android.R.string.cancel, null).create().apply {
                                 show()
+                                applyAccent()
                             }
 
                     }

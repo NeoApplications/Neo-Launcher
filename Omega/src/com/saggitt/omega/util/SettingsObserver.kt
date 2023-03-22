@@ -18,6 +18,7 @@ package com.saggitt.omega.util
 import android.content.ContentResolver
 import android.database.ContentObserver
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 
 interface SettingsObserver {
@@ -28,7 +29,8 @@ interface SettingsObserver {
     fun register(keySetting: String?, vararg dependentSettings: String?)
     fun unregister()
     fun onSettingChanged(keySettingEnabled: Boolean)
-    abstract class Secure(private val mResolver: ContentResolver) : ContentObserver(Handler()),
+    abstract class Secure(private val mResolver: ContentResolver) :
+        ContentObserver(Handler(Looper.getMainLooper())),
         SettingsObserver {
         private var mKeySetting: String? = null
         override fun register(keySetting: String?, vararg dependentSettings: String?) {
@@ -54,7 +56,8 @@ interface SettingsObserver {
         }
     }
 
-    abstract class System(private val mResolver: ContentResolver) : ContentObserver(Handler()),
+    abstract class System(private val mResolver: ContentResolver) :
+        ContentObserver(Handler(Looper.getMainLooper())),
         SettingsObserver {
         private var mKeySetting: String? = null
         override fun register(keySetting: String?, vararg dependentSettings: String?) {

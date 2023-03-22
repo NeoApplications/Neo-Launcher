@@ -32,15 +32,6 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         } else null
     }
 
-    init {
-        /*prefs.addOnPreferenceChangeListener(
-            this,
-            "pref_weather_api_key",
-            "pref_weather_city",
-            "pref_weather_units"
-        )*/
-    }
-
     @SuppressLint("MissingPermission")
     override fun updateData() {
         // TODO: Create a search/dropdown for cities, make Auto the default
@@ -93,33 +84,6 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         }
         updateData(null, null)
     }
-
-    override fun stopListening() {
-        super.stopListening()
-        /*prefs.removeOnPreferenceChangeListener(
-            this,
-            "pref_weather_api_key",
-            "pref_weather_city",
-            "pref_weather_units"
-        )*/
-    }
-
-    /*override fun onValueChanged(key: String, prefs: OmegaPreferences, force: Boolean) {
-        if (key in arrayOf("pref_weather_api_key", "pref_weather_city", "pref_weather_units")) {
-            if (key == "pref_weather_units") {
-                owm.setUnits(
-                    when (Temperature.unitFromString(prefs.smartspaceWeatherUnit.onGetValue())) {
-                        Temperature.Unit.Celsius -> Units.METRIC
-                        Temperature.Unit.Fahrenheit -> Units.IMPERIAL
-                        else -> Units.METRIC
-                    }
-                )
-            } else if (key == "pref_weather_api_key" && !force) {
-                owm.setApiKey(prefs.smartspaceWeatherApiKey.onGetValue())
-            }
-            if (!force) updateNow()
-        }
-    }*/
 
     companion object {
 

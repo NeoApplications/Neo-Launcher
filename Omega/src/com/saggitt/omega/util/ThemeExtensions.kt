@@ -19,6 +19,7 @@
 package com.saggitt.omega.util
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
@@ -26,13 +27,14 @@ import android.graphics.drawable.RippleDrawable
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RadioButton
+import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
-/*fun AlertDialog.applyAccent() {
-    val color = Utilities.getOmegaPrefs(context).themeAccentColor.onGetValue()
+fun AlertDialog.applyAccent() {
+    val color = Utilities.getOmegaPrefs(context).profileAccentColor.getValue()
     val buttons = listOf(
         getButton(DialogInterface.BUTTON_NEGATIVE),
         getButton(DialogInterface.BUTTON_NEUTRAL),
@@ -41,7 +43,7 @@ import com.android.launcher3.Utilities
     buttons.forEach {
         it?.setTextColor(color)
     }
-}*/
+}
 
 fun ImageView.tintDrawable(color: Int) {
     val drawable = drawable.mutate()

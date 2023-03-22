@@ -71,7 +71,6 @@ class OnboardingProvider(controller: OmegaSmartSpaceController) :
                     )
                 )
             )
-
             !devicePrefs.getBoolean(
                 PREF_HAS_OPENED_SETTINGS,
                 false
@@ -89,7 +88,6 @@ class OnboardingProvider(controller: OmegaSmartSpaceController) :
                     0
                 )
             )
-
             else -> null
         }
         updateData(null, card)

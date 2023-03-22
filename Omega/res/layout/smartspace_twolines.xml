@@ -22,9 +22,9 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-    <com.saggitt.omega.smartspace.IcuDateTextView
+    <com.saggitt.omega.smartspace.superg.IcuDateTextView
         android:id="@+id/time_above"
-        style="@style/SmartspaceTextHeadline"
+        style="@style/SmartspaceTextTitle"
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:layout_width="wrap_content"
@@ -37,14 +37,14 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:textColor="?workspaceTextColor"
-        android:textSize="@dimen/enhanced_smartspace_title_size"
+        android:textSize="@dimen/smartspace_title_size"
         android:visibility="gone"
         android:layout_marginBottom="4dp"
         tools:visibility="visible" />
 
     <com.saggitt.omega.smartspace.DoubleShadowTextView
         android:id="@+id/title_text"
-        style="@style/SmartspaceTextHeadline"
+        style="@style/SmartspaceTextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -52,7 +52,7 @@
         android:maxLines="1"
         android:textColor="?workspaceTextColor"
         android:text="@string/derived_app_name"
-        android:textSize="@dimen/enhanced_smartspace_title_size" />
+        android:textSize="@dimen/smartspace_title_size" />
 
     <LinearLayout
         android:id="@+id/subtitle_line"
@@ -76,7 +76,7 @@
 
         <com.saggitt.omega.smartspace.DoubleShadowTextView
             android:id="@+id/subtitle_text"
-            style="@style/SmartspaceTextHeadline"
+            style="@style/SmartspaceTextTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -115,7 +115,7 @@
 
             <com.saggitt.omega.smartspace.DoubleShadowTextView
                 android:id="@+id/subtitle_weather_text"
-                style="@style/SmartspaceTextHeadline"
+                style="@style/SmartspaceTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

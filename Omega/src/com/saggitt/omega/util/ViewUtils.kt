@@ -21,8 +21,6 @@ package com.saggitt.omega.util
 import android.app.PendingIntent
 import android.content.res.Resources
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.children
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -78,25 +76,5 @@ fun View.repeatOnAttached(block: suspend CoroutineScope.() -> Unit) {
         }
         launchedJob?.cancel()
         launchedJob = null
-    }
-}
-
-val ViewGroup.recursiveChildren: Sequence<View>
-    get() = children.flatMap {
-        if (it is ViewGroup) {
-            it.recursiveChildren + sequenceOf(it)
-        } else sequenceOf(it)
-    }
-
-fun ViewGroup.getAllChildren() = ArrayList<View>().also { getAllChildren(it) }
-
-fun ViewGroup.getAllChildren(list: MutableList<View>) {
-    for (i in (0 until childCount)) {
-        val child = getChildAt(i)
-        if (child is ViewGroup) {
-            child.getAllChildren(list)
-        } else {
-            list.add(child)
-        }
     }
 }

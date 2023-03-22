@@ -75,6 +75,7 @@ class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
     private val dataStore: DataStore<Preferences> = context.dataStore
     private val legacyPrefs = LegacyPreferences(context)
+    private var onChangeCallback: PreferencesChangeCallback? = null
 
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
@@ -99,9 +100,10 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
-    private fun updateSmartspaceProvider() {
-        //OmegaLauncher.getLauncher(context).omegaApp.smartspace.onProviderChanged()
+    private fun updateSmartSpaceProvider() {
+        onChangeCallback?.updateSmartspaceProvider()
     }
+
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
@@ -833,7 +835,7 @@ class NLPrefs private constructor(private val context: Context) {
             valueTransform = { OmegaSmartSpaceController.getDisplayName(context, it) }
         )
     ) {
-        updateSmartspaceProvider()
+        updateSmartSpaceProvider()
         pokeChange
     }
 
@@ -850,7 +852,7 @@ class NLPrefs private constructor(private val context: Context) {
         ),
         entries = Config.smartspaceEventProviders,
         withIcons = true,
-        onChange = { updateSmartspaceProvider() }
+        onChange = { updateSmartSpaceProvider() }
     )
 
     val notificationCountFolder = BooleanPref(
@@ -1066,6 +1068,14 @@ class NLPrefs private constructor(private val context: Context) {
                 LauncherAppState.getInstance(context).refreshAndReloadLauncher()
             }
             .launchIn(scope)
+    }
+
+    fun registerCallback(callback: PreferencesChangeCallback) {
+        onChangeCallback = callback
+    }
+
+    fun unregisterCallback() {
+        onChangeCallback = null
     }
 
     private fun initializeIconShape(shape: IconShape) {

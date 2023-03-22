@@ -360,7 +360,6 @@
     <string name="customize">Personalizar</string>
     <string name="app_name">Nome do app</string>
     <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
-    <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="icu_abbrev_date">dd MMMM</string>

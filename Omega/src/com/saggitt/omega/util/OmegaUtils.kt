@@ -38,6 +38,7 @@ import android.service.notification.StatusBarNotification
 import android.text.format.DateFormat
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -150,6 +151,19 @@ fun formatTime(calendar: Calendar, context: Context? = null): String {
 
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
+
+fun ViewGroup.getAllChildren() = ArrayList<View>().also { getAllChildren(it) }
+
+fun ViewGroup.getAllChildren(list: MutableList<View>) {
+    for (i in (0 until childCount)) {
+        val child = getChildAt(i)
+        if (child is ViewGroup) {
+            child.getAllChildren(list)
+        } else {
+            list.add(child)
+        }
+    }
+}
 
 fun StatusBarNotification.loadSmallIcon(context: Context): Drawable? {
     return notification.smallIcon?.loadDrawable(context)

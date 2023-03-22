@@ -25,9 +25,9 @@
     android:paddingBottom="8dp"
     android:animateLayoutChanges="true">
 
-    <com.saggitt.omega.smartspace.IcuDateTextView
+    <com.saggitt.omega.smartspace.superg.IcuDateTextView
         android:id="@+id/time_above"
-        style="@style/SmartspaceTextHeadline"
+        style="@style/SmartspaceTextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -67,9 +67,9 @@
             android:layout_gravity="center"
             android:orientation="horizontal">
 
-            <com.saggitt.omega.smartspace.IcuDateTextView
+            <com.saggitt.omega.smartspace.superg.IcuDateTextView
                 android:id="@+id/clock"
-                style="@style/SmartspaceTextHeadline"
+                style="@style/SmartspaceTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -82,7 +82,7 @@
                 android:maxLines="1"
                 android:scrollHorizontally="true"
                 android:textColor="?workspaceTextColor"
-                android:textSize="@dimen/enhanced_smartspace_title_size" />
+                android:textSize="@dimen/smartspace_title_size" />
 
             <LinearLayout
                 android:id="@+id/title_weather_content"
@@ -101,8 +101,8 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/title_weather_icon"
-                    android:layout_width="@dimen/enhanced_smartspace_title_size"
-                    android:layout_height="@dimen/enhanced_smartspace_title_size"
+                    android:layout_width="@dimen/smartspace_title_weather_icon_size"
+                    android:layout_height="@dimen/smartspace_title_weather_icon_size"
                     android:layout_marginEnd="4dp"
                     android:layout_gravity="center"
                     android:scaleType="fitXY"
@@ -110,13 +110,13 @@
 
                 <com.saggitt.omega.smartspace.DoubleShadowTextView
                     android:id="@+id/title_weather_text"
-                    style="@style/SmartspaceTextHeadline"
+                    style="@style/SmartspaceTextTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:drawablePadding="6dp"
                     android:textColor="?workspaceTextColor"
-                    android:textSize="@dimen/enhanced_smartspace_title_size"
+                    android:textSize="@dimen/smartspace_title_size"
                     tools:text="30°C" />
             </LinearLayout>
         </LinearLayout>
@@ -144,7 +144,7 @@
 
             <com.saggitt.omega.smartspace.DoubleShadowTextView
                 android:id="@+id/subtitle_text"
-                style="@style/SmartspaceTextHeadline"
+                style="@style/SmartspaceTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"

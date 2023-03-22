@@ -1,5 +1,28 @@
+/*
+ * This file is part of Neo Launcher
+ * Copyright (c) 2023   Neo Launcher Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.saggitt.omega.smartspace;
 
+import static com.saggit.omega.smartspace.SmartspaceProto.CardWrapper;
+import static com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.ExpiryCriteria;
+import static com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message;
+import static com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message.FormattedText;
+import static com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message.FormattedText.FormatParam;
 import static com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message.FormattedText.FormatParam.FormatParamArgs.SOMETHING2;
 
 import android.content.Context;
@@ -23,12 +46,7 @@ import com.android.launcher3.ResourceUtils;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.ShadowGenerator;
 import com.google.protobuf.ByteString;
-import com.saggit.omega.smartspace.SmartspaceProto.CardWrapper;
 import com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard;
-import com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.ExpiryCriteria;
-import com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message;
-import com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message.FormattedText;
-import com.saggit.omega.smartspace.SmartspaceProto.SmartSpaceUpdate.SmartSpaceCard.Message.FormattedText.FormatParam;
 
 public class SmartSpaceCardView {
     private final SmartSpaceCard mSmartSpaceCard;
@@ -83,7 +101,7 @@ public class SmartSpaceCardView {
         return null;
     }
 
-    public static CardWrapper cQ(Context context, CardInfo card) {
+    public static CardWrapper cQ(Context context, NewCardInfo card) {
         if (card == null) {
             return null;
         }
@@ -91,7 +109,7 @@ public class SmartSpaceCardView {
         final Bitmap ci = card.retrieveIcon(context);
         Bitmap cp;
         if (ci != null && builder.getIsIconGrayscale()) {
-            if (card.isPrimary()) {
+            if (card.mIsPrimary) {
                 cp = cP(ci, -1);
             } else {
                 cp = ci;
@@ -107,11 +125,11 @@ public class SmartSpaceCardView {
         }
         builder.setIcon(ByteString.copyFrom(flattenBitmap));
         builder.setIsIconGrayscale(cp != null && new ColorManipulation().dB(cp));
-        builder.setCard(card.getCard());
-        builder.setPublishTime(card.getPublishTime());
-        if (card.getPackageInfo() != null) {
-            builder.setGsaVersionCode(card.getPackageInfo().versionCode);
-            builder.setGsaUpdateTime(card.getPackageInfo().lastUpdateTime);
+        builder.setCard(card.mCard);
+        builder.setPublishTime(card.mPublishTime);
+        if (card.mPackageInfo != null) {
+            builder.setGsaVersionCode(card.mPackageInfo.versionCode);
+            builder.setGsaUpdateTime(card.mPackageInfo.lastUpdateTime);
         }
         return builder.build();
     }

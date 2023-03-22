@@ -80,6 +80,7 @@ fun WidgetsPrefsPage() {
                     null
                 },
                 prefs.smartspaceTime,
+                prefs.smartspaceTimeLarge,
                 prefs.smartspaceTime24H,
                 prefs.smartspaceUsePillQsb,
                 prefs.smartspaceWeatherProvider,

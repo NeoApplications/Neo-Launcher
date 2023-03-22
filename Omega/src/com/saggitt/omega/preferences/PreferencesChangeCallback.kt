@@ -1,6 +1,6 @@
 /*
  * This file is part of Neo Launcher
- * Copyright (c) 2023   Neo Launcher Team
+ * Copyright (c) 2021   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -16,17 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.preferences
 
-import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
-import com.android.launcher3.BuildConfig
+import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.blur.BlurWallpaperProvider
+import com.saggitt.omega.omegaApp
 
-class SmartspaceAppWidgetProvider : AppWidgetProvider() {
+class PreferencesChangeCallback(val launcher: OmegaLauncher) {
+    fun updateSmartspaceProvider() {
+        launcher.omegaApp.smartspace.onProviderChanged()
+    }
 
-    companion object {
-        @JvmField
-        val componentName =
-            ComponentName(BuildConfig.APPLICATION_ID, SmartspaceAppWidgetProvider::class.java.name)
+    fun updateBlur() {
+        BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
 }

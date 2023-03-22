@@ -62,9 +62,11 @@ import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.Themes;
 import com.saggitt.omega.OmegaAppKt;
+import com.saggitt.omega.OmegaLauncher;
 import com.saggitt.omega.preferences.NLPrefs;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.CardData;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
+import com.saggitt.omega.smartspace.superg.IcuDateTextView;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.widget.Temperature;
 
@@ -104,14 +106,11 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     private ImageView mSubtitleWeatherIcon;
     private final boolean mEnableShadow;
     private final Handler mHandler;
-
     private final OmegaSmartSpaceController mController;
     private boolean mFinishedInflate;
     private boolean mWeatherAvailable;
-    private final NLPrefs mPrefs;
-
+    private final NLPrefs prefs;
     private final ShadowGenerator mShadowGenerator;
-
     private final int mTitleSize;
     private final int mTitleMinSize;
     private final int mHorizontalPadding;
@@ -128,7 +127,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         super(context, set);
 
         mController = OmegaAppKt.getOmegaApp(context).getSmartspace();
-        mPrefs = Utilities.getOmegaPrefs(context);
+        prefs = Utilities.getOmegaPrefs(context);
 
         mShadowGenerator = new ShadowGenerator(ResourceUtils.pxFromDp(48, getResources().getDisplayMetrics()));
 
@@ -161,17 +160,26 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         ds = smartSpaceController.cY();
         mSmartspaceBackgroundRes = R.drawable.bg_smartspace;
         textPaint = new TextPaint();
-        textPaint.setTextSize((float) getResources().getDimensionPixelSize(R.dimen.enhanced_smartspace_title_size));
+        textPaint.setTextSize((float) getResources().getDimensionPixelSize(R.dimen.smartspace_title_size));
         mEnableShadow = !Themes.getAttrBoolean(context, R.attr.isWorkspaceDarkText);
 
         Resources res = getResources();
-        mTitleSize = res.getDimensionPixelSize(R.dimen.enhanced_smartspace_title_size);
-        mTitleMinSize = res.getDimensionPixelSize(R.dimen.enhanced_smartspace_subtitle_size);
+        mTitleSize = res.getDimensionPixelSize(R.dimen.smartspace_title_size);
+        mTitleMinSize = res.getDimensionPixelSize(R.dimen.smartspace_title_min_size);
         mHorizontalPadding = res.getDimensionPixelSize(R.dimen.smartspace_horizontal_padding);
         mSeparatorWidth = res.getDimensionPixelSize(R.dimen.smartspace_title_sep_width);
         mWeatherIconSize = res.getDimensionPixelSize(R.dimen.smartspace_title_weather_icon_size);
 
         setClipChildren(false);
+
+        try {
+            Launcher launcher = Launcher.getLauncher(getContext());
+            if (launcher instanceof OmegaLauncher) {
+                ((OmegaLauncher) launcher).registerSmartspaceView(this);
+            }
+        } catch (IllegalArgumentException ignored) {
+
+        }
     }
 
     @Override
@@ -282,7 +290,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
                 mSubtitleIcon.setVisibility(View.GONE);
             }
 
-            clockAboveTextSize = R.dimen.enhanced_smartspace_title_size;
+            clockAboveTextSize = R.dimen.smartspace_title_size;
         } else {
             mSubtitleLine.setVisibility(View.GONE);
             mSubtitleText.setOnClickListener(null);
@@ -294,7 +302,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     }
 
     private void bindClockAndSeparator(boolean forced) {
-        if (mPrefs.getSmartspaceDate().getValue() || mPrefs.getSmartspaceTime().getValue()) {
+        if (prefs.getSmartspaceDate().getValue() || prefs.getSmartspaceTime().getValue()) {
             mClockView.setVisibility(View.VISIBLE);
             mClockView.setOnClickListener(mCalendarClickListener);
             if (forced)
@@ -306,11 +314,11 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     }
 
     private void bindClockAbove(boolean forced) {
-        if (mPrefs.getSmartspaceTime().getValue() && mPrefs.getSmartspaceTimeLarge().getValue()) {
+        if (prefs.getSmartspaceTime().getValue() && prefs.getSmartspaceTimeLarge().getValue()) {
             mClockAboveView.setVisibility(View.VISIBLE);
             mClockAboveView.setOnClickListener(mClockClickListener);
             if (forced)
-                mClockAboveView.getTimeText(true);
+                mClockView.getTimeText(true);
         } else {
             mClockAboveView.setVisibility(GONE);
         }
@@ -322,20 +330,12 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
             container.setVisibility(View.VISIBLE);
             container.setOnClickListener(mWeatherClickListener);
             container.setOnLongClickListener(co());
-            NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
             String currentUnit = prefs.getSmartspaceWeatherUnit().getValue();
             title.setText(weather.getTitle(Temperature.Companion.unitFromString(currentUnit)));
             icon.setImageBitmap(addShadowToBitmap(weather.getIcon()));
         } else {
             container.setVisibility(View.GONE);
         }
-    }
-
-    public void reloadCustomizations() {
-        if (!mDoubleLine) {
-            bindClockAndSeparator(true);
-        }
-        bindClockAbove(true);
     }
 
     private Bitmap addShadowToBitmap(Bitmap bitmap) {
@@ -407,7 +407,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         }
     }
 
-    public void onAnimationUpdate(final ValueAnimator valueAnimator) {
+    public void onAnimationUpdate(@NonNull final ValueAnimator valueAnimator) {
         invalidate();
     }
 

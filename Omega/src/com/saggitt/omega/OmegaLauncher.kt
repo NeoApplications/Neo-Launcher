@@ -65,6 +65,8 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.PreferencesChangeCallback
+import com.saggitt.omega.smartspace.SmartSpaceView
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
@@ -80,6 +82,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
+    private val prefCallback = PreferencesChangeCallback(this)
 
     private val hiddenApps = ArrayList<AppInfo>()
     private val allApps = ArrayList<AppInfo>()
@@ -99,7 +102,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-
+        prefs.registerCallback(prefCallback)
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
@@ -241,7 +244,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun onDestroy() {
         super.onDestroy()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-
+        prefs.unregisterCallback()
         if (sRestart) {
             sRestart = false
         }
@@ -284,6 +287,10 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
         dummyView.requestLayout()
         dummyView.post { callback(dummyView) }
+    }
+
+    fun registerSmartspaceView(smartspace: SmartSpaceView) {
+        defaultOverlay.registerSmartSpaceView(smartspace)
     }
 
     override fun createTouchControllers(): Array<TouchController> {

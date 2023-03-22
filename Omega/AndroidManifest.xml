@@ -104,5 +104,54 @@
             android:name="com.saggitt.omega.BlankActivity"
             android:exported="true"
             android:theme="@style/Theme.Transparent" />
+
+        <!-- DT2S using device admin -->
+        <receiver
+            android:name="com.saggitt.omega.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
+            android:description="@string/dt2s_admin_hint"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/sleep_admin_policy" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.saggitt.omega.OmegaAccessibilityService"
+            android:exported="true"
+            android:label="@string/derived_app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.android.launcher3.uioverrides.dynamicui.WallpaperManagerCompatVL$ColorExtractionService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":wallpaper_chooser" />
+
+        <receiver
+            android:name="com.saggitt.omega.smartspace.superg.OPAStatusReceiver"
+            android:exported="false"
+            android:permission="android.permission.CAPTURE_AUDIO_HOTWORD">
+            <intent-filter>
+                <action android:name="com.google.android.systemui.OPA_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.saggitt.omega.smartspace.SmartSpaceBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>

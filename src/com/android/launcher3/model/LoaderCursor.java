@@ -460,7 +460,7 @@ public class LoaderCursor extends CursorWrapper {
 
         if (!occupied.containsKey(item.screenId)) {
             GridOccupancy screen = new GridOccupancy(countX + 1, countY + 1);
-            if (item.screenId == Workspace.FIRST_SCREEN_ID && FeatureFlags.QSB_ON_FIRST_SCREEN) {
+            if (item.screenId == Workspace.FIRST_SCREEN_ID && FeatureFlags.QSbOnFirstScreen(mContext)) {
                 // Mark the first X columns (X is width of the search container) in the first row as
                 // occupied (if the feature is enabled) in order to account for the search
                 // container.

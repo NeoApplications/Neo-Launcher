@@ -18,6 +18,9 @@
 
 package com.saggitt.omega.smartspace.superg;
 
+import static com.saggitt.omega.smartspace.OmegaSmartSpaceController.CardData;
+import static com.saggitt.omega.smartspace.OmegaSmartSpaceController.Listener;
+import static com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,8 +34,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
@@ -43,21 +44,21 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.saggitt.omega.OmegaAppKt;
 import com.saggitt.omega.preferences.NLPrefs;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController;
-import com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
 import com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut;
 import com.saggitt.omega.util.ContextExtensionsKt;
 import com.saggitt.omega.util.OmegaUtilsKt;
 import com.saggitt.omega.widget.Temperature;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A simple view used to show the region blocked by QSB during drag and drop.
  */
-public class QsbBlockerView extends FrameLayout implements OmegaSmartSpaceController.Listener,
+public class QsbBlockerView extends FrameLayout implements Listener,
         View.OnClickListener, View.OnLongClickListener {
     private final OmegaSmartSpaceController mController;
     private int mState = 0;
     private View mView;
-    private BubbleTextView mDummyBubbleTextView;
 
     private final Paint mBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -129,7 +130,7 @@ public class QsbBlockerView extends FrameLayout implements OmegaSmartSpaceContro
     }
 
     @Override
-    public void onDataUpdated(@Nullable WeatherData weather, @Nullable OmegaSmartSpaceController.CardData card) {
+    public void onDataUpdated(@Nullable WeatherData weather, @Nullable CardData card) {
         final int oldState = mState;
         final View oldView = mView;
 
