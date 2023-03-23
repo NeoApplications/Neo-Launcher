@@ -18,6 +18,9 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,8 +35,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.saggitt.omega.changeDefaultHome
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -71,12 +76,33 @@ fun MainPrefsPage() {
     val navController = LocalNavController.current
     val destination = subRoute(Routes.PREFS_DEV)
 
+    fun resolveDefaultHome(): String? {
+        val homeIntent: Intent = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_HOME)
+        val info: ResolveInfo? = context.packageManager
+            .resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        return if (info?.activityInfo != null) {
+            info.activityInfo.packageName
+        } else {
+            null
+        }
+    }
+
     OmegaAppTheme {
         ViewWithActionBar(
             title = stringResource(R.string.settings_button_text),
             showBackButton = false,
             actions = {
                 OverflowMenu {
+                    if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
+                        DropdownMenuItem(
+                            onClick = {
+                                changeDefaultHome(context)
+                                hideMenu()
+                            },
+                            text = { Text(text = stringResource(id = R.string.change_default_home)) }
+                        )
+                    }
                     DropdownMenuItem(
                         onClick = {
                             Utilities.killLauncher()
