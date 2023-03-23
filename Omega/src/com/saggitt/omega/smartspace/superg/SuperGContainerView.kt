@@ -22,13 +22,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.View
 import com.android.launcher3.DeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.saggitt.omega.util.createRipplePill
 import com.saggitt.omega.util.dpToPx
 import com.saggitt.omega.util.getColorAttr
+import kotlin.math.max
 
 class SuperGContainerView @JvmOverloads constructor(
     paramContext: Context?,
@@ -74,12 +74,12 @@ class SuperGContainerView @JvmOverloads constructor(
             val layoutParams = mQsbView!!.layoutParams as LayoutParams
             layoutParams.width = qsbWidth / deviceProfile.inv.numColumns
             if (deviceProfile.isVerticalBarLayout) {
-                layoutParams.width = Math.max(
+                layoutParams.width = max(
                     layoutParams.width,
                     resources.getDimensionPixelSize(R.dimen.qsb_min_width_with_mic)
                 )
             } else {
-                layoutParams.width = Math.max(
+                layoutParams.width = max(
                     layoutParams.width,
                     resources.getDimensionPixelSize(R.dimen.qsb_min_width_portrait)
                 )
@@ -95,13 +95,10 @@ class SuperGContainerView @JvmOverloads constructor(
     }
 
     override fun setGoogleAnimationStart(rect: Rect?, intent: Intent?) {}
-
     override fun applyQsbColor() {
         super.applyQsbColor()
         val radius = dpToPx(100f)
         mQsbView!!.background =
             createRipplePill(context, context.getColorAttr(R.attr.popupColorPrimary), radius)
     }
-
-    override fun onClick(view: View) {}
 }
