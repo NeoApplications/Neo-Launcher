@@ -29,10 +29,10 @@ import com.android.launcher3.R
 
 class DoubleShadowTextClock @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
+    attributeSet: AttributeSet? = null,
     i: Int = 0
 ) :
-    TextClock(context, attrs, i) {
+    TextClock(context, attributeSet, i) {
     private val ambientShadowBlur: Float
     private val ambientShadowColor: Int
     private val keyShadowBlur: Float
@@ -41,7 +41,7 @@ class DoubleShadowTextClock @JvmOverloads constructor(
 
     init {
         val ta = context.obtainStyledAttributes(
-            attrs, intArrayOf(
+            attributeSet, intArrayOf(
                 R.attr.ambientShadowColor,
                 R.attr.keyShadowColor,
                 R.attr.ambientShadowBlur,
