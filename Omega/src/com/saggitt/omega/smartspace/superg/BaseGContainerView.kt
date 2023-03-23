@@ -48,7 +48,7 @@ abstract class BaseGContainerView(
     FrameLayout(paramContext!!, paramAttributeSet, paramInt), View.OnClickListener,
     OnProviderChangeListener {
     private var mObjectAnimator: ObjectAnimator? = null
-    var mQsbView: View? = null
+    protected var mQsbView: View? = null
     protected var mConnectorView: QsbConnector? = null
     private val mADInterpolator: Interpolator = AccelerateDecelerateInterpolator()
     private val mElevationAnimator: ObjectAnimator?
@@ -78,14 +78,13 @@ abstract class BaseGContainerView(
             if (qsbHidden) {
                 hideQsbImmediately()
             }
-            mQsbView!!.setOnClickListener(this)
+            mQsbView?.setOnClickListener(this)
         }
         loadIcon()
         applyQsbColor()
     }
 
     protected open fun applyQsbColor() {}
-
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         applyOpaPreference()
@@ -170,7 +169,6 @@ abstract class BaseGContainerView(
     }
 
     protected open fun setGoogleAnimationStart(rect: Rect?, intent: Intent?) {}
-
     private fun loadWindowFocus() {
         if (hasWindowFocus()) {
             mWindowHasFocus = true
@@ -234,7 +232,7 @@ abstract class BaseGContainerView(
         val context = context
         try {
             context.startActivity(
-                Intent(TEXT_ASSIST)
+                Intent(Config.GOOGLE_TEXT_ASSIST)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                     .setPackage(Config.GOOGLE_QSB)
             )
@@ -269,9 +267,5 @@ abstract class BaseGContainerView(
             val gIcon = mQsbView!!.findViewById<ImageView>(R.id.g_icon)
             gIcon.setImageDrawable(provider.icon)
         }
-    }
-
-    companion object {
-        private const val TEXT_ASSIST = "com.google.android.googlequicksearchbox.TEXT_ASSIST"
     }
 }
