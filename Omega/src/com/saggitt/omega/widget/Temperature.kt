@@ -28,7 +28,6 @@ class Temperature(val value: Int, val unit: Unit) {
     }
 
     enum class Unit(val freezingPoint: Float, boilingPoint: Float, val suffix: String) {
-
         Celsius(0f, 100f, "°C"),
         Fahrenheit(32f, 212f, "°F"),
         Kelvin(273f, 373f, "K"),
@@ -68,6 +67,5 @@ class Temperature(val value: Int, val unit: Unit) {
                 else -> throw IllegalArgumentException("unknown unit $unit")
             }
         }
-
     }
 }
