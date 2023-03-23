@@ -269,6 +269,16 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
+    fun scheduleRestart() {
+        if (paused) {
+            sRestart = true
+        } else {
+            Utilities.restartLauncher(this)
+        }
+    }
+
+    fun shouldRecreate() = !sRestart
+
     inline fun prepareDummyView(left: Int, top: Int, crossinline callback: (View) -> Unit) {
         val size = resources.getDimensionPixelSize(R.dimen.options_menu_thumb_size)
         val halfSize = size / 2

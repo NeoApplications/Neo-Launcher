@@ -93,6 +93,8 @@ class NLPrefs private constructor(private val context: Context) {
     }
 
     private val pokeChange = { pokeChange() }
+    val updateBlur = { updateBlur() }
+    val recreate = { recreate() }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -171,7 +173,8 @@ class NLPrefs private constructor(private val context: Context) {
         summaryId = R.string.summary__theme_blur,
         dataStore = dataStore,
         key = PrefKey.PROFILE_BLUR_ENABLED,
-        defaultValue = false
+        defaultValue = false,
+        onChange = { updateBlur }
     )
 
     var profileBlurRadius = FloatPref(
@@ -750,7 +753,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_ENABLED,
         titleId = R.string.title_smartspace,
-        defaultValue = false,
+        defaultValue = false
     )
 
     var smartspaceWidgetId = IntPref(
@@ -765,14 +768,6 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_PILL_STYLE,
         titleId = R.string.title_use_pill_qsb,
         defaultValue = false,
-    )
-
-    val smartspaceCalendar = StringSelectionPref(
-        dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_CALENDAR,
-        titleId = R.string.title_smartspace_calendar,
-        defaultValue = context.getString(R.string.smartspace_calendar_gregorian),
-        entries = Config.calendarOptions(context)
     )
 
     val smartspaceDate = BooleanPref(
@@ -822,7 +817,7 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_UNIT,
         titleId = R.string.title_smartspace_weather_units,
         defaultValue = Temperature.Unit.Celsius.toString(),
-        entries = temperatureUnitOptions,
+        entries = temperatureUnitOptions
     )
 
     var smartspaceWeatherProvider = StringSelectionPref(
@@ -1076,6 +1071,14 @@ class NLPrefs private constructor(private val context: Context) {
 
     fun unregisterCallback() {
         onChangeCallback = null
+    }
+
+    fun recreate() {
+        onChangeCallback?.recreate()
+    }
+
+    private fun updateBlur() {
+        onChangeCallback?.updateBlur()
     }
 
     private fun initializeIconShape(shape: IconShape) {

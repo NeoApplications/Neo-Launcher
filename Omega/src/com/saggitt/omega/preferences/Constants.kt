@@ -46,6 +46,11 @@ val temperatureUnitOptions = listOfNotNull(
     Temperature.Unit.Celsius,
     Temperature.Unit.Fahrenheit,
     Temperature.Unit.Kelvin,
+    Temperature.Unit.Rakine,
+    Temperature.Unit.Delisle,
+    Temperature.Unit.Newton,
+    Temperature.Unit.Reaumur,
+    Temperature.Unit.Romer
 ).associateBy(
     keySelector = { it.toString() },
     valueTransform = { "${it.name} (${it.suffix})" }

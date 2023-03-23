@@ -40,6 +40,7 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.notification.NotificationListener
+import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.preferences.PrefKey.NOTIFICATION_BADGING
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
 import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
@@ -294,13 +295,13 @@ class OmegaSmartSpaceController(val context: Context) {
                 return
             }
 
-            /*BlankActivity.requestPermissions(
+            BlankActivity.requestPermissions(
                 context,
                 requiredPermissions.toTypedArray(),
                 1031
             ) { _, _, results ->
                 onFinish(results.all { it == PERMISSION_GRANTED })
-            }*/
+            }
         }
 
         open fun startListening() {
@@ -437,14 +438,14 @@ class OmegaSmartSpaceController(val context: Context) {
                 context.getString(providerName)
             )
 
-            /*BlankActivity.startActivityWithDialog(
+            BlankActivity.startActivityWithDialog(
                 context, intent, 1030,
                 context.getString(R.string.title_missing_notification_access),
                 msg,
                 context.getString(R.string.title_change_settings)
             ) {
                 onFinish(checkNotificationAccess())
-            }*/
+            }
         }
 
         private fun checkNotificationAccess(): Boolean {
@@ -469,7 +470,6 @@ class OmegaSmartSpaceController(val context: Context) {
         val forecastIntent: Intent? = null,
         val pendingIntent: PendingIntent? = null
     ) {
-
         fun getTitle(unit: Temperature.Unit): String {
             return "${temperature.inUnit(unit)}${unit.suffix}"
         }

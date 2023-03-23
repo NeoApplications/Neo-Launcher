@@ -23,11 +23,19 @@ import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.omegaApp
 
 class PreferencesChangeCallback(val launcher: OmegaLauncher) {
+    fun recreate() {
+        if (launcher.shouldRecreate()) launcher.recreate()
+    }
+
     fun updateSmartspaceProvider() {
         launcher.omegaApp.smartspace.onProviderChanged()
     }
 
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
+    }
+
+    fun updateWeatherData() {
+        launcher.omegaApp.smartspace.forceUpdateWeather()
     }
 }

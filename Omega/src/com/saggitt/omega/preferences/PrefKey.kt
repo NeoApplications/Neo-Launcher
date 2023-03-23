@@ -108,7 +108,6 @@ object PrefKey {
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")
     val WIDGETS_SMARTSPACE_WIDGET_ID = intPreferencesKey("widgets_smartspace_id")
-    val WIDGETS_SMARTSPACE_CALENDAR = stringPreferencesKey("widgets_smartspace_calendar")
     val WIDGETS_SMARTSPACE_DATE = booleanPreferencesKey("widgets_smartspace_date")
     val WIDGETS_SMARTSPACE_TIME = booleanPreferencesKey("widgets_smartspace_time")
     val WIDGETS_SMARTSPACE_TIME_LARGE = booleanPreferencesKey("widgets_smartspace_large_clock")

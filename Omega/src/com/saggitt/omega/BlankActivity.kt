@@ -17,82 +17,52 @@
 
 package com.saggitt.omega
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.ResultReceiver
-import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.ContextThemeWrapper
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.core.view.WindowCompat
-import com.saggitt.omega.theme.OmegaAppTheme
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import androidx.core.app.ActivityCompat
+import com.saggitt.omega.theme.ThemeOverride
+import com.saggitt.omega.util.Config.Companion.REQUEST_PERMISSION_LOCATION_ACCESS
+import com.saggitt.omega.util.applyAccent
 
 class BlankActivity : AppCompatActivity() {
 
-    private val resultReceiver by lazy { intent.getParcelableExtra<ResultReceiver>("callback")!! }
+    private val requestCode by lazy { intent.getIntExtra("requestCode", 0) }
+    private val permissionRequestCode by lazy { intent.getIntExtra("permissionRequestCode", 0) }
+    private val resultReceiver by lazy { intent.getParcelableExtra("callback") as ResultReceiver? }
     private var resultSent = false
     private var firstResume = true
     private var targetStarted = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        if (!intent.hasExtra("dialogTitle")) {
-            startTargetActivity()
-            return
-        }
-        setContent {
-            OmegaAppTheme() {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = ModalBottomSheetDefaults.scrimColor
-                ) {
-                    AlertDialog(
-                        onDismissRequest = { if (!targetStarted) finish() },
-                        confirmButton = {
-                            Button(onClick = { startTargetActivity() }) {
-                                Text(text = intent.getStringExtra("positiveButton")!!)
-                            }
-                        },
-                        dismissButton = {
-                            OutlinedButton(onClick = { finish() }) {
-                                Text(text = stringResource(id = android.R.string.cancel))
-                            }
-                        },
-                        title = {
-                            Text(text = intent.getStringExtra("dialogTitle")!!)
-                        },
-                        text = {
-                            Text(text = intent.getStringExtra("dialogMessage")!!)
-                        }
-                    )
-                }
-            }
-        }
-    }
 
     override fun onResume() {
         super.onResume()
 
         if (firstResume) {
             firstResume = false
-            return
+            if (intent.hasExtra("dialogTitle")) {
+                val theme = ThemeOverride.Settings().getTheme(this)
+                AlertDialog.Builder(ContextThemeWrapper(this, theme))
+                    .setTitle(intent.getCharSequenceExtra("dialogTitle"))
+                    .setMessage(intent.getCharSequenceExtra("dialogMessage"))
+                    .setOnDismissListener { if (!targetStarted) finish() }
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
+                    .setPositiveButton(intent.getStringExtra("positiveButton")) { _, _ ->
+                        startTargetActivity()
+                    }
+                    .show()
+                    .applyAccent()
+            } else {
+                startTargetActivity()
+            }
+        } else {
+            finish()
         }
-        finish()
     }
 
     private fun startTargetActivity() {
@@ -101,13 +71,14 @@ class BlankActivity : AppCompatActivity() {
                 if (intent.hasExtra("dialogTitle")) {
                     startActivity(intent.getParcelableExtra("intent"))
                 } else {
-                    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                        resultReceiver.send(it.resultCode, it.data?.extras)
-                        resultSent = true
-                        finish()
-                    }.launch(intent.getParcelableExtra("intent"))
+                    intent.getParcelableExtra<Intent>("intent")
+                        ?.let { startActivityForResult(it, requestCode) }
                 }
             }
+
+            intent.hasExtra("permissions") -> ActivityCompat.requestPermissions(
+                this, intent.getStringArrayExtra("permissions")!!, permissionRequestCode
+            )
 
             else -> {
                 finish()
@@ -117,64 +88,128 @@ class BlankActivity : AppCompatActivity() {
         targetStarted = true
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == permissionRequestCode) {
+            resultReceiver?.send(RESULT_OK, Bundle(2).apply {
+                putStringArray("permissions", permissions)
+                putIntArray("grantResults", grantResults)
+            })
+            resultSent = true
+            finish()
+        } else if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
+            omegaApp.smartspace.updateWeatherData()
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == this.requestCode) {
+            if (data != null) {
+                resultReceiver?.send(resultCode, data.extras)
+            }
+            resultSent = true
+            finish()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
         if (!resultSent && intent.hasExtra("callback")) {
             resultSent = true
-            resultReceiver.send(RESULT_CANCELED, null)
+            resultReceiver?.send(RESULT_CANCELED, null)
         }
     }
 
     companion object {
 
-        suspend fun startBlankActivityDialog(
-            activity: Activity, targetIntent: Intent,
-            dialogTitle: String, dialogMessage: String,
-            positiveButton: String
+        fun startActivityForResult(
+            context: Context, targetIntent: Intent, requestCode: Int,
+            flags: Int, callback: (Int, Bundle?) -> Unit
         ) {
-            start(activity, targetIntent, Bundle().apply {
-                putParcelable("intent", targetIntent)
-                putString("dialogTitle", dialogTitle)
-                putString("dialogMessage", dialogMessage)
-                putString("positiveButton", positiveButton)
-            })
-        }
+            val intent = Intent(context, BlankActivity::class.java).apply {
+                putExtra("intent", targetIntent)
+                putExtra("requestCode", requestCode)
+                putExtra("callback", object : ResultReceiver(Handler()) {
 
-        suspend fun startBlankActivityForResult(
-            activity: Activity,
-            targetIntent: Intent
-        ): ActivityResult {
-            return start(activity, targetIntent, Bundle.EMPTY)
-        }
-
-        private suspend fun start(
-            activity: Activity,
-            targetIntent: Intent,
-            extras: Bundle
-        ): ActivityResult {
-            return suspendCoroutine { continuation ->
-                val intent = Intent(activity, BlankActivity::class.java)
-                intent.putExtras(extras)
-                intent.putExtra("intent", targetIntent)
-                val resultReceiver = createResultReceiver {
-                    continuation.resume(it)
-                }
-                activity.startActivity(intent.putExtra("callback", resultReceiver))
-            }
-        }
-
-        private fun createResultReceiver(callback: (ActivityResult) -> Unit): ResultReceiver {
-            return object : ResultReceiver(Handler(Looper.myLooper()!!)) {
-
-                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                    val data = Intent()
-                    if (resultData != null) {
-                        data.putExtras(resultData)
+                    override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                        callback(resultCode, resultData)
                     }
-                    callback(ActivityResult(resultCode, data))
-                }
+                })
+                addFlags(flags)
             }
+            start(context, intent)
+        }
+
+        fun startActivityWithDialog(
+            context: Context, targetIntent: Intent, requestCode: Int,
+            dialogTitle: CharSequence, dialogMessage: CharSequence,
+            positiveButton: String, callback: (Int) -> Unit
+        ) {
+            val intent = Intent(context, BlankActivity::class.java).apply {
+                putExtra("intent", targetIntent)
+                putExtra("requestCode", requestCode)
+                putExtra("dialogTitle", dialogTitle)
+                putExtra("dialogMessage", dialogMessage)
+                putExtra("positiveButton", positiveButton)
+                putExtra("callback", object : ResultReceiver(Handler()) {
+
+                    override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                        callback(resultCode)
+                    }
+                })
+            }
+            start(context, intent)
+        }
+
+        inline fun requestPermission(
+            context: Context, permission: String, requestCode: Int,
+            crossinline callback: (Boolean) -> Unit
+        ) {
+            requestPermissions(context, arrayOf(permission), requestCode) { _, _, grantResults ->
+                callback(grantResults.all { it == PackageManager.PERMISSION_GRANTED })
+            }
+        }
+
+        fun requestPermissions(
+            context: Context, permissions: Array<String>, requestCode: Int,
+            callback: (Int, Array<String>, IntArray) -> Unit
+        ) {
+            val intent = Intent(context, BlankActivity::class.java).apply {
+                putExtra("permissions", permissions)
+                putExtra("permissionRequestCode", requestCode)
+                putExtra("callback", object : ResultReceiver(Handler()) {
+
+                    override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                        if (resultCode == RESULT_OK && resultData != null) {
+                            callback(
+                                requestCode,
+                                resultData.getStringArray("permissions")!!,
+                                resultData.getIntArray("grantResults")!!
+                            )
+                        } else {
+                            callback(requestCode, permissions,
+                                IntArray(permissions.size) { PackageManager.PERMISSION_DENIED })
+                        }
+                    }
+                })
+            }
+            start(context, intent)
+        }
+
+        private fun start(context: Context, intent: Intent) {
+            val foreground = context.omegaApp.activityHandler.foregroundActivity ?: context
+            if (foreground === context) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            foreground.startActivity(intent)
         }
     }
 }

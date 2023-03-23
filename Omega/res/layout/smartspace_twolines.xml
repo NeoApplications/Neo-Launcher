@@ -42,7 +42,7 @@
         android:layout_marginBottom="4dp"
         tools:visibility="visible" />
 
-    <com.saggitt.omega.smartspace.DoubleShadowTextView
+    <com.saggitt.omega.smartspace.superg.DoubleShadowTextView
         android:id="@+id/title_text"
         style="@style/SmartspaceTextTitle"
         android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
             android:layout_marginEnd="6dp"
             android:layout_weight="0.0" />
 
-        <com.saggitt.omega.smartspace.DoubleShadowTextView
+        <com.saggitt.omega.smartspace.superg.DoubleShadowTextView
             android:id="@+id/subtitle_text"
             style="@style/SmartspaceTextTitle"
             android:layout_width="wrap_content"
@@ -113,7 +113,7 @@
                 android:layout_marginEnd="4dp"
                 android:scaleType="fitXY" />
 
-            <com.saggitt.omega.smartspace.DoubleShadowTextView
+            <com.saggitt.omega.smartspace.superg.DoubleShadowTextView
                 android:id="@+id/subtitle_weather_text"
                 style="@style/SmartspaceTextTitle"
                 android:layout_width="wrap_content"

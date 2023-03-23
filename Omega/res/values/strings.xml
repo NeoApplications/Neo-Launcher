@@ -263,7 +263,6 @@
     <string name="title_smartspace">Show Smartspace</string>
     <string name="title_smartspace_time">Show Time</string>
     <string name="title_smartspace_date">Show Date</string>
-    <string name="title_smartspace_calendar">Select Calendar</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>
     <string name="title_smartspace_widget_provider">Weather source</string>
     <string name="title_smartspace_weather_units">Temperature unit</string>
@@ -272,11 +271,6 @@
     <string name="google_app" translatable="false">Google app</string>
     <string name="pref_shelf_summary">To the left of the main Home screen</string>
     <string name="accessibility_smartspace_page">Page %1$d of %2$d</string>
-
-    <string name="smartspace_calendar_gregorian" translatable="false">gregorian</string>
-    <string name="title_calendar_gregorian">Gregorian</string>
-    <string name="smartspace_calendar_persian" translatable="false">persian</string>
-    <string name="title_calendar_persian">Persian</string>
 
     <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>

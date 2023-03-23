@@ -64,8 +64,8 @@ abstract class NeoLauncherDb : RoomDatabase() {
                 database.execSQL(
                     "CREATE TABLE GestureItemInfo (" +
                             "packageName TEXT not Null, " +
-                            "swipeUp TEXT NULL DEFAULT 'none', " +
-                            "swipeDown TEXT NULL DEFAULT 'none', " +
+                            "swipeUp TEXT NULL DEFAULT '', " +
+                            "swipeDown TEXT NULL DEFAULT '', " +
                             "PRIMARY KEY(packageName))"
                 )
             }

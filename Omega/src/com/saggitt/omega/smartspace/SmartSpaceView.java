@@ -18,6 +18,8 @@
 
 package com.saggitt.omega.smartspace;
 
+import static com.android.launcher3.icons.IconProvider.parseComponents;
+
 import android.animation.ValueAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -25,6 +27,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -66,8 +69,10 @@ import com.saggitt.omega.OmegaLauncher;
 import com.saggitt.omega.preferences.NLPrefs;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.CardData;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
+import com.saggitt.omega.smartspace.superg.DoubleShadowTextView;
 import com.saggitt.omega.smartspace.superg.IcuDateTextView;
 import com.saggitt.omega.util.OmegaUtilsKt;
+import com.saggitt.omega.util.PackageUtilsKt;
 import com.saggitt.omega.widget.Temperature;
 
 import org.jetbrains.annotations.NotNull;
@@ -76,6 +81,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListener, ValueAnimator.AnimatorUpdateListener,
         View.OnClickListener, View.OnLongClickListener, Runnable, OmegaSmartSpaceController.Listener {
@@ -92,7 +98,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     private ViewGroup mSmartspaceContent;
     private final SmartSpaceController smartSpaceController;
     private SmartSpaceData smartSpaceData;
-    private BubbleTextView dr;
+    private BubbleTextView dummyView;
     private boolean ds;
     private boolean mDoubleLine;
     private final OnClickListener mCalendarClickListener;
@@ -121,7 +127,8 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     private final Rect mTextBounds = new Rect();
 
     private boolean mPerformingSetup = false;
-    public static final String GOOGLE_CALENDAR = "com.google.android.calendar";
+    protected List<ComponentName> dynamicCalendars = new ArrayList<>();
+    private View mTitleSeparator;
 
     public SmartSpaceView(final Context context, AttributeSet set) {
         super(context, set);
@@ -130,6 +137,14 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         prefs = Utilities.getOmegaPrefs(context);
 
         mShadowGenerator = new ShadowGenerator(ResourceUtils.pxFromDp(48, getResources().getDisplayMetrics()));
+
+        dynamicCalendars.addAll(parseComponents(context, R.array.dynamic_calendar_components_name));
+        PackageManager pm = context.getPackageManager();
+        //Filter installed calendars
+        dynamicCalendars = dynamicCalendars
+                .stream()
+                .filter(componentName -> PackageUtilsKt.isPackageInstalled(pm, componentName.getPackageName()))
+                .collect(Collectors.toList());
 
         mCalendarClickListener = v -> {
             final Uri content_URI = CalendarContract.CONTENT_URI;
@@ -142,7 +157,8 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
                 Launcher.getLauncher(getContext()).startActivitySafely(v, addFlags, null);
             } catch (ActivityNotFoundException ex) {
                 context.getSystemService(LauncherApps.class).startAppDetailsActivity(
-                        new ComponentName(GOOGLE_CALENDAR, ""), Process.myUserHandle(), null, null);
+                        new ComponentName(dynamicCalendars.get(0).getPackageName(), ""),
+                        Process.myUserHandle(), null, null);
             }
         };
 
@@ -236,17 +252,16 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
             List<OmegaSmartSpaceController.Line> lines = new ArrayList<>();
             lines.add(new OmegaSmartSpaceController.Line(getContext().getString(R.string.smartspace_setup_text)));
             card = new CardData(null, lines, v -> setupIfNeeded(), false);
-
         }
 
         mEventClickListener = card != null ? card.getOnClickListener() : null;
         boolean doubleLine = card != null && card.isDoubleLine();
         if (mDoubleLine != doubleLine) {
             mDoubleLine = doubleLine;
-            cs();
+            loadSmartSpaceView();
         }
         setOnClickListener(this);
-        setOnLongClickListener(co());
+        setOnLongClickListener(this);
         mWeatherAvailable = weather != null;
         if (mDoubleLine) {
             loadDoubleLine(weather, Objects.requireNonNull(card));
@@ -306,9 +321,12 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
             mClockView.setVisibility(View.VISIBLE);
             mClockView.setOnClickListener(mCalendarClickListener);
             if (forced)
-                mClockView.getTimeText(true);
+                mClockView.reloadDateFormat(true);
+            if (mWeatherAvailable)
+                mTitleSeparator.setVisibility(View.VISIBLE);
         } else {
             mClockView.setVisibility(View.GONE);
+            mTitleSeparator.setVisibility(View.GONE);
         }
         bindClockAbove(forced);
     }
@@ -318,7 +336,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
             mClockAboveView.setVisibility(View.VISIBLE);
             mClockAboveView.setOnClickListener(mClockClickListener);
             if (forced)
-                mClockView.getTimeText(true);
+                mClockView.reloadDateFormat(true);
         } else {
             mClockAboveView.setVisibility(GONE);
         }
@@ -329,7 +347,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         if (mWeatherAvailable) {
             container.setVisibility(View.VISIBLE);
             container.setOnClickListener(mWeatherClickListener);
-            container.setOnLongClickListener(co());
+            container.setOnLongClickListener(this);
             String currentUnit = prefs.getSmartspaceWeatherUnit().getValue();
             title.setText(weather.getTitle(Temperature.Companion.unitFromString(currentUnit)));
             icon.setImageBitmap(addShadowToBitmap(weather.getIcon()));
@@ -363,21 +381,18 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         mSubtitleWeatherText = findViewById(R.id.subtitle_weather_text);
         mClockView = findViewById(R.id.clock);
         mClockAboveView = findViewById(R.id.time_above);
+        mTitleSeparator = findViewById(R.id.title_sep);
+        mTitleSeparator.setBackgroundColor(prefs.getProfileAccentColor().getValue());
     }
 
-    private String cn() {
-        boolean b = true;
+    private String getCardText() {
         SmartSpaceCardView cardView = smartSpaceData.getWeatherCard();
-        return cardView.cC(TextUtils.ellipsize(cardView.cB(b), textPaint, getWidth() - getPaddingLeft()
+        return cardView.cC(TextUtils.ellipsize(cardView.cB(true), textPaint, getWidth() - getPaddingLeft()
                 - getPaddingRight() - getResources().getDimensionPixelSize(R.dimen.smartspace_horizontal_padding) -
-                textPaint.measureText(cardView.substitute(b)), TextUtils.TruncateAt.END).toString());
+                textPaint.measureText(cardView.substitute(true)), TextUtils.TruncateAt.END).toString());
     }
 
-    private OnLongClickListener co() {
-        return this;
-    }
-
-    private void cs() {
+    private void loadSmartSpaceView() {
         final int indexOfChild = indexOfChild(mSmartspaceContent);
         removeView(mSmartspaceContent);
         final LayoutInflater from = LayoutInflater.from(getContext());
@@ -433,14 +448,14 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         super.onFinishInflate();
         loadViews();
         mFinishedInflate = true;
-        dr = findViewById(R.id.dummyBubbleTextView);
-        dr.setTag(new ItemInfo() {
+        dummyView = findViewById(R.id.dummyBubbleTextView);
+        dummyView.setTag(new ItemInfo() {
             @Override
             public ComponentName getTargetComponent() {
                 return new ComponentName(getContext(), "");
             }
         });
-        dr.setContentDescription("");
+        dummyView.setContentDescription("");
         if (isAttachedToWindow() && mController != null)
             mController.addListener(this);
         else if (mController != null)
@@ -450,7 +465,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (smartSpaceData != null && smartSpaceData.hasWeather() && smartSpaceData.getWeatherCard().hasMessage()) {
-            final String cn = cn();
+            final String cn = getCardText();
             if (!cn.contentEquals(mTitleText.getText())) {
                 mTitleText.setText(cn);
             }

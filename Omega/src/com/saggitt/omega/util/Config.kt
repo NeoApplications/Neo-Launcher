@@ -67,6 +67,7 @@ class Config(val context: Context) {
         const val REQUEST_PERMISSION_READ_CONTACTS = 668
 
         const val GOOGLE_QSB = "com.google.android.googlequicksearchbox"
+        const val GOOGLE_TEXT_ASSIST = "com.google.android.googlequicksearchbox.TEXT_ASSIST"
 
         //APP DRAWER SORT MODE
         const val SORT_AZ = 0
@@ -117,15 +118,6 @@ class Config(val context: Context) {
             SmartSpaceDataWidget::class.java.name,
             OWMWeatherDataProvider::class.java.name,
             if (PEWeatherDataProvider.isAvailable(context)) PEWeatherDataProvider::class.java.name else null
-        )
-
-        fun calendarOptions(context: Context) = mapOf(
-            context.resources.getString(R.string.smartspace_calendar_gregorian) to context.resources.getString(
-                R.string.title_calendar_gregorian
-            ),
-            context.resources.getString(R.string.smartspace_calendar_persian) to context.resources.getString(
-                R.string.title_calendar_persian
-            )
         )
 
         fun getCurrentTheme(context: Context): Int {

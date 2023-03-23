@@ -57,7 +57,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         }
     }
 
-    override fun onThemeChanged(forceUpdate: Boolean) {}
+    override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
     companion object {
         fun createIntent(context: Context, destination: String): Intent {

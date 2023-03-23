@@ -74,11 +74,6 @@ fun WidgetsPrefsPage() {
             *listOfNotNull(
                 prefs.smartspaceEnable,
                 prefs.smartspaceDate,
-                if (prefs.smartspaceDate.getValue()) {
-                    prefs.smartspaceCalendar
-                } else {
-                    null
-                },
                 prefs.smartspaceTime,
                 prefs.smartspaceTimeLarge,
                 prefs.smartspaceTime24H,
