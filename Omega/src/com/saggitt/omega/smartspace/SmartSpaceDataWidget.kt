@@ -137,9 +137,14 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
         return !isWidgetBound
     }
 
+    override fun startSetup(onFinish: (Boolean) -> Unit) {
+        bindWidget {
+            onFinish(isWidgetBound)
+        }
+    }
+
     override fun stopListening() {
         super.stopListening()
-
         smartspaceWidgetHost.stopListening()
     }
 
