@@ -69,7 +69,10 @@ fun IntentLauncherDialogUI(
                     textId = pref.positiveAnswerId,
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
-                    onClick = { context.startActivity(pref.intent()) }
+                    onClick = {
+                        context.startActivity(pref.intent())
+                        openDialogCustom.value = false
+                    }
                 )
             }
         }
