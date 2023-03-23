@@ -189,7 +189,7 @@ public final class FeatureFlags {
             "Allow user to toggle minimal device mode in launcher.");
 
     public static final BooleanFlag EXPANDED_SMARTSPACE = new DeviceFlag(
-            "EXPANDED_SMARTSPACE", true, "Expands smartspace height to two rows. "
+            "EXPANDED_SMARTSPACE", false, "Expands smartspace height to two rows. "
             + "Any apps occupying the first row will be removed from workspace.");
 
     // TODO: b/172467144 Remove ENABLE_LAUNCHER_ACTIVITY_THEME_CROSSFADE feature flag.
