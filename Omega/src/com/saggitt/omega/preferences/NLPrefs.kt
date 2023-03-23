@@ -51,6 +51,7 @@ import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
 import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
@@ -824,7 +825,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
         titleId = R.string.title_smartspace_widget_provider,
-        defaultValue = SmartSpaceDataWidget::class.java.name,
+        defaultValue = OWMWeatherDataProvider::class.java.name,
         entries = Config.smartspaceWeatherProviders(context).associateBy(
             keySelector = { it },
             valueTransform = { OmegaSmartSpaceController.getDisplayName(context, it) }
