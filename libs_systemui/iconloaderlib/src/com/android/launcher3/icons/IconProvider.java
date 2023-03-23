@@ -321,7 +321,7 @@ public class IconProvider {
         return TextUtils.isEmpty(cn) ? null : ComponentName.unflattenFromString(cn);
     }
 
-    private static List<ComponentName> parseComponents(Context context, @ArrayRes int resId) {
+    public static List<ComponentName> parseComponents(Context context, @ArrayRes int resId) {
         final String[] componentResources = context.getResources().getStringArray(resId);
         final List<ComponentName> compList = new ArrayList<>();
         for (String component : componentResources) {
