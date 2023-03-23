@@ -220,7 +220,7 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun getSystemIconState(): String {
-        return super.getSystemIconState() + ",pack:${iconPackPref.get()}/${iconPackPref.getValue()},ver:${iconPackVersion}"
+        return super.getSystemIconState() + ",pack:${iconPackPref.getValue()},ver:${iconPackVersion}"
     }
 
     override fun registerIconChangeListener(
