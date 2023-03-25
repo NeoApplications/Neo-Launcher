@@ -39,12 +39,12 @@ class IconOverrideRepository(private val context: Context) {
 
     suspend fun setOverride(target: ComponentKey, item: IconPickerItem) {
         dao.insert(IconOverride(target, item))
-        reloadIcons()
+        updatePackageQueue.offer(target)
     }
 
     suspend fun deleteOverride(target: ComponentKey) {
         dao.delete(target)
-        reloadIcons()
+        updatePackageQueue.offer(target)
     }
 
     fun observeTarget(target: ComponentKey) = dao.observeTarget(target)
@@ -63,7 +63,7 @@ class IconOverrideRepository(private val context: Context) {
     private fun reloadIcons() {
         val las = LauncherAppState.getInstance(context)
         val idp = las.invariantDeviceProfile
-        idp.onPreferencesChanged(context.applicationContext)
+        idp.onPreferencesChanged(context)
     }
 
     companion object {

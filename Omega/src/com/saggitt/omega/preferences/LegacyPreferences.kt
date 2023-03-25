@@ -31,4 +31,13 @@ class LegacyPreferences(context: Context) {
         editor.putBoolean(key, value)
         editor.apply()
     }
+
+    fun savePreference(key: String, value: String) {
+        editor.putString(key, value)
+        editor.apply()
+    }
+
+    fun sharedPref(): SharedPreferences {
+        return sharedPreferences
+    }
 }

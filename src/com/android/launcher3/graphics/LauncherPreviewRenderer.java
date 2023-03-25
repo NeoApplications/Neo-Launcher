@@ -86,6 +86,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
+import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.MainThreadInitializedObject.SandboxContext;
 import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.launcher3.views.ActivityContext;
@@ -96,6 +97,8 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.LocalColorExtractor;
 import com.android.launcher3.widget.NavigableAppWidgetHostView;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
+import com.saggitt.omega.data.IconOverrideRepository;
+import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import java.util.ArrayList;
@@ -133,10 +136,18 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
+            putBaseInstance(IconPackProvider.INSTANCE);
+            putBaseInstance(IconOverrideRepository.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,
                     new LauncherAppState(this, null /* iconCacheFileName */));
         }
+
+        private void putBaseInstance(MainThreadInitializedObject mainThreadInitializedObject) {
+            mAllowedObjects.add(mainThreadInitializedObject);
+            mObjectMap.put(mainThreadInitializedObject, mainThreadInitializedObject.get(getBaseContext()));
+        }
+
 
         /**
          * Creates a new LauncherIcons for the preview, skipping the global pool

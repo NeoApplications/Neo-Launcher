@@ -37,6 +37,7 @@ import androidx.palette.graphics.Palette;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.pm.PackageInstallInfo;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
 
 import java.util.Comparator;
@@ -145,6 +146,10 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         }
 
         return workspaceItemInfo;
+    }
+
+    public ComponentKey toComponentKey() {
+        return new ComponentKey(componentName, user);
     }
 
     public static Intent makeLaunchIntent(LauncherActivityInfo info) {

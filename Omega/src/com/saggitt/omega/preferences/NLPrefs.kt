@@ -30,8 +30,10 @@ import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.settings.SettingsActivity
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
@@ -96,6 +98,7 @@ class NLPrefs private constructor(private val context: Context) {
     private val pokeChange = { pokeChange() }
     val updateBlur = { updateBlur() }
     val recreate = { recreate() }
+    val reloadAll = { reloadAll() }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -354,6 +357,11 @@ class NLPrefs private constructor(private val context: Context) {
         withIcons = true,
     )
 
+    val desktopPopupEdit: Boolean
+        get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_EDIT)
+    val desktopPopupRemove: Boolean
+        get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
+
     // TODO DimensionPref?
     val desktopGridColumns = IntPref(
         dataStore = dataStore,
@@ -554,6 +562,10 @@ class NLPrefs private constructor(private val context: Context) {
         entries = drawerPopupOptions,
         withIcons = true,
     )
+    val drawerPopupUninstall: Boolean
+        get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_UNINSTALL)
+    val drawerPopupEdit: Boolean
+        get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_EDIT)
 
     // TODO Show lock screen when the app is enabled and is clicked
     var drawerEnableProtectedApps = BooleanPref(
@@ -1028,6 +1040,15 @@ class NLPrefs private constructor(private val context: Context) {
         steps = 1,
     )
 
+    //Misc
+    val customAppName =
+        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", reloadAll) {
+            override fun flattenKey(key: ComponentKey) = key.toString()
+            override fun unflattenKey(key: String) = makeComponentKey(context, key)
+            override fun flattenValue(value: String) = value
+            override fun unflattenValue(value: String) = value
+        }
+
     //Dev options
     var restartLauncher = StringPref(
         titleId = R.string.title__restart_launcher,
@@ -1076,6 +1097,10 @@ class NLPrefs private constructor(private val context: Context) {
 
     fun recreate() {
         onChangeCallback?.recreate()
+    }
+
+    private fun reloadAll() {
+        onChangeCallback?.reloadAll()
     }
 
     private fun updateBlur() {

@@ -155,8 +155,7 @@ open class NavigationPref(
     val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
-    val navRoute: String = "",
-    onChange: () -> Unit = { }
+    val navRoute: String = ""
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -265,7 +264,6 @@ open class StringSetPref(
     }
 }
 
-
 open class StringMultiSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
@@ -331,8 +329,7 @@ open class StringPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
-    val onClick: (() -> Unit)? = null,
-    onChange: () -> Unit = {}
+    val onClick: (() -> Unit)? = null
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -344,14 +341,14 @@ open class StringPref(
 }
 
 abstract class MutableMapPref<K, V>(
-    private val context: Context,
+    context: Context,
     private val prefKey: String,
     onChange: () -> Unit = {}
 ) {
     private val valueMap = HashMap<K, V>()
     private val legacyPreferences = LegacyPreferences(context)
 
-    val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
+    private val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
 
     init {
         val obj = JSONObject(legacyPreferences.sharedPref().getString(prefKey, "{}"))

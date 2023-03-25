@@ -20,16 +20,16 @@ package com.saggitt.omega.util
 
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
-import com.android.launcher3.Utilities
 import com.android.launcher3.icons.LauncherActivityCachingLogic
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.preferences.NLPrefs
 
 class CustomActivityCachingLogic(context: Context) : LauncherActivityCachingLogic() {
-    private val prefs = Utilities.getOmegaPrefs(context)
+    private val prefs = NLPrefs.getInstance(context)
 
     override fun getLabel(info: LauncherActivityInfo): CharSequence {
         val key = ComponentKey(info.componentName, info.user)
-        val customLabel = "" //prefs.customAppName[key] TODO
+        val customLabel = prefs.customAppName[key]
         if (!customLabel.isNullOrEmpty()) {
             return customLabel
         }

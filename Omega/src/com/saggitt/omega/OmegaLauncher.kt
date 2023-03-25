@@ -56,6 +56,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
+import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
@@ -64,6 +65,7 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
+import com.saggitt.omega.popup.OmegaShortcuts
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.smartspace.SmartSpaceView
@@ -73,6 +75,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.stream.Stream
 
 class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     ActivityResultRegistryOwner {
@@ -209,6 +212,17 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 }
             }
         }
+    }
+
+    override fun getSupportedShortcuts(): Stream<SystemShortcut.Factory<*>> {
+        return Stream.concat(
+            super.getSupportedShortcuts(),
+            Stream.of(
+                OmegaShortcuts.CUSTOMIZE,
+                OmegaShortcuts.APP_REMOVE,
+                OmegaShortcuts.APP_UNINSTALL
+            )
+        )
     }
 
     override fun getDefaultOverlay(): LauncherOverlayManager {

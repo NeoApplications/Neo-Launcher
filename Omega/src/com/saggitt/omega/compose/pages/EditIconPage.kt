@@ -104,7 +104,6 @@ fun EditIconPage(
             }
         }
     }
-
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -168,7 +167,7 @@ fun EditIconPage(
                             )
                             if (mIcon != null) {
                                 Image(
-                                    bitmap = drawableToBitmap(mIcon)!!.asImageBitmap(),
+                                    bitmap = drawableToBitmap(mIcon).asImageBitmap(),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .requiredSize(64.dp)

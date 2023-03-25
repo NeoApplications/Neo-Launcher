@@ -11,3 +11,7 @@ fun <T> JSONArray.toArrayList(): ArrayList<T> {
 }
 
 infix fun Int.hasFlag(flag: Int) = (this and flag) != 0
+
+fun Int.hasFlags(vararg flags: Int): Boolean {
+    return flags.all { hasFlag(it) }
+}

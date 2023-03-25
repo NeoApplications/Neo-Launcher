@@ -38,4 +38,9 @@ class PreferencesChangeCallback(val launcher: OmegaLauncher) {
     fun updateWeatherData() {
         launcher.omegaApp.smartspace.forceUpdateWeather()
     }
+
+    fun reloadAll() {
+        launcher.model.forceReload()
+    }
+
 }
