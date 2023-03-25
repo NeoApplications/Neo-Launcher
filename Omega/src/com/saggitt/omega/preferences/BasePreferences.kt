@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.preferences
 
+import android.content.Context
 import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import kotlin.reflect.KProperty
 
 open class BooleanPref(
@@ -338,6 +340,61 @@ open class StringPref(
 
     override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
+    }
+}
+
+abstract class MutableMapPref<K, V>(
+    private val context: Context,
+    private val prefKey: String,
+    onChange: () -> Unit = {}
+) {
+    private val valueMap = HashMap<K, V>()
+    private val legacyPreferences = LegacyPreferences(context)
+
+    val onChangeMap: MutableMap<String, () -> Unit> = HashMap()
+
+    init {
+        val obj = JSONObject(legacyPreferences.sharedPref().getString(prefKey, "{}"))
+        obj.keys().forEach {
+            valueMap[unflattenKey(it)] = unflattenValue(obj.getString(it))
+        }
+        if (onChange !== {}) {
+            onChangeMap[prefKey] = onChange
+        }
+    }
+
+    fun toMap() = HashMap<K, V>(valueMap)
+
+    open fun flattenKey(key: K) = key.toString()
+
+    abstract fun unflattenKey(key: String): K
+
+    open fun flattenValue(value: V) = value.toString()
+
+    abstract fun unflattenValue(value: String): V
+
+    operator fun set(key: K, value: V?) {
+        if (value != null) {
+            valueMap[key] = value
+        } else {
+            valueMap.remove(key)
+        }
+        saveChanges()
+    }
+
+    private fun saveChanges() {
+        val obj = JSONObject()
+        valueMap.entries.forEach { obj.put(flattenKey(it.key), flattenValue(it.value)) }
+        legacyPreferences.savePreference(prefKey, obj.toString())
+    }
+
+    operator fun get(key: K): V? {
+        return valueMap[key]
+    }
+
+    fun clear() {
+        valueMap.clear()
+        saveChanges()
     }
 }
 
