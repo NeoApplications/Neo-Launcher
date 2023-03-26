@@ -23,10 +23,10 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 
 abstract class SearchProvider(protected val context: Context) {
-    abstract val name: String
-    abstract val supportsVoiceSearch: Boolean
-    abstract val supportsAssistant: Boolean
-    abstract val supportsFeed: Boolean
+    abstract val displayName: String
+    private val supportsVoiceSearch: Boolean = false
+    private val supportsAssistant: Boolean = false
+    private val supportsFeed: Boolean = false
 
     abstract val packageName: String
     abstract val icon: Drawable
@@ -58,6 +58,4 @@ abstract class SearchProvider(protected val context: Context) {
     open fun startFeed(callback: (intent: Intent) -> Unit = {}) {
         if (supportsFeed) throw RuntimeException("Feed supported but not implemented")
     }
-
-    override fun toString(): String = this::class.java.name
 }

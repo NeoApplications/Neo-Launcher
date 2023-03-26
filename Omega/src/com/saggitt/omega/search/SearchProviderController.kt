@@ -121,7 +121,7 @@ class SearchProviderController(private val context: Context) {
                 AppsSearchProvider(context)
             ).filter { it.isAvailable }
 
-            val entries = providers.map { it.name }.toTypedArray()
+            val entries = providers.map { it.displayName }.toTypedArray()
             val entryValues = providers.map { it::class.java.name }.toTypedArray()
             return entryValues.zip(entries).toMap()
         }
