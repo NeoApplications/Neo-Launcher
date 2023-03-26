@@ -134,7 +134,7 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorAccent),
+        defaultValue = 0xFF009688.toInt(),
         navRoute = Routes.COLOR_ACCENT
     )
 
