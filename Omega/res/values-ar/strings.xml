@@ -498,4 +498,7 @@
     <string name="folder_swipe_up">إجراء التمرير السريع لأعلى</string>
     <string name="folder_draw_stroke">‍لطخة رسم المجلد</string>
     <string name="folder_stroke_color">لون حد المجلد</string>
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
+    <string name="smartspace_icu_date_pattern">EEEMMMd</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s %2$s</string>
 </resources>
