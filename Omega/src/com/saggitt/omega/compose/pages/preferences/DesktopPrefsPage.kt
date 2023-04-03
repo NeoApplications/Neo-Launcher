@@ -69,6 +69,7 @@ fun DesktopPrefsPage() {
     )
     val gridPrefs = listOf(
         prefs.desktopIconAddInstalled,
+        prefs.desktopAllowRotation,
         prefs.desktopWidgetCornerRadius,
     )
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {

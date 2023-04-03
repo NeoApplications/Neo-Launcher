@@ -266,10 +266,19 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_ICON_ADD_INSTALLED,
         titleId = R.string.auto_add_shortcuts_label,
         summaryId = R.string.auto_add_shortcuts_description,
-        defaultValue = false,
+        defaultValue = true,
         onChange = {
             legacyPrefs.savePreference(PrefKey.DESKTOP_ICON_ADD_INSTALLED.name, it)
         }
+    )
+
+    val desktopAllowRotation = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_ALLOW_ROTATION,
+        titleId = R.string.allow_rotation_title,
+        summaryId = R.string.allow_rotation_desc,
+        defaultValue = false,
+        onChange = {}
     )
 
     var desktopIconScaleEnforce = BooleanPref(
