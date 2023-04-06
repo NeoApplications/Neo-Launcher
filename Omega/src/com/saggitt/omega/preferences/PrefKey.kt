@@ -165,4 +165,5 @@ object PrefKey {
     val SHOW_DEV_OPTIONS = booleanPreferencesKey("pref_show_dev_options")
     val KILL_LAUNCHER = stringPreferencesKey("pref_kill_launcher")
     val DEBUG_MODE = booleanPreferencesKey("pref_debug_mode")
+    val FIRST_TIME_RUN = booleanPreferencesKey("pref_first_run")
 }
