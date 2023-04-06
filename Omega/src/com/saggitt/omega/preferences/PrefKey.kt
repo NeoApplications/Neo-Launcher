@@ -59,7 +59,6 @@ object PrefKey {
     val DESKTOP_GRID_COLUMNS = intPreferencesKey("desktop_grid_columns")
     val DESKTOP_GRID_ROWS = intPreferencesKey("desktop_grid_rows")
     val DESKTOP_ICON_ADD_INSTALLED = booleanPreferencesKey(ADD_ICON_PREFERENCE_KEY)
-    val DESKTOP_ALLOW_ROTATION = booleanPreferencesKey(ALLOW_ROTATION_PREFERENCE_KEY)
     val DESKTOP_WIDGETS_FULL_WIDTH = booleanPreferencesKey("desktop_full_width_widgets")
     val DESKTOP_WIDGETS_CORNER_RADIUS = floatPreferencesKey("desktop_widget_corner_radius")
     val DESKTOP_EMPTY_SCREENS_ALLOW = booleanPreferencesKey("desktop_allow_empty_screens")
@@ -124,7 +123,7 @@ object PrefKey {
     val NOTIFICATION_BADGING = "notification_badging"
 
     // Notification
-    //// TODO handle the special notification badging intent
+    // TODO handle the special notification badging intent
     val NOTIFICATION_DOTS_ENABLED = booleanPreferencesKey("notification_dots_enable")
     val NOTIFICATION_DOTS_CUSTOM = booleanPreferencesKey("notification_dots_custom")
     val NOTIFICATION_DOTS_COLOR = intPreferencesKey("notification_dots_color")
