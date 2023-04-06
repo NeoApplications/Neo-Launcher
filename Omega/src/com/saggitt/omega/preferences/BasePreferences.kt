@@ -24,6 +24,7 @@ import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.android.launcher3.InvariantDeviceProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -70,6 +71,51 @@ open class IntPref(
     override suspend fun set(value: Int) {
         dataStore.edit { it[key] = value }
     }
+}
+
+class IdpIntPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    val key: Preferences.Key<Int>,
+    val selectDefaultValue: InvariantDeviceProfile.GridOption.() -> Int,
+    val specialOutputs: ((Int) -> String) = Int::toString,
+    val defaultValue: Int = 0,
+    val minValue: Float,
+    val maxValue: Float,
+    val steps: Int,
+    onChange: () -> Unit = {},
+) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
+
+    override fun get(): Flow<Int> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
+
+    override suspend fun set(value: Int) {
+        dataStore.edit { it[key] = value }
+    }
+
+    fun defaultValue(defaultGrid: InvariantDeviceProfile.GridOption): Int {
+        return selectDefaultValue(defaultGrid)
+    }
+
+    fun get(defaultGrid: InvariantDeviceProfile.GridOption): Int {
+        val value = getValue()
+        return if (value == -1 || value == -0) {
+            selectDefaultValue(defaultGrid)
+        } else {
+            value
+        }
+    }
+
+    fun set(newValue: Int, defaultGrid: InvariantDeviceProfile.GridOption) {
+        if (newValue == selectDefaultValue(defaultGrid)) {
+            setValue(-1)
+        } else {
+            setValue(newValue)
+        }
+    }
+
 }
 
 open class IntentLauncherPref(
@@ -392,6 +438,24 @@ abstract class MutableMapPref<K, V>(
     fun clear() {
         valueMap.clear()
         saveChanges()
+    }
+}
+
+class ResettableLazy<out T : Any>(private val create: () -> T) {
+    private var initialized = false
+    private var currentValue: T? = null
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        if (!initialized) {
+            currentValue = create()
+            initialized = true
+        }
+        return currentValue!!
+    }
+
+    fun resetValue() {
+        initialized = false
+        currentValue = null
     }
 }
 
