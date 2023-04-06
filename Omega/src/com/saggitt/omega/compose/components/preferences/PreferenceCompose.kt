@@ -67,6 +67,8 @@ import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
 import com.saggitt.omega.preferences.FloatPref
+import com.saggitt.omega.preferences.GridSize
+import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
@@ -389,6 +391,46 @@ fun StringSelectionPreference(
         titleId = pref.titleId,
         summaryId = pref.summaryId,
         summary = pref.entries[pref.getValue()],
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun GridSizePreference(
+    modifier: Modifier = Modifier,
+    pref: GridSize,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summary = pref.numColumnsPref.getValue().toString(),
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun GridSize2DPreference(
+    modifier: Modifier = Modifier,
+    pref: GridSize2D,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summary = "${pref.numColumns}x${pref.numRows}",
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
