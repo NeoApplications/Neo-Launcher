@@ -24,9 +24,9 @@ import android.graphics.drawable.Drawable
 
 abstract class SearchProvider(protected val context: Context) {
     abstract val displayName: String
-    private val supportsVoiceSearch: Boolean = false
-    private val supportsAssistant: Boolean = false
-    private val supportsFeed: Boolean = false
+    open val supportsVoiceSearch: Boolean = false
+    open val supportsAssistant: Boolean = false
+    open val supportsFeed: Boolean = false
 
     abstract val packageName: String
     abstract val icon: Drawable

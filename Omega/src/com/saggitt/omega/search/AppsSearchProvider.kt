@@ -32,7 +32,7 @@ import com.saggitt.omega.util.prefs
 @Keep
 class AppsSearchProvider(context: Context) : SearchProvider(context) {
 
-    override val name: String = context.getString(R.string.search_provider_appsearch)
+    override val displayName: String = context.getString(R.string.search_provider_appsearch)
     override val supportsVoiceSearch = false
     override val supportsAssistant = false
     override val supportsFeed = false
