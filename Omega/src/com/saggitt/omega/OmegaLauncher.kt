@@ -110,6 +110,16 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
 
+        //Set Initial value for idp columns and rows
+        if (prefs.firstTimeRun.getValue()) {
+            val idp = LauncherAppState.getIDP(this)
+            prefs.drawerGridColumns.setValue(idp.numAllAppsColumns)
+            prefs.desktopGridColumns.setValue(idp.numColumns)
+            prefs.desktopGridRows.setValue(idp.numRows)
+            prefs.dockNumIcons.setValue(idp.numShownHotseatIcons)
+            prefs.firstTimeRun.setValue(false)
+        }
+
         //Load hidden apps to use with hidden apps preference
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
     }
