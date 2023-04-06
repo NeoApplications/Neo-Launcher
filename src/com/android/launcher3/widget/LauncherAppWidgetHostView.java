@@ -48,6 +48,7 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer.TouchCompleteListener;
+import com.android.launcher3.widget.custom.CustomAppWidgetProviderInfo;
 
 /**
  * {@inheritDoc}
@@ -116,7 +117,8 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     @Override
     public void setColorResources(@Nullable SparseIntArray colors) {
         if (colors == null) {
-            resetColorResources();
+            if (Utilities.ATLEAST_S)
+                resetColorResources();
         } else {
             super.setColorResources(colors);
         }
@@ -136,6 +138,13 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     @TargetApi(Build.VERSION_CODES.Q)
     public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
         super.setAppWidget(appWidgetId, info);
+        if (info != null && Utilities.getOmegaPrefs(getContext()).getDesktopAllowFullWidthWidgets().getValue()) {
+            setPadding(0, 0, 0, 0);
+        } else if (info instanceof CustomAppWidgetProviderInfo) {
+            if (((CustomAppWidgetProviderInfo) info).noPadding) {
+                setPadding(0, 0, 0, 0);
+            }
+        }
         if (!mTrackingWidgetUpdate && Utilities.ATLEAST_Q) {
             mTrackingWidgetUpdate = true;
             Trace.beginAsyncSection(TRACE_METHOD_NAME + info.provider, appWidgetId);
