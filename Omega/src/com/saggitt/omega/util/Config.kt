@@ -22,9 +22,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.text.TextUtils
+import androidx.datastore.preferences.core.Preferences
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NavigationPref
+import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.BlankDataProvider
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
@@ -129,6 +132,17 @@ class Config(val context: Context) {
                 currentTheme = THEME_BLACK
             }
             return currentTheme
+        }
+
+        fun getIdpDefaultValue(context: Context, key: Preferences.Key<Int>): Int {
+            var originalIdp = 0
+            val idp = LauncherAppState.getIDP(context)
+            if (key == PrefKey.DOCK_COLUMNS) {
+                originalIdp = idp.numColumnsOriginal
+            } else if (key == PrefKey.DRAWER_GRID_COLUMNS) {
+                originalIdp = idp.numAllAppsColumnsOriginal
+            }
+            return originalIdp
         }
 
         fun gesturePrefs(context: Context): List<NavigationPref> {
