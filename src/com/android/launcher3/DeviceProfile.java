@@ -75,7 +75,7 @@ public class DeviceProfile {
     public final int rotationHint;
     public final float aspectRatio;
     public final boolean isScalableGrid;
-    private final int mTypeIndex;
+    public final int mTypeIndex;
     /**
      * The maximum amount of left/right workspace padding as a percentage of the screen width.
      * To be clear, this means that up to 7% of the screen width can be used as left padding, and
@@ -218,6 +218,7 @@ public class DeviceProfile {
                   boolean isMultiWindowMode, boolean transposeLayoutWithOrientation,
                   boolean useTwoPanels, boolean isGestureMode) {
         prefs = Utilities.getOmegaPrefs(context);
+        boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
 
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
@@ -588,8 +589,7 @@ public class DeviceProfile {
                     + allAppsLeftRightPadding * 2;
             allAppsLeftRightMargin = Math.max(1, (availableWidthPx - usedWidth) / 2);
         } else {
-            allAppsLeftRightPadding =
-                    desiredWorkspaceHorizontalMarginPx + cellLayoutHorizontalPadding;
+            allAppsLeftRightPadding = desiredWorkspaceHorizontalMarginPx + cellLayoutHorizontalPadding;
         }
     }
     /**
@@ -937,8 +937,12 @@ public class DeviceProfile {
             int paddingBottom = hotseatTop + workspacePageIndicatorHeight
                     + workspaceBottomPadding - mWorkspacePageIndicatorOverlapWorkspace;
             int paddingTop = workspaceTopPadding + (isScalableGrid ? 0 : edgeMarginPx);
-            int paddingSide = desiredWorkspaceHorizontalMarginPx;
-            padding.set(paddingSide, paddingTop, paddingSide, paddingBottom);
+
+            // Pad the top and bottom of the workspace with search/hotseat bar sizes
+            int horizontalPadding = prefs.getDesktopAllowFullWidthWidgets().getValue() ? 0 : desiredWorkspaceHorizontalMarginPx;
+
+            // Pad the top and bottom of the workspace with search/hotseat bar sizes
+            padding.set(horizontalPadding, paddingTop, horizontalPadding, paddingBottom);
         }
         insetPadding(workspacePadding, cellLayoutPaddingPx);
     }

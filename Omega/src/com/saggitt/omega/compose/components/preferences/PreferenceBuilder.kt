@@ -23,6 +23,9 @@ import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
 import com.saggitt.omega.preferences.FloatPref
+import com.saggitt.omega.preferences.GridSize
+import com.saggitt.omega.preferences.GridSize2D
+import com.saggitt.omega.preferences.IdpIntPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
@@ -40,7 +43,7 @@ val PreferenceBuilder =
                 index = index,
                 groupSize = size
             ) { onDialogPref(pref) }
-            /*
+
             is GridSize2D -> GridSize2DPreference(
                 pref = pref,
                 index = index,
@@ -52,7 +55,6 @@ val PreferenceBuilder =
                 groupSize = size
             ) { onDialogPref(pref) }
 
-            */
             is BooleanPref -> SwitchPreference(pref = pref, index = index, groupSize = size)
 
             is NavigationPref ->
@@ -69,10 +71,11 @@ val PreferenceBuilder =
 
             is FloatPref ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)
-            /*
+
             is IdpIntPref ->
                 IntSeekBarPreference(pref = pref, index = index, groupSize = size)
 
+            /*
             is DialogPref ->
                 AlertDialogPreference(pref = pref, index = index, groupSize = size) {
                     onDialogPref(

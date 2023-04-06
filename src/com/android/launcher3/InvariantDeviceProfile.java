@@ -56,6 +56,7 @@ import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
+import com.saggitt.omega.DeviceProfileOverrides;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -93,15 +94,27 @@ public class InvariantDeviceProfile {
     // Used for arrays to specify different sizes (e.g. border spaces, width/height) in different
     // constraints
     static final int COUNT_SIZES = 4;
-    static final int INDEX_DEFAULT = 0;
+    public static final int INDEX_DEFAULT = 0;
     static final int INDEX_LANDSCAPE = 1;
     static final int INDEX_TWO_PANEL_PORTRAIT = 2;
     static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
     /**
      * Number of icons per row and column in the workspace.
      */
+    /**
+     * Number of icons per row and column in the workspace.
+     */
     public int numRows;
+    public int numRowsOriginal;
     public int numColumns;
+    public int numColumnsOriginal;
+
+    /**
+     * Number of icons inside the hotseat area.
+     */
+    public int numHotseatIcons;
+    public int numHotseatIconsOriginal;
+
     public int numSearchContainerColumns;
     /**
      * Number of icons per row and column in the folder.
@@ -142,6 +155,7 @@ public class InvariantDeviceProfile {
      * Number of columns in the all apps list.
      */
     public int numAllAppsColumns;
+    public int numAllAppsColumnsOriginal;
     public int numDatabaseAllAppsColumns;
     /**
      * Do not query directly. see {@link DeviceProfile#isScalableGrid}.
@@ -182,6 +196,7 @@ public class InvariantDeviceProfile {
                     }
                 });
     }
+
     /**
      * This constructor should NOT have any monitors by design.
      */
@@ -191,6 +206,19 @@ public class InvariantDeviceProfile {
             throw new IllegalArgumentException("Unknown grid name");
         }
     }
+
+    public InvariantDeviceProfile(Context context, DeviceProfileOverrides.Options overrideOptions) {
+        Info displayInfo = DisplayController.INSTANCE.get(context).getInfo();
+        // Determine if we have split display
+
+        String gridName = getCurrentGridName(context);
+        ArrayList<DisplayOption> allOptions =
+                getPredefinedDeviceProfiles(context, gridName, deviceType, false);
+        DisplayOption displayOption =
+                invDistWeightedInterpolate(displayInfo, allOptions, deviceType);
+        initGrid(context, displayInfo, displayOption, deviceType, overrideOptions);
+    }
+
     /**
      * This constructor should NOT have any monitors by design.
      */
@@ -252,6 +280,7 @@ public class InvariantDeviceProfile {
             setCurrentGrid(context, newGridName);
         }
     }
+
     private static @DeviceType int getDeviceType(Info displayInfo) {
         int flagPhone = 1 << 0;
         int flagTablet = 1 << 1;
@@ -267,6 +296,7 @@ public class InvariantDeviceProfile {
             return TYPE_PHONE;
         }
     }
+
     public static String getCurrentGridName(Context context) {
         return Utilities.isGridOptionsEnabled(context)
                 ? Utilities.getPrefs(context).getString(KEY_IDP_GRID_NAME, null) : null;
@@ -282,12 +312,25 @@ public class InvariantDeviceProfile {
         initGrid(context, displayInfo, displayOption, deviceType);
         return displayOption.grid.name;
     }
+
+    private void initGrid(
+            Context context, Info displayInfo, DisplayOption displayOption,
+            int deviceType) {
+        DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
+                .getOverrides(displayOption.grid);
+        initGrid(context, displayInfo, displayOption, deviceType, overrideOptions);
+    }
+
     private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
-                          @DeviceType int deviceType) {
+                          @DeviceType int deviceType, DeviceProfileOverrides.Options overrideOptions) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
         numRows = closestProfile.numRows;
+        numRowsOriginal = closestProfile.numRows;
         numColumns = closestProfile.numColumns;
+        numColumnsOriginal = closestProfile.numColumns;
+        numHotseatIcons = closestProfile.numHotseatIcons;
+        numHotseatIconsOriginal = closestProfile.numHotseatIcons;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
         dbFile = closestProfile.dbFile;
         defaultLayoutId = closestProfile.defaultLayoutId;
@@ -317,13 +360,17 @@ public class InvariantDeviceProfile {
         hotseatColumnSpan = closestProfile.hotseatColumnSpan;
         hotseatBorderSpaces = displayOption.hotseatBorderSpaces;
         numAllAppsColumns = closestProfile.numAllAppsColumns;
+        numAllAppsColumnsOriginal = closestProfile.numAllAppsColumns;
         numDatabaseAllAppsColumns = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseAllAppsColumns : closestProfile.numAllAppsColumns;
         allAppsCellSize = displayOption.allAppsCellSize;
         allAppsBorderSpaces = displayOption.allAppsBorderSpaces;
         allAppsIconSize = displayOption.allAppsIconSizes;
         allAppsIconTextSize = displayOption.allAppsIconTextSizes;
-        if (!Utilities.isGridOptionsEnabled(context)) {
+        if (Utilities.isGridOptionsEnabled(context)) {
+            allAppsIconSize = displayOption.allAppsIconSizes;
+            allAppsIconTextSize = displayOption.allAppsIconTextSizes;
+        } else {
             allAppsIconSize = iconSize;
             allAppsIconTextSize = iconTextSize;
         }
@@ -334,6 +381,13 @@ public class InvariantDeviceProfile {
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
+        overrideOptions.apply(this);
+        for (int i = 1; i < iconSize.length; i++) {
+            maxIconSize = Math.max(maxIconSize, iconSize[i]);
+        }
+        iconBitmapSize = ResourceUtils.pxFromDp(maxIconSize, metrics);
+        fillResIconDpi = getLauncherIconDensity(iconBitmapSize);
+
         final List<DeviceProfile> localSupportedProfiles = new ArrayList<>();
         defaultWallpaperSize = new Point(displayInfo.currentSize);
         for (WindowBounds bounds : displayInfo.supportedBounds) {
@@ -638,9 +692,10 @@ public class InvariantDeviceProfile {
         public final boolean isEnabled;
         private final int numFolderRows;
         private final int numFolderColumns;
-        private final int numAllAppsColumns;
+        public final int numAllAppsColumns;
         private final int numDatabaseAllAppsColumns;
-        private final int numHotseatIcons;
+        public final int numHotseatIcons;
+        public int numHotseatIconsOriginal;
         private final int numShrunkenHotseatIcons;
         private final int numDatabaseHotseatIcons;
         private final int[] hotseatColumnSpan = new int[COUNT_SIZES];
@@ -650,6 +705,7 @@ public class InvariantDeviceProfile {
         private final boolean isScalable;
         private final int devicePaddingId;
         private final SparseArray<TypedValue> extraAttrs;
+        private int typeIndex;
         public GridOption(Context context, AttributeSet attrs, @DeviceType int deviceType) {
             TypedArray a = context.obtainStyledAttributes(
                     attrs, R.styleable.GridDisplayOption);
@@ -671,6 +727,7 @@ public class InvariantDeviceProfile {
                     R.styleable.GridDisplayOption_numExtendedAllAppsColumns, 2 * numAllAppsColumns);
             numHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numHotseatIcons, numColumns);
+            numHotseatIconsOriginal = numHotseatIcons;
             numShrunkenHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numShrunkenHotseatIcons, numHotseatIcons / 2);
             numDatabaseHotseatIcons = a.getInt(

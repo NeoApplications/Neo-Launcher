@@ -97,6 +97,7 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.LocalColorExtractor;
 import com.android.launcher3.widget.NavigableAppWidgetHostView;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
+import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.data.IconOverrideRepository;
 import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
@@ -138,6 +139,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
             mIdp = idp;
             putBaseInstance(IconPackProvider.INSTANCE);
             putBaseInstance(IconOverrideRepository.INSTANCE);
+            putBaseInstance(DeviceProfileOverrides.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,
                     new LauncherAppState(this, null /* iconCacheFileName */));

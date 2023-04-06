@@ -64,14 +64,17 @@ fun DrawerPrefsPage() {
     }
 
     val iconPrefs = listOf(
-        prefs.drawerIconScaleEnforce,
         prefs.drawerIconScale,
+        prefs.drawerHideLabels,
+        prefs.drawerMultilineLabel,
+        prefs.drawerLabelScale,
+        prefs.drawerIconScaleEnforce,
         prefs.drawerPopup,
     )
     val gridPrefs = listOf(
         prefs.drawerSortMode,
     )
-    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = -1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.drawerHiddenAppSet,

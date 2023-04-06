@@ -65,9 +65,13 @@ fun DesktopPrefsPage() {
     }
 
     val iconPrefs = listOf(
+        prefs.desktopIconScale,
+        prefs.desktopHideAppLabels,
+        prefs.desktopMultilineLabel,
         prefs.desktopPopup,
     )
     val gridPrefs = listOf(
+        prefs.desktopGridSize,
         prefs.desktopIconAddInstalled,
         prefs.desktopWidgetCornerRadius,
     )

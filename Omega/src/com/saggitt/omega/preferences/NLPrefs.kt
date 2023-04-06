@@ -88,16 +88,11 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
-    private fun pokeChange() {
-        CoroutineScope(Dispatchers.Default).launch {
-            _changePoker.emit(Random.nextInt())
-        }
-    }
-
     private val pokeChange = { pokeChange() }
-    val updateBlur = { updateBlur() }
+    private val updateBlur = { updateBlur() }
     val recreate = { recreate() }
     val reloadAll = { reloadAll() }
+    private val reloadGrid: () -> Unit = { idp.onPreferencesChanged(context) }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
@@ -317,7 +312,7 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
-    val desktopLabelsScale = FloatPref(
+    val desktopLabelScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_LABELS_SCALE,
         titleId = R.string.title_desktop_text_size,
@@ -361,23 +356,36 @@ class NLPrefs private constructor(private val context: Context) {
     val desktopPopupRemove: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
 
-    // TODO DimensionPref?
-    val desktopGridColumns = IntPref(
+    private var desktopGridSizeDelegate = ResettableLazy {
+        GridSize2D(
+            titleId = R.string.title__desktop_grid_size,
+            numColumnsPref = desktopGridColumns,
+            numRowsPref = desktopGridRows,
+            columnsKey = "numRows",
+            rowsKey = "numColumns",
+            targetObject = LauncherAppState.getIDP(context),
+            onChangeListener = reloadIcons
+        )
+    }
+    val desktopGridSize by desktopGridSizeDelegate
+    val desktopGridColumns = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_GRID_COLUMNS,
         titleId = R.string.title__drawer_columns,
-        defaultValue = 5, // TODO get from profile
-        minValue = 2,
-        maxValue = 16,
+        selectDefaultValue = { numColumns },
+        onChange = reloadGrid,
+        minValue = 2f,
+        maxValue = 16f,
         steps = 15,
     )
-    val desktopGridRows = IntPref(
+    val desktopGridRows = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_GRID_ROWS,
         titleId = R.string.title__drawer_rows,
-        defaultValue = 5, // TODO get from profile
-        minValue = 2,
-        maxValue = 16,
+        selectDefaultValue = { numRows },
+        onChange = reloadGrid,
+        minValue = 2f,
+        maxValue = 16f,
         steps = 15,
     )
     var desktopFolderCornerRadius = FloatPref(
@@ -401,7 +409,9 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_BG_CUSTOM,
         titleId = R.string.folder_custom_background,
         defaultValue = false
-    )
+    ) {
+        pokeChange()
+    }
 
     val desktopFolderBackgroundColor = ColorIntPref(
         titleId = R.string.folder_background,
@@ -416,7 +426,9 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_STROKE,
         titleId = R.string.folder_draw_stroke,
         defaultValue = false
-    )
+    ) {
+        pokeChange()
+    }
 
     val desktopFolderStrokeColor = ColorIntPref(
         titleId = R.string.folder_stroke_color,
@@ -463,6 +475,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__multiline_labels,
         defaultValue = false,
     )
+    val desktopLabelRows get() = if (desktopMultilineLabel.getValue()) 2 else 1
 
     // Dock
     var dockHide = BooleanPref(
@@ -505,9 +518,10 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_CUSTOM,
         titleId = R.string.title_dock_fill,
-        defaultValue = false,
-        onChange = { pokeChange }
-    )
+        defaultValue = false
+    ) {
+        pokeChange()
+    }
 
     val dockBackgroundColor = ColorIntPref(
         dataStore = dataStore,
@@ -524,12 +538,25 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = true,
     )
 
-    val dockNumIcons = IntPref(
+    private val dockGridSizeDelegate = ResettableLazy {
+        GridSize(
+            titleId = R.string.title__dock_hotseat_icons,
+            numColumnsPref = dockNumIcons,
+            columnsKey = "numHotseatIcons",
+            targetObject = LauncherAppState.getIDP(context),
+            onChangeListener = reloadIcons
+        )
+    }
+
+    val dockGridSize by dockGridSizeDelegate
+
+    val dockNumIcons = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_COLUMNS,
         titleId = R.string.num_hotseat_icons_pref_title,
-        minValue = 2,
-        maxValue = 16,
+        selectDefaultValue = { numHotseatIcons },
+        minValue = 2f,
+        maxValue = 16f,
         steps = 15
     )
 
@@ -616,6 +643,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__multiline_labels,
         defaultValue = false,
     )
+    val drawerLabelRows get() = if (drawerMultilineLabel.getValue()) 2 else 1
 
     val drawerRowHeightScale = FloatPref(
         dataStore = dataStore,
@@ -642,13 +670,15 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
-    val drawerGridColumns = IntPref(
+    val drawerGridColumns = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_GRID_COLUMNS,
         titleId = R.string.title__drawer_columns,
+        selectDefaultValue = { numAllAppsColumns },
+        onChange = reloadGrid,
         defaultValue = 5,
-        minValue = 2,
-        maxValue = 16,
+        minValue = 2f,
+        maxValue = 16f,
         steps = 15
     )
 
@@ -656,9 +686,10 @@ class NLPrefs private constructor(private val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_CUSTOM,
         titleId = R.string.title_drawer_enable_background,
-        defaultValue = false,
-        onChange = { pokeChange }
-    )
+        defaultValue = false
+    ) {
+        pokeChange()
+    }
 
     val drawerBackgroundColor = ColorIntPref(
         dataStore = dataStore,
@@ -749,9 +780,10 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.notification_custom_color,
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
-        defaultValue = false,
-        onChange = { pokeChange }
-    )
+        defaultValue = false
+    ) {
+        pokeChange()
+    }
 
     val notificationBackground = ColorIntPref(
         dataStore = dataStore,
@@ -843,7 +875,7 @@ class NLPrefs private constructor(private val context: Context) {
         )
     ) {
         updateSmartSpaceProvider()
-        pokeChange
+        pokeChange()
     }
 
     var smartspaceEventProviders = StringMultiSelectionPref(
@@ -1106,11 +1138,25 @@ class NLPrefs private constructor(private val context: Context) {
         onChangeCallback?.updateBlur()
     }
 
+    private fun pokeChange() {
+        CoroutineScope(Dispatchers.IO).launch {
+            _changePoker.emit(Random.nextInt())
+        }
+    }
+
     private fun initializeIconShape(shape: IconShape) {
         CustomAdaptiveIconDrawable.sInitialized = true
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
         CustomAdaptiveIconDrawable.sMask = shape.getMaskPath()
     }
+
+    var firstTimeRun = BooleanPref(
+        titleId = R.string.app_name,
+        dataStore = dataStore,
+        key = PrefKey.FIRST_TIME_RUN,
+        defaultValue = true,
+        onChange = {}
+    )
 
     companion object {
         private val INSTANCE = MainThreadInitializedObject(::NLPrefs)
