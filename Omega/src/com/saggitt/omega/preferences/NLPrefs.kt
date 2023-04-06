@@ -88,7 +88,6 @@ class NLPrefs private constructor(private val context: Context) {
         idp.onPreferencesChanged(context)
     }
 
-
     private fun pokeChange() {
         CoroutineScope(Dispatchers.Default).launch {
             _changePoker.emit(Random.nextInt())
@@ -270,15 +269,6 @@ class NLPrefs private constructor(private val context: Context) {
         onChange = {
             legacyPrefs.savePreference(PrefKey.DESKTOP_ICON_ADD_INSTALLED.name, it)
         }
-    )
-
-    val desktopAllowRotation = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DESKTOP_ALLOW_ROTATION,
-        titleId = R.string.allow_rotation_title,
-        summaryId = R.string.allow_rotation_desc,
-        defaultValue = false,
-        onChange = {}
     )
 
     var desktopIconScaleEnforce = BooleanPref(
