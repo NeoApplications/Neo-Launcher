@@ -33,7 +33,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.saggitt.omega.compose.pages.preferences.mainPrefsGraph
-import soup.compose.material.motion.materialSharedAxisX
+import soup.compose.material.motion.animation.materialSharedAxisXIn
+import soup.compose.material.motion.animation.materialSharedAxisXOut
 
 object Routes {
     const val PREFS_MAIN = "prefs_main"
@@ -75,20 +76,21 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun PrefsComposeView(navController: NavHostController) {
+fun PrefsComposeView(navController: NavHostController) { // TODO check the animation if works as excpected
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val motionSpec = materialSharedAxisX()
     val density = LocalDensity.current
+    val inMotionSpec = materialSharedAxisXIn(true, 3)
+    val outMotionSpec = materialSharedAxisXOut(true, 3)
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
         AnimatedNavHost(
             navController = navController,
             startDestination = "/",
-            enterTransition = { motionSpec.enter.transition(!isRtl, density) },
-            exitTransition = { motionSpec.exit.transition(!isRtl, density) },
-            popEnterTransition = { motionSpec.enter.transition(isRtl, density) },
-            popExitTransition = { motionSpec.exit.transition(isRtl, density) },
+            enterTransition = { inMotionSpec },
+            exitTransition = { outMotionSpec },
+            popEnterTransition = { inMotionSpec },
+            popExitTransition = { outMotionSpec },
         ) {
             mainPrefsGraph(route = "/")
         }

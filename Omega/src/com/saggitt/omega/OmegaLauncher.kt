@@ -42,7 +42,6 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
@@ -77,8 +76,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
+// compiler is misidentifying lifecycle's getter(s), ignore the warning for now
 class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-    ActivityResultRegistryOwner {
+                      ActivityResultRegistryOwner {
 
     val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
@@ -97,9 +97,8 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 
     override fun onCreate(savedInstanceState: Bundle?) {
         savedStateRegistryController.performRestore(savedInstanceState)
@@ -114,76 +113,85 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
     }
 
-    override fun getActivityResultRegistry() = object : ActivityResultRegistry() {
-        override fun <I : Any?, O : Any?> onLaunch(
-            requestCode: Int,
-            contract: ActivityResultContract<I, O>,
-            input: I,
-            options: ActivityOptionsCompat?
-        ) {
-            val activity = this@OmegaLauncher
+    override val activityResultRegistry: ActivityResultRegistry
+        get() = object : ActivityResultRegistry() {
+            override fun <I : Any?, O : Any?> onLaunch(
+                requestCode: Int,
+                contract: ActivityResultContract<I, O>,
+                input: I,
+                options: ActivityOptionsCompat?,
+            ) {
+                val activity = this@OmegaLauncher
 
-            // Immediate result path
-            val synchronousResult = contract.getSynchronousResult(activity, input)
-            if (synchronousResult != null) {
-                Handler(Looper.getMainLooper()).post {
-                    dispatchResult(
-                        requestCode,
-                        synchronousResult.value
-                    )
-                }
-                return
-            }
-
-            // Start activity path
-            val intent = contract.createIntent(activity, input)
-            var optionsBundle: Bundle? = null
-            // If there are any extras, we should defensively set the classLoader
-            if (intent.extras != null && intent.extras!!.classLoader == null) {
-                intent.setExtrasClassLoader(activity.classLoader)
-            }
-            if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
-                optionsBundle =
-                    intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-                intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-            } else if (options != null) {
-                optionsBundle = options.toBundle()
-            }
-            if (RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS == intent.action) {
-                // requestPermissions path
-                var permissions =
-                    intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
-                if (permissions == null) {
-                    permissions = arrayOfNulls(0)
-                }
-                ActivityCompat.requestPermissions(activity, permissions, requestCode)
-            } else if (StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
-                val request: IntentSenderRequest =
-                    intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
-                try {
-                    // startIntentSenderForResult path
-                    ActivityCompat.startIntentSenderForResult(
-                        activity, request.intentSender,
-                        requestCode, request.fillInIntent, request.flagsMask,
-                        request.flagsValues, 0, optionsBundle
-                    )
-                } catch (e: IntentSender.SendIntentException) {
+                // Immediate result path
+                val synchronousResult = contract.getSynchronousResult(activity, input)
+                if (synchronousResult != null) {
                     Handler(Looper.getMainLooper()).post {
                         dispatchResult(
-                            requestCode, RESULT_CANCELED,
-                            Intent()
-                                .setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
-                                .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e)
+                            requestCode,
+                            synchronousResult.value
                         )
                     }
+                    return
                 }
-            } else {
-                // startActivityForResult path
-                ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle)
-            }
-        }
 
-    }
+                // Start activity path
+                val intent = contract.createIntent(activity, input)
+                var optionsBundle: Bundle? = null
+                // If there are any extras, we should defensively set the classLoader
+                if (intent.extras != null && intent.extras!!.classLoader == null) {
+                    intent.setExtrasClassLoader(activity.classLoader)
+                }
+                if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
+                    optionsBundle =
+                        intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+                    intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+                } else if (options != null) {
+                    optionsBundle = options.toBundle()
+                }
+                if (RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS == intent.action) {
+                    // requestPermissions path
+                    var permissions =
+                        intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
+                    if (permissions == null) {
+                        permissions = arrayOfNulls(0)
+                    }
+                    ActivityCompat.requestPermissions(activity, permissions, requestCode)
+                } else if (StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
+                    val request: IntentSenderRequest =
+                        intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+                    try {
+                        // startIntentSenderForResult path
+                        ActivityCompat.startIntentSenderForResult(
+                            activity, request.intentSender,
+                            requestCode, request.fillInIntent, request.flagsMask,
+                            request.flagsValues, 0, optionsBundle
+                        )
+                    } catch (e: IntentSender.SendIntentException) {
+                        Handler(Looper.getMainLooper()).post {
+                            dispatchResult(
+                                requestCode, RESULT_CANCELED,
+                                Intent()
+                                    .setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
+                                    .putExtra(
+                                        StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION,
+                                        e
+                                    )
+                            )
+                        }
+                    }
+                } else {
+                    // startActivityForResult path
+                    ActivityCompat.startActivityForResult(
+                        activity,
+                        intent,
+                        requestCode,
+                        optionsBundle
+                    )
+                }
+            }
+
+        }
 
     private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
@@ -272,7 +280,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun setupViews() {
         super.setupViews()
         findViewById<LauncherRootView>(R.id.launcher).let {
-            ViewTreeLifecycleOwner.set(it, this)
+            // ViewTreeLifecycleOwner.set(it, this) TODO is it needed?
             it.setViewTreeSavedStateRegistryOwner(this)
         }
     }
@@ -301,7 +309,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     inline fun prepareDummyView(
         left: Int, top: Int, right: Int, bottom: Int,
-        crossinline callback: (View) -> Unit
+        crossinline callback: (View) -> Unit,
     ) {
         (dummyView.layoutParams as ViewGroup.MarginLayoutParams).let {
             it.width = right - left
