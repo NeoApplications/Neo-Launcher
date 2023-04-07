@@ -66,6 +66,7 @@ import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
+import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.FloatPref
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
@@ -462,6 +463,27 @@ fun StringMultiSelectionPreference(
         onClick = onClick
     )
 }
+
+@Composable
+fun AlertDialogPreference(
+    modifier: Modifier = Modifier,
+    pref: DialogPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
 
 @Composable
 fun StringTextPreference(

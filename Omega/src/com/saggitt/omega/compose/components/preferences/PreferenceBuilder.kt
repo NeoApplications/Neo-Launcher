@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
+import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.FloatPref
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
@@ -75,14 +76,13 @@ val PreferenceBuilder =
             is IdpIntPref ->
                 IntSeekBarPreference(pref = pref, index = index, groupSize = size)
 
-            /*
             is DialogPref ->
                 AlertDialogPreference(pref = pref, index = index, groupSize = size) {
                     onDialogPref(
                         pref
                     )
                 }
-                */
+
             is IntSelectionPref ->
                 IntSelectionPreference(
                     pref = pref,
