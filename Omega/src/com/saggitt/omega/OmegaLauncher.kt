@@ -42,6 +42,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
@@ -291,7 +292,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun setupViews() {
         super.setupViews()
         findViewById<LauncherRootView>(R.id.launcher).let {
-            // ViewTreeLifecycleOwner.set(it, this) TODO is it needed?
+            it.setViewTreeLifecycleOwner(this)
             it.setViewTreeSavedStateRegistryOwner(this)
         }
     }
