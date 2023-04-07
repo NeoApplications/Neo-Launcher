@@ -18,6 +18,8 @@
 
 package com.saggitt.omega.compose.components.preferences
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +35,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -57,6 +61,7 @@ import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GridSizePrefDialogUI(
     pref: GridSize,
@@ -91,15 +96,35 @@ fun GridSizePrefDialogUI(
                     .weight(1f, false)
             ) {
                 item {
+
+                    var menuExpanded by remember { mutableStateOf(false) }
                     Row(
                         modifier = Modifier.height(40.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier
+                                .size(32.dp)
+                                .combinedClickable(
+                                    onClick = {},
+                                    onLongClick = {
+                                        menuExpanded = !menuExpanded
+                                    }
+                                ),
                             painter = painterResource(id = R.drawable.ic_columns),
                             contentDescription = stringResource(id = R.string.title__drawer_columns)
                         )
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    numRows = pref.numColumnsPref.defaultValue
+                                    menuExpanded = false
+                                },
+                                text = { Text(text = stringResource(id = R.string.reset_to_default)) }
+                            )
+                        }
                         Text(
                             text = numColumns.toString(),
                             textAlign = TextAlign.Center,
@@ -124,11 +149,31 @@ fun GridSizePrefDialogUI(
                         modifier = Modifier.height(40.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        var menuExpanded by remember { mutableStateOf(false) }
                         Icon(
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier
+                                .size(32.dp)
+                                .combinedClickable(
+                                    onClick = {},
+                                    onLongClick = {
+                                        menuExpanded = !menuExpanded
+                                    }
+                                ),
                             painter = painterResource(id = R.drawable.ic_rows),
                             contentDescription = stringResource(id = R.string.title__drawer_rows)
                         )
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    numRows = pref.numRowsPref.defaultValue
+                                    menuExpanded = false
+                                },
+                                text = { Text(text = stringResource(id = R.string.reset_to_default)) }
+                            )
+                        }
                         Text(
                             text = numRows.toString(),
                             textAlign = TextAlign.Center,
