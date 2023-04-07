@@ -23,10 +23,10 @@
     android:viewportHeight="32">
 
     <path
-        android:fillAlpha="0.80"
-        android:fillColor="?colorAccent"
+        android:fillAlpha="0.10"
+        android:fillColor="@color/colorAccent"
         android:pathData="M16,16m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
-        android:strokeAlpha="0.30" />
+        android:strokeAlpha="0.10" />
 
     <group
         android:scaleX="0.09"
@@ -36,36 +36,36 @@
         <path
             android:fillColor="@android:color/transparent"
             android:pathData="M84,240a23.9,23.9 0,0 0,24 -24V168"
-            android:strokeWidth="24"
-            android:strokeColor="?settingsBackground"
+            android:strokeWidth="20"
+            android:strokeColor="@color/colorAccent"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
         <path
             android:fillColor="@android:color/transparent"
             android:pathData="M172,240a23.9,23.9 0,0 1,-24 -24V168"
-            android:strokeWidth="24"
-            android:strokeColor="?settingsBackground"
+            android:strokeWidth="20"
+            android:strokeColor="@color/colorAccent"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
         <path
             android:fillColor="@android:color/transparent"
             android:pathData="M152,168h16a23.9,23.9 0,0 1,24 24v8a23.9,23.9 0,0 0,24 24"
-            android:strokeWidth="24"
-            android:strokeColor="?settingsBackground"
+            android:strokeWidth="20"
+            android:strokeColor="@color/colorAccent"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
         <path
             android:fillColor="@android:color/transparent"
             android:pathData="M104,168H88a23.9,23.9 0,0 0,-24 24v8a23.9,23.9 0,0 1,-24 24"
-            android:strokeWidth="24"
-            android:strokeColor="?settingsBackground"
+            android:strokeWidth="20"
+            android:strokeColor="@color/colorAccent"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
         <path
             android:fillColor="@android:color/transparent"
             android:pathData="M111.8,64A52,52 0,0 0,68 40a52,52 0,0 0,-3.5 44.7A49.3,49.3 0,0 0,56 112v8a48,48 0,0 0,48 48h48a48,48 0,0 0,48 -48v-8a49.3,49.3 0,0 0,-8.5 -27.3A52,52 0,0 0,188 40a52,52 0,0 0,-43.8 24Z"
-            android:strokeWidth="24"
-            android:strokeColor="?settingsBackground"
+            android:strokeWidth="20"
+            android:strokeColor="@color/colorAccent"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
     </group>
