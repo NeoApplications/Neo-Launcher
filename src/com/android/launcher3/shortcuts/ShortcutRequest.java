@@ -99,13 +99,15 @@ public class ShortcutRequest {
         }
         mQuery.setQueryFlags(flags);
 
+        QueryResult result;
         try {
-            return new QueryResult(mContext.getSystemService(LauncherApps.class)
+            result = new QueryResult(mContext.getSystemService(LauncherApps.class)
                     .getShortcuts(mQuery, mUserHandle));
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Failed to query for shortcuts", e);
-            return QueryResult.DEFAULT;
+            result = QueryResult.DEFAULT;
         }
+        return result;
     }
 
     public static class QueryResult extends ArrayList<ShortcutInfo> {
