@@ -22,8 +22,10 @@ import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +39,8 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -245,6 +249,7 @@ fun ColorIntPreference(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SeekBarPreference(
     modifier: Modifier = Modifier,
@@ -265,12 +270,33 @@ fun SeekBarPreference(
         isEnabled = isEnabled,
         bottomWidget = {
             Row {
+
+                var menuExpanded by remember { mutableStateOf(false) }
                 Text(
                     text = pref.specialOutputs(currentValue),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.widthIn(min = 52.dp)
+                    modifier = Modifier
+                        .widthIn(min = 52.dp)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                menuExpanded = !menuExpanded
+                            }
+                        )
                 )
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                    DropdownMenuItem(
+                        onClick = {
+                            currentValue = pref.defaultValue
+                            pref.setValue(currentValue)
+                            onValueChange(currentValue)
+                            menuExpanded = false
+                        },
+                        text = { Text(text = stringResource(id = R.string.reset_to_default)) }
+                    )
+                }
+
                 Spacer(modifier = Modifier.requiredWidth(8.dp))
                 Slider(
                     modifier = Modifier
