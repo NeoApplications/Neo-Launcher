@@ -16,7 +16,7 @@ class DeviceProfileOverrides(context: Context) {
     private val predefinedGrids = InvariantDeviceProfile.parseAllGridOptions(context)
         .map { option ->
             val gridInfo = DBGridInfo(
-                numHotseatColumns = option.numHotseatIcons,
+                numHotseatIcons = option.numHotseatIcons,
                 numRows = option.numRows,
                 numColumns = option.numColumns
             )
@@ -42,7 +42,7 @@ class DeviceProfileOverrides(context: Context) {
         val gridInfo = getGridInfo(gridName)
         prefs.desktopGridRows.setValue(gridInfo.numRows)
         prefs.desktopGridColumns.setValue(gridInfo.numColumns)
-        prefs.dockNumIcons.setValue(gridInfo.numHotseatColumns)
+        prefs.dockNumIcons.setValue(gridInfo.numHotseatIcons)
     }
 
     fun getOverrides(defaultGrid: InvariantDeviceProfile.GridOption) =
@@ -54,14 +54,14 @@ class DeviceProfileOverrides(context: Context) {
     fun getTextFactors() = TextFactors(prefs)
 
     data class DBGridInfo(
-        val numHotseatColumns: Int,
+        val numHotseatIcons: Int,
         val numRows: Int,
         val numColumns: Int,
     ) {
-        val dbFile get() = "launcher_${numRows}_${numColumns}_${numHotseatColumns}.db"
+        val dbFile get() = "launcher_${numRows}_${numColumns}_${numHotseatIcons}.db"
 
         constructor(prefs: NLPrefs) : this(
-            numHotseatColumns = prefs.dockNumIcons.getValue(),
+            numHotseatIcons = prefs.dockNumIcons.getValue(),
             numRows = prefs.desktopGridRows.getValue(),
             numColumns = prefs.desktopGridColumns.getValue(),
         )

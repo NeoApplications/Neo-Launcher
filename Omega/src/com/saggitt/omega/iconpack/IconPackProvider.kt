@@ -59,7 +59,7 @@ class IconPackProvider(private val context: Context) {
                 IconPackInfo(
                     info.loadLabel(pm).toString(),
                     info.activityInfo.packageName,
-                    CustomAdaptiveIconDrawable.wrapNonNull(info.loadIcon(pm))
+                    info.loadIcon(pm)
                 )
             }
         val defaultIconPack =
@@ -69,7 +69,7 @@ class IconPackProvider(private val context: Context) {
             IconPackInfo(
                 info.applicationInfo.loadLabel(pm).toString(),
                 LAWNICONS_PACKAGE_NAME,
-                CustomAdaptiveIconDrawable.wrapNonNull(info.applicationInfo.loadIcon(pm))
+                info.applicationInfo.loadIcon(pm)
             )
         } catch (e: PackageManager.NameNotFoundException) {
             null
@@ -77,6 +77,7 @@ class IconPackProvider(private val context: Context) {
         val themedIconsInfo = if (minSDK(33)) IconPackInfo(
             context.getString(R.string.title_themed_icons),
             THEME_ICON_THEMED,
+            /*
             ThemedIconDrawable.wrapWithThemeData(
                 ContextCompat.getDrawable(context, R.mipmap.ic_launcher),
                 context.resources,
@@ -85,7 +86,8 @@ class IconPackProvider(private val context: Context) {
                     context.packageName,
                     R.drawable.ic_launcher_foreground
                 )
-            )
+            )*/
+            ContextCompat.getDrawable(context, R.mipmap.ic_launcher)!!
         ) else null
         return listOfNotNull(
             defaultIconPack,

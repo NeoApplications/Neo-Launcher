@@ -349,10 +349,10 @@ public class InvariantDeviceProfile {
         borderSpaces = displayOption.borderSpaces;
         folderBorderSpace = displayOption.folderBorderSpace;
         horizontalMargin = displayOption.horizontalMargin;
-        numShownHotseatIcons = dbGridInfo.getNumHotseatColumns();
+        numShownHotseatIcons = dbGridInfo.getNumHotseatIcons();
         numShrunkenHotseatIcons = closestProfile.numShrunkenHotseatIcons;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
-                ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
+                ? closestProfile.numDatabaseHotseatIcons : dbGridInfo.getNumHotseatIcons();
         hotseatColumnSpan = closestProfile.hotseatColumnSpan;
         hotseatBorderSpaces = displayOption.hotseatBorderSpaces;
         numAllAppsColumns = closestProfile.numAllAppsColumns;
