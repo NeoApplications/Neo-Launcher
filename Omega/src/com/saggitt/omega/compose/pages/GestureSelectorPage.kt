@@ -21,6 +21,7 @@ package com.saggitt.omega.compose.pages
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRow
 import androidx.compose.material3.Icon
@@ -71,9 +74,7 @@ import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.saggitt.omega.compose.components.ExpandableListItem
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.TabItem
@@ -109,7 +110,7 @@ fun NavGraphBuilder.gesturesPageGraph(route: String) {
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun GestureSelectorPage(prefs: NavigationPref) {
 
@@ -204,7 +205,7 @@ fun GestureSelectorPage(prefs: NavigationPref) {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                HorizontalPager(state = pagerState, count = tabs.size) { page ->
+                HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
                     tabs[page].screen()
                 }
             }
@@ -215,7 +216,7 @@ fun GestureSelectorPage(prefs: NavigationPref) {
 @Composable
 fun LauncherScreen(
     selectedOption: MutableState<String>,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val launcherItems = GestureController.getGestureHandlers(context, true, true)
@@ -288,7 +289,7 @@ fun LauncherScreen(
 fun AppsScreen(
     apps: List<App>,
     selectedOption: MutableState<String>,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -366,7 +367,7 @@ fun AppsScreen(
 fun ShortcutsScreen(
     apps: List<App>,
     selectedOption: MutableState<String>,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier

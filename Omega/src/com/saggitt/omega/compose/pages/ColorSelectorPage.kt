@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.pages
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRow
 import androidx.compose.material3.BottomAppBar
@@ -57,9 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.R
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.raedapps.alwan.rememberAlwanState
 import com.raedapps.alwan.ui.Alwan
 import com.saggitt.omega.compose.components.ColorItem
@@ -75,18 +76,18 @@ import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val coroutineScope = rememberCoroutineScope()
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
-        PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor
+        PrefKey.DESKTOP_FOLDER_BG_COLOR     -> prefs.desktopFolderBackgroundColor
         PrefKey.DESKTOP_FOLDER_STROKE_COLOR -> prefs.desktopFolderStrokeColor
-        PrefKey.DOCK_BG_COLOR -> prefs.dockBackgroundColor
-        PrefKey.DRAWER_BG_COLOR         -> prefs.drawerBackgroundColor
-        PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
-        else -> prefs.profileAccentColor
+        PrefKey.DOCK_BG_COLOR               -> prefs.dockBackgroundColor
+        PrefKey.DRAWER_BG_COLOR             -> prefs.drawerBackgroundColor
+        PrefKey.NOTIFICATION_DOTS_COLOR     -> prefs.notificationBackground
+        else                                -> prefs.profileAccentColor
     }
     val navController = LocalNavController.current
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
@@ -94,9 +95,9 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val presetColors = staticColors
 
     val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentAccentColor.value } -> 0
+        presetColors.any { it.accentColor == currentAccentColor.value }  -> 0
         dynamicColors.any { it.accentColor == currentAccentColor.value } -> 2
-        else -> 1
+        else                                                             -> 1
     }
     val pagerState = rememberPagerState(defaultTabIndex)
 
@@ -198,7 +199,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    HorizontalPager(state = pagerState, count = tabs.size) { page ->
+                    HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
                         tabs[page].screen()
                     }
                 }

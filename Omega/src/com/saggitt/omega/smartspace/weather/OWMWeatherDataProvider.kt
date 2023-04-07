@@ -9,10 +9,10 @@ import android.widget.Toast
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.kwabenaberko.openweathermaplib.constants.Units
+import com.kwabenaberko.openweathermaplib.constant.Units
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
-import com.kwabenaberko.openweathermaplib.implementation.callbacks.CurrentWeatherCallback
-import com.kwabenaberko.openweathermaplib.models.currentweather.CurrentWeather
+import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
+import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.weather.icons.WeatherIconProvider
