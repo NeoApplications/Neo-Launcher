@@ -9,10 +9,11 @@ buildscript {
     }
 }
 val vKotlin = "1.8.10"
-val vCompose = "1.3.1"
-val vComposeCompiler = "1.4.3"
-val vAccompanist = "0.27.0"
-val vRoom = "2.5.0-beta01"
+val vCompose = "1.4.1"
+val vComposeCompiler = "1.4.4"
+val vAccompanist = "0.30.1"
+val vRoom = "2.5.1"
+val vProtobuf = "3.22.2"
 
 plugins {
     id("com.android.application").version("7.4.2")
@@ -179,7 +180,7 @@ android {
         protobuf {
             // Configure the protoc executable
             protoc {
-                artifact = "com.google.protobuf:protoc:3.21.12"
+                artifact = "com.google.protobuf:protoc:$vProtobuf"
             }
             generateProtoTasks {
                 all().forEach { task ->
@@ -211,28 +212,28 @@ dependencies {
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
 
-    implementation("com.google.android.material:material:1.9.0-alpha02")
+    implementation("com.google.android.material:material:1.9.0-beta01")
 
     //Libs
-    implementation("com.google.protobuf:protobuf-javalite:3.21.12")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
-    implementation("com.github.samanzamani:PersianDate:1.5.4")
-    implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.0.1") {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0-Beta")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation("com.github.samanzamani:PersianDate:1.6.1")
+    implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.1.0") {
         exclude("com.android.support", "support-compat")
         exclude("com.android.support", "appcompat-v7")
     }
-    implementation("com.raedapps:alwan:1.0.0")
-    implementation("io.github.hokofly:hoko-blur:1.3.7")
+    implementation("com.raedapps:alwan:1.0.1")
+    implementation("io.github.hokofly:hoko-blur:1.4.0")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
     implementation("androidx.compose.runtime:runtime:$vCompose")
     implementation("androidx.compose.ui:ui:$vCompose")
@@ -240,8 +241,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
     implementation("androidx.compose.foundation:foundation:$vCompose")
     implementation("androidx.navigation:navigation-compose:2.5.3")
-    implementation("io.github.fornewid:material-motion-compose-core:0.9.0")
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.github.fornewid:material-motion-compose-core:0.11.1")
+    implementation("io.coil-kt:coil-compose:2.3.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
 
     implementation("androidx.compose.material:material:$vCompose")
@@ -268,7 +269,7 @@ dependencies {
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
 
-    api("com.airbnb.android:lottie:3.3.0")
+    api("com.airbnb.android:lottie:6.0.0")
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
