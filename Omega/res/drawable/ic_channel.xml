@@ -28,7 +28,7 @@
     <group
         android:scaleX="0.09"
         android:scaleY="0.09"
-        android:translateX="4.5"
+        android:translateX="3.5"
         android:translateY="4.5">
         <path
             android:fillColor="@android:color/transparent"
