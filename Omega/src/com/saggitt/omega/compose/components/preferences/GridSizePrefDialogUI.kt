@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -90,9 +91,12 @@ fun GridSizePrefDialogUI(
                     .weight(1f, false)
             ) {
                 item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.height(40.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier.size(32.dp),
                             painter = painterResource(id = R.drawable.ic_columns),
                             contentDescription = stringResource(id = R.string.title__drawer_columns)
                         )
@@ -100,7 +104,7 @@ fun GridSizePrefDialogUI(
                             text = numColumns.toString(),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.widthIn(min = 32.dp)
+                            modifier = Modifier.widthIn(min = 28.dp)
                         )
                         Spacer(modifier = Modifier.requiredWidth(8.dp))
                         Slider(
@@ -115,9 +119,13 @@ fun GridSizePrefDialogUI(
                     }
                 }
                 if (pref is GridSize2D) item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.height(40.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier.size(32.dp),
                             painter = painterResource(id = R.drawable.ic_rows),
                             contentDescription = stringResource(id = R.string.title__drawer_rows)
                         )

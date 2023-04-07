@@ -39,6 +39,7 @@ import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.compose.components.preferences.GridSizePrefDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
@@ -46,6 +47,7 @@ import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialo
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
@@ -156,10 +158,11 @@ fun DesktopPrefsPage() {
                             pref = dialogPref as StringMultiSelectionPref,
                             openDialogCustom = openDialog
                         )
-                        /*is GridSize -> GridSizePrefDialogUI(
+
+                        is GridSize -> GridSizePrefDialogUI(
                             pref = dialogPref as GridSize,
                             openDialogCustom = openDialog
-                        )*/
+                        )
                     }
                 }
             }

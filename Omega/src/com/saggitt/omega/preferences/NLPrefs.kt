@@ -580,6 +580,28 @@ class NLPrefs private constructor(private val context: Context) {
         onChange = { reloadApps() }
     )
 
+    private val drawerGridSizeDelegate = ResettableLazy {
+        GridSize(
+            titleId = R.string.title__drawer_columns,
+            numColumnsPref = drawerColumns,
+            columnsKey = "numAllAppsColumns",
+            targetObject = LauncherAppState.getIDP(context),
+            onChangeListener = reloadIcons
+        )
+    }
+    val drawerGridSize by drawerGridSizeDelegate
+
+    private val drawerColumns = IdpIntPref(
+        key = PrefKey.DRAWER_GRID_COLUMNS,
+        titleId = R.string.title__drawer_columns,
+        dataStore = dataStore,
+        selectDefaultValue = { numAllAppsColumns },
+        minValue = 2f,
+        maxValue = 16f,
+        steps = 15,
+        onChange = reloadGrid
+    )
+
     var drawerPopup = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_POPUP_OPTIONS,
