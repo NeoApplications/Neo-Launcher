@@ -95,9 +95,9 @@ public class InvariantDeviceProfile {
     // constraints
     static final int COUNT_SIZES = 4;
     public static final int INDEX_DEFAULT = 0;
-    static final int INDEX_LANDSCAPE = 1;
-    static final int INDEX_TWO_PANEL_PORTRAIT = 2;
-    static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
+    public static final int INDEX_LANDSCAPE = 1;
+    public static final int INDEX_TWO_PANEL_PORTRAIT = 2;
+    public static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
     /**
      * Number of icons per row and column in the workspace.
      */
@@ -201,22 +201,12 @@ public class InvariantDeviceProfile {
      * This constructor should NOT have any monitors by design.
      */
     public InvariantDeviceProfile(Context context, String gridName) {
-        String newName = initGrid(context, gridName);
-        if (newName == null || !newName.equals(gridName)) {
-            throw new IllegalArgumentException("Unknown grid name");
-        }
+        this(context, DeviceProfileOverrides.INSTANCE.get(context).getGridInfo(gridName));
     }
 
-    public InvariantDeviceProfile(Context context, DeviceProfileOverrides.Options overrideOptions) {
-        Info displayInfo = DisplayController.INSTANCE.get(context).getInfo();
-        // Determine if we have split display
-
-        String gridName = getCurrentGridName(context);
-        ArrayList<DisplayOption> allOptions =
-                getPredefinedDeviceProfiles(context, gridName, deviceType, false);
-        DisplayOption displayOption =
-                invDistWeightedInterpolate(displayInfo, allOptions, deviceType);
-        initGrid(context, displayInfo, displayOption, deviceType, overrideOptions);
+    public InvariantDeviceProfile(Context context, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+        String gridName = DeviceProfileOverrides.INSTANCE.get(context).getGridName(dbGridInfo);
+        initGrid(context, gridName, dbGridInfo);
     }
 
     /**
@@ -298,10 +288,16 @@ public class InvariantDeviceProfile {
     }
 
     public static String getCurrentGridName(Context context) {
-        return Utilities.isGridOptionsEnabled(context)
-                ? Utilities.getPrefs(context).getString(KEY_IDP_GRID_NAME, null) : null;
+        return DeviceProfileOverrides.INSTANCE.get(context).getCurrentGridName();
     }
+
     private String initGrid(Context context, String gridName) {
+        DeviceProfileOverrides.DBGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        return initGrid(context, gridName, dbGridInfo);
+    }
+
+    private String initGrid(Context context, String gridName, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
         Info displayInfo = DisplayController.INSTANCE.get(context).getInfo();
         @DeviceType int deviceType = getDeviceType(displayInfo);
         ArrayList<DisplayOption> allOptions =
@@ -309,30 +305,30 @@ public class InvariantDeviceProfile {
                         RestoreDbTask.isPending(context));
         DisplayOption displayOption =
                 invDistWeightedInterpolate(displayInfo, allOptions, deviceType);
-        initGrid(context, displayInfo, displayOption, deviceType);
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
         return displayOption.grid.name;
     }
 
     private void initGrid(
             Context context, Info displayInfo, DisplayOption displayOption,
             int deviceType) {
-        DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
-                .getOverrides(displayOption.grid);
-        initGrid(context, displayInfo, displayOption, deviceType, overrideOptions);
+        DeviceProfileOverrides.DBGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
     }
 
     private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
-                          @DeviceType int deviceType, DeviceProfileOverrides.Options overrideOptions) {
+                          @DeviceType int deviceType, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+        DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
+                .getOverrides(displayOption.grid);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
-        numRows = closestProfile.numRows;
-        numRowsOriginal = closestProfile.numRows;
-        numColumns = closestProfile.numColumns;
-        numColumnsOriginal = closestProfile.numColumns;
-        numHotseatIcons = closestProfile.numHotseatIcons;
-        numHotseatIconsOriginal = closestProfile.numHotseatIcons;
+        numRows = dbGridInfo.getNumRows();
+        numRowsOriginal = dbGridInfo.getNumRows();
+        numColumns = dbGridInfo.getNumColumns();
+        numColumnsOriginal = dbGridInfo.getNumColumns();
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
-        dbFile = closestProfile.dbFile;
+        dbFile = dbGridInfo.getDbFile();
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
         numFolderRows = closestProfile.numFolderRows;
@@ -353,7 +349,7 @@ public class InvariantDeviceProfile {
         borderSpaces = displayOption.borderSpaces;
         folderBorderSpace = displayOption.folderBorderSpace;
         horizontalMargin = displayOption.horizontalMargin;
-        numShownHotseatIcons = closestProfile.numHotseatIcons;
+        numShownHotseatIcons = dbGridInfo.getNumHotseatColumns();
         numShrunkenHotseatIcons = closestProfile.numShrunkenHotseatIcons;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
@@ -381,7 +377,7 @@ public class InvariantDeviceProfile {
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
-        overrideOptions.apply(this);
+        overrideOptions.applyUi(this);
         for (int i = 1; i < iconSize.length; i++) {
             maxIconSize = Math.max(maxIconSize, iconSize[i]);
         }
@@ -420,6 +416,7 @@ public class InvariantDeviceProfile {
         mChangeListeners.remove(listener);
     }
     public void setCurrentGrid(Context context, String gridName) {
+        DeviceProfileOverrides.INSTANCE.get(context).setCurrentGrid(gridName);
         Context appContext = context.getApplicationContext();
         Utilities.getPrefs(appContext).edit().putString(KEY_IDP_GRID_NAME, gridName).apply();
         MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
@@ -495,11 +492,14 @@ public class InvariantDeviceProfile {
         }
         return filteredProfiles;
     }
+
     /**
      * @return all the grid options that can be shown on the device
      */
-    public List<GridOption> parseAllGridOptions(Context context) {
+    public static List<GridOption> parseAllGridOptions(Context context) {
         List<GridOption> result = new ArrayList<>();
+        Info defaultInfo = DisplayController.INSTANCE.get(context).getInfo();
+        @DeviceType int deviceType = getDeviceType(defaultInfo);
         try (XmlResourceParser parser = context.getResources().getXml(R.xml.device_profiles)) {
             final int depth = parser.getDepth();
             int type;

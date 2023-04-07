@@ -71,6 +71,8 @@ import com.android.launcher3.util.NoLocaleSQLiteHelper;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.LauncherAppWidgetHost;
+import com.saggitt.omega.OmegaApp;
+import com.saggitt.omega.OmegaAppKt;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -654,6 +656,11 @@ public class LauncherProvider extends ContentProvider {
                                                    boolean forMigration) {
             if (dbName == null) {
                 dbName = InvariantDeviceProfile.INSTANCE.get(context).dbFile;
+                if (!forMigration) {
+                    OmegaApp app = OmegaAppKt.getOmegaApp(context);
+                    app.renameRestoredDb(dbName);
+                    app.migrateDbName(dbName);
+                }
             }
             DatabaseHelper databaseHelper = new DatabaseHelper(context, dbName, forMigration);
             // Table creation sometimes fails silently, which leads to a crash loop.

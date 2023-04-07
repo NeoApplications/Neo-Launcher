@@ -77,7 +77,7 @@ import com.android.launcher3.graphics.IconShape as L3IconShape
 class NLPrefs private constructor(private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
     private val dataStore: DataStore<Preferences> = context.dataStore
-    private val legacyPrefs = LegacyPreferences(context)
+    val legacyPrefs = LegacyPreferences(context)
     private var onChangeCallback: PreferencesChangeCallback? = null
 
     private val _changePoker = MutableSharedFlow<Int>()

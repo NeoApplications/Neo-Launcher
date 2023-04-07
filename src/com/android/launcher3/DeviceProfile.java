@@ -44,6 +44,7 @@ import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.preferences.NLPrefs;
 
 import java.io.PrintWriter;
@@ -211,6 +212,7 @@ public class DeviceProfile {
 
     private final NLPrefs prefs;
 
+    private final DeviceProfileOverrides.TextFactors mTextFactors;
     /**
      * TODO: Once we fully migrate to staged split, remove "isMultiWindowMode"
      */
@@ -220,6 +222,7 @@ public class DeviceProfile {
         prefs = Utilities.getOmegaPrefs(context);
         boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
 
+        mTextFactors = DeviceProfileOverrides.INSTANCE.get(context).getTextFactors();
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -649,6 +652,7 @@ public class DeviceProfile {
         float invIconTextSizeSp = inv.iconTextSize[mTypeIndex];
         iconSizePx = Math.max(1, pxFromDp(invIconSizeDp, mMetrics, iconScale));
         iconTextSizePx = (int) (pxFromSp(invIconTextSizeSp, mMetrics) * iconScale);
+        iconTextSizePx *= mTextFactors.getIconTextSizeFactor();
         iconDrawablePaddingPx = (int) (iconDrawablePaddingOriginalPx * iconScale);
         cellLayoutBorderSpacePx = getCellLayoutBorderSpace(inv, scale);
         if (isScalableGrid) {
@@ -676,7 +680,9 @@ public class DeviceProfile {
         }
         // All apps
         updateAllAppsIconSize(scale, res);
+
         updateHotseatIconSize(iconSizePx);
+
         // Folder icon
         folderIconSizePx = IconNormalizer.getNormalizedCircleSize(iconSizePx);
         folderIconOffsetYPx = (iconSizePx - folderIconSizePx) / 2;
@@ -714,14 +720,15 @@ public class DeviceProfile {
         if (isScalableGrid) {
             allAppsIconSizePx =
                     pxFromDp(inv.allAppsIconSize[mTypeIndex], mMetrics, scale);
-            allAppsIconTextSizePx =
-                    pxFromSp(inv.allAppsIconTextSize[mTypeIndex], mMetrics, scale);
+            allAppsIconTextSizePx = pxFromSp(inv.allAppsIconTextSize[mTypeIndex], mMetrics, scale);
+            allAppsIconTextSizePx *= mTextFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx = iconDrawablePaddingOriginalPx;
         } else {
             float invIconSizeDp = inv.allAppsIconSize[mTypeIndex];
             float invIconTextSizeSp = inv.allAppsIconTextSize[mTypeIndex];
             allAppsIconSizePx = Math.max(1, pxFromDp(invIconSizeDp, mMetrics, scale));
             allAppsIconTextSizePx = (int) (pxFromSp(invIconTextSizeSp, mMetrics) * scale);
+            allAppsIconTextSizePx *= mTextFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx =
                     res.getDimensionPixelSize(R.dimen.all_apps_icon_drawable_padding);
         }
@@ -761,6 +768,7 @@ public class DeviceProfile {
         folderChildTextSizePx =
                 pxFromSp(inv.iconTextSize[INDEX_DEFAULT], mMetrics, scale);
         folderLabelTextSizePx = (int) (folderChildTextSizePx * folderLabelTextScale);
+        folderChildTextSizePx *= mTextFactors.getIconTextSizeFactor();
         int textHeight = Utilities.calculateTextHeight(folderChildTextSizePx);
         if (isScalableGrid) {
             int minWidth = folderChildIconSizePx + iconDrawablePaddingPx * 2;

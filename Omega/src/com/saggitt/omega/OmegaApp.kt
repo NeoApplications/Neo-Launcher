@@ -25,11 +25,14 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
+import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
+import java.io.File
 
 class OmegaApp : Application() {
     private val TAG = "OmegaApp"
@@ -81,6 +84,46 @@ class OmegaApp : Application() {
             false
         }
     }
+
+    fun renameRestoredDb(dbName: String) {
+        //val restoredDbFile = getDatabasePath(OmegaBackup.RESTORED_DB_FILE_NAME)
+        val restoredDbFile = getDatabasePath("restored.db")
+        if (!restoredDbFile.exists()) return
+        val dbFile = getDatabasePath(dbName)
+        restoredDbFile.renameTo(dbFile)
+    }
+
+    fun migrateDbName(dbName: String) {
+        val dbFile = getDatabasePath(dbName)
+        if (dbFile.exists()) return
+        val prefs = NLPrefs.getInstance(this)
+        val dbJournalFile = getJournalFile(dbFile)
+        val oldDbSlot = prefs.legacyPrefs.getStringPreference("pref_currentDbSlot", "a")
+        val oldDbName = if (oldDbSlot == "a") "launcher.db" else "launcher.db_b"
+        val oldDbFile = getDatabasePath(oldDbName)
+        val oldDbJournalFile = getJournalFile(oldDbFile)
+        if (oldDbFile.exists()) {
+            oldDbFile.copyTo(dbFile)
+            oldDbJournalFile.copyTo(dbJournalFile)
+            oldDbFile.delete()
+            oldDbJournalFile.delete()
+        }
+    }
+
+    fun cleanUpDatabases() {
+        val idp = InvariantDeviceProfile.INSTANCE.get(this)
+        val dbName = idp.dbFile
+        val dbFile = getDatabasePath(dbName)
+        dbFile?.parentFile?.listFiles()?.forEach { file ->
+            val name = file.name
+            if (name.startsWith("launcher") && !name.startsWith(dbName)) {
+                file.delete()
+            }
+        }
+    }
+
+    private fun getJournalFile(file: File): File =
+        File(file.parentFile, "${file.name}-journal")
 
     class ActivityHandler : ActivityLifecycleCallbacks {
 

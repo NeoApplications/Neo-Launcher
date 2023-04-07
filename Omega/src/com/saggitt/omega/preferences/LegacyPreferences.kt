@@ -27,6 +27,10 @@ class LegacyPreferences(context: Context) {
         context.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
     var editor = sharedPreferences.edit()
 
+    fun getStringPreference(key: String, default: String): String? {
+        return sharedPreferences.getString(key, default)
+    }
+
     fun savePreference(key: String, value: Boolean) {
         editor.putBoolean(key, value)
         editor.apply()
