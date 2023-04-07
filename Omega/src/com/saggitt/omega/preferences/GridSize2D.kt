@@ -47,6 +47,8 @@ open class GridSize(
         numColumns = fromPref(numColumnsPref.getValue(), numColumnsOriginal)
     }
 
+    fun resetDefaultColumn(): Int = numColumnsOriginal
+
     fun fromPref(value: Int, default: Int) = if (value != 0) value else default
 }
 
@@ -80,4 +82,6 @@ class GridSize2D(
     private fun applyNumRows() {
         numRows = fromPref(numRowsPref.getValue(), numRowsOriginal)
     }
+
+    fun resetDefaultRow(): Int = numRowsOriginal
 }

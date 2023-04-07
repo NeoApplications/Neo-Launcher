@@ -119,7 +119,7 @@ fun GridSizePrefDialogUI(
                             onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(
                                 onClick = {
-                                    numRows = pref.numColumnsPref.defaultValue
+                                    numColumns = pref.resetDefaultColumn()
                                     menuExpanded = false
                                 },
                                 text = { Text(text = stringResource(id = R.string.reset_to_default)) }
@@ -168,7 +168,7 @@ fun GridSizePrefDialogUI(
                             onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(
                                 onClick = {
-                                    numRows = pref.numRowsPref.defaultValue
+                                    numRows = pref.resetDefaultRow()
                                     menuExpanded = false
                                 },
                                 text = { Text(text = stringResource(id = R.string.reset_to_default)) }
