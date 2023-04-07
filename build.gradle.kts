@@ -255,7 +255,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
-    implementation("com.google.accompanist:accompanist-pager:$vAccompanist")
     implementation("com.google.accompanist:accompanist-pager-indicators:$vAccompanist")
 
     //Room
