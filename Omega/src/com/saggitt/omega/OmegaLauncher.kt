@@ -59,7 +59,6 @@ import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -70,6 +69,7 @@ import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.smartspace.SmartSpaceView
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -109,22 +109,20 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
-
-        val coroutineScope = CoroutineScope(Dispatchers.IO)
         //Set Initial value for idp columns and rows
-        if (prefs.firstTimeRun.getValue()) {
-            val idp = LauncherAppState.getIDP(this)
-            coroutineScope.launch {
+
+        val idp = LauncherAppState.getIDP(this)
+        val coroutineScope = CoroutineScope(Dispatchers.IO)
+        coroutineScope.launch {
+            if (prefs.firstTimeRun.get().firstBlocking()) {
                 prefs.drawerGridColumns.set(idp.numAllAppsColumns)
                 prefs.desktopGridColumns.set(idp.numColumns)
                 prefs.desktopGridRows.set(idp.numRows)
                 prefs.dockNumIcons.set(idp.numShownHotseatIcons)
                 prefs.firstTimeRun.set(false)
             }
+            loadHiddenApps(prefs.drawerHiddenAppSet.getValue())
         }
-
-        //Load hidden apps to use with hidden apps preference
-        MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
     }
 
     override fun getActivityResultRegistry() = object : ActivityResultRegistry() {
@@ -198,7 +196,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     }
 
-    private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
+    private suspend fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
         CoroutineScope(Dispatchers.IO).launch {
             val appFilter = AppFilter()
