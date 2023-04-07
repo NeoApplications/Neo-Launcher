@@ -478,7 +478,7 @@
     <string name="show_top_shadow">Mostrar la sombra superior</string>
     <string name="title_override_corner_radius_value">Radio global de las esquinas</string>
     <string name="dash_line_size">Tamaño de la línea de trazos</string>
-    <string name="full_wday_month_day_no_year"></string>
+    <string name="full_wday_month_day_no_year">dd MMMM , EEEE</string>
     <string name="n_percent">%1$d%%</string>
     <string name="smartspace_flight_qr_code">Código QR</string>
     <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
@@ -493,4 +493,6 @@
     <string name="button_apply">Aplicar</string>
     <string name="smartspace_time_12_hour_format">Formato de 12 horas</string>
     <string name="folder_stroke_color">Color del trazo de la carpeta</string>
+    <string name="smartspace_icu_date_pattern">ddMMMEEE</string>
+    <string name="smartspace_widget_placeholder_date">Vier. 3 de Mar.</string>
 </resources>
