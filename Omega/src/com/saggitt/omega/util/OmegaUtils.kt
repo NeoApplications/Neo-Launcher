@@ -24,6 +24,7 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
 import android.graphics.RectF
@@ -46,12 +47,19 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
+import com.android.launcher3.allapps.AppInfoComparator
+import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.views.OptionsPopupView
+import com.saggitt.omega.allapps.AppColorComparator
+import com.saggitt.omega.allapps.AppUsageComparator
+import com.saggitt.omega.allapps.InstallTimeComparator
+import com.saggitt.omega.data.AppTrackerRepository
 import com.saggitt.omega.preferences.NLPrefs
 import java.lang.reflect.Field
+import java.text.Collator
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.Callable
@@ -235,6 +243,32 @@ fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, option
 
 fun UserCache.getUserForProfileId(profileId: Int) =
     userProfiles.find { it.toString() == "UserHandle{$profileId}" }
+
+fun MutableList<AppInfo>.sortApps(context: Context, sortType: Int) {
+    val pm: PackageManager = context.packageManager
+    when (sortType) {
+        Config.SORT_ZA -> sortWith(compareBy(Collator.getInstance().reversed()) {
+            it.title.toString().lowercase()
+        })
+
+        Config.SORT_MOST_USED -> {
+            val repository = AppTrackerRepository.INSTANCE[context]
+            val appsCounter = repository.getAppsCount()
+            val mostUsedComparator = AppUsageComparator(appsCounter)
+            sortWith(mostUsedComparator)
+        }
+
+        Config.SORT_BY_COLOR -> sortWith(AppColorComparator(context))
+
+        Config.SORT_BY_INSTALL_DATE -> sortWith(InstallTimeComparator(pm))
+
+        Config.SORT_AZ -> sortWith(compareBy(Collator.getInstance()) {
+            it.title.toString().lowercase()
+        })
+
+        else -> sortWith(AppInfoComparator(context))
+    }
+}
 
 fun Float.ceilToInt() = ceil(this).toInt()
 

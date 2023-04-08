@@ -23,14 +23,19 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
+import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -84,6 +89,9 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
+    private final NLPrefs prefs;
+    private final BaseDraggingActivity mLauncher;
+
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
                                 WorkAdapterProvider adapterProvider) {
         mAllAppsStore = appsStore;
@@ -94,6 +102,9 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
+
+        prefs = Utilities.getOmegaPrefs(context);
+        mLauncher = BaseDraggingActivity.fromContext(context);
     }
 
     public void updateItemFilter(Predicate<ItemInfo> itemFilter) {
@@ -189,11 +200,19 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         // Sort the list of apps
         mApps.clear();
-        Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
+
+        // Sort the list of apps
+        List<AppInfo> unsortedApps = Arrays.asList(mAllAppsStore.getApps());
+        OmegaUtilsKt.sortApps(unsortedApps, mLauncher, prefs.getDrawerSortMode().getValue());
+        AppInfo[] sortedApps = unsortedApps.toArray(AppInfo.EMPTY_ARRAY);
+
+        Stream<AppInfo> appSteam = Stream.of(sortedApps);
         if (!hasSearchResults() && mItemFilter != null) {
             appSteam = appSteam.filter(mItemFilter);
         }
-        appSteam = appSteam.sorted(mAppNameComparator);
+
+        //appSteam = appSteam.sorted(mAppNameComparator);
+
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
         Locale curLocale = mActivityContext.getResources().getConfiguration().locale;
