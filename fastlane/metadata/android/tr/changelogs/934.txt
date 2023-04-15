@@ -1,0 +1,8 @@
+Ekle: Hava durumu sağlayıcısı olarak OWM
+ Ekleyin: LawnIcons desteği
+ Ekle: A13 için temalı simge desteği
+ Güncelleme: Yepyeni ayarlar UI/UX
+ Düzeltme: Hayalet simgeleri sorunu
+ Düzeltme: Sürüm/neo/debug arasındaki yedekleme uyumluluğu
+ Düzeltme: Uygulamaları yerel dile göre sıralama
+ Daha fazla ayrıntı için tam değişiklik günlüğünü kontrol edin…
