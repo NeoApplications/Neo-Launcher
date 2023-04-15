@@ -1,0 +1,7 @@
+Not 1: eski sürümlerden alınan yedeklemelerle uyumsuz
+ - Android 12/L'nin başlatıcısında yeniden temel alın
+ - Ekle: Smartspace
+ - Ekle: Sekmelerin/kategorilerin doğrudan düzenlenmesi
+ - Ekle: Bulanık Arama seçeneği
+ - Güncelleme: Dash'i, simgeleri ve kullanıcı arayüzünü yenileyin
+ Not 2: Eski sürümlerden kaçırılan özellikler sonraki sürümlerde eklenebilir

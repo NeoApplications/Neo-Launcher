@@ -1,0 +1,7 @@
+Ekle: Klasörlere yukarı kaydırma hareketi
+ Ekle: Feed Sağlayıcı ayarı
+ Düzeltme: Dil tercihi
+ Güncelleme: Izgara/sütun aralığını 2-16'ya yükseltin
+ Kaldır: Arama sağlayıcıları olarak Google Uygulaması ve Google GO
+ Kaldır: StartAppSearch, StartApp ve TimeoutSleep hareketleri
+ Birçok kilitlenme düzeltmesi
