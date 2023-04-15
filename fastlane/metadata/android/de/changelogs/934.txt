@@ -1,0 +1,8 @@
+Neu: OWM als Wetterdienstleister
+Neu: LawnIcons Unterstützung
+Neu: Unterstützung für Icon-Designgs in A13
+Update: Komplett neue UI/UX für Einstellungen
+Fix: Problem mit „Ghost Icons“
+Fix: Kompatibilität von Backups zwischen Release/Neo/Debug
+Fix: Sortierung von Apps basierend auf der Sprache des Gebietsschemas
+Weitere Details im vollständigen Changelog…
