@@ -264,8 +264,8 @@
     <string name="folder_cover_mode">Kapak Modunu Kullan</string>
     <string name="none">Hiç</string>
     <string name="reset_to_default">Varsayılanlara sıfırla</string>
-    <string name="drag_to_enable_packs">Kapatmak için yukarı sürükleyin</string>
-    <string name="drag_to_disable_packs">Açmak için aşağı sürükleyin</string>
+    <string name="drag_to_enable_packs">Açmak için yukarı sürükleyin</string>
+    <string name="drag_to_disable_packs">Kapatmak için aşağı sürükleyin</string>
     <string name="dash_media_player_description">Ses oynatıcı denetimlerini göster veya gizle</string>
     <string name="dash_media_player">Ses oynatıcı</string>
     <string name="dash_all_apps_summary">Tüm uygulama düğmesini göster</string>
@@ -449,4 +449,24 @@
     <string name="pref_category__features">Özellikler</string>
     <string name="title__drawer_rows">Satır sayısı</string>
     <string name="protected_apps">Korumalı Uygulamalar</string>
+    <string name="section_web">Web</string>
+    <string name="smartspace_time_follow_system">Sistemi takip et</string>
+    <string name="smartspace_widget_placeholder_date">3 Mart Cuma</string>
+    <string name="smartspace_time_12_hour_format">12 Saat Biçimi</string>
+    <string name="notification_dots_missing_notification_access">Bildirim Noktalarını göstermek için uygulama bildirimlerine erişimi açın</string>
+    <string name="folder_swipe_up">Yukarı kaydırma işlemi</string>
+    <string name="section_contacts">Kişiler</string>
+    <string name="folder_opacity">Klasör Simgesi Opaklığı</string>
+    <string name="folder_stroke_color">Klasör kontur rengi</string>
+    <string name="folder_draw_stroke">Klasör Çizgisi Çiz</string>
+    <string name="title_search_contacts">Kişileri ara</string>
+    <string name="notification_dots_disabled">Bildirim Noktalarını göstermek için ayarlarda bildirim noktalarının gösterilmesini etkinleştirin</string>
+    <string name="button_apply">Uygula</string>
+    <string name="dash_line_size">Kısa çizgi boyutu</string>
+    <string name="pref_category__dash">Kısa çizgi</string>
+    <string name="title__feed">Beslemek</string>
+    <string name="section_apps">Uygulamalar</string>
+    <string name="author_role">Geliştirici</string>
+    <string name="contributor_role">Katkıda bulunan</string>
+    <string name="title_override_corner_radius_value">Küresel köşe yarıçapı</string>
 </resources>
