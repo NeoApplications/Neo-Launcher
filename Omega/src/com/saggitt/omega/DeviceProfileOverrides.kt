@@ -63,7 +63,7 @@ class DeviceProfileOverrides(context: Context) {
         constructor(prefs: NLPrefs) : this(
             numHotseatIcons = prefs.dockNumIcons.getValue(),
             numRows = prefs.desktopGridRows.getValue(),
-            numColumns = prefs.desktopGridColumns.getValue(),
+            numColumns = prefs.desktopGridColumns.getValue()
         )
     }
 

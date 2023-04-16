@@ -356,7 +356,7 @@ class NLPrefs private constructor(private val context: Context) {
     val desktopPopupRemove: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
 
-    private var desktopGridSizeDelegate = ResettableLazy {
+    var desktopGridSizeDelegate = ResettableLazy {
         GridSize2D(
             titleId = R.string.title__desktop_grid_size,
             numColumnsPref = desktopGridColumns,
@@ -373,6 +373,7 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_GRID_COLUMNS,
         titleId = R.string.title__drawer_columns,
         selectDefaultValue = { numColumns },
+        defaultValue = 4,
         onChange = reloadGrid,
         minValue = 2f,
         maxValue = 16f,
@@ -383,6 +384,7 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DESKTOP_GRID_ROWS,
         titleId = R.string.title__drawer_rows,
         selectDefaultValue = { numRows },
+        defaultValue = 5,
         onChange = reloadGrid,
         minValue = 2f,
         maxValue = 16f,
@@ -555,6 +557,7 @@ class NLPrefs private constructor(private val context: Context) {
         key = PrefKey.DOCK_COLUMNS,
         titleId = R.string.num_hotseat_icons_pref_title,
         selectDefaultValue = { numHotseatIcons },
+        defaultValue = 4,
         minValue = 2f,
         maxValue = 16f,
         steps = 15
@@ -596,6 +599,7 @@ class NLPrefs private constructor(private val context: Context) {
         titleId = R.string.title__drawer_columns,
         dataStore = dataStore,
         selectDefaultValue = { numAllAppsColumns },
+        defaultValue = 4,
         minValue = 2f,
         maxValue = 16f,
         steps = 15,

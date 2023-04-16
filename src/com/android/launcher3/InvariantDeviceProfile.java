@@ -57,6 +57,7 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
 import com.saggitt.omega.DeviceProfileOverrides;
+import com.saggitt.omega.preferences.NLPrefs;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -323,10 +324,11 @@ public class InvariantDeviceProfile {
                 .getOverrides(displayOption.grid);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
-        numRows = dbGridInfo.getNumRows();
-        numRowsOriginal = dbGridInfo.getNumRows();
-        numColumns = dbGridInfo.getNumColumns();
-        numColumnsOriginal = dbGridInfo.getNumColumns();
+        NLPrefs prefs = Utilities.getOmegaPrefs(context);
+        numRows = prefs.getDesktopGridRows().getValue();
+        numRowsOriginal = numRows;
+        numColumns = prefs.getDesktopGridColumns().getValue();
+        numColumnsOriginal = numColumns;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
         dbFile = dbGridInfo.getDbFile();
         defaultLayoutId = closestProfile.defaultLayoutId;
