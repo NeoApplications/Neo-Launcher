@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="folder_name">Název složky</string>
+    <string name="default_folder_name">Nová složka</string>
+    <string name="title__general_about">O aplikaci</string>
+    <string name="title__general_desktop">Plocha</string>
+</resources>
