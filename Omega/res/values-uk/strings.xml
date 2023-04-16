@@ -117,7 +117,7 @@
     <string name="reset_custom_icon">Видалити користувацький значок</string>
     <string name="title_themed_icons">Тематичні значки</string>
     <string name="summary_force_shapeless">Використовувати застарілі піктограми для всіх програм.</string>
-    <string name="title_smartspace_time_24_h">Використовувати 24-годинний формат</string>
+    <string name="title_smartspace_time_24_h">24-годинний формат</string>
     <string name="title_smartspace_weather_units">Одиниця вимірювання температури</string>
     <string name="title_smartspace_event_providers">Джерела подій</string>
     <string name="pref_shelf_summary">Ліворуч від головного екрану</string>
@@ -162,7 +162,7 @@
     <string name="cat_search_bar">Панель пошуку</string>
     <string name="error_no_browser">Спочатку встановіть програму, щоб відкривати URL-адреси</string>
     <string name="folder_background">Колір фону теки</string>
-    <string name="folder_opacity">Непрозорість теки</string>
+    <string name="folder_opacity">Непрозорість іконки папок</string>
     <string name="summary__advanced_language">Змініть мову цього додатка</string>
     <string name="title__advanced_setting_search">Показати пошук налаштувань</string>
     <string name="title__advanced_language">Мова</string>
@@ -474,4 +474,21 @@
     <string name="show_top_shadow">Показати верхню тінь</string>
     <string name="title_override_corner_radius_value">Глобальний радіус кута</string>
     <string name="dash_line_size">Розмір штрихової лінії</string>
+    <string name="title__dock_icon_size_enforce">Встановити власний розмір іконки</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% - Повний заряд через %2$s</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="full_wday_month_day_no_year">РРРР, ММММ д</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Наступний будильник о %s</string>
+    <string name="smartspace_time_follow_system">Стежити за системою</string>
+    <string name="smartspace_time_12_hour_format">12-годинний формат</string>
+    <string name="smartspace_widget_placeholder_date">Пт, 3 березня</string>
+    <string name="folder_swipe_up">Проведіть пальцем вгору</string>
+    <string name="button_apply">Застосувати</string>
+    <string name="color_dynamic">Динамічний</string>
+    <string name="accessibility_smartspace_page">Сторінка %1$d з %2$d</string>
+    <string name="smartspace_icu_date_pattern">РРРМММд</string>
+    <string name="folder_draw_stroke">Намалювати обведення папки</string>
+    <string name="smartspace_flight_qr_code">QR код</string>
+    <string name="folder_stroke_color">Колір обведення папки</string>
 </resources>

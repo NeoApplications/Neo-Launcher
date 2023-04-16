@@ -28,4 +28,21 @@
     <string name="pref_category__features">Fitur</string>
     <string name="pref_category__inputs">Gestur dan Pencarian</string>
     <string name="pref_category__others">Lainnya</string>
+    <string name="pref_category__incubating">Inkubasi</string>
+    <string name="allow_rotation_blocked_desc">Pengaturan Tampilan saat ini tidak mengizinkan rotasi</string>
+    <string name="title_desktop_full_width_widgets">Widget lebar penuh</string>
+    <string name="title_desktop_widget_corner_radius">Radius sudut widget</string>
+    <string name="title__desktop_icon_size">Ukuran ikon</string>
+    <string name="title__desktop_grid_size">Ukuran kisi</string>
+    <string name="title__desktop_hide_icon_labels">Sembunyikan label ikon di layar beranda</string>
+    <string name="title_desktop_overlap_placement">Izinkan widget yang tumpang tindih</string>
+    <string name="title_desktop_lock_desktop">Kunci Desktop</string>
+    <string name="title_desktop_keep_empty">Izinkan Halaman Kosong</string>
+    <string name="title__multiline_labels">Nama aplikasi multiline</string>
+    <string name="title_desktop_icon_popup_menu">Item menu popup</string>
+    <string name="title_desktop_hide_statusbar">Sembunyikan bilah status</string>
+    <string name="title_desktop_text_size">Ukuran Teks</string>
+    <string name="summary_full_width_widgets">Izinkan widget menjangkau seluruh lebar tanpa padding</string>
+    <string name="grid_size_height">Tinggi</string>
+    <string name="grid_size_width">Lebar</string>
 </resources>

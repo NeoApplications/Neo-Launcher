@@ -249,7 +249,7 @@
     <string name="title_smartspace_event_providers">Fonti eventi</string>
     <string name="title_smartspace_weather_units">Unità di temperatura</string>
     <string name="title_smartspace_time_above">Mostra orologio grande</string>
-    <string name="title_smartspace_time_24_h">Usa formato 24 ore</string>
+    <string name="title_smartspace_time_24_h">Formato 24 ore</string>
     <string name="title_smartspace_date">Mostra data</string>
     <string name="title_smartspace_time">Mostra orario</string>
     <string name="title_smartspace">Mostra Smartspace</string>
@@ -488,9 +488,26 @@
     <string name="weather_city">Città</string>
     <string name="reset_custom_icon">Rimuovi icona personalizzata</string>
     <string name="title_themed_icons">Icone a tema</string>
-    <string name="folder_opacity">Opacità cartella</string>
+    <string name="folder_opacity">Opacità icona cartella</string>
     <string name="tap_to_enable">Tocca elemento per abilitarlo</string>
     <string name="show_top_shadow">Mostra ombra superiore</string>
     <string name="title_override_corner_radius_value">Raggio d\'angolo globale</string>
     <string name="dash_line_size">Dimensione linea pannello</string>
+    <string name="full_wday_month_day_no_year">EEEE d MMMM</string>
+    <string name="color_dynamic">Dinamico</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — Carico tra %2$s</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="smartspace_icu_date_pattern">EEEMMMd</string>
+    <string name="smartspace_flight_qr_code">Codice QR</string>
+    <string name="smartspace_time_follow_system">Segui sistema</string>
+    <string name="smartspace_time_12_hour_format">Formato 12 ore</string>
+    <string name="folder_swipe_up">Scorri verso l\'alto</string>
+    <string name="folder_stroke_color">Colore contorno cartella</string>
+    <string name="accessibility_smartspace_page">Pagina %1$d di %2$d</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Prossima sveglia alle %s</string>
+    <string name="button_apply">Applica</string>
+    <string name="title__dock_icon_size_enforce">Imposta dimensione personalizzata icone</string>
+    <string name="smartspace_widget_placeholder_date">Ven, 3 marzo</string>
+    <string name="folder_draw_stroke">Disegna contorno cartella</string>
 </resources>

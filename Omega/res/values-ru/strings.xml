@@ -165,7 +165,7 @@
     <string name="title_smartspace_weather_units">Единица измерения температуры</string>
     <string name="title_smartspace_widget_provider">Источник погоды</string>
     <string name="title_smartspace_time_above">Показывать большие часы</string>
-    <string name="title_smartspace_time_24_h">Использовать 24-часовой формат</string>
+    <string name="title_smartspace_time_24_h">24-часовой формат</string>
     <string name="title_smartspace_date">Показать дату</string>
     <string name="title_smartspace_time">Показать время</string>
     <string name="title_show_google_app">Показать приложение Google</string>
@@ -475,6 +475,26 @@
     <string name="permission_denied">Разрешение на чтение отклонено!</string>
     <string name="reset_custom_icon">Удалить пользовательский значок</string>
     <string name="title_themed_icons">Тематические иконки</string>
-    <string name="folder_opacity">Непрозрачность папки</string>
+    <string name="folder_opacity">Непрозрачность иконки папки</string>
     <string name="tap_to_enable">Нажмите элемент, чтобы включить</string>
+    <string name="full_wday_month_day_no_year">ГГГГ, ММММ д</string>
+    <string name="title__dock_icon_size_enforce">Пользовательский размер иконки</string>
+    <string name="color_dynamic">Динамический</string>
+    <string name="accessibility_smartspace_page">Страница %1$d из %2$d</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — Полный заряд через %2$s</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="smartspace_icu_date_pattern">ГГГМММд</string>
+    <string name="smartspace_flight_qr_code">QR код</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="smartspace_time_follow_system">Как в системе</string>
+    <string name="smartspace_time_12_hour_format">12-Часовой Формат</string>
+    <string name="smartspace_widget_placeholder_date">Пн, 3 марта</string>
+    <string name="folder_swipe_up">Действие свайпа наверх</string>
+    <string name="folder_draw_stroke">Рисовать обводку папки</string>
+    <string name="folder_stroke_color">Цвет обводки папки</string>
+    <string name="dash_line_size">Размер штриховой линии</string>
+    <string name="accessibility_next_alarm">Следующий будильник в %s</string>
+    <string name="button_apply">Применить</string>
+    <string name="title_override_corner_radius_value">Радиус глобального угла</string>
+    <string name="show_top_shadow">Показывать верхнюю тень</string>
 </resources>

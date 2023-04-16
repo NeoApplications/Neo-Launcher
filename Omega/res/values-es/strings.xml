@@ -166,7 +166,7 @@
     <string name="title_smartspace_weather_units">Unidad de temperatura</string>
     <string name="title_smartspace_widget_provider">Origen del clima</string>
     <string name="title_smartspace_time_above">Mostrar reloj grande</string>
-    <string name="title_smartspace_time_24_h">Usar formato de 24 horas</string>
+    <string name="title_smartspace_time_24_h">Formato de 24 horas</string>
     <string name="title_smartspace_date">Mostrar fecha</string>
     <string name="title_smartspace_time">Mostrar hora</string>
     <string name="title_white_only_treatment">Reemplazar fondo blanco</string>
@@ -472,10 +472,27 @@
     <string name="notification_dots_missing_notification_access">Para mostrar puntos de notificación, activa el acceso a las notificaciones de la aplicación</string>
     <string name="author_role">Desarrollador</string>
     <string name="title_themed_icons">Iconos temáticos</string>
-    <string name="folder_opacity">Opacidad de las carpetas</string>
+    <string name="folder_opacity">Opacidad del icono de la carpeta</string>
     <string name="reset_custom_icon">Eliminar el ícono personalizado</string>
     <string name="tap_to_enable">Toque el elemento para activarlo</string>
     <string name="show_top_shadow">Mostrar la sombra superior</string>
     <string name="title_override_corner_radius_value">Radio global de las esquinas</string>
     <string name="dash_line_size">Tamaño de la línea de trazos</string>
+    <string name="full_wday_month_day_no_year">dd MMMM , EEEE</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="smartspace_flight_qr_code">Código QR</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Próxima alarma a las %s</string>
+    <string name="smartspace_time_follow_system">Seguir al sistema</string>
+    <string name="folder_swipe_up">Desliza hacia arriba</string>
+    <string name="folder_draw_stroke">Dibuja el trazo de carpeta</string>
+    <string name="title__dock_icon_size_enforce">Aplicar un tamaño de icono personalizado</string>
+    <string name="color_dynamic">Dinámico</string>
+    <string name="accessibility_smartspace_page">Página %1$d de %2$d</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — Completo en %2$s</string>
+    <string name="button_apply">Aplicar</string>
+    <string name="smartspace_time_12_hour_format">Formato de 12 horas</string>
+    <string name="folder_stroke_color">Color del trazo de la carpeta</string>
+    <string name="smartspace_icu_date_pattern">ddMMMEEE</string>
+    <string name="smartspace_widget_placeholder_date">Vier. 3 de Mar.</string>
 </resources>
