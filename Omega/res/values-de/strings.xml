@@ -492,4 +492,5 @@
     <string name="dash_line_size">Dash Zeilengröße</string>
     <string name="title_override_corner_radius_value">Globaler Eckenradius</string>
     <string name="show_top_shadow">Oberen Schatten anzeigen</string>
+    <string name="smartspace_icu_date_pattern">EEEddMMM</string>
 </resources>
