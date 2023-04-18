@@ -32,6 +32,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
@@ -164,19 +165,16 @@ public class IconProvider {
         ThemeData td = getThemeData(packageName, component);
         Drawable icon = null;
 
-        int iconType = ICON_TYPE_DEFAULT;
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
-            icon = loadCalendarDrawable(iconDpi);
-            iconType = ICON_TYPE_CALENDAR;
+            icon = loadCalendarDrawable(iconDpi, td);
         } else if (mClock != null
                 && mClock.getPackageName().equals(packageName)
                 && Process.myUserHandle().equals(user)) {
-            icon = loadClockDrawable(iconDpi);
-            iconType = ICON_TYPE_CLOCK;
+            //icon = loadClockDrawable(iconDpi, td);
+            icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi, td);
         }
         if (icon == null) {
             icon = fallback.get();
-            //iconType = ICON_TYPE_DEFAULT;
             if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
                 AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
                 if (aid.getMonochrome() == null) {
@@ -185,7 +183,8 @@ public class IconProvider {
                 }
             }
         }
-        return td != null ? td.wrapDrawable(icon, iconType) : icon;
+        return icon;
+        //return td != null ? td.wrapDrawable(icon, iconType) : icon;
     }
 
     private Drawable loadActivityInfoIcon(ActivityInfo ai, int density) {
@@ -259,7 +258,7 @@ public class IconProvider {
         return mThemedIconMap;
     }
 
-    private Drawable loadCalendarDrawable(int iconDpi) {
+    private Drawable loadCalendarDrawable(int iconDpi, @Nullable ThemeData td) {
         PackageManager pm = mContext.getPackageManager();
         try {
             final Bundle metadata = pm.getActivityInfo(
@@ -270,7 +269,22 @@ public class IconProvider {
             final int id = getDynamicIconId(metadata, resources);
             if (id != ID_NULL) {
                 if (DEBUG) Log.d(TAG, "Got icon #" + id);
-                return resources.getDrawableForDensity(id, iconDpi, null /* theme */);
+                Drawable drawable = resources.getDrawableForDensity(id, iconDpi, null /* theme */);
+                if (ATLEAST_T && drawable instanceof AdaptiveIconDrawable && td != null) {
+                    AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
+                    if (aid.getMonochrome() != null) {
+                        return drawable;
+                    }
+                    if ("array".equals(td.mResources.getResourceTypeName(td.mResID))) {
+                        TypedArray ta = td.mResources.obtainTypedArray(td.mResID);
+                        int monoId = ta.getResourceId(IconProvider.getDay(), ID_NULL);
+                        ta.recycle();
+                        return monoId == ID_NULL ? drawable
+                                : new AdaptiveIconDrawable(aid.getBackground(), aid.getForeground(),
+                                new ThemeData(td.mResources, mCalendar.getPackageName(), monoId).loadPaddedDrawable());
+                    }
+                }
+                return drawable;
             }
         } catch (PackageManager.NameNotFoundException e) {
             if (DEBUG) {
@@ -281,9 +295,9 @@ public class IconProvider {
         return null;
     }
 
-    private Drawable loadClockDrawable(int iconDpi) {
+    /*private Drawable loadClockDrawable(int iconDpi) {
         return ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi);
-    }
+    }*/
 
     /**
      * @param metadata  metadata of the default activity of Calendar
