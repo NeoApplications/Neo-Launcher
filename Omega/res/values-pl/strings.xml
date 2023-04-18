@@ -61,7 +61,7 @@
     <string name="title_show_google_app">Pokaż aplikację Google</string>
     <string name="title_smartspace_time">Pokaż czas</string>
     <string name="title_smartspace_date">Pokaż datę</string>
-    <string name="title_smartspace_time_24_h">Używaj formatu 24-godzinnego</string>
+    <string name="title_smartspace_time_24_h">Format 24-godzinny</string>
     <string name="title_smartspace_weather_units">Jednostka temperatury</string>
     <string name="title_smartspace_event_providers">Źródła wydarzeń</string>
     <string name="smartspace_now">teraz</string>
@@ -468,8 +468,24 @@
     <string name="title_fuzzy_search">Wyszukiwanie rozmyte</string>
     <string name="dt2s_admin_hint">W celu używania podwójnego stuknięcia do uśpienia oraz do przyznania uprawnienia administratora.</string>
     <string name="title_override_corner_radius_value">Globalny promień narożników</string>
-    <string name="folder_opacity">Nieprzezroczystość folderów</string>
+    <string name="folder_opacity">Nieprzezroczystość ikony folderu</string>
     <string name="section_web">Sieć</string>
     <string name="tap_to_enable">Naciśnij pozycję, aby włączyć</string>
-    <string name="home_widget">Widżet \"W skrócie\"</string>
+    <string name="home_widget">W skrócie</string>
+    <string name="title__dock_icon_size_enforce">Wymuszenie niestandardowego rozmiaru ikony</string>
+    <string name="color_dynamic">Dynamiczne</string>
+    <string name="title_smartspace">Pokaż inteligentną przestrzeń</string>
+    <string name="accessibility_smartspace_page">Strona %1$d z %2$d</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — Pełna za %2$s</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
+    <string name="smartspace_flight_qr_code">Kod QR</string>
+    <string name="smartspace_icu_date_pattern">EEEMMMd</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Następny alarm o %s</string>
+    <string name="smartspace_time_follow_system">Zgodny z systemowym</string>
+    <string name="smartspace_time_12_hour_format">Format 12-godzinny</string>
+    <string name="smartspace_widget_placeholder_date">Pią, 3 Mar</string>
+    <string name="folder_swipe_up">Przeciągnięcie w górę</string>
+    <string name="button_apply">Zastosuj</string>
 </resources>
