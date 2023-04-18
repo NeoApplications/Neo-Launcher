@@ -152,7 +152,7 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     var profileThemedIcons = BooleanPref(
-        titleId = R.string.title__theme_blur,
+        titleId = R.string.title_themed_icons,
         summaryId = R.string.summary__theme_blur,
         dataStore = dataStore,
         key = PrefKey.PROFILE_THEMED_ICONS,

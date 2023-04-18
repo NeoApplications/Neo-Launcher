@@ -108,6 +108,10 @@ class IconPackProvider(private val context: Context) {
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
         val clockMetadata =
             if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
+        val isThemedIconsEnabled =
+            Utilities.ATLEAST_S && (iconEntry.packPackageName in listOf(
+                LAWNICONS_PACKAGE_NAME
+            ))
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
@@ -118,10 +122,16 @@ class IconPackProvider(private val context: Context) {
                     ) ?: drawable
                 }
             if (clockDrawable != null) {
-                return clockDrawable.foreground ?: clockDrawable
+                return if (isThemedIconsEnabled)
+                    clockDrawable.foreground
+                else
+                    CustomAdaptiveIconDrawable(clockDrawable.background, clockDrawable.foreground)
             }
         }
 
+        if (isThemedIconsEnabled) {
+            return wrapThemedData(packageManager, iconEntry, drawable)
+        }
         return drawable
     }
 

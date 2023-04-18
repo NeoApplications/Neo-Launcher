@@ -31,7 +31,7 @@ class SystemIconPack(context: Context) : IconPack(context, "") {
         startLoad()
     }
 
-    fun reloadAppMap() {
+    override fun reloadAppMap() {
         appMap = run {
             val profiles = UserCache.INSTANCE.get(context).userProfiles
             val launcherApps = context.getSystemService<LauncherApps>()!!
@@ -55,8 +55,7 @@ class SystemIconPack(context: Context) : IconPack(context, "") {
     override fun getClocks(): MutableSet<ComponentName> = mutableSetOf()
 
     override fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable? {
-        val key = if (iconEntry.componentKey != null) iconEntry.componentKey
-        else ComponentKey.fromString(iconEntry.name)
+        val key = ComponentKey.fromString(iconEntry.name)
         val app = appMap[key] ?: return null
         return app.getIcon(iconDpi)
     }

@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.icons;
 
+import static com.android.launcher3.icons.IconProvider.ATLEAST_T;
 import static com.android.launcher3.icons.ThemedIconDrawable.getColors;
 
 import android.annotation.TargetApi;
@@ -94,6 +95,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     private final AnimationInfo mAnimationInfo = new AnimationInfo();
     private int mTargetSdkVersion;
     protected ThemeData mThemeData;
+    private AnimationInfo mThemeInfo = null;
 
     public ClockDrawableWrapper(AdaptiveIconDrawable base) {
         super(base.getBackground(), base.getForeground());
@@ -103,18 +105,64 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
      * Loads and returns the wrapper from the provided package, or returns null
      * if it is unable to load.
      */
-    public static ClockDrawableWrapper forPackage(Context context, String pkg, int iconDpi) {
+    public static ClockDrawableWrapper forPackage(Context context, String pkg, int iconDpi, @Nullable ThemeData themeData) {
         try {
             PackageManager pm = context.getPackageManager();
             ApplicationInfo appInfo = pm.getApplicationInfo(pkg,
                     PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
             Resources res = pm.getResourcesForApplication(appInfo);
-            return forExtras(appInfo, appInfo.metaData,
+            ClockDrawableWrapper wrapper = forExtras(appInfo.metaData,
                     resId -> res.getDrawableForDensity(resId, iconDpi));
+            if (wrapper != null && themeData != null) {
+                wrapper.applyThemeData(themeData);
+            }
+            return wrapper;
         } catch (Exception e) {
             Log.d(TAG, "Unable to load clock drawable info", e);
         }
         return null;
+    }
+
+    @Override
+    public Drawable getMonochrome() {
+        if (mThemeInfo == null) {
+            return null;
+        }
+        Drawable d = mThemeInfo.baseDrawableState.newDrawable().mutate();
+        if (d instanceof AdaptiveIconDrawable) {
+            Drawable mono = ((AdaptiveIconDrawable) d).getForeground();
+            mThemeInfo.applyTime(Calendar.getInstance(), (LayerDrawable) mono);
+            return mono;
+        }
+        return null;
+    }
+
+    private void applyThemeData(ThemeData themeData) {
+        if (!ATLEAST_T || mThemeInfo != null) {
+            return;
+        }
+        try {
+            TypedArray ta = themeData.mResources.obtainTypedArray(themeData.mResID);
+            int count = ta.length();
+            Bundle extras = new Bundle();
+            for (int i = 0; i < count; i += 2) {
+                TypedValue v = ta.peekValue(i + 1);
+                extras.putInt(ta.getString(i), v.type >= TypedValue.TYPE_FIRST_INT
+                        && v.type <= TypedValue.TYPE_LAST_INT
+                        ? v.data : v.resourceId);
+            }
+            ta.recycle();
+            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
+                Drawable bg = new ColorDrawable(Color.WHITE);
+                Drawable fg = themeData.mResources.getDrawable(resId).mutate();
+                return new AdaptiveIconDrawable(bg, fg);
+            });
+            if (drawable != null) {
+                mThemeInfo = drawable.mAnimationInfo;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading themed clock", e);
+        }
     }
 
     private static ClockDrawableWrapper fromThemeData(Context context, ThemeData themeData) {
@@ -129,14 +177,13 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
                         ? v.data : v.resourceId);
             }
             ta.recycle();
-            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(
-                    context.getApplicationInfo(), extras, resId -> {
-                        int[] colors = getColors(context);
-                        Drawable bg = new ColorDrawable(colors[0]);
-                        Drawable fg = themeData.mResources.getDrawable(resId).mutate();
-                        fg.setTint(colors[1]);
-                        return new CustomAdaptiveIconDrawable(bg, fg);
-                    });
+            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
+                int[] colors = getColors(context);
+                Drawable bg = new ColorDrawable(colors[0]);
+                Drawable fg = themeData.mResources.getDrawable(resId).mutate();
+                fg.setTint(colors[1]);
+                return new CustomAdaptiveIconDrawable(bg, fg);
+            });
             if (drawable != null) {
                 return drawable;
             }
@@ -146,8 +193,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         return null;
     }
 
-    private static ClockDrawableWrapper forExtras(ApplicationInfo appInfo, Bundle metadata,
-                                                  IntFunction<Drawable> drawableProvider) {
+    private static ClockDrawableWrapper forExtras(Bundle metadata, IntFunction<Drawable> drawableProvider) {
         if (metadata == null) {
             return null;
         }
@@ -157,24 +203,46 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
             return null;
         }
 
-        int hourLayerIndex = metadata.getInt(HOUR_INDEX_METADATA_KEY, INVALID_VALUE);
-        int minuteLayerIndex = metadata.getInt(MINUTE_INDEX_METADATA_KEY, INVALID_VALUE);
-        int secondLayerIndex = metadata.getInt(SECOND_INDEX_METADATA_KEY, INVALID_VALUE);
+        Drawable drawable = drawableProvider.apply(drawableId).mutate();
+        if (!(drawable instanceof AdaptiveIconDrawable)) {
+            return null;
+        }
 
-        int defaultHour = metadata.getInt(DEFAULT_HOUR_METADATA_KEY, 0);
-        int defaultMinute = metadata.getInt(DEFAULT_MINUTE_METADATA_KEY, 0);
-        int defaultSecond = metadata.getInt(DEFAULT_SECOND_METADATA_KEY, 0);
+        AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
 
-        ClockMetadata clockMetadata = new ClockMetadata(
-                hourLayerIndex,
-                minuteLayerIndex,
-                secondLayerIndex,
-                defaultHour,
-                defaultMinute,
-                defaultSecond
-        );
+        ClockDrawableWrapper wrapper = new ClockDrawableWrapper(aid);
+        AnimationInfo info = wrapper.mAnimationInfo;
 
-        return forMeta(appInfo.targetSdkVersion, clockMetadata, () -> drawableProvider.apply(drawableId));
+        info.baseDrawableState = drawable.getConstantState();
+        info.hourLayerIndex = metadata.getInt(HOUR_INDEX_METADATA_KEY, INVALID_VALUE);
+        info.minuteLayerIndex = metadata.getInt(MINUTE_INDEX_METADATA_KEY, INVALID_VALUE);
+        info.secondLayerIndex = metadata.getInt(SECOND_INDEX_METADATA_KEY, INVALID_VALUE);
+
+        info.defaultHour = metadata.getInt(DEFAULT_HOUR_METADATA_KEY, 0);
+        info.defaultMinute = metadata.getInt(DEFAULT_MINUTE_METADATA_KEY, 0);
+        info.defaultSecond = metadata.getInt(DEFAULT_SECOND_METADATA_KEY, 0);
+
+        LayerDrawable foreground = (LayerDrawable) wrapper.getForeground();
+        int layerCount = foreground.getNumberOfLayers();
+        if (info.hourLayerIndex < 0 || info.hourLayerIndex >= layerCount) {
+            info.hourLayerIndex = INVALID_VALUE;
+        }
+        if (info.minuteLayerIndex < 0 || info.minuteLayerIndex >= layerCount) {
+            info.minuteLayerIndex = INVALID_VALUE;
+        }
+        if (info.secondLayerIndex < 0 || info.secondLayerIndex >= layerCount) {
+            info.secondLayerIndex = INVALID_VALUE;
+        } else if (DISABLE_SECONDS) {
+            foreground.setDrawable(info.secondLayerIndex, null);
+            info.secondLayerIndex = INVALID_VALUE;
+        }
+
+        if (ATLEAST_T && aid.getMonochrome() instanceof LayerDrawable) {
+            wrapper.mThemeInfo = info.copyForIcon(new AdaptiveIconDrawable(
+                    new ColorDrawable(Color.WHITE), aid.getMonochrome().mutate()));
+        }
+        info.applyTime(Calendar.getInstance(), foreground);
+        return wrapper;
     }
 
     public static ClockDrawableWrapper forMeta(int targetSdkVersion,
@@ -265,6 +333,18 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         public int defaultHour;
         public int defaultMinute;
         public int defaultSecond;
+
+        public AnimationInfo copyForIcon(Drawable icon) {
+            AnimationInfo result = new AnimationInfo();
+            result.baseDrawableState = icon.getConstantState();
+            result.defaultHour = defaultHour;
+            result.defaultMinute = defaultMinute;
+            result.defaultSecond = defaultSecond;
+            result.hourLayerIndex = hourLayerIndex;
+            result.minuteLayerIndex = minuteLayerIndex;
+            result.secondLayerIndex = secondLayerIndex;
+            return result;
+        }
 
         boolean applyTime(Calendar time, LayerDrawable foregroundDrawable) {
             time.setTimeInMillis(System.currentTimeMillis());

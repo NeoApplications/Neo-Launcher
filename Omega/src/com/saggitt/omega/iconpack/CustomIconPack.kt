@@ -39,6 +39,9 @@ class CustomIconPack(context: Context, packPackageName: String) :
         pm.getApplicationInfo(packPackageName, 0).loadLabel(pm).toString()
     }
 
+    override fun reloadAppMap() {
+    }
+
     init {
         startLoad()
     }

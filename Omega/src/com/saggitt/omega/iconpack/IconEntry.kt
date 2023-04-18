@@ -18,15 +18,11 @@
 
 package com.saggitt.omega.iconpack
 
-import com.android.launcher3.util.ComponentKey
-
 data class IconEntry(
     val packPackageName: String,
     val name: String,
     val type: IconType
 ) {
-    var componentKey: ComponentKey? = null
-
     fun resolveDynamicCalendar(day: Int): IconEntry {
         if (type != IconType.Calendar) throw IllegalStateException("type is not calendar")
         return IconEntry(packPackageName, "$name${day + 1}", IconType.Normal)

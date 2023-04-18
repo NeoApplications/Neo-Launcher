@@ -55,6 +55,8 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
+import com.saggitt.omega.iconpack.IconPack;
+import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saggitt.omega.preferences.NLPrefs;
 
 import java.util.ArrayList;
@@ -136,14 +138,18 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                              appsList.trackRemoves(a -> removedComponents.add(a.componentName))) {
                     for (int i = 0; i < N; i++) {
                         if (DEBUG) Log.d(TAG, "mAllAppsList.updatePackage " + packages[i]);
+
+                        //Reload appMap if the current icon pack is SystemIconPack
+                        NLPrefs prefs = Utilities.getOmegaPrefs(context);
+                        if (prefs.getProfileIconPack().getValue().equals("")) {
+                            IconPack iconPack = IconPackProvider.INSTANCE.get(context).getIconPackOrSystem("");
+                            if (iconPack != null)
+                                iconPack.reloadAppMap();
+                        }
+
                         iconCache.updateIconsForPkg(packages[i], mUser);
                         activitiesLists.put(
                                 packages[i], appsList.updatePackage(context, packages[i], mUser));
-
-                        //Reload SystemIconPack map
-                        if (Utilities.getOmegaPrefs(context).getProfileIconPack().getValue().equals("")) {
-                            Utilities.getOmegaPrefs(context).reloadApps();
-                        }
 
                         // The update may have changed which shortcuts/widgets are available.
                         // Refresh the widgets for the package if we have an activity running.
