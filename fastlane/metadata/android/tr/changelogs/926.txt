@@ -1,0 +1,7 @@
+Ekle: Uygulamaları renk seçeneğine göre sırala
+ Ekle: Duvar Kağıdı (Siyah) temasını takip et
+ Düzeltme: Yedekleme/geri yükleme açılırken kilitlenme
+ Düzeltme: Bir uygulamadan çıkarken Çekmecenin üst çubuğunu Renklendirme
+ Düzeltme: Özel simge şekli kullanılırken simgeler güncellenmiyor
+ Kaldır: Gün Işığı temasını takip et
+ Kaldır: OnePlus hava durumu veri sağlayıcısı

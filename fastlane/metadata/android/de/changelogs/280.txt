@@ -1,12 +1,12 @@
 <ul>
-  <li>Hinzufügen: Brave Web-Suche</li>
-  <li>Hinzufügen: Einstellungen für die Zurücktastengeste</li>
-  <li>Hinzufügen: Einstellungen für die Home-Tastengeste</li>
-  <li>Hinzufügen: Desktop Modus</li>
-  <li>Fix: Textfarbe bei der Widgetauswahl für das helle Thema</li>
+  <li>Neu: Brave Web-Suche</li>
+  <li>Neu: Einstellungen für die Zurücktastengeste</li>
+  <li>Neu: Einstellungen für die Home-Tastengeste</li>
+  <li>Neu: Desktop Modus</li>
+  <li>Fix: Textfarbe bei der Widgetauswahl für das helle Design</li>
   <li>Fix: Versteckte Apps suchen</li>
   <li>Fix: Ordner Icons im Cover-Modus</li>
-  <li>Stelle Smartspace Widget wiederher</li>
-  <li>Stelle adaptives Uhr-Icon (Google) wiederher</li>
-  <li>Stelle adaptives Kalender-Icon (Google) wiederher</li>
+  <li>Wiederhergestellt: Smartspace Widget</li>
+  <li>Wiederhergestellt: adaptives Uhr-Icon (Google)</li>
+  <li>Wiederhergestellt: adaptives Kalender-Icon</li>
 </ul>
