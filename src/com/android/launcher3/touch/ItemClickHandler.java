@@ -25,6 +25,7 @@ import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_LO
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_QUIET_USER;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
+import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -103,9 +104,12 @@ public class ItemClickHandler {
             }
         } else if (tag instanceof AppInfo) {
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
-            if (Utilities.getOmegaPrefs(launcher).getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
-                Utilities.getOmegaPrefs(launcher).reloadApps();
-            }
+            MODEL_EXECUTOR.execute(() -> {
+                if (Utilities.getOmegaPrefs(launcher).getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
+                    Utilities.getOmegaPrefs(launcher).reloadApps();
+                }
+            });
+
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
                 onClickPendingWidget((PendingAppWidgetHostView) v, launcher);
