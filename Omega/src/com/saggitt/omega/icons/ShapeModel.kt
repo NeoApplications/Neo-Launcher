@@ -35,7 +35,7 @@ class ShapeModel(val shapeName: String) {
         return when (shapeName) {
             "circle" -> CircleShape
             "square" -> RoundedCornerShape(corner = CornerSize(4.dp))
-            "rounded" -> RoundedCornerShape(corner = CornerSize(16.dp))
+            "roundedSquare" -> RoundedCornerShape(corner = CornerSize(16.dp))
             "squircle" -> SquircleShape()
             "sammy" -> SammyShape()
             "teardrop" -> TearDropShape

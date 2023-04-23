@@ -255,10 +255,9 @@ open class IconShape(
         .6f, .6f, .6f, .6f
     ) {
 
-        override val qsbEdgeRadius = R.dimen.qsb_radius_square
         override val windowTransitionRadius = .6f
 
-        override fun toString() = "rounded"
+        override fun toString() = "roundedSquare"
     }
 
     object Squircle : IconShape(
