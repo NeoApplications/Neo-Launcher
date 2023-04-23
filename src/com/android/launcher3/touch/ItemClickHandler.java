@@ -102,10 +102,10 @@ public class ItemClickHandler {
                 onClickFolderIcon(v);
             }
         } else if (tag instanceof AppInfo) {
+            startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
             if (Utilities.getOmegaPrefs(launcher).getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
                 Utilities.getOmegaPrefs(launcher).reloadApps();
             }
-            startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
                 onClickPendingWidget((PendingAppWidgetHostView) v, launcher);
