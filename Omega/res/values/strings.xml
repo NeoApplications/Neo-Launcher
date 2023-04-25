@@ -150,6 +150,7 @@
     <string name="add_new_tab">Add</string>
     <string name="selected_count">%1$d selected</string>
     <plurals name="tab_apps_count">
+        <item quantity="zero">%0$d Apps</item>
         <item quantity="one">%1$d App</item>
         <item quantity="other">%1$d Apps</item>
     </plurals>
@@ -181,6 +182,7 @@
     <string name="title_theme_customize_icons">Customize Icons</string>
     <string name="summary__theme_blur">Blur page backgrounds</string>
     <string name="theme_auto">Follow wallpaper</string>
+    <string name="color_wallpaper_secondary">Wallpaper Secondary</string>
     <string name="theme_auto_black">Follow wallpaper (Black)</string>
     <string name="theme_auto_night_mode">System</string>
     <string name="theme_auto_night_mode_black">System (Black)</string>

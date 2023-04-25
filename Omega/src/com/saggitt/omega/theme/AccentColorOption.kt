@@ -49,6 +49,16 @@ sealed class AccentColorOption {
         override fun toString() = "wallpaper_primary"
     }
 
+    object WallpaperSecondary : AccentColorOption() {
+        override val isSupported = Utilities.ATLEAST_OREO_MR1
+        override val displayName = R.string.color_wallpaper_secondary
+        override val accentColor: Int
+            get() = WallpaperManagerCompat.getInstance(OmegaApp.instance?.applicationContext)
+                .getWallpaperColors(FLAG_SYSTEM)!!.secondaryColor
+
+        override fun toString() = "wallpaper_primary"
+    }
+
     class CustomColor(override val accentColor: Int) : AccentColorOption() {
         override val isSupported = true
         override val displayName = R.string.app_name
