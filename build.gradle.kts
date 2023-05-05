@@ -232,6 +232,7 @@ dependencies {
     }
     implementation("com.raedapps:alwan:1.0.1")
     implementation("io.github.hokofly:hoko-blur:1.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
     //Compose
     implementation("androidx.activity:activity-compose:1.7.0")
