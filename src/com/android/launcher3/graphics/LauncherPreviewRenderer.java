@@ -100,6 +100,7 @@ import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.data.IconOverrideRepository;
 import com.saggitt.omega.iconpack.IconPackProvider;
+import com.saggitt.omega.preferences.NLPrefs;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import java.util.ArrayList;
@@ -137,6 +138,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
+            putBaseInstance(NLPrefs.INSTANCE);
             putBaseInstance(IconPackProvider.INSTANCE);
             putBaseInstance(IconOverrideRepository.INSTANCE);
             putBaseInstance(DeviceProfileOverrides.INSTANCE);
