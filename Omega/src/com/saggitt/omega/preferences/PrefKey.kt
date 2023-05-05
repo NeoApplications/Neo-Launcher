@@ -104,6 +104,10 @@ object PrefKey {
     val DRAWER_BG_CUSTOM = booleanPreferencesKey("drawer_custom_background")
     val DRAWER_BG_COLOR = intPreferencesKey("drawer_custom_background_color")
     val DRAWER_BG_OPACITY = floatPreferencesKey("drawer_custom_background_opacity")
+    val DRAWER_CATEGORIZATION = stringPreferencesKey("drawer_categorization")
+    val DRAWER_CATEGORIZATION_ENABLED = booleanPreferencesKey("drawer_categorization_enabled")
+    val DRAWER_CATEGORIZATION_TYPE = stringPreferencesKey("drawer_categorization_type")
+    val DRAWER_CATEGORIZATION_TABS = stringSetPreferencesKey("pref_drawer_tabs")
 
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")
