@@ -26,6 +26,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.pm.UserCache
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.BlankDataProvider
@@ -83,6 +84,11 @@ class Config(val context: Context) {
         const val THEME_LIGHT = 0
         const val THEME_DARK = 1
         const val THEME_BLACK = 2
+
+        //CATEGORY BOTTOM SHEET
+        const val BS_SELECT_TAB_TYPE = 0
+        const val BS_CREATE_GROUP = 1
+        const val BS_EDIT_GROUP = 2
 
         val drawerSortOptions = mutableMapOf(
             SORT_AZ to R.string.title__sort_alphabetical_az,
@@ -143,6 +149,11 @@ class Config(val context: Context) {
                 originalIdp = idp.numAllAppsColumnsOriginal
             }
             return originalIdp
+        }
+
+        fun hasWorkApps(context: Context): Boolean {
+            return context.prefs.drawerSeparateWorkApps.getValue() &&
+                    UserCache.INSTANCE.get(context).userProfiles.size > 1
         }
 
         fun gesturePrefs(context: Context): List<NavigationPref> {
