@@ -16,7 +16,11 @@ val staticColors = listOf(
     AccentColorOption.CustomColor(0xFF67818E)
 )
 
-val dynamicColors = listOf(AccentColorOption.SystemAccent, AccentColorOption.WallpaperPrimary)
+val dynamicColors = listOf(
+    AccentColorOption.SystemAccent,
+    AccentColorOption.WallpaperPrimary,
+    AccentColorOption.WallpaperSecondary
+)
     .filter(AccentColorOption::isSupported)
 
 /*
