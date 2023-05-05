@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.preferences
 
+import com.android.launcher3.LauncherAppState
 import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.omegaApp
@@ -25,6 +26,12 @@ import com.saggitt.omega.omegaApp
 class PreferencesChangeCallback(val launcher: OmegaLauncher) {
     fun recreate() {
         if (launcher.shouldRecreate()) launcher.recreate()
+    }
+
+    fun reloadApps() {
+        val las = LauncherAppState.getInstance(launcher.applicationContext)
+        val idp = las.invariantDeviceProfile
+        idp.onPreferencesChanged(launcher.applicationContext)
     }
 
     fun updateSmartspaceProvider() {
