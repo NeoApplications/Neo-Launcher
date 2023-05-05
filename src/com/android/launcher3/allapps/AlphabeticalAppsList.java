@@ -67,7 +67,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         public FastScrollSectionInfo(String sectionName, int position) {
             this.sectionName = sectionName;
             this.position = position;
-            this.color = color;
+            //this.color = color;
         }
     }
     private final T mActivityContext;
