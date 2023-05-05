@@ -256,6 +256,12 @@ public class FolderInfo extends ItemInfo {
         return new ComponentKey(new ComponentName("com.saggitt.omega.folder", String.valueOf(id)), Process.myUserHandle());
     }
 
+    public void onIconChanged() {
+        for (FolderListener listener : mListeners) {
+            listener.onIconChanged();
+        }
+    }
+
     @Override
     protected String dumpProperties() {
         return String.format("%s; labelState=%s", super.dumpProperties(), getLabelState());
