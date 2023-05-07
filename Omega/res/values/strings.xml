@@ -616,6 +616,7 @@
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
 
     <string name="title_override_corner_radius_value">Global corner radius</string>
     <string name="dash_line_size">Dash line size</string>
