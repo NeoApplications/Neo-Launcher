@@ -5,7 +5,7 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.android.tools.build:gradle:8.0.1")
     }
 }
 val vKotlin = "1.8.10"
