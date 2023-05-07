@@ -613,6 +613,7 @@
     <string name="web_search_metager">Metager (Web)</string>
     <string name="web_search_searx">Searx (Web)</string>
     <string name="web_search_phind">Phind (Web)</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
 
     <string name="title_override_corner_radius_value">Global corner radius</string>
     <string name="dash_line_size">Dash line size</string>
