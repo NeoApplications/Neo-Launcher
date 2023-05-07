@@ -107,8 +107,10 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
         dataBinding = true
+        aidl = true
     }
 
     composeOptions {
@@ -124,7 +126,13 @@ android {
         jvmTarget = compileOptions.sourceCompatibility.toString()
     }
 
-    packagingOptions {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = compileOptions.sourceCompatibility.toString()
+        }
+    }
+
+    packaging {
         jniLibs {
             pickFirsts += listOf("**/libeasyBypass.so")
         }
