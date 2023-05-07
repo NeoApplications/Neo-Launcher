@@ -8,19 +8,19 @@ buildscript {
         classpath("com.android.tools.build:gradle:8.0.1")
     }
 }
-val vKotlin = "1.8.10"
-val vCompose = "1.4.1"
-val vComposeCompiler = "1.4.4"
-val vAccompanist = "0.30.1"
+val vKotlin = "1.8.20"
+val vCompose = "1.5.0-alpha03"
+val vComposeCompiler = "1.4.6"
+val vAccompanist = "0.31.0-alpha"
 val vRoom = "2.5.1"
 val vProtobuf = "3.22.2"
 
 plugins {
-    id("com.android.application").version("7.4.2")
-    kotlin("android").version("1.8.10")
-    kotlin("plugin.parcelize").version("1.8.10")
-    kotlin("plugin.serialization").version("1.8.10")
-    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
+    id("com.android.application").version("8.0.1")
+    kotlin("android").version("1.8.20")
+    kotlin("plugin.parcelize").version("1.8.20")
+    kotlin("plugin.serialization").version("1.8.20")
+    id("com.google.devtools.ksp").version("1.8.20-1.0.11")
     id("com.google.protobuf").version("0.9.1")
 }
 
@@ -209,13 +209,13 @@ dependencies {
     //UI
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
 
-    implementation("com.google.android.material:material:1.9.0-beta01")
+    implementation("com.google.android.material:material:1.9.0")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
@@ -234,7 +234,7 @@ dependencies {
     implementation("io.github.hokofly:hoko-blur:1.4.0")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation("androidx.activity:activity-compose:1.7.1")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
     implementation("androidx.compose.runtime:runtime:$vCompose")
     implementation("androidx.compose.ui:ui:$vCompose")
