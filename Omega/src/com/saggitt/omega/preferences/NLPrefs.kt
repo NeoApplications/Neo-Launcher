@@ -43,6 +43,8 @@ import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
+import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
@@ -74,10 +76,11 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 import com.android.launcher3.graphics.IconShape as L3IconShape
 
-class NLPrefs private constructor(private val context: Context) {
+class NLPrefs private constructor(val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
     private val dataStore: DataStore<Preferences> = context.dataStore
     val legacyPrefs = LegacyPreferences(context)
+
     private var onChangeCallback: PreferencesChangeCallback? = null
 
     private val _changePoker = MutableSharedFlow<Int>()
@@ -104,6 +107,11 @@ class NLPrefs private constructor(private val context: Context) {
         onChangeCallback?.updateSmartspaceProvider()
     }
 
+    inline fun withChangeCallback(
+        crossinline callback: (PreferencesChangeCallback) -> Unit,
+    ): () -> Unit {
+        return { getOnChangeCallback()?.let { callback(it) } }
+    }
 
     // Profile
     // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
@@ -689,6 +697,12 @@ class NLPrefs private constructor(private val context: Context) {
         defaultValue = false,
     )
 
+    val drawerAppGroupsManager by lazy { AppGroupsManager(this, dataStore) }
+    val drawerTabs get() = drawerAppGroupsManager.drawerTabs
+    val drawerTabsModelCurrent
+        get() = drawerAppGroupsManager.getEnabledModel() as? DrawerTabs
+            ?: drawerAppGroupsManager.drawerTabs
+
     val drawerSaveScrollPosition = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_SCROLL_POSITION_SAVE,
@@ -732,6 +746,14 @@ class NLPrefs private constructor(private val context: Context) {
         maxValue = 1f,
         minValue = 0f,
         steps = 10,
+    )
+
+    var drawerAppGroups = NavigationPref(
+        key = PrefKey.DRAWER_CATEGORIZATION,
+        dataStore = dataStore,
+        titleId = R.string.title_app_categorize,
+        summaryId = R.string.summary_app_categorize,
+        navRoute = Routes.CATEGORIZE_APPS
     )
 
     // Notifications & Widgets/Smartspace
@@ -1169,6 +1191,8 @@ class NLPrefs private constructor(private val context: Context) {
         }
     }
 
+    fun getOnChangeCallback() = onChangeCallback
+
     private fun initializeIconShape(shape: IconShape) {
         CustomAdaptiveIconDrawable.sInitialized = true
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
@@ -1184,7 +1208,8 @@ class NLPrefs private constructor(private val context: Context) {
     )
 
     companion object {
-        private val INSTANCE = MainThreadInitializedObject(::NLPrefs)
+        @JvmField
+        val INSTANCE = MainThreadInitializedObject(::NLPrefs)
 
         @JvmStatic
         fun getInstance(context: Context) = INSTANCE.get(context)!!
