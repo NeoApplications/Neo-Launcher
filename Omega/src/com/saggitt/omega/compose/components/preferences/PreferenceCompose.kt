@@ -510,7 +510,6 @@ fun AlertDialogPreference(
     )
 }
 
-
 @Composable
 fun StringTextPreference(
     modifier: Modifier = Modifier,
