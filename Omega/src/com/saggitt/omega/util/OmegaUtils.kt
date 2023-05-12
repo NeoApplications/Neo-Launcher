@@ -36,6 +36,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.service.notification.StatusBarNotification
+import android.text.TextUtils
 import android.text.format.DateFormat
 import android.util.TypedValue
 import android.view.View
@@ -58,6 +59,7 @@ import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator
 import com.saggitt.omega.data.AppTrackerRepository
 import com.saggitt.omega.preferences.NLPrefs
+import org.json.JSONObject
 import java.lang.reflect.Field
 import java.text.Collator
 import java.util.Calendar
@@ -65,19 +67,32 @@ import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import kotlin.math.ceil
+import kotlin.random.Random
 import kotlin.reflect.KProperty
 
 @Suppress("UNCHECKED_CAST")
 class JavaField<T>(
     private val targetObject: Any,
     fieldName: String,
-    targetClass: Class<*> = targetObject::class.java
+    targetClass: Class<*> = targetObject::class.java,
 ) {
     private val field: Field = targetClass.getDeclaredField(fieldName).apply { isAccessible = true }
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T = field.get(targetObject) as T
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
         field.set(targetObject, value)
 }
+
+fun JSONObject.asMap() = JSONMap(this)
+fun JSONObject.getNullable(key: String): Any? {
+    return opt(key)
+}
+
+fun String.asNonEmpty(): String? {
+    if (TextUtils.isEmpty(this)) return null
+    return this
+}
+
+val Long.Companion.random get() = Random.nextLong()
 
 @JvmOverloads
 fun makeBasicHandler(preferMyLooper: Boolean = false, callback: Handler.Callback? = null): Handler =
