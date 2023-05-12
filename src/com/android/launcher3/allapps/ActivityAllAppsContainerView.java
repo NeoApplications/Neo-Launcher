@@ -171,6 +171,11 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
         return mIsSearching;
     }
 
+    public void reloadTabs() {
+        //mTabsController.reloadTabs();
+        //rebindAdapters(mTabsController.getShouldShowTabs(), true);
+    }
+
     @Override
     protected void rebindAdapters(boolean force) {
         super.rebindAdapters(force);
