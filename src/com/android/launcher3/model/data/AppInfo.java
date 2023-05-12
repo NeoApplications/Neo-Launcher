@@ -191,6 +191,10 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
                 PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
     }
 
+    public WorkspaceItemInfo makeWorkspaceItem() {
+        return new WorkspaceItemInfo(this);
+    }
+
     @Override
     public AppInfo clone() {
         return new AppInfo(this);
