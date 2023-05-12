@@ -30,10 +30,8 @@ import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringPref
-import com.saggitt.omega.preferences.StringSetPref
 
 class AppGroupsManager(val prefs: NLPrefs, val dataStore: DataStore<Preferences>) {
-
     var categorizationEnabled = BooleanPref(
         key = PrefKey.DRAWER_CATEGORIZATION_ENABLED,
         dataStore = dataStore,
@@ -51,13 +49,10 @@ class AppGroupsManager(val prefs: NLPrefs, val dataStore: DataStore<Preferences>
         onChange = { onPrefsChanged() }
     )
 
-    var tabs = StringSetPref(
-        key = PrefKey.DRAWER_CATEGORIZATION_TABS,
-        dataStore = dataStore,
-        titleId = -1,
-        defaultValue = setOf(),
-        onChange = { onPrefsChanged() }
-    )
+
+    val drawerTabs by lazy { CustomTabs(this) }
+    val flowerpotTabs by lazy { FlowerpotTabs(this) }
+    val drawerFolders by lazy { DrawerFolders(this) }
 
     fun getCurrentCategory(): Category {
         return categories.firstOrNull { it.key == categorizationType.getValue() } ?: Category.NONE
@@ -89,9 +84,6 @@ class AppGroupsManager(val prefs: NLPrefs, val dataStore: DataStore<Preferences>
         }
     }
 
-    val drawerTabs by lazy { CustomTabs(this) }
-    val flowerpotTabs by lazy { FlowerpotTabs(this) }
-    val drawerFolders by lazy { DrawerFolders(this) }
 
     private val categories =
         listOf(Category.FLOWERPOT, Category.TAB, Category.FOLDER, Category.NONE)
