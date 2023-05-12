@@ -375,7 +375,8 @@ open class StringPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
-    val onClick: (() -> Unit)? = null
+    val onClick: (() -> Unit)? = null,
+    val onChange: (String) -> Unit = {},
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -383,6 +384,7 @@ open class StringPref(
 
     override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
+        onChange(value)
     }
 }
 
