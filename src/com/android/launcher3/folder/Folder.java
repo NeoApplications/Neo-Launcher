@@ -105,6 +105,7 @@ import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.folder.FolderShortcut;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.preferences.NLPrefs;
 
 import java.lang.annotation.Retention;
@@ -319,12 +320,12 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         } else {
             settingsButton.setOnClickListener(v -> {
                 animateClosed();
-                /*if (mInfo instanceof DrawerFolderInfo) {
+                if (mInfo instanceof DrawerFolderInfo) {
                     ((DrawerFolderInfo) mInfo).showEdit(mLauncher);
-                } else {*/
-                FolderShortcut fc = new FolderShortcut(mLauncher, mInfo);
-                fc.show();
-                //}
+                } else {
+                    FolderShortcut fc = new FolderShortcut(mLauncher, mInfo);
+                    fc.show();
+                }
             });
         }
     }
@@ -922,6 +923,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         clearDragInfo();
         setState(STATE_CLOSED);
         mContent.setCurrentPage(0);
+        if (mInfo instanceof DrawerFolderInfo) {
+            ((DrawerFolderInfo) mInfo).onCloseComplete();
+        }
     }
 
     @Override
