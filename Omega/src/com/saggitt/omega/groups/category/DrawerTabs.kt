@@ -113,10 +113,7 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
     class CustomTab(context: Context) :
         Tab(context, TYPE_CUSTOM, context.getString(R.string.default_tab_name)) {
-        val hideFromAllApps = SwitchRow(
-            R.drawable.tab_hide_from_main, R.string.tab_hide_from_main,
-            KEY_HIDE_FROM_ALL_APPS, true
-        )
+        val hideFromAllApps = BooleanCustomization(KEY_HIDE_FROM_ALL_APPS, true)
 
         val contents = ComponentsCustomization(KEY_ITEMS, mutableSetOf())
 
