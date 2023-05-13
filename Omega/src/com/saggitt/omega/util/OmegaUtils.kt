@@ -92,6 +92,16 @@ fun String.asNonEmpty(): String? {
     return this
 }
 
+fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
+    if (contains(obj) != exists) {
+        if (exists) add(obj)
+        else remove(obj)
+        return true
+    }
+    return false
+}
+
+
 val Long.Companion.random get() = Random.nextLong()
 
 @JvmOverloads
