@@ -271,15 +271,18 @@ fun AppCategoriesPage() {
                     ).forEach {
                         CategorizationOption(
                             category = it,
-                            selected = selectedCategoryKey == it.key
-                        ) {
-                            manager.categorizationType.setValue(it.key)
-                            selectedCategoryKey = it.key
-                            currentCategory = it
-                            sheetChanger = if (it == AppGroupsManager.Category.FOLDER) {
-                                Config.BS_CREATE_GROUP
-                            } else {
-                                Config.BS_SELECT_TAB_TYPE
+                            selected = selectedCategoryKey == it.key && categoriesEnabled.value,
+
+                            ) {
+                            if (categoriesEnabled.value) {
+                                manager.categorizationType.setValue(it.key)
+                                selectedCategoryKey = it.key
+                                currentCategory = it
+                                sheetChanger = if (it == AppGroupsManager.Category.FOLDER) {
+                                    Config.BS_CREATE_GROUP
+                                } else {
+                                    Config.BS_SELECT_TAB_TYPE
+                                }
                             }
                         }
                     }
@@ -322,11 +325,12 @@ fun AppCategoriesPage() {
                                         AppGroupsManager.Category.TAB.key,
                                         AppGroupsManager.Category.FLOWERPOT.key,
                                         -> {
+                                            manager.drawerTabs.setGroups(groups as List<DrawerTabs.Tab>)
                                             manager.drawerTabs.saveToJson()
                                         }
 
                                         AppGroupsManager.Category.FOLDER.key -> {
-                                            //manager.drawerFolders.setGroups(groups as List<DrawerFolders.Folder>)
+                                            manager.drawerFolders.setGroups(groups as List<DrawerFolders.Folder>)
                                             manager.drawerFolders.saveToJson()
                                         }
 
@@ -381,12 +385,12 @@ fun AppCategoriesPage() {
                                 AppGroupsManager.Category.TAB.key,
                                 AppGroupsManager.Category.FLOWERPOT.key,
                                 -> {
-                                    //manager.drawerTabs.removeGroup(item as DrawerTabs.Tab)
+                                    manager.drawerTabs.removeGroup(item as DrawerTabs.Tab)
                                     manager.drawerTabs.saveToJson()
                                 }
 
                                 AppGroupsManager.Category.FOLDER.key -> {
-                                    //manager.drawerFolders.removeGroup(item as DrawerFolders.Folder)
+                                    manager.drawerFolders.removeGroup(item as DrawerFolders.Folder)
                                     manager.drawerFolders.saveToJson()
                                 }
 
@@ -415,8 +419,10 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
         -> {
             if (hasWorkApps) {
                 manager.drawerTabs.getGroups()
+                    .filter { it !is DrawerTabs.ProfileTab || !it.profile.matchesAll }
             } else {
                 manager.drawerTabs.getGroups()
+                    .filter { it !is DrawerTabs.ProfileTab || it.profile.matchesAll }
             }
         }
 
