@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,11 +67,19 @@ import com.saggitt.omega.compose.components.preferences.BasePreference
 import com.saggitt.omega.compose.pages.AppSelectionPage
 import com.saggitt.omega.compose.pages.ColorSelectionDialog
 import com.saggitt.omega.flowerpot.Flowerpot
+import com.saggitt.omega.groups.AppGroups
+import com.saggitt.omega.groups.AppGroups.Companion.KEY_COLOR
+import com.saggitt.omega.groups.AppGroups.Companion.KEY_HIDE_FROM_ALL_APPS
+import com.saggitt.omega.groups.AppGroups.Companion.KEY_ITEMS
+import com.saggitt.omega.groups.AppGroups.Companion.KEY_TITLE
 import com.saggitt.omega.groups.AppGroupsManager
+import com.saggitt.omega.groups.category.DrawerFolders
+import com.saggitt.omega.groups.category.DrawerTabs
+import com.saggitt.omega.groups.category.FlowerpotTabs
+import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -81,17 +90,46 @@ fun CreateGroupBottomSheet(
 
     val context = LocalContext.current
     val prefs = NLPrefs.getInstance(context)
+    val manager = prefs.drawerAppGroupsManager
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
     val openDialog = remember { mutableStateOf(false) }
     val colorPicker = remember { mutableStateOf(false) }
     var isHidden by remember { mutableStateOf(false) }
-    var flowerpotCategory by remember { mutableStateOf("PERSONALIZATION") }
-    val selectedApps = remember { mutableSetOf<ComponentKey>(*(emptyArray())) }
-    val coroutineScope = rememberCoroutineScope()
+    var flowerpotCategory by remember { mutableStateOf(AppGroups.KEY_FLOWERPOT_DEFAULT) }
 
     var color by remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
+    val group = when (category) {
+        AppGroupsManager.Category.TAB -> {
+            DrawerTabs.CustomTab(context)
+        }
+
+        AppGroupsManager.Category.FLOWERPOT -> {
+            FlowerpotTabs.FlowerpotTab(context)
+        }
+
+        else -> {
+            DrawerFolders.CustomFolder(context)
+        }
+    }
+    val config = group.customizations
+    val selectedApps = remember {
+        mutableStateListOf(
+            *((config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value?.toTypedArray()
+                ?: emptyArray())
+        )
+    }
+
+    val selectedCategory by remember {
+        mutableStateOf(
+            AppGroups.StringCustomization(
+                KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
+            ).value ?: AppGroups.KEY_FLOWERPOT_DEFAULT
+        )
+    }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -157,6 +195,8 @@ fun CreateGroupBottomSheet(
                 BaseDialog(openDialogCustom = openDialog) {
                     CategorySelectionDialogUI(selectedCategory = flowerpotCategory) {
                         flowerpotCategory = it
+                        (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                            it
                         openDialog.value = false
                     }
                 }
@@ -203,6 +243,8 @@ fun CreateGroupBottomSheet(
                                 it.mapNotNull { ck -> ComponentKey.fromString(ck) }.toMutableSet()
                             selectedApps.clear()
                             selectedApps.addAll(componentsSet)
+                            (config[KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                                componentsSet
                         }
                     }
                 }
@@ -292,32 +334,43 @@ fun CreateGroupBottomSheet(
             OutlinedButton(
                 onClick = {
                     onClose(Config.BS_SELECT_TAB_TYPE)
-
                     coroutineScope.launch {
-                        val group = JSONObject("{}")
-
-                        if (category.key == AppGroupsManager.Category.TAB.key) {
-                            group.apply {
-                                put("title", title)
-                                put("hideFromAllApps", isHidden)
-                                put("type", 2)
-                                put("color", color)
-                                put("apps", selectedApps.map { it.toString() }.toSet())
-                            }
-                            prefs.drawerAppGroupsManager.drawerTabs.saveToJson(group)
+                        (config[KEY_TITLE] as? AppGroups.StringCustomization)?.value = title
+                        if (category != AppGroupsManager.Category.FLOWERPOT) {
+                            (config[KEY_HIDE_FROM_ALL_APPS] as? AppGroups.BooleanCustomization)?.value =
+                                isHidden
+                            (config[KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                                selectedApps.toMutableSet()
+                        } else {
+                            (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                                selectedCategory
                         }
-                        if (category.key == AppGroupsManager.Category.FOLDER.key) {
-
-                            group.apply {
-                                put("title", title)
-                                put("hideFromAllApps", isHidden)
-                                put("type", 1)
-                                put("apps", selectedApps.map { it.toString() }.toSet())
+                        if (category != AppGroupsManager.Category.FOLDER) {
+                            (config[KEY_COLOR] as? AppGroups.StringCustomization)?.value =
+                                color.toString()
+                        }
+                        group.customizations.applyFrom(config)
+                        group.title = title
+                        when (category) {
+                            AppGroupsManager.Category.FOLDER -> {
+                                manager.drawerFolders.apply {
+                                    addGroup(group as DrawerFolders.Folder)
+                                    saveToJson()
+                                }
                             }
-                            prefs.drawerAppGroupsManager.drawerFolders.saveToJson(group)
+
+                            AppGroupsManager.Category.TAB,
+                            AppGroupsManager.Category.FLOWERPOT,
+                            -> {
+                                manager.drawerTabs.apply {
+                                    addGroup(group as DrawerTabs.Tab)
+                                    saveToJson()
+                                }
+                            }
+
+                            else -> {}
                         }
                     }
-
                 },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
