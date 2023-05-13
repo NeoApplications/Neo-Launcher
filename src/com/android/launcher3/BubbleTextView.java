@@ -72,6 +72,10 @@ import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.util.ShortcutUtil;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
+import com.saggitt.omega.gestures.BlankGestureHandler;
+import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.gestures.GestureHandler;
+import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.saggitt.omega.preferences.NLPrefs;
 
 import java.text.NumberFormat;
@@ -175,6 +179,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     private HandlerRunnable mIconLoadRequest;
 
     private boolean mEnableIconUpdateAnimation = false;
+
+    private GestureHandler mSwipeUpHandler;
 
     public BubbleTextView(Context context) {
         this(context, null, 0);
@@ -339,6 +345,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @UiThread
     public void applyFromWorkspaceItem(WorkspaceItemInfo info, boolean promiseStateChanged) {
         applyIconAndLabel(info);
+        applySwipeUpAction(info);
         setItemInfo(info);
         applyLoadingState(promiseStateChanged);
         applyDotState(info, false /* animate */);
@@ -407,6 +414,17 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     : info.contentDescription);
         }
     }
+
+    private void applySwipeUpAction(WorkspaceItemInfo info) {
+        GestureHandler handler = GestureController.Companion.createGestureHandler(
+                getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        if (handler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, handler);
+        }
+    }
+
 
     /**
      * Overrides the default long press timeout.
