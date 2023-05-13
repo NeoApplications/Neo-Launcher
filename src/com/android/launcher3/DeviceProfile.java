@@ -430,8 +430,9 @@ public class DeviceProfile {
         int cellLayoutPadding =
                 isTwoPanels ? cellLayoutBorderSpacePx.x / 2 : res.getDimensionPixelSize(
                         R.dimen.cell_layout_padding);
-        cellLayoutPaddingPx = new Rect(cellLayoutPadding, cellLayoutPadding, cellLayoutPadding,
-                cellLayoutPadding);
+
+        int cellLayoutPaddingX = fullWidthWidgets ? 0 : cellLayoutPadding;
+        cellLayoutPaddingPx = new Rect(cellLayoutPaddingX, cellLayoutPadding, cellLayoutPaddingX, cellLayoutPadding);
         updateHotseatScale(res);
         updateWorkspacePadding();
         // Hotseat and QSB width depends on updated cellSize and workspace padding

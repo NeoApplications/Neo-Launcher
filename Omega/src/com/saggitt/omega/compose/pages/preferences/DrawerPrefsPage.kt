@@ -79,7 +79,9 @@ fun DrawerPrefsPage() {
     val gridPrefs = listOf(
         prefs.drawerGridSize,
         prefs.drawerSortMode,
-        prefs.drawerAppGroups
+        prefs.drawerAppGroups,
+        prefs.drawerSeparateWorkApps,
+        prefs.drawerSaveScrollPosition
     )
     val otherPrefs = remember(prefs.changePoker.collectAsState(initial = -1).value) {
         mutableStateListOf(
