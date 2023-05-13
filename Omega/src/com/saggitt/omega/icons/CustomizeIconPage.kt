@@ -72,6 +72,7 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.data.IconOverrideRepository
+import com.saggitt.omega.groups.ui.AppTabDialog
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.addIfNotNull
 import com.saggitt.omega.util.collectAsStateBlocking
@@ -233,7 +234,7 @@ fun CustomizeIconView(
                     )
                 }
 
-                /*if (prefs.drawerTabs.isEnabled) {
+                if (prefs.drawerTabs.isEnabled) {
                     val openDialogCustom = remember { mutableStateOf(false) }
                     PreferenceItem(
                         title = stringResource(R.string.app_categorization_tabs),
@@ -247,7 +248,7 @@ fun CustomizeIconView(
                             openDialogCustom = openDialogCustom
                         )
                     }
-                }*/
+                }
             }
         }
         if (prefs.showDebugInfo.getValue()) {
