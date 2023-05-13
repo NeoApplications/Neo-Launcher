@@ -173,7 +173,6 @@
     <string name="allow">Cho phép</string>
     <string name="deny">Từ chối</string>
     <string name="smartspace_provider_calendar">Lịch sự kiện</string>
-    <string name="action_press_back">Nút quay lại</string>
     <string name="action_open_recents">Mở gần đây</string>
     <string name="personality_provider">Lời chào</string>
     <string name="onbording_settings_title">Thiết lập %s</string>

@@ -300,7 +300,6 @@
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
     <string name="smartspace_provider_calendar">Calendar events</string>
-    <string name="action_press_back">Back button</string>
     <string name="action_open_recents">Open recents</string>
     <string name="personality_provider">Greetings</string>
     <string name="onbording">Onboarding</string>
@@ -399,6 +398,7 @@
     <string name="gesture_dock_swipe_up">Swipe upwards from dock</string>
     <string name="gesture_press_home">Home Button Tap</string>
     <string name="gesture_press_back">Back button</string>
+    <string name="gesture_press_recents">Recents button</string>
     <string name="omega_actions">Actions</string>
     <string name="dt2s_admin_hint">To use double tap to sleep and grant admin permission.</string>
     <string name="dt2s_admin_warning">Double tap to sleep will be turned off.</string>

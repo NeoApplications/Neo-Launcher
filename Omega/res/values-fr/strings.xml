@@ -326,7 +326,6 @@
     <string name="action_open_widgets">Ouvrir Le Tiroir Widget</string>
     <string name="action_open_drawer_or_recents">Ouvrir récents/tiroir app</string>
     <string name="action_open_recents">Ouvert récents</string>
-    <string name="action_press_back">Bouton de retour</string>
     <string name="needs_usage_access">Utilisation Accès nécessaire</string>
     <string name="title_drawer_row_height">Hauteur de ligne</string>
     <string name="num_hotseat_icons_pref_title">Icône Comte</string>

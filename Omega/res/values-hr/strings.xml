@@ -325,7 +325,6 @@
     <string name="battery_low">Slaba baterija</string>
     <string name="allow">Dozvoli</string>
     <string name="deny">Odbij</string>
-    <string name="action_press_back">Gumb za natrag</string>
     <string name="action_open_recents">Otvori nedavne</string>
     <string name="personality_provider">Pozdrav</string>
     <string name="onbording_settings_title">Postavi %s</string>

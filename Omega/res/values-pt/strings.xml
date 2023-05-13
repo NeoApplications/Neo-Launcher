@@ -111,7 +111,6 @@
     <string name="name_provider_alarm_events">Próximos alarmes</string>
     <string name="zen_mode_enabled">Não perturbe está ativado.</string>
     <string name="event_provider_missing_notification_access">Ative as notificações de <xliff:g example="My App" id="name">“%2$s” para usar </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
-    <string name="action_press_back">Botão de voltar</string>
     <string name="weather_provider_pe">Experiência Pixel</string>
     <string name="weather_provider_oneplus_weather">Clima do OnePlus</string>
     <string name="units_imperial">Fahrenheit</string>

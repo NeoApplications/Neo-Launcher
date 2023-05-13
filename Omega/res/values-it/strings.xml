@@ -223,7 +223,6 @@
     <string name="onbording_settings_title">Configura %s</string>
     <string name="onbording">Integrazione</string>
     <string name="personality_provider">Ringraziamenti</string>
-    <string name="action_press_back">Tasto indietro</string>
     <string name="deny">Nega</string>
     <string name="permission_iplocate_twilight_explanation">Consenti l\'accesso alla tua posizione approssimativa\? Ciò consente un calcolo della luce diurna più accurato.</string>
     <string name="permission_iplocate">Posizione approssimativa</string>

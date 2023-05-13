@@ -197,7 +197,6 @@
     <string name="battery_charging">Lataus</string>
     <string name="battery_full">Ladattu</string>
     <string name="battery_low">Akun varaus on alhainen</string>
-    <string name="action_press_back">Takaisin-painike</string>
     <string name="event_provider_missing_notification_access">Ota ilmoitukset käyttöön <xliff:g example="My App" id="name">“%2$s” to use </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="event_provider_missing_notification_dots">Ota ilmoituspisteet käyttöön käyttääksesi <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
     <string name="permission_iplocate">Arvioitu sijainti</string>

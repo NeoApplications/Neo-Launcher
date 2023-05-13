@@ -201,7 +201,6 @@
     <string name="onbording_settings_title">%s einstellen</string>
     <string name="personality_provider">Begrüßungen</string>
     <string name="action_open_recents">Zeige kürzlich geöffnete Apps</string>
-    <string name="action_press_back">Zurück-Taste</string>
     <string name="smartspace_provider_calendar">Kalender Ereignisse</string>
     <string name="deny">Ablehnen</string>
     <string name="allow">Erlauben</string>

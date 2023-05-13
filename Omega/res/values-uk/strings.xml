@@ -100,7 +100,6 @@
     <string name="folder_name">Назва теки</string>
     <string name="event_provider_missing_notification_access">Увімкніть сповіщення від <xliff:g example="My App" id="name">“%2$s” для використання </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="smartspace_provider_calendar">Календарні події</string>
-    <string name="action_press_back">Кнопка “Назад\"</string>
     <string name="weather_provider_oneplus_weather">Погода OnePlus</string>
     <string name="units_imperial">Фаренгейт</string>
     <string name="owm_get_your_own_key">Отримати ключ API на api.openweathermap.org.</string>

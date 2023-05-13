@@ -29,14 +29,13 @@ import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.omegaApp
 import org.json.JSONObject
-
 @Keep
 @TargetApi(Build.VERSION_CODES.P)
 open class PressBackGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
-    override val displayName: String = context.getString(R.string.action_press_back)
-    override val displayNameRes = R.string.action_press_back
+    override val displayName: String = context.getString(R.string.gesture_press_back)
+    override val displayNameRes = R.string.gesture_press_back
     override val icon = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back)
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {

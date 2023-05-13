@@ -247,7 +247,6 @@
     <string name="icon_shape_corner_round">Okrągła</string>
     <string name="summary_colored_backgrounds">Do tła ikon adaptacyjnych.</string>
     <string name="name_provider_alarm_events">Nadchodzące alarmy</string>
-    <string name="action_press_back">Przycisk powrotu</string>
     <string name="onbording_settings_summary">Dotknij i przytrzymaj na pulpicie.</string>
     <string name="weather_provider_testing">Debugowanie</string>
     <string name="title__gesture_swipe_down">Przesuń w dół</string>

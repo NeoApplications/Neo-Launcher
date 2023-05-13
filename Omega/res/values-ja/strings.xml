@@ -117,7 +117,6 @@
     <string name="permission_iplocate_twilight_explanation">おおよその位置情報へのアクセスを許可しますか？ より正確に明るさを算出できるようになります。</string>
     <string name="allow">許可</string>
     <string name="deny">許可しない</string>
-    <string name="action_press_back">戻るボタン</string>
     <string name="onbording_settings_title">%s を設定する</string>
     <string name="onbording_settings_summary">デスクトップを長押ししてください。</string>
     <string name="weather_provider_testing">デバッグ</string>

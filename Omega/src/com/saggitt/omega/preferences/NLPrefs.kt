@@ -1092,6 +1092,7 @@ class NLPrefs private constructor(val context: Context) {
         defaultValue = NotificationsOpenGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP.name}"
     )
+
     var gestureDockSwipeUp = GesturePref(
         titleId = R.string.gesture_dock_swipe_up,
         key = PrefKey.GESTURES_SWIPE_UP_DOCK,
