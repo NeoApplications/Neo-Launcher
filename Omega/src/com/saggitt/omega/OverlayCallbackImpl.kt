@@ -50,9 +50,45 @@ class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherO
         )
     }
 
+    override fun onAttachedToWindow() {
+        mClient?.onAttachedToWindow()
+    }
+
+    override fun onDetachedFromWindow() {
+        mClient?.onDetachedFromWindow()
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+        mClient!!.onStart()
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        mClient!!.onResume()
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        mClient!!.onPause()
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+        mClient!!.onStop()
+    }
+
     override fun onActivityDestroyed(activity: Activity) {
         mClient!!.onDestroy()
         mClient!!.mDestroyed = true
+    }
+
+    override fun openOverlay() {
+        mClient!!.showOverlay(true)
+    }
+
+    override fun hideOverlay(animate: Boolean) {
+        mClient!!.hideOverlay(animate)
+    }
+
+    override fun hideOverlay(duration: Int) {
+        mClient!!.hideOverlay(duration)
     }
 
     override fun onScrollInteractionBegin() {
@@ -71,14 +107,14 @@ class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherO
         mLauncherOverlayCallbacks = callbacks
     }
 
-    override fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean) {
-        this.onServiceStateChanged(overlayAttached)
-    }
-
     override fun onOverlayScrollChanged(progress: Float) {
         if (mLauncherOverlayCallbacks != null) {
             mLauncherOverlayCallbacks!!.onScrollChanged(progress)
         }
+    }
+
+    override fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean) {
+        this.onServiceStateChanged(overlayAttached)
     }
 
     override fun onServiceStateChanged(overlayAttached: Boolean) {

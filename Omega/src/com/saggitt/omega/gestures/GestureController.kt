@@ -28,7 +28,6 @@ import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
-import com.saggitt.omega.gestures.gestures.PressRecentsGesture
 import com.saggitt.omega.gestures.gestures.VerticalSwipeGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
@@ -48,7 +47,6 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
     private val pressHomeGesture by lazy { PressHomeGesture(this) }
     private val pressBackGesture by lazy { PressBackGesture(this) }
-    private val pressRecentsGesture by lazy { PressRecentsGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
     val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
 
