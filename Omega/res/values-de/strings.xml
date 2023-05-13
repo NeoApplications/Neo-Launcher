@@ -243,7 +243,7 @@
     <string name="automatic_short">Auto</string>
     <string name="reset_to_default">Auf Standard zurücksetzen</string>
     <string name="drag_to_enable_packs">Zum Einschalten nach oben ziehen</string>
-    <string name="drag_to_disable_packs">Zum Einschalten nach unten ziehen</string>
+    <string name="drag_to_disable_packs">Zum Ausschalten nach unten ziehen</string>
     <string name="wallpaper_pick">Bildschirmhintergrund auswählen</string>
     <string name="edit_dash">Dash bearbeiten</string>
     <string name="content_storage_permission_required">Speicherzugriff gewähren, um ein Hintergrundbild festzulegen.</string>
@@ -330,7 +330,7 @@
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
     <string name="summary__general_dock">Hotseat-Symbole, Suchleiste</string>
     <string name="title__general_smartspace">Start-Widget</string>
-    <string name="title__general_theme">Thema</string>
+    <string name="title__general_theme">Design</string>
     <string name="title__general_dock">Dock</string>
     <string name="gesture_press_home">Tippen auf die Home-Taste</string>
     <string name="title_separate_work_apps">Zweiter Tab für Apps im Arbeitsprofil</string>
@@ -390,7 +390,7 @@
     <string name="pref_desktop_mode_summary">Androids Desktop-Modus aktivieren</string>
     <string name="folder_name_format">Ordner: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
     <string name="summary_force_shapeless">Versuche für alle Apps veraltete Symbole zu verwenden.</string>
-    <string name="summary_app_suggestions">Für alle Anwendungen und den Startbildschirm</string>
+    <string name="summary_app_suggestions">Für alle Apps und den Startbildschirm</string>
     <string name="theme_auto_night_mode_black">System (Schwarz)</string>
     <string name="theme_dark_theme_mode_follow_daylight_black">Nach Tageslicht richten (Schwarz)</string>
     <string name="summary_colored_backgrounds">Für Hintergründe von adaptiven Icons.</string>
@@ -435,7 +435,7 @@
     <string name="title_desktop_widget_corner_radius">Widget Eckradius</string>
     <string name="summary_fuzzy_search">Ungefähre Übereinstimmung für App-Suchen.</string>
     <string name="owm_get_your_own_key">API-Schlüssel fehlt! Gibt\'s auf api.openweathermap.org.</string>
-    <string name="icon_picker_load_failed">Konnte keine weiteren Symbole laden.</string>
+    <string name="icon_picker_load_failed">Es konnten keine weiteren Symbole geladen werden.</string>
     <string name="notification_dots_missing_notification_access">Um Benachrichtigungspunkte anzuzeigen, wird Zugriff auf die Benachrichtigungen benötigt</string>
     <string name="tab_launcher">Launcher</string>
     <string name="tab_shortcuts">Verknüpfungen</string>
@@ -492,4 +492,5 @@
     <string name="dash_line_size">Dash Zeilengröße</string>
     <string name="title_override_corner_radius_value">Globaler Eckenradius</string>
     <string name="show_top_shadow">Oberen Schatten anzeigen</string>
+    <string name="smartspace_icu_date_pattern">EEEddMMM</string>
 </resources>
