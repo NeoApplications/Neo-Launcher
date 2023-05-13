@@ -732,6 +732,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onTitleChanged(CharSequence title) {
         mFolderName.setText(title);
+        applySwipeUpAction(mInfo);
         setContentDescription(getAccessiblityTitle(title));
     }
 
