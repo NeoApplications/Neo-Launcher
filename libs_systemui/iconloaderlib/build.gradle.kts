@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace = "com.android.launcher3.icons"
     compileSdk = 33
 
     defaultConfig {
@@ -46,6 +47,6 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
     implementation("androidx.annotation:annotation:1.6.0")
 }
