@@ -24,13 +24,18 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.preferences.NLPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
@@ -39,6 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -307,13 +313,41 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                     .dispatchUpdatesTo(mAdapter);
         }
     }
+
+    /**
+     * Returns all the apps.
+     */
+    public List<AppInfo> getApps() {
+        return mApps;
+    }
+
+    private List<DrawerFolderInfo> getFolderInfos() {
+        LauncherAppState app = LauncherAppState.getInstance(mLauncher);
+        LauncherModel model = app.getModel();
+        ModelWriter modelWriter = model.getWriter(false, true, null);
+        return Utilities.getOmegaPrefs(mLauncher)
+                .getDrawerAppGroupsManager()
+                .getDrawerFolders()
+                .getFolderInfos(this, modelWriter);
+    }
+
+    private Set<ComponentKey> getFolderFilteredApps() {
+
+        return Utilities.getOmegaPrefs(mLauncher)
+                .getDrawerAppGroupsManager()
+                .getDrawerFolders()
+                .getHiddenComponents();
+    }
+
     private static class MyDiffCallback extends DiffUtil.Callback {
         private final List<AdapterItem> mOldList;
         private final List<AdapterItem> mNewList;
+
         MyDiffCallback(List<AdapterItem> oldList, List<AdapterItem> newList) {
             mOldList = oldList;
             mNewList = newList;
         }
+
         @Override
         public int getOldListSize() {
             return mOldList.size();
