@@ -24,6 +24,9 @@
     <dimen name="key_text_shadow_dy">0.5dip</dimen>
     <dimen name="key_text_shadow_radius">0.5dip</dimen>
 
+    <dimen name="swipe_up_negative_max">400dp</dimen>
+    <dimen name="swipe_up_positive_max">100dp</dimen>
+
     <dimen name="widget_margin">0dp</dimen>
     <dimen name="smartspace_title_size">24sp</dimen>
     <dimen name="smartspace_clock_above_size">40sp</dimen>

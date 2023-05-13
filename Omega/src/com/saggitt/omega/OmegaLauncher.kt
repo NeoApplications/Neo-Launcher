@@ -24,6 +24,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.LauncherApps
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -312,6 +313,12 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     }
 
     fun shouldRecreate() = !sRestart
+
+    inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
+        val rect = Rect()
+        dragLayer.getViewRectRelativeToSelf(view, rect)
+        prepareDummyView(rect.left, rect.top, rect.right, rect.bottom, callback)
+    }
 
     inline fun prepareDummyView(left: Int, top: Int, crossinline callback: (View) -> Unit) {
         val size = resources.getDimensionPixelSize(R.dimen.options_menu_thumb_size)
