@@ -491,4 +491,10 @@
     <string name="folder_draw_stroke">Намалювати обведення папки</string>
     <string name="smartspace_flight_qr_code">QR код</string>
     <string name="folder_stroke_color">Колір обведення папки</string>
+    <string name="web_search_perplexity">Perplexity (Веб)</string>
+    <string name="web_search_you">You (Веб)</string>
+    <string name="web_search_neeva">Neeva (Веб)</string>
+    <string name="color_wallpaper_secondary">Вторинні Шпалери</string>
+    <string name="web_search_phind">Phind (Веб)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Веб)</string>
 </resources>
