@@ -70,7 +70,7 @@
     <string name="theme_light">Hell</string>
     <string name="theme_based">Nach Design einstellen</string>
     <string name="theme_auto_night_mode">System</string>
-    <string name="theme_auto">Hintergrundbild folgen</string>
+    <string name="theme_auto">Nach Hintergrundbild richten</string>
     <string name="summary__theme_blur">Verwische die Seitenhindergründe</string>
     <string name="title_theme_icon_packs">Symbol-Pakete</string>
     <string name="title__theme_icon_shape">Symbolform</string>
@@ -464,7 +464,7 @@
     <string name="notification_dots_disabled">Um Benachrichtigungspunkte anzuzeigen, muss die Funktion in den Einstellungen aktiviert werden</string>
     <string name="title__feed">Feed</string>
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
-    <string name="theme_auto_black">Hintergrundbild folgen (Schwarz)</string>
+    <string name="theme_auto_black">Nach Hintergrundbild richten (Schwarz)</string>
     <string name="pref_category__dash">Dash</string>
     <string name="cat_dock_search">App-Übersicht und Dock</string>
     <string name="title_fuzzy_search">Fuzzy Suche</string>
@@ -493,4 +493,10 @@
     <string name="title_override_corner_radius_value">Globaler Eckenradius</string>
     <string name="show_top_shadow">Oberen Schatten anzeigen</string>
     <string name="smartspace_icu_date_pattern">EEEddMMM</string>
+    <string name="web_search_you">You (Web)</string>
+    <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="color_wallpaper_secondary">Sekundärfarbe des Hintergrunds</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
+    <string name="web_search_phind">Phind (Web)</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
 </resources>
