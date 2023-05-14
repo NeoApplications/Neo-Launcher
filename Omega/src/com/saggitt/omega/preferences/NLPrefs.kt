@@ -289,7 +289,7 @@ class NLPrefs private constructor(val context: Context) {
         maxValue = 2f,
         minValue = 0.5f,
         steps = 150,
-        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     val desktopLock = BooleanPref(
@@ -745,7 +745,8 @@ class NLPrefs private constructor(val context: Context) {
         defaultValue = 1f,
         maxValue = 1f,
         minValue = 0f,
-        steps = 10,
+        steps = 100,
+        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var drawerAppGroups = NavigationPref(

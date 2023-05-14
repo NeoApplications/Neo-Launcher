@@ -92,7 +92,8 @@ fun DrawerPrefsPage() {
                     prefs.drawerBackgroundColor
                 } else {
                     null
-                }
+                },
+                prefs.drawerBackgroundOpacity
             ).toTypedArray()
         )
     }
