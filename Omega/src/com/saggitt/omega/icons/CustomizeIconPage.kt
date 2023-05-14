@@ -66,6 +66,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities.drawableToBitmap
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.PackageManagerHelper
+import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.compose.PreferenceActivity
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -75,7 +76,6 @@ import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.groups.ui.AppTabDialog
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.addIfNotNull
-import com.saggitt.omega.util.collectAsStateBlocking
 import kotlinx.coroutines.launch
 
 @Composable
@@ -139,8 +139,6 @@ fun CustomizeIconView(
     val repo = IconOverrideRepository.INSTANCE.get(context)
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
-
-    val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsStateBlocking()
 
     Column(
         modifier = Modifier
@@ -210,16 +208,15 @@ fun CustomizeIconView(
 
         PreferenceGroup {
             if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
-                val stringKey = componentKey.toString()
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
-                    isChecked = hiddenApps.value.contains(stringKey),
+                    isChecked = CustomAppFilter.isHiddenApp(context, componentKey),
                     onCheckedChange = { newValue ->
-                        val newSet = hiddenApps.value.toMutableSet()
-                        if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
-                        scope.launch {
-                            prefs.drawerHiddenAppSet.set(newSet)
-                        }
+                        CustomAppFilter.setComponentNameState(
+                            context,
+                            componentKey.toString(),
+                            newValue
+                        )
                     }
                 )
 

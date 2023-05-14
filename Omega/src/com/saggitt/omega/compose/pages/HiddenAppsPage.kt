@@ -29,16 +29,12 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.appComparator
 import com.saggitt.omega.util.comparing
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun HiddenAppsPage() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
     val hiddenApps by remember { mutableStateOf(prefs.drawerHiddenAppSet.getValue()) }
-    val coroutineScope = CoroutineScope(context = Dispatchers.IO)
     val title = if (hiddenApps.isEmpty()) stringResource(id = R.string.title__drawer_hide_apps)
     else stringResource(id = R.string.hide_app_selected, hiddenApps.size)
 
@@ -47,9 +43,7 @@ fun HiddenAppsPage() {
         selectedApps = hiddenApps,
         pluralTitleId = R.string.hide_app_selected
     ) { selectedApps ->
-        coroutineScope.launch {
-            prefs.drawerHiddenAppSet.set(selectedApps)
-        }
+        prefs.drawerHiddenAppSet.setValue(selectedApps)
     }
 }
 
