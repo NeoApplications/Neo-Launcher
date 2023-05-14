@@ -42,7 +42,6 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.BlankActivity
-import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.applyAccent
@@ -61,7 +60,6 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
     private val providerInfo = getSmartspaceWidgetProvider(context)
     private var isWidgetBound = false
     var widgetId = -1
-    val activity = OmegaLauncher.getLauncher(context)
     private val pendingIntentTagId =
         context.resources.getIdentifier("pending_intent_tag", "id", "android")
 

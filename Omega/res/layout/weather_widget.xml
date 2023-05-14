@@ -28,7 +28,7 @@
             android:includeFontPadding="false"
             android:paddingBottom="2.0dip"
             android:textColor="#ffffffff"
-            android:textSize="36.0dip"
+            android:textSize="36sp"
             style="@style/WeatherWidget.Text" />
     </LinearLayout>
 

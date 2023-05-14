@@ -80,7 +80,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListener, ValueAnimator.AnimatorUpdateListener,
@@ -264,7 +263,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         setOnLongClickListener(this);
         mWeatherAvailable = weather != null;
         if (mDoubleLine) {
-            loadDoubleLine(weather, Objects.requireNonNull(card));
+            loadDoubleLine(weather, card);
         } else {
             loadSingleLine(weather, card);
         }
