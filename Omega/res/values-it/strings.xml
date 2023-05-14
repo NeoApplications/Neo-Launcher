@@ -509,4 +509,10 @@
     <string name="title__dock_icon_size_enforce">Imposta dimensione personalizzata icone</string>
     <string name="smartspace_widget_placeholder_date">Ven, 3 marzo</string>
     <string name="folder_draw_stroke">Disegna contorno cartella</string>
+    <string name="web_search_you">You (Web)</string>
+    <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
+    <string name="web_search_phind">Phind (Web)</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
+    <string name="color_wallpaper_secondary">Sfondo secondario</string>
 </resources>
