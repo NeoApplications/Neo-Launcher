@@ -35,13 +35,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -83,7 +82,7 @@ fun CustomizeIconPage(
     icon: Drawable,
     defaultTitle: String,
     componentKey: ComponentKey,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     val context = LocalContext.current
     val prefs = NLPrefs.getInstance(context)
@@ -122,7 +121,7 @@ fun CustomizeIconPage(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomizeIconView(
     icon: Drawable,
@@ -130,7 +129,7 @@ fun CustomizeIconView(
     onTitleChange: (String) -> Unit,
     defaultTitle: String,
     componentKey: ComponentKey,
-    launchSelectIcon: (() -> Unit)? = null
+    launchSelectIcon: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val prefs = NLPrefs.getInstance(context)
@@ -189,9 +188,10 @@ fun CustomizeIconView(
                 }
             },
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12F),
-                textColor = MaterialTheme.colorScheme.onSurface
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
