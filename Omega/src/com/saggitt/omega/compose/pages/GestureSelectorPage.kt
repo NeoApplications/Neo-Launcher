@@ -44,7 +44,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -73,8 +72,6 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.saggitt.omega.compose.components.ExpandableListItem
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.TabItem
@@ -110,12 +107,11 @@ fun NavGraphBuilder.gesturesPageGraph(route: String) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GestureSelectorPage(prefs: NavigationPref) {
 
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val currentOption = remember { mutableStateOf(prefs.getValue()) }
@@ -148,6 +144,7 @@ fun GestureSelectorPage(prefs: NavigationPref) {
             )
         }
     )
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
 
     ViewWithActionBar(
         title = stringResource(prefs.titleId),
@@ -162,12 +159,8 @@ fun GestureSelectorPage(prefs: NavigationPref) {
         ) {
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
-                indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(
-                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
+                indicator = {},
+                divider = {},
                 backgroundColor = MaterialTheme.colorScheme.background
             ) {
                 tabs.forEachIndexed { index, tab ->
@@ -205,7 +198,7 @@ fun GestureSelectorPage(prefs: NavigationPref) {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
+                HorizontalPager(state = pagerState) { page ->
                     tabs[page].screen()
                 }
             }

@@ -59,8 +59,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.R
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.raedapps.alwan.rememberAlwanState
 import com.raedapps.alwan.ui.Alwan
 import com.saggitt.omega.compose.components.ColorItem
@@ -76,7 +74,7 @@ import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val coroutineScope = rememberCoroutineScope()
@@ -93,13 +91,6 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
-
-    val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentAccentColor.value }  -> 0
-        dynamicColors.any { it.accentColor == currentAccentColor.value } -> 2
-        else                                                             -> 1
-    }
-    val pagerState = rememberPagerState(defaultTabIndex)
 
     val tabs = listOf(
         TabItem(title = R.string.color_presets) {
@@ -125,6 +116,12 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
             )
         }
     )
+    val defaultTabIndex = when {
+        presetColors.any { it.accentColor == currentAccentColor.value }  -> 0
+        dynamicColors.any { it.accentColor == currentAccentColor.value } -> 2
+        else                                                             -> 1
+    }
+    val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -165,12 +162,8 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
             ) {
                 TabRow(
                     selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
+                    indicator = {},
+                    divider = {},
                     backgroundColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
@@ -199,7 +192,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
+                    HorizontalPager(state = pagerState) { page ->
                         tabs[page].screen()
                     }
                 }

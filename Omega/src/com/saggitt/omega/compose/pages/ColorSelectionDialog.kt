@@ -39,8 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.theme.OmegaAppTheme
@@ -48,7 +46,7 @@ import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.staticColors
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectionDialog(
     defaultColor: Int,
@@ -58,13 +56,6 @@ fun ColorSelectionDialog(
     val currentColor = remember { mutableStateOf(defaultColor) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
-
-    val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentColor.value } -> 0
-        dynamicColors.any { it.accentColor == currentColor.value } -> 2
-        else -> 1
-    }
-    val pagerState = rememberPagerState(defaultTabIndex)
 
     val tabs = listOf(
         TabItem(title = R.string.color_presets) {
@@ -90,6 +81,12 @@ fun ColorSelectionDialog(
             )
         }
     )
+    val defaultTabIndex = when {
+        presetColors.any { it.accentColor == currentColor.value } -> 0
+        dynamicColors.any { it.accentColor == currentColor.value } -> 2
+        else -> 1
+    }
+    val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -109,12 +106,8 @@ fun ColorSelectionDialog(
             ) {
                 TabRow(
                     selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            modifier = Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
+                    indicator = {},
+                    divider = {},
                     backgroundColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
@@ -143,7 +136,7 @@ fun ColorSelectionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
+                    HorizontalPager(state = pagerState) { page ->
                         tabs[page].screen()
                     }
                 }
