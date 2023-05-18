@@ -19,32 +19,22 @@
 package com.saggitt.omega.compose.pages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.TabRow
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
+import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.staticColors
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -52,7 +42,6 @@ fun ColorSelectionDialog(
     defaultColor: Int,
     onClose: (Int) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val currentColor = remember { mutableStateOf(defaultColor) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
@@ -94,53 +83,12 @@ fun ColorSelectionDialog(
             onBackAction = {
                 onClose(currentColor.value)
             }
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = it.calculateTopPadding(),
-                        bottom = 16.dp,
-                        start = 8.dp,
-                        end = 8.dp
-                    )
-            ) {
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = {},
-                    divider = {},
-                    backgroundColor = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    tabs.forEachIndexed { index, tab ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = {
-                                Text(
-                                    text = stringResource(id = tab.title),
-                                    color = if (pagerState.currentPage == index)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        )
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    HorizontalPager(state = pagerState) { page ->
-                        tabs[page].screen()
-                    }
-                }
-            }
+        ) { paddingValues ->
+            HorizontalPagerPage(
+                Modifier.padding(paddingValues),
+                pagerState,
+                tabs,
+            )
         }
     }
 

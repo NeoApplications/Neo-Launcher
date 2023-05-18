@@ -34,21 +34,16 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TabRow
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +57,7 @@ import com.android.launcher3.R
 import com.raedapps.alwan.rememberAlwanState
 import com.raedapps.alwan.ui.Alwan
 import com.saggitt.omega.compose.components.ColorItem
+import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -72,12 +68,10 @@ import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
-    val coroutineScope = rememberCoroutineScope()
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
         PrefKey.DESKTOP_FOLDER_BG_COLOR     -> prefs.desktopFolderBackgroundColor
@@ -150,53 +144,12 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
                     }
                 }
             }
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = it.calculateTopPadding(),
-                        bottom = 16.dp,
-                        start = 8.dp,
-                        end = 8.dp
-                    )
-            ) {
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = {},
-                    divider = {},
-                    backgroundColor = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    tabs.forEachIndexed { index, tab ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = {
-                                Text(
-                                    text = stringResource(id = tab.title),
-                                    color = if (pagerState.currentPage == index)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        )
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    HorizontalPager(state = pagerState) { page ->
-                        tabs[page].screen()
-                    }
-                }
-            }
+        ) { paddingValues ->
+            HorizontalPagerPage(
+                Modifier.padding(paddingValues),
+                pagerState,
+                tabs,
+            )
         }
     }
 }

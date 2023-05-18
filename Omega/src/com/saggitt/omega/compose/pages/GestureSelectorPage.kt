@@ -29,35 +29,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TabRow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,6 +66,7 @@ import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
 import com.saggitt.omega.compose.components.ExpandableListItem
+import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -85,7 +79,6 @@ import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.appsState
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -110,8 +103,6 @@ fun NavGraphBuilder.gesturesPageGraph(route: String) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GestureSelectorPage(prefs: NavigationPref) {
-
-    val coroutineScope = rememberCoroutineScope()
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val currentOption = remember { mutableStateOf(prefs.getValue()) }
@@ -148,61 +139,12 @@ fun GestureSelectorPage(prefs: NavigationPref) {
 
     ViewWithActionBar(
         title = stringResource(prefs.titleId),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(
-                    top = it.calculateTopPadding() - 1.dp,
-                    start = 8.dp,
-                    end = 8.dp
-                )
-        ) {
-            TabRow(
-                selectedTabIndex = pagerState.currentPage,
-                indicator = {},
-                divider = {},
-                backgroundColor = MaterialTheme.colorScheme.background
-            ) {
-                tabs.forEachIndexed { index, tab ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = tab.title),
-                                color = if (pagerState.currentPage == index)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = tab.icon),
-                                contentDescription = stringResource(id = tab.title),
-                                tint = if (pagerState.currentPage == index)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                HorizontalPager(state = pagerState) { page ->
-                    tabs[page].screen()
-                }
-            }
-        }
+    ) { paddingValues ->
+        HorizontalPagerPage(
+            Modifier.padding(paddingValues),
+            pagerState,
+            tabs,
+        )
     }
 }
 
