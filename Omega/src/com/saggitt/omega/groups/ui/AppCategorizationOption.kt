@@ -33,7 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Check
 import com.saggitt.omega.groups.AppGroupsManager
 
 @Composable
@@ -79,7 +80,7 @@ fun CategorizationOption(
         trailingContent = {
             if (selected) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_check),
+                    imageVector = Phosphor.Check,
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(32.dp)

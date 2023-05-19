@@ -59,7 +59,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
@@ -116,7 +115,6 @@ fun BasePreference(
                 text = stringResource(id = titleId),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp
             )
         },
         supportingContent = {
@@ -534,7 +532,6 @@ fun PagePreference(
                 Icon(
                     imageVector = icon,
                     contentDescription = stringResource(id = titleId),
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         } else null,
