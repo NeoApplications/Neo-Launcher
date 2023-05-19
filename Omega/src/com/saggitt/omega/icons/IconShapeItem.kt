@@ -33,18 +33,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Check
+import com.saggitt.omega.compose.icons.phosphor.Palette
 
 @Composable
 fun IconShapeItem(
     modifier: Modifier = Modifier,
     item: ShapeModel,
     checked: Boolean,
-    onClick: (ShapeModel) -> Unit = {}
+    onClick: (ShapeModel) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -72,10 +73,8 @@ fun IconShapeItem(
                         .fillMaxWidth(0.5f)
                         .aspectRatio(1f)
                         .align(Alignment.Center),
-                    painter = painterResource(
-                        id = if (item.shapeName == "system") R.drawable.ic_style
-                        else R.drawable.ic_check
-                    ),
+                    imageVector = if (item.shapeName == "system") Phosphor.Palette
+                    else Phosphor.Check,
                     tint = MaterialTheme.colorScheme.onBackground,
                     contentDescription = item.shapeName
                 )

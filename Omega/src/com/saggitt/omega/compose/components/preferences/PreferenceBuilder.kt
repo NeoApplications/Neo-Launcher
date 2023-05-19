@@ -113,7 +113,7 @@ val PreferenceBuilder =
             is PageItem ->
                 PagePreference(
                     titleId = pref.titleId,
-                    iconId = pref.iconId,
+                    icon = pref.icon,
                     route = pref.route,
                     index = index,
                     groupSize = size

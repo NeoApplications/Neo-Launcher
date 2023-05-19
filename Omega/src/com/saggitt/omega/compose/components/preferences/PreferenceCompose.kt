@@ -19,7 +19,6 @@
 package com.saggitt.omega.compose.components.preferences
 
 import android.util.Log
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -56,7 +55,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -519,7 +518,7 @@ fun StringTextPreference(
 fun PagePreference(
     modifier: Modifier = Modifier,
     @StringRes titleId: Int,
-    @DrawableRes iconId: Int = -1,
+    icon: ImageVector? = null,
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
@@ -530,11 +529,10 @@ fun PagePreference(
     BasePreference(
         modifier = modifier,
         titleId = titleId,
-        startWidget =
-        if (iconId != -1) {
+        startWidget = if (icon != null) {
             {
                 Icon(
-                    painter = painterResource(id = iconId),
+                    imageVector = icon,
                     contentDescription = stringResource(id = titleId),
                     tint = MaterialTheme.colorScheme.primary
                 )

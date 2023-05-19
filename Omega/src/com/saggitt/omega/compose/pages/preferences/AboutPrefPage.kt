@@ -204,7 +204,7 @@ fun AboutPrefPage() {
                 Spacer(modifier = Modifier.height(2.dp))
                 PagePreference(
                     titleId = PageItem.AboutTranslators.titleId,
-                    iconId = PageItem.AboutTranslators.iconId,
+                    icon = PageItem.AboutTranslators.icon,
                     route = PageItem.AboutTranslators.route,
                     index = 1,
                     groupSize = 2
