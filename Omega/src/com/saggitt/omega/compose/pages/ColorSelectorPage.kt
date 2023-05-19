@@ -20,25 +20,27 @@ package com.saggitt.omega.compose.pages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -58,12 +60,12 @@ import com.raedapps.alwan.rememberAlwanState
 import com.raedapps.alwan.ui.Alwan
 import com.saggitt.omega.compose.components.ColorItem
 import com.saggitt.omega.compose.components.HorizontalPagerPage
-import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.theme.AccentColorOption
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
@@ -87,14 +89,14 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
     val presetColors = staticColors
 
     val tabs = listOf(
-        TabItem(title = R.string.color_presets) {
+        TabItem(title = R.string.color_presets, icon = R.drawable.ic_setting) {
             PresetsPage(
                 presetColors = presetColors,
                 onSelectColor = { currentAccentColor.value = it },
                 isColorSelected = { it == currentAccentColor.value }
             )
         },
-        TabItem(title = R.string.custom) {
+        TabItem(title = R.string.custom, icon = R.drawable.ic_color_donut) {
             CustomPage(
                 initialColor = Color(currentAccentColor.value),
                 onSelectColor = {
@@ -102,7 +104,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
                 }
             )
         },
-        TabItem(title = R.string.color_dynamic) {
+        TabItem(title = R.string.color_dynamic, icon = R.drawable.ic_palette) {
             DynamicPage(
                 dynamicColors = dynamicColors,
                 onSelectColor = { currentAccentColor.value = it },
@@ -161,10 +163,7 @@ fun PresetsPage(
     isColorSelected: (Int) -> Boolean,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(vertical = 16.dp)
+        modifier = Modifier.fillMaxSize(),
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(5),
@@ -180,7 +179,7 @@ fun PresetsPage(
                     ColorItem(
                         color = colorOption.accentColor,
                         selected = isColorSelected(colorOption.accentColor),
-                        modifier = Modifier.widthIn(0.dp, 56.dp),
+                        modifier = Modifier.widthIn(0.dp, 64.dp),
                         onClick = { onSelectColor(colorOption.accentColor) }
                     )
                 }
@@ -195,19 +194,16 @@ fun CustomPage(
     onSelectColor: (Int) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val current = rememberAlwanState(initialColor = initialColor)
         Box(
             modifier = Modifier
-                .height(64.dp)
-                .width(164.dp)
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .height(72.dp)
+                .padding(12.dp)
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
                 .background(current.color),
             contentAlignment = Alignment.Center
         ) {
@@ -215,10 +211,12 @@ fun CustomPage(
         }
 
         Alwan(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
             onColorChanged = {
                 onSelectColor(current.color.hashCode())
             },
-            modifier = Modifier.width(300.dp),
             state = current,
             showAlphaSlider = true,
         )
@@ -233,28 +231,39 @@ fun DynamicPage(
 ) {
     val groupSize = dynamicColors.size
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
         dynamicColors.forEachIndexed { index, option ->
             val rank = (index + 1f) / groupSize
-            val base = index.toFloat() / groupSize
-            SingleSelectionListItem(
+            ListItem(
                 modifier = Modifier
-                    .height(56.dp)
                     .clip(
-                        RoundedCornerShape(
-                            topStart = if (base == 0f) 16.dp else 6.dp,
-                            topEnd = if (base == 0f) 16.dp else 6.dp,
-                            bottomStart = if (rank == 1f) 16.dp else 6.dp,
-                            bottomEnd = if (rank == 1f) 16.dp else 6.dp
+                        GroupItemShape(index, groupSize - 1)
+                    )
+                    .clickable {
+                        onSelectColor(option.accentColor)
+                    }
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation((rank * 24).dp)),
+                leadingContent = {
+                    RadioButton(
+                        selected = isColorSelected(option.accentColor),
+                        onClick = {
+                            onSelectColor(option.accentColor)
+                        },
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary,
+                            unselectedColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation((rank * 24).dp)),
-                text = stringResource(id = option.displayName), endWidget = {
+                },
+                headlineContent = {
+                    Text(
+                        text = stringResource(id = option.displayName),
+                    )
+                },
+                trailingContent = {
                     ColorItem(
                         color = option.accentColor,
                         selected = false,
@@ -262,11 +271,8 @@ fun DynamicPage(
                         onClick = { onSelectColor(option.accentColor) }
                     )
                 },
-                isSelected = isColorSelected(option.accentColor)
-            ) {
-                onSelectColor(option.accentColor)
-            }
-            Spacer(modifier = Modifier.height(2.dp))
+            )
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
