@@ -39,7 +39,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -116,7 +115,7 @@ fun AboutPrefPage() {
                 Row(
                     modifier = Modifier
                         .padding(8.dp)
-                        .clip(RoundedCornerShape(16f))
+                        .clip(MaterialTheme.shapes.large)
 
                 ) {
                     ResourcesCompat.getDrawable(
@@ -224,14 +223,14 @@ fun AboutPrefPage() {
 private data class Link(
     @DrawableRes val iconResId: Int,
     @StringRes val labelResId: Int,
-    val url: String
+    val url: String,
 )
 
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
     val photoUrl: String,
-    val webpage: String
+    val webpage: String,
 )
 
 private val links = listOf(
@@ -311,8 +310,8 @@ fun ComposableWebView(url: String) {
 
     val cssFile = when (Config.getCurrentTheme(LocalContext.current)) {
         Config.THEME_BLACK -> "black.css"
-        Config.THEME_DARK -> "dark.css"
-        else -> "light.css"
+        Config.THEME_DARK  -> "dark.css"
+        else               -> "light.css"
     }
     AndroidView(
         factory = { context ->
@@ -351,7 +350,7 @@ fun ComposableWebView(url: String) {
 
                     override fun shouldOverrideUrlLoading(
                         view: WebView,
-                        request: WebResourceRequest
+                        request: WebResourceRequest,
                     ): Boolean {
                         if (url.contains("file://")) {
                             view.loadUrl(url)

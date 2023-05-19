@@ -86,9 +86,6 @@ fun PreferenceGroupHeading(
     heading: String? = null,
     textAlignment: Alignment.Horizontal = Alignment.Start
 ) {
-    var spacerHeight = 0
-    if (heading == null) spacerHeight += 8
-    Spacer(modifier = Modifier.requiredHeight(spacerHeight.dp))
     if (heading != null) {
         Column(
             verticalArrangement = Arrangement.Center,
