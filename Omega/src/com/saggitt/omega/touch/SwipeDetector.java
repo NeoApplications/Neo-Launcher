@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.android.launcher3.touch;
+package com.saggitt.omega.touch;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
