@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -221,7 +222,7 @@ fun AboutPrefPage() {
 }
 
 private data class Link(
-    @DrawableRes val iconResId: Int,
+    val icon: ImageVector,
     @StringRes val labelResId: Int,
     val url: String,
 )
@@ -235,17 +236,17 @@ private data class TeamMember(
 
 private val links = listOf(
     Link(
-        iconResId = R.drawable.ic_github,
+        icon = Phosphor.GithubLogo,
         labelResId = R.string.about_source,
         url = "https://github.com/NeoApplications/Neo-Launcher"
     ),
     Link(
-        iconResId = R.drawable.ic_channel,
+        icon = Phosphor.TelegramLogo,
         labelResId = R.string.about_channel,
         url = "https://t.me/neo_applications"
     ),
     Link(
-        iconResId = R.drawable.ic_community,
+        icon = Phosphor.UsersThree,
         labelResId = R.string.about_community,
         url = "https://t.me/neo_launcher"
     )
