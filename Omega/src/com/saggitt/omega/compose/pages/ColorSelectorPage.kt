@@ -73,15 +73,15 @@ import com.saggitt.omega.util.staticColors
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
+fun ColorSelectorPage(prefKey: Preferences.Key<String>) {
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
-        PrefKey.DESKTOP_FOLDER_BG_COLOR     -> prefs.desktopFolderBackgroundColor
+        PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor
         PrefKey.DESKTOP_FOLDER_STROKE_COLOR -> prefs.desktopFolderStrokeColor
-        PrefKey.DOCK_BG_COLOR               -> prefs.dockBackgroundColor
-        PrefKey.DRAWER_BG_COLOR             -> prefs.drawerBackgroundColor
-        PrefKey.NOTIFICATION_DOTS_COLOR     -> prefs.notificationBackground
-        else                                -> prefs.profileAccentColor
+        PrefKey.DOCK_BG_COLOR -> prefs.dockBackgroundColor
+        PrefKey.DRAWER_BG_COLOR -> prefs.drawerBackgroundColor
+        PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
+        else -> prefs.profileAccentColor
     }
     val navController = LocalNavController.current
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
@@ -98,7 +98,7 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
         },
         TabItem(title = R.string.custom, icon = R.drawable.ic_color_donut) {
             CustomPage(
-                initialColor = Color(currentAccentColor.value),
+                initialColor = Color(AccentColorOption.fromString(currentAccentColor.value).accentColor),
                 onSelectColor = {
                     currentAccentColor.value = it
                 }
@@ -113,9 +113,9 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
         }
     )
     val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentAccentColor.value }  -> 0
-        dynamicColors.any { it.accentColor == currentAccentColor.value } -> 2
-        else                                                             -> 1
+        presetColors.any { it.toString() == currentAccentColor.value } -> 0
+        dynamicColors.any { it.toString() == currentAccentColor.value } -> 2
+        else -> 1
     }
     val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
@@ -159,8 +159,8 @@ fun ColorSelectorPage(prefKey: Preferences.Key<Int>) {
 @Composable
 fun PresetsPage(
     presetColors: List<AccentColorOption>,
-    onSelectColor: (Int) -> Unit,
-    isColorSelected: (Int) -> Boolean,
+    onSelectColor: (String) -> Unit,
+    isColorSelected: (String) -> Boolean,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -178,9 +178,9 @@ fun PresetsPage(
                 ) {
                     ColorItem(
                         color = colorOption.accentColor,
-                        selected = isColorSelected(colorOption.accentColor),
+                        selected = isColorSelected(colorOption.toString()),
                         modifier = Modifier.widthIn(0.dp, 64.dp),
-                        onClick = { onSelectColor(colorOption.accentColor) }
+                        onClick = { onSelectColor(colorOption.toString()) }
                     )
                 }
             }
@@ -191,7 +191,7 @@ fun PresetsPage(
 @Composable
 fun CustomPage(
     initialColor: Color,
-    onSelectColor: (Int) -> Unit,
+    onSelectColor: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -215,7 +215,7 @@ fun CustomPage(
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
             onColorChanged = {
-                onSelectColor(current.color.hashCode())
+                onSelectColor(current.toString())
             },
             state = current,
             showAlphaSlider = true,
@@ -226,8 +226,8 @@ fun CustomPage(
 @Composable
 fun DynamicPage(
     dynamicColors: List<AccentColorOption>,
-    onSelectColor: (Int) -> Unit,
-    isColorSelected: (Int) -> Boolean,
+    onSelectColor: (String) -> Unit,
+    isColorSelected: (String) -> Boolean,
 ) {
     val groupSize = dynamicColors.size
     Column(
@@ -242,14 +242,14 @@ fun DynamicPage(
                         GroupItemShape(index, groupSize - 1)
                     )
                     .clickable {
-                        onSelectColor(option.accentColor)
+                        onSelectColor(option.toString())
                     }
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation((rank * 24).dp)),
                 leadingContent = {
                     RadioButton(
-                        selected = isColorSelected(option.accentColor),
+                        selected = isColorSelected(option.toString()),
                         onClick = {
-                            onSelectColor(option.accentColor)
+                            onSelectColor(option.toString())
                         },
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                         colors = RadioButtonDefaults.colors(
@@ -268,7 +268,7 @@ fun DynamicPage(
                         color = option.accentColor,
                         selected = false,
                         modifier = Modifier.widthIn(0.dp, 36.dp),
-                        onClick = { onSelectColor(option.accentColor) }
+                        onClick = { onSelectColor(option.toString()) }
                     )
                 },
             )

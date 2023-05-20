@@ -76,6 +76,7 @@ import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
@@ -222,7 +223,7 @@ fun ColorIntPreference(
                     .size(40.dp),
                 onDraw = {
                     drawCircle(color = Color.Black, style = Stroke(width = 1.dp.toPx()))
-                    drawCircle(color = Color(currentColor))
+                    drawCircle(color = Color(AccentColorOption.fromString(currentColor).accentColor))
                 }
             )
         }

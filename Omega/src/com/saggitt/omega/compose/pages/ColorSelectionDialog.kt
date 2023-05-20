@@ -32,6 +32,7 @@ import com.android.launcher3.R
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.staticColors
@@ -39,8 +40,8 @@ import com.saggitt.omega.util.staticColors
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectionDialog(
-    defaultColor: Int,
-    onClose: (Int) -> Unit,
+    defaultColor: String,
+    onClose: (String) -> Unit,
 ) {
     val currentColor = remember { mutableStateOf(defaultColor) }
     val dynamicColors = dynamicColors
@@ -56,7 +57,7 @@ fun ColorSelectionDialog(
         },
         TabItem(title = R.string.custom) {
             CustomPage(
-                initialColor = Color(currentColor.value),
+                initialColor = Color(AccentColorOption.fromString(currentColor.value).accentColor),
                 onSelectColor = {
                     currentColor.value = it
                 }
@@ -71,11 +72,11 @@ fun ColorSelectionDialog(
         }
     )
     val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentColor.value } -> 0
-        dynamicColors.any { it.accentColor == currentColor.value } -> 2
+        presetColors.any { it.toString() == currentColor.value } -> 0
+        dynamicColors.any { it.toString() == currentColor.value } -> 2
         else -> 1
     }
-    val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
+    val pagerState = rememberPagerState(initialPage = defaultTabIndex)
 
     OmegaAppTheme {
         ViewWithActionBar(

@@ -251,7 +251,7 @@ val isBlackTheme: Boolean = false //TODO add black theme support
 fun getAllAppsScrimColor(context: Context): Int {
     val opacity = context.prefs.drawerBackgroundOpacity.getValue()
     val scrimColor = if (context.prefs.drawerCustomBackground.getValue()) {
-        context.prefs.drawerBackgroundColor.getValue()
+        context.prefs.drawerBackgroundColor.getColor()
     } else {
         Themes.getAttrColor(context, R.attr.allAppsScrimColor)
     }

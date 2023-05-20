@@ -31,7 +31,7 @@ object PrefKey {
     // Profile
     val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
     val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")
-    val PROFILE_ACCENT_COLOR = intPreferencesKey("profile_accent_color")
+    val PROFILE_ACCENT_COLOR = stringPreferencesKey("profile_accent_color")
     val PROFILE_ICON_PACK = stringPreferencesKey("profile_icon_pack")
     val PROFILE_ICON_SHAPE = stringPreferencesKey("profile_icon_shape")
     val PROFILE_ICON_LEGACY = stringPreferencesKey("profile_override_icon_shape")
@@ -66,8 +66,8 @@ object PrefKey {
     val DESKTOP_FOLDER_COLUMNS = intPreferencesKey("desktop_folder_columns")
     val DESKTOP_FOLDER_ROWS = intPreferencesKey("desktop_folder_rows")
     val DESKTOP_FOLDER_BG_CUSTOM = booleanPreferencesKey("desktop_folder_custom_background")
-    val DESKTOP_FOLDER_BG_COLOR = intPreferencesKey("desktop_folder_custom_background_color")
-    val DESKTOP_FOLDER_STROKE_COLOR = intPreferencesKey("desktop_folder_stroke_color")
+    val DESKTOP_FOLDER_BG_COLOR = stringPreferencesKey("desktop_folder_custom_background_color")
+    val DESKTOP_FOLDER_STROKE_COLOR = stringPreferencesKey("desktop_folder_stroke_color")
     val DESKTOP_FOLDER_BG_OPACITY = floatPreferencesKey("desktop_folder_custom_background_opacity")
     val DESKTOP_FOLDER_STROKE = booleanPreferencesKey("desktop_folder_draw_stroke")
     val DESKTOP_STATUS_BAR_HIDE = booleanPreferencesKey("desktop_hide_status_bar")
@@ -76,7 +76,7 @@ object PrefKey {
     // Dock
     val DOCK_ENABLED = booleanPreferencesKey("dock_enabled")
     val DOCK_BG_CUSTOM = booleanPreferencesKey("dock_custom_background")
-    val DOCK_BG_COLOR = intPreferencesKey("dock_custom_background_color")
+    val DOCK_BG_COLOR = stringPreferencesKey("dock_custom_background_color")
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
     val DOCK_ICON_SCALE_ENFORCE = booleanPreferencesKey("dock_icon_scale_enforce")
@@ -102,7 +102,7 @@ object PrefKey {
     val DRAWER_PROTECTED_APPS_ENABLED = booleanPreferencesKey("drawer_protected_apps_enabled")
     val DRAWER_PROTECTED_APPS_LIST = stringSetPreferencesKey("drawer_protected_apps")
     val DRAWER_BG_CUSTOM = booleanPreferencesKey("drawer_custom_background")
-    val DRAWER_BG_COLOR = intPreferencesKey("drawer_custom_background_color")
+    val DRAWER_BG_COLOR = stringPreferencesKey("drawer_custom_background_color")
     val DRAWER_BG_OPACITY = floatPreferencesKey("drawer_custom_background_opacity")
     val DRAWER_CATEGORIZATION = stringPreferencesKey("drawer_categorization")
     val DRAWER_CATEGORIZATION_ENABLED = booleanPreferencesKey("drawer_categorization_enabled")
@@ -130,7 +130,7 @@ object PrefKey {
     // TODO handle the special notification badging intent
     val NOTIFICATION_DOTS_ENABLED = booleanPreferencesKey("notification_dots_enable")
     val NOTIFICATION_DOTS_CUSTOM = booleanPreferencesKey("notification_dots_custom")
-    val NOTIFICATION_DOTS_COLOR = intPreferencesKey("notification_dots_color")
+    val NOTIFICATION_DOTS_COLOR = stringPreferencesKey("notification_dots_color")
     val NOTIFICATION_DOTS_COUNT = booleanPreferencesKey("notification_dots_count")
     val NOTIFICATION_DOTS_FOLDER_ENABLED = booleanPreferencesKey("notification_dots_folder_enable")
     val NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners"

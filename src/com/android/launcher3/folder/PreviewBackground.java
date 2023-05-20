@@ -159,7 +159,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         mDotColor = ta.getColor(R.styleable.FolderIconPreview_folderDotColor, 0);
         DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
         if (DRAW_STROKE) {
-            mStrokeColor = prefs.getDesktopFolderStrokeColor().getValue();
+            mStrokeColor = prefs.getDesktopFolderStrokeColor().getColor();
         } else {
             mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
         }

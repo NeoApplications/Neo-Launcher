@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.theme
 
+import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -68,6 +69,7 @@ sealed class AccentColorOption {
         override fun equals(other: Any?) = other is CustomColor && other.accentColor == accentColor
 
         override fun hashCode() = accentColor
+        override fun toString() = "custom|#${String.format("%08x", accentColor)}"
     }
 
     object LauncherDefault : AccentColorOption() {
@@ -77,5 +79,30 @@ sealed class AccentColorOption {
         override val accentColor: Int
             get() = OmegaApp.instance?.applicationContext!!.getColorAttr(R.attr.colorAccent)
 
+    }
+
+    companion object {
+        fun fromString(stringValue: String) = when (stringValue) {
+            "system_accent" -> SystemAccent
+            "wallpaper_primary" -> WallpaperPrimary
+            "wallpaper_secondary" -> WallpaperSecondary
+            "default" -> LauncherDefault
+            else -> instantiateCustomColor(stringValue)
+        }
+
+        private fun instantiateCustomColor(stringValue: String): AccentColorOption {
+            try {
+                if (stringValue.startsWith("custom")) {
+                    val color = Color.parseColor(stringValue.substring(7))
+                    return CustomColor(color)
+                }
+            } catch (_: IllegalArgumentException) {
+            }
+            return when {
+                Utilities.ATLEAST_S -> SystemAccent
+                Utilities.ATLEAST_OREO_MR1 -> WallpaperPrimary
+                else -> LauncherDefault
+            }
+        }
     }
 }

@@ -210,7 +210,7 @@ class BlurWallpaperProvider(val context: Context) {
         return bitmap
     }
 
-    private val tintColor = prefs.profileAccentColor.getValue()
+    private val tintColor = prefs.profileAccentColor.getColor()
     fun updateAsync() {
         MAIN_EXECUTOR.execute(mUpdateRunnable)
     }

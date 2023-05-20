@@ -52,5 +52,5 @@ class AppsSearchProvider(context: Context) : SearchProvider(context) {
         get() = R.drawable.ic_search
     override val icon: Drawable
         get() = ResourcesCompat.getDrawable(context.resources, iconRes, null)!!
-            .mutate().apply { setTint(context.prefs.profileAccentColor.getValue()) }
+            .mutate().apply { setTint(context.prefs.profileAccentColor.getColor()) }
 }

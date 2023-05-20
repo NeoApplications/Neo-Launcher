@@ -25,6 +25,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.android.launcher3.InvariantDeviceProfile
+import com.saggitt.omega.theme.AccentColorOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -181,16 +182,22 @@ open class ColorIntPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
-    val defaultValue: Int = -1,
-    private val key: Preferences.Key<Int>,
-    val navRoute: String = ""
-) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
-    override fun get(): Flow<Int> {
+    val defaultValue: String = "system_accent",
+    private val key: Preferences.Key<String>,
+    val navRoute: String = "",
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
-    override suspend fun set(value: Int) {
+    override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
+    }
+
+    fun getColor(): Int {
+        return runBlocking(Dispatchers.IO) {
+            AccentColorOption.fromString(get().firstOrNull() ?: defaultValue).accentColor
+        }
     }
 }
 

@@ -136,7 +136,7 @@ class NLPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
-        defaultValue = 0xFF009688.toInt(),
+        defaultValue = "system_accent",
         navRoute = Routes.COLOR_ACCENT
     )
 
@@ -427,7 +427,7 @@ class NLPrefs private constructor(val context: Context) {
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface),
+        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface).toString(),
         navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
     )
 
@@ -444,7 +444,7 @@ class NLPrefs private constructor(val context: Context) {
         titleId = R.string.folder_stroke_color,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface),
+        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface).toString(),
         navRoute = Routes.COLOR_STROKE_FOLDER,
     )
 
@@ -537,7 +537,7 @@ class NLPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_COLOR,
         titleId = R.string.title_dock_background_color,
-        defaultValue = (0xff101010).toInt(),
+        defaultValue = (0xff101010).toString(),
         navRoute = Routes.COLOR_BG_DOCK,
     )
 
@@ -734,7 +734,7 @@ class NLPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_COLOR,
         titleId = R.string.title_dock_background_color,
-        defaultValue = (0xff101010).toInt(),
+        defaultValue = (0xff101010).toString(),
         navRoute = Routes.COLOR_BG_DRAWER,
     )
 
@@ -837,7 +837,7 @@ class NLPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COLOR,
         titleId = R.string.title__notification_background,
-        defaultValue = 0xFFF32020.toInt(),
+        defaultValue = 0xFFF32020.toString(),
         navRoute = Routes.COLOR_DOTS_NOTIFICATION,
     )
 

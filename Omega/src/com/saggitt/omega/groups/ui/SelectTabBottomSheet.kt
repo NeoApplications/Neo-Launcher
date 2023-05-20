@@ -63,7 +63,7 @@ fun SelectTabBottomSheet(
         Text(
             text = stringResource(id = R.string.default_tab_name),
             modifier = Modifier.fillMaxWidth(),
-            color = Color(prefs.profileAccentColor.getValue()),
+            color = Color(prefs.profileAccentColor.getColor()),
             style = MaterialTheme.typography.titleLarge
         )
 

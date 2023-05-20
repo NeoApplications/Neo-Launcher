@@ -314,7 +314,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
 
         ImageView settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setColorFilter(prefs.getProfileAccentColor().getValue(), PorterDuff.Mode.SRC_IN);
+        settingsButton.setColorFilter(prefs.getProfileAccentColor().getColor(), PorterDuff.Mode.SRC_IN);
         if (prefs.getDesktopLock().getValue()) {
             settingsButton.setVisibility(View.GONE);
         } else {
@@ -333,7 +333,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private void customizeFolder() {
         int bgColor;
         if (prefs.getDesktopCustomFolderBackground().getValue()) {
-            bgColor = prefs.getDesktopFolderBackgroundColor().getValue();
+            bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
         } else {
             bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
         }

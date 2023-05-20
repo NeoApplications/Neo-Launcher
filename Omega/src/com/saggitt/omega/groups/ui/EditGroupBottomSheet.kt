@@ -51,7 +51,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -72,6 +71,7 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.TYPE_FLOWERPOT
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
@@ -117,10 +117,8 @@ fun EditGroupBottomSheet(
     val selectedApps = remember { mutableStateListOf(*apps) }
     var color by remember {
         mutableStateOf(
-            Color(
                 (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value
                     ?: context.prefs.profileAccentColor.getValue()
-            )
         )
     }
     Column(
@@ -324,9 +322,9 @@ fun EditGroupBottomSheet(
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
                         ) {
                             ColorSelectionDialog(
-                                defaultColor = color.toArgb()
+                                defaultColor = color
                             ) {
-                                color = Color(it)
+                                color = it
                                 colorPicker.value = false
                             }
                         }
@@ -341,7 +339,7 @@ fun EditGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = color
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
 
                     Text(
@@ -389,7 +387,7 @@ fun EditGroupBottomSheet(
                         selectedApps.toMutableSet()
                     if (category != AppGroupsManager.Category.FOLDER) {
                         (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value =
-                            color.toArgb()
+                            color
                     }
                     group.customizations.applyFrom(config)
 

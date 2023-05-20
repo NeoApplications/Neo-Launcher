@@ -34,7 +34,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 fun AlertDialog.applyAccent() {
-    val color = Utilities.getOmegaPrefs(context).profileAccentColor.getValue()
+    val color = Utilities.getOmegaPrefs(context).profileAccentColor.getColor()
     val buttons = listOf(
         getButton(DialogInterface.BUTTON_NEGATIVE),
         getButton(DialogInterface.BUTTON_NEUTRAL),

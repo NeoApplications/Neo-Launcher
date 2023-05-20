@@ -170,7 +170,7 @@ class CustomHotseat @JvmOverloads constructor(
     }
 
     private fun setBgColor() {
-        bgColor = customBgColor.getValue()
+        bgColor = customBgColor.getColor()
         paint.color = bgColor
         invalidate()
     }

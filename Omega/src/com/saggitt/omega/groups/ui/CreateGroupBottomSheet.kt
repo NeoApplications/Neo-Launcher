@@ -71,6 +71,7 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
 import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
 
@@ -278,7 +279,7 @@ fun CreateGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = Color(color)
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
                 }
             ) {

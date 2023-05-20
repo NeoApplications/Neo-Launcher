@@ -382,7 +382,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
         mClockAboveView = findViewById(R.id.time_above);
         mTitleSeparator = findViewById(R.id.title_sep);
         if (mTitleSeparator != null)
-            mTitleSeparator.setBackgroundColor(prefs.getProfileAccentColor().getValue());
+            mTitleSeparator.setBackgroundColor(prefs.getProfileAccentColor().getColor());
     }
 
     private String getCardText() {
