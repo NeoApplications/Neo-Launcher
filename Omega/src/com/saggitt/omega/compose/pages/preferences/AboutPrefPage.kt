@@ -66,9 +66,10 @@ import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PagePreference
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupHeading
 import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.BracketsSquare
 import com.saggitt.omega.compose.icons.phosphor.GithubLogo
+import com.saggitt.omega.compose.icons.phosphor.Megaphone
 import com.saggitt.omega.compose.icons.phosphor.TelegramLogo
-import com.saggitt.omega.compose.icons.phosphor.UsersThree
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.objects.PageItem
@@ -260,14 +261,19 @@ private val links = listOf(
         url = "https://github.com/NeoApplications/Neo-Launcher"
     ),
     Link(
-        icon = Phosphor.TelegramLogo,
+        icon = Phosphor.Megaphone,
         labelResId = R.string.about_channel,
         url = "https://t.me/neo_applications"
     ),
     Link(
-        icon = Phosphor.UsersThree,
-        labelResId = R.string.about_community,
+        icon = Phosphor.TelegramLogo,
+        labelResId = R.string.about_community_telegram,
         url = "https://t.me/neo_launcher"
+    ),
+    Link(
+        icon = Phosphor.BracketsSquare,
+        labelResId = R.string.about_community_matrix,
+        url = "https://matrix.to/#/#neo-launcher:matrix.org"
     )
 )
 
