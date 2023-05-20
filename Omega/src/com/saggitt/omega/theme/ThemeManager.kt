@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.res.Configuration
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.uioverrides.WallpaperColorInfo
 import com.saggitt.omega.omegaApp
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
@@ -30,11 +29,13 @@ import com.saggitt.omega.util.hasFlag
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.useApplicationContext
 import com.saggitt.omega.util.usingNightMode
+import com.saggitt.omega.wallpaper.WallpaperColorsCompat
+import com.saggitt.omega.wallpaper.WallpaperManagerCompat
 
-class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
+class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChangedListenerCompat {
 
     private val app = context.omegaApp
-    private val wallpaperColorInfo = WallpaperColorInfo.getInstance(context)!!
+    private val wallpaperManager = WallpaperManagerCompat.INSTANCE.get(context)
     private val listeners = HashSet<ThemeOverride>()
     private val prefs = context.prefs
     private var themeFlags = 0
@@ -57,7 +58,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
 
     init {
         updateTheme()
-        wallpaperColorInfo.addOnChangeListener(this)
+        wallpaperManager.addOnChangeListener(this)
     }
 
     fun addOverride(themeOverride: ThemeOverride) {
@@ -85,7 +86,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
         }
     }
 
-    override fun onExtractedColorsChanged(ignore: WallpaperColorInfo?) {
+    override fun onColorsChanged(colors: WallpaperColorsCompat?, which: Int) {
         updateTheme()
     }
 
@@ -93,8 +94,8 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener {
         val theme = prefs.profileTheme.getValue()
         val isDark = when {
             theme.hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
-            theme.hasFlag(THEME_FOLLOW_WALLPAPER)  -> wallpaperColorInfo.isDark
-            else                                   -> theme.hasFlag(THEME_DARK)
+            theme.hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperManager.supportsDarkTheme
+            else -> theme.hasFlag(THEME_DARK)
         }
         val isBlack = isBlack(theme) && isDark
 
