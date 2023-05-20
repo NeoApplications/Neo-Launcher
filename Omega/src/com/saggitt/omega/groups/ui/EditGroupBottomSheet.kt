@@ -29,20 +29,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -77,7 +75,7 @@ import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.TYPE_FLOWERPOT
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditGroupBottomSheet(
     category: AppGroupsManager.Category,
@@ -146,9 +144,10 @@ fun EditGroupBottomSheet(
             modifier = Modifier
                 .fillMaxWidth(),
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12F),
-                textColor = MaterialTheme.colorScheme.onSurface
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -196,7 +195,7 @@ fun EditGroupBottomSheet(
                 if (openDialog.value) {
                     BaseDialog(openDialogCustom = openDialog) {
                         Card(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = MaterialTheme.shapes.large,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -251,7 +250,7 @@ fun EditGroupBottomSheet(
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
                             Card(
-                                shape = RoundedCornerShape(16.dp),
+                                shape = MaterialTheme.shapes.large,
                                 modifier = Modifier.padding(8.dp),
                                 elevation = CardDefaults.elevatedCardElevation(8.dp),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -319,7 +318,7 @@ fun EditGroupBottomSheet(
                 if (colorPicker.value) {
                     BaseDialog(openDialogCustom = colorPicker) {
                         Card(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = MaterialTheme.shapes.large,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -370,7 +369,7 @@ fun EditGroupBottomSheet(
                 onClick = {
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
@@ -401,15 +400,15 @@ fun EditGroupBottomSheet(
 
                         AppGroupsManager.Category.TAB,
                         AppGroupsManager.Category.FLOWERPOT,
-                        -> {
+                                                         -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
                         }
 
-                        else -> {}
+                        else                             -> {}
                     }
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
                     contentColor = MaterialTheme.colorScheme.onPrimary

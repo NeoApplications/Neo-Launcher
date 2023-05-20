@@ -28,21 +28,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -68,20 +66,15 @@ import com.saggitt.omega.compose.pages.AppSelectionPage
 import com.saggitt.omega.compose.pages.ColorSelectionDialog
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.groups.AppGroups
-import com.saggitt.omega.groups.AppGroups.Companion.KEY_COLOR
-import com.saggitt.omega.groups.AppGroups.Companion.KEY_HIDE_FROM_ALL_APPS
-import com.saggitt.omega.groups.AppGroups.Companion.KEY_ITEMS
-import com.saggitt.omega.groups.AppGroups.Companion.KEY_TITLE
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
-import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.preferences.NLPrefs
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateGroupBottomSheet(
     category: AppGroupsManager.Category,
@@ -124,7 +117,7 @@ fun CreateGroupBottomSheet(
     val selectedCategory by remember {
         mutableStateOf(
             AppGroups.StringCustomization(
-                KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
+                FlowerpotTabs.KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
             ).value ?: AppGroups.KEY_FLOWERPOT_DEFAULT
         )
     }
@@ -152,9 +145,10 @@ fun CreateGroupBottomSheet(
             modifier = Modifier
                 .fillMaxWidth(),
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12F),
-                textColor = MaterialTheme.colorScheme.onSurface
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -195,7 +189,7 @@ fun CreateGroupBottomSheet(
                 BaseDialog(openDialogCustom = openDialog) {
                     CategorySelectionDialogUI(selectedCategory = flowerpotCategory) {
                         flowerpotCategory = it
-                        (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                        (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                             it
                         openDialog.value = false
                     }
@@ -231,7 +225,7 @@ fun CreateGroupBottomSheet(
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     Card(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = MaterialTheme.shapes.large,
                         modifier = Modifier.padding(8.dp),
                         elevation = CardDefaults.elevatedCardElevation(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -243,7 +237,7 @@ fun CreateGroupBottomSheet(
                                 it.mapNotNull { ck -> ComponentKey.fromString(ck) }.toMutableSet()
                             selectedApps.clear()
                             selectedApps.addAll(componentsSet)
-                            (config[KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                            (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                                 componentsSet
                         }
                     }
@@ -293,7 +287,7 @@ fun CreateGroupBottomSheet(
             if (colorPicker.value) {
                 BaseDialog(openDialogCustom = colorPicker) {
                     Card(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = MaterialTheme.shapes.large,
                         modifier = Modifier.padding(8.dp),
                         elevation = CardDefaults.elevatedCardElevation(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -321,7 +315,7 @@ fun CreateGroupBottomSheet(
                 onClick = {
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
@@ -335,18 +329,19 @@ fun CreateGroupBottomSheet(
                 onClick = {
                     onClose(Config.BS_SELECT_TAB_TYPE)
                     coroutineScope.launch {
-                        (config[KEY_TITLE] as? AppGroups.StringCustomization)?.value = title
+                        (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
+                            title
                         if (category != AppGroupsManager.Category.FLOWERPOT) {
-                            (config[KEY_HIDE_FROM_ALL_APPS] as? AppGroups.BooleanCustomization)?.value =
+                            (config[AppGroups.KEY_HIDE_FROM_ALL_APPS] as? AppGroups.BooleanCustomization)?.value =
                                 isHidden
-                            (config[KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                            (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                                 selectedApps.toMutableSet()
                         } else {
-                            (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                            (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                                 selectedCategory
                         }
                         if (category != AppGroupsManager.Category.FOLDER) {
-                            (config[KEY_COLOR] as? AppGroups.StringCustomization)?.value =
+                            (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
                                 color.toString()
                         }
                         group.customizations.applyFrom(config)
@@ -361,18 +356,18 @@ fun CreateGroupBottomSheet(
 
                             AppGroupsManager.Category.TAB,
                             AppGroupsManager.Category.FLOWERPOT,
-                            -> {
+                                                             -> {
                                 manager.drawerTabs.apply {
                                     addGroup(group as DrawerTabs.Tab)
                                     saveToJson()
                                 }
                             }
 
-                            else -> {}
+                            else                             -> {}
                         }
                     }
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
                     contentColor = MaterialTheme.colorScheme.onPrimary

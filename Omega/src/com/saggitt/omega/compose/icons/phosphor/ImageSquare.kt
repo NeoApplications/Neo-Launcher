@@ -18,8 +18,8 @@ val Phosphor.ImageSquare: ImageVector
         }
         _image_square = Builder(
             name = "Image-square",
-            defaultWidth = 32.0.dp,
-            defaultHeight = 32.0.dp,
+            defaultWidth = 24.0.dp,
+            defaultHeight = 24.0.dp,
             viewportWidth = 256.0f,
             viewportHeight = 256.0f
         ).apply {

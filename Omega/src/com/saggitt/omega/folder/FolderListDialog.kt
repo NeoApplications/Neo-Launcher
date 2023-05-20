@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -55,13 +54,12 @@ import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FolderListDialog(
     folder: FolderInfo,
     openDialogCustom: MutableState<Boolean>,
     currentGesture: GestureHandler,
-    onClose: (GestureHandler) -> Unit
+    onClose: (GestureHandler) -> Unit,
 ) {
     Dialog(
         onDismissRequest = { openDialogCustom.value = false },
@@ -81,7 +79,7 @@ fun FolderListDialogUI(
     folder: FolderInfo,
     currentGesture: GestureHandler,
     openDialogCustom: MutableState<Boolean>,
-    onClose: (GestureHandler) -> Unit
+    onClose: (GestureHandler) -> Unit,
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
@@ -91,7 +89,7 @@ fun FolderListDialogUI(
         radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
-    val gestures = GestureController.getGestureHandlers(context, true, true)
+    val gestures = GestureController.getGestureHandlers(context, isSwipeUp = true, hasBlank = true)
     var selected by remember { mutableStateOf(currentGesture.javaClass.name.toString()) }
     var selectedGesture by remember { mutableStateOf(currentGesture) }
     Card(

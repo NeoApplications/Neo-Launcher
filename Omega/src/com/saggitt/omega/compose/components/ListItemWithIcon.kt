@@ -38,12 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.BracketsCurly
 import com.saggitt.omega.util.addIf
 
 @Composable
@@ -58,7 +58,7 @@ fun ListItemWithIcon(
     applyPaddings: Boolean = true,
     horizontalPadding: Dp = 16.dp,
     verticalPadding: Dp = 16.dp,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
 ) {
     Column {
         if (showDivider) {
@@ -125,7 +125,7 @@ fun PreviewListItemWithIcon() {
         summary = "com.saggitt.iconpack",
         startIcon = {
             Image(
-                painterResource(id = R.drawable.ic_code),
+                Phosphor.BracketsCurly,
                 contentDescription = null,
                 modifier = Modifier
                     .clip(CircleShape)

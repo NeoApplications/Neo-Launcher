@@ -18,8 +18,8 @@ val Phosphor.SkipForward: ImageVector
         }
         _skip_forward = Builder(
             name = "Skip-forward",
-            defaultWidth = 32.0.dp,
-            defaultHeight = 32.0.dp,
+            defaultWidth = 24.0.dp,
+            defaultHeight = 24.0.dp,
             viewportWidth = 256.0f,
             viewportHeight = 256.0f
         ).apply {
