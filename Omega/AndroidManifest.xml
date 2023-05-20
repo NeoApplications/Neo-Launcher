@@ -146,12 +146,6 @@
             </intent-filter>
         </service>
 
-        <service
-            android:name="com.android.launcher3.uioverrides.dynamicui.WallpaperManagerCompatVL$ColorExtractionService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:process=":wallpaper_chooser" />
-
         <receiver
             android:name="com.saggitt.omega.smartspace.superg.OPAStatusReceiver"
             android:exported="false"
