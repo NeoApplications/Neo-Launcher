@@ -19,10 +19,12 @@
 
     <style name="AppTheme.Light" parent="@style/LauncherTheme" >
         <item name="allAppsInterimScrimAlpha">46</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" >
         <item name="allAppsInterimScrimAlpha">102</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
     </style>
 
     <style name="AppTheme.Black" parent="AppTheme.Dark" />
