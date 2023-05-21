@@ -254,6 +254,7 @@ dependencies {
     implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
     implementation("io.coil-kt:coil-compose:2.3.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
 
     implementation("androidx.compose.material:material:$vCompose")
     implementation("androidx.compose.material3:material3:1.1.0")
