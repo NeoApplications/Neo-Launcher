@@ -36,7 +36,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final BaseDraggingActivity mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,

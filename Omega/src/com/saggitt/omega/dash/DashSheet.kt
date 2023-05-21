@@ -18,14 +18,14 @@
 package com.saggitt.omega.dash
 
 import android.content.Context
-import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.theme.OmegaAppTheme
 
 class DashSheet(val context: Context) {
 
     companion object {
-        fun show(launcher: OmegaLauncher, animate: Boolean = true) {
+        fun show(launcher: NeoLauncher, animate: Boolean = true) {
             ComposeBottomSheet.show(launcher, animate) {
                 OmegaAppTheme { DashPage() }
             }

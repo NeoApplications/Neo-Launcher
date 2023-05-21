@@ -218,7 +218,7 @@ import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -1612,8 +1612,8 @@ public class Launcher extends StatefulActivity<LauncherState>
                 if (shouldMoveToDefaultScreen && !mWorkspace.isHandlingTouch()) {
                     mWorkspace.post(mWorkspace::moveToDefaultScreen);
                 }
-                if (!handled && this instanceof OmegaLauncher) {
-                    ((OmegaLauncher) this).getGestureController().onPressHome();
+                if (!handled && this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressHome();
                 }
             }
 
@@ -2065,8 +2065,8 @@ public class Launcher extends StatefulActivity<LauncherState>
             if (!isInState(NORMAL)) {
                 onStateBack();
             } else {
-                if (this instanceof OmegaLauncher) {
-                    ((OmegaLauncher) this).getGestureController().onPressBack();
+                if (this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressBack();
                 }
             }
         }

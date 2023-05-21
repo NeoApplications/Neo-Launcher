@@ -25,6 +25,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.LauncherApps
 import android.graphics.Rect
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -49,7 +50,6 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.android.launcher3.AppFilter
-import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherRootView
@@ -66,7 +66,7 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.popup.OmegaShortcuts
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.smartspace.SmartSpaceView
 import com.saggitt.omega.util.Config
@@ -79,10 +79,10 @@ import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
 // compiler is misidentifying lifecycle's getter(s), ignore the warning for now
-class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-                      ActivityResultRegistryOwner {
+class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
+                    ActivityResultRegistryOwner {
 
-    val prefs: NLPrefs by lazy { Utilities.getOmegaPrefs(this) }
+    val prefs: NeoPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
@@ -147,7 +147,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 input: I,
                 options: ActivityOptionsCompat?,
             ) {
-                val activity = this@OmegaLauncher
+                val activity = this@NeoLauncher
 
                 // Immediate result path
                 val synchronousResult = contract.getSynchronousResult(activity, input)
@@ -313,7 +313,7 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private fun restartIfPending() {
         if (sRestart) {
-            omegaApp.restart(false)
+            neoApp.restart(false)
         }
     }
 
@@ -370,13 +370,13 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     companion object {
 
         @JvmStatic
-        fun getLauncher(context: Context): OmegaLauncher {
-            return context as? OmegaLauncher
-                ?: (context as ContextWrapper).baseContext as? OmegaLauncher
-                ?: LauncherAppState.getInstance(context).launcher as OmegaLauncher
+        fun getLauncher(context: Context): NeoLauncher {
+            return context as? NeoLauncher
+                ?: (context as ContextWrapper).baseContext as? NeoLauncher
+                ?: LauncherAppState.getInstance(context).launcher as NeoLauncher
         }
     }
 }
 
-val Context.launcher: OmegaLauncher
-    get() = BaseActivity.fromContext(this)
+val Context.nLauncher: NeoLauncher
+    get() = NeoLauncher.getLauncher(this)

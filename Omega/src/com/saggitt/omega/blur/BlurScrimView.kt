@@ -36,17 +36,16 @@ import com.android.launcher3.anim.Interpolators.LINEAR
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
-import com.saggitt.omega.OmegaLauncher
-import com.saggitt.omega.preferences.NLPrefs
-import com.saggitt.omega.util.dpToPx
+import com.saggitt.omega.nLauncher
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.runOnMainThread
-import kotlin.math.roundToInt
 
-class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs), BlurWallpaperProvider.Listener {
-    private val prefs = NLPrefs.getInstance(context)
+class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs),
+                                                              BlurWallpaperProvider.Listener {
+    private val prefs = NeoPrefs.getInstance(context)
     private var drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
     private var radius = prefs.profileBlurRadius.getValue()
-    private var mLauncher = OmegaLauncher.getLauncher(context)
+    private var mLauncher = context.nLauncher
 
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
@@ -123,17 +122,21 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     fun updateColors() {
         val alpha = when {
-            useFlatColor -> ((1 - mProgress) * 255).toInt()
-            mProgress >= fullBlurProgress -> Math.round(255 * ACCEL_2.getInterpolation(
-                Math.max(0f, 1 - mProgress) / (1 - fullBlurProgress)))
+            useFlatColor                  -> ((1 - mProgress) * 255).toInt()
+            mProgress >= fullBlurProgress -> Math.round(
+                255 * ACCEL_2.getInterpolation(
+                    Math.max(0f, 1 - mProgress) / (1 - fullBlurProgress)
+                )
+            )
 
-            else -> 255
+            else                          -> 255
         }
         blurDrawable?.alpha = alpha
 
         if (!useFlatColor) {
             if (mProgress >= 1
-                && mLauncher.stateManager.state == BACKGROUND_APP) {
+                && mLauncher.stateManager.state == BACKGROUND_APP
+            ) {
                 mShelfColor = ColorUtils.setAlphaComponent(allAppsBackground, mMidAlpha)
             } else {
                 mShelfColor = getColorForProgress(mProgress)
@@ -143,13 +146,15 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     private fun getColorForProgress(progress: Float): Int {
         val interpolatedProgress: Float = when {
-            progress >= 1 -> progress
+            progress >= 1            -> progress
             progress >= mMidProgress -> Utilities.mapToRange(
                 progress, mMidProgress, 1f, mMidProgress, 1f,
-                mBeforeMidProgressColorInterpolator)
+                mBeforeMidProgressColorInterpolator
+            )
 
-            else -> Utilities.mapToRange(
-                progress, 0f, mMidProgress, 0f, mMidProgress, mAfterMidProgressColorInterpolator)
+            else                     -> Utilities.mapToRange(
+                progress, 0f, mMidProgress, 0f, mMidProgress, mAfterMidProgressColorInterpolator
+            )
         }
         colorRanges.forEach {
             if (interpolatedProgress in it) {
@@ -179,7 +184,8 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     private fun calculateEndScrim() {
         mEndScrim = ColorUtils.setAlphaComponent(allAppsBackground, mEndAlpha)
-        mEndFlatColor = ColorUtils.compositeColors(mEndScrim, ColorUtils.setAlphaComponent(mScrimColor, mMaxScrimAlpha)
+        mEndFlatColor = ColorUtils.compositeColors(
+            mEndScrim, ColorUtils.setAlphaComponent(mScrimColor, mMaxScrimAlpha)
         )
     }
 
@@ -222,7 +228,16 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
         }
     }
 
-    override fun onDrawRoundRect(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, paint: Paint) {
+    override fun onDrawRoundRect(
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        rx: Float,
+        ry: Float,
+        paint: Paint,
+    ) {
         blurDrawable?.run {
             setBlurBounds(left, top, right, bottom)
             draw(canvas)
@@ -245,8 +260,10 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
         private const val BOTTOM_CORNER_RADIUS_RATIO = 2f
     }
 
-    class ColorRange(private val start: Float, private val end: Float,
-                     private val startColor: Int, private val endColor: Int) {
+    class ColorRange(
+        private val start: Float, private val end: Float,
+        private val startColor: Int, private val endColor: Int,
+    ) {
 
         private val range = start..end
 

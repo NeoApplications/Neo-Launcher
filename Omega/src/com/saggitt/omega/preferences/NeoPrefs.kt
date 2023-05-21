@@ -38,7 +38,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
-import com.saggitt.omega.OmegaApp
+import com.saggitt.omega.NeoApp
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash
@@ -85,7 +85,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 import com.android.launcher3.graphics.IconShape as L3IconShape
 
-class NLPrefs private constructor(val context: Context) {
+class NeoPrefs private constructor(val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
     private val dataStore: DataStore<Preferences> = context.dataStore
     val legacyPrefs = LegacyPreferences(context)
@@ -137,7 +137,7 @@ class NLPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_GLOBAL_THEME,
         titleId = R.string.title__general_theme,
-        defaultValue = if (OmegaApp.minSDK(31)) THEME_SYSTEM else THEME_WALLPAPER,
+        defaultValue = if (NeoApp.minSDK(Build.VERSION_CODES.S)) THEME_SYSTEM else THEME_WALLPAPER,
         entries = themeItems,
     )
 
@@ -1253,7 +1253,7 @@ class NLPrefs private constructor(val context: Context) {
 
     companion object {
         @JvmField
-        val INSTANCE = MainThreadInitializedObject(::NLPrefs)
+        val INSTANCE = MainThreadInitializedObject(::NeoPrefs)
 
         @JvmStatic
         fun getInstance(context: Context) = INSTANCE.get(context)!!

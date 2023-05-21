@@ -8,7 +8,7 @@ import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_LANDSCAPE
 import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_PORTRAIT
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 class DeviceProfileOverrides(context: Context) {
     private val prefs by lazy { Utilities.getOmegaPrefs(context) }
@@ -60,7 +60,7 @@ class DeviceProfileOverrides(context: Context) {
     ) {
         val dbFile get() = "launcher_${numRows}_${numColumns}_${numHotseatIcons}.db"
 
-        constructor(prefs: NLPrefs) : this(
+        constructor(prefs: NeoPrefs) : this(
             numHotseatIcons = prefs.dockNumIcons.getValue(),
             numRows = prefs.desktopGridRows.getValue(),
             numColumns = prefs.desktopGridColumns.getValue()
@@ -76,7 +76,7 @@ class DeviceProfileOverrides(context: Context) {
         val allAppsIconSizeFactor: Float
     ) {
         constructor(
-            prefs: NLPrefs,
+            prefs: NeoPrefs,
             defaultGrid: InvariantDeviceProfile.GridOption,
         ) : this(
             numAllAppsColumns = prefs.drawerGridColumns.get(defaultGrid),
@@ -108,7 +108,7 @@ class DeviceProfileOverrides(context: Context) {
         val allAppsIconTextSizeFactor: Float,
     ) {
         constructor(
-            prefs: NLPrefs,
+            prefs: NeoPrefs,
         ) : this(
             enableIconText = !prefs.desktopHideAppLabels.getValue(),
             iconTextSizeFactor = prefs.desktopLabelScale.getValue(),

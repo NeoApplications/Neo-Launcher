@@ -18,13 +18,11 @@ package com.android.launcher3.pm;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
 import android.content.pm.ShortcutInfo;
-import android.os.Build;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
@@ -51,7 +49,6 @@ public class PinRequestHelper {
      * that (d) happens after model is updated.
      */
     @Nullable
-    @TargetApi(Build.VERSION_CODES.O)
     public static WorkspaceItemInfo createWorkspaceItemFromPinItemRequest(
             Context context, final PinItemRequest request, final long acceptDelay) {
         if (request != null && request.getRequestType() == PinItemRequest.REQUEST_TYPE_SHORTCUT
@@ -90,7 +87,6 @@ public class PinRequestHelper {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     public static PinItemRequest getPinItemRequest(Intent intent) {
         Parcelable extra = intent.getParcelableExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST);
         return extra instanceof PinItemRequest ? (PinItemRequest) extra : null;

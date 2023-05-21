@@ -79,7 +79,7 @@ import com.saggitt.omega.groups.ui.CreateGroupBottomSheet
 import com.saggitt.omega.groups.ui.EditGroupBottomSheet
 import com.saggitt.omega.groups.ui.GroupItem
 import com.saggitt.omega.groups.ui.SelectTabBottomSheet
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
 fun AppCategoriesPage() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val manager by lazy { prefs.drawerAppGroupsManager }
     val (categoriesEnabled, enableCategories) = remember(manager.categorizationEnabled.getValue()) {
         mutableStateOf(manager.categorizationEnabled.getValue())

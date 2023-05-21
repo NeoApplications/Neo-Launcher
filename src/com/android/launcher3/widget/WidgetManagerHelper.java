@@ -16,12 +16,10 @@
 
 package com.android.launcher3.widget;
 
-import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 
@@ -68,7 +66,6 @@ public class WidgetManagerHelper {
     /**
      * @see AppWidgetManager#getInstalledProvidersForPackage(String, UserHandle)
      */
-    @TargetApi(Build.VERSION_CODES.O)
     public List<AppWidgetProviderInfo> getAllProviders(@Nullable PackageUserKey packageUser) {
         if (WidgetsModel.GO_DISABLE_WIDGETS) {
             return Collections.emptyList();

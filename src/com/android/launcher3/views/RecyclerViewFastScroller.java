@@ -48,7 +48,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.FastScrollThumbDrawable;
 import com.android.launcher3.util.Themes;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
@@ -136,7 +136,7 @@ public class RecyclerViewFastScroller extends View {
     private int mDownX;
     private int mDownY;
     private int mLastY;
-    private NLPrefs prefs;
+    private NeoPrefs prefs;
 
 
     public RecyclerViewFastScroller(Context context) {

@@ -18,7 +18,6 @@ package com.android.launcher3.icons;
 import static com.android.launcher3.icons.IconProvider.ATLEAST_T;
 import static com.android.launcher3.icons.ThemedIconDrawable.getColors;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -36,7 +35,6 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.SystemClock;
@@ -61,7 +59,6 @@ import java.util.function.IntFunction;
  * Wrapper over {@link AdaptiveIconDrawable} to intercept icon flattening logic for dynamic
  * clock icons
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements BitmapInfo.Extender {
 
     private static final String TAG = "ClockDrawableWrapper";

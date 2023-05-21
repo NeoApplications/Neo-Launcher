@@ -27,7 +27,7 @@ import androidx.core.content.ContextCompat
 import com.android.launcher3.R
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import org.json.JSONObject
 @Keep
 @TargetApi(Build.VERSION_CODES.P)
@@ -39,7 +39,7 @@ open class PressBackGestureHandler(context: Context, config: JSONObject?) :
     override val icon = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back)
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        context.omegaApp.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        context.neoApp.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
     }
 
     override fun isAvailableForSwipeUp(isSwipeUp: Boolean) = isSwipeUp

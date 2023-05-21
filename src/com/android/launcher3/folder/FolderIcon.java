@@ -79,13 +79,13 @@ import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.gestures.BlankGestureHandler;
 import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
@@ -638,7 +638,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
-            NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
+            NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
             Rect iconBounds = mDotParams.iconBounds;
 
             Utilities.setRectToViewCenter(this, mActivity.getDeviceProfile().iconSizePx,
@@ -750,8 +750,8 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         // Keep receiving the rest of the events
 
         Launcher launcher = ContextExtensionsKt.getLauncherOrNull(getContext());
-        if (launcher instanceof OmegaLauncher && mSwipeUpHandler != null) {
-            ((OmegaLauncher) launcher).getGestureController()
+        if (launcher instanceof NeoLauncher && mSwipeUpHandler != null) {
+            ((NeoLauncher) launcher).getGestureController()
                     .setSwipeUpOverride(mSwipeUpHandler, event.getDownTime());
         }
         return true;

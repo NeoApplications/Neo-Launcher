@@ -39,7 +39,7 @@ open class BooleanPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Boolean>,
     private val defaultValue: Boolean = false,
-    val onChange: (Boolean) -> Unit = {}
+    val onChange: (Boolean) -> Unit = {},
 ) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Boolean> {
@@ -183,7 +183,7 @@ open class ColorIntPref(
     private val dataStore: DataStore<Preferences>,
     val defaultValue: Int = -1,
     private val key: Preferences.Key<Int>,
-    val navRoute: String = ""
+    val navRoute: String = "",
 ) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<Int> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -201,7 +201,7 @@ open class NavigationPref(
     val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
-    val navRoute: String = ""
+    val navRoute: String = "",
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -219,7 +219,7 @@ class GesturePref(
     key: Preferences.Key<String>,
     defaultValue: String = "",
     onClick: (() -> Unit)? = null,
-    navRoute: String = ""
+    navRoute: String = "",
 ) : NavigationPref(
     titleId = titleId,
     summaryId = summaryId,
@@ -263,7 +263,7 @@ open class StringSelectionPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val entries: Map<String, String>,
-    val onChange: () -> Unit = { }
+    val onChange: () -> Unit = { },
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<String> {
@@ -283,7 +283,7 @@ open class StringSetPref(
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
     val navRoute: String = "",
-    val onChange: () -> Unit = {}
+    val onChange: () -> Unit = {},
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
     private val valueList = arrayListOf<String>()
     override fun get(): Flow<Set<String>> {
@@ -318,7 +318,7 @@ open class StringMultiSelectionPref(
     val defaultValue: Set<String> = emptySet(),
     val withIcons: Boolean = false,
     val entries: Map<String, Int>,
-    onChange: () -> Unit = { }
+    onChange: () -> Unit = { },
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
 
     private val valueList = arrayListOf<String>()
@@ -391,7 +391,7 @@ open class StringPref(
 abstract class MutableMapPref<K, V>(
     context: Context,
     private val prefKey: String,
-    onChange: () -> Unit = {}
+    onChange: () -> Unit = {},
 ) {
     private val valueMap = HashMap<K, V>()
     private val legacyPreferences = LegacyPreferences(context)
@@ -466,7 +466,7 @@ abstract class PrefDelegate<T : Any>(
     @StringRes var summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<T>,
-    private val defaultValue: T
+    private val defaultValue: T,
 ) {
     fun getValue(): T {
         return runBlocking(Dispatchers.IO) {

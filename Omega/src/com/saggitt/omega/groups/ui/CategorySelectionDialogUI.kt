@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.flowerpot.Flowerpot
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 @Composable
 fun CategorySelectionDialogUI(
@@ -52,7 +52,7 @@ fun CategorySelectionDialogUI(
 ) {
     val context = LocalContext.current
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     var selected by remember { mutableStateOf(selectedCategory) }
 
     var radius = 16.dp

@@ -1,6 +1,6 @@
 /*
- * This file is part of Omega Launcher
- * Copyright (c) 2022   Omega Launcher Team
+ * This file is part of Neo Launcher
+ * Copyright (c) 2021   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as

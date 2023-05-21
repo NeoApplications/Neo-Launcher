@@ -97,7 +97,7 @@ import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.WidgetManagerHelper;
-import com.saggitt.omega.OmegaAppKt;
+import com.saggitt.omega.NeoAppKt;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,7 +361,7 @@ public class LoaderTask implements Runnable {
         // Migration failed. Clear workspace.
 
         if (!(context instanceof LauncherPreviewRenderer.PreviewContext)) {
-            OmegaAppKt.getOmegaApp(context).cleanUpDatabases();
+            NeoAppKt.getNeoApp(context).cleanUpDatabases();
         }
 
         if (clearDb) {

@@ -23,7 +23,7 @@ import android.os.Build
 import android.provider.Settings
 import android.telephony.TelephonyManager
 import com.android.launcher3.R
-import com.saggitt.omega.OmegaApp
+import com.saggitt.omega.NeoApp
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.ArrowsDownUp
 import com.saggitt.omega.dash.DashControlProvider
@@ -42,7 +42,7 @@ class MobileData(context: Context) : DashControlProvider(context) {
             return tm.dataState != TelephonyManager.DATA_DISCONNECTED
         }
         set(value) {
-            if (OmegaApp.minSDK(Build.VERSION_CODES.P)) {
+            if (NeoApp.minSDK(Build.VERSION_CODES.P)) {
                 context.startActivity(Intent(Settings.ACTION_DATA_USAGE_SETTINGS))
             } else {
                 context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))

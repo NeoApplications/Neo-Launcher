@@ -60,7 +60,7 @@ import com.saggitt.omega.allapps.AppColorComparator
 import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator
 import com.saggitt.omega.data.AppTrackerRepository
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import org.json.JSONObject
 import java.lang.reflect.Field
 import java.text.Collator
@@ -343,6 +343,6 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
 }
 
 fun getFolderPreviewAlpha(context: Context): Int {
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
 }

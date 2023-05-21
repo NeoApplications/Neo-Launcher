@@ -45,7 +45,7 @@ import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
 import com.saggitt.omega.DeviceProfileOverrides;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -210,7 +210,7 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
 
     private final DeviceProfileOverrides.TextFactors mTextFactors;
     /**

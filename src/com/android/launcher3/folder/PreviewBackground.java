@@ -46,7 +46,7 @@ import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
@@ -154,7 +154,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
-        NLPrefs prefs = NLPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance(context);
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
         mDotColor = ta.getColor(R.styleable.FolderIconPreview_folderDotColor, 0);
         DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
