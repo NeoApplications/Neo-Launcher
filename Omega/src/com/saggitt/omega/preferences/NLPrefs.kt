@@ -21,6 +21,7 @@ package com.saggitt.omega.preferences
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.datastore.core.DataStore
@@ -39,8 +40,16 @@ import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.saggitt.omega.OmegaApp
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.dash.actionprovider.DeviceSettings
+import com.saggitt.omega.dash.actionprovider.EditDash
+import com.saggitt.omega.dash.actionprovider.LaunchAssistant
+import com.saggitt.omega.dash.actionprovider.ManageVolume
+import com.saggitt.omega.dash.controlprovider.MobileData
+import com.saggitt.omega.dash.controlprovider.Wifi
+import com.saggitt.omega.dash.dashProviderOptions
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
 import com.saggitt.omega.groups.AppGroupsManager
@@ -1058,7 +1067,7 @@ class NLPrefs private constructor(val context: Context) {
         titleId = R.string.gesture_double_tap,
         dataStore = dataStore,
         key = PrefKey.GESTURES_DOUBLE_TAP,
-        defaultValue = BlankGestureHandler(context, null).toString(),
+        defaultValue = OpenDashGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
     )
 
@@ -1119,6 +1128,39 @@ class NLPrefs private constructor(val context: Context) {
         minValue = 4,
         steps = 1,
     )
+
+    var dashProvidersItems = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.DASH_PROVIDERS,
+        titleId = R.string.edit_dash,
+        summaryId = R.string.edit_dash_summary,
+        defaultValue = setOf(
+            Wifi::class.java.name,
+            MobileData::class.java.name,
+            DeviceSettings::class.java.name,
+            LaunchAssistant::class.java.name,
+            ManageVolume::class.java.name,
+            EditDash::class.java.name,
+        ),
+        entries = dashProviderOptions,
+        withIcons = true,
+    )
+
+    var dashEdit = NavigationPref(
+        dataStore = dataStore,
+        key = PrefKey.DASH_EDIT,
+        titleId = R.string.edit_dash,
+        summaryId = R.string.edit_dash_summary,
+        navRoute = Routes.EDIT_DASH,
+    )
+
+    var dashTorchState = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DASH_TORCH_STATE,
+        titleId = R.string.dash_torch,
+        defaultValue = false,
+    )
+
 
     //Misc
     val customAppName =

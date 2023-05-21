@@ -107,13 +107,26 @@ class OmegaLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         prefs.registerCallback(prefCallback)
+        val coroutineScope = CoroutineScope(Dispatchers.IO)
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
         //Set Initial value for idp columns and rows
+        val camManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager?
+        camManager?.registerTorchCallback(object : CameraManager.TorchCallback() {
+            override fun onTorchModeUnavailable(cameraId: String) {
+            }
+
+            override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+                coroutineScope.launch {
+                    if (cameraId == camManager.cameraIdList[0]) {
+                        prefs.dashTorchState.set(enabled)
+                    }
+                }
+            }
+        }, null)
 
         val idp = LauncherAppState.getIDP(this)
-        val coroutineScope = CoroutineScope(Dispatchers.IO)
         coroutineScope.launch {
             if (prefs.firstTimeRun.get().firstBlocking()) {
                 prefs.drawerGridColumns.set(idp.numAllAppsColumns)

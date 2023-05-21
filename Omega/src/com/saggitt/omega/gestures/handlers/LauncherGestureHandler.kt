@@ -36,6 +36,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.widget.picker.WidgetsFullSheet
+import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.search.SearchProviderController
@@ -266,6 +267,21 @@ class OpenWidgetsGestureHandler(context: Context, config: JSONObject?) :
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
         WidgetsFullSheet.show(controller.launcher, true)
+    }
+}
+
+@Keep
+class OpenDashGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName = context.getString(R.string.action_open_dash)
+    override val displayNameRes: Int = R.string.action_open_dash
+
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_edit_dash)
+    override val requiresForeground = true
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        DashSheet.show(controller.launcher, true)
     }
 }
 
