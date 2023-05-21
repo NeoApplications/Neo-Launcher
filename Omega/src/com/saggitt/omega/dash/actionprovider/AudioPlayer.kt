@@ -1,6 +1,6 @@
 /*
  * This file is part of Neo Launcher
- * Copyright (c) 2022   Neo Launcher Team
+ * Copyright (c) 2023   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -15,11 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.saggitt.omega.dash.actionprovider
 
-package com.saggitt.omega.compose.pages
+import android.content.Context
+import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Play
+import com.saggitt.omega.dash.DashActionProvider
 
-import androidx.compose.runtime.Composable
+class AudioPlayer(context: Context) : DashActionProvider(context) {
+    override val itemId = 2
+    override val name = context.getString(R.string.dash_media_player)
+    override val description = context.getString(R.string.dash_media_player_description)
+    override val icon = Phosphor.Play
 
-@Composable
-fun EditDashPage() {
+    override fun runAction(context: Context) {
+    }
 }
