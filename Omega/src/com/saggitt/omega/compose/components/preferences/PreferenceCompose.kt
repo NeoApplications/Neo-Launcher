@@ -76,7 +76,6 @@ import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
-import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
@@ -203,7 +202,7 @@ fun ColorIntPreference(
     val navController = LocalNavController.current
     val route = subRoute(pref.navRoute)
 
-    val currentColor by remember(pref) { mutableStateOf(pref.getValue()) }
+    val currentColor by remember(pref) { mutableStateOf(pref.getColor()) }
 
     BasePreference(
         modifier = modifier,
@@ -223,7 +222,7 @@ fun ColorIntPreference(
                     .size(40.dp),
                 onDraw = {
                     drawCircle(color = Color.Black, style = Stroke(width = 1.dp.toPx()))
-                    drawCircle(color = Color(AccentColorOption.fromString(currentColor).accentColor))
+                    drawCircle(color = Color(currentColor))
                 }
             )
         }
