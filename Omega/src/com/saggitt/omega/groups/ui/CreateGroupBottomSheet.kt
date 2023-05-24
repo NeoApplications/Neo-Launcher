@@ -279,7 +279,7 @@ fun CreateGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = Color(color)
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
                 }
             ) {
