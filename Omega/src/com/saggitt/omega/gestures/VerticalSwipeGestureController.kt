@@ -22,14 +22,14 @@ import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.util.TouchController
-import com.saggitt.omega.OmegaLauncher
 import com.saggitt.omega.gestures.handlers.VerticalSwipeGestureHandler
+import com.saggitt.omega.nLauncher
 import com.saggitt.omega.touch.SwipeDetector
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
 class VerticalSwipeGestureController(private val launcher: Launcher) : TouchController,
-    SwipeDetector.Listener {
+                                                                       SwipeDetector.Listener {
 
     enum class GestureState {
         Locked,
@@ -42,7 +42,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
     private val triggerVelocity = 2.25f
     private val notificationsCloseVelocity = 0.35f
 
-    private val controller by lazy { OmegaLauncher.getLauncher(launcher).gestureController }
+    private val controller by lazy { launcher.nLauncher.gestureController }
     private val gesture by lazy { controller.verticalSwipeGesture }
     private val detector by lazy {
         SwipeDetector(
@@ -122,9 +122,9 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
                     SwipeDetector.DIRECTION_POSITIVE
             }
 
-            gesture.customSwipeUp && !isOverHotseat(ev) -> SwipeDetector.DIRECTION_BOTH
-            gesture.customDockSwipeUp && isOverHotseat(ev) -> SwipeDetector.DIRECTION_BOTH
-            else -> SwipeDetector.DIRECTION_NEGATIVE
+            gesture.customSwipeUp && !isOverHotseat(ev)        -> SwipeDetector.DIRECTION_BOTH
+            gesture.customDockSwipeUp && isOverHotseat(ev)     -> SwipeDetector.DIRECTION_BOTH
+            else                                               -> SwipeDetector.DIRECTION_NEGATIVE
         }
     }
 

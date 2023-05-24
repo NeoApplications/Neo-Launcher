@@ -19,7 +19,9 @@
 package com.saggitt.omega.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -41,7 +43,6 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.EditDashPage
 import com.saggitt.omega.compose.pages.gesturesPageGraph
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.GestureController
@@ -79,10 +80,10 @@ fun GesturesPrefsPage() {
         it.summaryId = handler.displayNameRes
     }
 
-    /*val dashPrefs = listOf(
+    val dashPrefs = listOf(
         prefs.dashLineSize,
         prefs.dashEdit
-    )*/
+    )
 
     OmegaAppTheme {
         ViewWithActionBar(
@@ -102,14 +103,14 @@ fun GesturesPrefsPage() {
                         onPrefDialog = onPrefDialog
                     )
                 }
-                /*item {
+                item {
                     PreferenceGroup(
                         stringResource(id = R.string.pref_category__dash),
                         prefs = dashPrefs,
                         onPrefDialog = onPrefDialog
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                }*/
+                }
             }
 
             if (openDialog.value) {

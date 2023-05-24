@@ -71,8 +71,8 @@ import com.android.launcher3.util.NoLocaleSQLiteHelper;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.LauncherAppWidgetHost;
-import com.saggitt.omega.OmegaApp;
-import com.saggitt.omega.OmegaAppKt;
+import com.saggitt.omega.NeoApp;
+import com.saggitt.omega.NeoAppKt;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -657,7 +657,7 @@ public class LauncherProvider extends ContentProvider {
             if (dbName == null) {
                 dbName = InvariantDeviceProfile.INSTANCE.get(context).dbFile;
                 if (!forMigration) {
-                    OmegaApp app = OmegaAppKt.getOmegaApp(context);
+                    NeoApp app = NeoAppKt.getNeoApp(context);
                     app.renameRestoredDb(dbName);
                     app.migrateDbName(dbName);
                 }

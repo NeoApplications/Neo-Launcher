@@ -22,14 +22,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.UserHandle
 import com.android.launcher3.AppFilter
-import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.NeoLauncher
 
 open class OmegaAppFilter(context: Context) : AppFilter() {
 
     private val mHideList = HashSet<ComponentName>()
 
     init {
-        mHideList.add(ComponentName(context, OmegaLauncher::class.java.name))
+        mHideList.add(ComponentName(context, NeoLauncher::class.java.name))
         //Voice Search
         mHideList.add(ComponentName.unflattenFromString("com.google.android.googlequicksearchbox/.VoiceSearchActivity")!!)
         //Google Now Launcher

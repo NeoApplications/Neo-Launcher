@@ -27,7 +27,7 @@ import com.saggitt.omega.launcherclient.IScrollCallback
 import com.saggitt.omega.launcherclient.LauncherClient
 import com.saggitt.omega.launcherclient.LauncherClientCallbacks
 import com.saggitt.omega.launcherclient.StaticInteger
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
     LauncherClientCallbacks, LauncherOverlayManager,
@@ -35,7 +35,7 @@ class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherO
 
     private var mClient: LauncherClient? = null
     private val mLauncher = launcher
-    private val prefs = NLPrefs.getInstance(mLauncher)
+    private val prefs = NeoPrefs.getInstance(mLauncher)
     private var enableFeed: Boolean = prefs.feedProvider.getValue() != ""
     private var mLauncherOverlayCallbacks: LauncherOverlayCallbacks? = null
     private var mWasOverlayAttached = false

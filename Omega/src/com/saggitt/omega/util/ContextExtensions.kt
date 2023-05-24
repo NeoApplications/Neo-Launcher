@@ -30,7 +30,7 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import java.util.*
 
 fun Context.getLauncherOrNull(): Launcher? {
@@ -55,8 +55,8 @@ fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
 val Context.locale: Locale
     get() = this.resources.configuration.locales[0]
 
-val Context.prefs: NLPrefs
-    get() = NLPrefs.getInstance(this)
+val Context.prefs: NeoPrefs
+    get() = NeoPrefs.getInstance(this)
 
 fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
     try {

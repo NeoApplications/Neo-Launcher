@@ -41,8 +41,8 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
-import com.saggitt.omega.OmegaAppKt;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.NeoAppKt;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController;
 import com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut;
 import com.saggitt.omega.util.ContextExtensionsKt;
@@ -68,7 +68,7 @@ public class QsbBlockerView extends FrameLayout implements Listener,
         mBgPaint.setColor(Color.WHITE);
         mBgPaint.setAlpha(0);
 
-        mController = OmegaAppKt.getOmegaApp(getContext()).getSmartspace();
+        mController = NeoAppKt.getNeoApp(getContext()).getSmartspace();
     }
 
     @Override
@@ -174,7 +174,7 @@ public class QsbBlockerView extends FrameLayout implements Listener,
         ImageView weatherIcon = view.findViewById(R.id.weather_widget_icon);
         weatherIcon.setImageBitmap(weather.getIcon());
         TextView weatherTemperature = view.findViewById(R.id.weather_widget_temperature);
-        NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
+        NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
         String currentUnit = prefs.getSmartspaceWeatherUnit().getValue();
         weatherTemperature.setText(weather.getTitle(Temperature.Companion.unitFromString(currentUnit)));
     }

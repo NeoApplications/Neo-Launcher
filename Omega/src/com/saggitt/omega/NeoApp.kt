@@ -29,12 +29,12 @@ import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
 import java.io.File
 
-class OmegaApp : Application() {
+class NeoApp : Application() {
     private val TAG = "OmegaApp"
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
@@ -48,7 +48,7 @@ class OmegaApp : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (NeoApp.minSDK(Build.VERSION_CODES.P)) {
             try {
                 Unseal.unseal()
                 Log.i(TAG, "Unseal success!")
@@ -96,7 +96,7 @@ class OmegaApp : Application() {
     fun migrateDbName(dbName: String) {
         val dbFile = getDatabasePath(dbName)
         if (dbFile.exists()) return
-        val prefs = NLPrefs.getInstance(this)
+        val prefs = NeoPrefs.getInstance(this)
         val dbJournalFile = getJournalFile(dbFile)
         val oldDbSlot = prefs.legacyPrefs.getStringPreference("pref_currentDbSlot", "a")
         val oldDbName = if (oldDbSlot == "a") "launcher.db" else "launcher.db_b"
@@ -131,7 +131,7 @@ class OmegaApp : Application() {
         var foregroundActivity: Activity? = null
 
         fun finishAll(recreateLauncher: Boolean = true) {
-            HashSet(activities).forEach { if (recreateLauncher && it is OmegaLauncher) it.recreate() else it.finish() }
+            HashSet(activities).forEach { if (recreateLauncher && it is NeoLauncher) it.recreate() else it.finish() }
         }
 
         override fun onActivityPaused(activity: Activity) {
@@ -163,7 +163,7 @@ class OmegaApp : Application() {
 
     companion object {
         @JvmStatic
-        var instance: OmegaApp? = null
+        var instance: NeoApp? = null
             private set
 
         fun minSDK(sdk: Int): Boolean {
@@ -172,4 +172,4 @@ class OmegaApp : Application() {
     }
 }
 
-val Context.omegaApp get() = applicationContext as OmegaApp
+val Context.neoApp get() = applicationContext as NeoApp

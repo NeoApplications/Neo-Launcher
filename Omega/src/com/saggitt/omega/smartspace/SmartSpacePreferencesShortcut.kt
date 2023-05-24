@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import com.android.launcher3.R
 import com.android.launcher3.logging.StatsLogManager.EventEnum
 import com.android.launcher3.views.OptionsPopupView.OptionItem
-import com.saggitt.omega.compose.PreferenceActivity
+import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.compose.navigation.Routes
 
 class SmartSpacePreferencesShortcut(context: Context, eventId: EventEnum?) : OptionItem(

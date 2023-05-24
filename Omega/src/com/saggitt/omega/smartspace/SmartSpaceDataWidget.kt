@@ -42,7 +42,7 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.BlankActivity
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.applyAccent
 import com.saggitt.omega.util.getAllChildren
@@ -260,7 +260,7 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
                 return provider
             } else {
                 runOnMainThread {
-                    val foreground = context.omegaApp.activityHandler.foregroundActivity
+                    val foreground = context.neoApp.activityHandler.foregroundActivity
                         ?: context
                     if (foreground is AppCompatActivity) {
                         AlertDialog.Builder(foreground)

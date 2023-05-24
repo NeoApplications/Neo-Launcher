@@ -101,7 +101,7 @@ class BlankActivity : AppCompatActivity() {
             resultSent = true
             finish()
         } else if (requestCode == REQUEST_PERMISSION_LOCATION_ACCESS) {
-            omegaApp.smartspace.updateWeatherData()
+            neoApp.smartspace.updateWeatherData()
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -205,7 +205,7 @@ class BlankActivity : AppCompatActivity() {
         }
 
         private fun start(context: Context, intent: Intent) {
-            val foreground = context.omegaApp.activityHandler.foregroundActivity ?: context
+            val foreground = context.neoApp.activityHandler.foregroundActivity ?: context
             if (foreground === context) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

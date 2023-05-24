@@ -25,7 +25,7 @@ import com.android.launcher3.model.ModelWriter
 import com.android.launcher3.model.data.FolderInfo
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.groups.ui.EditGroupBottomSheet
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.prefs
 
 class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderInfo() {
@@ -54,7 +54,7 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
     }
 
     fun showEdit(launcher: Launcher) {
-        val prefs = NLPrefs.getInstance(launcher)
+        val prefs = NeoPrefs.getInstance(launcher)
         ComposeBottomSheet.show(launcher, true) {
             EditGroupBottomSheet(
                 category = prefs.drawerAppGroupsManager.getEnabledType()!!,

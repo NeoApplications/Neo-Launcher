@@ -70,7 +70,7 @@ import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
@@ -83,7 +83,7 @@ fun CreateGroupBottomSheet(
 ) {
 
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val manager = prefs.drawerAppGroupsManager
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -279,7 +279,7 @@ fun CreateGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = Color(AccentColorOption.fromString(color).accentColor)
+                        tint = Color(color)
                     )
                 }
             ) {

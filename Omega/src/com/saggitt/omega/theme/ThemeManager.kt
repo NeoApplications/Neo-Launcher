@@ -22,7 +22,7 @@ import android.content.Context
 import android.content.res.Configuration
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.hasFlag
@@ -34,7 +34,7 @@ import com.saggitt.omega.wallpaper.WallpaperManagerCompat
 
 class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChangedListenerCompat {
 
-    private val app = context.omegaApp
+    private val app = context.neoApp
     private val wallpaperManager = WallpaperManagerCompat.INSTANCE.get(context)
     private val listeners = HashSet<ThemeOverride>()
     private val prefs = context.prefs

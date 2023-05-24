@@ -35,6 +35,7 @@ import android.widget.Toast
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.saggitt.omega.NeoApp
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ceilToInt
 import com.saggitt.omega.util.ensureOnMainThread
@@ -100,7 +101,7 @@ class BlurWallpaperProvider(val context: Context) {
             updatePending = true
             return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !context.hasStoragePermission) {
+        if (NeoApp.minSDK(Build.VERSION_CODES.O_MR1) && !context.hasStoragePermission) {
             prefs.profileBlurEnable.setValue(false)
             return
         }

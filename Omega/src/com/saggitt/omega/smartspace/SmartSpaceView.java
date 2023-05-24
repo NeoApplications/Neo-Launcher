@@ -64,9 +64,9 @@ import com.android.launcher3.icons.ShadowGenerator;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.Themes;
-import com.saggitt.omega.OmegaAppKt;
-import com.saggitt.omega.OmegaLauncher;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.NeoAppKt;
+import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.CardData;
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController.WeatherData;
 import com.saggitt.omega.smartspace.superg.DoubleShadowTextView;
@@ -114,7 +114,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     private final OmegaSmartSpaceController mController;
     private boolean mFinishedInflate;
     private boolean mWeatherAvailable;
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final ShadowGenerator mShadowGenerator;
     private final int mTitleSize;
     private final int mTitleMinSize;
@@ -132,7 +132,7 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
     public SmartSpaceView(final Context context, AttributeSet set) {
         super(context, set);
 
-        mController = OmegaAppKt.getOmegaApp(context).getSmartspace();
+        mController = NeoAppKt.getNeoApp(context).getSmartspace();
         prefs = Utilities.getOmegaPrefs(context);
 
         mShadowGenerator = new ShadowGenerator(ResourceUtils.pxFromDp(48, getResources().getDisplayMetrics()));
@@ -189,8 +189,8 @@ public class SmartSpaceView extends FrameLayout implements SmartSpaceUpdateListe
 
         try {
             Launcher launcher = Launcher.getLauncher(getContext());
-            if (launcher instanceof OmegaLauncher) {
-                ((OmegaLauncher) launcher).registerSmartspaceView(this);
+            if (launcher instanceof NeoLauncher) {
+                ((NeoLauncher) launcher).registerSmartspaceView(this);
             }
         } catch (IllegalArgumentException ignored) {
 

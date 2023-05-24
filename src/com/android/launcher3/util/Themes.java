@@ -74,7 +74,7 @@ public class Themes {
                     : isMainColorDark ? R.style.AppTheme_Dark_DarkMainColor : R.style.AppTheme_Dark;
         } else {
             return supportsDarkText ? R.style.AppTheme_DarkText
-                    : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme;
+                    : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme_Light;
         }
     }
 

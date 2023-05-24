@@ -117,7 +117,7 @@ import com.android.launcher3.widget.WidgetManagerHelper;
 import com.android.launcher3.widget.dragndrop.AppWidgetHostViewDragListener;
 import com.android.launcher3.widget.util.WidgetSizes;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.views.OmegaBackgroundView;
 
 import java.util.ArrayList;
@@ -1273,8 +1273,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         mLauncher.getDragLayer().setTranslationX(transX);
         Log.d(BAD_STATE, "Workspace onOverlayScrollChanged DragLayer ALPHA_INDEX_OVERLAY=" + alpha);
 
-        if (mLauncher instanceof OmegaLauncher) {
-            ((OmegaLauncher) mLauncher).getBackground().getBlurAlphas().getProperty(
+        if (mLauncher instanceof NeoLauncher) {
+            ((NeoLauncher) mLauncher).getBackground().getBlurAlphas().getProperty(
                     OmegaBackgroundView.ALPHA_INDEX_OVERLAY).setValue(1 - alpha);
         }
         mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);

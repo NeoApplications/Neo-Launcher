@@ -22,10 +22,10 @@ import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import com.android.launcher3.icons.LauncherActivityCachingLogic
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 class CustomActivityCachingLogic(context: Context) : LauncherActivityCachingLogic() {
-    private val prefs = NLPrefs.getInstance(context)
+    private val prefs = NeoPrefs.getInstance(context)
 
     override fun getLabel(info: LauncherActivityInfo): CharSequence {
         val key = ComponentKey(info.componentName, info.user)

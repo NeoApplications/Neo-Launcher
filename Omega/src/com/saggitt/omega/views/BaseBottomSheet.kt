@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import com.android.launcher3.Insettable
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.android.launcher3.anim.Interpolators
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
@@ -36,7 +35,7 @@ import com.android.launcher3.views.AbstractSlideInView
 open class BaseBottomSheet @JvmOverloads constructor(
     context: Context?,
     attrs: AttributeSet?,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : AbstractSlideInView<Launcher>(context, attrs, defStyleAttr), Insettable {
     private val mInsets: Rect = Rect()
     private val mLauncher = Launcher.getLauncher(context)
@@ -100,15 +99,8 @@ open class BaseBottomSheet @JvmOverloads constructor(
         // Extend behind left, right, and bottom insets.
         val leftInset = insets.left - mInsets.left
         val rightInset = insets.right - mInsets.right
-        var bottomInset = insets.bottom - mInsets.bottom
+        val bottomInset = insets.bottom - mInsets.bottom
         mInsets.set(insets)
-        if (!Utilities.ATLEAST_OREO && !mLauncher.deviceProfile.isVerticalBarLayout) {
-            val navBarBg = findViewById<View>(R.id.nav_bar_bg)
-            val navBarBgLp = navBarBg.layoutParams
-            navBarBgLp.height = bottomInset
-            navBarBg.layoutParams = navBarBgLp
-            bottomInset = 0
-        }
         setPadding(
             paddingLeft + leftInset, paddingTop,
             paddingRight + rightInset, paddingBottom + bottomInset

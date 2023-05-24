@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.IdpIntPref
+import com.saggitt.omega.preferences.IntPref
 import com.saggitt.omega.util.Config
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -52,7 +53,7 @@ fun IntSeekBarPreference(
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
-    onValueChange: ((Float) -> Unit) = {}
+    onValueChange: ((Float) -> Unit) = {},
 ) {
     var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
     val defaultValue = Config.getIdpDefaultValue(LocalContext.current, pref.key)
@@ -99,6 +100,74 @@ fun IntSeekBarPreference(
                         .weight(1f),
                     value = currentValue.toFloat(),
                     valueRange = pref.minValue..pref.maxValue,
+                    onValueChange = { currentValue = it.toInt() },
+                    steps = pref.steps,
+                    onValueChangeFinished = {
+                        pref.setValue(currentValue)
+                        onValueChange(currentValue.toFloat())
+                    },
+                    enabled = isEnabled
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun IntSeekBarPreference(
+    modifier: Modifier = Modifier,
+    pref: IntPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onValueChange: ((Float) -> Unit) = {},
+) {
+    var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
+    val defaultValue = pref.defaultValue
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        bottomWidget = {
+            Row {
+                var menuExpanded by remember { mutableStateOf(false) }
+                Text(
+                    text = pref.specialOutputs(currentValue),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .widthIn(min = 52.dp)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                menuExpanded = !menuExpanded
+                            }
+                        )
+                )
+
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                    DropdownMenuItem(
+                        onClick = {
+                            pref.setValue(defaultValue)
+                            onValueChange(defaultValue.toFloat())
+                            currentValue = defaultValue
+                            menuExpanded = false
+                        },
+                        text = { Text(text = stringResource(id = R.string.reset_to_default)) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.requiredWidth(8.dp))
+                Slider(
+                    modifier = Modifier
+                        .requiredHeight(24.dp)
+                        .weight(1f),
+                    value = currentValue.toFloat(),
+                    valueRange = pref.minValue.toFloat()..pref.maxValue.toFloat(),
                     onValueChange = { currentValue = it.toInt() },
                     steps = pref.steps,
                     onValueChangeFinished = {

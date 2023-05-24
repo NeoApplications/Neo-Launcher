@@ -25,7 +25,7 @@ import android.content.SharedPreferences
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.OnboardingPrefs.HOME_BOUNCE_SEEN
-import com.saggitt.omega.compose.PreferenceActivity
+import com.saggitt.omega.preferences.PreferenceActivity
 
 class OnboardingProvider(controller: OmegaSmartSpaceController) :
     OmegaSmartSpaceController.DataProvider(controller),

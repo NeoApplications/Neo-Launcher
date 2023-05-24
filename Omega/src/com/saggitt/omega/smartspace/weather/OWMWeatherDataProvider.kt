@@ -13,7 +13,7 @@ import com.kwabenaberko.openweathermaplib.constant.Units
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.weather.icons.WeatherIconProvider
 import com.saggitt.omega.util.checkLocationAccess
@@ -48,7 +48,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         // TODO: Create a search/dropdown for cities, make Auto the default
         if (prefs.smartspaceWeatherCity.getValue() == "##Auto") {
             if (!locationAccess) {
-                Utilities.requestLocationPermission(context.omegaApp.activityHandler.foregroundActivity)
+                Utilities.requestLocationPermission(context.neoApp.activityHandler.foregroundActivity)
                 return
             } else {
                 val locationProvider = locationManager?.getBestProvider(Criteria(), true)
