@@ -73,7 +73,7 @@ import com.saggitt.omega.util.staticColors
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ColorSelectorPage(prefKey: Preferences.Key<String>) {
+fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
         PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor

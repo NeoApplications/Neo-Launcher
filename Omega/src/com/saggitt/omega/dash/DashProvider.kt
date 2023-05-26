@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.saggitt.omega.util.prefs
 
 abstract class DashProvider(protected val context: Context) {
-    val accentColor = context.prefs.profileAccentColor.getValue()
+    val accentColor = context.prefs.profileAccentColor.getColor()
     abstract val itemId: Int
     abstract val name: String
     abstract val description: String

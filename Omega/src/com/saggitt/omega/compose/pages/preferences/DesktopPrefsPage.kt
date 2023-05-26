@@ -46,7 +46,7 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
@@ -175,10 +175,10 @@ fun NavGraphBuilder.desktopPrefsGraph(route: String) {
     preferenceGraph(route, { DesktopPrefsPage() }) { subRoute ->
         preferenceGraph(
             route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
-            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
+            { ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
 
         preferenceGraph(
             route = subRoute(Routes.COLOR_STROKE_FOLDER),
-            { ColorSelectorPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR) })
+            { ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR) })
     }
 }

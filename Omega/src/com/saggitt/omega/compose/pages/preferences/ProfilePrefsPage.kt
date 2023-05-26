@@ -46,7 +46,7 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.compose.pages.IconShapePage
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
@@ -161,6 +161,6 @@ fun NavGraphBuilder.profilePrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
         preferenceGraph(
             route = subRoute(Routes.COLOR_ACCENT),
-            { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
+            { ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

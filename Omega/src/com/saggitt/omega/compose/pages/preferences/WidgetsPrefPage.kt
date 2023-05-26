@@ -47,7 +47,7 @@ import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialo
 import com.saggitt.omega.compose.components.preferences.StringTextPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.PrefKey
@@ -74,10 +74,13 @@ fun WidgetsPrefsPage() {
             *listOfNotNull(
                 prefs.smartspaceEnable,
                 prefs.smartspaceDate,
+                if(prefs.smartspaceDate.getValue()){
+                    prefs.smartspaceCalendar
+                }else{
+                    null
+                },
                 prefs.smartspaceTime,
-                prefs.smartspaceTimeLarge,
                 prefs.smartspaceTime24H,
-                prefs.smartspaceUsePillQsb,
                 prefs.smartspaceWeatherProvider,
                 if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherDataProvider::class.java.name) {
                     prefs.smartspaceWeatherApiKey
@@ -170,6 +173,6 @@ fun NavGraphBuilder.widgetsPrefsGraph(route: String) {
     preferenceGraph(route, { WidgetsPrefsPage() }) { subRoute ->
         preferenceGraph(
             route = subRoute(Routes.COLOR_DOTS_NOTIFICATION),
-            { ColorSelectorPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
+            { ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
     }
 }

@@ -47,7 +47,7 @@ import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialo
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.pages.AppCategoriesPage
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.compose.pages.HiddenAppsPage
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
@@ -166,6 +166,6 @@ fun NavGraphBuilder.drawerPrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })
         preferenceGraph(
             route = subRoute(Routes.COLOR_BG_DRAWER),
-            { ColorSelectorPage(PrefKey.DRAWER_BG_COLOR) })
+            { ColorSelectionPage(PrefKey.DRAWER_BG_COLOR) })
     }
 }
