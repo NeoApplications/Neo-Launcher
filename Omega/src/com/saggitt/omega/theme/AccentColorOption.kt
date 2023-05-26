@@ -38,6 +38,8 @@ sealed class AccentColorOption {
 
         override val accentColor: Int
             get() = NeoApp.instance?.applicationContext!!.getSystemAccent(false)
+
+        override fun toString() = "system_accent"
     }
 
     object WallpaperPrimary : AccentColorOption() {
