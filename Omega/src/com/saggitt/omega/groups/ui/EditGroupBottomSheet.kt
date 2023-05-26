@@ -35,6 +35,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -75,7 +76,7 @@ import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditGroupBottomSheet(
     category: AppGroupsManager.Category,
@@ -117,7 +118,7 @@ fun EditGroupBottomSheet(
     val selectedApps = remember { mutableStateListOf(*apps) }
     var color by remember {
         mutableStateOf(
-                (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value
+            (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value
                     ?: context.prefs.profileAccentColor.getValue()
         )
     }
@@ -386,7 +387,7 @@ fun EditGroupBottomSheet(
                     (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                         selectedApps.toMutableSet()
                     if (category != AppGroupsManager.Category.FOLDER) {
-                        (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value =
+                        (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
                             color
                     }
                     group.customizations.applyFrom(config)

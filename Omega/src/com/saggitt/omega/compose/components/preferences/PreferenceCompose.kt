@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.components.preferences
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -76,6 +75,7 @@ import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
@@ -182,7 +182,6 @@ fun NavigationPreference(
         isEnabled = isEnabled,
         onClick = {
             if (pref.navRoute != "") {
-                Log.d("NavigationPreference", "Navigating to $route")
                 navController.navigate(route)
             } else {
                 pref.onClick?.invoke()
@@ -202,7 +201,9 @@ fun ColorIntPreference(
     val navController = LocalNavController.current
     val route = subRoute(pref.navRoute)
 
-    val currentColor by remember(pref) { mutableStateOf(pref.getColor()) }
+    val currentColor by remember(pref) {
+        mutableStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
+    }
 
     BasePreference(
         modifier = modifier,

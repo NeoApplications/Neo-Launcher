@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.groups.ui
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -75,7 +77,7 @@ import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CreateGroupBottomSheet(
     category: AppGroupsManager.Category,
@@ -328,6 +330,7 @@ fun CreateGroupBottomSheet(
 
             OutlinedButton(
                 onClick = {
+                    Log.d("GROUPS", "color: $color")
                     onClose(Config.BS_SELECT_TAB_TYPE)
                     coroutineScope.launch {
                         (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
@@ -357,7 +360,7 @@ fun CreateGroupBottomSheet(
 
                             AppGroupsManager.Category.TAB,
                             AppGroupsManager.Category.FLOWERPOT,
-                                                             -> {
+                            -> {
                                 manager.drawerTabs.apply {
                                     addGroup(group as DrawerTabs.Tab)
                                     saveToJson()
