@@ -37,6 +37,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -132,6 +133,7 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
                     Button(
                         modifier = Modifier
                             .padding(start = 8.dp, end = 8.dp)
+                            .height(48.dp)
                             .fillMaxWidth(),
                         onClick = {
                             pref.setValue(currentAccentColor.value)
@@ -215,7 +217,7 @@ fun CustomPage(
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
             onColorChanged = {
-                onSelectColor(current.toString())
+                onSelectColor("custom|#${Integer.toHexString(current.color.hashCode())}")
             },
             state = current,
             showAlphaSlider = true,
@@ -223,6 +225,7 @@ fun CustomPage(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DynamicPage(
     dynamicColors: List<AccentColorOption>,
@@ -231,7 +234,9 @@ fun DynamicPage(
 ) {
     val groupSize = dynamicColors.size
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp, top = 16.dp)
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
         dynamicColors.forEachIndexed { index, option ->

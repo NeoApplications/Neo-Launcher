@@ -48,14 +48,14 @@ fun ColorSelectionDialog(
     val presetColors = staticColors
 
     val tabs = listOf(
-        TabItem(title = R.string.color_presets) {
+        TabItem(title = R.string.color_presets, icon = R.drawable.ic_setting) {
             PresetsPage(
                 presetColors = presetColors,
                 onSelectColor = { currentColor.value = it },
                 isColorSelected = { it == currentColor.value }
             )
         },
-        TabItem(title = R.string.custom) {
+        TabItem(title = R.string.custom, icon = R.drawable.ic_color_donut) {
             CustomPage(
                 initialColor = Color(AccentColorOption.fromString(currentColor.value).accentColor),
                 onSelectColor = {
@@ -63,7 +63,7 @@ fun ColorSelectionDialog(
                 }
             )
         },
-        TabItem(title = R.string.color_dynamic) {
+        TabItem(title = R.string.color_dynamic, icon = R.drawable.ic_palette) {
             DynamicPage(
                 dynamicColors = dynamicColors,
                 onSelectColor = { currentColor.value = it },
@@ -76,7 +76,7 @@ fun ColorSelectionDialog(
         dynamicColors.any { it.toString() == currentColor.value } -> 2
         else -> 1
     }
-    val pagerState = rememberPagerState(initialPage = defaultTabIndex)
+    val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
     OmegaAppTheme {
         ViewWithActionBar(

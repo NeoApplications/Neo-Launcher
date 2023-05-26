@@ -343,7 +343,7 @@ fun CreateGroupBottomSheet(
                         }
                         if (category != AppGroupsManager.Category.FOLDER) {
                             (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
-                                color.toString()
+                                color
                         }
                         group.customizations.applyFrom(config)
                         group.title = title
