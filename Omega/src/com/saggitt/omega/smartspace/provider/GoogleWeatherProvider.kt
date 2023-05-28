@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Icon
@@ -19,6 +18,7 @@ import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.pendingIntent
 import com.saggitt.omega.widget.HeadlessWidgetsManager
@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-class SmartspaceWidgetReader(context: Context) : SmartspaceDataSource(
+class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
     context, R.string.category__behavior_weather
 ) {
     override val isAvailable: Boolean
@@ -141,19 +141,6 @@ class SmartspaceWidgetReader(context: Context) : SmartspaceDataSource(
 
     private fun extractBitmap(imageView: ImageView?): Bitmap? {
         return (imageView?.drawable as? BitmapDrawable)?.bitmap
-    }
-
-    data class WeatherData(
-        val icon: Bitmap,
-        private val temperature: Temperature,
-        val forecastUrl: String? = "https://www.google.com/search?q=weather",
-        val forecastIntent: Intent? = null,
-        val pendingIntent: PendingIntent? = null
-    ) {
-
-        fun getTitle(unit: Temperature.Unit = temperature.unit): String {
-            return "${temperature.inUnit(unit)}${unit.suffix}"
-        }
     }
 
     companion object {

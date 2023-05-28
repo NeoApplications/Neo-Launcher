@@ -36,8 +36,8 @@ import com.saggitt.omega.smartspace.eventprovider.CalendarEventProvider
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
-import com.saggitt.omega.smartspace.provider.SmartspaceWidgetReader
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.smartspace.weather.PEWeatherDataProvider
 import com.saggitt.omega.theme.ThemeOverride
@@ -124,7 +124,7 @@ class Config(val context: Context) {
         )
 
         val smartspaceEventProviders = mapOf(
-            SmartspaceWidgetReader::class.java.name to R.string.category__behavior_weather,
+            GoogleWeatherProvider::class.java.name to R.string.category__behavior_weather,
             BatteryStatusProvider::class.java.name to R.string.battery_status,
             NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
         )

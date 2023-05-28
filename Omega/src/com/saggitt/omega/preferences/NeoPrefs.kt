@@ -63,8 +63,8 @@ import com.saggitt.omega.smartspace.SmartSpaceDataWidget
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
-import com.saggitt.omega.smartspace.provider.SmartspaceWidgetReader
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
@@ -952,7 +952,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
         titleId = R.string.title_smartspace_event_providers,
         defaultValue = setOf(
-            SmartspaceWidgetReader::class.java.name,
+            GoogleWeatherProvider::class.java.name,
             BatteryStatusProvider::class.java.name,
             NowPlayingProvider::class.java.name
         ),

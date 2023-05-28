@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.shareIn
 class SmartspaceProvider private constructor(context: Context) {
 
     val dataSources = listOf(
-        SmartspaceWidgetReader(context),
+        GoogleWeatherProvider(context),
         BatteryStatusProvider(context),
         NowPlayingProvider(context)
     )
