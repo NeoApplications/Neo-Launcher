@@ -22,11 +22,17 @@ import kotlinx.coroutines.flow.shareIn
 
 class SmartspaceProvider private constructor(context: Context) {
     val prefs = NeoPrefs.getInstance(context)
+    val currentWeather = prefs.smartspaceWeatherProvider.getValue()
+    val weatherProvider = when (currentWeather) {
+        GoogleWeatherProvider::class.java.name -> GoogleWeatherProvider(context)
+        OWMWeatherProvider::class.java.name -> OWMWeatherProvider(context)
+        PixelWeatherProvider::class.java.name -> PixelWeatherProvider(context)
+        else -> BlankWeatherProvider(context)
+    }
+
+
     private val dataSources = listOf(
-        BlankWeatherProvider(context),
-        GoogleWeatherProvider(context),
-        PixelWeatherProvider(context),
-        OWMWeatherProvider(context),
+        weatherProvider,
         BatteryStatusProvider(context),
         NowPlayingProvider(context)
     )
