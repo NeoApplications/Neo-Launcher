@@ -11,7 +11,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -29,9 +28,6 @@ abstract class SmartspaceDataSource(
     open val disabledTargets: List<SmartspaceTarget> = emptyList()
 
     private val restartSignal = MutableStateFlow(0)
-
-    //get current weather provider
-    val weatherProvider = prefs.smartspaceWeatherProvider.getValue()
 
     private val enabledTargets
         get() = internalTargets
@@ -52,13 +48,13 @@ abstract class SmartspaceDataSource(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val targets = prefs.smartspaceEventProviders.get()
-        .distinctUntilChanged()
         .flatMapLatest {
             if (isAvailable)
                 restartSignal.flatMapLatest { enabledTargets }
             else
                 flowOf(State(targets = disabledTargets))
         }
+
 
     open suspend fun requiresSetup(): Boolean = false
 
