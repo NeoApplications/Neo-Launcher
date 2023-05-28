@@ -31,9 +31,8 @@ class DoubleShadowIconDrawable(icon: Drawable, context: Context) : LayerDrawable
     private var canvasSize = 0
 
     init {
-        val i: Int = (iconSize * 2) + iconInsetSize
-        canvasSize = i
-
+        val iconSize =
+            context.resources.getDimensionPixelSize(R.dimen.enhanced_smartspace_icon_size)
         val bitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         icon.setBounds(0, 0, iconSize, iconSize)
@@ -42,7 +41,7 @@ class DoubleShadowIconDrawable(icon: Drawable, context: Context) : LayerDrawable
         shadowDrawable = generateShadowDrawable(bitmap, context)
         addLayer(shadowDrawable)
         addLayer(iconDrawable)
-        setBounds(0, 0, i, i)
+        setBounds(0, 0, iconSize, iconSize)
     }
 
     override fun setAlpha(i: Int) {
