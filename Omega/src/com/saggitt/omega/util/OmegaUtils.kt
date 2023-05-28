@@ -45,6 +45,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.children
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.launcher3.Launcher
@@ -104,6 +105,12 @@ fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
     return false
 }
 
+val ViewGroup.recursiveChildren: Sequence<View>
+    get() = children.flatMap {
+        if (it is ViewGroup) {
+            it.recursiveChildren + sequenceOf(it)
+        } else sequenceOf(it)
+    }
 
 val Long.Companion.random get() = Random.nextLong()
 

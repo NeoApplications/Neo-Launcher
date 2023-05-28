@@ -1,6 +1,6 @@
 /*
- * This file is part of Omega Launcher
- * Copyright (c) 2022   Omega Launcher Team
+ * This file is part of Neo Launcher
+ * Copyright (c) 2023   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -18,8 +18,15 @@
 
 package com.saggitt.omega.smartspace
 
-interface SmartSpaceUpdateListener {
-    fun onGsaChanged() {}
-    fun onSmartSpaceUpdated(smartSpaceData: SmartSpaceData)
-    fun onSensitiveModeChanged(hideSensitiveData: Boolean)
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
+import com.android.launcher3.BuildConfig
+
+class SmartSpaceAppWidgetProvider : AppWidgetProvider() {
+
+    companion object {
+        @JvmField
+        val componentName =
+            ComponentName(BuildConfig.APPLICATION_ID, SmartSpaceAppWidgetProvider::class.java.name)
+    }
 }

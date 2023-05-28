@@ -60,10 +60,11 @@ import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
-import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
-import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
+import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.NowPlayingProvider
+import com.saggitt.omega.smartspace.provider.SmartspaceWidgetReader
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
@@ -141,7 +142,7 @@ class NeoPrefs private constructor(val context: Context) {
         entries = themeItems,
     )
 
-    var profileAccentColor = ColorIntPref(
+    val profileAccentColor = ColorIntPref(
         dataStore = dataStore,
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
@@ -373,7 +374,7 @@ class NeoPrefs private constructor(val context: Context) {
     val desktopPopupRemove: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
 
-    var desktopGridSizeDelegate = ResettableLazy {
+    private var desktopGridSizeDelegate = ResettableLazy {
         GridSize2D(
             titleId = R.string.title__desktop_grid_size,
             numColumnsPref = desktopGridColumns,
@@ -436,7 +437,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface).toString(),
+        defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
         navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
     )
 
@@ -453,7 +454,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.folder_stroke_color,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
-        defaultValue = Themes.getAttrColor(context, R.attr.colorSurface).toString(),
+        defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
         navRoute = Routes.COLOR_STROKE_FOLDER,
     )
 
@@ -546,7 +547,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_COLOR,
         titleId = R.string.title_dock_background_color,
-        defaultValue = (0xff101010).toString(),
+        defaultValue = "custom|#ff101010",
         navRoute = Routes.COLOR_BG_DOCK,
     )
 
@@ -743,7 +744,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_COLOR,
         titleId = R.string.title_dock_background_color,
-        defaultValue = (0xff101010).toString(),
+        defaultValue = "custom|#ff101010",
         navRoute = Routes.COLOR_BG_DRAWER,
     )
 
@@ -846,7 +847,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_COLOR,
         titleId = R.string.title__notification_background,
-        defaultValue = 0xFFF32020.toString(),
+        defaultValue = "custom|#FFF32020",
         navRoute = Routes.COLOR_DOTS_NOTIFICATION,
     )
 
@@ -864,19 +865,20 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = -1,
     )
 
-    var smartspaceUsePillQsb = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_PILL_STYLE,
-        titleId = R.string.title_use_pill_qsb,
-        defaultValue = false,
-    )
-
     val smartspaceDate = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
         defaultValue = true,
         onChange = { pokeChange }
+    )
+
+    val smartspaceCalendar = StringSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_CALENDAR,
+        titleId = R.string.title_smartspace_calendar,
+        defaultValue = context.getString(R.string.smartspace_calendar_gregorian),
+        entries = Config.calendarOptions(context)
     )
 
     val smartspaceTime = BooleanPref(
@@ -886,12 +888,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = true,
     )
 
-    val smartspaceTimeLarge = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_TIME_LARGE,
-        titleId = R.string.title_smartspace_time_above,
-        defaultValue = false,
-    )
     val smartspaceTime24H = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_TIME_24H,
@@ -935,16 +931,30 @@ class NeoPrefs private constructor(val context: Context) {
         pokeChange()
     }
 
-    var smartspaceEventProviders = StringMultiSelectionPref(
+    var smartspaceEventProvidersX = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
         titleId = R.string.title_smartspace_event_providers,
         defaultValue = setOf(
             SmartSpaceDataWidget::class.java.name,
             NotificationUnreadProvider::class.java.name,
-            NowPlayingProvider::class.java.name,
-            BatteryStatusProvider::class.java.name,
+            //NowPlayingProvider::class.java.name,
+            //BatteryStatusProvider::class.java.name,
             PersonalityProvider::class.java.name
+        ),
+        entries = Config.smartspaceEventProvidersX,
+        withIcons = true,
+        onChange = { updateSmartSpaceProvider() }
+    )
+
+    var smartspaceEventProviders = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
+        titleId = R.string.title_smartspace_event_providers,
+        defaultValue = setOf(
+            SmartspaceWidgetReader::class.java.name,
+            BatteryStatusProvider::class.java.name,
+            NowPlayingProvider::class.java.name
         ),
         entries = Config.smartspaceEventProviders,
         withIcons = true,

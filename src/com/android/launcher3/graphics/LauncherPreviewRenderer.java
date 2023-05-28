@@ -101,6 +101,7 @@ import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.data.IconOverrideRepository;
 import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.smartspace.provider.SmartspaceProvider;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import java.util.ArrayList;
@@ -141,6 +142,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
             putBaseInstance(NeoPrefs.INSTANCE);
             putBaseInstance(IconPackProvider.INSTANCE);
             putBaseInstance(IconOverrideRepository.INSTANCE);
+            putBaseInstance(SmartspaceProvider.INSTANCE);
             putBaseInstance(DeviceProfileOverrides.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,

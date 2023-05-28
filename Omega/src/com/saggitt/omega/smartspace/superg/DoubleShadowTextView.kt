@@ -55,12 +55,19 @@ open class DoubleShadowTextView @JvmOverloads constructor(
             mShadowInfo.ambientShadowColor
         )
         super.onDraw(canvas)
+        canvas.save()
+        canvas.clipRect(
+            scrollX, scrollY + extendedPaddingTop,
+            scrollX + width,
+            scrollY + height
+        )
         paint.setShadowLayer(
             mShadowInfo.keyShadowBlur,
-            0.0f,
             mShadowInfo.keyShadowOffsetX,
+            mShadowInfo.keyShadowOffsetY,
             mShadowInfo.keyShadowColor
         )
         super.onDraw(canvas)
+        canvas.restore()
     }
 }

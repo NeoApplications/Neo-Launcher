@@ -32,11 +32,12 @@ import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.BlankDataProvider
 import com.saggitt.omega.smartspace.SmartSpaceDataWidget
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
-import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.eventprovider.CalendarEventProvider
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
-import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
+import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.NowPlayingProvider
+import com.saggitt.omega.smartspace.provider.SmartspaceWidgetReader
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
 import com.saggitt.omega.smartspace.weather.PEWeatherDataProvider
 import com.saggitt.omega.theme.ThemeOverride
@@ -112,14 +113,20 @@ class Config(val context: Context) {
             Intent("com.dlto.atom.launcher.THEME"),
         )
 
-        val smartspaceEventProviders = mapOf(
+        val smartspaceEventProvidersX = mapOf(
             NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
-            NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
-            BatteryStatusProvider::class.java.name to R.string.battery_status,
+            //NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
+            //BatteryStatusProvider::class.java.name to R.string.battery_status,
             PersonalityProvider::class.java.name to R.string.personality_provider,
             CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
             SmartSpaceDataWidget::class.java.name to R.string.title_smartspace_widget_provider,
             AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events
+        )
+
+        val smartspaceEventProviders = mapOf(
+            SmartspaceWidgetReader::class.java.name to R.string.category__behavior_weather,
+            BatteryStatusProvider::class.java.name to R.string.battery_status,
+            NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
         )
 
         fun smartspaceWeatherProviders(context: Context) = listOfNotNull(
@@ -127,6 +134,15 @@ class Config(val context: Context) {
             SmartSpaceDataWidget::class.java.name,
             OWMWeatherDataProvider::class.java.name,
             if (PEWeatherDataProvider.isAvailable(context)) PEWeatherDataProvider::class.java.name else null
+        )
+
+        fun calendarOptions(context: Context) = mapOf(
+            context.resources.getString(R.string.smartspace_calendar_gregorian) to context.resources.getString(
+                R.string.title_calendar_gregorian
+            ),
+            context.resources.getString(R.string.smartspace_calendar_persian) to context.resources.getString(
+                R.string.title_calendar_persian
+            )
         )
 
         fun getCurrentTheme(context: Context): Int {

@@ -110,6 +110,10 @@
             android:theme="@style/Theme.Transparent" />
 
         <activity
+            android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
+            android:theme="@style/Theme.Transparent" />
+
+        <activity
             android:name="com.saggitt.omega.FakeLauncher"
             android:enabled="false"
             android:exported="true">
@@ -147,20 +151,14 @@
         </service>
 
         <receiver
-            android:name="com.saggitt.omega.smartspace.superg.OPAStatusReceiver"
-            android:exported="false"
-            android:permission="android.permission.CAPTURE_AUDIO_HOTWORD">
-            <intent-filter>
-                <action android:name="com.google.android.systemui.OPA_ENABLED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name="com.saggitt.omega.smartspace.SmartSpaceBroadcastReceiver"
+            android:name="com.saggitt.omega.smartspace.SmartSpaceAppWidgetProvider"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/smartspace_appwidget_info" />
         </receiver>
 
     </application>

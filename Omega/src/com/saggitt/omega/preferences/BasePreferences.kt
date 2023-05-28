@@ -196,7 +196,7 @@ open class ColorIntPref(
 
     fun getColor(): Int {
         return runBlocking(Dispatchers.IO) {
-            AccentColorOption.fromString(get().firstOrNull() ?: defaultValue).accentColor
+            AccentColorOption.fromString(getValue()).accentColor
         }
     }
 }

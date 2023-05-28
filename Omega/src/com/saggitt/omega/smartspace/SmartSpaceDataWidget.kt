@@ -17,6 +17,7 @@
 
 package com.saggitt.omega.smartspace
 
+import android.app.Activity
 import android.app.PendingIntent
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
@@ -41,13 +42,16 @@ import com.android.launcher3.AppWidgetResizeFrame
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.BlankActivity
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.neoApp
+import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.applyAccent
 import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.runOnMainThread
 import com.saggitt.omega.widget.Temperature
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Keep
 class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
@@ -60,11 +64,12 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
     private val providerInfo = getSmartspaceWidgetProvider(context)
     private var isWidgetBound = false
     var widgetId = -1
+    val activity = NeoLauncher.getLauncher(context)
     private val pendingIntentTagId =
         context.resources.getIdentifier("pending_intent_tag", "id", "android")
 
     init {
-        bindWidget {}
+        bindWidget(activity) { }
     }
 
     private fun createBindOptions(): Bundle {
@@ -81,10 +86,10 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
         return opts
     }
 
-    private fun bindWidget(onSetupComplete: () -> Unit) {
+    private fun bindWidget(activity: Activity, onSetupComplete: () -> Unit) {
         val widgetManager = AppWidgetManager.getInstance(context)
 
-        var widgetId = widgetIdPref.getValue()
+        widgetId = widgetIdPref.getValue()
         val widgetInfo = widgetManager.getAppWidgetInfo(widgetId)
         isWidgetBound = widgetInfo != null && widgetInfo.provider == providerInfo.provider
         val opts: Bundle = createBindOptions()
@@ -111,18 +116,9 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
             smartspaceWidgetHost.startListening()
             onSetupComplete()
         } else {
-            val bindIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
-                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, providerInfo.provider)
-            BlankActivity.startActivityForResult(context, bindIntent, 1028, 0) { resultCode, _ ->
-                if (resultCode == AppCompatActivity.RESULT_OK) {
-                    bindWidget(onSetupComplete)
-                } else {
-                    smartspaceWidgetHost.deleteAppWidgetId(widgetId)
-                    widgetId = -1
-                    widgetIdPref.setValue(-1)
-                    onSetupComplete()
-                }
+            val scope = CoroutineScope(Dispatchers.IO)
+            scope.launch {
+                showPermissionRequest(activity, onSetupComplete)
             }
         }
 
@@ -131,18 +127,36 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
         }
     }
 
+    private suspend fun showPermissionRequest(activity: Activity, onSetupComplete: () -> Unit) {
+        val bindIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
+            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, providerInfo.provider)
+
+        PreferenceActivity.startBlankActivityForResult(activity, bindIntent).apply {
+            if (resultCode == AppCompatActivity.RESULT_OK) {
+                bindWidget(activity, onSetupComplete)
+            } else {
+                smartspaceWidgetHost.deleteAppWidgetId(widgetId)
+                widgetId = -1
+                widgetIdPref.setValue(-1)
+                onSetupComplete()
+            }
+        }
+    }
+
     override fun requiresSetup(): Boolean {
         return !isWidgetBound
     }
 
-    override fun startSetup(onFinish: (Boolean) -> Unit) {
-        bindWidget {
+    fun startSetup(activity: Activity, onFinish: (Boolean) -> Unit) {
+        bindWidget(activity) {
             onFinish(isWidgetBound)
         }
     }
 
     override fun stopListening() {
         super.stopListening()
+
         smartspaceWidgetHost.stopListening()
     }
 
@@ -268,7 +282,6 @@ class SmartSpaceDataWidget(controller: OmegaSmartSpaceController) :
                             .setMessage(R.string.smartspace_widget_provider_not_found)
                             .setNegativeButton(android.R.string.cancel, null).create().apply {
                                 show()
-                                applyAccent()
                             }
 
                     }

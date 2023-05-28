@@ -131,7 +131,8 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
                 view.getResources().getDisplayMetrics());
         mTopScrim = Themes.getAttrDrawable(view.getContext(), R.attr.workspaceStatusBarScrim);
         mBottomMask = mTopScrim == null ? null : createDitheredAlphaMask();
-        mHideSysUiScrim = mTopScrim == null;
+        NeoPrefs prefs = NeoPrefs.Companion.getInstance(view.getContext());
+        mHideSysUiScrim = mTopScrim == null || !prefs.getProfileShowTopShadow().getValue();
 
         mDrawWallpaperScrim = FeatureFlags.ENABLE_WALLPAPER_SCRIM.get()
                 && !Themes.getAttrBoolean(view.getContext(), R.attr.isMainColorDark)
@@ -142,11 +143,6 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mWallpaperScrimPaint.setColor(wallpaperScrimColor);
 
         view.addOnAttachStateChangeListener(this);
-        NeoPrefs prefs = NeoPrefs.Companion.getInstance(view.getContext());
-        if (prefs.getProfileShowTopShadow().getValue()) {
-            mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
-            mRoot.invalidate();
-        }
     }
 
     /**

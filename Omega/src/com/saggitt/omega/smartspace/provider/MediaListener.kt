@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.saggitt.omega.smartspace.eventprovider
+package com.saggitt.omega.smartspace.provider
 
 import android.app.Notification
 import android.content.Context
@@ -25,6 +25,8 @@ import android.media.session.PlaybackState
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.view.KeyEvent
+import androidx.core.util.Consumer
+import com.saggitt.omega.smartspace.eventprovider.NotificationsManager
 import com.saggitt.omega.util.makeBasicHandler
 
 /**
@@ -32,22 +34,23 @@ import com.saggitt.omega.util.makeBasicHandler
  * notifications. Without this information, it is impossible to hide on stop.
  */
 class MediaListener internal constructor(
-    private val mContext: Context,
-    private val mOnChange: Runnable
+    private val context: Context,
+    private val onChange: Consumer<MediaListener>
 ) : MediaController.Callback(), NotificationsManager.OnChangeListener {
-    private val mNotificationsManager: NotificationsManager = NotificationsManager
     private val mHandler = makeBasicHandler(true)
+    private var mOnChange: Runnable = Runnable { onChange.accept(this) }
     var tracking: MediaNotificationController? = null
         private set
     private var mControllers: List<MediaNotificationController> = emptyList()
+
     fun onResume() {
         updateTracking()
-        mNotificationsManager.addListener(this)
+        NotificationsManager.addListener(this)
     }
 
     fun onPause() {
         updateTracking()
-        mNotificationsManager.removeListener(this)
+        NotificationsManager.removeListener(this)
     }
 
     private fun updateControllers(controllers: List<MediaNotificationController>) {
@@ -109,12 +112,12 @@ class MediaListener internal constructor(
     private val controllers: List<MediaNotificationController>
         get() {
             val controllers: MutableList<MediaNotificationController> = ArrayList()
-            for (notif in mNotificationsManager.notifications) {
+            for (notif in NotificationsManager.notifications) {
                 val extras = notif.notification.extras
                 val notifToken =
                     extras.getParcelable<MediaSession.Token>(Notification.EXTRA_MEDIA_SESSION)
                 if (notifToken != null) {
-                    val controller = MediaController(mContext, notifToken)
+                    val controller = MediaController(context, notifToken)
                     controllers.add(MediaNotificationController(controller, notif))
                 }
             }

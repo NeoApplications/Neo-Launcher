@@ -36,6 +36,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import androidx.annotation.Keep
+import androidx.core.app.ActivityCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -43,10 +44,8 @@ import com.android.launcher3.notification.NotificationListener
 import com.saggitt.omega.BlankActivity
 import com.saggitt.omega.preferences.PrefKey.NOTIFICATION_BADGING
 import com.saggitt.omega.smartspace.eventprovider.AlarmEventProvider
-import com.saggitt.omega.smartspace.eventprovider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.eventprovider.CalendarEventProvider
 import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
-import com.saggitt.omega.smartspace.eventprovider.NowPlayingProvider
 import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.smartspace.weather.FakeDataProvider
 import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
@@ -67,14 +66,12 @@ class OmegaSmartSpaceController(val context: Context) {
     private var cardData: CardData? = null
     private val listeners = ArrayList<Listener>()
     private val weatherProviderPref = Utilities.getOmegaPrefs(context).smartspaceWeatherProvider
-    private val eventProvidersPref = context.prefs.smartspaceEventProviders
+    private val eventProvidersPref = context.prefs.smartspaceEventProvidersX
     private var weatherDataProvider = BlankDataProvider(this) as DataProvider
     private val eventDataProviders = mutableListOf<DataProvider>()
     private val eventDataMap = mutableMapOf<DataProvider, CardData?>()
 
-    private val stockProviderClasses = listOf(
-        OnboardingProvider::class.java
-    )
+    //private val stockProviderClasses = listOf( OnboardingProvider::class.java )
     private val stockProviders = mutableListOf<DataProvider>()
 
     var requiresSetup = false
@@ -215,10 +212,10 @@ class OmegaSmartSpaceController(val context: Context) {
 
     private fun initStockProviders() {
         val providers = mutableListOf<DataProvider>()
-        stockProviderClasses
+        /*stockProviderClasses
             .map { createDataProvider(it.name) }
             .filterTo(providers) { it !is BlankDataProvider }
-            .forEach { it.cardUpdateListener = ::updateCardData }
+            .forEach { it.cardUpdateListener = ::updateCardData }*/
 
         stockProviders.addAll(providers)
         providers.forEach { it.forceUpdate() }
@@ -241,9 +238,11 @@ class OmegaSmartSpaceController(val context: Context) {
                     Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts
                 )
             }
+
             data.forecastIntent != null -> {
                 launcher.startActivitySafely(v, data.forecastIntent, null)
             }
+
             launcher.packageManager.isAppEnabled(Config.GOOGLE_QSB, 0) -> {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("dynact://velour/weather/ProxyActivity")
@@ -253,6 +252,7 @@ class OmegaSmartSpaceController(val context: Context) {
                 )
                 launcher.startActivitySafely(v, intent, null)
             }
+
             else -> {
                 openURLInBrowser(
                     launcher, data.forecastUrl,
@@ -294,14 +294,11 @@ class OmegaSmartSpaceController(val context: Context) {
                 onFinish(true)
                 return
             }
+            ActivityCompat.requestPermissions(
+                Launcher.getLauncher(context),
+                requiredPermissions.toTypedArray(), 1031
+            )
 
-            BlankActivity.requestPermissions(
-                context,
-                requiredPermissions.toTypedArray(),
-                1031
-            ) { _, _, results ->
-                onFinish(results.all { it == PERMISSION_GRANTED })
-            }
         }
 
         open fun startListening() {
@@ -470,6 +467,7 @@ class OmegaSmartSpaceController(val context: Context) {
         val forecastIntent: Intent? = null,
         val pendingIntent: PendingIntent? = null
     ) {
+
         fun getTitle(unit: Temperature.Unit): String {
             return "${temperature.inUnit(unit)}${unit.suffix}"
         }
@@ -592,15 +590,15 @@ class OmegaSmartSpaceController(val context: Context) {
             Pair(SmartSpaceDataWidget::class.java.name, R.string.google_app),
             Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
             Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-            Pair(NowPlayingProvider::class.java.name, R.string.event_provider_now_playing),
+            //Pair(NowPlayingProvider::class.java.name, R.string.event_provider_now_playing),
             Pair(
                 NotificationUnreadProvider::class.java.name,
                 R.string.event_provider_unread_notifications
             ),
-            Pair(BatteryStatusProvider::class.java.name, R.string.battery_status),
+            //Pair(BatteryStatusProvider::class.java.name, R.string.battery_status),
             Pair(AlarmEventProvider::class.java.name, R.string.name_provider_alarm_events),
             Pair(PersonalityProvider::class.java.name, R.string.personality_provider),
-            Pair(OnboardingProvider::class.java.name, R.string.onbording),
+            //Pair(OnboardingProvider::class.java.name, R.string.onbording),
             Pair(CalendarEventProvider::class.java.name, R.string.smartspace_provider_calendar),
             Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing)
         )

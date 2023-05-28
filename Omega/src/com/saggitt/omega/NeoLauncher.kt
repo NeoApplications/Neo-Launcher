@@ -68,7 +68,6 @@ import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.popup.OmegaShortcuts
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
-import com.saggitt.omega.smartspace.SmartSpaceView
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.views.OmegaBackgroundView
@@ -351,10 +350,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
         dummyView.requestLayout()
         dummyView.post { callback(dummyView) }
-    }
-
-    fun registerSmartspaceView(smartspace: SmartSpaceView) {
-        defaultOverlay.registerSmartSpaceView(smartspace)
     }
 
     override fun createTouchControllers(): Array<TouchController> {

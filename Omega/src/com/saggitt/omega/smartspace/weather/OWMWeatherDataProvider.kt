@@ -9,7 +9,6 @@ import android.widget.Toast
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.kwabenaberko.openweathermaplib.constant.Units
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
@@ -31,16 +30,6 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         if (locationAccess) {
             context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         } else null
-    }
-
-    init {
-        owm.setUnits(
-            when (Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())) {
-                Temperature.Unit.Celsius -> Units.METRIC
-                Temperature.Unit.Fahrenheit -> Units.IMPERIAL
-                else -> Units.METRIC
-            }
-        )
     }
 
     @SuppressLint("MissingPermission")
@@ -69,13 +58,12 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
     override fun onSuccess(currentWeather: CurrentWeather) {
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
-        val currentUnit = Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())
         updateData(
             OmegaSmartSpaceController.WeatherData(
                 iconProvider.getIcon(icon),
                 Temperature(
                     temp.roundToInt(),
-                    if (currentUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius
+                    if (Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue()) != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius
                     else Temperature.Unit.Fahrenheit
                 ),
                 "https://openweathermap.org/city/${currentWeather.id}"
@@ -96,6 +84,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         }
         updateData(null, null)
     }
+
 
     companion object {
 

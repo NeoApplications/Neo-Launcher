@@ -118,6 +118,7 @@ import com.android.launcher3.widget.dragndrop.AppWidgetHostViewDragListener;
 import com.android.launcher3.widget.util.WidgetSizes;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.smartspace.SmartSpaceAppWidgetProvider;
 import com.saggitt.omega.views.OmegaBackgroundView;
 
 import java.util.ArrayList;
@@ -572,13 +573,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         if (mQsb == null) {
             // In transposed layout, we add the QSB in the Grid. As workspace does not touch the
             // edges, we do not need a full width QSB.
-            int layout = 0;
-
-            if (Utilities.getOmegaPrefs(getContext()).getSmartspaceUsePillQsb().getValue()) {
-                layout = R.layout.qsb_container_preview;
-            } else {
-                layout = R.layout.search_container_workspace;
-            }
+            int layout = R.layout.search_container_workspace;
 
             mQsb = LayoutInflater.from(getContext())
                     .inflate(layout, firstPage, false);
@@ -1082,6 +1077,29 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         } else {
             mIsEventOverQsb = false;
         }
+        if (!mIsEventOverQsb) {
+            mIsEventOverQsb = isEventOverQsb(mXDown, mYDown);
+        }
+    }
+
+    private boolean isEventOverQsb(float x, float y) {
+        CellLayout target = (CellLayout) getChildAt(mCurrentPage);
+        ShortcutAndWidgetContainer container = target.getShortcutsAndWidgets();
+        mTempFXY[0] = x;
+        mTempFXY[1] = y;
+        Utilities.mapCoordInSelfToDescendant(container, this, mTempFXY);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            Object tag = child.getTag();
+            if (!(tag instanceof LauncherAppWidgetInfo)) continue;
+            LauncherAppWidgetInfo info = (LauncherAppWidgetInfo) tag;
+            if (!info.providerName.equals(SmartSpaceAppWidgetProvider.componentName)) continue;
+
+            boolean isOverQsb = child.getLeft() <= mTempFXY[0] && child.getRight() >= mTempFXY[0]
+                    && child.getTop() <= mTempFXY[1] && child.getBottom() >= mTempFXY[1];
+            if (isOverQsb) return true;
+        }
+        return false;
     }
 
     @Override

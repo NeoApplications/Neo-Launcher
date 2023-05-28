@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.model
 
 import androidx.annotation.StringRes
 import com.android.launcher3.R
