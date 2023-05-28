@@ -30,7 +30,6 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
-import com.saggitt.omega.smartspace.OmegaSmartSpaceController
 import org.chickenhook.restrictionbypass.Unseal
 import java.io.File
 
@@ -38,7 +37,7 @@ class NeoApp : Application() {
     private val TAG = "OmegaApp"
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
-    val smartspace by lazy { OmegaSmartSpaceController(this) }
+    //val smartspace by lazy { OmegaSmartSpaceController(this) }
 
     override fun onCreate() {
         super.onCreate()

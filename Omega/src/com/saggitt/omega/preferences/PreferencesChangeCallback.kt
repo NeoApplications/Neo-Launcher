@@ -21,7 +21,6 @@ package com.saggitt.omega.preferences
 import com.android.launcher3.LauncherAppState
 import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
-import com.saggitt.omega.neoApp
 
 class PreferencesChangeCallback(val launcher: NeoLauncher) {
     fun recreate() {
@@ -35,15 +34,10 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     }
 
     fun updateSmartspaceProvider() {
-        launcher.neoApp.smartspace.onProviderChanged()
     }
 
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
-    }
-
-    fun updateWeatherData() {
-        launcher.neoApp.smartspace.forceUpdateWeather()
     }
 
     fun reloadAll() {

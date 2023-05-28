@@ -54,7 +54,7 @@ import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
-import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.prefs
@@ -82,7 +82,7 @@ fun WidgetsPrefsPage() {
                 prefs.smartspaceTime,
                 prefs.smartspaceTime24H,
                 prefs.smartspaceWeatherProvider,
-                if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherDataProvider::class.java.name) {
+                if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name) {
                     prefs.smartspaceWeatherApiKey
                     prefs.smartspaceWeatherCity
                 } else null,

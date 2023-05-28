@@ -58,14 +58,10 @@ import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.search.SearchProviderController
-import com.saggitt.omega.smartspace.OmegaSmartSpaceController
-import com.saggitt.omega.smartspace.SmartSpaceDataWidget
-import com.saggitt.omega.smartspace.eventprovider.NotificationUnreadProvider
-import com.saggitt.omega.smartspace.eventprovider.PersonalityProvider
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
-import com.saggitt.omega.smartspace.provider.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
-import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
+import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
@@ -921,31 +917,13 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
         titleId = R.string.title_smartspace_widget_provider,
-        defaultValue = OWMWeatherDataProvider::class.java.name,
-        entries = Config.smartspaceWeatherProviders(context).associateBy(
-            keySelector = { it },
-            valueTransform = { OmegaSmartSpaceController.getDisplayName(context, it) }
-        )
+        defaultValue = OWMWeatherProvider::class.java.name,
+        entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
     ) {
         updateSmartSpaceProvider()
         pokeChange()
     }
 
-    var smartspaceEventProvidersX = StringMultiSelectionPref(
-        dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_EVENTS_PROVIDER,
-        titleId = R.string.title_smartspace_event_providers,
-        defaultValue = setOf(
-            SmartSpaceDataWidget::class.java.name,
-            NotificationUnreadProvider::class.java.name,
-            //NowPlayingProvider::class.java.name,
-            //BatteryStatusProvider::class.java.name,
-            PersonalityProvider::class.java.name
-        ),
-        entries = Config.smartspaceEventProvidersX,
-        withIcons = true,
-        onChange = { updateSmartSpaceProvider() }
-    )
 
     var smartspaceEventProviders = StringMultiSelectionPref(
         dataStore = dataStore,

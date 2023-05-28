@@ -5,9 +5,14 @@ import android.content.Context
 import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saggitt.omega.smartspace.weather.BlankWeatherProvider
+import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
+import com.saggitt.omega.smartspace.weather.PixelWeatherProvider
 import com.saggitt.omega.util.dropWhileBusy
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,9 +21,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 
 class SmartspaceProvider private constructor(context: Context) {
-
-    val dataSources = listOf(
+    val prefs = NeoPrefs.getInstance(context)
+    private val dataSources = listOf(
+        BlankWeatherProvider(context),
         GoogleWeatherProvider(context),
+        PixelWeatherProvider(context),
+        OWMWeatherProvider(context),
         BatteryStatusProvider(context),
         NowPlayingProvider(context)
     )

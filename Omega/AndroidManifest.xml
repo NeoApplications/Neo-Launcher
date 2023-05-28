@@ -105,11 +105,6 @@
         </activity>
 
         <activity
-            android:name="com.saggitt.omega.BlankActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Transparent" />
-
-        <activity
             android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
             android:theme="@style/Theme.Transparent" />
 

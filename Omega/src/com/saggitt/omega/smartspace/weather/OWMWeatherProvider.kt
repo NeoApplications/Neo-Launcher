@@ -1,7 +1,26 @@
+/*
+ * This file is part of Neo Launcher
+ * Copyright (c) 2023   Neo Launcher Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.saggitt.omega.smartspace.weather
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Icon
 import android.location.Criteria
 import android.location.LocationManager
 import android.util.Log
@@ -13,17 +32,31 @@ import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
 import com.saggitt.omega.neoApp
-import com.saggitt.omega.smartspace.OmegaSmartSpaceController
+import com.saggitt.omega.smartspace.model.SmartspaceAction
+import com.saggitt.omega.smartspace.model.SmartspaceScores
+import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saggitt.omega.smartspace.model.WeatherData
+import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
+import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.saggitt.omega.smartspace.weather.icons.WeatherIconProvider
 import com.saggitt.omega.util.checkLocationAccess
 import com.saggitt.omega.widget.Temperature
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlin.math.roundToInt
 
-class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
-    OmegaSmartSpaceController.PeriodicDataProvider(controller), CurrentWeatherCallback {
-    private val prefs = Utilities.getOmegaPrefs(context)
+class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
+    context, R.string.weather_provider_owm
+), CurrentWeatherCallback {
+    override val isAvailable = true
+    override val disabledTargets = listOf(dummyTarget)
+    override lateinit var internalTargets: Flow<List<SmartspaceTarget>>
+
     private val owm by lazy { OpenWeatherMapHelper(prefs.smartspaceWeatherApiKey.getValue()) }
     private val iconProvider by lazy { WeatherIconProvider(context) }
+
+    private var weatherData: WeatherData? = null
 
     private val locationAccess get() = context.checkLocationAccess()
     private val locationManager: LocationManager? by lazy {
@@ -32,9 +65,35 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         } else null
     }
 
+    init {
+        internalTargets = listOf(disabledTargets).asFlow()
+        startListening()
+    }
+
+    private fun updateData(weather: WeatherData?) {
+        internalTargets = callbackFlow {
+            if (weather != null) {
+                val target = SmartspaceTarget(
+                    id = "OWMWeather",
+                    headerAction = SmartspaceAction(
+                        id = "OWMWeather",
+                        icon = weatherData?.icon.let { Icon.createWithBitmap(it) },
+                        title = "",
+                        subtitle = weatherData?.getTitle(),
+                        pendingIntent = weatherData?.pendingIntent
+                    ),
+                    score = SmartspaceScores.SCORE_WEATHER,
+                    featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER,
+                )
+                trySend(listOf(target)).isSuccess
+            } else {
+                trySend(disabledTargets).isSuccess
+            }
+        }
+    }
+
     @SuppressLint("MissingPermission")
     override fun updateData() {
-        // TODO: Create a search/dropdown for cities, make Auto the default
         if (prefs.smartspaceWeatherCity.getValue() == "##Auto") {
             if (!locationAccess) {
                 Utilities.requestLocationPermission(context.neoApp.activityHandler.foregroundActivity)
@@ -59,7 +118,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
         updateData(
-            OmegaSmartSpaceController.WeatherData(
+            WeatherData(
                 iconProvider.getIcon(icon),
                 Temperature(
                     temp.roundToInt(),
@@ -67,7 +126,7 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
                     else Temperature.Unit.Fahrenheit
                 ),
                 "https://openweathermap.org/city/${currentWeather.id}"
-            ), null
+            )
         )
     }
 
@@ -82,9 +141,8 @@ class OWMWeatherDataProvider(controller: OmegaSmartSpaceController) :
             Log.d("OWM", "Updating weather data failed", throwable)
             Toast.makeText(context, throwable.message, Toast.LENGTH_LONG).show()
         }
-        updateData(null, null)
+        updateData(null)
     }
-
 
     companion object {
 

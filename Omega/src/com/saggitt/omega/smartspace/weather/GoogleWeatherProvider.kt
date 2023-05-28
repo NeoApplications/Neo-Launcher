@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace.provider
+package com.saggitt.omega.smartspace.weather
 
 import android.app.Activity
 import android.app.PendingIntent
@@ -19,6 +19,7 @@ import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.model.WeatherData
+import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
 import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.pendingIntent
 import com.saggitt.omega.widget.HeadlessWidgetsManager
@@ -28,7 +29,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
-    context, R.string.category__behavior_weather
+    context, R.string.google_app
 ) {
     override val isAvailable: Boolean
 
@@ -148,7 +149,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
         private const val WIDGET_CLASS_NAME =
             "com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider"
 
-        private val dummyTarget = SmartspaceTarget(
+        val dummyTarget = SmartspaceTarget(
             id = "dummyTarget",
             featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER
         )
