@@ -24,6 +24,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.net.Uri
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
@@ -35,9 +36,11 @@ import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.saggitt.omega.widget.Temperature
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import java.util.concurrent.TimeUnit
 
 class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
     context, R.string.weather_provider_pe
@@ -46,57 +49,46 @@ class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
     override val disabledTargets = listOf(dummyTarget)
     override lateinit var internalTargets: Flow<List<SmartspaceTarget>>
     private val contentResolver = context.contentResolver
+    private var weatherData: WeatherData? = null
 
     init {
         isAvailable = isAvailable(context)
-        /*internalTargets = callbackFlow {
-            val weatherData = queryWeatherData()
-            if (weatherData != null) {
-                    val target = SmartspaceTarget(
-                    id = "smartspacePEWeather",
-                    headerAction = SmartspaceAction(
-                        id = "smartspacePEWeather",
-                        icon = weatherData.icon.let { Icon.createWithBitmap(it) },
-                        title = "",
-                        subtitle = weatherData.getTitle(),
-                        pendingIntent = weatherData.pendingIntent
-                    ),
-                    score = SmartspaceScores.SCORE_WEATHER,
-                    featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER,
-                )
-                trySend(listOf(target)).isSuccess
-            } else {
-                trySend(disabledTargets).isSuccess
+        internalTargets = if (isAvailable) {
+            updateData()
+            flow {
+                while (true) {
+                    emit(updateWeatherData())
+                    delay(TimeUnit.MINUTES.toMillis(30))
+                }
             }
-        }
-        startListening()*/
-        internalTargets = listOf(disabledTargets).asFlow()
-        startListening()
-    }
-
-    private fun updateData(weatherData: WeatherData?) {
-        internalTargets = callbackFlow {
-            if (weatherData != null) {
-                val target = SmartspaceTarget(
-                    id = "OWMWeather",
-                    headerAction = SmartspaceAction(
-                        id = "OWMWeather",
-                        icon = weatherData.icon.let { Icon.createWithBitmap(it) },
-                        title = "",
-                        subtitle = weatherData.getTitle(),
-                        pendingIntent = weatherData.pendingIntent
-                    ),
-                    score = SmartspaceScores.SCORE_WEATHER,
-                    featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER,
-                )
-                trySend(listOf(target)).isSuccess
-            } else {
-                trySend(disabledTargets).isSuccess
-            }
+        } else {
+            listOf(disabledTargets).asFlow()
         }
     }
 
-    override fun updateData() {
+    private fun updateWeatherData(): List<SmartspaceTarget> {
+        if (weatherData != null) {
+            Log.d("PixelWeatherProvider", "Updating weather data " + weatherData?.getTitle())
+            val target = SmartspaceTarget(
+                id = "PixelWeatherProvider",
+                headerAction = SmartspaceAction(
+                    id = "PixelWeatherProvider",
+                    icon = Icon.createWithBitmap(weatherData!!.icon),
+                    title = "",
+                    subtitle = weatherData?.getTitle(Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())),
+                    pendingIntent = weatherData?.pendingIntent
+                ),
+                score = SmartspaceScores.SCORE_WEATHER,
+                featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER,
+            )
+            return listOf(target)
+        } else {
+            return disabledTargets
+        }
+
+    }
+
+    private fun updateData() {
         contentResolver.query(weatherUri, PROJECTION_DEFAULT_WEATHER, null, null, null)
             ?.use { cursor ->
                 val count = cursor.count
@@ -106,16 +98,13 @@ class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
                     if (status == 0) {
                         val conditions = cursor.getString(1)
                         val temperature = cursor.getInt(2)
-                        updateData(
-                            WeatherData(
-                                getConditionIcon(conditions),
-                                Temperature(temperature, Temperature.Unit.Celsius), ""
-                            )
+                        weatherData = WeatherData(
+                            getConditionIcon(conditions),
+                            Temperature(temperature, Temperature.Unit.Celsius), ""
                         )
                     }
                 }
             }
-        updateData(null)
     }
 
     @SuppressLint("DiscouragedApi")
