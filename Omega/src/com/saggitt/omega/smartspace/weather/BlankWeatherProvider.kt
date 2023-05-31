@@ -15,7 +15,4 @@ class BlankWeatherProvider(context: Context) : SmartspaceDataSource(
     override val disabledTargets = listOf(GoogleWeatherProvider.dummyTarget)
     override val internalTargets: Flow<List<SmartspaceTarget>> = listOf(disabledTargets).asFlow()
 
-    init {
-        stopListening()
-    }
 }
