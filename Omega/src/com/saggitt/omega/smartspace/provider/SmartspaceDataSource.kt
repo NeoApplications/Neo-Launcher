@@ -2,11 +2,8 @@ package com.saggitt.omega.smartspace.provider
 
 import android.app.Activity
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
-import android.util.Log
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saggitt.omega.util.prefs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,16 +12,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import java.util.concurrent.TimeUnit
 
 abstract class SmartspaceDataSource(
     val context: Context,
     val providerName: Int
 ) {
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = context.prefs
 
     open val isAvailable: Boolean = true
-    protected abstract val internalTargets: Flow<List<SmartspaceTarget>>
+    abstract val internalTargets: Flow<List<SmartspaceTarget>>
     open val disabledTargets: List<SmartspaceTarget> = emptyList()
 
     private val restartSignal = MutableStateFlow(0)
@@ -68,32 +64,6 @@ abstract class SmartspaceDataSource(
 
     private fun restart() {
         restartSignal.value++
-    }
-
-    private val handlerThread =
-        HandlerThread(this::class.java.simpleName).apply { if (!isAlive) start() }
-    private val handler = Handler(handlerThread.looper)
-    private val update = ::periodicUpdate
-
-    open val timeout = TimeUnit.MINUTES.toMillis(30)
-    fun startListening() {
-        handler.post(update)
-    }
-
-    private fun periodicUpdate() {
-        try {
-            updateData()
-        } catch (e: Exception) {
-            Log.d("PeriodicDataProvider", "failed to update data", e)
-        }
-        handler.postDelayed(update, timeout)
-    }
-
-    fun stopListening() {
-        handlerThread.quit()
-    }
-
-    open fun updateData() {
     }
 
     private class RequiresSetupException : RuntimeException()
