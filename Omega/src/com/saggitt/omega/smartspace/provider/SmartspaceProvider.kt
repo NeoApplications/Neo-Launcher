@@ -38,6 +38,7 @@ class SmartspaceProvider private constructor(context: Context) {
         when (provider) {
             BatteryStatusProvider::class.java.name -> BatteryStatusProvider(context)
             NowPlayingProvider::class.java.name -> NowPlayingProvider(context)
+            CalendarEventProvider::class.java.name -> CalendarEventProvider(context)
             else -> null
         }?.let { dataSources.add(it) }
     }
