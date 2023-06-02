@@ -27,7 +27,6 @@ abstract class Filter<T>(val context: Context) {
 
     open val size get() = matches?.size ?: 0
 
-    //abstract val matcher: Predicate<ItemInfo>
     abstract val matcher: CustomItemInfoMatcher
 }
 
@@ -44,11 +43,3 @@ class CustomFilter(context: Context, override val matches: Set<ComponentKey>) :
             )
         }
 }
-/*class CustomFilter(context: Context, override val matches: Set<ComponentKey>) :
-    Filter<ComponentKey>(context) {
-
-    override val matcher
-        get() = ItemInfoMatcher.ofComponents(
-            matches.map { it.componentName }.toSet().toHashSet(), matches.map { it.user }[0]
-        )
-}*/
