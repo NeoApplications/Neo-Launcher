@@ -66,9 +66,9 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     init {
-        updateData()
         internalTargets = flow {
             while (true) {
+                updateData()
                 emit(updateWeatherData())
                 delay(TimeUnit.MINUTES.toMillis(30))
             }

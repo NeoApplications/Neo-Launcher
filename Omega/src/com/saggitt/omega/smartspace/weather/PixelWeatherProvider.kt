@@ -54,9 +54,9 @@ class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
     init {
         isAvailable = isAvailable(context)
         internalTargets = if (isAvailable) {
-            updateData()
             flow {
                 while (true) {
+                    updateData()
                     emit(updateWeatherData())
                     delay(TimeUnit.MINUTES.toMillis(30))
                 }
