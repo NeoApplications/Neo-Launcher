@@ -72,22 +72,22 @@ android {
         named("debug") {
             isMinifyEnabled = false
             applicationIdSuffix = ".alpha"
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_debug"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round_debug"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
             signingConfig = signingConfigs.getByName("debug")
         }
         create("neo") {
             isMinifyEnabled = false
             applicationIdSuffix = ".neo"
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_debug"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round_debug"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
         }
 
         named("release") {
             isMinifyEnabled = false
             setProguardFiles(listOf("proguard-android-optimize.txt", "proguard.flags"))
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round"
         }
     }
 

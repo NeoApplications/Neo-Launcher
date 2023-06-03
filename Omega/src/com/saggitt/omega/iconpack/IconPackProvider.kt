@@ -88,7 +88,7 @@ class IconPackProvider(private val context: Context) {
                     R.drawable.ic_launcher_foreground
                 )
             )*/
-            ContextCompat.getDrawable(context, R.mipmap.ic_launcher)!!
+            ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!
         ) else null
         return listOfNotNull(
             defaultIconPack,
