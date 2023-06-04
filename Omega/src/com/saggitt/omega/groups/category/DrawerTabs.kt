@@ -25,18 +25,20 @@ import android.os.Process
 import android.os.UserHandle
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.ItemInfoMatcher
 import com.saggitt.omega.groups.AppGroups
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.CustomFilter
-import com.saggitt.omega.groups.CustomItemInfoMatcher
 import com.saggitt.omega.groups.Filter
 import com.saggitt.omega.groups.GroupCreator
 import com.saggitt.omega.groups.category.FlowerpotTabs.FlowerpotTab
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.util.prefs
 import org.json.JSONObject
+import java.util.function.Predicate
 
 abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Category) :
     AppGroups<DrawerTabs.Tab>(manager, type) {
@@ -132,10 +134,10 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
     data class Profile(val user: UserHandle?, val matchesAll: Boolean = false) : Parcelable {
 
         val isWork = user != null && user != Process.myUserHandle()
-        val matcher: CustomItemInfoMatcher? = if (user != null) {
-            CustomItemInfoMatcher.ofUser(user)
+        val matcher: Predicate<ItemInfo>? = if (user != null) {
+            ItemInfoMatcher.ofUser(user)
         } else if (!matchesAll) {
-            CustomItemInfoMatcher.ofUser(Process.myUserHandle())
+            ItemInfoMatcher.ofUser(Process.myUserHandle())
         } else {
             null
         }

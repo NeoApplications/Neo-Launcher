@@ -18,14 +18,13 @@
 
 package com.saggitt.omega.allapps
 
-import android.content.ComponentName
 import android.content.Context
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.groups.CustomItemInfoMatcher
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
 import com.saggitt.omega.util.prefs
+import java.util.function.Predicate
 
 class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
 
@@ -46,7 +45,7 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
         reloadTabs()
     }
 
-    private fun reloadTabs() {
+    fun reloadTabs() {
         addedApps.clear()
         tabs.clear()
         context.prefs.drawerTabsModelCurrent.getGroups().mapNotNullTo(tabs) {
@@ -76,13 +75,11 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
 
     private fun createMatcher(
         components: List<ComponentKey>,
-        base: CustomItemInfoMatcher? = null
-    ): CustomItemInfoMatcher {
-        return object : CustomItemInfoMatcher {
-            override fun matches(info: ItemInfo, cn: ComponentName?): Boolean {
-                if (base?.matches(info, cn) == false) return false
-                return !components.contains(ComponentKey(info.targetComponent, info.user))
-            }
+        base: Predicate<ItemInfo>? = null
+    ): Predicate<ItemInfo> {
+        return Predicate<ItemInfo> { info ->
+            if (base?.test(info) == false) return@Predicate false
+            return@Predicate !components.contains(ComponentKey(info.targetComponent, info.user))
         }
     }
 
@@ -92,11 +89,13 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
 
     operator fun get(index: Int) = tabs[index]
 
-    inner class ProfileTab(matcher: CustomItemInfoMatcher?, drawerTab: DrawerTabs.ProfileTab) :
-        Tab(drawerTab.title, matcher, drawerTab.profile.isWork, drawerTab)
+    inner class ProfileTab(matcher: Predicate<ItemInfo>, drawerTab: DrawerTabs.ProfileTab) :
+        Tab(drawerTab.title, matcher, drawerTab.profile.isWork, false, drawerTab)
 
     open class Tab(
-        val name: String, val matcher: CustomItemInfoMatcher?,
-        val isWork: Boolean = false, val drawerTab: DrawerTabs.Tab
+        val name: String,
+        val matcher: Predicate<ItemInfo>,
+        val isWork: Boolean = false,
+        val drawerTab: DrawerTabs.Tab
     )
 }
