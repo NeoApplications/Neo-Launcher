@@ -90,7 +90,7 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
     operator fun get(index: Int) = tabs[index]
 
     inner class ProfileTab(matcher: Predicate<ItemInfo>, drawerTab: DrawerTabs.ProfileTab) :
-        Tab(drawerTab.title, matcher, drawerTab.profile.isWork, false, drawerTab)
+        Tab(drawerTab.title, matcher, drawerTab.profile.isWork, drawerTab)
 
     open class Tab(
         val name: String,
