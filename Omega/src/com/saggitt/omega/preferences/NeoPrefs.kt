@@ -863,13 +863,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false
     )
 
-    var smartspaceWidgetId = IntPref(
-        dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_WIDGET_ID,
-        titleId = -1,
-        defaultValue = -1,
-    )
-
     val smartspaceDate = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
