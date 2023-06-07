@@ -91,10 +91,7 @@ object PrefKey {
     val DRAWER_LABELS_SCALE = floatPreferencesKey("drawer_labels_scale")
     val DRAWER_POPUP_OPTIONS = stringSetPreferencesKey("drawer_popup_options")
     val DRAWER_GRID_COLUMNS = intPreferencesKey("drawer_grid_columns")
-    val DRAWER_LAYOUT_MODE = intPreferencesKey("drawer_layout_mode")
-    val DRAWER_GRID_ROWS = intPreferencesKey("drawer_grid_rows")
     val DRAWER_SORT_MODE = intPreferencesKey("drawer_sort_mode")
-    val DRAWER_GROUPS_MODE = stringPreferencesKey("drawer_groups_mode")
     val DRAWER_WORK_APPS_SEPARATE = booleanPreferencesKey("drawer_separate_work_apps")
     val DRAWER_CELL_HEIGHT_SCALE = floatPreferencesKey("drawer_cell_height_scale")
     val DRAWER_SCROLL_POSITION_SAVE = booleanPreferencesKey("drawer_save_scroll_position")
@@ -107,7 +104,6 @@ object PrefKey {
     val DRAWER_CATEGORIZATION = stringPreferencesKey("drawer_categorization")
     val DRAWER_CATEGORIZATION_ENABLED = booleanPreferencesKey("drawer_categorization_enabled")
     val DRAWER_CATEGORIZATION_TYPE = stringPreferencesKey("drawer_categorization_type")
-    val DRAWER_CATEGORIZATION_TABS = stringSetPreferencesKey("pref_drawer_tabs")
 
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")

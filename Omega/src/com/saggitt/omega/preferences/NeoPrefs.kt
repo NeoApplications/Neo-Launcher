@@ -597,6 +597,15 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadApps() }
     )
 
+    var drawerProtectedAppsSet = StringSetPref(
+        key = PrefKey.DRAWER_PROTECTED_APPS_LIST,
+        titleId = R.string.protected_apps,
+        dataStore = dataStore,
+        defaultValue = setOf(),
+        navRoute = Routes.PROTECTED_APPS,
+        onChange = { reloadApps() }
+    )
+
     private val drawerGridSizeDelegate = ResettableLazy {
         GridSize(
             titleId = R.string.title__drawer_columns,

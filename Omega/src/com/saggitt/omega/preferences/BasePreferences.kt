@@ -301,20 +301,6 @@ open class StringSetPref(
         onChange()
         dataStore.edit { it[key] = value }
     }
-
-    fun getAll(): List<String> = valueList
-
-    fun setAll(value: List<String>) {
-        valueList.clear()
-        valueList.addAll(value)
-        return runBlocking(Dispatchers.IO) {
-            saveChanges()
-        }
-    }
-
-    private suspend fun saveChanges() {
-        dataStore.edit { it[key] = valueList.toSet() }
-    }
 }
 
 open class StringMultiSelectionPref(

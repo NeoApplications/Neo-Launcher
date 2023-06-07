@@ -49,6 +49,8 @@ import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.pages.AppCategoriesPage
 import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.compose.pages.HiddenAppsPage
+import com.saggitt.omega.compose.pages.ProtectedAppsPage
+import com.saggitt.omega.compose.pages.ProtectedAppsView
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
@@ -87,6 +89,8 @@ fun DrawerPrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.drawerHiddenAppSet,
+                prefs.drawerEnableProtectedApps,
+                prefs.drawerProtectedAppsSet,
                 prefs.drawerCustomBackground,
                 if (prefs.drawerCustomBackground.getValue()) {
                     prefs.drawerBackgroundColor
@@ -161,8 +165,8 @@ fun DrawerPrefsPage() {
 fun NavGraphBuilder.drawerPrefsGraph(route: String) {
     preferenceGraph(route, { DrawerPrefsPage() }) { subRoute ->
         preferenceGraph(route = subRoute(Routes.HIDDEN_APPS), { HiddenAppsPage() })
-        /*preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
-        preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })*/
+        preferenceGraph(route = subRoute(Routes.PROTECTED_APPS), { ProtectedAppsPage() })
+        preferenceGraph(route = Routes.PROTECTED_APPS_VIEW, { ProtectedAppsView() })
         preferenceGraph(route = subRoute(Routes.CATEGORIZE_APPS), { AppCategoriesPage() })
         preferenceGraph(
             route = subRoute(Routes.COLOR_BG_DRAWER),
