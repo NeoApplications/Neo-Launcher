@@ -26,6 +26,7 @@ import android.content.IntentSender
 import android.content.pm.LauncherApps
 import android.graphics.Rect
 import android.hardware.camera2.CameraManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -70,6 +71,7 @@ import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
+import com.saggitt.omega.util.hasStoragePermission
 import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +104,10 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         get() = lifecycleRegistry
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
+            && !this.hasStoragePermission
+        ) Utilities.requestStoragePermission(this)
+
         savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)

@@ -54,7 +54,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         themeOverride = ThemeOverride(themeSet, this)
         themeOverride.applyTheme(this)
         currentTheme = themeOverride.getTheme(this)
-        currentAccent = Color.Green.hashCode() //omegaPrefs.themeAccentColor.onGetValue()
+        currentAccent = Color.Green.hashCode()
         setContent {
             OmegaAppTheme {
                 navController = rememberAnimatedNavController()

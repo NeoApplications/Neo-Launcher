@@ -21,6 +21,7 @@ import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ICON_BADGED
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
+import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -1067,6 +1068,11 @@ public final class Utilities {
     public static boolean hasPermission(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void requestStoragePermission(Activity activity) {
+        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION_STORAGE_ACCESS);
     }
 
     public static void requestLocationPermission(Activity activity) {

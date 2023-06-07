@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -86,8 +87,12 @@ fun ProfilePrefsPage() {
     val others = remember(prefs.changePoker.collectAsState(initial = false).value) {
         mutableStateListOf(
             *listOfNotNull(
-                prefs.profileBlurEnable,
-                if (prefs.profileBlurEnable.getValue()) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+                    prefs.profileBlurEnable
+                } else {
+                    null
+                },
+                if (prefs.profileBlurEnable.getValue() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
                     prefs.profileBlurRadius
                 } else {
                     null
