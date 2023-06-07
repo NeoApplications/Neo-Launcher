@@ -10,6 +10,7 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.provider.CalendarContract
 import android.text.format.DateFormat
+import android.util.Log
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.PreferenceActivity
@@ -54,6 +55,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
 
     private fun calendarTarget(): List<SmartspaceTarget> {
         val event = getNextEvent()
+        Log.d("CalendarEventProvider", "calendarTarget " + event?.title)
         if (event != null) {
             val timeText = "${formatTime(event.start)} – ${formatTime(event.end)}"
             val subtitle = if (event.location != null) {

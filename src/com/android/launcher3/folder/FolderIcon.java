@@ -75,6 +75,7 @@ import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Executors;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
@@ -85,6 +86,7 @@ import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
@@ -215,7 +217,13 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         icon.mFolderName.setText(folderInfo.title);
         icon.mFolderName.setCompoundDrawablePadding(0);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
-        lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        if (folderInfo instanceof DrawerFolderInfo) {
+            lp.topMargin = grid.allAppsIconSizePx + grid.allAppsIconDrawablePaddingPx;
+            icon.mBackground = new PreviewBackground(true);
+            ((DrawerFolderInfo) folderInfo).getAppsStore().registerFolderIcon(icon);
+        } else {
+            lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        }
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(ItemClickHandler.INSTANCE);
@@ -896,6 +904,34 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         } else {
             return getContext().getString(R.string.folder_name_format_overflow, title,
                     MAX_NUM_ITEMS_IN_PREVIEW);
+        }
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo instanceof DrawerFolderInfo;
+    }
+
+    public WorkspaceItemInfo getCoverInfo() {
+        return mInfo.getCoverInfo();
+    }
+
+    public void applyCoverDotState(ItemInfo itemInfo, boolean animate) {
+        mFolderName.applyDotState(itemInfo, animate);
+    }
+
+    public void updateIconDots(Predicate<PackageUserKey> updatedBadges, PackageUserKey tmpKey) {
+        FolderDotInfo folderDotInfo = new FolderDotInfo();
+        for (WorkspaceItemInfo si : mInfo.contents) {
+            folderDotInfo.addDotInfo(mActivity.getDotInfoForItem(si));
+        }
+        setDotInfo(folderDotInfo);
+
+        if (mInfo.isCoverMode()) {
+            WorkspaceItemInfo coverInfo = getCoverInfo();
+            if (tmpKey.updateFromItemInfo(coverInfo) &&
+                    updatedBadges.test(tmpKey)) {
+                applyCoverDotState(coverInfo, true);
+            }
         }
     }
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -328,21 +327,13 @@ public class RecyclerViewFastScroller extends View {
         // Update the fastscroller section name at this touch position
         int bottom = mRv.getScrollbarTrackHeight() - mThumbHeight;
         float boundedY = (float) Math.max(0, Math.min(bottom, y - mTouchOffsetY));
-        PositionThumbInfo thumbInfo = mRv.scrollToPositionAtProgress(boundedY / bottom);
-        String sectionName = thumbInfo.name;
+        String sectionName = mRv.scrollToPositionAtProgress(boundedY / bottom);
         if (!sectionName.equals(mPopupSectionName)) {
             mPopupSectionName = sectionName;
             mPopupView.setText(sectionName);
             performHapticFeedback(CLOCK_TICK);
         }
-        int color = thumbInfo.color;
-        if (color != 0 && prefs.getDrawerSortMode().getValue() == Config.SORT_BY_COLOR) {
-            setColor(color, Color.WHITE);
-            if (!prefs.getShowDebugInfo().getValue()) {
-                mPopupSectionName = "";
-                mPopupView.setText("");
-            }
-        } else if (prefs.getDrawerSortMode().getValue() == Config.SORT_BY_INSTALL_DATE) {
+        if (prefs.getDrawerSortMode().getValue() == Config.SORT_BY_INSTALL_DATE) {
             mPopupSectionName = "";
             mPopupView.setText("");
         } else {

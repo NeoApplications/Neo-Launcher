@@ -1736,6 +1736,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         mOnFolderStateChangedListener = listener;
     }
 
+    public boolean isInAppDrawer() {
+        return mInfo.container == ItemInfo.NO_ID;
+    }
+
     /**
      * Listener that can be registered via {@link Folder#setOnFolderStateChangedListener}
      */

@@ -129,6 +129,15 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                     previewBackground.invalidate();
                 }
             };
+    private boolean isInDrawer;
+
+    public PreviewBackground() {
+        this(false);
+    }
+
+    public PreviewBackground(boolean inDrawer) {
+        isInDrawer = inDrawer;
+    }
 
     /**
      * Draws folder background under cell layout
@@ -169,7 +178,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
-        previewSize = grid.folderIconSizePx;
+        previewSize = isInDrawer ? grid.allAppsIconSizePx - 10 : grid.folderIconSizePx;
 
         basePreviewOffsetX = (availableSpaceX - previewSize) / 2;
         basePreviewOffsetY = topPadding + grid.folderIconOffsetYPx;
