@@ -122,6 +122,7 @@ fun EditDashPage() {
                         title = stringResource(id = item.titleResId),
                         modifier = Modifier
                             .shadow(elevation.value)
+                            .height(56.dp)
                             .clip(
                                 RoundedCornerShape(
                                     topStart = if (index == 0) 16.dp else 6.dp,
@@ -184,6 +185,7 @@ fun EditDashPage() {
                 ListItemWithIcon(
                     title = stringResource(id = item.titleResId),
                     modifier = Modifier
+                        .height(56.dp)
                         .clip(
                             RoundedCornerShape(
                                 topStart = if (index == 0) 16.dp else 6.dp,
