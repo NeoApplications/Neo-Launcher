@@ -106,7 +106,7 @@ import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.folder.FolderShortcut;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -245,7 +245,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private KeyboardInsetAnimationCallback mKeyboardInsetAnimationCallback;
 
     private GradientDrawable mBackground;
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final Launcher mLauncher;
 
     /**
@@ -314,7 +314,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
 
         ImageView settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setColorFilter(prefs.getProfileAccentColor().getValue(), PorterDuff.Mode.SRC_IN);
+        settingsButton.setColorFilter(prefs.getProfileAccentColor().getColor(), PorterDuff.Mode.SRC_IN);
         if (prefs.getDesktopLock().getValue()) {
             settingsButton.setVisibility(View.GONE);
         } else {
@@ -333,7 +333,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private void customizeFolder() {
         int bgColor;
         if (prefs.getDesktopCustomFolderBackground().getValue()) {
-            bgColor = prefs.getDesktopFolderBackgroundColor().getValue();
+            bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
         } else {
             bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
         }
@@ -1734,6 +1734,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     public void setOnFolderStateChangedListener(@Nullable OnFolderStateChangedListener listener) {
         mOnFolderStateChangedListener = listener;
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo.container == ItemInfo.NO_ID;
     }
 
     /**

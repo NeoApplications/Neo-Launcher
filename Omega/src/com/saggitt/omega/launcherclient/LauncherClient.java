@@ -43,7 +43,7 @@ import android.view.WindowManager.LayoutParams;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.lang.ref.WeakReference;
 
@@ -408,7 +408,7 @@ public class LauncherClient {
 
     static Intent getIntent(Context context, boolean proxy) {
         String pkg = context.getPackageName();
-        NLPrefs prefs = NLPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance(context);
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
                 .setPackage(prefs.getFeedProvider().getValue())
                 .setData(Uri.parse("app://" +

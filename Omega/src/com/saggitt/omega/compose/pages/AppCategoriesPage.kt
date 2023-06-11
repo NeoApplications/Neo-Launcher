@@ -79,7 +79,7 @@ import com.saggitt.omega.groups.ui.CreateGroupBottomSheet
 import com.saggitt.omega.groups.ui.EditGroupBottomSheet
 import com.saggitt.omega.groups.ui.GroupItem
 import com.saggitt.omega.groups.ui.SelectTabBottomSheet
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -89,8 +89,11 @@ import kotlinx.coroutines.launch
 fun AppCategoriesPage() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val manager by lazy { prefs.drawerAppGroupsManager }
+    val (categoriesEnabled, enableCategories) = remember(manager.categorizationEnabled.getValue()) {
+        mutableStateOf(manager.categorizationEnabled.getValue())
+    }
 
     var categoryTitle by remember { mutableStateOf("") }
 
@@ -104,8 +107,6 @@ fun AppCategoriesPage() {
     )
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
-    val categoriesEnabled =
-        remember(manager.categorizationEnabled) { mutableStateOf(manager.categorizationEnabled.getValue()) }
     var selectedCategoryKey by remember { mutableStateOf(manager.categorizationType.getValue()) }
     var currentCategory by remember { mutableStateOf(AppGroupsManager.Category.TAB) }
 
@@ -151,10 +152,10 @@ fun AppCategoriesPage() {
             }
         }
     }
+    var overscrollJob by remember { mutableStateOf<Job?>(null) }
     val onMove: (Int, Int) -> Unit = { from, to ->
         groups.move(from, to)
     }
-    var overscrollJob by remember { mutableStateOf<Job?>(null) }
     val dragDropListState = rememberDragDropListState(onMove = onMove)
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -244,7 +245,7 @@ fun AppCategoriesPage() {
                 ComposeSwitchView(
                     modifier = Modifier
                         .background(
-                            if (categoriesEnabled.value) MaterialTheme.colorScheme.primary.copy(0.6f)
+                            if (categoriesEnabled) MaterialTheme.colorScheme.primary.copy(0.6f)
                             else MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                             MaterialTheme.shapes.extraLarge
                         )
@@ -253,8 +254,9 @@ fun AppCategoriesPage() {
                     summary = stringResource(id = R.string.summary_app_categorization_enable),
                     verticalPadding = 16.dp,
                     horizontalPadding = 16.dp,
-                    isChecked = categoriesEnabled.value,
+                    isChecked = categoriesEnabled,
                     onCheckedChange = {
+                        enableCategories(it)
                         manager.categorizationEnabled.setValue(it)
                     }
                 )
@@ -271,10 +273,10 @@ fun AppCategoriesPage() {
                     ).forEach {
                         CategorizationOption(
                             category = it,
-                            selected = selectedCategoryKey == it.key && categoriesEnabled.value,
+                            selected = selectedCategoryKey == it.key && categoriesEnabled,
 
                             ) {
-                            if (categoriesEnabled.value) {
+                            if (categoriesEnabled) {
                                 manager.categorizationType.setValue(it.key)
                                 selectedCategoryKey = it.key
                                 currentCategory = it

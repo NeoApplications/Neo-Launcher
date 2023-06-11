@@ -35,6 +35,8 @@ import android.widget.Toast
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.saggitt.omega.NeoApp
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ceilToInt
 import com.saggitt.omega.util.ensureOnMainThread
@@ -100,7 +102,7 @@ class BlurWallpaperProvider(val context: Context) {
             updatePending = true
             return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !context.hasStoragePermission) {
+        if (NeoApp.minSDK(Build.VERSION_CODES.O_MR1) && !context.hasStoragePermission) {
             prefs.profileBlurEnable.setValue(false)
             return
         }
@@ -210,7 +212,8 @@ class BlurWallpaperProvider(val context: Context) {
         return bitmap
     }
 
-    private val tintColor = prefs.profileAccentColor.getValue()
+    private val tintColor =
+        AccentColorOption.fromString(prefs.profileAccentColor.getValue()).accentColor
     fun updateAsync() {
         MAIN_EXECUTOR.execute(mUpdateRunnable)
     }

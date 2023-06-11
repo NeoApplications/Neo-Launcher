@@ -44,6 +44,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.children
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.launcher3.Launcher
@@ -53,12 +55,13 @@ import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
+import com.android.launcher3.util.Themes
 import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.allapps.AppColorComparator
 import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator
 import com.saggitt.omega.data.AppTrackerRepository
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import org.json.JSONObject
 import java.lang.reflect.Field
 import java.text.Collator
@@ -67,6 +70,7 @@ import java.util.Locale
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.reflect.KProperty
 
@@ -101,6 +105,12 @@ fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
     return false
 }
 
+val ViewGroup.recursiveChildren: Sequence<View>
+    get() = children.flatMap {
+        if (it is ViewGroup) {
+            it.recursiveChildren + sequenceOf(it)
+        } else sequenceOf(it)
+    }
 
 val Long.Companion.random get() = Random.nextLong()
 
@@ -245,6 +255,17 @@ inline fun <T> listWhileNotNull(generator: () -> T?): List<T> = mutableListOf<T>
 
 val isBlackTheme: Boolean = false //TODO add black theme support
 
+fun getAllAppsScrimColor(context: Context): Int {
+    val opacity = context.prefs.drawerBackgroundOpacity.getValue()
+    val scrimColor = if (context.prefs.drawerCustomBackground.getValue()) {
+        context.prefs.drawerBackgroundColor.getColor()
+    } else {
+        Themes.getAttrColor(context, R.attr.allAppsScrimColor)
+    }
+    val alpha = (opacity * 255).roundToInt()
+    return ColorUtils.setAlphaComponent(scrimColor, alpha)
+}
+
 fun openURLInBrowser(context: Context, url: String?) {
     openURLInBrowser(context, url, null, null)
 }
@@ -329,6 +350,6 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
 }
 
 fun getFolderPreviewAlpha(context: Context): Int {
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
 }

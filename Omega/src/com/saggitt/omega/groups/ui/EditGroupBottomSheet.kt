@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
@@ -41,8 +40,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -53,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -74,6 +72,7 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.TYPE_FLOWERPOT
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
@@ -119,10 +118,8 @@ fun EditGroupBottomSheet(
     val selectedApps = remember { mutableStateListOf(*apps) }
     var color by remember {
         mutableStateOf(
-            Color(
-                (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value
+            (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value
                     ?: context.prefs.profileAccentColor.getValue()
-            )
         )
     }
     Column(
@@ -146,9 +143,10 @@ fun EditGroupBottomSheet(
             modifier = Modifier
                 .fillMaxWidth(),
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12F),
-                textColor = MaterialTheme.colorScheme.onSurface
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -196,7 +194,7 @@ fun EditGroupBottomSheet(
                 if (openDialog.value) {
                     BaseDialog(openDialogCustom = openDialog) {
                         Card(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = MaterialTheme.shapes.large,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -251,7 +249,7 @@ fun EditGroupBottomSheet(
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
                             Card(
-                                shape = RoundedCornerShape(16.dp),
+                                shape = MaterialTheme.shapes.large,
                                 modifier = Modifier.padding(8.dp),
                                 elevation = CardDefaults.elevatedCardElevation(8.dp),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -319,15 +317,15 @@ fun EditGroupBottomSheet(
                 if (colorPicker.value) {
                     BaseDialog(openDialogCustom = colorPicker) {
                         Card(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = MaterialTheme.shapes.large,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
                         ) {
                             ColorSelectionDialog(
-                                defaultColor = color.toArgb()
+                                defaultColor = color
                             ) {
-                                color = Color(it)
+                                color = it
                                 colorPicker.value = false
                             }
                         }
@@ -342,7 +340,7 @@ fun EditGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = color
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
 
                     Text(
@@ -370,7 +368,7 @@ fun EditGroupBottomSheet(
                 onClick = {
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
@@ -389,8 +387,8 @@ fun EditGroupBottomSheet(
                     (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                         selectedApps.toMutableSet()
                     if (category != AppGroupsManager.Category.FOLDER) {
-                        (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value =
-                            color.toArgb()
+                        (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
+                            color
                     }
                     group.customizations.applyFrom(config)
 
@@ -401,15 +399,15 @@ fun EditGroupBottomSheet(
 
                         AppGroupsManager.Category.TAB,
                         AppGroupsManager.Category.FLOWERPOT,
-                        -> {
+                                                         -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
                         }
 
-                        else -> {}
+                        else                             -> {}
                     }
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
                     contentColor = MaterialTheme.colorScheme.onPrimary

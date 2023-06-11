@@ -144,7 +144,6 @@
     <string name="onbording_settings_summary">Коснитесь и удерживайте на рабочем столе.</string>
     <string name="onbording_settings_title">Настройка %s</string>
     <string name="personality_provider">Приветствия</string>
-    <string name="action_press_back">Кнопка “Назад”</string>
     <string name="deny">Запретить</string>
     <string name="allow">Разрешить</string>
     <string name="permission_iplocate_twilight_explanation">Разрешить доступ к вашему приблизительному местоположению\? Это позволяет более точно рассчитывать дневное освещение.</string>

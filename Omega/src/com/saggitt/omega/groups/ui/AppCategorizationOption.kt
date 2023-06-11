@@ -18,32 +18,25 @@
 
 package com.saggitt.omega.groups.ui
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.android.launcher3.R
+import com.saggitt.omega.compose.icons.Phosphor
+import com.saggitt.omega.compose.icons.phosphor.Check
 import com.saggitt.omega.groups.AppGroupsManager
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategorizationOption(
     modifier: Modifier = Modifier,
@@ -51,63 +44,48 @@ fun CategorizationOption(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        border = if (selected)
-            BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(0.95f))
-        else
-            BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+    ListItem(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .clickable { onClick() },
         tonalElevation = 2.dp,
-        color = if (selected) MaterialTheme.colorScheme.primary.copy(0.15f) else MaterialTheme.colorScheme.background,
-        onClick = onClick
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
-        ) {
+        colors = ListItemDefaults.colors(
+            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surface,
+        ),
+        leadingContent = {
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(id = category.iconId),
                 contentDescription = stringResource(id = category.titleId),
-                tint = if (selected) MaterialTheme.colorScheme.primary.copy(0.95f)
-                else MaterialTheme.colorScheme.outline
             )
-            Spacer(modifier = Modifier.width(6.dp))
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(id = category.titleId),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Text(
-                    text = stringResource(id = category.summaryId),
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
+        },
+        headlineContent = {
+            Text(
+                text = stringResource(id = category.titleId),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurface
+            )
+        },
+        supportingContent = {
+            Text(
+                text = stringResource(id = category.summaryId),
+                color = if (selected) MaterialTheme.colorScheme.onSurfaceVariant
+                else MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        trailingContent = {
             if (selected) {
-                Column(
-                    modifier = Modifier
-                        .width(48.dp)
-                        .padding(top = 6.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_check),
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.primary.copy(0.95f),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Phosphor.Check,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(32.dp)
+                )
             }
-        }
-    }
+        },
+    )
 }

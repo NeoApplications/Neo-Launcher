@@ -23,13 +23,14 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import com.android.launcher3.util.TouchController
-import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
 import com.saggitt.omega.gestures.gestures.VerticalSwipeGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
+import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverlayGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
@@ -41,7 +42,7 @@ import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import org.json.JSONException
 import org.json.JSONObject
 
-class GestureController(val launcher: OmegaLauncher) : TouchController {
+class GestureController(val launcher: NeoLauncher) : TouchController {
 
     private val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
@@ -152,14 +153,14 @@ class GestureController(val launcher: OmegaLauncher) : TouchController {
             mutableListOf(
                 PressBackGestureHandler(context, null),
                 SleepGestureHandler(context, null),
-                //OpenDashGestureHandler(context, null),
+                OpenDashGestureHandler(context, null),
                 OpenDrawerGestureHandler(context, null),
                 OpenWidgetsGestureHandler(context, null),
                 NotificationsOpenGestureHandler(context, null),
                 OpenOverlayGestureHandler(context, null),
                 OpenOverviewGestureHandler(context, null),
                 StartGlobalSearchGestureHandler(context, null),
-                OpenSettingsGestureHandler(context, null)
+                OpenSettingsGestureHandler(context, null),
             ).apply {
                 if (hasBlank) {
                     add(0, BlankGestureHandler(context, null))

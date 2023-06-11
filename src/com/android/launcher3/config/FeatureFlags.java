@@ -21,7 +21,7 @@ import android.content.Context;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.uioverrides.DeviceFlag;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public final class FeatureFlags {
      */
     //public static final boolean QSB_ON_FIRST_SCREEN = true;
     public static boolean QSbOnFirstScreen(Context context) {
-        return NLPrefs.getInstance(context).getSmartspaceEnable().getValue();
+        return NeoPrefs.getInstance(context).getSmartspaceEnable().getValue();
     }
 
     /**

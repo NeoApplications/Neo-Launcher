@@ -21,28 +21,14 @@ package com.saggitt.omega.allapps
 import android.content.ComponentName
 import android.content.Context
 import android.os.UserHandle
-import com.android.launcher3.AppFilter
-import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.OmegaLauncher
-import java.util.stream.Collectors
 
-open class CustomAppFilter(val context: Context) : AppFilter() {
+class CustomAppFilter(private val mContext: Context) : OmegaAppFilter(mContext) {
 
-    private var mFilteredComponents: MutableSet<ComponentName> =
-        context.resources.getStringArray(R.array.filtered_components).mapNotNull {
-            ComponentName.unflattenFromString(it)
-        }.stream().collect(Collectors.toSet())
-
-    init {
-        mFilteredComponents.add(ComponentName(context, OmegaLauncher::class.java.name))
-    }
-
-    override fun shouldShowApp(componentName: ComponentName, user: UserHandle?): Boolean {
-        return super.shouldShowApp(componentName, user) ||
-                !mFilteredComponents.contains(componentName) ||
-                !isHiddenApp(context, ComponentKey(componentName, user))
+    override fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
+        return super.shouldShowApp(componentName, user)
+                && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
     }
 
     companion object {
@@ -57,17 +43,16 @@ open class CustomAppFilter(val context: Context) : AppFilter() {
             setHiddenApps(context, hiddenApps)
         }
 
-        private fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
-            Utilities.getOmegaPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
-        }
-
         fun isHiddenApp(context: Context, key: ComponentKey?): Boolean {
             return getHiddenApps(context).contains(key.toString())
         }
 
         private fun getHiddenApps(context: Context): MutableSet<String> {
-            return HashSet(Utilities.getOmegaPrefs(context).drawerHiddenAppSet.getAll())
+            return HashSet(Utilities.getOmegaPrefs(context).drawerHiddenAppSet.getValue())
         }
 
+        fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
+            Utilities.getOmegaPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
+        }
     }
 }

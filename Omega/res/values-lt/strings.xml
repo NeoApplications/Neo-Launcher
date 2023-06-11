@@ -221,7 +221,6 @@
     <string name="dt2s_admin_warning">Dvigubas bakstelėjimas užmigdymui bus išjungtas.</string>
     <string name="dt2s_admin_hint">Norėdami naudoti dvigubą bakstelėjimą užmigdymui, suteikite administratoriaus teises.</string>
     <string name="omega_actions">Veiksmai</string>
-    <string name="action_press_back">Atgalinis mygtukas</string>
     <string name="gesture_press_back">Atgalinis mygtukas</string>
     <string name="gesture_press_home">Pagrindinio mygtuko bakstelėjimas</string>
     <string name="gesture_swipe_up">Perbraukimas aukštyn</string>

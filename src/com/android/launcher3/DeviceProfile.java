@@ -23,29 +23,31 @@ import static com.android.launcher3.ResourceUtils.pxFromDp;
 import static com.android.launcher3.Utilities.dpiFromPx;
 import static com.android.launcher3.Utilities.pxFromSp;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ICON_OVERLAP_FACTOR;
+import static com.android.launcher3.icons.GraphicsUtils.getShapePath;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.SparseArray;
 import android.view.Surface;
+
+import androidx.annotation.NonNull;
 
 import com.android.launcher3.CellLayout.ContainerType;
 import com.android.launcher3.DevicePaddings.DevicePadding;
 import com.android.launcher3.icons.DotRenderer;
-import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
 import com.saggitt.omega.DeviceProfileOverrides;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -210,13 +212,14 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
 
     private final DeviceProfileOverrides.TextFactors mTextFactors;
     /**
      * TODO: Once we fully migrate to staged split, remove "isMultiWindowMode"
      */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
+                  SparseArray<DotRenderer> dotRendererCache,
                   boolean isMultiWindowMode, boolean transposeLayoutWithOrientation,
                   boolean useTwoPanels, boolean isGestureMode) {
         prefs = Utilities.getOmegaPrefs(context);
@@ -430,8 +433,9 @@ public class DeviceProfile {
         int cellLayoutPadding =
                 isTwoPanels ? cellLayoutBorderSpacePx.x / 2 : res.getDimensionPixelSize(
                         R.dimen.cell_layout_padding);
-        cellLayoutPaddingPx = new Rect(cellLayoutPadding, cellLayoutPadding, cellLayoutPadding,
-                cellLayoutPadding);
+
+        int cellLayoutPaddingX = fullWidthWidgets ? 0 : cellLayoutPadding;
+        cellLayoutPaddingPx = new Rect(cellLayoutPaddingX, cellLayoutPadding, cellLayoutPaddingX, cellLayoutPadding);
         updateHotseatScale(res);
         updateWorkspacePadding();
         // Hotseat and QSB width depends on updated cellSize and workspace padding
@@ -440,17 +444,23 @@ public class DeviceProfile {
         flingToDeleteThresholdVelocity = res.getDimensionPixelSize(
                 R.dimen.drag_flingToDeleteMinVelocity);
 
+        mDotRendererWorkSpace = createDotRenderer(iconSizePx, dotRendererCache);
+        mDotRendererAllApps = createDotRenderer(allAppsIconSizePx, dotRendererCache);
+    }
+
+    private DotRenderer createDotRenderer(int size, @NonNull SparseArray<DotRenderer> cache) {
+        DotRenderer renderer = cache.get(size);
         // This is done last, after iconSizePx is calculated above.
-        float dotSize = 0.38f;
-        if (!Utilities.getOmegaPrefs(context).getNotificationCount().getValue()) {
-            dotSize = 0.228f;
+        float dotSize = 0.228f;
+        if (prefs.getNotificationCount().getValue()) {
+            dotSize = 0.38f;
         }
 
-        // This is done last, after iconSizePx is calculated above.
-        Path dotPath = GraphicsUtils.getShapePath(DEFAULT_DOT_SIZE);
-        mDotRendererWorkSpace = new DotRenderer(iconSizePx, dotPath, dotSize);
-        mDotRendererAllApps = iconSizePx == allAppsIconSizePx ? mDotRendererWorkSpace :
-                new DotRenderer(allAppsIconSizePx, dotPath, dotSize);
+        if (renderer == null) {
+            renderer = new DotRenderer(size, getShapePath(DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, dotSize);
+            cache.put(size, renderer);
+        }
+        return renderer;
     }
 
     /**
@@ -1349,29 +1359,37 @@ public class DeviceProfile {
             getOnDeviceProfileChangeListeners().add(listener);
         }
 
-        /** Unregister listener for {@link DeviceProfile} changes. */
+        /**
+         * Unregister listener for {@link DeviceProfile} changes.
+         */
         default void removeOnDeviceProfileChangeListener(OnDeviceProfileChangeListener listener) {
             getOnDeviceProfileChangeListeners().remove(listener);
         }
     }
+
     public static class Builder {
-        private Context mContext;
-        private InvariantDeviceProfile mInv;
-        private Info mInfo;
+        private final Context mContext;
+        private final InvariantDeviceProfile mInv;
+        private final Info mInfo;
         private WindowBounds mWindowBounds;
         private boolean mUseTwoPanels;
         private boolean mIsMultiWindowMode = false;
         private Boolean mTransposeLayoutWithOrientation;
         private Boolean mIsGestureMode;
+
+        private SparseArray<DotRenderer> mDotRendererCache;
+
         public Builder(Context context, InvariantDeviceProfile inv, Info info) {
             mContext = context;
             mInv = inv;
             mInfo = info;
         }
+
         public Builder setMultiWindowMode(boolean isMultiWindowMode) {
             mIsMultiWindowMode = isMultiWindowMode;
             return this;
         }
+
         public Builder setUseTwoPanels(boolean useTwoPanels) {
             mUseTwoPanels = useTwoPanels;
             return this;
@@ -1399,7 +1417,10 @@ public class DeviceProfile {
             if (mIsGestureMode == null) {
                 mIsGestureMode = DisplayController.getNavigationMode(mContext).hasGestures;
             }
-            return new DeviceProfile(mContext, mInv, mInfo, mWindowBounds, mIsMultiWindowMode,
+            if (mDotRendererCache == null) {
+                mDotRendererCache = new SparseArray<>();
+            }
+            return new DeviceProfile(mContext, mInv, mInfo, mWindowBounds, mDotRendererCache, mIsMultiWindowMode,
                     mTransposeLayoutWithOrientation, mUseTwoPanels, mIsGestureMode);
         }
     }

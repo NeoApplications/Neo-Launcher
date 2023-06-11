@@ -40,7 +40,7 @@ class OptionsState(id: Int) :
 
         val scale = 85f / 100f
         if (grid.isVerticalBarLayout) {
-            val optionsView = OmegaLauncher.getLauncher(launcher).optionsView
+            val optionsView = launcher.nLauncher.optionsView
 
             val wsHeightWithoutInsets = ws.height - grid.insets.top - grid.insets.bottom
             val desiredCenter = wsHeightWithoutInsets * 0.5f * scale

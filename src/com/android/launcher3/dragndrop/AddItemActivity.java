@@ -24,7 +24,6 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ADD_EXTERNAL_ITEM_START;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
-import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -40,7 +39,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -84,7 +82,6 @@ import java.util.function.Supplier;
 /**
  * Activity to show pin widget dialog.
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class AddItemActivity extends BaseActivity
         implements OnLongClickListener, OnTouchListener, AbstractSlideInView.OnCloseListener {
 

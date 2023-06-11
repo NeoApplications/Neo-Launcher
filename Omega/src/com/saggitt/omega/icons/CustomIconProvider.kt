@@ -22,13 +22,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.ACTION_DATE_CHANGED
-import android.content.Intent.ACTION_PACKAGE_ADDED
-import android.content.Intent.ACTION_PACKAGE_CHANGED
-import android.content.Intent.ACTION_PACKAGE_REMOVED
-import android.content.Intent.ACTION_TIMEZONE_CHANGED
-import android.content.Intent.ACTION_TIME_CHANGED
-import android.content.Intent.ACTION_TIME_TICK
+import android.content.Intent.*
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
@@ -50,6 +44,7 @@ import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
+import com.saggitt.omega.NeoApp
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconPack
@@ -65,7 +60,7 @@ import java.util.function.Supplier
 
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
-    supportsIconTheme: Boolean = false
+    supportsIconTheme: Boolean = false,
 ) : IconProvider(context, supportsIconTheme) {
 
     private val prefs = Utilities.getOmegaPrefs(context)
@@ -122,7 +117,7 @@ class CustomIconProvider @JvmOverloads constructor(
         component: String,
         user: UserHandle,
         iconDpi: Int,
-        fallback: Supplier<Drawable>
+        fallback: Supplier<Drawable>,
     ): Drawable {
         val componentName = ComponentName(packageName, component)
         val iconEntry = resolveIconEntry(componentName, user)
@@ -175,7 +170,7 @@ class CustomIconProvider @JvmOverloads constructor(
         var defaultIcon =
             super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
         if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && defaultIcon.monochrome != null
+            NeoApp.minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
         ) {
             defaultIcon = defaultIcon.monochrome
             return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {
@@ -225,7 +220,7 @@ class CustomIconProvider @JvmOverloads constructor(
 
     override fun registerIconChangeListener(
         callback: IconChangeListener,
-        handler: Handler
+        handler: Handler,
     ): SafeCloseable {
         return MultiSafeCloseable().apply {
             add(super.registerIconChangeListener(callback, handler))
@@ -237,7 +232,7 @@ class CustomIconProvider @JvmOverloads constructor(
     private inner class IconPackChangeReceiver(
         private val context: Context,
         private val handler: Handler,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : SafeCloseable {
 
         private var calendarAndClockChangeReceiver: CalendarAndClockChangeReceiver? = null
@@ -282,7 +277,7 @@ class CustomIconProvider @JvmOverloads constructor(
     private class CalendarAndClockChangeReceiver(
         private val context: Context, handler: Handler,
         private val iconPack: IconPack,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
 
         init {
@@ -306,7 +301,7 @@ class CustomIconProvider @JvmOverloads constructor(
                     }
                 }
 
-                ACTION_DATE_CHANGED -> {
+                ACTION_DATE_CHANGED                                            -> {
                     context.getSystemService<UserManager>()?.userProfiles?.forEach { user ->
                         iconPack.getCalendars().forEach { componentName ->
                             callback.onAppIconChanged(componentName.packageName, user)
@@ -323,7 +318,7 @@ class CustomIconProvider @JvmOverloads constructor(
 
     private inner class LawniconsChangeReceiver(
         private val context: Context, handler: Handler,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
 
         init {

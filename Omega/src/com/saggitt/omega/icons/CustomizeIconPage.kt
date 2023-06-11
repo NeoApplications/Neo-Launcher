@@ -35,13 +35,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -66,16 +65,16 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities.drawableToBitmap
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.PackageManagerHelper
-import com.saggitt.omega.compose.PreferenceActivity
+import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.groups.ui.AppTabDialog
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addIfNotNull
-import com.saggitt.omega.util.collectAsStateBlocking
 import kotlinx.coroutines.launch
 
 @Composable
@@ -83,10 +82,10 @@ fun CustomizeIconPage(
     icon: Drawable,
     defaultTitle: String,
     componentKey: ComponentKey,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     var title by remember { mutableStateOf("") }
     val request =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -122,7 +121,7 @@ fun CustomizeIconPage(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomizeIconView(
     icon: Drawable,
@@ -130,17 +129,15 @@ fun CustomizeIconView(
     onTitleChange: (String) -> Unit,
     defaultTitle: String,
     componentKey: ComponentKey,
-    launchSelectIcon: (() -> Unit)? = null
+    launchSelectIcon: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
     val repo = IconOverrideRepository.INSTANCE.get(context)
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
-
-    val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsStateBlocking()
 
     Column(
         modifier = Modifier
@@ -191,9 +188,10 @@ fun CustomizeIconView(
                 }
             },
             singleLine = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12F),
-                textColor = MaterialTheme.colorScheme.onSurface
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
@@ -210,16 +208,15 @@ fun CustomizeIconView(
 
         PreferenceGroup {
             if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
-                val stringKey = componentKey.toString()
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
-                    isChecked = hiddenApps.value.contains(stringKey),
+                    isChecked = CustomAppFilter.isHiddenApp(context, componentKey),
                     onCheckedChange = { newValue ->
-                        val newSet = hiddenApps.value.toMutableSet()
-                        if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
-                        scope.launch {
-                            prefs.drawerHiddenAppSet.set(newSet)
-                        }
+                        CustomAppFilter.setComponentNameState(
+                            context,
+                            componentKey.toString(),
+                            newValue
+                        )
                     }
                 )
 

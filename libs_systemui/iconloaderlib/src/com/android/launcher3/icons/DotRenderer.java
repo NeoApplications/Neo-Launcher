@@ -63,8 +63,8 @@ public class DotRenderer {
     private final int mOffset;
     private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
-    public DotRenderer(int iconSizePx, Path iconShapePath, float pathSize) {
-        size = Math.round(pathSize * iconSizePx);
+    public DotRenderer(int iconSizePx, Path iconShapePath, float pathSize, float dotSize) {
+        size = Math.round(dotSize * iconSizePx);
         if (size <= 0) {
             size = MIN_DOT_SIZE;
         }

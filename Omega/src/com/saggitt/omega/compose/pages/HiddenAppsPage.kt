@@ -19,7 +19,8 @@
 package com.saggitt.omega.compose.pages
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -28,16 +29,12 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.appComparator
 import com.saggitt.omega.util.comparing
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun HiddenAppsPage() {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsState(initial = emptySet()).value
-    val coroutineScope = CoroutineScope(context = Dispatchers.IO)
+    val hiddenApps by remember { mutableStateOf(prefs.drawerHiddenAppSet.getValue()) }
     val title = if (hiddenApps.isEmpty()) stringResource(id = R.string.title__drawer_hide_apps)
     else stringResource(id = R.string.hide_app_selected, hiddenApps.size)
 
@@ -46,9 +43,7 @@ fun HiddenAppsPage() {
         selectedApps = hiddenApps,
         pluralTitleId = R.string.hide_app_selected
     ) { selectedApps ->
-        coroutineScope.launch {
-            prefs.drawerHiddenAppSet.set(selectedApps)
-        }
+        prefs.drawerHiddenAppSet.setValue(selectedApps)
     }
 }
 

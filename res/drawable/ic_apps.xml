@@ -15,7 +15,7 @@
   -->
 
 <vector android:height="24dp"
-    android:tint="#FFFFFF"
+    android:tint="?attr/colorControlNormal"
     android:viewportHeight="24.0"
     android:viewportWidth="24.0"
     android:width="24dp"

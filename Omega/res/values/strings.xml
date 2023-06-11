@@ -264,7 +264,9 @@
     <string name="title_use_pill_qsb">Show Pill Search Shortcut</string>
     <string name="title_smartspace">Show Smartspace</string>
     <string name="title_smartspace_time">Show Time</string>
+    <string name="title_smartspace_time_format">Time Format</string>
     <string name="title_smartspace_date">Show Date</string>
+    <string name="title_smartspace_calendar">Select Calendar</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>
     <string name="title_smartspace_widget_provider">Weather source</string>
     <string name="title_smartspace_weather_units">Temperature unit</string>
@@ -273,6 +275,11 @@
     <string name="google_app" translatable="false">Google app</string>
     <string name="pref_shelf_summary">To the left of the main Home screen</string>
     <string name="accessibility_smartspace_page">Page %1$d of %2$d</string>
+
+    <string name="smartspace_calendar_gregorian" translatable="false">gregorian</string>
+    <string name="title_calendar_gregorian">Gregorian</string>
+    <string name="smartspace_calendar_persian" translatable="false">persian</string>
+    <string name="title_calendar_persian">Persian</string>
 
     <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>
@@ -300,7 +307,6 @@
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
     <string name="smartspace_provider_calendar">Calendar events</string>
-    <string name="action_press_back">Back button</string>
     <string name="action_open_recents">Open recents</string>
     <string name="personality_provider">Greetings</string>
     <string name="onbording">Onboarding</string>
@@ -399,6 +405,7 @@
     <string name="gesture_dock_swipe_up">Swipe upwards from dock</string>
     <string name="gesture_press_home">Home Button Tap</string>
     <string name="gesture_press_back">Back button</string>
+    <string name="gesture_press_recents">Recents button</string>
     <string name="omega_actions">Actions</string>
     <string name="dt2s_admin_hint">To use double tap to sleep and grant admin permission.</string>
     <string name="dt2s_admin_warning">Double tap to sleep will be turned off.</string>
@@ -522,6 +529,8 @@
     <string name="about_source">Source Code</string>
     <string name="about_channel">Channel</string>
     <string name="about_community">Community</string>
+    <string name="about_community_telegram">Community on Telegram</string>
+    <string name="about_community_matrix">Community on Matrix</string>
     <string name="about_open_source">Open Source Libraries</string>
     <string name="about_source_url" translatable="false">https://github.com/otakuhqz/Omega</string>
     <string name="category__about_licenses">License</string>

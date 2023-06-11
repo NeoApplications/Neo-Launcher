@@ -117,6 +117,7 @@ import android.widget.Toast;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -218,7 +219,8 @@ import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.util.Config;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -1612,8 +1614,8 @@ public class Launcher extends StatefulActivity<LauncherState>
                 if (shouldMoveToDefaultScreen && !mWorkspace.isHandlingTouch()) {
                     mWorkspace.post(mWorkspace::moveToDefaultScreen);
                 }
-                if (!handled && this instanceof OmegaLauncher) {
-                    ((OmegaLauncher) this).getGestureController().onPressHome();
+                if (!handled && this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressHome();
                 }
             }
 
@@ -2065,8 +2067,8 @@ public class Launcher extends StatefulActivity<LauncherState>
             if (!isInState(NORMAL)) {
                 onStateBack();
             } else {
-                if (this instanceof OmegaLauncher) {
-                    ((OmegaLauncher) this).getGestureController().onPressBack();
+                if (this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressBack();
                 }
             }
         }
@@ -2139,6 +2141,14 @@ public class Launcher extends StatefulActivity<LauncherState>
         }
         return success;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public void startActivitySafelyAuth(View v, Intent intent, ItemInfo item) {
+        Config.Companion.showLockScreen(this, getString(R.string.trust_apps_manager_name), () -> {
+            startActivitySafely(v, intent, item);
+        });
+    }
+
 
     boolean isHotseatLayout(View layout) {
         // TODO: Remove this method

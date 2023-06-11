@@ -135,7 +135,6 @@
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="battery_status">Pil Durumu</string>
     <string name="event_provider_unread_notifications">Bildirimler</string>
-    <string name="action_press_back">Geri düğmesi</string>
     <string name="smartspace_provider_calendar">Takvim etkinlikleri</string>
     <string name="deny">Reddet</string>
     <string name="allow">İzin ver</string>

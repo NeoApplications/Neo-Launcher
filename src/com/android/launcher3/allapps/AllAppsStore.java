@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.ComponentKey;
@@ -32,7 +33,11 @@ import com.android.launcher3.util.PackageUserKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -62,6 +67,8 @@ public class AllAppsStore {
     public AppInfo[] getApps() {
         return mApps;
     }
+
+    private final Set<FolderIcon> mFolderIcons = Collections.newSetFromMap(new WeakHashMap<>());
 
     /**
      * Sets the current set of apps.
@@ -141,6 +148,10 @@ public class AllAppsStore {
         mIconContainers.remove(container);
     }
 
+    public void registerFolderIcon(FolderIcon folderIcon) {
+        mFolderIcons.add(folderIcon);
+    }
+
     public void updateNotificationDots(Predicate<PackageUserKey> updatedDots) {
         updateAllIcons((child) -> {
             if (child.getTag() instanceof ItemInfo) {
@@ -150,6 +161,23 @@ public class AllAppsStore {
                 }
             }
         });
+
+        Set<FolderIcon> foldersToUpdate = new HashSet<>();
+        for (FolderIcon folderIcon : mFolderIcons) {
+            folderIcon.getFolder().iterateOverItems((info, view) -> {
+                if (mTempKey.updateFromItemInfo(info) && updatedDots.test(mTempKey)) {
+                    if (view instanceof BubbleTextView) {
+                        ((BubbleTextView) view).applyDotState(info, true);
+                    }
+                    foldersToUpdate.add(folderIcon);
+                }
+                return false;
+            });
+        }
+
+        for (FolderIcon folderIcon : foldersToUpdate) {
+            folderIcon.updateIconDots(updatedDots, mTempKey);
+        }
     }
 
     /**

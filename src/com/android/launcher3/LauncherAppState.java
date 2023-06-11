@@ -50,7 +50,7 @@ import com.android.launcher3.util.SettingsCache;
 import com.android.launcher3.util.SimpleBroadcastReceiver;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
-import com.saggitt.omega.OmegaAppKt;
+import com.saggitt.omega.NeoAppKt;
 import com.saggitt.omega.icons.CustomIconProvider;
 
 public class LauncherAppState implements SafeCloseable {
@@ -64,7 +64,7 @@ public class LauncherAppState implements SafeCloseable {
                 @Override
                 protected void onPostInit(Context context) {
                     super.onPostInit(context);
-                    OmegaAppKt.getOmegaApp(context).onLauncherAppStateCreated();
+                    NeoAppKt.getNeoApp(context).onLauncherAppStateCreated();
                 }
             };
 

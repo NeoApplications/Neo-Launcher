@@ -29,34 +29,30 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TabRow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,10 +69,8 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.saggitt.omega.compose.components.ExpandableListItem
-import com.saggitt.omega.compose.components.ListItemWithIcon
+import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -85,10 +79,10 @@ import com.saggitt.omega.data.AppItemWithShortcuts
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.handlers.StartAppGestureHandler
 import com.saggitt.omega.preferences.NavigationPref
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.appsState
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -110,12 +104,9 @@ fun NavGraphBuilder.gesturesPageGraph(route: String) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GestureSelectorPage(prefs: NavigationPref) {
-
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val currentOption = remember { mutableStateOf(prefs.getValue()) }
@@ -148,68 +139,16 @@ fun GestureSelectorPage(prefs: NavigationPref) {
             )
         }
     )
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
 
     ViewWithActionBar(
         title = stringResource(prefs.titleId),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(
-                    top = it.calculateTopPadding() - 1.dp,
-                    start = 8.dp,
-                    end = 8.dp
-                )
-        ) {
-            TabRow(
-                selectedTabIndex = pagerState.currentPage,
-                indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(
-                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                backgroundColor = MaterialTheme.colorScheme.background
-            ) {
-                tabs.forEachIndexed { index, tab ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = tab.title),
-                                color = if (pagerState.currentPage == index)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = tab.icon),
-                                contentDescription = stringResource(id = tab.title),
-                                tint = if (pagerState.currentPage == index)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                HorizontalPager(state = pagerState, pageCount = tabs.size) { page ->
-                    tabs[page].screen()
-                }
-            }
-        }
+    ) { paddingValues ->
+        HorizontalPagerPage(
+            Modifier.padding(paddingValues),
+            pagerState,
+            tabs,
+        )
     }
 }
 
@@ -219,7 +158,11 @@ fun LauncherScreen(
     onSelect: (String) -> Unit,
 ) {
     val context = LocalContext.current
-    val launcherItems = GestureController.getGestureHandlers(context, true, true)
+    val launcherItems = GestureController.getGestureHandlers(
+        context = context,
+        isSwipeUp = true,
+        hasBlank = true
+    )
 
     val groupSize = launcherItems.size
     val colors = RadioButtonDefaults.colors(
@@ -228,46 +171,42 @@ fun LauncherScreen(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 4.dp, end = 4.dp)
+        modifier = Modifier.fillMaxSize(),
     ) {
         PreferenceGroup {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 itemsIndexed(launcherItems) { index, item ->
-                    ListItemWithIcon(
-                        title = item.displayName,
+                    ListItem(
                         modifier = Modifier
                             .clip(
-                                RoundedCornerShape(
-                                    topStart = if (index == 0) 16.dp else 6.dp,
-                                    topEnd = if (index == 0) 16.dp else 6.dp,
-                                    bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
-                                    bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
-                                )
-                            )
-                            .background(
-                                color = if (item.toString() == selectedOption.value)
-                                    MaterialTheme.colorScheme.primary.copy(0.4f)
-                                else MaterialTheme.colorScheme.surface
+                                GroupItemShape(index, groupSize - 1)
                             )
                             .clickable {
                                 onSelect(item.toString())
                             },
-                        summary = "",
-                        startIcon = {
+                        colors = ListItemDefaults.colors(
+                            containerColor = if (item.toString() == selectedOption.value)
+                                MaterialTheme.colorScheme.primary.copy(0.4f)
+                            else MaterialTheme.colorScheme.surface
+                        ),
+                        leadingContent = {
                             Icon(
                                 painter = rememberDrawablePainter(drawable = item.icon),
-                                contentDescription = null,
+                                contentDescription = item.displayName,
                                 modifier = Modifier
-                                    .size(30.dp)
+                                    .size(32.dp)
                                     .zIndex(1f),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        endCheckbox = {
+                        headlineContent = {
+                            Text(
+                                text = item.displayName,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        },
+                        trailingContent = {
                             RadioButton(
                                 selected = (item.toString() == selectedOption.value),
                                 onClick = {
@@ -276,8 +215,6 @@ fun LauncherScreen(
                                 colors = colors
                             )
                         },
-                        horizontalPadding = 0.dp,
-                        verticalPadding = 4.dp
                     )
                 }
             }
@@ -292,9 +229,7 @@ fun AppsScreen(
     onSelect: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 4.dp, end = 4.dp)
+        modifier = Modifier.fillMaxSize(),
     ) {
         val context = LocalContext.current
         val colors = RadioButtonDefaults.colors(
@@ -318,34 +253,34 @@ fun AppsScreen(
                     appGestureHandler.apply {
                         appName = item.label
                     }
-                    ListItemWithIcon(
-                        title = item.label,
+                    ListItem(
                         modifier = Modifier
                             .clip(
-                                RoundedCornerShape(
-                                    topStart = if (index == 0) 16.dp else 6.dp,
-                                    topEnd = if (index == 0) 16.dp else 6.dp,
-                                    bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
-                                    bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
-                                )
-                            )
-                            .background(
-                                color = if (appGestureHandler.toString() == selectedOption.value)
-                                    MaterialTheme.colorScheme.primary.copy(0.4f)
-                                else MaterialTheme.colorScheme.surface
+                                GroupItemShape(index, groupSize - 1)
                             )
                             .clickable {
                                 onSelect(appGestureHandler.toString())
                             },
-                        summary = "",
-                        startIcon = {
+                        colors = ListItemDefaults.colors(
+                            containerColor = if (appGestureHandler.toString() == selectedOption.value)
+                                MaterialTheme.colorScheme.primary.copy(0.4f)
+                            else MaterialTheme.colorScheme.surface
+                        ),
+                        leadingContent = {
                             Image(
                                 painter = BitmapPainter(item.icon.asImageBitmap()),
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp)
+                                contentDescription = item.label,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.size(32.dp),
                             )
                         },
-                        endCheckbox = {
+                        headlineContent = {
+                            Text(
+                                text = item.label,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        },
+                        trailingContent = {
                             RadioButton(
                                 selected = (appGestureHandler.toString() == selectedOption.value),
                                 onClick = {
@@ -354,8 +289,6 @@ fun AppsScreen(
                                 colors = colors
                             )
                         },
-                        horizontalPadding = 0.dp,
-                        verticalPadding = 4.dp
                     )
                 }
             }
@@ -370,9 +303,7 @@ fun ShortcutsScreen(
     onSelect: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 4.dp, end = 4.dp)
+        modifier = Modifier.fillMaxSize(),
     ) {
         val context = LocalContext.current
         var appsWithShortcuts by remember { mutableStateOf(emptyList<AppItemWithShortcuts>()) }
@@ -394,17 +325,10 @@ fun ShortcutsScreen(
                 itemsIndexed(appsWithShortcuts) { appIndex, app ->
                     var expanded by remember { mutableStateOf(false) }
 
-                    val rank = (appIndex + 1f) / appsSize
-                    val base = appIndex.toFloat() / appsSize
                     ExpandableListItem(
                         modifier = Modifier
                             .clip(
-                                RoundedCornerShape(
-                                    topStart = if (base == 0f) 16.dp else 6.dp,
-                                    topEnd = if (base == 0f) 16.dp else 6.dp,
-                                    bottomStart = if (rank == 1f) 16.dp else 6.dp,
-                                    bottomEnd = if (rank == 1f) 16.dp else 6.dp
-                                )
+                                GroupItemShape(appIndex, appsSize - 1)
                             )
                             .background(
                                 if (expanded) MaterialTheme.colorScheme.background
@@ -431,42 +355,40 @@ fun ShortcutsScreen(
                             appGestureHandler.apply {
                                 appName = it.label.toString()
                             }
-                            ListItemWithIcon(
-                                title = it.label.toString(),
+                            ListItem(
                                 modifier = Modifier
                                     .clip(
-                                        RoundedCornerShape(
-                                            topStart = if (index == 0) 16.dp else 6.dp,
-                                            topEnd = if (index == 0) 16.dp else 6.dp,
-                                            bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
-                                            bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
-                                        )
-                                    )
-                                    .background(
-                                        color = if (appGestureHandler.toString() == selectedOption.value)
-                                            MaterialTheme.colorScheme.primary.copy(0.4f)
-                                        else MaterialTheme.colorScheme.surface
+                                        GroupItemShape(index, groupSize - 1)
                                     )
                                     .clickable {
                                         onSelect(appGestureHandler.toString())
                                     },
-                                summary = "",
-                                startIcon = {
+                                colors = ListItemDefaults.colors(
+                                    containerColor = if (appGestureHandler.toString() == selectedOption.value)
+                                        MaterialTheme.colorScheme.primary.copy(0.4f)
+                                    else MaterialTheme.colorScheme.surface
+                                ),
+                                leadingContent = {
                                     Image(
-                                        painter = BitmapPainter(
+                                        painter = if (it.iconDrawable != null) BitmapPainter(
                                             it.iconDrawable.toBitmap(
                                                 32,
                                                 32,
                                                 null
                                             ).asImageBitmap()
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
+                                        ) else painterResource(id = R.drawable.ic_widget),
+                                        contentScale = ContentScale.FillBounds,
+                                        contentDescription = it.label.toString(),
+                                        modifier = Modifier.size(32.dp),
                                     )
                                 },
-                                horizontalPadding = 0.dp,
-                                verticalPadding = 0.dp,
-                                endCheckbox = {
+                                headlineContent = {
+                                    Text(
+                                        text = it.label.toString(),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                },
+                                trailingContent = {
                                     RadioButton(
                                         selected = (appGestureHandler.toString() == selectedOption.value),
                                         onClick = {

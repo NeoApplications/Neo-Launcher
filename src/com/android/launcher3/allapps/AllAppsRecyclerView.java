@@ -21,7 +21,6 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_VERTICAL_SWIPE_END;
 import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 import static com.android.launcher3.util.UiThreadHelper.hideKeyboardAsync;
-import static com.android.launcher3.views.RecyclerViewFastScroller.PositionThumbInfo;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -134,11 +133,12 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_EMPTY_SEARCH, 1);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ALL_APPS_DIVIDER, 1);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_SEARCH_MARKET, 1);
-        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ICON, approxRows
-                * (mNumAppsPerRow + 1));
+        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ICON, approxRows * (mNumAppsPerRow + 1));
+        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, approxRows * (mNumAppsPerRow + 1));
 
         mViewHeights.clear();
         mViewHeights.put(AllAppsGridAdapter.VIEW_TYPE_ICON, grid.allAppsCellHeightPx);
+        mViewHeights.put(AllAppsGridAdapter.VIEW_TYPE_FOLDER, grid.allAppsCellHeightPx);
     }
 
 
@@ -223,10 +223,10 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      */
 
-    public PositionThumbInfo scrollToPositionAtProgress(float touchFraction) {
+    public String scrollToPositionAtProgress(float touchFraction) {
         int rowCount = mApps.getNumAppRows();
         if (rowCount == 0) {
-            return new PositionThumbInfo("", 0);
+            return "";
         }
 
         // Find the fastscroll section that maps to this touch fraction
@@ -234,12 +234,12 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
                 mApps.getFastScrollerSections();
         int count = fastScrollSections.size();
         if (count == 0) {
-            return new PositionThumbInfo("", 0);
+            return "";
         }
         int index = Utilities.boundToRange((int) (touchFraction * count), 0, count - 1);
         AlphabeticalAppsList.FastScrollSectionInfo section = fastScrollSections.get(index);
         mFastScrollHelper.smoothScrollToSection(section);
-        return new PositionThumbInfo(section.sectionName, section.color);
+        return section.sectionName;
     }
 
     @Override

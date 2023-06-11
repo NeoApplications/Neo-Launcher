@@ -24,7 +24,7 @@ import com.android.launcher3.DeviceProfile.DeviceProfileListenable;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
-import com.android.launcher3.util.Themes;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
  * Definition for AllApps state
@@ -95,10 +95,17 @@ public class AllAppsState extends LauncherState {
         return 0f;
     }
 
-    @Override
+    /*@Override
     public int getWorkspaceScrimColor(Launcher launcher) {
         return launcher.getDeviceProfile().isTablet
                 ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
                 : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
+    }*/
+
+    @Override
+    public int getWorkspaceScrimColor(Launcher launcher) {
+        return launcher.getDeviceProfile().isTablet
+                ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
+                : OmegaUtilsKt.getAllAppsScrimColor(launcher);
     }
 }

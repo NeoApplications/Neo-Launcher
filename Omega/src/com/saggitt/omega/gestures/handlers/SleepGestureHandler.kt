@@ -32,7 +32,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import org.json.JSONObject
 
 @Keep
@@ -66,7 +66,7 @@ class SleepMethodPieAccessibility(context: Context) : SleepGestureHandler.SleepM
 
     @TargetApi(Build.VERSION_CODES.P)
     override fun sleep(controller: GestureController?) {
-        context.omegaApp.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+        context.neoApp.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
     }
 }
 

@@ -28,11 +28,11 @@ class OmegaAccessibilityService : AccessibilityService() {
         serviceInfo.eventTypes = 0
         serviceInfo.packageNames = arrayOfNulls(0)
         setServiceInfo(serviceInfo)
-        applicationContext.omegaApp.accessibilityService = this
+        applicationContext.neoApp.accessibilityService = this
     }
 
     override fun onDestroy() {
-        applicationContext.omegaApp.accessibilityService = null
+        applicationContext.neoApp.accessibilityService = null
         super.onDestroy()
     }
 

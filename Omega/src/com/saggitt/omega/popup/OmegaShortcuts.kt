@@ -41,10 +41,10 @@ import com.android.launcher3.model.data.LauncherAppWidgetInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.icons.CustomizeIconPage
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.hasFlag
 import com.saggitt.omega.util.hasFlags
 import java.net.URISyntaxException
@@ -52,17 +52,17 @@ import com.android.launcher3.model.data.AppInfo as ModelAppInfo
 
 class OmegaShortcuts {
     class Customize(
-        private val launcher: OmegaLauncher,
+        private val launcher: NeoLauncher,
         private val appInfo: ModelAppInfo,
         itemInfo: ItemInfo,
         originalView: View
-    ) : SystemShortcut<OmegaLauncher>(
+    ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_edit_no_shadow,
         R.string.action_preferences, launcher, itemInfo,
         originalView
     ) {
 
-        val prefs: NLPrefs = NLPrefs.getInstance(launcher)
+        val prefs: NeoPrefs = NeoPrefs.getInstance(launcher)
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
             var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
@@ -102,10 +102,10 @@ class OmegaShortcuts {
     }
 
     class AppRemove(
-        private val launcher: OmegaLauncher,
+        private val launcher: NeoLauncher,
         itemInfo: ItemInfo,
         originalView: View
-    ) : SystemShortcut<OmegaLauncher>(
+    ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_remove_no_shadow,
         R.string.remove_drop_target_label, launcher, itemInfo,
         originalView
@@ -120,10 +120,10 @@ class OmegaShortcuts {
     }
 
     class AppUninstall(
-        private val launcher: OmegaLauncher,
+        private val launcher: NeoLauncher,
         itemInfo: ItemInfo,
         originalView: View
-    ) : SystemShortcut<OmegaLauncher>(
+    ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_uninstall_no_shadow,
         R.string.uninstall_drop_target_label, launcher, itemInfo, originalView
     ) {
@@ -167,8 +167,8 @@ class OmegaShortcuts {
     }
 
     companion object {
-        val CUSTOMIZE = SystemShortcut.Factory<OmegaLauncher> { activity, itemInfo, originalView ->
-            val prefs = NLPrefs.getInstance(activity)
+        val CUSTOMIZE = SystemShortcut.Factory<NeoLauncher> { activity, itemInfo, originalView ->
+            val prefs = NeoPrefs.getInstance(activity)
             var customize: Customize? = null
             if (Launcher.getLauncher(activity).isInState(LauncherState.NORMAL)) {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
@@ -186,15 +186,15 @@ class OmegaShortcuts {
             customize
         }
 
-        private fun getAppInfo(launcher: OmegaLauncher, itemInfo: ItemInfo): ModelAppInfo? {
+        private fun getAppInfo(launcher: NeoLauncher, itemInfo: ItemInfo): ModelAppInfo? {
             if (itemInfo is ModelAppInfo) return itemInfo
             if (itemInfo.itemType != ITEM_TYPE_APPLICATION) return null
             val key = ComponentKey(itemInfo.targetComponent, itemInfo.user)
             return launcher.appsView.appsStore.getApp(key)
         }
 
-        val APP_REMOVE = SystemShortcut.Factory<OmegaLauncher> { launcher, itemInfo, originalView ->
-            val prefs = NLPrefs.getInstance(launcher)
+        val APP_REMOVE = SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
+            val prefs = NeoPrefs.getInstance(launcher)
             var appRemove: AppRemove? = null
             if (Launcher.getLauncher(launcher).isInState(LauncherState.NORMAL)) {
                 if (itemInfo is WorkspaceItemInfo
@@ -211,8 +211,8 @@ class OmegaShortcuts {
         }
 
         val APP_UNINSTALL =
-            SystemShortcut.Factory<OmegaLauncher> { launcher, itemInfo, originalView ->
-                val prefs = NLPrefs.getInstance(launcher)
+            SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
+                val prefs = NeoPrefs.getInstance(launcher)
                 var appUninstall: AppUninstall? = null
 
                 if (prefs.drawerPopupUninstall && launcher.isInState(LauncherState.ALL_APPS)) {

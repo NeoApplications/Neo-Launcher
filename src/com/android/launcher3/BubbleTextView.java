@@ -72,7 +72,11 @@ import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.util.ShortcutUtil;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.gestures.BlankGestureHandler;
+import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.gestures.GestureHandler;
+import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -92,6 +96,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     protected static final int DISPLAY_TASKBAR = 5;
     private static final int DISPLAY_SEARCH_RESULT = 6;
     private static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
+    private static final int DISPLAY_DRAWER_FOLDER = 8;
 
     private static final float MIN_LETTER_SPACING = -0.05f;
     private static final int MAX_SEARCH_LOOP_COUNT = 20;
@@ -176,6 +181,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private boolean mEnableIconUpdateAnimation = false;
 
+    private GestureHandler mSwipeUpHandler;
+
     public BubbleTextView(Context context) {
         this(context, null, 0);
     }
@@ -198,7 +205,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         mDisplay = a.getInteger(R.styleable.BubbleTextView_iconDisplay, DISPLAY_WORKSPACE);
         final int defaultIconSize;
 
-        NLPrefs prefs = Utilities.getOmegaPrefs(context);
+        NeoPrefs prefs = Utilities.getOmegaPrefs(context);
         if (mDisplay == DISPLAY_WORKSPACE) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.iconTextSizePx);
             setCompoundDrawablePadding(grid.iconDrawablePaddingPx);
@@ -217,6 +224,12 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             setCompoundDrawablePadding(grid.folderChildDrawablePaddingPx);
             defaultIconSize = grid.folderChildIconSizePx;
             int lines = prefs.getDesktopLabelRows();
+            setLineCount(lines);
+        } else if (mDisplay == DISPLAY_DRAWER_FOLDER) {
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
+            setCompoundDrawablePadding(grid.allAppsIconDrawablePaddingPx);
+            defaultIconSize = grid.allAppsIconSizePx;
+            int lines = prefs.getDrawerLabelRows();
             setLineCount(lines);
         } else if (mDisplay == DISPLAY_SEARCH_RESULT) {
             defaultIconSize = getResources().getDimensionPixelSize(R.dimen.search_row_icon_size);
@@ -339,6 +352,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @UiThread
     public void applyFromWorkspaceItem(WorkspaceItemInfo info, boolean promiseStateChanged) {
         applyIconAndLabel(info);
+        applySwipeUpAction(info);
         setItemInfo(info);
         applyLoadingState(promiseStateChanged);
         applyDotState(info, false /* animate */);
@@ -407,6 +421,17 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     : info.contentDescription);
         }
     }
+
+    private void applySwipeUpAction(WorkspaceItemInfo info) {
+        GestureHandler handler = GestureController.Companion.createGestureHandler(
+                getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        if (handler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, handler);
+        }
+    }
+
 
     /**
      * Overrides the default long press timeout.
@@ -593,12 +618,12 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             final int scrollY = getScrollY();
             canvas.translate(scrollX, scrollY);
             if (mDotInfo != null) {
-                NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
+                NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
                 mDotParams.count = mDotInfo.getNotificationCount();
                 mDotParams.notificationKeys = mDotInfo.getNotificationKeys().size();
                 mDotParams.showCount = prefs.getNotificationCount().getValue();
                 if (prefs.getNotificationCustomColor().getValue()) {
-                    mDotParams.dotColor = prefs.getNotificationBackground().getValue();
+                    mDotParams.dotColor = prefs.getNotificationBackground().getColor();
                 }
             }
             mDotRenderer.draw(canvas, mDotParams);

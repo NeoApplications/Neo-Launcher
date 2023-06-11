@@ -75,11 +75,20 @@ import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Executors;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.gestures.BlankGestureHandler;
+import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.gestures.GestureHandler;
+import com.saggitt.omega.gestures.RunnableGestureHandler;
+import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
+import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +151,11 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
     private final PointF mTranslationForReorderPreview = new PointF(0, 0);
     private float mScaleForReorderBounce = 1f;
 
+    private GestureHandler mSwipeUpHandler;
+
+    public boolean isCustomIcon = false;
+    private boolean mIsTextVisible = true;
+
     private static final Property<FolderIcon, Float> DOT_SCALE_PROPERTY
             = new Property<FolderIcon, Float>(Float.TYPE, "dotScale") {
         @Override
@@ -156,7 +170,6 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         }
     };
 
-    public boolean isCustomIcon = false;
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -204,7 +217,13 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         icon.mFolderName.setText(folderInfo.title);
         icon.mFolderName.setCompoundDrawablePadding(0);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
-        lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        if (folderInfo instanceof DrawerFolderInfo) {
+            lp.topMargin = grid.allAppsIconSizePx + grid.allAppsIconDrawablePaddingPx;
+            icon.mBackground = new PreviewBackground(true);
+            ((DrawerFolderInfo) folderInfo).getAppsStore().registerFolderIcon(icon);
+        } else {
+            lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        }
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(ItemClickHandler.INSTANCE);
@@ -627,7 +646,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
-            NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
+            NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
             Rect iconBounds = mDotParams.iconBounds;
 
             Utilities.setRectToViewCenter(this, mActivity.getDeviceProfile().iconSizePx,
@@ -639,7 +658,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
             // If we are animating to the accepting state, animate the dot out.
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getScaleProgress());
             if (prefs.getNotificationCustomColor().getValue()) {
-                mDotParams.dotColor = prefs.getNotificationBackground().getValue();
+                mDotParams.dotColor = prefs.getNotificationBackground().getColor();
             } else {
                 mDotParams.dotColor = mBackground.getDotColor();
             }
@@ -721,6 +740,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onTitleChanged(CharSequence title) {
         mFolderName.setText(title);
+        applySwipeUpAction(mInfo);
         setContentDescription(getAccessiblityTitle(title));
     }
 
@@ -736,7 +756,27 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         super.onTouchEvent(event);
         mLongPressHelper.onTouchEvent(event);
         // Keep receiving the rest of the events
+
+        Launcher launcher = ContextExtensionsKt.getLauncherOrNull(getContext());
+        if (launcher instanceof NeoLauncher && mSwipeUpHandler != null) {
+            ((NeoLauncher) launcher).getGestureController()
+                    .setSwipeUpOverride(mSwipeUpHandler, event.getDownTime());
+        }
         return true;
+    }
+
+    private void applySwipeUpAction(FolderInfo info) {
+        if (info.isCoverMode()) {
+            mSwipeUpHandler = new RunnableGestureHandler(getContext(), () -> ItemClickHandler.INSTANCE.onClick(this));
+        } else {
+            mSwipeUpHandler = GestureController.Companion.createGestureHandler(
+                    getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        }
+        if (mSwipeUpHandler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, mSwipeUpHandler);
+        }
     }
 
     /**
@@ -864,6 +904,34 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         } else {
             return getContext().getString(R.string.folder_name_format_overflow, title,
                     MAX_NUM_ITEMS_IN_PREVIEW);
+        }
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo instanceof DrawerFolderInfo;
+    }
+
+    public WorkspaceItemInfo getCoverInfo() {
+        return mInfo.getCoverInfo();
+    }
+
+    public void applyCoverDotState(ItemInfo itemInfo, boolean animate) {
+        mFolderName.applyDotState(itemInfo, animate);
+    }
+
+    public void updateIconDots(Predicate<PackageUserKey> updatedBadges, PackageUserKey tmpKey) {
+        FolderDotInfo folderDotInfo = new FolderDotInfo();
+        for (WorkspaceItemInfo si : mInfo.contents) {
+            folderDotInfo.addDotInfo(mActivity.getDotInfoForItem(si));
+        }
+        setDotInfo(folderDotInfo);
+
+        if (mInfo.isCoverMode()) {
+            WorkspaceItemInfo coverInfo = getCoverInfo();
+            if (tmpKey.updateFromItemInfo(coverInfo) &&
+                    updatedBadges.test(tmpKey)) {
+                applyCoverDotState(coverInfo, true);
+            }
         }
     }
 

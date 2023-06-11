@@ -40,8 +40,8 @@ fun OmegaAppTheme(
             darkTheme               -> DarkColors
             else                    -> LightColors
         }.copy(
-            primary = Color(LocalContext.current.prefs.profileAccentColor.getValue()),
-            surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getValue())
+            primary = Color(LocalContext.current.prefs.profileAccentColor.getColor()),
+            surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getColor())
         ),
         content = content
     )

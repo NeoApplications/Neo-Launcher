@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -47,7 +46,6 @@ import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.preferences.StringTextPref
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StringTextPrefDialogUI(
     pref: StringTextPref,

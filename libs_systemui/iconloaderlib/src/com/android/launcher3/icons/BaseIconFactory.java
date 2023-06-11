@@ -48,7 +48,6 @@ import com.saulhdev.neolauncher.icons.IconPreferences;
 public class BaseIconFactory implements AutoCloseable {
 
     private static final int DEFAULT_WRAPPER_BACKGROUND = Color.WHITE;
-    static final boolean ATLEAST_OREO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     static final boolean ATLEAST_P = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
 
     protected static final int BITMAP_GENERATION_MODE_DEFAULT = 0;
@@ -167,8 +166,6 @@ public class BaseIconFactory implements AutoCloseable {
      * @return
      */
     public BitmapInfo createIconBitmap(String placeholder, int color) {
-        if (!ATLEAST_OREO) return null;
-
         Bitmap placeholderBitmap = Bitmap.createBitmap(mIconBitmapSize, mIconBitmapSize,
                 Bitmap.Config.ARGB_8888);
         mTextPaint.setColor(color);
@@ -191,12 +188,10 @@ public class BaseIconFactory implements AutoCloseable {
 
     public BitmapInfo createShapedIconBitmap(Bitmap icon, UserHandle user) {
         Drawable d = new FixedSizeBitmapDrawable(icon);
-        if (ATLEAST_OREO) {
-            float inset = AdaptiveIconDrawable.getExtraInsetFraction();
-            inset = inset / (1 + 2 * inset);
-            d = new CustomAdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
-                    new InsetDrawable(d, inset, inset, inset, inset));
-        }
+        float inset = AdaptiveIconDrawable.getExtraInsetFraction();
+        inset = inset / (1 + 2 * inset);
+        d = new CustomAdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
+                new InsetDrawable(d, inset, inset, inset, inset));
         return createBadgedIconBitmap(d, user, true);
     }
 
@@ -230,14 +225,12 @@ public class BaseIconFactory implements AutoCloseable {
 
     public BitmapInfo createBadgedIconBitmap(Drawable icon, UserHandle user,
                                              int iconAppTargetSdk, boolean isInstantApp, float[] scale) {
-        boolean shrinkNonAdaptiveIcons = ATLEAST_P ||
-                (ATLEAST_OREO && iconAppTargetSdk >= Build.VERSION_CODES.O);
+        boolean shrinkNonAdaptiveIcons = ATLEAST_P || iconAppTargetSdk >= Build.VERSION_CODES.O;
         return createBadgedIconBitmap(icon, user, shrinkNonAdaptiveIcons, isInstantApp, scale);
     }
 
     public Bitmap createScaledBitmapWithoutShadow(Drawable icon, int iconAppTargetSdk) {
-        boolean shrinkNonAdaptiveIcons = ATLEAST_P ||
-                (ATLEAST_OREO && iconAppTargetSdk >= Build.VERSION_CODES.O);
+        boolean shrinkNonAdaptiveIcons = ATLEAST_P || iconAppTargetSdk >= Build.VERSION_CODES.O;
         return createScaledBitmapWithoutShadow(icon, shrinkNonAdaptiveIcons);
     }
 
@@ -259,7 +252,7 @@ public class BaseIconFactory implements AutoCloseable {
         }
         icon = normalizeAndWrapToAdaptiveIcon(icon, shrinkNonAdaptiveIcons, null, scale);
         Bitmap bitmap = createIconBitmap(icon, scale[0]);
-        if (ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+        if (icon instanceof AdaptiveIconDrawable) {
             mCanvas.setBitmap(bitmap);
             getShadowGenerator().recreateIcon(Bitmap.createBitmap(bitmap), mCanvas);
             mCanvas.setBitmap(null);
@@ -432,7 +425,7 @@ public class BaseIconFactory implements AutoCloseable {
         }
         float scale = 1f;
 
-        if (shrinkNonAdaptiveIcons && ATLEAST_OREO) {
+        if (shrinkNonAdaptiveIcons) {
             if (mWrapperIcon == null) {
                 Drawable background = new ColorDrawable(mContext.getColor(R.color.legacy_icon_background));
                 Drawable foreground = new FixedScaleDrawable();

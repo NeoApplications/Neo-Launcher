@@ -382,16 +382,18 @@ public abstract class BaseAllAppsContainerView<T extends Context & ActivityConte
      * Resets the state of AllApps.
      */
     public void reset(boolean animate) {
-        for (int i = 0; i < mAH.size(); i++) {
-            if (mAH.get(i).mRecyclerView != null) {
-                mAH.get(i).mRecyclerView.scrollToTop();
+        if (!Utilities.getOmegaPrefs(getContext()).getDrawerSaveScrollPosition().getValue()) {
+            for (int i = 0; i < mAH.size(); i++) {
+                if (mAH.get(i).mRecyclerView != null) {
+                    mAH.get(i).mRecyclerView.scrollToTop();
+                }
             }
+            if (isHeaderVisible()) {
+                mHeader.reset(animate);
+            }
+            // Reset the base recycler view after transitioning home.
+            updateHeaderScroll(0);
         }
-        if (isHeaderVisible()) {
-            mHeader.reset(animate);
-        }
-        // Reset the base recycler view after transitioning home.
-        updateHeaderScroll(0);
     }
 
     @Override

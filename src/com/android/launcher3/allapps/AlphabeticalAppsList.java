@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.android.launcher3.allapps;
+
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_ALL_APPS_DIVIDER;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_EMPTY_SEARCH;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_SEARCH_MARKET;
@@ -36,7 +37,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 /**
  * The alphabetically sorted list of applications.
  *
@@ -58,6 +60,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         AllAppsStore.OnUpdateListener {
     public static final String TAG = "AlphabeticalAppsList";
     private final WorkAdapterProvider mWorkAdapterProvider;
+
     /**
      * Info about a fast scroller section, depending if sections are merged, the fast scroller
      * sections will not be the same set as the section headers.
@@ -67,15 +70,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         public final String sectionName;
         // The item position
         public final int position;
-        // The color of this fast scroll section
-        public int color;
 
         public FastScrollSectionInfo(String sectionName, int position) {
             this.sectionName = sectionName;
             this.position = position;
-            //this.color = color;
         }
     }
+
     private final T mActivityContext;
     // The set of apps from the system
     private final List<AppInfo> mApps = new ArrayList<>();
@@ -95,7 +96,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final BaseDraggingActivity mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
@@ -117,24 +118,28 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         this.mItemFilter = itemFilter;
         onAppsUpdated();
     }
+
     /**
      * Sets the adapter to notify when this dataset changes.
      */
     public void setAdapter(BaseAllAppsAdapter<T> adapter) {
         mAdapter = adapter;
     }
+
     /**
      * Returns fast scroller sections of all the current filtered applications.
      */
     public List<FastScrollSectionInfo> getFastScrollerSections() {
         return mFastScrollerSections;
     }
+
     /**
      * Returns the current filtered list of applications broken down into their sections.
      */
     public List<AdapterItem> getAdapterItems() {
         return mAdapterItems;
     }
+
     /**
      * Returns the child adapter item with IME launch focus.
      */
@@ -144,6 +149,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         return mAdapterItems.get(getFocusedChildIndex());
     }
+
     /**
      * Returns the index of the child with IME launch focus.
      */
@@ -155,12 +161,14 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         return -1;
     }
+
     /**
      * Returns the number of rows of applications
      */
     public int getNumAppRows() {
         return mNumAppRowsInAdapter;
     }
+
     /**
      * Returns the number of applications in this list.
      */
@@ -196,6 +204,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         updateAdapterItems();
         return true;
     }
+
     /**
      * Updates internals when the set of apps are updated.
      */
@@ -240,6 +249,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             updateAdapterItems();
         }
     }
+
     /**
      * Updates the set of filtered apps with the current filter. At this point, we expect
      * mCachedSectionNames to have been calculated for the set of all apps in mApps.
@@ -272,6 +282,24 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                 }
             }
             String lastSectionName = null;
+
+            if (mAllAppsStore != null) {
+                for (DrawerFolderInfo info : getFolderInfos()) {
+                    // Create an folder item
+                    mAdapterItems.add(AdapterItem.asFolder(info));
+                    String sectionName = "#";
+
+                    // Create a new section if the section names do not match
+                    if (!sectionName.equals(lastSectionName)) {
+                        lastSectionName = sectionName;
+                        mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
+                    }
+
+                    info.setAppsStore(mAllAppsStore);
+                    position++;
+                }
+            }
+
             for (AppInfo info : mApps) {
                 mAdapterItems.add(AdapterItem.asApp(info));
                 String sectionName = info.sectionName;
@@ -352,14 +380,17 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         public int getOldListSize() {
             return mOldList.size();
         }
+
         @Override
         public int getNewListSize() {
             return mNewList.size();
         }
+
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             return mOldList.get(oldItemPosition).isSameAs(mNewList.get(newItemPosition));
         }
+
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             return mOldList.get(oldItemPosition).isContentSame(mNewList.get(newItemPosition));

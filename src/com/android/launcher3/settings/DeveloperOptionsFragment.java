@@ -23,7 +23,6 @@ import static com.android.launcher3.settings.SettingsActivity.EXTRA_FRAGMENT_ARG
 import static com.android.launcher3.uioverrides.plugins.PluginManagerWrapper.PLUGIN_CHANGED;
 import static com.android.launcher3.uioverrides.plugins.PluginManagerWrapper.pluginEnabledKey;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,7 +32,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -76,7 +74,6 @@ import java.util.stream.Collectors;
  * Dev-build only UI allowing developers to toggle flag settings and plugins.
  * See {@link FeatureFlags}.
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class DeveloperOptionsFragment extends PreferenceFragmentCompat {
 
     private static final String ACTION_PLUGIN_SETTINGS = "com.android.systemui.action.PLUGIN_SETTINGS";

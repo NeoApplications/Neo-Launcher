@@ -23,7 +23,7 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 open class BaseClientService(context: Context, flags: Int) : ServiceConnection {
     private var mConnected = false
@@ -34,7 +34,7 @@ open class BaseClientService(context: Context, flags: Int) : ServiceConnection {
     fun connect(): Boolean {
         if (!mConnected) {
             try {
-                val prefs = NLPrefs.getInstance(mContext)
+                val prefs = NeoPrefs.getInstance(mContext)
                 if (prefs.feedProvider.getValue() != "") {
                     mConnected = mContext.bindService(
                         LauncherClient.getIntent(mContext, false),

@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,7 +47,7 @@ import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPref
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.compose.pages.IconShapePage
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
@@ -86,8 +87,12 @@ fun ProfilePrefsPage() {
     val others = remember(prefs.changePoker.collectAsState(initial = false).value) {
         mutableStateListOf(
             *listOfNotNull(
-                prefs.profileBlurEnable,
-                if (prefs.profileBlurEnable.getValue()) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+                    prefs.profileBlurEnable
+                } else {
+                    null
+                },
+                if (prefs.profileBlurEnable.getValue() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
                     prefs.profileBlurRadius
                 } else {
                     null
@@ -161,6 +166,6 @@ fun NavGraphBuilder.profilePrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
         preferenceGraph(
             route = subRoute(Routes.COLOR_ACCENT),
-            { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
+            { ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

@@ -48,7 +48,6 @@ import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class FolderAdaptiveIcon extends CustomAdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 

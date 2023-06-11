@@ -19,11 +19,10 @@
 package com.saggitt.omega.preferences
 
 import com.android.launcher3.LauncherAppState
-import com.saggitt.omega.OmegaLauncher
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
-import com.saggitt.omega.omegaApp
 
-class PreferencesChangeCallback(val launcher: OmegaLauncher) {
+class PreferencesChangeCallback(val launcher: NeoLauncher) {
     fun recreate() {
         if (launcher.shouldRecreate()) launcher.recreate()
     }
@@ -35,15 +34,10 @@ class PreferencesChangeCallback(val launcher: OmegaLauncher) {
     }
 
     fun updateSmartspaceProvider() {
-        launcher.omegaApp.smartspace.onProviderChanged()
     }
 
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
-    }
-
-    fun updateWeatherData() {
-        launcher.omegaApp.smartspace.forceUpdateWeather()
     }
 
     fun reloadAll() {

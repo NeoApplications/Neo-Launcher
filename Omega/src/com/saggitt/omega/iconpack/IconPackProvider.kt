@@ -16,7 +16,8 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.icons.ClockDrawableWrapper
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.saggitt.omega.OmegaApp.Companion.minSDK
+import com.saggitt.omega.NeoApp
+import com.saggitt.omega.NeoApp.Companion.minSDK
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
@@ -74,7 +75,7 @@ class IconPackProvider(private val context: Context) {
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
-        val themedIconsInfo = if (minSDK(33)) IconPackInfo(
+        val themedIconsInfo = if (minSDK(Build.VERSION_CODES.TIRAMISU)) IconPackInfo(
             context.getString(R.string.title_themed_icons),
             THEME_ICON_THEMED,
             /*
@@ -87,7 +88,7 @@ class IconPackProvider(private val context: Context) {
                     R.drawable.ic_launcher_foreground
                 )
             )*/
-            ContextCompat.getDrawable(context, R.mipmap.ic_launcher)!!
+            ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!
         ) else null
         return listOfNotNull(
             defaultIconPack,
@@ -138,7 +139,7 @@ class IconPackProvider(private val context: Context) {
     private fun wrapThemedData(
         packageManager: PackageManager,
         iconEntry: IconEntry,
-        drawable: Drawable
+        drawable: Drawable,
     ): Drawable? {
         val themedColors: IntArray = ThemedIconDrawable.getThemedColors(context)
         val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
@@ -148,7 +149,7 @@ class IconPackProvider(private val context: Context) {
         val bg: Drawable = ColorDrawable(themedColors[0])
         val td = ThemedIconDrawable.ThemeData(res, iconEntry.packPackageName, resId)
         return if (drawable is AdaptiveIconDrawable) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
+            if (NeoApp.minSDK(Build.VERSION_CODES.TIRAMISU) && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }
             } else {
                 val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }
@@ -169,5 +170,5 @@ class IconPackProvider(private val context: Context) {
 data class IconPackInfo(
     val name: String,
     val packageName: String,
-    val icon: Drawable
+    val icon: Drawable,
 )

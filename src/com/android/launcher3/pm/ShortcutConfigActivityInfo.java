@@ -188,8 +188,8 @@ public abstract class ShortcutConfigActivityInfo implements ComponentWithLabelAn
             boolean ignoreTargetSdk = myUser.equals(user);
             for (LauncherActivityInfo activityInfo :
                     launcherApps.getShortcutConfigActivityList(packageName, user)) {
-                if (ignoreTargetSdk || activityInfo.getApplicationInfo().targetSdkVersion
-                        >= Build.VERSION_CODES.O) {
+                if (ignoreTargetSdk ||
+                        activityInfo.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O) {
                     result.add(new ShortcutConfigActivityInfoVO(activityInfo));
                 }
             }

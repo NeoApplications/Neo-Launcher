@@ -15,14 +15,16 @@
   ~  You should have received a copy of the GNU General Public License
   ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme.Light" parent="@style/LauncherTheme" >
+    <style name="AppTheme.Light" parent="@style/LauncherTheme">
         <item name="allAppsInterimScrimAlpha">46</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Light</item>
     </style>
 
-    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" >
+    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
         <item name="allAppsInterimScrimAlpha">102</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
     </style>
 
     <style name="AppTheme.Black" parent="AppTheme.Dark" />
@@ -53,19 +55,57 @@
 
     <style name="SmartspaceTextTitle">
         <item name="android:textColor">?attr/workspaceTextColor</item>
-        <item name="android:letterSpacing">@dimen/smartspaceLetterSpacing</item>
+        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
         <item name="ambientShadowBlur">@dimen/smartspaceAmbientShadowBlur</item>
         <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
         <item name="keyShadowBlur">@dimen/smartspaceKeyShadowBlur</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/smartspaceKeyShadowOffset</item>
     </style>
+
     <style name="WeatherWidget" />
 
     <style name="WeatherWidget.Text">
         <item name="android:shadowRadius">3.0</item>
         <item name="android:shadowDy">0.5</item>
         <item name="android:shadowColor">#33000000</item>
+    </style>
+
+
+    <style name="SmartspaceTextHeadline">
+        <item name="android:textColor">?attr/workspaceTextColor</item>
+        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
+        <item name="ambientShadowBlur">@dimen/ambient_text_shadow_radius</item>
+        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
+        <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
+        <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
+        <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+    </style>
+
+    <style name="EnhancedSmartspaceTextSubtitle" parent="@style/EnhancedSmartspaceTextTitle">
+        <item name="android:textSize">@dimen/enhanced_smartspace_subtitle_size</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:fontFamily">google-sans-text</item>
+        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
+        <item name="android:lineHeight" tools:targetApi="p">20.0sp</item>
+    </style>
+
+    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/Theme.Material">
+        <item name="android:textSize">@dimen/enhanced_smartspace_title_size</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:drawablePadding">@dimen/enhanced_smartspace_icon_margin</item>
+        <item name="android:lineHeight" tools:targetApi="p">24.0sp</item>
+
+        <item name="ambientShadowBlur">@dimen/ambient_text_shadow_radius</item>
+        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
+        <item name="keyShadowBlur">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowColor">?attr/workspaceAmbientShadowColor</item>
+        <item name="keyShadowOffsetX">@dimen/key_text_shadow_dx</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_dy</item>
     </style>
 </resources>
 

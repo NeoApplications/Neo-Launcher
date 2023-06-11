@@ -23,7 +23,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.UserHandle;
 import android.util.Log;
 
@@ -218,7 +217,7 @@ public class BitmapInfo {
             return null;
         }
         BitmapFactory.Options decodeOptions;
-        if (BitmapRenderer.USE_HARDWARE_BITMAP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (BitmapRenderer.USE_HARDWARE_BITMAP) {
             decodeOptions = new BitmapFactory.Options();
             decodeOptions.inPreferredConfig = Bitmap.Config.HARDWARE;
         } else {

@@ -36,11 +36,11 @@
 package com.saggitt.omega.blur
 
 import android.graphics.Bitmap
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 
 interface WallpaperFilter {
 
-    fun applyPrefs(prefs: NLPrefs)
+    fun applyPrefs(prefs: NeoPrefs)
 
     fun apply(wallpaper: Bitmap): ApplyTask
 

@@ -47,14 +47,14 @@ import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialo
 import com.saggitt.omega.compose.components.preferences.StringTextPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
-import com.saggitt.omega.smartspace.weather.OWMWeatherDataProvider
+import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.prefs
@@ -74,12 +74,15 @@ fun WidgetsPrefsPage() {
             *listOfNotNull(
                 prefs.smartspaceEnable,
                 prefs.smartspaceDate,
+                if(prefs.smartspaceDate.getValue()){
+                    prefs.smartspaceCalendar
+                }else{
+                    null
+                },
                 prefs.smartspaceTime,
-                prefs.smartspaceTimeLarge,
                 prefs.smartspaceTime24H,
-                prefs.smartspaceUsePillQsb,
                 prefs.smartspaceWeatherProvider,
-                if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherDataProvider::class.java.name) {
+                if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name) {
                     prefs.smartspaceWeatherApiKey
                     prefs.smartspaceWeatherCity
                 } else null,
@@ -170,6 +173,6 @@ fun NavGraphBuilder.widgetsPrefsGraph(route: String) {
     preferenceGraph(route, { WidgetsPrefsPage() }) { subRoute ->
         preferenceGraph(
             route = subRoute(Routes.COLOR_DOTS_NOTIFICATION),
-            { ColorSelectorPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
+            { ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
     }
 }

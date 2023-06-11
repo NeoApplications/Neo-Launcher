@@ -19,7 +19,9 @@
 package com.saggitt.omega.groups
 
 import android.content.Context
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
+import java.util.function.Predicate
 
 abstract class Filter<T>(val context: Context) {
 
@@ -27,15 +29,14 @@ abstract class Filter<T>(val context: Context) {
 
     open val size get() = matches?.size ?: 0
 
-    //abstract val matcher: Predicate<ItemInfo>
-    abstract val matcher: CustomItemInfoMatcher
+    abstract val matcher: Predicate<ItemInfo>
 }
 
 class CustomFilter(context: Context, override val matches: Set<ComponentKey>) :
     Filter<ComponentKey>(context) {
 
-    override val matcher: CustomItemInfoMatcher
-        get() = CustomItemInfoMatcher { info, _ ->
+    override val matcher: Predicate<ItemInfo>
+        get() = Predicate<ItemInfo> { info ->
             matches.contains(
                 ComponentKey(
                     info.targetComponent,
@@ -44,11 +45,3 @@ class CustomFilter(context: Context, override val matches: Set<ComponentKey>) :
             )
         }
 }
-/*class CustomFilter(context: Context, override val matches: Set<ComponentKey>) :
-    Filter<ComponentKey>(context) {
-
-    override val matcher
-        get() = ItemInfoMatcher.ofComponents(
-            matches.map { it.componentName }.toSet().toHashSet(), matches.map { it.user }[0]
-        )
-}*/

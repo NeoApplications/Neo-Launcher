@@ -48,9 +48,9 @@ class CustomHotseat @JvmOverloads constructor(
     private val prefs by lazy { context.prefs }
 
     private var bgEnabled = prefs.dockCustomBackground.getValue()
+    private val hotseatDisabled = context.prefs.dockHide.getValue()
     private var radius = getWindowCornerRadius(context)
 
-    private var shadow = true
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val shadowBlur = resources.getDimension(R.dimen.all_apps_scrim_blur)
     private val shadowHelper = NinePatchDrawHelper()
@@ -71,8 +71,7 @@ class CustomHotseat @JvmOverloads constructor(
             field = value
             setBgColor()
         }
-    private var bgColor = 0
-    private var customBgColor = prefs.dockBackgroundColor
+    private var bgColor = prefs.dockBackgroundColor.getColor()
         set(value) {
             field = value
             setBgColor()
@@ -88,13 +87,12 @@ class CustomHotseat @JvmOverloads constructor(
         }
     }
 
-    private val hotseatDisabled = context.prefs.dockHide.getValue()
-
     init {
         if (hotseatDisabled) {
             super.setVisibility(View.GONE)
         }
-        setWillNotDraw(!bgEnabled || launcher.useVerticalBarLayout())
+
+        reloadPrefs()
     }
 
     override fun setVisibility(visibility: Int) {
@@ -118,16 +116,10 @@ class CustomHotseat @JvmOverloads constructor(
     private fun reloadPrefs() {
         bgEnabled = prefs.dockCustomBackground.getValue()
         radius = dpToPx(getWindowCornerRadius(context))
-        shadow = true //prefs.dockShadow
         shadowBitmap = generateShadowBitmap()
         setWillNotDraw(!bgEnabled || launcher.useVerticalBarLayout())
         createBlurDrawable()
         invalidate()
-    }
-
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        super.onLayout(changed, l, t, r, b)
-        setWillNotDraw(!bgEnabled || launcher.useVerticalBarLayout())
     }
 
     override fun draw(canvas: Canvas) {
@@ -156,7 +148,6 @@ class CustomHotseat @JvmOverloads constructor(
             draw(canvas)
         }
         canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
-        if (shadow) {
             shadowHelper.paint.alpha = (viewAlpha * 255).toInt()
             shadowHelper.drawVerticallyStretched(
                 shadowBitmap, canvas,
@@ -165,18 +156,16 @@ class CustomHotseat @JvmOverloads constructor(
                 right + shadowBlur,
                 bottom
             )
-        }
         canvas.restore()
     }
 
     private fun setBgColor() {
-        bgColor = customBgColor.getValue()
         paint.color = bgColor
         invalidate()
     }
 
     override fun setAlpha(alpha: Float) {
-        this.viewAlpha = max(0f, alpha)
+        viewAlpha = max(0f, alpha)
         shortcutsAndWidgets.alpha = alpha
     }
 

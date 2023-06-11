@@ -25,6 +25,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.android.launcher3.InvariantDeviceProfile
+import com.saggitt.omega.theme.AccentColorOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -57,11 +58,11 @@ open class IntPref(
     @StringRes summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Int>,
-    private val defaultValue: Int = -1,
-    minValue: Int = 0,
-    maxValue: Int = "FFFFFF".toInt(16),
-    steps: Int = 1,
-    specialOutputs: ((Int) -> String) = Int::toString,
+    val defaultValue: Int = -1,
+    val minValue: Int = 0,
+    val maxValue: Int = "FFFFFF".toInt(16),
+    val steps: Int = 1,
+    val specialOutputs: ((Int) -> String) = Int::toString,
 ) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
 
     override fun get(): Flow<Int> {
@@ -181,16 +182,22 @@ open class ColorIntPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
-    val defaultValue: Int = -1,
-    private val key: Preferences.Key<Int>,
+    val defaultValue: String = "system_accent",
+    private val key: Preferences.Key<String>,
     val navRoute: String = ""
-) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
-    override fun get(): Flow<Int> {
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
-    override suspend fun set(value: Int) {
+    override suspend fun set(value: String) {
         dataStore.edit { it[key] = value }
+    }
+
+    fun getColor(): Int {
+        return runBlocking(Dispatchers.IO) {
+            AccentColorOption.fromString(getValue()).accentColor
+        }
     }
 }
 
@@ -293,20 +300,6 @@ open class StringSetPref(
     override suspend fun set(value: Set<String>) {
         onChange()
         dataStore.edit { it[key] = value }
-    }
-
-    fun getAll(): List<String> = valueList
-
-    fun setAll(value: List<String>) {
-        valueList.clear()
-        valueList.addAll(value)
-        return runBlocking(Dispatchers.IO) {
-            saveChanges()
-        }
-    }
-
-    private suspend fun saveChanges() {
-        dataStore.edit { it[key] = valueList.toSet() }
     }
 }
 

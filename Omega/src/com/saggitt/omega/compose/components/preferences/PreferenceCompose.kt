@@ -18,30 +18,25 @@
 
 package com.saggitt.omega.compose.components.preferences
 
-import android.util.Log
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -54,17 +49,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
@@ -82,6 +75,8 @@ import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
+import com.saggitt.omega.theme.AccentColorOption
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
 
@@ -99,48 +94,37 @@ fun BasePreference(
     bottomWidget: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val base = index.toFloat() / groupSize
     val rank = (index + 1f) / groupSize
 
-    Column(
-        modifier = Modifier
+    ListItem(
+        modifier = modifier
+            .fillMaxWidth()
             .clip(
-                RoundedCornerShape(
-                    topStart = if (base == 0f) 16.dp else 6.dp,
-                    topEnd = if (base == 0f) 16.dp else 6.dp,
-                    bottomStart = if (rank == 1f) 16.dp else 6.dp,
-                    bottomEnd = if (rank == 1f) 16.dp else 6.dp
-                )
+                GroupItemShape(index, groupSize - 1)
             )
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation((rank * 24).dp))
-            .heightIn(min = 64.dp)
             .addIf(onClick != null) {
                 clickable(enabled = isEnabled, onClick = onClick!!)
-            }, verticalArrangement = Arrangement.Center
-    ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            startWidget?.let {
-                startWidget()
-                Spacer(modifier = Modifier.requiredWidth(8.dp))
-            }
+            },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme
+                .surfaceColorAtElevation((rank * 24).dp),
+        ),
+        leadingContent = startWidget,
+        headlineContent = {
+            Text(
+                text = stringResource(id = titleId),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        supportingContent = {
             Column(
                 modifier = Modifier
-                    .weight(1f)
                     .addIf(!isEnabled) {
                         alpha(0.3f)
                     }
             ) {
-                Text(
-                    text = stringResource(id = titleId),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 16.sp
-                )
+
                 if (summaryId != -1 || summary != null) {
                     Text(
                         text = summary ?: stringResource(id = summaryId),
@@ -153,12 +137,9 @@ fun BasePreference(
                     bottomWidget()
                 }
             }
-            endWidget?.let {
-                Spacer(modifier = Modifier.requiredWidth(8.dp))
-                endWidget()
-            }
-        }
-    }
+        },
+        trailingContent = endWidget,
+    )
 }
 
 @Composable
@@ -201,7 +182,6 @@ fun NavigationPreference(
         isEnabled = isEnabled,
         onClick = {
             if (pref.navRoute != "") {
-                Log.d("NavigationPreference", "Navigating to $route")
                 navController.navigate(route)
             } else {
                 pref.onClick?.invoke()
@@ -221,7 +201,9 @@ fun ColorIntPreference(
     val navController = LocalNavController.current
     val route = subRoute(pref.navRoute)
 
-    val currentColor by remember(pref) { mutableStateOf(pref.getValue()) }
+    val currentColor by remember(pref) {
+        mutableStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
+    }
 
     BasePreference(
         modifier = modifier,
@@ -535,24 +517,22 @@ fun StringTextPreference(
 fun PagePreference(
     modifier: Modifier = Modifier,
     @StringRes titleId: Int,
-    @DrawableRes iconId: Int = -1,
+    icon: ImageVector? = null,
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
-    route: String
+    route: String,
 ) {
     val navController = LocalNavController.current
     val destination = subRoute(route)
     BasePreference(
         modifier = modifier,
         titleId = titleId,
-        startWidget =
-        if (iconId != -1) {
+        startWidget = if (icon != null) {
             {
                 Icon(
-                    painter = painterResource(id = iconId),
+                    imageVector = icon,
                     contentDescription = stringResource(id = titleId),
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         } else null,

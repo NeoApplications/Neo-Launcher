@@ -280,21 +280,6 @@ abstract class AppGroups<T : AppGroups.Group>(
         }
     }
 
-    open class ColorCustomization(key: String, default: Int) :
-        Customization<Int, String>(key, default) {
-        override fun loadFromJson(context: Context, obj: String?) {
-            value = obj?.toInt()
-        }
-
-        override fun saveToJson(context: Context): String? {
-            return value.toString()
-        }
-
-        override fun clone(): Customization<Int, String> {
-            return ColorCustomization(key, default).also { it.value = value }
-        }
-    }
-
     abstract class SetCustomization<T : Any, S : Any>(key: String, default: MutableSet<T>) :
         Customization<MutableSet<T>, JSONArray>(key, default) {
 

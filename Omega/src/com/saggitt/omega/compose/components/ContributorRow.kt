@@ -44,7 +44,7 @@ fun ContributorRow(
     photoUrl: String,
     url: String,
     index: Int = 0,
-    groupSize: Int = 1
+    groupSize: Int = 1,
 ) {
     val context = LocalContext.current
 
@@ -71,7 +71,7 @@ fun ContributorRow(
                 contentDescription = null,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(32.dp)
+                    .size(24.dp)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12F))
             )
         }
