@@ -80,7 +80,7 @@
     <string name="title__sort_last_installed">مثبت مؤخرا</string>
     <string name="title__sort_alphabetical_za">ي → أ</string>
     <string name="title__sort_alphabetical_az">أ → ي</string>
-    <string name="title__sort_mode">فرز التطبيقات</string>
+    <string name="title__sort_mode">ترتيب التطبيقات</string>
     <string name="title_drawer_row_height">طول الاعمدة</string>
     <string name="title_drawer_enable_background">أستخدم لون خلفية مخصصة</string>
     <string name="title__drawer_columns">رقم الاعمدة</string>
@@ -506,4 +506,11 @@
     <string name="web_search_wolfram_alpha">ولفرام ألفا (الويب)</string>
     <string name="web_search_phind">فيند (ويب)</string>
     <string name="web_search_neeva">نيفا (ويب)</string>
+    <string name="title_smartspace_calendar">حدد التقويم</string>
+    <string name="title_calendar_gregorian">الميلادي</string>
+    <string name="gesture_press_recents">زر \"الحديثة\"</string>
+    <string name="about_community_telegram">المجتمع على تيليجرام</string>
+    <string name="about_community_matrix">المجتمع على ماتريكس</string>
+    <string name="title_smartspace_time_format">تنسيق الوقت</string>
+    <string name="title_calendar_persian">الفارسي</string>
 </resources>
