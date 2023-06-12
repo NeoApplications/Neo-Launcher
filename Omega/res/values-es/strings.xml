@@ -500,4 +500,11 @@
     <string name="color_wallpaper_secondary">Fondo de pantalla secundario</string>
     <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="title_smartspace_time_format">Formato de la hora</string>
+    <string name="title_smartspace_calendar">Seleccionar calendario</string>
+    <string name="title_calendar_gregorian">Gregoriano</string>
+    <string name="title_calendar_persian">Persa</string>
+    <string name="gesture_press_recents">Botón de Recientes</string>
+    <string name="about_community_telegram">La Comunidad en Telegram</string>
+    <string name="about_community_matrix">La Comunidad en Matrix</string>
 </resources>
