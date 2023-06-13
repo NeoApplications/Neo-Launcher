@@ -609,7 +609,7 @@ class NeoPrefs private constructor(val context: Context) {
     private val drawerGridSizeDelegate = ResettableLazy {
         GridSize(
             titleId = R.string.title__drawer_columns,
-            numColumnsPref = drawerColumns,
+            numColumnsPref = drawerGridColumns,
             columnsKey = "numAllAppsColumns",
             targetObject = LauncherAppState.getIDP(context),
             onChangeListener = reloadIcons
@@ -617,12 +617,11 @@ class NeoPrefs private constructor(val context: Context) {
     }
     val drawerGridSize by drawerGridSizeDelegate
 
-    private val drawerColumns = IdpIntPref(
+    val drawerGridColumns = IdpIntPref(
+        dataStore = dataStore,
         key = PrefKey.DRAWER_GRID_COLUMNS,
         titleId = R.string.title__drawer_columns,
-        dataStore = dataStore,
         selectDefaultValue = { numAllAppsColumns },
-        defaultValue = 4,
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
@@ -723,17 +722,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_SCROLL_POSITION_SAVE,
         titleId = R.string.title_all_apps_keep_scroll_state,
         defaultValue = false,
-    )
-
-    val drawerGridColumns = IdpIntPref(
-        dataStore = dataStore,
-        key = PrefKey.DRAWER_GRID_COLUMNS,
-        titleId = R.string.title__drawer_columns,
-        selectDefaultValue = { numAllAppsColumns },
-        onChange = reloadGrid,
-        minValue = 2f,
-        maxValue = 16f,
-        steps = 15
     )
 
     val drawerCustomBackground = BooleanPref(

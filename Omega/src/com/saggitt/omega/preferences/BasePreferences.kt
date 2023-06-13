@@ -102,7 +102,7 @@ class IdpIntPref(
 
     fun get(defaultGrid: InvariantDeviceProfile.GridOption): Int {
         val value = getValue()
-        return if (value == -1 || value == -0) {
+        return if (value == -1 || value == 0) {
             selectDefaultValue(defaultGrid)
         } else {
             value
