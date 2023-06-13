@@ -515,4 +515,11 @@
     <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="color_wallpaper_secondary">Sfondo secondario</string>
+    <string name="title_calendar_gregorian">Gregoriano</string>
+    <string name="title_calendar_persian">Persiano</string>
+    <string name="about_community_telegram">Comunità su Telegram</string>
+    <string name="title_smartspace_time_format">Formato ora</string>
+    <string name="title_smartspace_calendar">Seleziona calendario</string>
+    <string name="gesture_press_recents">Pulsante recenti</string>
+    <string name="about_community_matrix">Comunità su Matrix</string>
 </resources>
