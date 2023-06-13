@@ -58,13 +58,13 @@
     <string name="title__dock_hide">Сховати панель швидкого доступу</string>
     <string name="title__dock_hide_labels">Приховати ярлики</string>
     <string name="label_search">Пошук</string>
-    <string name="title__drawer_sort">Сортування додатків</string>
+    <string name="title__drawer_sort">Сортування застосунків</string>
     <string name="title__drawer_all_apps">Показати ярлик «Усі додатки»</string>
     <string name="title__drawer_hide_icon_labels">Сховати назви додатків</string>
     <string name="title__drawer_categorization">Категорії</string>
     <string name="title_drawer_enable_background">Використовувати свій колір фону</string>
     <string name="title_drawer_row_height">Висота рядка</string>
-    <string name="title__sort_mode">Сортування додатків</string>
+    <string name="title__sort_mode">Сортування застосунків</string>
     <string name="title__sort_alphabetical_az">A→Z</string>
     <string name="title__sort_alphabetical_za">Z→A</string>
     <string name="title__sort_most_used">Найчастіше використовувані</string>
@@ -120,7 +120,7 @@
     <string name="title_smartspace_weather_units">Одиниця вимірювання температури</string>
     <string name="title_smartspace_event_providers">Джерела подій</string>
     <string name="pref_shelf_summary">Ліворуч від головного екрану</string>
-    <string name="smartspace_preferences">Налаштування</string>
+    <string name="smartspace_preferences">Параметри</string>
     <string name="smartspace_setup_text">Торкніться, щоб налаштувати</string>
     <string name="smartspace_in_time">в %1$s</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
@@ -496,4 +496,11 @@
     <string name="color_wallpaper_secondary">Вторинні Шпалери</string>
     <string name="web_search_phind">Phind (Веб)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Веб)</string>
+    <string name="title_smartspace_time_format">Формат часу</string>
+    <string name="title_smartspace_calendar">Виберіть Календар</string>
+    <string name="title_calendar_gregorian">Григоріанський</string>
+    <string name="gesture_press_recents">Кнопка \"Останні\"</string>
+    <string name="about_community_matrix">Спільнота на Matrix</string>
+    <string name="title_calendar_persian">Персидський</string>
+    <string name="about_community_telegram">Спільнота в Telegram</string>
 </resources>
