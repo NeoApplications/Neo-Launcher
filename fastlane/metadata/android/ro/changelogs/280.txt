@@ -1,0 +1,12 @@
+<ul>
+  <li>Adăugare: Căutare folosind motorul de căutare Brave</li>
+  <li>Adăugare: Preferințe pentru gestul de navigare înapoi</li>
+  <li>Adăugare: Preferințe pentru gestul de navigare acasă</li>
+  <li>Adăugare: Modul desktop</li>
+  <li>Reparație: Culoarea textului pe selectorul de widgeturi când tematica de sistem este albă</li>
+  <li>Reparație: Căutare pentru aplicații ascunse</li>
+  <li>Reparație: Iconița de folder în modul cover</li>
+  <li>Restaurat widgetul spațiu inteligent</li>
+  <li>Restaurat iconița de ceas Adaptive (Google)</li>
+  <li>Restaurat iconița de calendar Adaptive (Google)</li>
+</ul>
