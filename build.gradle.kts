@@ -5,15 +5,20 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.0.1")
+        classpath("com.android.tools.build:gradle:8.0.2")
     }
 }
-val vKotlin = "1.8.21"
-val vCompose = "1.5.0-alpha04"
-val vComposeCompiler = "1.4.7"
+
 val vAccompanist = "0.31.2-alpha"
-val vRoom = "2.5.1"
+val vCompose = "1.5.0-beta02"
+val vComposeCompiler = "1.4.7"
+val vKotlin = "1.8.21"
+val vLifecycle = "2.6.1"
+val vMaterial3 = "1.2.0-alpha02"
+val vNavigation = "2.7.0-beta01"
+val vOkhttp = "5.0.0-alpha.11"
 val vProtobuf = "3.22.2"
+val vRoom = "2.5.1"
 
 plugins {
     id("com.android.application").version("8.0.1")
@@ -227,12 +232,12 @@ dependencies {
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
     implementation("com.github.samanzamani:PersianDate:1.6.1")
     implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.1.0") {
         exclude("com.android.support", "support-compat")
@@ -243,21 +248,20 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.7.1")
+    implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
     implementation("androidx.compose.runtime:runtime:$vCompose")
     implementation("androidx.compose.ui:ui:$vCompose")
     implementation("androidx.compose.ui:ui-tooling:$vCompose")
     implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
     implementation("androidx.compose.foundation:foundation:$vCompose")
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.navigation:navigation-compose:$vNavigation")
     implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
 
-    implementation("androidx.compose.material:material:$vCompose")
-    implementation("androidx.compose.material3:material3:1.1.0")
+    implementation("androidx.compose.material3:material3:$vMaterial3")
 
     //Accompanist
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
