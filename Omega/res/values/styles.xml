@@ -19,21 +19,71 @@
 
     <style name="AppTheme.Light" parent="@style/LauncherTheme">
         <item name="allAppsInterimScrimAlpha">46</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+    </style>
+
+    <style name="AppTheme.Light.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor">
+        <item name="allAppsInterimScrimAlpha">46</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Light</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+    </style>
+
+    <style name="AppTheme.Light.DarkText" parent="@style/LauncherTheme.DarkText">
+        <item name="allAppsInterimScrimAlpha">46</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Light</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
         <item name="allAppsInterimScrimAlpha">102</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
     </style>
 
-    <style name="AppTheme.Black" parent="AppTheme.Dark" />
+    <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor">
+        <item name="allAppsInterimScrimAlpha">102</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+    </style>
 
-    <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar" />
+    <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText">
+        <item name="allAppsInterimScrimAlpha">102</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+    </style>
 
-    <style name="SettingsTheme.Dark" parent="Theme.Material3.Dark.NoActionBar" />
+    <style name="AppTheme.Black" parent="AppTheme.Dark">
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Black</item>
+    </style>
 
-    <style name="SettingsTheme.Black" parent="SettingsTheme.Dark" />
+    <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar">
+        <item name="alertDialogTheme">@style/AlertDialog.Light</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+        <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
+        <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+    </style>
+
+    <style name="SettingsTheme.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+        <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
+        <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
+    </style>
+
+    <style name="SettingsTheme.Black" parent="SettingsTheme.Dark">
+        <item name="alertDialogTheme">@style/AlertDialog.Black</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
+    </style>
 
     <style name="AlertDialog.Light" parent="Theme.Material3.Light.Dialog.Alert" />
 
@@ -53,14 +103,53 @@
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
     </style>
 
-    <style name="SmartspaceTextTitle">
-        <item name="android:textColor">?attr/workspaceTextColor</item>
-        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
-        <item name="ambientShadowBlur">@dimen/smartspaceAmbientShadowBlur</item>
-        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
-        <item name="keyShadowBlur">@dimen/smartspaceKeyShadowBlur</item>
-        <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
-        <item name="keyShadowOffsetX">@dimen/smartspaceKeyShadowOffset</item>
+    <style name="SettingsTheme.BottomSheetDialog.Light" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="bottomSheetStyle">@style/SettingsTheme.BottomSheet</item>
+    </style>
+
+    <style name="SettingsTheme.BottomSheetDialog.Dark" parent="Theme.Material3.Dark.BottomSheetDialog">
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="bottomSheetStyle">@style/SettingsTheme.BottomSheet</item>
+    </style>
+
+    <style name="SettingsTheme.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">?backgroundColor</item>
+    </style>
+
+    <style name="SettingsTheme.PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/mtrl_popupmenu_background</item>
+        <item name="android:popupElevation">8dp</item>
+    </style>
+
+    <style name="SettingsTheme.PopupMenu.Overflow" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/mtrl_popupmenu_background</item>
+        <item name="android:popupElevation">8dp</item>
+        <item name="android:dropDownVerticalOffset">40dp</item>
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
+    </style>
+
+    <style name="WidgetContainerTheme.Light" parent="SettingsTheme.Light">
+        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
+        <item name="bottomSheetNavBarColor">@color/all_apps_navbar_color</item>
+        <item name="colorBackgroundFloating">?backgroundColor</item>
+        <item name="android:colorPrimary">@color/grey_100</item>
+    </style>
+
+    <style name="WidgetContainerTheme.Dark" parent="SettingsTheme.Dark">
+        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
+        <item name="bottomSheetNavBarColor">@color/grey_900</item>
+        <item name="colorBackgroundFloating">?backgroundColor</item>
+        <item name="android:colorPrimary">@color/grey_800</item>
+    </style>
+
+    <style name="WidgetContainerTheme.Black" parent="SettingsTheme.Black">
+        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
+        <item name="bottomSheetNavBarColor">#00000000</item>
+        <item name="colorBackgroundFloating">?backgroundColor</item>
+        <item name="android:colorPrimary">@color/grey_900</item>
     </style>
 
     <style name="WeatherWidget" />
@@ -71,6 +160,15 @@
         <item name="android:shadowColor">#33000000</item>
     </style>
 
+    <style name="SmartspaceTextTitle">
+        <item name="android:textColor">?attr/workspaceTextColor</item>
+        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
+        <item name="ambientShadowBlur">@dimen/smartspaceAmbientShadowBlur</item>
+        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
+        <item name="keyShadowBlur">@dimen/smartspaceKeyShadowBlur</item>
+        <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
+        <item name="keyShadowOffsetX">@dimen/smartspaceKeyShadowOffset</item>
+    </style>
 
     <style name="SmartspaceTextHeadline">
         <item name="android:textColor">?attr/workspaceTextColor</item>

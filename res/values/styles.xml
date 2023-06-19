@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 * Copyright (C) 2008 The Android Open Source Project
 *
@@ -48,7 +47,7 @@
         <item name="workspaceAmbientShadowColor">#40000000</item>
         <item name="workspaceKeyShadowColor">#89000000</item>
         <item name="workspaceStatusBarScrim">@drawable/workspace_bg</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="folderDotColor">@color/folder_dot_color</item>
         <item name="folderPaginationColor">@color/folder_pagination_color_light</item>
         <item name="folderPreviewColor">@color/folder_preview_light</item>
@@ -140,14 +139,13 @@
     </style>
 
     <!-- A derivative project can extend these themes to customize the application theme without
-         affecting the base theme -->
-    <style name="AppTheme" parent="@style/LauncherTheme" />
+         affecting the base theme
     <style name="AppTheme.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor" />
     <style name="AppTheme.DarkText" parent="@style/LauncherTheme.DarkText" />
 
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor" />
-    <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText" />
+    <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText" /> -->
 
     <style name="HomeSettings.Theme" parent="@android:style/Theme.DeviceDefault.Settings">
         <item name="android:navigationBarColor">?android:colorPrimaryDark</item>
@@ -176,11 +174,12 @@
     </style>
 
     <!-- Theme for the widget container. -->
-    <style name="WidgetContainerTheme" parent="@android:style/Theme.DeviceDefault.Settings">
+    <style name="WidgetContainerTheme.Light" parent="@android:style/Theme.DeviceDefault.Settings">
         <item name="android:colorPrimaryDark">#E8EAED</item>
         <item name="android:textColorSecondary">?android:attr/textColorPrimary</item>
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
     </style>
+
     <style name="WidgetContainerTheme.Dark" parent="AppTheme.Dark">
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
         <item name="android:colorPrimaryDark">#616161</item> <!-- Gray 700 -->
@@ -259,7 +258,7 @@
     </style>
 
     <!-- Intentionally empty so we can override -->
-    <style name="BaseIcon.Workspace" parent="BaseIcon.Workspace.Shadows"></style>
+    <style name="BaseIcon.Workspace" parent="BaseIcon.Workspace.Shadows" />
 
     <!-- Theme for the popup container -->
     <style name="PopupItem">
@@ -317,8 +316,19 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
-    <style name="AddItemActivityTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
-        <item name="widgetsTheme">@style/WidgetContainerTheme</item>
+    <style name="Theme.AppCompat.Transparent.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="backgroundColor">?colorPrimary</item>
+    </style>
+
+    <!--<style name="AddItemActivityTheme" parent="@android:style/Theme.Translucent.NoTitleBar"> -->
+    <style name="AddItemActivityTheme" parent="Theme.AppCompat.Transparent.NoActionBar">
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
