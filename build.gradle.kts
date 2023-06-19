@@ -261,7 +261,6 @@ dependencies {
 
     //Accompanist
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
-    implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
 
