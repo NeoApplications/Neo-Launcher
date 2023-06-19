@@ -28,12 +28,11 @@ import android.os.ResultReceiver
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.graphics.Color
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.rememberNavController
 import com.saggitt.omega.compose.navigation.PrefsComposeView
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.theme.ThemeManager
@@ -48,7 +47,6 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
-    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         themeOverride = ThemeOverride(themeSet, this)
@@ -57,7 +55,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         currentAccent = Color.Green.hashCode()
         setContent {
             OmegaAppTheme {
-                navController = rememberAnimatedNavController()
+                navController = rememberNavController()
                 PrefsComposeView(navController)
             }
         }

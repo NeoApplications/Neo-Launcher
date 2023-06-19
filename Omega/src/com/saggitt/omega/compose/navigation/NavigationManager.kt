@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.navigation
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +30,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import androidx.navigation.compose.NavHost
 import com.saggitt.omega.compose.pages.preferences.mainPrefsGraph
 import soup.compose.material.motion.animation.materialSharedAxisXIn
 import soup.compose.material.motion.animation.materialSharedAxisXOut
@@ -74,7 +73,6 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
     error("CompositionLocal LocalNavController not present")
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PrefsComposeView(navController: NavHostController) { // TODO check the animation if works as excpected
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
@@ -84,7 +82,7 @@ fun PrefsComposeView(navController: NavHostController) { // TODO check the anima
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
-        AnimatedNavHost(
+        NavHost(
             navController = navController,
             startDestination = "/",
             enterTransition = { inMotionSpec },
