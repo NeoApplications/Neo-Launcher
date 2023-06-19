@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.data
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -29,6 +30,7 @@ import com.saggitt.omega.data.models.AppTracker
 import com.saggitt.omega.data.models.GestureItemInfo
 import com.saggitt.omega.data.models.IconOverride
 import com.saggitt.omega.data.models.PeopleInfo
+import com.saggitt.omega.data.models.SearchProvider
 
 @Database(
     entities = [
@@ -36,9 +38,16 @@ import com.saggitt.omega.data.models.PeopleInfo
         AppTracker::class,
         PeopleInfo::class,
         GestureItemInfo::class,
+        SearchProvider::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(
+            from = 4,
+            to = 5,
+        ),
+    ]
 )
 @TypeConverters(Converters::class)
 abstract class NeoLauncherDb : RoomDatabase() {
@@ -47,6 +56,7 @@ abstract class NeoLauncherDb : RoomDatabase() {
     abstract fun appTrackerDao(): AppTrackerDao
     abstract fun peopleDao(): PeopleDao
     abstract fun gestureItemInfoDao(): GestureItemInfoDao
+    abstract fun searchProviderDao(): SearchProviderDao
 
     companion object {
 
