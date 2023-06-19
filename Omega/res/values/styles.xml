@@ -22,6 +22,7 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+        <item name="folderBackgroundColor">@color/folder_background_light</item>
     </style>
 
     <style name="AppTheme.Light.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor">
@@ -29,6 +30,7 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+        <item name="folderBackgroundColor">@color/folder_background_light</item>
     </style>
 
     <style name="AppTheme.Light.DarkText" parent="@style/LauncherTheme.DarkText">
@@ -36,6 +38,7 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+        <item name="folderBackgroundColor">@color/folder_background_light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
@@ -43,6 +46,7 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+        <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor">
@@ -50,6 +54,7 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+        <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
     <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText">
@@ -57,11 +62,13 @@
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
+        <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
     <style name="AppTheme.Black" parent="AppTheme.Dark">
         <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
         <item name="alertDialogTheme">@style/AlertDialog.Black</item>
+        <item name="folderBackgroundColor">#DD000000</item>
     </style>
 
     <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar">

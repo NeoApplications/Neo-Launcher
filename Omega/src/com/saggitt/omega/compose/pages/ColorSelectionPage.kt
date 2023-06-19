@@ -105,7 +105,7 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
                 }
             )
         },
-        TabItem(title = R.string.color_dynamic, icon = R.drawable.ic_palette) {
+        TabItem(title = R.string.color_dynamic, icon = R.drawable.ic_paint_bucket) {
             DynamicPage(
                 dynamicColors = dynamicColors,
                 onSelectColor = { currentAccentColor.value = it },

@@ -27,6 +27,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -175,7 +176,8 @@ fun LauncherScreen(
     ) {
         PreferenceGroup {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
             ) {
                 itemsIndexed(launcherItems) { index, item ->
                     ListItem(
@@ -239,7 +241,10 @@ fun AppsScreen(
         val groupSize = apps.size
 
         PreferenceGroup {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
                 itemsIndexed(apps) { index, item ->
                     val config = JSONObject("{}")
                     config.apply {
@@ -321,7 +326,10 @@ fun ShortcutsScreen(
 
         val appsSize = appsWithShortcuts.size
         PreferenceGroup {
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
                 itemsIndexed(appsWithShortcuts) { appIndex, app ->
                     var expanded by remember { mutableStateOf(false) }
 
@@ -401,7 +409,6 @@ fun ShortcutsScreen(
                             if (index < groupSize - 1) Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
-                    if (appIndex < appsSize - 1) Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }

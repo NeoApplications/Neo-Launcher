@@ -335,12 +335,11 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (prefs.getDesktopCustomFolderBackground().getValue()) {
             bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
         } else {
-            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
+            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderBackgroundColor);
         }
         mBackground = new GradientDrawable();
         mBackground.setShape(GradientDrawable.RECTANGLE);
-        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_IN);
-
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
         mBackground.setCornerRadius(getCornerRadius());
     }
 
