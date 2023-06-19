@@ -20,14 +20,18 @@
     <style name="AppTheme.Light" parent="@style/LauncherTheme">
         <item name="allAppsInterimScrimAlpha">46</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
+        <item name="folderBackgroundColor">@color/folder_background_light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
         <item name="allAppsInterimScrimAlpha">102</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
+        <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
-    <style name="AppTheme.Black" parent="AppTheme.Dark" />
+    <style name="AppTheme.Black" parent="AppTheme.Dark">
+        <item name="folderBackgroundColor">#DD000000</item>
+    </style>
 
     <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar" />
 
