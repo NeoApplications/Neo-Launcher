@@ -26,16 +26,14 @@ import android.widget.RelativeLayout;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.launcher3.DeviceProfile.DeviceProfileListenable;
+import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.PackageManagerHelper;
-import com.android.launcher3.views.AppLauncher;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -43,8 +41,7 @@ import java.util.Objects;
  *
  * @param <T> Type of context inflating all apps.
  */
-public class ActivityAllAppsContainerView<T extends Context & AppLauncher
-        & DeviceProfileListenable> extends BaseAllAppsContainerView<T> {
+public class ActivityAllAppsContainerView<T extends BaseDraggingActivity> extends BaseAllAppsContainerView<T> {
 
     protected SearchUiManager mSearchUiManager;
     /**
@@ -85,8 +82,8 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
                 mActivityContext, query);
         OnClickListener marketSearchClickListener = (v) -> mActivityContext.startActivitySafely(v,
                 marketSearchIntent, null);
-        for (int i = 0; i < mAH.size(); i++) {
-            mAH.get(i).mAdapter.setLastSearchQuery(query, marketSearchClickListener);
+        for (AdapterHolder adapterHolder : mAH) {
+            adapterHolder.mAdapter.setLastSearchQuery(query, marketSearchClickListener);
         }
         mIsSearching = true;
         rebindAdapters();
@@ -106,12 +103,10 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
     /**
      * Sets results list for search
      */
-    public void setSearchResults(ArrayList<AdapterItem> results) {
-        if (getSearchResultList().setSearchResults(results)) {
-            for (int i = 0; i < mAH.size(); i++) {
-                if (mAH.get(i).mRecyclerView != null) {
-                    mAH.get(i).mRecyclerView.onSearchResultsChanged();
-                }
+    public void setSearchResults() {
+        for (AdapterHolder adapterHolder : mAH) {
+            if (adapterHolder.mRecyclerView != null) {
+                adapterHolder.mRecyclerView.onSearchResultsChanged();
             }
         }
     }
@@ -185,7 +180,7 @@ public class ActivityAllAppsContainerView<T extends Context & AppLauncher
         }
 
         RecyclerView.ItemDecoration decoration = getMainAdapterProvider().getDecorator();
-        mAH.stream()
+        Arrays.stream(mAH)
                 .map(adapterHolder -> adapterHolder.mRecyclerView)
                 .filter(Objects::nonNull)
                 .forEach(v -> {

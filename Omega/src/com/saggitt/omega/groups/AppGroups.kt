@@ -25,6 +25,7 @@ import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.util.asMap
+import com.saggitt.omega.util.prefs
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -53,6 +54,9 @@ abstract class AppGroups<T : AppGroups.Group>(
     var isEnabled =
         manager.categorizationEnabled.getValue() && manager.categorizationType.getValue() == category.key
         private set
+
+
+    private val defaultGroups by lazy { getDefaultCreators().mapNotNull { it.createGroup(context) } }
 
     fun checkIsEnabled(changeCallback: PreferencesChangeCallback) {
         val enabled =
@@ -83,7 +87,7 @@ abstract class AppGroups<T : AppGroups.Group>(
 
     fun getGroups(): List<T> {
         if (!isEnabled) {
-            return emptyList()
+            return defaultGroups
         }
         return groups
     }
@@ -105,8 +109,7 @@ abstract class AppGroups<T : AppGroups.Group>(
     }
 
     fun addGroup(group: T) {
-        val updatedList = this.groups.plus(group)
-        setGroups(updatedList)
+        setGroups(this.groups.plus(group))
     }
 
     fun removeGroup(group: T) {
@@ -176,13 +179,17 @@ abstract class AppGroups<T : AppGroups.Group>(
                 _title.value = value
             }
 
-        var color: Int = 0
+        var color = StringCustomization(
+            KEY_COLOR,
+            context.prefs.profileAccentColor.defaultValue
+        )
 
         open val summary: String?
             get() = null
 
         init {
             addCustomization(_title)
+            addCustomization(color)
         }
 
         fun addCustomization(customization: Customization<*, *>) {

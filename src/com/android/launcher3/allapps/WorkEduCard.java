@@ -98,8 +98,8 @@ public class WorkEduCard extends FrameLayout implements
         if (mPosition == -1) {
             if (getParent() != null) ((ViewGroup) getParent()).removeView(WorkEduCard.this);
         } else {
-            AllAppsRecyclerView rv = mActivityContext.getAppsView().mAH.get(
-                    ActivityAllAppsContainerView.AdapterHolder.WORK).mRecyclerView;
+            AllAppsRecyclerView rv = mActivityContext.getAppsView()
+                    .mAH[BaseAllAppsContainerView.AdapterHolder.TYPE_WORK].mRecyclerView;
             rv.getApps().getAdapterItems().remove(mPosition);
             rv.getAdapter().notifyItemRemoved(mPosition);
         }

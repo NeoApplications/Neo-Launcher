@@ -121,7 +121,7 @@ public class WorkModeSwitch extends Button implements Insettable, View.OnClickLi
 
     @Override
     public void onActivePageChanged(int page) {
-        mOnWorkTab = page == ActivityAllAppsContainerView.AdapterHolder.WORK;
+        mOnWorkTab = page == ActivityAllAppsContainerView.AdapterHolder.TYPE_WORK;
         updateVisibility();
     }
 

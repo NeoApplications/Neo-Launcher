@@ -171,14 +171,14 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     @Override
     public void onSearchResult(String query, ArrayList<AdapterItem> items) {
         if (items != null) {
-            mAppsView.setSearchResults(items);
+            mAppsView.setSearchResults();
             mAppsView.setLastSearchQuery(query);
         }
     }
 
     @Override
     public void clearSearchResult() {
-        mAppsView.setSearchResults(null);
+        mAppsView.setSearchResults();
         // Clear the search query
         mSearchQueryBuilder.clear();
         mSearchQueryBuilder.clearSpans();

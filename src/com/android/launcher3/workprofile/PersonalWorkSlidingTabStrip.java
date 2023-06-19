@@ -31,8 +31,8 @@ import com.android.launcher3.views.ActivityContext;
  * Supports two indicator colors, dedicated for personal and work tabs.
  */
 public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageIndicator {
-    private OnActivePageChangedListener mOnActivePageChangedListener;
-    private int mLastActivePage = 0;
+    protected OnActivePageChangedListener mOnActivePageChangedListener;
+    protected int mLastActivePage = 0;
 
     public PersonalWorkSlidingTabStrip(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
