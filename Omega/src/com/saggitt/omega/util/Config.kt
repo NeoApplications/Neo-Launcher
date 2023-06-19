@@ -21,6 +21,8 @@ package com.saggitt.omega.util
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.LauncherActivityInfo
+import android.content.pm.LauncherApps
 import android.content.res.Resources
 import android.hardware.biometrics.BiometricManager
 import android.hardware.biometrics.BiometricPrompt
@@ -30,6 +32,7 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.datastore.preferences.core.Preferences
+import com.android.launcher3.AppFilter
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -68,6 +71,18 @@ class Config(val context: Context) {
             ) // de-rAt
             else Locale(languageCode) // de
         } else Resources.getSystem().configuration.locales[0]
+    }
+
+    fun getAppsList(filter: AppFilter?): MutableList<LauncherActivityInfo> {
+        val apps = ArrayList<LauncherActivityInfo>()
+        val profiles = UserCache.INSTANCE[context].userProfiles
+        val launcherApps = context.getSystemService(LauncherApps::class.java)
+        profiles.forEach { apps += launcherApps.getActivityList(null, it) }
+        return if (filter != null) {
+            apps.filter { filter.shouldShowApp(it.componentName, it.user) }.toMutableList()
+        } else {
+            apps
+        }
     }
 
     companion object {
@@ -199,7 +214,7 @@ class Config(val context: Context) {
 
                 val authenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult
+                        result: BiometricPrompt.AuthenticationResult,
                     ) {
                         successRunnable.run()
                     }

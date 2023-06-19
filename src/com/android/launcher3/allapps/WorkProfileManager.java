@@ -38,7 +38,9 @@ import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.function.Predicate;
+
 /**
  * Companion class for {@link BaseAllAppsContainerView} to manage work tab and personal tab
  * related
@@ -50,6 +52,7 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
     public static final int STATE_DISABLED = 2;
     public static final int STATE_TRANSITION = 3;
     private final UserManager mUserManager;
+
     /**
      * Work profile manager states
      */
@@ -65,18 +68,20 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
     private final BaseAllAppsContainerView<?> mAllApps;
     private final WorkAdapterProvider mAdapterProvider;
     private final Predicate<ItemInfo> mMatcher;
+    private final Runnable mRefreshCB;
     private WorkModeSwitch mWorkModeSwitch;
     private final DeviceProfile mDeviceProfile;
     @WorkProfileState
     private int mCurrentState;
 
     public WorkProfileManager(UserManager userManager, BaseAllAppsContainerView<?> allApps,
-                              SharedPreferences preferences, DeviceProfile deviceProfile) {
+                              SharedPreferences preferences, DeviceProfile deviceProfile, Runnable refreshCallback) {
         mUserManager = userManager;
         mAllApps = allApps;
         mDeviceProfile = deviceProfile;
         mAdapterProvider = new WorkAdapterProvider(allApps.mActivityContext, preferences);
         mMatcher = mAllApps.mPersonalMatcher.negate();
+        mRefreshCB = refreshCallback;
     }
 
     /**
@@ -94,12 +99,14 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
             }
         });
     }
+
     @Override
     public void onActivePageChanged(int page) {
         if (mWorkModeSwitch != null) {
             mWorkModeSwitch.onActivePageChanged(page);
         }
     }
+
     /**
      * Requests work profile state from {@link AllAppsStore} and updates work profile related views
      */
@@ -107,9 +114,11 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         boolean isEnabled = !mAllApps.getAppsStore().hasModelFlag(FLAG_QUIET_MODE_ENABLED);
         updateCurrentState(isEnabled ? STATE_ENABLED : STATE_DISABLED);
     }
+
     private void updateCurrentState(@WorkProfileState int currentState) {
         mCurrentState = currentState;
         mAdapterProvider.updateCurrentState(currentState);
+        mRefreshCB.run();
         if (getAH() != null) {
             getAH().mAppsList.updateAdapterItems();
         }
@@ -117,6 +126,7 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
             mWorkModeSwitch.updateCurrentState(currentState == STATE_ENABLED);
         }
     }
+
     /**
      * Creates and attaches for profile toggle button to {@link BaseAllAppsContainerView}
      */
@@ -164,8 +174,12 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
     }
 
     private BaseAllAppsContainerView<?>.AdapterHolder getAH() {
-        return mAllApps.mAH.get(BaseAllAppsContainerView.AdapterHolder.WORK);
+        return Arrays.stream(mAllApps.mAH)
+                .filter(BaseAllAppsContainerView.AdapterHolder::isWork)
+                .findAny()
+                .orElse(null);
     }
+
     public int getCurrentState() {
         return mCurrentState;
     }
