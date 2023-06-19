@@ -31,7 +31,7 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
     val tabs = ArrayList<Tab>()
     val count get() = tabs.size
 
-    private var hasWorkApps = false
+    var hasWorkApps = false
         set(value) {
             if (value != field) {
                 field = value
@@ -50,13 +50,13 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
         tabs.clear()
         context.prefs.drawerTabsModelCurrent.getGroups().mapNotNullTo(tabs) {
             when {
-                it is DrawerTabs.ProfileTab -> {
+                it is DrawerTabs.ProfileTab                                      -> {
                     if (hasWorkApps != it.profile.matchesAll) {
                         ProfileTab(createMatcher(addedApps, it.profile.matcher), it)
                     } else null
                 }
 
-                it is DrawerTabs.CustomTab -> {
+                it is DrawerTabs.CustomTab                                       -> {
                     if (it.hideFromAllApps.value()) {
                         addedApps.addAll(it.contents.value())
                     }
@@ -68,14 +68,14 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
                     Tab(it.title, it.getFilter(context).matcher, drawerTab = it)
                 }
 
-                else -> null
+                else                                                             -> null
             }
         }
     }
 
     private fun createMatcher(
         components: List<ComponentKey>,
-        base: Predicate<ItemInfo>? = null
+        base: Predicate<ItemInfo>? = null,
     ): Predicate<ItemInfo> {
         return Predicate<ItemInfo> { info ->
             if (base?.test(info) == false) return@Predicate false
@@ -96,6 +96,6 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
         val name: String,
         val matcher: Predicate<ItemInfo>,
         val isWork: Boolean = false,
-        val drawerTab: DrawerTabs.Tab
+        val drawerTab: DrawerTabs.Tab,
     )
 }

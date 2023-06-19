@@ -50,7 +50,6 @@ fun HorizontalPagerPage(
                 .weight(1f)
                 .blockBorder(),
             state = pagerState,
-            pageCount = tabs.size,
         ) { page ->
             tabs[page].screen()
         }

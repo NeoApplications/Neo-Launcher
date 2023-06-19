@@ -60,7 +60,7 @@ class AllAppsTabsLayout(context: Context, attrs: AttributeSet) :
                 list = tabs.tabs,
                 selectedPage = selectedPage,
                 onClick = { i -> switcher.accept(i) },
-                onLongClick = { item -> // TODO fix
+                onLongClick = { item ->
                     ComposeBottomSheet.show(context, true) {
                         EditGroupBottomSheet(
                             category = context.prefs.drawerAppGroupsManager.getEnabledType()!!,

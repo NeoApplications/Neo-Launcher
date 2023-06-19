@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -77,12 +76,12 @@ import com.saggitt.omega.util.staticColors
 fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     val prefs = LocalContext.current.prefs
     val pref = when (prefKey) {
-        PrefKey.DESKTOP_FOLDER_BG_COLOR -> prefs.desktopFolderBackgroundColor
+        PrefKey.DESKTOP_FOLDER_BG_COLOR     -> prefs.desktopFolderBackgroundColor
         PrefKey.DESKTOP_FOLDER_STROKE_COLOR -> prefs.desktopFolderStrokeColor
-        PrefKey.DOCK_BG_COLOR -> prefs.dockBackgroundColor
-        PrefKey.DRAWER_BG_COLOR -> prefs.drawerBackgroundColor
-        PrefKey.NOTIFICATION_DOTS_COLOR -> prefs.notificationBackground
-        else -> prefs.profileAccentColor
+        PrefKey.DOCK_BG_COLOR               -> prefs.dockBackgroundColor
+        PrefKey.DRAWER_BG_COLOR             -> prefs.drawerBackgroundColor
+        PrefKey.NOTIFICATION_DOTS_COLOR     -> prefs.notificationBackground
+        else                                -> prefs.profileAccentColor
     }
     val navController = LocalNavController.current
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
@@ -114,9 +113,9 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
         }
     )
     val defaultTabIndex = when {
-        presetColors.any { it.toString() == currentAccentColor.value } -> 0
+        presetColors.any { it.toString() == currentAccentColor.value }  -> 0
         dynamicColors.any { it.toString() == currentAccentColor.value } -> 2
-        else -> 1
+        else                                                            -> 1
     }
     val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
@@ -225,7 +224,6 @@ fun CustomPage(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DynamicPage(
     dynamicColors: List<AccentColorOption>,

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2017 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +20,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal|top"
     android:layout_marginTop="@dimen/all_apps_header_pill_height"
-    android:clipChildren="true"
+    android:clipChildren="false"
     android:clipToPadding="false"
     android:descendantFocusability="afterDescendants"
     android:paddingTop="@dimen/all_apps_paged_view_top_padding"

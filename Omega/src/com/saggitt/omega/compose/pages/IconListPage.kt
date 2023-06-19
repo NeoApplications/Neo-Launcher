@@ -26,7 +26,6 @@ import android.os.Process
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,10 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.google.accompanist.insets.ui.LocalScaffoldPadding
-import com.google.accompanist.navigation.animation.composable
 import com.saggitt.omega.compose.components.*
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupDescription
 import com.saggitt.omega.compose.navigation.preferenceGraph
@@ -72,7 +71,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun IconListPage(
-    iconPackName: String
+    iconPackName: String,
 ) {
     val context = LocalContext.current
     var iconPackage = ""
@@ -174,7 +173,7 @@ fun IconPickerGrid(
     iconPack: IconPack,
     searchQuery: String,
     onClickItem: (item: IconPickerItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var loadFailed by remember { mutableStateOf(false) }
     val categoriesFlow = remember {
@@ -243,7 +242,7 @@ fun IconPickerGrid(
 fun IconPreview(
     iconPack: IconPack,
     iconItem: IconPickerItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val drawable by produceState<Drawable?>(initialValue = null, iconPack, iconItem) {
         launch(Dispatchers.IO) {
@@ -264,7 +263,6 @@ fun IconPreview(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.iconPickerGraph(route: String) {
     preferenceGraph(route, {
         IconListPage(iconPackName = "")

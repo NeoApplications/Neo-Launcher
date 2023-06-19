@@ -20,7 +20,6 @@ package com.saggitt.omega.compose.pages
 
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,12 +63,12 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import com.google.accompanist.navigation.animation.composable
 import com.saggitt.omega.compose.components.ExpandableListItem
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
@@ -86,7 +85,6 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.appsState
 import org.json.JSONObject
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.gesturesPageGraph(route: String) {
     preferenceGraph(route, { }) { subRoute ->
         composable(

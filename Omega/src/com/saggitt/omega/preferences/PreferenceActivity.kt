@@ -76,7 +76,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         suspend fun startBlankActivityDialog(
             activity: Activity, targetIntent: Intent,
             dialogTitle: String, dialogMessage: String,
-            positiveButton: String
+            positiveButton: String,
         ) {
             start(activity, targetIntent, Bundle().apply {
                 putParcelable("intent", targetIntent)
@@ -88,7 +88,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
 
         suspend fun startBlankActivityForResult(
             activity: Activity,
-            targetIntent: Intent
+            targetIntent: Intent,
         ): ActivityResult {
             return start(activity, targetIntent, Bundle.EMPTY)
         }
@@ -96,7 +96,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         private suspend fun start(
             activity: Activity,
             targetIntent: Intent,
-            extras: Bundle
+            extras: Bundle,
         ): ActivityResult {
             return suspendCoroutine { continuation ->
                 val intent = Intent(activity, PreferenceActivity::class.java)

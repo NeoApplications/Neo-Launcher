@@ -641,6 +641,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Called when one handed mode activated and deactivated.
+     *
      * @param activated true if one handed mode activated, false otherwise.
      */
     public void onOneHandedStateChanged(boolean activated) {
@@ -1203,6 +1204,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     /**
      * {@code LauncherOverlayCallbacks} scroll amount.
      * Indicates transition progress to -1 screen.
+     *
      * @param progress From 0 to 1.
      */
     @Override
@@ -1640,7 +1642,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     private void showAllAppsWorkTabFromIntent(boolean alreadyOnHome) {
         showAllAppsFromIntent(alreadyOnHome);
-        mAppsView.switchToTab(BaseAllAppsContainerView.AdapterHolder.WORK);
+        mAppsView.switchToTab(BaseAllAppsContainerView.AdapterHolder.TYPE_WORK);
     }
 
     /**
@@ -2199,6 +2201,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Sets the next pages to bind synchronously on next bind.
+     *
      * @param pages should not be null.
      */
     public void setPagesToBindSynchronously(@NonNull IntSet pages) {
@@ -2270,7 +2273,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Refreshes the shortcuts shown on the workspace.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     public void startBinding() {
@@ -2371,7 +2374,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Bind the items start-end from the list.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -2382,7 +2385,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Bind the items start-end from the list.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      *
      * @param focusFirstItemForAccessibility true iff the first item to be added to the workspace
@@ -2740,7 +2743,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Callback saying that there aren't any more items to bind.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     public void finishBindingItems(IntSet pagesBoundFirst) {
@@ -2889,11 +2892,12 @@ public class Launcher extends StatefulActivity<LauncherState>
      * Informs us that the page transition has ended, so that we can react to the newly selected
      * page if we want to.
      */
-    public void onPageEndTransition() {}
+    public void onPageEndTransition() {
+    }
 
     /**
      * Add the icons for all apps.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -2942,7 +2946,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Update the state of a package, typically related to install state.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -3152,9 +3156,11 @@ public class Launcher extends StatefulActivity<LauncherState>
         return new TouchController[]{getDragController(), new AllAppsSwipeController(this)};
     }
 
-    public void useFadeOutAnimationForLauncherStart(CancellationSignal signal) { }
+    public void useFadeOutAnimationForLauncherStart(CancellationSignal signal) {
+    }
 
-    public void onDragLayerHierarchyChanged() { }
+    public void onDragLayerHierarchyChanged() {
+    }
 
     @Override
     public void returnToHomescreen() {
@@ -3202,7 +3208,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Cross-fades the launcher's updated appearance with its previous appearance.
-     *
+     * <p>
      * This method is used to cross-fade UI updates on activity creation, specifically dark mode
      * updates.
      */
@@ -3280,7 +3286,9 @@ public class Launcher extends StatefulActivity<LauncherState>
         return findViewById(R.id.popup_container);
     }
 
-    /** Pauses view updates that should not be run during the app launch animation. */
+    /**
+     * Pauses view updates that should not be run during the app launch animation.
+     */
     public void pauseExpensiveViewUpdates() {
         // Pause page indicator animations as they lead to layer trashing.
         getWorkspace().getPageIndicator().pauseAnimations();
@@ -3293,7 +3301,9 @@ public class Launcher extends StatefulActivity<LauncherState>
         });
     }
 
-    /** Resumes view updates at the end of the app launch animation. */
+    /**
+     * Resumes view updates at the end of the app launch animation.
+     */
     public void resumeExpensiveViewUpdates() {
         getWorkspace().getPageIndicator().skipAnimationsToEnd();
 

@@ -23,7 +23,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,10 +57,10 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
-import com.google.accompanist.navigation.animation.composable
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.OnResult
@@ -77,7 +76,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun EditIconPage(
-    componentKey: ComponentKey
+    componentKey: ComponentKey,
 ) {
     val context = LocalContext.current
     val iconPacks = IconPackProvider.INSTANCE.get(context).getIconPackList()
@@ -235,7 +234,6 @@ fun EditIconPage(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.editIconGraph(route: String) {
     preferenceGraph(route, { }) { subRoute ->
         composable(

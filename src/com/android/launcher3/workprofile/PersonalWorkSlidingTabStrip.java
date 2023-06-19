@@ -74,17 +74,6 @@ public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageInd
         return false;
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (getPaddingLeft() == 0 && getPaddingRight() == 0) {
-            // If any padding is not specified, restrict the width to emulate padding
-            int size = MeasureSpec.getSize(widthMeasureSpec);
-            size = getTabWidth(getContext(), size);
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
-        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
     /**
      * Returns distance between left and right app icons
      */
