@@ -23,8 +23,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.data.models.AppTracker
 import com.saggitt.omega.data.models.GestureItemInfo
@@ -60,39 +58,8 @@ abstract class NeoLauncherDb : RoomDatabase() {
 
     companion object {
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE AppTracker (packageName TEXT not Null, count INTEGER not Null, PRIMARY KEY(packageName))")
-            }
-        }
-
-        /*
-        * Add Migration for Contacts
-        */
-        private val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE PeopleInfo (contactId TEXT NOT NULL, contactName TEXT not Null, contactPhone TEXT not Null, PRIMARY KEY(contactId))")
-            }
-        }
-
-        /*
-        * Add Migration for SwipeUp action
-        */
-        private val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
-                    "CREATE TABLE GestureItemInfo (" +
-                            "packageName TEXT not Null, " +
-                            "swipeUp TEXT NULL DEFAULT '', " +
-                            "swipeDown TEXT NULL DEFAULT '', " +
-                            "PRIMARY KEY(packageName))"
-                )
-            }
-        }
-
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
-                //.addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
         }
     }
