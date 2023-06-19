@@ -72,6 +72,7 @@ import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
+import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
@@ -93,7 +94,6 @@ fun CreateGroupBottomSheet(
     val openDialog = remember { mutableStateOf(false) }
     val colorPicker = remember { mutableStateOf(false) }
     var isHidden by remember { mutableStateOf(false) }
-    var flowerpotCategory by remember { mutableStateOf(AppGroups.KEY_FLOWERPOT_DEFAULT) }
 
     var color by remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
     val group = when (category) {
@@ -117,7 +117,7 @@ fun CreateGroupBottomSheet(
         )
     }
 
-    val selectedCategory by remember {
+    var selectedCategory by remember {
         mutableStateOf(
             AppGroups.StringCustomization(
                 FlowerpotTabs.KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
@@ -170,7 +170,7 @@ fun CreateGroupBottomSheet(
             BasePreference(
                 titleId = R.string.pref_appcategorization_flowerpot_title,
                 summary = flowerpotManager.getAllPots()
-                    .find { it.name == flowerpotCategory }!!.displayName,
+                    .find { it.name == selectedCategory }!!.displayName,
                 startWidget = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_category),
@@ -190,9 +190,9 @@ fun CreateGroupBottomSheet(
 
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
-                    CategorySelectionDialogUI(selectedCategory = flowerpotCategory) {
-                        flowerpotCategory = it
-                        (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                    CategorySelectionDialogUI(selectedCategory = selectedCategory) {
+                        selectedCategory = it
+                        (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                             it
                         openDialog.value = false
                     }
@@ -341,7 +341,7 @@ fun CreateGroupBottomSheet(
                             (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                                 selectedApps.toMutableSet()
                         } else {
-                            (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                            (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                                 selectedCategory
                         }
                         if (category != AppGroupsManager.Category.FOLDER) {
@@ -360,7 +360,7 @@ fun CreateGroupBottomSheet(
 
                             AppGroupsManager.Category.TAB,
                             AppGroupsManager.Category.FLOWERPOT,
-                            -> {
+                                                             -> {
                                 manager.drawerTabs.apply {
                                     addGroup(group as DrawerTabs.Tab)
                                     saveToJson()
