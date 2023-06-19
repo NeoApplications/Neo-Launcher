@@ -16,29 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.data
+package com.saggitt.omega.data.models
 
 import android.os.Parcelable
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconType
 import kotlinx.parcelize.Parcelize
-
-@Entity
-data class IconOverride(
-    @PrimaryKey val target: ComponentKey,
-    @Embedded val iconPickerItem: IconPickerItem
-)
 
 @Parcelize
 data class IconPickerItem(
     val packPackageName: String,
     val drawableName: String,
     val label: String,
-    val type: IconType
+    val type: IconType,
 ) : Parcelable {
     fun toIconEntry(): IconEntry {
         return IconEntry(
@@ -48,23 +38,3 @@ data class IconPickerItem(
         )
     }
 }
-
-@Entity
-data class AppTracker(
-    @PrimaryKey val packageName: String,
-    val count: Int
-)
-
-@Entity
-data class PeopleInfo(
-    @PrimaryKey val contactId: String,
-    val contactName: String,
-    val contactPhone: String
-)
-
-@Entity
-data class GestureItemInfo(
-    @PrimaryKey val packageName: ComponentKey,
-    var swipeUp: String? = "",
-    var swipeDown: String? = ""
-)

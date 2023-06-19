@@ -1,6 +1,6 @@
 /*
  * This file is part of Neo Launcher
- * Copyright (c) 2022   Neo Launcher Team
+ * Copyright (c) 2021   Neo Launcher Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -15,23 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.saggitt.omega.data
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.saggitt.omega.data.models.PeopleInfo
+package com.saggitt.omega.data.models
 
-@Dao
-interface PeopleDao {
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.android.launcher3.util.ComponentKey
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(people: PeopleInfo)
-
-    @Query("SELECT * FROM PeopleInfo WHERE contactName LIKE '%' || :query || '%' LIMIT 5")
-    fun findPeople(query: String): List<PeopleInfo>
-
-    @Query("DELETE FROM peopleinfo")
-    suspend fun deleteAll()
-}
+@Entity
+data class GestureItemInfo(
+    @PrimaryKey val packageName: ComponentKey,
+    var swipeUp: String? = "",
+    var swipeDown: String? = "",
+)

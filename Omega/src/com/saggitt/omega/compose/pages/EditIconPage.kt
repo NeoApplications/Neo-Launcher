@@ -67,7 +67,7 @@ import com.saggitt.omega.compose.navigation.OnResult
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.data.IconOverrideRepository
-import com.saggitt.omega.data.IconPickerItem
+import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.util.getUserForProfileId

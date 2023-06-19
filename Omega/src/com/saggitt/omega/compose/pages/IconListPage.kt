@@ -55,7 +55,7 @@ import com.saggitt.omega.compose.components.*
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupDescription
 import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.resultSender
-import com.saggitt.omega.data.IconPickerItem
+import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.iconpack.CustomIconPack
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider

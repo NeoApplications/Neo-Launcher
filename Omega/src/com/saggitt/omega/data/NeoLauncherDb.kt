@@ -25,6 +25,10 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.saggitt.omega.data.models.AppTracker
+import com.saggitt.omega.data.models.GestureItemInfo
+import com.saggitt.omega.data.models.IconOverride
+import com.saggitt.omega.data.models.PeopleInfo
 
 @Database(
     entities = [IconOverride::class, AppTracker::class, PeopleInfo::class, GestureItemInfo::class],

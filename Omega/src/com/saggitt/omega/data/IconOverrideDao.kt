@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.data.models.IconOverride
 import kotlinx.coroutines.flow.Flow
 
 @Dao

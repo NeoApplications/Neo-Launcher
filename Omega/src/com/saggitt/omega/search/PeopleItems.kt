@@ -21,7 +21,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
-import com.saggitt.omega.data.PeopleInfo
+import com.saggitt.omega.data.models.PeopleInfo
 
 class PeopleItems(val context: Context) {
 

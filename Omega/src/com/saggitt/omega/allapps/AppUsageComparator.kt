@@ -19,7 +19,7 @@
 package com.saggitt.omega.allapps
 
 import com.android.launcher3.model.data.AppInfo
-import com.saggitt.omega.data.AppTracker
+import com.saggitt.omega.data.models.AppTracker
 
 class AppUsageComparator(private val mApps: List<AppTracker>) : Comparator<AppInfo> {
     override fun compare(app1: AppInfo, app2: AppInfo): Int {

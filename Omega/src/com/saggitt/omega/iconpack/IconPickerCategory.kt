@@ -1,6 +1,6 @@
 package com.saggitt.omega.iconpack
 
-import com.saggitt.omega.data.IconPickerItem
+import com.saggitt.omega.data.models.IconPickerItem
 
 data class IconPickerCategory(
     val title: String,
