@@ -31,9 +31,14 @@ import com.saggitt.omega.data.models.IconOverride
 import com.saggitt.omega.data.models.PeopleInfo
 
 @Database(
-    entities = [IconOverride::class, AppTracker::class, PeopleInfo::class, GestureItemInfo::class],
+    entities = [
+        IconOverride::class,
+        AppTracker::class,
+        PeopleInfo::class,
+        GestureItemInfo::class,
+    ],
     version = 4,
-    exportSchema = false
+    exportSchema = true,
 )
 @TypeConverters(Converters::class)
 abstract class NeoLauncherDb : RoomDatabase() {
@@ -77,7 +82,7 @@ abstract class NeoLauncherDb : RoomDatabase() {
 
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                //.addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
         }
     }
