@@ -19,7 +19,6 @@ import static com.android.launcher3.touch.ItemLongClickListener.INSTANCE_ALL_APP
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,13 +28,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
@@ -43,7 +43,6 @@ import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.DrawerFolderItem;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
 
-import java.util.Arrays;
 /**
  * Adapter for all the apps.
  *
@@ -51,31 +50,35 @@ import java.util.Arrays;
  */
 public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> extends
         RecyclerView.Adapter<BaseAllAppsAdapter.ViewHolder> {
+
     public static final String TAG = "BaseAllAppsAdapter";
+
     // A normal icon
     public static final int VIEW_TYPE_ICON = 1 << 1;
     // The message shown when there are no filtered results
     public static final int VIEW_TYPE_EMPTY_SEARCH = 1 << 2;
-    // The message to continue to a market search when there are no filtered results
-    public static final int VIEW_TYPE_SEARCH_MARKET = 1 << 3;
-    // We use various dividers for various purposes.  They share enough attributes to reuse layouts,
-    // but differ in enough attributes to require different view types
     // A divider that separates the apps list and the search market button
-    public static final int VIEW_TYPE_ALL_APPS_DIVIDER = 1 << 4;
+    public static final int VIEW_TYPE_ALL_APPS_DIVIDER = 1 << 3;
+
+    public static final int VIEW_TYPE_WORK_EDU_CARD = 1 << 4;
+    public static final int VIEW_TYPE_WORK_DISABLED_CARD = 1 << 5;
 
     // Drawer folders
     public static final int VIEW_TYPE_FOLDER = 1 << 6;
 
+    public static final int NEXT_ID = 6;
+
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
     public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_FOLDER;
-    ;
-    protected final BaseAdapterProvider[] mAdapterProviders;
+
+    protected final SearchAdapterProvider<?> mAdapterProvider;
 
     /**
      * ViewHolder for each icon.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         public ViewHolder(View v) {
             super(v);
         }
@@ -85,22 +88,21 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
      * Sets the number of apps to be displayed in one row of the all apps screen.
      */
     public abstract void setAppsPerRow(int appsPerRow);
+
     /**
      * Info about a particular adapter item (can be either section or app)
      */
     public static class AdapterItem {
-        /**
-         * Common properties
-         */
+        /** Common properties */
         // The type of this item
         public final int viewType;
+
         // The row that this item shows up on
         public int rowIndex;
         // The index of this app in the row
         public int rowAppIndex;
         // The associated ItemInfoWithIcon for the item
         public AppInfo itemInfo = null;
-
         // The associated folder for the folder
         public DrawerFolderItem folderItem = null;
 
@@ -120,11 +122,15 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public static AdapterItem asFolder(DrawerFolderInfo folderInfo) {
             AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
             item.folderItem = new DrawerFolderItem(folderInfo);
+            /*item.position = pos;
+            item.sectionName = sectionName;
+            item.folderItem = new DrawerFolderItem(folderInfo);
+            item.rowAppIndex = folderIndex;*/
             return item;
         }
 
         protected boolean isCountedForAccessibility() {
-            return viewType == VIEW_TYPE_ICON || viewType == VIEW_TYPE_SEARCH_MARKET;
+            return viewType == VIEW_TYPE_ICON;
         }
 
         /**
@@ -133,6 +139,7 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public boolean isSameAs(AdapterItem other) {
             return (other.viewType == viewType) && (other.getClass() == getClass());
         }
+
         /**
          * This is called only if {@link #isSameAs} returns true to check if the contents are same
          * as well. Returning true will prevent redrawing of thee item.
@@ -140,32 +147,40 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public boolean isContentSame(AdapterItem other) {
             return itemInfo == null && other.itemInfo == null;
         }
+
+        /**
+         * Sets the alpha of the decorator for this item. Returns true if successful.
+         */
+        public boolean setDecorationFillAlpha(int alpha) {
+            return false;
+        }
     }
 
     protected final T mActivityContext;
     protected final AlphabeticalAppsList<T> mApps;
     // The text to show when there are no search results and no market search handler.
-    protected String mEmptySearchMessage;
     protected int mAppsPerRow;
+
     protected final LayoutInflater mLayoutInflater;
     protected final OnClickListener mOnIconClickListener;
     protected OnLongClickListener mOnIconLongClickListener = INSTANCE_ALL_APPS;
     protected OnFocusChangeListener mIconFocusListener;
-    // The click listener to send off to the market app, updated each time the search query changes.
-    private OnClickListener mMarketSearchClickListener;
-    private final int mExtraHeight;
+    private final int mExtraTextHeight;
 
     public BaseAllAppsAdapter(T activityContext, LayoutInflater inflater,
-                              AlphabeticalAppsList<T> apps, BaseAdapterProvider[] adapterProviders) {
+                              AlphabeticalAppsList<T> apps, SearchAdapterProvider<?> adapterProvider) {
         Resources res = activityContext.getResources();
         mActivityContext = activityContext;
         mApps = apps;
-        mEmptySearchMessage = res.getString(R.string.all_apps_loading_message);
         mLayoutInflater = inflater;
+
         mOnIconClickListener = mActivityContext.getItemOnClickListener();
-        mAdapterProviders = adapterProviders;
-        mExtraHeight = res.getDimensionPixelSize(R.dimen.all_apps_height_extra);
+
+        mAdapterProvider = adapterProvider;
+        mExtraTextHeight = Utilities.calculateTextHeight(
+                mActivityContext.getDeviceProfile().allAppsIconTextSizePx);
     }
+
     /**
      * Sets the long click listener for icons
      */
@@ -178,25 +193,13 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         return isViewType(viewType, VIEW_TYPE_MASK_DIVIDER);
     }
 
-    /**
-     * Checks if the passed viewType represents all apps icon.
-     */
+    /** Checks if the passed viewType represents all apps icon. */
     public static boolean isIconViewType(int viewType) {
         return isViewType(viewType, VIEW_TYPE_MASK_ICON);
     }
 
     public void setIconFocusListener(OnFocusChangeListener focusListener) {
         mIconFocusListener = focusListener;
-    }
-
-    /**
-     * Sets the last search query that was made, used to show when there are no results and to also
-     * seed the intent for searching the market.
-     */
-    public void setLastSearchQuery(String query, OnClickListener marketSearchClickListener) {
-        Resources res = mActivityContext.getResources();
-        mEmptySearchMessage = res.getString(R.string.all_apps_no_search_results, query);
-        mMarketSearchClickListener = marketSearchClickListener;
     }
 
     /**
@@ -220,63 +223,58 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
                 icon.getLayoutParams().height =
                         mActivityContext.getDeviceProfile().allAppsCellHeightPx;
                 if (FeatureFlags.ENABLE_TWOLINE_ALLAPPS.get()) {
-                    icon.getLayoutParams().height += mExtraHeight;
+                    icon.getLayoutParams().height += mExtraTextHeight;
                 }
                 return new ViewHolder(icon);
             case VIEW_TYPE_EMPTY_SEARCH:
                 return new ViewHolder(mLayoutInflater.inflate(R.layout.all_apps_empty_search,
                         parent, false));
-            case VIEW_TYPE_SEARCH_MARKET:
-                View searchMarketView = mLayoutInflater.inflate(R.layout.all_apps_search_market,
-                        parent, false);
-                searchMarketView.setOnClickListener(mMarketSearchClickListener);
-                return new ViewHolder(searchMarketView);
             case VIEW_TYPE_ALL_APPS_DIVIDER:
                 return new ViewHolder(mLayoutInflater.inflate(
                         R.layout.all_apps_divider, parent, false));
             case VIEW_TYPE_FOLDER:
-                FrameLayout folderLayout = new FrameLayout(mActivityContext);
+                FrameLayout folder = new FrameLayout(mActivityContext);
                 ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         mActivityContext.getDeviceProfile().allAppsCellHeightPx);
-                folderLayout.setLayoutParams(lp);
-                return new ViewHolder(folderLayout);
-
+                folder.setLayoutParams(lp);
+                return new ViewHolder(folder);
+            case VIEW_TYPE_WORK_EDU_CARD:
+                return new ViewHolder(mLayoutInflater.inflate(
+                        R.layout.work_apps_edu, parent, false));
+            case VIEW_TYPE_WORK_DISABLED_CARD:
+                return new ViewHolder(mLayoutInflater.inflate(
+                        R.layout.work_apps_paused, parent, false));
             default:
-                BaseAdapterProvider adapterProvider = getAdapterProvider(viewType);
-                if (adapterProvider != null) {
-                    return adapterProvider.onCreateViewHolder(mLayoutInflater, parent, viewType);
+                if (mAdapterProvider.isViewSupported(viewType)) {
+                    return mAdapterProvider.onCreateViewHolder(mLayoutInflater, parent, viewType);
                 }
                 throw new RuntimeException("Unexpected view type" + viewType);
         }
     }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         switch (holder.getItemViewType()) {
-            case VIEW_TYPE_ICON:
+            case VIEW_TYPE_ICON: {
                 AdapterItem adapterItem = mApps.getAdapterItems().get(position);
                 BubbleTextView icon = (BubbleTextView) holder.itemView;
                 icon.reset();
                 icon.applyFromApplicationInfo(adapterItem.itemInfo);
                 break;
-            case VIEW_TYPE_EMPTY_SEARCH:
-                TextView emptyViewText = (TextView) holder.itemView;
-                emptyViewText.setText(mEmptySearchMessage);
-                emptyViewText.setGravity(mApps.hasNoFilteredResults() ? Gravity.CENTER :
-                        Gravity.START | Gravity.CENTER_VERTICAL);
-                break;
-            case VIEW_TYPE_SEARCH_MARKET:
-                TextView searchView = (TextView) holder.itemView;
-                if (mMarketSearchClickListener != null) {
-                    searchView.setVisibility(View.VISIBLE);
-                } else {
-                    searchView.setVisibility(View.GONE);
+            }
+            case VIEW_TYPE_EMPTY_SEARCH: {
+                AppInfo info = mApps.getAdapterItems().get(position).itemInfo;
+                if (info != null) {
+                    ((TextView) holder.itemView).setText(mActivityContext.getString(
+                            R.string.all_apps_no_search_results, info.title));
                 }
                 break;
+            }
             case VIEW_TYPE_ALL_APPS_DIVIDER:
+            case VIEW_TYPE_WORK_DISABLED_CARD:
                 // nothing to do
                 break;
-
             case VIEW_TYPE_FOLDER:
                 ViewGroup container = (ViewGroup) holder.itemView;
                 FolderIcon folderIcon = mApps.getAdapterItems().get(position)
@@ -285,39 +283,35 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
                 container.removeAllViews();
                 container.addView(folderIcon);
                 break;
-
+            case VIEW_TYPE_WORK_EDU_CARD:
+                ((WorkEduCard) holder.itemView).setPosition(position);
+                break;
             default:
-                BaseAdapterProvider adapterProvider = getAdapterProvider(holder.getItemViewType());
-                if (adapterProvider != null) {
-                    adapterProvider.onBindView(holder, position);
+                if (mAdapterProvider.isViewSupported(holder.getItemViewType())) {
+                    mAdapterProvider.onBindView(holder, position);
                 }
         }
     }
-    @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        super.onViewRecycled(holder);
-    }
+
     @Override
     public boolean onFailedToRecycleView(ViewHolder holder) {
         // Always recycle and we will reset the view when it is bound
         return true;
     }
+
     @Override
     public int getItemCount() {
         return mApps.getAdapterItems().size();
     }
+
     @Override
     public int getItemViewType(int position) {
         AdapterItem item = mApps.getAdapterItems().get(position);
         return item.viewType;
     }
+
     protected static boolean isViewType(int viewType, int viewTypeMask) {
         return (viewType & viewTypeMask) != 0;
     }
-    @Nullable
-    protected BaseAdapterProvider getAdapterProvider(int viewType) {
-        return Arrays.stream(mAdapterProviders).filter(
-                adapterProvider -> adapterProvider.isViewSupported(viewType)).findFirst().orElse(
-                null);
-    }
+
 }

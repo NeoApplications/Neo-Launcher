@@ -28,6 +28,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import com.android.launcher3.BaseActivity;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.UiThreadHelper;
 
 /**
@@ -48,6 +49,17 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
         // original dimensions to determine if rotation is allowed of not.
         float originalSmallestWidth = dpiFromPx(
                 Math.min(deviceProfile.widthPx, deviceProfile.heightPx), DENSITY_DEVICE_STABLE);
+        return originalSmallestWidth >= MIN_TABLET_WIDTH;
+    }
+
+    /**
+     * Returns the default value of {@link #ALLOW_ROTATION_PREFERENCE_KEY} preference.
+     */
+    public static boolean getAllowRotationDefaultValue(DisplayController.Info info) {
+        // If the device's pixel density was scaled (usually via settings for A11y), use the
+        // original dimensions to determine if rotation is allowed of not.
+        float originalSmallestWidth = dpiFromPx(Math.min(info.currentSize.x, info.currentSize.y),
+                DENSITY_DEVICE_STABLE);
         return originalSmallestWidth >= MIN_TABLET_WIDTH;
     }
 

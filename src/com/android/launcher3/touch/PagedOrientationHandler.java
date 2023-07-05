@@ -34,9 +34,9 @@ import android.widget.LinearLayout;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.util.SplitConfigurationOptions;
+import com.android.launcher3.util.SplitConfigurationOptions.SplitBounds;
 import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.util.SplitConfigurationOptions.StagePosition;
-import com.android.launcher3.util.SplitConfigurationOptions.StagedSplitBounds;
 
 import java.util.List;
 
@@ -84,12 +84,9 @@ public interface PagedOrientationHandler {
     int getCenterForPage(View view, Rect insets);
     int getScrollOffsetStart(View view, Rect insets);
     int getScrollOffsetEnd(View view, Rect insets);
-
     int getSecondaryTranslationDirectionFactor();
-
     int getSplitTranslationDirectionFactor(@StagePosition int stagePosition,
                                            DeviceProfile deviceProfile);
-
     ChildBounds getChildBounds(View child, int childStart, int pageCenter, boolean layoutChild);
     void setMaxScroll(AccessibilityEvent event, int maxScroll);
     boolean getRecentsRtlSetting(Resources resources);
@@ -108,14 +105,10 @@ public interface PagedOrientationHandler {
     float getSecondaryValue(float x, float y);
 
     boolean isLayoutNaturalToLauncher();
-
     Pair<FloatProperty, FloatProperty> getSplitSelectTaskOffset(FloatProperty primary,
                                                                 FloatProperty secondary, DeviceProfile deviceProfile);
-
     int getDistanceToBottomOfRect(DeviceProfile dp, Rect rect);
-
     List<SplitPositionOption> getSplitPositionOptions(DeviceProfile dp);
-
     /**
      * @param placeholderHeight height of placeholder view in portrait, width in landscape
      */
@@ -137,10 +130,21 @@ public interface PagedOrientationHandler {
      * @param dp                  The device profile, used to report rotation and hardware insets.
      * @param stagePosition       0 if the staging area is pinned to top/left, 1 for bottom/right.
      */
-    void updateStagedSplitIconParams(View out, float onScreenRectCenterX,
-                                     float onScreenRectCenterY, float fullscreenScaleX, float fullscreenScaleY,
-                                     int drawableWidth, int drawableHeight, DeviceProfile dp,
-                                     @StagePosition int stagePosition);
+    void updateSplitIconParams(View out, float onScreenRectCenterX,
+                               float onScreenRectCenterY, float fullscreenScaleX, float fullscreenScaleY,
+                               int drawableWidth, int drawableHeight, DeviceProfile dp,
+                               @StagePosition int stagePosition);
+
+    /**
+     * Sets positioning and rotation for a SplitInstructionsView.
+     *
+     * @param out                     The SplitInstructionsView that needs to be positioned.
+     * @param dp                      The device profile, used to report rotation and device type.
+     * @param splitInstructionsHeight The SplitInstructionView's height.
+     * @param splitInstructionsWidth  The SplitInstructionView's width.
+     */
+    void setSplitInstructionsParams(View out, DeviceProfile dp, int splitInstructionsHeight,
+                                    int splitInstructionsWidth);
 
     /**
      * @param splitDividerSize height of split screen drag handle in portrait, width in landscape
@@ -161,12 +165,12 @@ public interface PagedOrientationHandler {
      * @param desiredStagePosition Which stage position (topLeft/rightBottom) we want to resize
      *                             outRect for
      */
-    void setSplitTaskSwipeRect(DeviceProfile dp, Rect outRect, StagedSplitBounds splitInfo,
+    void setSplitTaskSwipeRect(DeviceProfile dp, Rect outRect, SplitBounds splitInfo,
                                @SplitConfigurationOptions.StagePosition int desiredStagePosition);
 
     void measureGroupedTaskViewThumbnailBounds(View primarySnapshot, View secondarySnapshot,
                                                int parentWidth, int parentHeight,
-                                               StagedSplitBounds splitBoundsConfig, DeviceProfile dp, boolean isRtl);
+                                               SplitBounds splitBoundsConfig, DeviceProfile dp, boolean isRtl);
 
     // Overview TaskMenuView methods
     void setTaskIconParams(FrameLayout.LayoutParams iconParams,
@@ -175,7 +179,7 @@ public interface PagedOrientationHandler {
     void setSplitIconParams(View primaryIconView, View secondaryIconView,
                             int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
                             int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
-            DeviceProfile deviceProfile, StagedSplitBounds splitConfig);
+                            DeviceProfile deviceProfile, SplitBounds splitConfig);
 
     /*
      * The following two methods try to center the TaskMenuView in landscape by finding the center
@@ -183,11 +187,14 @@ public interface PagedOrientationHandler {
      * taskMenu width is the same size as the thumbnail width (what got set below in
      * getTaskMenuWidth()), so we directly use that in the calculations.
      */
-    float getTaskMenuX(float x, View thumbnailView, int overScroll, DeviceProfile deviceProfile);
+    float getTaskMenuX(float x, View thumbnailView, DeviceProfile deviceProfile,
+                       float taskInsetMargin);
 
-    float getTaskMenuY(float y, View thumbnailView, int overScroll);
+    float getTaskMenuY(float y, View thumbnailView, int stagePosition,
+                       View taskMenuView, float taskInsetMargin);
 
-    int getTaskMenuWidth(View view, DeviceProfile deviceProfile);
+    int getTaskMenuWidth(View thumbnailView, DeviceProfile deviceProfile,
+                         @StagePosition int stagePosition);
 
     /**
      * Sets linear layout orientation for {@link com.android.launcher3.popup.SystemShortcut} items
@@ -196,7 +203,6 @@ public interface PagedOrientationHandler {
     void setTaskOptionsMenuLayoutOrientation(DeviceProfile deviceProfile,
                                              LinearLayout taskMenuLayout, int dividerSpacing,
                                              ShapeDrawable dividerDrawable);
-
     /**
      * Sets layout param attributes for {@link com.android.launcher3.popup.SystemShortcut} child
      * views inside task menu view.
@@ -205,39 +211,21 @@ public interface PagedOrientationHandler {
                                               LinearLayout viewGroup, DeviceProfile deviceProfile);
 
     /**
-     * Adjusts margins for the entire task menu view itself, which comprises of both app title and
-     * shortcut options.
-     */
-    void setTaskMenuAroundTaskView(LinearLayout taskView, float margin);
-    /**
-     * Since the task menu layout is manually positioned on top of recents view, this method returns
-     * additional adjustments to the positioning based on fake land/seascape
-     */
-    PointF getAdditionalInsetForTaskMenu(float margin);
-
-    /**
      * Calculates the position where a Digital Wellbeing Banner should be placed on its parent
      * TaskView.
-     *
      * @return A Pair of Floats representing the proper x and y translations.
      */
     Pair<Float, Float> getDwbLayoutTranslations(int taskViewWidth,
-                                                int taskViewHeight, StagedSplitBounds splitBounds, DeviceProfile deviceProfile,
+                                                int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
                                                 View[] thumbnailViews, int desiredTaskId, View banner);
 
     // The following are only used by TaskViewTouchHandler.
-
-    /**
-     * @return Either VERTICAL or HORIZONTAL.
-     */
+    /** @return Either VERTICAL or HORIZONTAL. */
     SingleAxisSwipeDetector.Direction getUpDownSwipeDirection();
 
     /** @return Given {@link #getUpDownSwipeDirection()}, whether POSITIVE or NEGATIVE is up. */
     int getUpDirection(boolean isRtl);
-
-    /**
-     * @return Whether the displacement is going towards the top of the screen.
-     */
+    /** @return Whether the displacement is going towards the top of the screen. */
     boolean isGoingUp(float displacement, boolean isRtl);
     /** @return Either 1 or -1, a factor to multiply by so the animation goes the correct way. */
     int getTaskDragDisplacementFactor(boolean isRtl);
@@ -250,9 +238,45 @@ public interface PagedOrientationHandler {
 
     /**
      * Ensures that outStartRect left bound is within the DeviceProfile's visual boundaries
+     *
      * @param outStartRect The start rect that will directly be modified
      */
     void fixBoundsForHomeAnimStartRect(RectF outStartRect, DeviceProfile deviceProfile);
+
+    /**
+     * Determine the target translation for animating the FloatingTaskView out. This value could
+     * either be an x-coordinate or a y-coordinate, depending on which way the FloatingTaskView was
+     * docked.
+     *
+     * @param floatingTask  The FloatingTaskView.
+     * @param onScreenRect  The current on-screen dimensions of the FloatingTaskView.
+     * @param stagePosition STAGE_POSITION_TOP_OR_LEFT or STAGE_POSITION_BOTTOM_OR_RIGHT.
+     * @param dp            The device profile.
+     * @return A float. When an animation translates the FloatingTaskView to this position, it will
+     * appear to tuck away off the edge of the screen.
+     */
+    float getFloatingTaskOffscreenTranslationTarget(View floatingTask, RectF onScreenRect,
+                                                    @StagePosition int stagePosition, DeviceProfile dp);
+
+    /**
+     * Sets the translation of a FloatingTaskView along its "slide-in/slide-out" axis (could be
+     * either x or y), depending on how the view is oriented.
+     *
+     * @param floatingTask The FloatingTaskView to be translated.
+     * @param translation  The target translation value.
+     * @param dp           The current device profile.
+     */
+    void setFloatingTaskPrimaryTranslation(View floatingTask, float translation, DeviceProfile dp);
+
+    /**
+     * Gets the translation of a FloatingTaskView along its "slide-in/slide-out" axis (could be
+     * either x or y), depending on how the view is oriented.
+     *
+     * @param floatingTask The FloatingTaskView in question.
+     * @param dp           The current device profile.
+     * @return The current translation value.
+     */
+    Float getFloatingTaskPrimaryTranslation(View floatingTask, DeviceProfile dp);
 
     class ChildBounds {
 

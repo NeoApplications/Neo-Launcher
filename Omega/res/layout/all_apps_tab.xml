@@ -3,7 +3,7 @@
 <com.saggitt.omega.views.ColoredButton xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/ThemeOverlay.Material3.FloatingActionButton.Surface"
+    style="@style/Widget.AppCompat.Button"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_marginHorizontal="4dp"

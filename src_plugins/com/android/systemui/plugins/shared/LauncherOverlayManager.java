@@ -107,6 +107,6 @@ public interface LauncherOverlayManager extends Application.ActivityLifecycleCal
 
     interface LauncherOverlayCallbacks {
 
-        void onScrollChanged(float progress);
+        void onOverlayScrollChanged(float progress);
     }
 }

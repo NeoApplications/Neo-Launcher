@@ -29,7 +29,7 @@ import com.android.launcher3.workprofile.PersonalWorkPagedView;
 
 /**
  * A {@link PagedView} for showing different views for the personal and work profile respectively
- * in the {@link BaseAllAppsContainerView}.
+ * in the {@link ActivityAllAppsContainerView}.
  */
 public class AllAppsPagedView extends PersonalWorkPagedView {
 

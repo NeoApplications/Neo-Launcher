@@ -16,7 +16,6 @@
 package com.android.launcher3.views;
 
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_APP_LAUNCH_TAP;
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_SHORTCUTS;
 
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
@@ -194,9 +193,6 @@ public interface AppLauncher extends ActivityContext {
      */
     default void startShortcut(String packageName, String id, Rect sourceBounds,
                                Bundle startActivityOptions, UserHandle user) {
-        if (GO_DISABLE_SHORTCUTS) {
-            return;
-        }
         try {
             ((Context) this).getSystemService(LauncherApps.class).startShortcut(packageName, id,
                     sourceBounds, startActivityOptions, user);

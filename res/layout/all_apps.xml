@@ -19,42 +19,7 @@
     android:id="@+id/apps_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
+    android:clipChildren="true"
     android:clipToPadding="false"
     android:focusable="false"
-    android:saveEnabled="false"
-    android:theme="?attr/allAppsTheme">
-
-    <include
-        layout="@layout/all_apps_bottom_sheet_background"
-        android:visibility="gone" />
-
-    <include
-        layout="@layout/search_results_rv_layout"
-        android:visibility="gone" />
-
-    <include
-        layout="@layout/all_apps_rv_layout"
-        android:visibility="gone" />
-
-    <com.android.launcher3.allapps.FloatingHeaderView
-        android:id="@+id/all_apps_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/all_apps_header_top_padding"
-        android:paddingBottom="@dimen/all_apps_header_bottom_padding">
-
-        <com.saggitt.omega.allapps.AllAppsTabsLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false" />
-    </com.android.launcher3.allapps.FloatingHeaderView>
-
-    <include layout="@layout/search_container_all_apps" />
-
-    <include layout="@layout/all_apps_fast_scroller" />
-</com.android.launcher3.allapps.LauncherAllAppsContainerView>
+    android:saveEnabled="false" />

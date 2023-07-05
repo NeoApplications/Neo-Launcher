@@ -287,7 +287,7 @@ public class SecondaryDropTarget extends ButtonDropTarget implements OnAlarmList
             if (widgetId != INVALID_APPWIDGET_ID) {
                 mLauncher.setWaitingForResult(
                         PendingRequestArgs.forWidgetInfo(widgetId, null, info));
-                mLauncher.getAppWidgetHost().startConfigActivity(mLauncher, widgetId,
+                mLauncher.getAppWidgetHolder().startConfigActivity(mLauncher, widgetId,
                         REQUEST_RECONFIGURE_APPWIDGET);
             }
             return null;
@@ -354,7 +354,7 @@ public class SecondaryDropTarget extends ButtonDropTarget implements OnAlarmList
 
         @Override
         public void onDropCompleted(View target, DragObject d,
-                boolean success) {
+                                    boolean success) {
             mDragObject = d;
         }
 

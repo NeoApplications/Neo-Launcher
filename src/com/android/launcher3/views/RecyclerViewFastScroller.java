@@ -47,8 +47,6 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.FastScrollThumbDrawable;
 import com.android.launcher3.util.Themes;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -135,8 +133,6 @@ public class RecyclerViewFastScroller extends View {
     private int mDownX;
     private int mDownY;
     private int mLastY;
-    private NeoPrefs prefs;
-
 
     public RecyclerViewFastScroller(Context context) {
         this(context, null);
@@ -174,17 +170,18 @@ public class RecyclerViewFastScroller extends View {
                 context.obtainStyledAttributes(attrs, R.styleable.RecyclerViewFastScroller, defStyleAttr, 0);
         mCanThumbDetach = ta.getBoolean(R.styleable.RecyclerViewFastScroller_canThumbDetach, false);
         ta.recycle();
-        prefs = Utilities.getOmegaPrefs(context);
     }
 
     /**
-     * @return whether there is a RecyclerView bound to this scroller.
+     * Sets the popup view to show while the scroller is being dragged
      */
-    public boolean hasRecyclerView() {
-        return mRv != null;
+    public void setPopupView(TextView popupView) {
+        mPopupView = popupView;
+        mPopupView.setBackground(
+                new FastScrollThumbDrawable(mThumbPaint, Utilities.isRtl(getResources())));
     }
 
-    public void setRecyclerView(FastScrollRecyclerView rv, TextView popupView) {
+    public void setRecyclerView(FastScrollRecyclerView rv) {
         if (mRv != null && mOnScrollListener != null) {
             mRv.removeOnScrollListener(mOnScrollListener);
         }
@@ -202,10 +199,6 @@ public class RecyclerViewFastScroller extends View {
                 mRv.onUpdateScrollbar(dy);
             }
         });
-
-        mPopupView = popupView;
-        mPopupView.setBackground(
-                new FastScrollThumbDrawable(mThumbPaint, Utilities.isRtl(getResources())));
     }
 
     public void reattachThumbToScroll() {
@@ -291,15 +284,7 @@ public class RecyclerViewFastScroller extends View {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                mRv.onFastScrollCompleted();
-                mTouchOffsetY = 0;
-                mLastTouchY = 0;
-                mIgnoreDragGesture = false;
-                if (mIsDragging) {
-                    mIsDragging = false;
-                    animatePopupVisibility(false);
-                    showActiveScrollbar(false);
-                }
+                endFastScrolling();
                 break;
         }
         if (DEBUG) {
@@ -333,18 +318,29 @@ public class RecyclerViewFastScroller extends View {
             mPopupView.setText(sectionName);
             performHapticFeedback(CLOCK_TICK);
         }
-        if (prefs.getDrawerSortMode().getValue() == Config.SORT_BY_INSTALL_DATE) {
-            mPopupSectionName = "";
-            mPopupView.setText("");
-        } else {
-            animatePopupVisibility(!sectionName.isEmpty());
-        }
+        animatePopupVisibility(!sectionName.isEmpty());
         mLastTouchY = boundedY;
         setThumbOffsetY((int) mLastTouchY);
     }
 
+    /**
+     * End any active fast scrolling touch handling, if applicable.
+     */
+    public void endFastScrolling() {
+        mRv.onFastScrollCompleted();
+        mTouchOffsetY = 0;
+        mLastTouchY = 0;
+        mIgnoreDragGesture = false;
+        if (mIsDragging) {
+            mIsDragging = false;
+            animatePopupVisibility(false);
+            showActiveScrollbar(false);
+        }
+    }
+
+    @Override
     public void onDraw(Canvas canvas) {
-        if (mThumbOffsetY < 0) {
+        if (mThumbOffsetY < 0 || mRv == null) {
             return;
         }
         int saveCount = canvas.save();
@@ -462,20 +458,5 @@ public class RecyclerViewFastScroller extends View {
         // There is actually some overlap between the track and the thumb. But since the track
         // alpha is so low, it does not matter.
         return false;
-    }
-
-    public void setColor(int color, int foregroundColor) {
-        mThumbPaint.setColor(color);
-        mPopupView.setTextColor(foregroundColor);
-    }
-
-    public static class PositionThumbInfo {
-        public String name;
-        public int color;
-
-        public PositionThumbInfo(String name, int color) {
-            this.name = name;
-            this.color = color;
-        }
     }
 }

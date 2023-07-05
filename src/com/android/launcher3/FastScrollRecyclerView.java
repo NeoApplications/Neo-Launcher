@@ -20,7 +20,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.Nullable;
@@ -53,16 +52,9 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        bindFastScrollbar();
-    }
-
-    public void bindFastScrollbar() {
-        ViewGroup parent = (ViewGroup) getParent().getParent();
-        mScrollbar = parent.findViewById(R.id.fast_scroller);
-        mScrollbar.setRecyclerView(this, parent.findViewById(R.id.fast_scroller_popup));
+    public void bindFastScrollbar(RecyclerViewFastScroller scrollbar) {
+        mScrollbar = scrollbar;
+        mScrollbar.setRecyclerView(this);
         onUpdateScrollbar(0);
     }
 
@@ -75,26 +67,34 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
         return getPaddingTop();
     }
 
+    public int getScrollBarMarginBottom() {
+        return getPaddingBottom();
+    }
+
     /**
      * Returns the height of the fast scroll bar
      */
     public int getScrollbarTrackHeight() {
-        return mScrollbar.getHeight() - getScrollBarTop() - getPaddingBottom();
+        return mScrollbar.getHeight() - getScrollBarTop() - getScrollBarMarginBottom();
     }
 
     /**
      * Returns the available scroll height:
      * AvailableScrollHeight = Total height of the all items - last page height
      */
-    protected abstract int getAvailableScrollHeight();
+    protected int getAvailableScrollHeight() {
+        // AvailableScrollHeight = Total height of the all items - first page height
+        int firstPageHeight = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
+        int availableScrollHeight = computeVerticalScrollRange() - firstPageHeight;
+        return Math.max(0, availableScrollHeight);
+    }
 
     /**
      * Returns the available scroll bar height:
      *   AvailableScrollBarHeight = Total height of the visible view - thumb height
      */
     protected int getAvailableScrollBarHeight() {
-        int availableScrollBarHeight = getScrollbarTrackHeight() - mScrollbar.getThumbHeight();
-        return availableScrollBarHeight;
+        return getScrollbarTrackHeight() - mScrollbar.getThumbHeight();
     }
 
     /**
@@ -138,10 +138,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
 
         // IF scroller is at the very top OR there is no scroll bar because there is probably not
         // enough items to scroll, THEN it's okay for the container to be pulled down.
-        if (getCurrentScrollY() == 0) {
-            return true;
-        }
-        return getAdapter() == null || getAdapter().getItemCount() == 0;
+        return computeVerticalScrollOffset() == 0;
     }
 
     /**
@@ -150,14 +147,6 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
     public boolean supportsFastScrolling() {
         return true;
     }
-
-    /**
-     * Maps the touch (from 0..1) to the adapter position that should be visible.
-     * <p>Override in each subclass of this base class.
-     *
-     * @return the scroll top of this recycler view.
-     */
-    public abstract int getCurrentScrollY();
 
     /**
      * Maps the touch (from 0..1) to the adapter position that should be visible.

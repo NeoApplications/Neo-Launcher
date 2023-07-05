@@ -24,15 +24,15 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 
-import com.android.launcher3.DeviceProfile.DeviceProfileListenable;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.util.SystemUiController;
 import com.android.launcher3.util.ViewCache;
-import com.android.launcher3.views.AppLauncher;
+import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.ScrimView;
 
 import java.io.PrintWriter;
@@ -43,8 +43,7 @@ import java.util.List;
 /**
  * Launcher BaseActivity
  */
-public abstract class BaseActivity extends Activity implements AppLauncher,
-        DeviceProfileListenable {
+public abstract class BaseActivity extends Activity implements ActivityContext {
 
     private static final String TAG = "BaseActivity";
 
@@ -277,7 +276,8 @@ public abstract class BaseActivity extends Activity implements AppLauncher,
     /**
      * Used to set the override visibility state, used only to handle the transition home with the
      * recents animation.
-     * @see QuickstepTransitionManager#createWallpaperOpenRunner
+     *
+     * @see
      */
     public void addForceInvisibleFlag(@InvisibilityFlags int flag) {
         mForceInvisible |= flag;
@@ -296,6 +296,12 @@ public abstract class BaseActivity extends Activity implements AppLauncher,
 
     public boolean hasSomeInvisibleFlag(int mask) {
         return (mForceInvisible & mask) != 0;
+    }
+
+    /**
+     * Attempts to clear accessibility focus on {@param view}.
+     */
+    public void tryClearAccessibilityFocus(View view) {
     }
 
     public interface MultiWindowModeChangedListener {

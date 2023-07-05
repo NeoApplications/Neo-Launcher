@@ -38,7 +38,7 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         titleId = R.string.title_app_categorization_enable,
         summaryId = R.string.summary_app_categorization_enable,
         defaultValue = false,
-        onChange = { onPrefsChanged() }
+        onChange = {}
     )
 
     var categorizationType = StringPref(

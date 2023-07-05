@@ -109,7 +109,7 @@ class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherO
 
     override fun onOverlayScrollChanged(progress: Float) {
         if (mLauncherOverlayCallbacks != null) {
-            mLauncherOverlayCallbacks!!.onScrollChanged(progress)
+            mLauncherOverlayCallbacks!!.onOverlayScrollChanged(progress)
         }
     }
 

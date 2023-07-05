@@ -67,4 +67,6 @@
 
     <dimen name="theme_icon_size">24dp</dimen>
     <dimen name="all_apps_scrim_blur">4dp</dimen>
+    <dimen name="all_apps_tabs_side_padding">12dp</dimen>
+    <dimen name="all_apps_tabs_margin_top">8dp</dimen>
 </resources>

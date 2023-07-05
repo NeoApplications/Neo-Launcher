@@ -326,6 +326,25 @@ fun dpToPx(size: Float): Float {
     )
 }
 
+fun View.runOnAttached(runnable: Runnable) {
+    if (isAttachedToWindow) {
+        runnable.run()
+    } else {
+        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+
+            override fun onViewAttachedToWindow(v: View) {
+                runnable.run()
+                removeOnAttachStateChangeListener(this)
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                removeOnAttachStateChangeListener(this)
+            }
+        })
+
+    }
+}
+
 fun pxToDp(size: Float): Float {
     return size / dpToPx(1f)
 }

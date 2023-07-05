@@ -414,4 +414,15 @@ public class ItemClickHandler {
             launcher.startActivitySafely(v, intent, item);
         }
     }
+
+    /**
+     * Interface to indicate that an item will handle the click itself.
+     */
+    public interface ItemClickProxy {
+
+        /**
+         * Called when the item is clicked
+         */
+        void onItemClicked(View view);
+    }
 }

@@ -19,6 +19,7 @@
 package com.saggitt.omega.groups.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -241,7 +243,10 @@ fun EditGroupBottomSheet(
                         iconId = R.drawable.tab_hide_from_main,
                         isChecked = isHidden,
                         onCheckedChange = { isHidden = it },
-                        horizontalPadding = 4.dp
+                        horizontalPadding = 4.dp,
+                        modifier = Modifier.background(
+                            MaterialTheme.colorScheme.surfaceColorAtElevation((3 * 24).dp)
+                        )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -310,6 +315,9 @@ fun EditGroupBottomSheet(
                     .clickable {
                         colorPicker.value = true
                     }
+                    .background(
+                        MaterialTheme.colorScheme.surfaceColorAtElevation((4 * 24).dp)
+                    )
             )
             {
 
@@ -398,15 +406,15 @@ fun EditGroupBottomSheet(
 
                         AppGroupsManager.Category.TAB,
                         AppGroupsManager.Category.FLOWERPOT,
-                                                         -> {
+                        -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
                         }
 
-                        else                             -> {}
+                        else -> {}
                     }
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = MaterialTheme.shapes.large,
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
                     contentColor = MaterialTheme.colorScheme.onPrimary

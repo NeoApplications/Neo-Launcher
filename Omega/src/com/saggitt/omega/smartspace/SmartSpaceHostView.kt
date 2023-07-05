@@ -15,6 +15,7 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.logging.StatsLogManager.EventEnum
 import com.android.launcher3.qsb.QsbWidgetHostView
+import com.android.launcher3.util.MultiTranslateDelegate
 import com.android.launcher3.views.BaseDragLayer.TouchCompleteListener
 import com.android.launcher3.views.OptionsPopupView
 import com.android.launcher3.views.OptionsPopupView.OptionItem
@@ -22,12 +23,17 @@ import com.android.launcher3.views.OptionsPopupView.OptionItem
 open class SmartSpaceHostView(context: Context) : QsbWidgetHostView(context), OnLongClickListener,
     TouchCompleteListener {
     private val mLauncher: Launcher by lazy { Launcher.getLauncher(context) }
+    private val mTranslateDelegate = MultiTranslateDelegate(this)
 
     @Suppress("LeakingThis")
     private val mLongPressHelper: CheckLongPressHelper = CheckLongPressHelper(this, this)
 
     override fun getErrorView(): View {
         return SmartspaceQsb.getDateView(this)
+    }
+
+    override fun getTranslateDelegate(): MultiTranslateDelegate {
+        return mTranslateDelegate
     }
 
     override fun onLongClick(view: View): Boolean {

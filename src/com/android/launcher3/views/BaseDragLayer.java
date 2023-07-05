@@ -40,8 +40,8 @@ import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InsettableFrameLayout;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.util.MultiPropertyFactory.MultiProperty;
 import com.android.launcher3.util.MultiValueAlpha;
-import com.android.launcher3.util.MultiValueAlpha.AlphaProperty;
 import com.android.launcher3.util.TouchController;
 
 import java.io.PrintWriter;
@@ -501,8 +501,8 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
         return new LayoutParams(p);
     }
 
-    public AlphaProperty getAlphaProperty(int index) {
-        return mMultiValueAlpha.getProperty(index);
+    public MultiProperty getAlphaProperty(int index) {
+        return mMultiValueAlpha.get(index);
     }
 
     public void dump(String prefix, PrintWriter writer) {
@@ -511,7 +511,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
             writer.println(prefix + "\tactiveController: " + mActiveController);
             mActiveController.dump(prefix + "\t", writer);
         }
-        writer.println(prefix + "\tdragLayerAlpha : " + mMultiValueAlpha );
+        writer.println(prefix + "\tdragLayerAlpha : " + mMultiValueAlpha);
     }
 
     public static class LayoutParams extends InsettableFrameLayout.LayoutParams {

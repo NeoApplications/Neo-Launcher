@@ -130,7 +130,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void initializeSearch(ActivityAllAppsContainerView<?> appsView) {
         mAppsView = appsView;
         mSearchBarController.initialize(
-                new DefaultAppSearchAlgorithm(getContext()),
+                new DefaultAppSearchAlgorithm(getContext(), true),
                 this, mLauncher, this);
     }
 
@@ -171,14 +171,12 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     @Override
     public void onSearchResult(String query, ArrayList<AdapterItem> items) {
         if (items != null) {
-            mAppsView.setSearchResults();
-            mAppsView.setLastSearchQuery(query);
+            mAppsView.setSearchResults(items);
         }
     }
 
     @Override
     public void clearSearchResult() {
-        mAppsView.setSearchResults();
         // Clear the search query
         mSearchQueryBuilder.clear();
         mSearchQueryBuilder.clearSpans();

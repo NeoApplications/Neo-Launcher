@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.DragSource;
 import com.android.launcher3.DropTarget;
+import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -93,6 +94,7 @@ public abstract class DragController<T extends ActivityContext>
     protected int mDistanceSinceScroll = 0;
 
     protected boolean mIsInPreDrag;
+    private final int DRAG_VIEW_SCALE_DURATION_MS = 500;
 
     /**
      * Interface to receive notifications when a drag starts or stops
@@ -218,6 +220,15 @@ public abstract class DragController<T extends ActivityContext>
             mOptions.preDragCondition.onPreDragEnd(mDragObject, true /* dragStarted*/);
         }
         mIsInPreDrag = false;
+        if (mOptions.preDragEndScale != 0) {
+            mDragObject.dragView
+                    .animate()
+                    .scaleX(mOptions.preDragEndScale)
+                    .scaleY(mOptions.preDragEndScale)
+                    .setInterpolator(Interpolators.EMPHASIZED)
+                    .setDuration(DRAG_VIEW_SCALE_DURATION_MS)
+                    .start();
+        }
         mDragObject.dragView.onDragStart();
         for (DragListener listener : new ArrayList<>(mListeners)) {
             listener.onDragStart(mDragObject, mOptions);

@@ -15,10 +15,6 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_ALL_APPS_DIVIDER;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_EMPTY_SEARCH;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_SEARCH_MARKET;
-
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -29,7 +25,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
-import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.celllayout.CellPosMapper;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
@@ -59,7 +55,8 @@ import java.util.stream.Stream;
 public class AlphabeticalAppsList<T extends Context & ActivityContext> implements
         AllAppsStore.OnUpdateListener {
     public static final String TAG = "AlphabeticalAppsList";
-    private final WorkAdapterProvider mWorkAdapterProvider;
+
+    private final WorkProfileManager mWorkProviderManager;
 
     /**
      * Info about a fast scroller section, depending if sections are merged, the fast scroller
@@ -100,11 +97,11 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final BaseDraggingActivity mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
-                                WorkAdapterProvider adapterProvider) {
+                                WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
         mAppNameComparator = new AppInfoComparator(context);
-        mWorkAdapterProvider = adapterProvider;
+        mWorkProviderManager = workProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().inv.numAllAppsColumns;
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
@@ -264,20 +261,11 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // ordered set of sections
         if (hasSearchResults()) {
             mAdapterItems.addAll(mSearchResults);
-            if (!FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
-                // Append the search market item
-                if (hasNoFilteredResults()) {
-                    mAdapterItems.add(new AdapterItem(VIEW_TYPE_EMPTY_SEARCH));
-                } else {
-                    mAdapterItems.add(new AdapterItem(VIEW_TYPE_ALL_APPS_DIVIDER));
-                }
-                mAdapterItems.add(new AdapterItem(VIEW_TYPE_SEARCH_MARKET));
-            }
         } else {
             int position = 0;
-            if (mWorkAdapterProvider != null) {
-                position += mWorkAdapterProvider.addWorkItems(mAdapterItems);
-                if (!mWorkAdapterProvider.shouldShowWorkApps()) {
+            if (mWorkProviderManager != null) {
+                position += mWorkProviderManager.addWorkItems(mAdapterItems);
+                if (!mWorkProviderManager.shouldShowWorkApps()) {
                     return;
                 }
             }
@@ -352,7 +340,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private List<DrawerFolderInfo> getFolderInfos() {
         LauncherAppState app = LauncherAppState.getInstance(mLauncher);
         LauncherModel model = app.getModel();
-        ModelWriter modelWriter = model.getWriter(false, true, null);
+        ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
         return Utilities.getOmegaPrefs(mLauncher)
                 .getDrawerAppGroupsManager()
                 .getDrawerFolders()

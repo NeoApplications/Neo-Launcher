@@ -38,9 +38,9 @@
 
     <View
         android:id="@+id/icon"
-        android:layout_width="@dimen/system_shortcut_icon_size"
-        android:layout_height="@dimen/system_shortcut_icon_size"
-        android:layout_marginStart="@dimen/system_shortcut_margin_start"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="@dimen/system_shortcut_margin_start"
         android:backgroundTint="@color/system_shortcut_text" />
 </merge>

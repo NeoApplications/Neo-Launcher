@@ -74,14 +74,10 @@
             android:orientation="vertical"
             android:paddingTop="@dimen/all_apps_header_top_padding">
 
-            <com.saggitt.omega.allapps.AllAppsTabsLayout
-                android:id="@+id/tabs"
-                style="@style/TextHeadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="horizontal" />
+            <include layout="@layout/floating_header_content" />
+
+            <include layout="@layout/all_apps_personal_work_tabs" />
+
         </com.android.launcher3.allapps.FloatingHeaderView>
 
         <com.android.launcher3.allapps.search.AppsSearchContainerLayout

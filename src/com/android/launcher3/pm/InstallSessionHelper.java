@@ -65,7 +65,7 @@ public class InstallSessionHelper {
     // Set<String> of session ids of promise icons that have been added to the home screen
     // as FLAG_PROMISE_NEW_INSTALLS.
     @NonNull
-    protected static final String PROMISE_ICON_IDS = "promise_icon_ids";
+    public static final String PROMISE_ICON_IDS = "promise_icon_ids";
 
     private static final boolean DEBUG = false;
 

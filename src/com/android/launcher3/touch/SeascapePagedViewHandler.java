@@ -19,9 +19,11 @@ package com.android.launcher3.touch;
 import static android.view.Gravity.BOTTOM;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.Gravity.END;
+import static android.view.Gravity.RIGHT;
 import static android.view.Gravity.START;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.HORIZONTAL;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
+import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_UNDEFINED;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
 
 import android.content.res.Resources;
@@ -31,13 +33,13 @@ import android.util.Pair;
 import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.util.SplitConfigurationOptions;
+import com.android.launcher3.util.SplitConfigurationOptions.SplitBounds;
 import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
-import com.android.launcher3.util.SplitConfigurationOptions.StagedSplitBounds;
 import com.android.launcher3.views.BaseDragLayer;
 
 import java.util.Collections;
@@ -82,32 +84,47 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
     }
 
     @Override
-    public float getTaskMenuX(float x, View thumbnailView, int overScroll,
-                              DeviceProfile deviceProfile) {
-        return x;
+    public float getTaskMenuX(float x, View thumbnailView,
+                              DeviceProfile deviceProfile, float taskInsetMargin) {
+        return x + taskInsetMargin;
     }
 
     @Override
-    public float getTaskMenuY(float y, View thumbnailView, int overScroll) {
-        return y + overScroll +
-                (thumbnailView.getMeasuredHeight() + thumbnailView.getMeasuredWidth()) / 2f;
+    public float getTaskMenuY(float y, View thumbnailView, int stagePosition,
+                              View taskMenuView, float taskInsetMargin) {
+        BaseDragLayer.LayoutParams lp = (BaseDragLayer.LayoutParams) taskMenuView.getLayoutParams();
+        int taskMenuWidth = lp.width;
+        if (stagePosition == STAGE_POSITION_UNDEFINED) {
+            return y + taskInsetMargin
+                    + (thumbnailView.getMeasuredHeight() + taskMenuWidth) / 2f;
+        } else {
+            return y + taskMenuWidth + taskInsetMargin;
+        }
     }
 
     @Override
-    public void setTaskMenuAroundTaskView(LinearLayout taskView, float margin) {
-        BaseDragLayer.LayoutParams lp = (BaseDragLayer.LayoutParams) taskView.getLayoutParams();
-        lp.bottomMargin += margin;
-    }
+    public void setSplitTaskSwipeRect(DeviceProfile dp, Rect outRect, SplitBounds splitInfo,
+                                      int desiredStagePosition) {
+        float topLeftTaskPercent = splitInfo.appsStackedVertically
+                ? splitInfo.topTaskPercent
+                : splitInfo.leftTaskPercent;
+        float dividerBarPercent = splitInfo.appsStackedVertically
+                ? splitInfo.dividerHeightPercent
+                : splitInfo.dividerWidthPercent;
 
-    @Override
-    public PointF getAdditionalInsetForTaskMenu(float margin) {
-        return new PointF(-margin, margin);
+        // In seascape, the primary thumbnail is counterintuitively placed at the physical bottom of
+        // the screen. This is to preserve consistency when the user rotates: From the user's POV,
+        // the primary should always be on the left.
+        if (desiredStagePosition == SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT) {
+            outRect.top += (int) (outRect.height() * ((1 - topLeftTaskPercent)));
+        } else {
+            outRect.bottom -= (int) (outRect.height() * (topLeftTaskPercent + dividerBarPercent));
+        }
     }
-
 
     @Override
     public Pair<Float, Float> getDwbLayoutTranslations(int taskViewWidth,
-                                                       int taskViewHeight, StagedSplitBounds splitBounds, DeviceProfile deviceProfile,
+                                                       int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
                                                        View[] thumbnailViews, int desiredTaskId, View banner) {
         boolean isRtl = banner.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         float translationX = 0;
@@ -160,8 +177,30 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
     public List<SplitPositionOption> getSplitPositionOptions(DeviceProfile dp) {
         // Add "right" option which is actually the top
         return Collections.singletonList(new SplitPositionOption(
-                R.drawable.ic_split_right, R.string.split_screen_position_right,
+                R.drawable.ic_split_horizontal, R.string.recent_task_option_split_screen,
                 STAGE_POSITION_BOTTOM_OR_RIGHT, STAGE_TYPE_MAIN));
+    }
+
+    @Override
+    public void setSplitInstructionsParams(View out, DeviceProfile dp, int splitInstructionsHeight,
+                                           int splitInstructionsWidth) {
+        out.setPivotX(0);
+        out.setPivotY(splitInstructionsHeight);
+        out.setRotation(getDegreesRotated());
+        int distanceToEdge = out.getResources().getDimensionPixelSize(
+                R.dimen.split_instructions_bottom_margin_phone_landscape);
+        // Adjust for any insets on the right edge
+        int insetCorrectionX = dp.getInsets().right;
+        // Center the view in case of unbalanced insets on top or bottom of screen
+        int insetCorrectionY = (dp.getInsets().bottom - dp.getInsets().top) / 2;
+        out.setTranslationX(splitInstructionsWidth - distanceToEdge + insetCorrectionX);
+        out.setTranslationY(((-splitInstructionsHeight + splitInstructionsWidth) / 2f)
+                + insetCorrectionY);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) out.getLayoutParams();
+        // Setting gravity to RIGHT instead of the lint-recommended END because we always want this
+        // view to be screen-right when phone is in seascape, regardless of the RtL setting.
+        lp.gravity = RIGHT | CENTER_VERTICAL;
+        out.setLayoutParams(lp);
     }
 
     @Override
@@ -171,13 +210,14 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
         iconParams.leftMargin = -taskIconHeight - taskIconMargin / 2;
         iconParams.rightMargin = 0;
         iconParams.topMargin = thumbnailTopMargin / 2;
+        iconParams.bottomMargin = 0;
     }
 
     @Override
     public void setSplitIconParams(View primaryIconView, View secondaryIconView,
                                    int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
                                    int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
-                                   DeviceProfile deviceProfile, StagedSplitBounds splitConfig) {
+                                   DeviceProfile deviceProfile, SplitBounds splitConfig) {
         super.setSplitIconParams(primaryIconView, secondaryIconView, taskIconHeight,
                 primarySnapshotWidth, primarySnapshotHeight, groupedTaskViewHeight,
                 groupedTaskViewWidth, isRtl, deviceProfile, splitConfig);
@@ -189,7 +229,8 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
         // We calculate the "midpoint" of the thumbnail area, and place the icons there.
         // This is the place where the thumbnail area splits by default, in a near-50/50 split.
         // It is usually not exactly 50/50, due to insets/screen cutouts.
-        int fullscreenInsetThickness = deviceProfile.getInsets().top;
+        int fullscreenInsetThickness = deviceProfile.getInsets().top
+                - deviceProfile.getInsets().bottom;
         int fullscreenMidpointFromBottom = ((deviceProfile.heightPx
                 - fullscreenInsetThickness) / 2);
         float midpointFromBottomPct = (float) fullscreenMidpointFromBottom / deviceProfile.heightPx;
@@ -206,18 +247,61 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
         if (splitConfig.initiatedFromSeascape) {
             // if the split was initiated from seascape,
             // the task on the right (secondary) is slightly larger
-            primaryIconView.setTranslationY(-bottomToMidpointOffset - insetOffset);
-            secondaryIconView.setTranslationY(-bottomToMidpointOffset - insetOffset
+            primaryIconView.setTranslationY(-bottomToMidpointOffset - insetOffset
                     + taskIconHeight);
+            secondaryIconView.setTranslationY(-bottomToMidpointOffset - insetOffset);
         } else {
             // if not,
             // the task on the left (primary) is slightly larger
-            primaryIconView.setTranslationY(-bottomToMidpointOffset);
-            secondaryIconView.setTranslationY(-bottomToMidpointOffset + taskIconHeight);
+            primaryIconView.setTranslationY(-bottomToMidpointOffset + taskIconHeight);
+            secondaryIconView.setTranslationY(-bottomToMidpointOffset);
         }
 
         primaryIconView.setLayoutParams(primaryIconParams);
         secondaryIconView.setLayoutParams(secondaryIconParams);
+    }
+
+    @Override
+    public void measureGroupedTaskViewThumbnailBounds(View primarySnapshot, View secondarySnapshot,
+                                                      int parentWidth, int parentHeight, SplitBounds splitBoundsConfig, DeviceProfile dp,
+                                                      boolean isRtl) {
+        FrameLayout.LayoutParams primaryParams =
+                (FrameLayout.LayoutParams) primarySnapshot.getLayoutParams();
+        FrameLayout.LayoutParams secondaryParams =
+                (FrameLayout.LayoutParams) secondarySnapshot.getLayoutParams();
+
+        // Swap the margins that are set in TaskView#setRecentsOrientedState()
+        secondaryParams.topMargin = dp.overviewTaskThumbnailTopMarginPx;
+        primaryParams.topMargin = 0;
+
+        // Measure and layout the thumbnails bottom up, since the primary is on the visual left
+        // (portrait bottom) and secondary is on the right (portrait top)
+        int spaceAboveSnapshot = dp.overviewTaskThumbnailTopMarginPx;
+        int totalThumbnailHeight = parentHeight - spaceAboveSnapshot;
+        int dividerBar = Math.round(totalThumbnailHeight * (splitBoundsConfig.appsStackedVertically
+                ? splitBoundsConfig.dividerHeightPercent
+                : splitBoundsConfig.dividerWidthPercent));
+        int primarySnapshotHeight;
+        int primarySnapshotWidth;
+        int secondarySnapshotHeight;
+        int secondarySnapshotWidth;
+
+        float taskPercent = splitBoundsConfig.appsStackedVertically ?
+                splitBoundsConfig.topTaskPercent : splitBoundsConfig.leftTaskPercent;
+        primarySnapshotWidth = parentWidth;
+        primarySnapshotHeight = (int) (totalThumbnailHeight * (taskPercent));
+
+        secondarySnapshotWidth = parentWidth;
+        secondarySnapshotHeight = totalThumbnailHeight - primarySnapshotHeight - dividerBar;
+        secondarySnapshot.setTranslationY(0);
+        primarySnapshot.setTranslationY(secondarySnapshotHeight + spaceAboveSnapshot + dividerBar);
+        primarySnapshot.measure(
+                View.MeasureSpec.makeMeasureSpec(primarySnapshotWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(primarySnapshotHeight, View.MeasureSpec.EXACTLY));
+        secondarySnapshot.measure(
+                View.MeasureSpec.makeMeasureSpec(secondarySnapshotWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(secondarySnapshotHeight,
+                        View.MeasureSpec.EXACTLY));
     }
 
     /* ---------- The following are only used by TaskViewTouchHandler. ---------- */

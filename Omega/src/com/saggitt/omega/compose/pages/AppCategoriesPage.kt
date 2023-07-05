@@ -47,6 +47,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -136,7 +137,7 @@ fun AppCategoriesPage() {
     }
 
     var sheetChanger by remember {
-        mutableStateOf(Config.BS_SELECT_TAB_TYPE)
+        mutableIntStateOf(Config.BS_SELECT_TAB_TYPE)
     }
 
     BackHandler(sheetState.isVisible) {
