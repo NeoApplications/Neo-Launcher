@@ -1,0 +1,12 @@
+<ul>
+  <li>Nieuw: Brave zoekmachine</li>
+  <li>Nieuw Terugknop is nu aanpasbaar</li>
+  <li>Nieuw: Thuisknop is nu aanpasbaar</li>
+  <li>Nieuw: Bureaubladmodus</li>
+  <li>Opgelost: Tekstkleur op widget-selector voor licht thema</li>
+  <li>Opgelost: zoeken naar verstopte apps</li>
+  <li>Opgelost: mappictogram in dekkingsmodus</li>
+  <li>Smartspace-widget hersteld</li>
+  <li>Adaptief klokpictogram (Google) hersteld</li>
+  <li>Adaptief kalenderpictogram (Google) hersteld</li>
+</ul>
