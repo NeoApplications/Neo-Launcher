@@ -105,11 +105,20 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
     }
 
     override fun onGroupsChanged(changeCallback: PreferencesChangeCallback) {
-        //changeCallback.launcher.appsView.reloadTabs()
+        changeCallback.launcher.appsView.reloadTabs()
     }
 
     abstract class Tab(context: Context, type: String, title: String) :
-        Group(type, context, title) {}
+        Group(type, context, title) {
+        var color = StringCustomization(
+            KEY_COLOR,
+            context.prefs.profileAccentColor.defaultValue
+        )
+
+        init {
+            addCustomization(color)
+        }
+    }
 
     class CustomTab(context: Context) :
         Tab(context, TYPE_CUSTOM, context.getString(R.string.default_tab_name)) {
@@ -118,6 +127,7 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
         val contents = ComponentsCustomization(KEY_ITEMS, mutableSetOf())
 
         init {
+            addCustomization(hideFromAllApps)
             addCustomization(contents)
         }
 
@@ -217,7 +227,6 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
         init {
             addCustomization(HiddenAppsRow(profile))
-            customizations.setOrder(KEY_TITLE, KEY_COLOR, KEY_HIDDEN)
         }
 
         override val summary: String?
@@ -255,13 +264,6 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
             setHiddenApps(context, value)
             this.value = null
             return null
-        }
-
-
-        private fun filteredValue(context: Context): Collection<ComponentKey> {
-            return context.prefs.drawerHiddenAppSet.getValue()
-                .map { Utilities.makeComponentKey(context, it) }
-                .filter(predicate)
         }
 
         private fun setHiddenApps(context: Context, hidden: Collection<ComponentKey>) {

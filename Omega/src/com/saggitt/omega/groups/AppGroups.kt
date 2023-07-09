@@ -25,7 +25,6 @@ import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.util.asMap
-import com.saggitt.omega.util.prefs
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -171,7 +170,6 @@ abstract class AppGroups<T : AppGroups.Group>(
 
         val customizations = CustomizationMap()
         private val _title = StringCustomization(KEY_TITLE, defaultTitle)
-
         open var title: String
             get() =
                 _title.value ?: defaultTitle
@@ -179,17 +177,11 @@ abstract class AppGroups<T : AppGroups.Group>(
                 _title.value = value
             }
 
-        var color = StringCustomization(
-            KEY_COLOR,
-            context.prefs.profileAccentColor.defaultValue
-        )
-
         open val summary: String?
             get() = null
 
         init {
             addCustomization(_title)
-            addCustomization(color)
         }
 
         fun addCustomization(customization: Customization<*, *>) {

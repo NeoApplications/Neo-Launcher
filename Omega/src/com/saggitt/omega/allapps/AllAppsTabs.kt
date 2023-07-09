@@ -68,7 +68,7 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
                     Tab(it.title, it.getFilter(context).matcher, drawerTab = it)
                 }
 
-                else                                                             -> null
+                else -> null
             }
         }
     }

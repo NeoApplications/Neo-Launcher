@@ -28,11 +28,12 @@ import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.Themes
 import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip
 import com.saggitt.omega.compose.components.ComposeBottomSheet
+import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.ui.EditGroupBottomSheet
 import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.views.ColoredButton
 import kotlin.math.floor
 
@@ -40,7 +41,6 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
     PersonalWorkSlidingTabStrip(context, attrs) {
 
     private var mSelectedIndicatorPaint: Paint = Paint()
-    private var mDividerPaint: Paint
 
     private var mIndicatorLeft = -1
     private var mIndicatorRight = -1
@@ -54,12 +54,7 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
     val launcher: Launcher = Launcher.getLauncher(context)
 
     init {
-        mSelectedIndicatorPaint.color = Themes.getAttrColor(context, android.R.attr.colorAccent)
-        mDividerPaint = Paint()
-        mDividerPaint.color = Themes.getAttrColor(context, android.R.attr.colorControlHighlight)
-        mDividerPaint.strokeWidth =
-            resources.getDimensionPixelSize(R.dimen.all_apps_divider_height).toFloat()
-
+        mSelectedIndicatorPaint.color = prefs.profileAccentColor.getColor()
         mIsRtl = Utilities.isRtl(resources)
     }
 
@@ -205,8 +200,7 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
         for (i in 0 until tabs.count) {
             val tab = tabs[i]
             val button = getChildAt(i) as ColoredButton
-            button.color =
-                prefs.profileAccentColor.getColor() //Color.parseColor(tab.drawerTab.color.value())
+            button.color = getTabColor(tab.drawerTab)
             button.refreshColor()
             button.text = tab.name
             button.setOnLongClickListener { v: View ->
@@ -222,5 +216,9 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
         }
         updateIndicatorPosition()
         invalidate()
+    }
+
+    private fun getTabColor(tab: DrawerTabs.Tab): Int {
+        return AccentColorOption.fromString(tab.color.value()).accentColor
     }
 }

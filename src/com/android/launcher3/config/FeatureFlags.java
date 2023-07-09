@@ -86,7 +86,7 @@ public final class FeatureFlags {
             "ENABLE_DEVICE_SEARCH", true, "Allows on device search in all apps");
 
     public static final BooleanFlag ENABLE_FLOATING_SEARCH_BAR =
-            getDebugFlag(270390286, "ENABLE_FLOATING_SEARCH_BAR", true,
+            getDebugFlag(270390286, "ENABLE_FLOATING_SEARCH_BAR", false,
                     "Keep All Apps search bar at the bottom (but above keyboard if open)");
 
     public static final BooleanFlag ENABLE_EXPANDING_PAUSE_WORK_BUTTON = getReleaseFlag(270390779,
@@ -169,7 +169,7 @@ public final class FeatureFlags {
             "ENABLE_ENFORCED_ROUNDED_CORNERS", true, "Enforce rounded corners on all App Widgets");
 
     public static final BooleanFlag NOTIFY_CRASHES = getDebugFlag(
-            270393108, "NOTIFY_CRASHES", false,
+            270393108, "NOTIFY_CRASHES", true,
             "Sends a notification whenever launcher encounters an uncaught exception.");
 
     public static final BooleanFlag ENABLE_WALLPAPER_SCRIM = getDebugFlag(270393604,

@@ -279,6 +279,10 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         return false;
     }
 
+    public void setScrollbarColor(int color) {
+        //mScrollbar.setColor(color, Color.WHITE); //TODO : Fix this
+    }
+
     private void logCumulativeVerticalScroll() {
         ActivityContext context = ActivityContext.lookupContext(getContext());
         StatsLogManager mgr = context.getStatsLogManager();

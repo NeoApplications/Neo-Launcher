@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "415478ae58071911c9a90dbab263a19e",
+    "identityHash": "ec03eb85187ba409c3a3e74cb04b2635",
     "entities": [
       {
         "tableName": "IconOverride",
@@ -140,12 +140,12 @@
       },
       {
         "tableName": "SearchProvider",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `iconId` INTEGER NOT NULL, `searchUrl` TEXT NOT NULL, `suggestionUrl` TEXT, `enabled` INTEGER NOT NULL, `order` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `iconId` INTEGER NOT NULL, `searchUrl` TEXT NOT NULL, `suggestionUrl` TEXT, `enabled` INTEGER NOT NULL, `order` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -186,7 +186,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -198,7 +198,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '415478ae58071911c9a90dbab263a19e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ec03eb85187ba409c3a3e74cb04b2635')"
     ]
   }
 }

@@ -9,7 +9,7 @@ import com.android.launcher3.R
 @Entity
 data class SearchProvider(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "_id")
+    @ColumnInfo(name = "id")
     var id: Long = 0,
     val name: String,
     @DrawableRes val iconId: Int,

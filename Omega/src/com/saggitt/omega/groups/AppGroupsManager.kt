@@ -46,7 +46,9 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         dataStore = dataStore,
         titleId = R.string.pref_appcategorization_style_text,
         defaultValue = "categorization_type_tabs",
-        onChange = { onPrefsChanged() }
+        onChange = {
+
+        }
     )
 
 

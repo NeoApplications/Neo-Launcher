@@ -66,7 +66,7 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
     // Drawer folders
     public static final int VIEW_TYPE_FOLDER = 1 << 6;
 
-    public static final int NEXT_ID = 6;
+    public static final int NEXT_ID = 7;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
@@ -122,10 +122,6 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public static AdapterItem asFolder(DrawerFolderInfo folderInfo) {
             AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
             item.folderItem = new DrawerFolderItem(folderInfo);
-            /*item.position = pos;
-            item.sectionName = sectionName;
-            item.folderItem = new DrawerFolderItem(folderInfo);
-            item.rowAppIndex = folderIndex;*/
             return item;
         }
 

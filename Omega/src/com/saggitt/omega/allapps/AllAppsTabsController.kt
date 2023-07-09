@@ -1,6 +1,13 @@
 package com.saggitt.omega.allapps
 
+import android.view.View
+import android.view.ViewGroup
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
+import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.MAIN
+import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK
+import com.android.launcher3.allapps.AllAppsPagedView
+import com.android.launcher3.allapps.AllAppsStore
+import com.saggitt.omega.util.forEachChildIndexed
 
 typealias AdapterHolders = List<ActivityAllAppsContainerView<*>.AdapterHolder>
 
@@ -8,7 +15,6 @@ class AllAppsTabsController(
     val tabs: AllAppsTabs,
     private val container: ActivityAllAppsContainerView<*>
 ) {
-    /*
         val tabsCount get() = tabs.count
         val shouldShowTabs get() = tabsCount > 1
 
@@ -50,6 +56,7 @@ class AllAppsTabsController(
 
         fun setup(pagedView: AllAppsPagedView) {
             tabs.forEachIndexed { index, tab ->
+                holders[index].setIsWork(tab.isWork)
                 holders[index].setup(pagedView.getChildAt(index), tab.matcher)
             }
         }
@@ -75,5 +82,5 @@ class AllAppsTabsController(
                 it.mPadding.right = horizontalPadding
                 it.applyPadding()
             }
-        }*/
+        }
 }

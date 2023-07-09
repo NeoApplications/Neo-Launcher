@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.Insettable;
 import com.android.launcher3.R;
-import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
 import com.android.launcher3.views.ActivityContext;
@@ -42,6 +41,7 @@ import com.android.systemui.plugins.PluginListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class FloatingHeaderView extends LinearLayout implements
@@ -87,10 +87,9 @@ public class FloatingHeaderView extends LinearLayout implements
     private final int mTabsAdditionalPaddingBottom;
 
     protected ViewGroup mTabLayout;
-    private AllAppsRecyclerView mMainRV;
-    private AllAppsRecyclerView mWorkRV;
     private SearchRecyclerView mSearchRV;
     private AllAppsRecyclerView mCurrentRV;
+    private ViewGroup mParent;
     protected int mSnappedScrolledY;
     private int mTranslationY;
 
@@ -113,6 +112,8 @@ public class FloatingHeaderView extends LinearLayout implements
     // Array of all fixed rows and plugin rows. This is initialized every time a plugin is
     // enabled or disabled, and represent the current set of all rows.
     private FloatingHeaderRow[] mAllRows = FloatingHeaderRow.NO_ROWS;
+    private int mActiveRV = 0;
+    private ArrayList<AllAppsRecyclerView> mRVs = new ArrayList<>();
 
     public FloatingHeaderView(@NonNull Context context) {
         this(context, null);
@@ -221,19 +222,26 @@ public class FloatingHeaderView extends LinearLayout implements
         return super.getFocusedChild();
     }
 
-    void setup(AllAppsRecyclerView mainRV, AllAppsRecyclerView workRV, SearchRecyclerView searchRV,
-               int activeRV, boolean tabsHidden) {
+    public void setup(List<ActivityAllAppsContainerView<?>.AdapterHolder> mAH,
+                      SearchRecyclerView searchRV, int activeRV, boolean tabsHidden) {
         for (FloatingHeaderRow row : mAllRows) {
             row.setup(this, mAllRows, tabsHidden);
         }
         updateExpectedHeight();
-
         mTabsHidden = tabsHidden;
         mTabLayout.setVisibility(tabsHidden ? View.GONE : View.VISIBLE);
-        mMainRV = mainRV;
-        mWorkRV = workRV;
+
+        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
+            if (holder.mRecyclerView != null && !holder.isSearch()) {
+                AllAppsRecyclerView newHolder = holder.mRecyclerView;
+                newHolder.addOnScrollListener(mOnScrollListener);
+                mRVs.add(newHolder);
+            }
+        }
+
         mSearchRV = searchRV;
-        setActiveRV(activeRV);
+        mParent = (ViewGroup) mRVs.get(0).getParent();
+        setCurrentActive(Math.min(activeRV, mRVs.size() - 1));
         reset(false);
     }
 
@@ -241,20 +249,19 @@ public class FloatingHeaderView extends LinearLayout implements
      * Whether this header has been set up previously.
      */
     boolean isSetUp() {
-        return mMainRV != null;
+        return mRVs.size() > 0;
     }
 
     /**
      * Set the active AllApps RV which will adjust the alpha of the header when scrolled.
      */
-    void setActiveRV(int rvType) {
+    public void setCurrentActive(int active) {
         if (mCurrentRV != null) {
             mCurrentRV.removeOnScrollListener(mOnScrollListener);
         }
-        mCurrentRV =
-                rvType == AdapterHolder.MAIN ? mMainRV
-                        : rvType == AdapterHolder.WORK ? mWorkRV : mSearchRV;
+        mCurrentRV = mRVs.get(active);
         mCurrentRV.addOnScrollListener(mOnScrollListener);
+        mActiveRV = active;
     }
 
     private void updateExpectedHeight() {
@@ -334,11 +341,14 @@ public class FloatingHeaderView extends LinearLayout implements
         mHeaderClip.top = clipTop;
         // clipping on a draw might cause additional redraw
         setClipBounds(mHeaderClip);
-        if (mMainRV != null) {
+        /*if (mMainRV != null) {
             mMainRV.setClipBounds(mRVClip);
         }
         if (mWorkRV != null) {
             mWorkRV.setClipBounds(mRVClip);
+        }*/
+        for (AllAppsRecyclerView rv : mRVs) {
+            rv.setClipBounds(mRVClip);
         }
         if (mSearchRV != null) {
             mSearchRV.setClipBounds(mRVClip);
@@ -421,7 +431,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        calcOffset(mTempOffset);
+        // calcOffset(mTempOffset);
         ev.offsetLocation(mTempOffset.x, mTempOffset.y);
         mForwardToRecyclerView = mCurrentRV.onInterceptTouchEvent(ev);
         ev.offsetLocation(-mTempOffset.x, -mTempOffset.y);
@@ -445,8 +455,8 @@ public class FloatingHeaderView extends LinearLayout implements
     }
 
     private void calcOffset(Point p) {
-        p.x = getLeft() - mCurrentRV.getLeft() - ((ViewGroup) mCurrentRV.getParent()).getLeft();
-        p.y = getTop() - mCurrentRV.getTop() - ((ViewGroup) mCurrentRV.getParent()).getTop();
+        p.x = getLeft() - mCurrentRV.getLeft() - mParent.getLeft();
+        p.y = getTop() - mCurrentRV.getTop() - mParent.getTop();
     }
 
     @Override
