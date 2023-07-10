@@ -45,4 +45,25 @@
     <string name="summary_full_width_widgets">Izinkan widget menjangkau seluruh lebar tanpa padding</string>
     <string name="grid_size_height">Tinggi</string>
     <string name="grid_size_width">Lebar</string>
+    <string name="title__dock_icon_size">Ukuran ikon</string>
+    <string name="label_search">Cari</string>
+    <string name="summary_dock_search">Tampilkan di dock bawah</string>
+    <string name="cat_dock_search">Drawer dan dock</string>
+    <string name="title_separate_work_apps">Tab Kedua untuk Aplikasi Kerja</string>
+    <string name="title__drawer_paged_apps">Tampilan Aplikasi Berhalaman</string>
+    <string name="title__sort_alphabetical_za">Z→A</string>
+    <string name="title_dock_fill">Tampilkan Latar Belakang</string>
+    <string name="title_dock_two_row">Tampilkan Baris Kedua</string>
+    <string name="title__dock_colored_icons">Ikon berwarna</string>
+    <string name="hotseat_show_page_indicator">Tampilkan Indikator Halaman</string>
+    <string name="num_hotseat_icons_pref_title">Jumlah Ikon</string>
+    <string name="title__drawer_sort">Urutkan Aplikasi</string>
+    <string name="title__drawer_icon_size">Semua Ukuran Ikon Aplikasi</string>
+    <string name="title__drawer_columns">Jumlah kolom</string>
+    <string name="title__drawer_rows">Jumlah baris</string>
+    <string name="title__sort_mode">Penyortiran Aplikasi</string>
+    <string name="show_top_shadow">Tampilkan Bayangan Atas</string>
+    <string name="title_disabled">Mati</string>
+    <string name="title__dock_hide_labels">Sembunyikan Label</string>
+    <string name="title__sort_alphabetical_az">A→Z</string>
 </resources>
