@@ -1,0 +1,7 @@
+新增：向上滑動手勢以開啟資料夾
+新增：提供餵入器設定
+修正：語言偏好設定
+更新：將格線/欄位範圍擴增至2至16
+移除：Google App和Google GO作為搜尋供應者
+移除：StartAppSearch、StartApp和TimeoutSleep手勢
+許多當機修復
