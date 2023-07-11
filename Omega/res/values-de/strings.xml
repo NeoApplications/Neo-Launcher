@@ -498,4 +498,11 @@
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
     <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
+    <string name="title_smartspace_calendar">Kalender auswählen</string>
+    <string name="title_calendar_gregorian">Gregorianisch</string>
+    <string name="gesture_press_recents">Taste für kürzlich geöffnete Apps</string>
+    <string name="about_community_telegram">Community auf Telegram</string>
+    <string name="about_community_matrix">Community auf Matrix</string>
+    <string name="title_smartspace_time_format">Zeitformat</string>
+    <string name="title_calendar_persian">Persisch</string>
 </resources>

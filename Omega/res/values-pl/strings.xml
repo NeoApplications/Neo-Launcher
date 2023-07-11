@@ -465,7 +465,7 @@
     <string name="gesture_press_home">Naciśnięcie przycisku strony głównej</string>
     <string name="web_search_metager">Metager (Web)</string>
     <string name="title_fuzzy_search">Wyszukiwanie rozmyte</string>
-    <string name="dt2s_admin_hint">W celu używania podwójnego stuknięcia do uśpienia oraz do przyznania uprawnienia administratora.</string>
+    <string name="dt2s_admin_hint">Aby użyć podwójnego stuknięcia do uśpienia oraz do przyznania uprawnienia administratora.</string>
     <string name="title_override_corner_radius_value">Globalny promień narożników</string>
     <string name="folder_opacity">Nieprzezroczystość ikony folderu</string>
     <string name="section_web">Sieć</string>
@@ -487,4 +487,22 @@
     <string name="smartspace_widget_placeholder_date">Pią, 3 Mar</string>
     <string name="folder_swipe_up">Przeciągnięcie w górę</string>
     <string name="button_apply">Zastosuj</string>
+    <string name="title_smartspace_time_format">Format czasu</string>
+    <string name="color_wallpaper_secondary">Tapeta drugorzędna</string>
+    <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="pref_category__dash">Kreska</string>
+    <string name="title_use_pill_qsb">Pokaż pigułkę — skrót do wyszukiwania</string>
+    <string name="folder_stroke_color">Kolor obrysu folderu</string>
+    <string name="folder_draw_stroke">Rysuj obrys folderu</string>
+    <string name="dash_line_size">Rozmiar linii przerywanej</string>
+    <string name="title_smartspace_calendar">Wybierz kalendarz</string>
+    <string name="title_calendar_gregorian">gregoriański</string>
+    <string name="title_calendar_persian">perski</string>
+    <string name="gesture_press_recents">Przycisk ostatnich działań</string>
+    <string name="about_community_telegram">Społeczność na Telegramie</string>
+    <string name="about_community_matrix">Społeczność na Matrix</string>
+    <string name="web_search_phind">Phind (Web)</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
+    <string name="web_search_you">You (Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
 </resources>
