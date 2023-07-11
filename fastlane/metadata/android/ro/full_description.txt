@@ -1,0 +1,13 @@
+Lansatorul Neo este o copie a lansatorului AOSP pentru utilizatorii avansați.
+Aceste este foarte configurabil, și oferă o funcționalitate vastă. Câteva dintre acestea sunt:
+
+- _Dash_-ul.
+- Suport vast pentru modificare a temei.
+- Motoare de căutare terțe.
+- Suport pentru gesturi.
+- Un widget special și unic.
+- Categorii sau foldere în biblioteca de aplicații.
+- Suport pentru forme ale iconițelor și pentru seturi de iconițe.
+- Ascundere de aplicații.
+
+Mereu sunt caracteristici noi pe drum, așa că rămâneți aproape…
