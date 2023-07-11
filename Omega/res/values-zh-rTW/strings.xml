@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="default_folder_name">新建資料夾</string>
+    <string name="folder_name">資料夾名稱</string>
+    <string name="title__general_about">關於</string>
+    <string name="title__general_desktop">桌面</string>
+</resources>
