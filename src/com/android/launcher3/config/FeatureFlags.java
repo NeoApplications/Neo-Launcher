@@ -234,7 +234,7 @@ public final class FeatureFlags {
             "Enable dragging and dropping to pin apps within secondary display");
 
     public static final BooleanFlag SHOW_HOME_GARDENING = getDebugFlag(270395183,
-            "SHOW_HOME_GARDENING", false,
+            "SHOW_HOME_GARDENING", true,
             "Show the new home gardening mode");
 
     public static final BooleanFlag ENABLE_DISMISS_PREDICTION_UNDO = getDebugFlag(270394476,

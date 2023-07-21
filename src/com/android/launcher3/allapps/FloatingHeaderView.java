@@ -112,7 +112,6 @@ public class FloatingHeaderView extends LinearLayout implements
     // Array of all fixed rows and plugin rows. This is initialized every time a plugin is
     // enabled or disabled, and represent the current set of all rows.
     private FloatingHeaderRow[] mAllRows = FloatingHeaderRow.NO_ROWS;
-    private int mActiveRV = 0;
     private ArrayList<AllAppsRecyclerView> mRVs = new ArrayList<>();
 
     public FloatingHeaderView(@NonNull Context context) {
@@ -241,7 +240,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
         mSearchRV = searchRV;
         mParent = (ViewGroup) mRVs.get(0).getParent();
-        setCurrentActive(Math.min(activeRV, mRVs.size() - 1));
+        setActiveRV(Math.min(activeRV, mRVs.size() - 1));
         reset(false);
     }
 
@@ -255,13 +254,13 @@ public class FloatingHeaderView extends LinearLayout implements
     /**
      * Set the active AllApps RV which will adjust the alpha of the header when scrolled.
      */
-    public void setCurrentActive(int active) {
+    public void setActiveRV(int active) {
         if (mCurrentRV != null) {
             mCurrentRV.removeOnScrollListener(mOnScrollListener);
         }
         mCurrentRV = mRVs.get(active);
+
         mCurrentRV.addOnScrollListener(mOnScrollListener);
-        mActiveRV = active;
     }
 
     private void updateExpectedHeight() {
@@ -341,12 +340,6 @@ public class FloatingHeaderView extends LinearLayout implements
         mHeaderClip.top = clipTop;
         // clipping on a draw might cause additional redraw
         setClipBounds(mHeaderClip);
-        /*if (mMainRV != null) {
-            mMainRV.setClipBounds(mRVClip);
-        }
-        if (mWorkRV != null) {
-            mWorkRV.setClipBounds(mRVClip);
-        }*/
         for (AllAppsRecyclerView rv : mRVs) {
             rv.setClipBounds(mRVClip);
         }
