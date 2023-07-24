@@ -128,7 +128,7 @@ fun CreateGroupBottomSheet(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -221,6 +221,8 @@ fun CreateGroupBottomSheet(
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 },
+                index = 0,
+                groupSize = 3
             ) { openDialog.value = true }
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -266,7 +268,9 @@ fun CreateGroupBottomSheet(
                     }
                 )
             },
-            onClick = { isHidden = !isHidden }
+            onClick = { isHidden = !isHidden },
+            index = 1,
+            groupSize = 3
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -282,7 +286,9 @@ fun CreateGroupBottomSheet(
                         modifier = Modifier.size(30.dp),
                         tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
-                }
+                },
+                index = 2,
+                groupSize = 3
             ) {
                 colorPicker.value = true
             }
