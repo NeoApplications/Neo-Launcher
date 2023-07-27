@@ -59,7 +59,7 @@
     <string name="title__dock_hide_labels">Приховати підписи</string>
     <string name="label_search">Пошук</string>
     <string name="title__drawer_sort">Сортування застосунків</string>
-    <string name="title__drawer_all_apps">Показати підпис «Усі застосунки»</string>
+    <string name="title__drawer_all_apps">Показати підпис «Всі застосунки»</string>
     <string name="title__drawer_hide_icon_labels">Сховати назви застосунків</string>
     <string name="title__drawer_categorization">Категорії</string>
     <string name="title_drawer_enable_background">Використовувати свій колір фону</string>
@@ -149,7 +149,7 @@
     <string name="title__notification_background">Колір фону сповіщення</string>
     <string name="pref_category__gestures">Жести</string>
     <string name="pref_category__dash">Панель</string>
-    <string name="action_open_drawer_or_recents">Відкрити панель додатків/нещодавніх програм</string>
+    <string name="action_open_drawer_or_recents">Відкрити панель застосунків/нещодавніх застосунків</string>
     <string name="action_open_settings">Відкрити налаштування лончера</string>
     <string name="action_overlay">Відкрити Google Feed</string>
     <string name="action_close_notifications">Закрити сповіщення</string>
