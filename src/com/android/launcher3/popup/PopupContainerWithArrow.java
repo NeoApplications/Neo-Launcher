@@ -297,7 +297,6 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
             }
             updateNotificationHeader();
         }
-        int viewsToFlip = getChildCount();
         mSystemShortcutContainer = this;
         if (mDeepShortcutContainer == null) {
             mDeepShortcutContainer = findViewById(R.id.deep_shortcuts_container);

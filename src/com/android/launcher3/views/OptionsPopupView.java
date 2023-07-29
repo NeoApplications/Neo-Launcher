@@ -27,7 +27,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -266,10 +265,6 @@ public class OptionsPopupView extends ArrowPopup<Launcher>
             intent.putExtra(EXTRA_WALLPAPER_FLAVOR, "wallpaper_only");
         } else {
             intent.putExtra(EXTRA_WALLPAPER_FLAVOR, "focus_wallpaper");
-        }
-        String pickerPackage = launcher.getString(R.string.wallpaper_picker_package);
-        if (!TextUtils.isEmpty(pickerPackage)) {
-            intent.setPackage(pickerPackage);
         }
         return launcher.startActivitySafely(v, intent, placeholderInfo(intent));
     }
