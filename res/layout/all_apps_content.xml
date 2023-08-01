@@ -49,8 +49,6 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:fillViewport="true"
-            android:paddingLeft="@dimen/all_apps_tabs_side_padding"
-            android:paddingRight="@dimen/all_apps_tabs_side_padding"
             android:scrollbars="none">
 
             <com.saggitt.omega.allapps.AllAppsTabItem
@@ -58,6 +56,7 @@
                 style="@style/TextHeadline"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/all_apps_header_tab_height"
+                android:layout_marginTop="8dp"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:orientation="horizontal" />
