@@ -171,14 +171,14 @@
     <string name="title_white_only_treatment">Заменить белый фон</string>
     <string name="title_legacy_treatment">Создание адаптивных иконок</string>
     <string name="title_colored_backgrounds">Цветные фоны</string>
-    <string name="title_adaptify_pack">Создать адаптивные иконки для пакета иконок</string>
+    <string name="title_adaptify_pack">Создать адаптивные иконки для набора</string>
     <string name="color_presets">Предустановки</string>
-    <string name="reset_custom_icons_confirmation">Вернуться к иконкам по умолчанию из этого пакета иконок\? Это нельзя отменить.</string>
+    <string name="reset_custom_icons_confirmation">Вернуться к иконкам по умолчанию из этого набора\? Это действие нельзя отменить.</string>
     <string name="reset_custom_icons">Удалить пользовательские иконки</string>
     <string name="import_as_adaptive">Как адаптивная иконка</string>
     <string name="import_icon">Импорт иконки</string>
     <string name="open_image_picker">Открыть средство выбора изображений</string>
-    <string name="icon_pack_external_picker">Открытый внешний подборщик</string>
+    <string name="icon_pack_external_picker">Открыть внешнюю палитру</string>
     <string name="icon_pack_default">Системные иконки</string>
     <string name="icon_pack_applied_toast">%s применено</string>
     <string name="icon_shape_corner_squircle">Скругленный квадрат</string>
@@ -197,8 +197,8 @@
     <string name="icon_shape_override_label">Изменить форму иконки</string>
     <string name="icon_shape_override_progress">Применение изменений формы иконки</string>
     <string name="menu_icon_shape">Индивидуальная форма иконки</string>
-    <string name="get_more_icon_packs">Скачать новый пакет иконок</string>
-    <string name="icon_pack">Пакеты иконок</string>
+    <string name="get_more_icon_packs">Скачать новый набор иконок</string>
+    <string name="icon_pack">Набор иконок</string>
     <string name="title_default">По умолчанию</string>
     <string name="theme_use_dark_text">Использование темного текста</string>
     <string name="theme_use_black">Использовать чистый черный</string>
@@ -215,8 +215,8 @@
     <string name="theme_auto_night_mode">Система</string>
     <string name="theme_auto">В соответствии с обоями</string>
     <string name="summary__theme_blur">Размытие фона страницы</string>
-    <string name="title_theme_icon_packs">Пакеты иконок</string>
-    <string name="title__theme_icon_shape">Изменить форму иконки</string>
+    <string name="title_theme_icon_packs">Наборы иконок</string>
+    <string name="title__theme_icon_shape">Форма иконок</string>
     <string name="title__theme_blur_radius">Интенсивность размытия</string>
     <string name="title__theme_blur">Размытие</string>
     <string name="title__theme_accent_color">Цвет акцента</string>
@@ -291,7 +291,7 @@
     <string name="summary__general_advanced">Язык, резервное копирование, поиск</string>
     <string name="summary__general_smartspace">Дата, время, домашний виджет</string>
     <string name="summary__general_search">Провайдер поиска, стиль, иконки</string>
-    <string name="summary__general_theme">Изменение цвета, пакета и формы иконок</string>
+    <string name="summary__general_theme">Изменение цвета, формы и набора иконок</string>
     <string name="summary__general_drawer">Настройка выдвижной панели</string>
     <string name="summary__general_dock">Иконки горячих клавиш, панель поиска</string>
     <string name="title__general_advanced">Расширенные настройки</string>
@@ -386,7 +386,7 @@
     <string name="title_separate_work_apps">Вторая вкладка для рабочих приложений</string>
     <string name="protected_app_reset">Перезагрузить защищённые приложения</string>
     <string name="pref_category__incubating">В разработке</string>
-    <string name="title_theme_customize_icons">Форма иконок</string>
+    <string name="title_theme_customize_icons">Настроить иконки</string>
     <string name="summary_colored_backgrounds">Для фона адаптивных иконок.</string>
     <string name="title_dock_search">Панель поиска</string>
     <string name="summary_dock_search">Показать под панелью</string>
@@ -496,4 +496,5 @@
     <string name="button_apply">Применить</string>
     <string name="title_override_corner_radius_value">Радиус глобального угла</string>
     <string name="show_top_shadow">Показывать верхнюю тень</string>
+    <string name="color_wallpaper_secondary">Вторичный обоев</string>
 </resources>
