@@ -16,9 +16,6 @@
 package com.android.launcher3.allapps;
 
 import static com.android.launcher3.LauncherPrefs.WORK_EDU_STEP;
-import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.MAIN;
-import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.SEARCH;
-import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_WORK_DISABLED_CARD;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_WORK_EDU_CARD;
@@ -123,11 +120,8 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
 
     private void updateWorkFAB(int page) {
         if (mWorkModeSwitch != null) {
-            if (page == MAIN || page == SEARCH) {
-                mWorkModeSwitch.animateVisibility(false);
-            } else if (page == MAIN && mCurrentState == STATE_ENABLED) {
-                mWorkModeSwitch.animateVisibility(true);
-            }
+            ActivityAllAppsContainerView<?>.AdapterHolder tab = mAllApps.mAH.get(page);
+            mWorkModeSwitch.animateVisibility(tab.isWork() && mCurrentState == STATE_ENABLED);
         }
     }
 
@@ -139,7 +133,7 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         updateCurrentState(isEnabled ? STATE_ENABLED : STATE_DISABLED);
     }
 
-    private void updateCurrentState(@WorkProfileState int currentState) {
+    public void updateCurrentState(@WorkProfileState int currentState) {
         if (TestProtocol.sDebugTracing) {
             Log.d(WORK_TAB_MISSING, "WorkProfileManager#updateCurrentState: " +
                     currentState, new Throwable());
@@ -178,7 +172,9 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         if (mWorkModeSwitch.getParent() == null) {
             mAllApps.addView(mWorkModeSwitch);
         }
-        if (mAllApps.getCurrentPage() != WORK) {
+        if (mAllApps.mAH.get(mAllApps.getCurrentPage()).isWork()) {
+            mWorkModeSwitch.animateVisibility(mCurrentState == STATE_ENABLED);
+        } else {
             mWorkModeSwitch.animateVisibility(false);
         }
         if (getAH() != null) {
@@ -207,8 +203,13 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         return mWorkModeSwitch;
     }
 
-    private ActivityAllAppsContainerView.AdapterHolder getAH() {
-        return mAllApps.mAH.get(WORK);
+    private ActivityAllAppsContainerView<?>.AdapterHolder getAH() {
+        for (ActivityAllAppsContainerView<?>.AdapterHolder ah : mAllApps.mAH) {
+            if (ah.isWork()) {
+                return ah;
+            }
+        }
+        return null;
     }
 
     public int getCurrentState() {

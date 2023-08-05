@@ -16,7 +16,10 @@
 package com.android.launcher3.allapps;
 
 import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.SEARCH;
+import static com.android.launcher3.allapps.WorkProfileManager.STATE_DISABLED;
+import static com.android.launcher3.allapps.WorkProfileManager.STATE_ENABLED;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_COUNT;
+import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_QUIET_MODE_ENABLED;
 import static com.android.launcher3.testing.shared.TestProtocol.WORK_TAB_MISSING;
 import static com.android.launcher3.util.ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE;
 
@@ -33,6 +36,7 @@ import android.graphics.Path.Direction;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.Process;
@@ -167,7 +171,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private AllAppsTransitionController mAllAppsTransitionController;
     private final AllAppsTabsController mTabsController;
     private final NeoPrefs prefs;
-    private WorkModeSwitch mWorkModeSwitch;
 
     public ActivityAllAppsContainerView(Context context) {
         this(context, null);
@@ -464,7 +467,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         // Header keeps track of active recycler view to properly render header protection.\
         mHeader.setActiveRV(currentActivePage);
         reset(true /* animate */);
-
         mWorkManager.onActivePageChanged(currentActivePage);
     }
 
@@ -514,7 +516,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         replaceAppsRVContainer(showTabs);
         mUsingTabs = showTabs;
         if (mTabsController.getTabs().getHasWorkApps()) {
-            setupWorkToggle();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mWorkManager.attachWorkModeSwitch();
+            }
         }
 
         if (mUsingTabs) {
@@ -549,7 +553,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
         if (isSearchBarOnBottom()) {
             // Keep the scroller above the search bar.
-            RelativeLayout.LayoutParams scrollerLayoutParams =
+            LayoutParams scrollerLayoutParams =
                     (LayoutParams) mFastScroller.getLayoutParams();
             scrollerLayoutParams.addRule(RelativeLayout.ABOVE, R.id.search_container_all_apps);
             scrollerLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
@@ -603,14 +607,13 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 }
             });
             if (mTabsController.getTabs().getHasWorkApps()) {
-                setupWorkToggle();
                 mWorkManager.reset();
+                post(() -> mAH.get(getWorkHolder()).applyPadding());
             }
 
         } else {
             mWorkManager.detachWorkModeSwitch();
             mViewPager = null;
-            removeWorkToggle();
         }
 
         removeCustomRules(rvContainer);
@@ -630,36 +633,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         return rvContainer;
     }
 
-    private void setupWorkToggle() {
-        removeWorkToggle();
-        if (Utilities.ATLEAST_P) {
-            mWorkModeSwitch = (WorkModeSwitch) mActivityContext.getLayoutInflater().inflate(
-                    R.layout.work_mode_fab, this, false);
-            this.addView(mWorkModeSwitch);
-            mWorkModeSwitch.setInsets(mInsets);
-            mWorkModeSwitch.post(() -> {
-                for (ActivityAllAppsContainerView<?>.AdapterHolder adapterHolder : mAH) {
-                    if (adapterHolder.isWork()) {
-                        adapterHolder.applyPadding();
-                    }
-                }
-
-                resetWorkProfile();
-            });
-        }
-    }
-
-    private void removeWorkToggle() {
-        if (mWorkModeSwitch == null) return;
-        if (mWorkModeSwitch.getParent() == this) {
-            this.removeView(mWorkModeSwitch);
-        }
-        mWorkModeSwitch = null;
-    }
-
     private void resetWorkProfile() {
+        boolean isEnabled = !mAllAppsStore.hasModelFlag(FLAG_QUIET_MODE_ENABLED);
         for (ActivityAllAppsContainerView<?>.AdapterHolder adapterHolder : mAH) {
             if (adapterHolder.isWork()) {
+                mWorkManager.updateCurrentState(isEnabled ? STATE_ENABLED : STATE_DISABLED);
                 adapterHolder.applyPadding();
             }
         }
@@ -933,6 +911,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             }
             if (!isSearching()) {
                 rebindAdapters(mHasWorkApps);
+                if (mHasWorkApps) {
+                    resetWorkProfile();
+                }
                 AllAppsTabs allAppsTabs = mTabsController.getTabs();
                 force = allAppsTabs.getHasWorkApps() != mHasWorkApps;
                 allAppsTabs.setHasWorkApps(mHasWorkApps);
@@ -1451,7 +1432,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             }
         }
 
-        private boolean isWork() {
+        public boolean isWork() {
             return mType == WORK;
         }
 
