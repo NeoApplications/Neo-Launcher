@@ -53,8 +53,9 @@ class IconOverrideRepository(private val context: Context) {
     fun observeCount() = dao.observeCount()
 
     suspend fun deleteAll() {
+        val targets = dao.getAll()
         dao.deleteAll()
-        reloadIcons()
+        updatePackageIcons(targets)
     }
 
     private fun updatePackageIcons(target: ComponentKey) {
@@ -62,10 +63,11 @@ class IconOverrideRepository(private val context: Context) {
         model.onPackageChanged(target.componentName.packageName, target.user)
     }
 
-    private fun reloadIcons() {
-        val las = LauncherAppState.getInstance(context)
-        val idp = las.invariantDeviceProfile
-        idp.onPreferencesChanged(context)
+    private fun updatePackageIcons(target: List<IconOverride>) {
+        val model = LauncherAppState.getInstance(context).model
+        target.forEach {
+            model.onPackageChanged(it.target.componentName.packageName, it.target.user)
+        }
     }
 
     companion object {

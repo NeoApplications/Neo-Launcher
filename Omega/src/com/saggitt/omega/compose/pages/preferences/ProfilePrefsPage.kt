@@ -40,9 +40,9 @@ import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
-import com.saggitt.omega.compose.components.preferences.AlertDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
+import com.saggitt.omega.compose.components.preferences.ResetCustomIconsDialog
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
@@ -150,7 +150,7 @@ fun ProfilePrefsPage() {
                             openDialogCustom = openDialog
                         )
 
-                        is DialogPref -> AlertDialogUI(
+                        is DialogPref -> ResetCustomIconsDialog(
                             pref = dialogPref as DialogPref,
                             openDialogCustom = openDialog
                         )

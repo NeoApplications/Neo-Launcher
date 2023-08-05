@@ -57,6 +57,7 @@ import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -275,13 +276,12 @@ fun StringMultiSelectionPrefDialogUI(
 }
 
 @Composable
-fun AlertDialogUI(
+fun ResetCustomIconsDialog(
     pref: DialogPref,
     openDialogCustom: MutableState<Boolean>
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    val scope = rememberCoroutineScope()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {
@@ -322,7 +322,7 @@ fun AlertDialogUI(
                     cornerRadius = cornerRadius,
                     onClick = {
                         val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
-                        scope.launch {
+                        MainScope().launch {
                             overrideRepo.deleteAll()
                         }
                         openDialogCustom.value = false
