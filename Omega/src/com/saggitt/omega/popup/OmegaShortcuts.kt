@@ -85,7 +85,7 @@ class OmegaShortcuts {
                         )
                     }
                 }
-            } else if (launcher.isInState(LauncherState.NORMAL)) {
+            } else {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
                     ComposeBottomSheet.show(launcher, true) {

@@ -120,7 +120,7 @@ class NeoPrefs private constructor(val context: Context) {
     }
 
     // Profile
-    // TODO themeResetCustomIcons, themeIconShape, themeIconPackGlobal, themePrimaryColor (restore or revamp?)
+    // TODO themeResetCustomIcons (restore or revamp?)
 
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
@@ -268,7 +268,6 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     // Desktop
-    // TODO desktop_rows, desktop_columns,
     val desktopIconAddInstalled = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_ICON_ADD_INSTALLED,
@@ -578,7 +577,7 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     // Drawer
-    // TODO drawerLayout, drawerProtectedAppSet, drawerHiddenAppSet, drawerGroupsMode, drawerGridRows?
+    // TODO drawerLayout
     var drawerSortMode = IntSelectionPref(
         dataStore = dataStore,
         titleId = R.string.title__sort_mode,
@@ -641,7 +640,6 @@ class NeoPrefs private constructor(val context: Context) {
     val drawerPopupEdit: Boolean
         get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_EDIT)
 
-    // TODO Show lock screen when the app is enabled and is clicked
     var drawerEnableProtectedApps = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
@@ -1040,7 +1038,6 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     // GESTURES & Dash
-    // TODO GesturePref, dash_providers, dashEdit?
     var gestureDoubleTap = GesturePref(
         titleId = R.string.gesture_double_tap,
         dataStore = dataStore,
