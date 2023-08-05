@@ -88,7 +88,7 @@
     <string name="backup_error_blank_name">Имя должно быть заполнено</string>
     <string name="backup_wallpaper">Обои</string>
     <string name="backup_settings">Настройки</string>
-    <string name="backup_homescreen">Рабочий стол</string>
+    <string name="backup_homescreen">Домашний экран</string>
     <string name="restore_backup">Восстановить</string>
     <string name="backup_pref_summary">Сохранить домашний экран, восстановить резервную копию</string>
     <string name="backup_share">Поделиться</string>
@@ -497,4 +497,16 @@
     <string name="title_override_corner_radius_value">Радиус глобального угла</string>
     <string name="show_top_shadow">Показывать верхнюю тень</string>
     <string name="color_wallpaper_secondary">Вторичный обоев</string>
+    <string name="web_search_phind">Phind (Веб)</string>
+    <string name="title_smartspace_time_format">Формат времени</string>
+    <string name="title_calendar_gregorian">Григорианский</string>
+    <string name="title_smartspace_calendar">Выбрать календарь</string>
+    <string name="title_calendar_persian">Иранский (Персидский)</string>
+    <string name="gesture_press_recents">Кнопка недавних</string>
+    <string name="about_community_telegram">Сообщество в Telegram</string>
+    <string name="about_community_matrix">Сообщество в Matrix</string>
+    <string name="web_search_you">You (Веб)</string>
+    <string name="web_search_neeva">Neeva (Веб)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Веб)</string>
+    <string name="web_search_perplexity">Perplexity (Веб)</string>
 </resources>
