@@ -10,22 +10,22 @@ buildscript {
 }
 
 val vAccompanist = "0.31.2-alpha"
-val vCompose = "1.5.0-beta02"
-val vComposeCompiler = "1.4.7"
+val vCompose = "1.5.0-beta03"
+val vComposeCompiler = "1.5.0"
 val vKotlin = "1.8.21"
 val vLifecycle = "2.6.1"
 val vMaterial3 = "1.2.0-alpha02"
-val vNavigation = "2.7.0-beta01"
+val vNavigation = "2.7.0-beta02"
 val vOkhttp = "5.0.0-alpha.11"
 val vProtobuf = "3.22.2"
-val vRoom = "2.5.1"
+val vRoom = "2.5.2"
 
 plugins {
     id("com.android.application").version("8.0.1")
-    kotlin("android").version("1.8.21")
-    kotlin("plugin.parcelize").version("1.8.21")
-    kotlin("plugin.serialization").version("1.8.21")
-    id("com.google.devtools.ksp").version("1.8.21-1.0.11")
+    kotlin("android").version("1.9.0")
+    kotlin("plugin.parcelize").version("1.9.0")
+    kotlin("plugin.serialization").version("1.9.0")
+    id("com.google.devtools.ksp").version("1.9.0-1.0.11")
     id("com.google.protobuf").version("0.9.1")
 }
 
@@ -40,7 +40,7 @@ allprojects {
 val prebuiltsDir: String = "prebuilts/"
 android {
     namespace = "com.android.launcher3"
-    compileSdk = 33
+    compileSdk = 34
 
     val name = "1.0"
     val code = 950
@@ -239,11 +239,15 @@ dependencies {
 
     implementation("com.google.android.material:material:1.9.0")
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-common-java8:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
+
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
@@ -281,9 +285,6 @@ dependencies {
     implementation("androidx.room:room-runtime:$vRoom")
     implementation("androidx.room:room-ktx:$vRoom")
     ksp("androidx.room:room-compiler:$vRoom")
-
-    //DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
