@@ -53,7 +53,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.DeviceProfile;
@@ -705,7 +704,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     protected void updateHeaderScroll(int scrolledOffset) {
-        float prog1 = Utilities.boundToRange((float) scrolledOffset / mHeaderThreshold, 0f, 1f);
+        /*float prog1 = Utilities.boundToRange((float) scrolledOffset / mHeaderThreshold, 0f, 1f);
         int headerColor = getHeaderColor(prog1);
         int tabsAlpha = mHeader.getPeripheralProtectionHeight() == 0 ? 0
                 : (int) (Utilities.boundToRange(
@@ -718,7 +717,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         if (mSearchUiManager.getEditText() == null) {
             return;
-        }
+        }*/
 
         float prog = Utilities.boundToRange((float) scrolledOffset / mHeaderThreshold, 0f, 1f);
         boolean bgVisible = mSearchUiManager.getBackgroundVisibility();
@@ -730,11 +729,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mSearchUiManager.setBackgroundVisibility(bgVisible, 1 - prog);
     }
 
-    protected int getHeaderColor(float blendRatio) {
+    /*protected int getHeaderColor(float blendRatio) {
         return ColorUtils.setAlphaComponent(
                 ColorUtils.blendARGB(mScrimColor, mHeaderProtectionColor, blendRatio),
                 (int) (mSearchContainer.getAlpha() * 255));
-    }
+    }*/
 
     /**
      * It is up to the search container view created by {@link #inflateSearchBox()} to use the
