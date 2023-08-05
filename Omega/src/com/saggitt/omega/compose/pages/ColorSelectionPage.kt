@@ -254,7 +254,6 @@ fun DynamicPage(
                         onClick = {
                             onSelectColor(option.toString())
                         },
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                         colors = RadioButtonDefaults.colors(
                             selectedColor = MaterialTheme.colorScheme.primary,
                             unselectedColor = MaterialTheme.colorScheme.onSurface
