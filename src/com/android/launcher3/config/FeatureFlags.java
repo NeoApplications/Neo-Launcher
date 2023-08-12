@@ -77,7 +77,7 @@ public final class FeatureFlags {
 
     // When enabled the promise icon is visible in all apps while installation an app.
     public static final BooleanFlag PROMISE_APPS_IN_ALL_APPS = getDebugFlag(270390012,
-            "PROMISE_APPS_IN_ALL_APPS", true, "Add promise icon in all-apps");
+            "PROMISE_APPS_IN_ALL_APPS", false, "Add promise icon in all-apps");
 
     public static final BooleanFlag KEYGUARD_ANIMATION = getDebugFlag(270390904,
             "KEYGUARD_ANIMATION", true, "Enable animation for keyguard going away on wallpaper");
