@@ -11,6 +11,7 @@ import android.view.View
 import com.android.launcher3.R
 import com.saggitt.omega.smartspace.model.SmartspaceAction
 
+
 object BcSmartSpaceUtil {
     fun getIconDrawable(icon: Icon?, context: Context): Drawable? {
         if (icon == null) return null

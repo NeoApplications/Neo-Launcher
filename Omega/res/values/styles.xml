@@ -203,6 +203,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:drawablePadding">@dimen/enhanced_smartspace_icon_margin</item>
+        <item name="android:fontFamily">google-sans</item>
         <item name="android:lineHeight" tools:targetApi="p">24.0sp</item>
 
         <item name="ambientShadowBlur">@dimen/ambient_text_shadow_radius</item>

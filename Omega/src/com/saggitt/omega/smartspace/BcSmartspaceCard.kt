@@ -33,13 +33,17 @@ class BcSmartspaceCard @JvmOverloads constructor(
     private var nextAlarmImageView: ImageView? = null
     private var nextAlarmTextView: TextView? = null
     private var subtitleTextView: TextView? = null
-    private lateinit var target: SmartspaceTarget
+    lateinit var target: SmartspaceTarget
     private var titleTextView: TextView? = null
     private var topPadding = 0
     private var usePageIndicatorUi = false
+    private var textGroup: ViewGroup? = null
+    private var secondaryCardGroup: ViewGroup? = null
 
     override fun onFinishInflate() {
         super.onFinishInflate()
+        textGroup = findViewById(R.id.text_group);
+        secondaryCardGroup = findViewById(R.id.secondary_card_group);
         dateView = findViewById(R.id.date)
         titleTextView = findViewById(R.id.title_text)
         subtitleTextView = findViewById(R.id.subtitle_text)
@@ -66,7 +70,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
             var title: CharSequence? = headerAction.title
             var subtitle = headerAction.subtitle
             val hasTitle =
-                target.featureType == SmartspaceTarget.FeatureType.FEATURE_WEATHER || !TextUtils.isEmpty(
+                target.featureType == SmartspaceTarget.FEATURE_WEATHER || !TextUtils.isEmpty(
                     title
                 )
             val hasSubtitle = !TextUtils.isEmpty(subtitle)
@@ -147,7 +151,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
             if (hasIcon) iconDrawable else null, null,
             null, null
         )
-        if (target.featureType == SmartspaceTarget.FeatureType.FEATURE_CALENDAR
+        if (target.featureType == SmartspaceTarget.FEATURE_CALENDAR
             && Locale.ENGLISH.language == context.resources.configuration.locale.language
         ) {
             titleView.ellipsize = TextUtils.TruncateAt.MIDDLE
@@ -167,7 +171,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
             null, null
         )
         subtitleTextView!!.maxLines =
-            if (target.featureType == SmartspaceTarget.FeatureType.FEATURE_TIPS && !usePageIndicatorUi) 2 else 1
+            if (target.featureType == SmartspaceTarget.FEATURE_TIPS && !usePageIndicatorUi) 2 else 1
         setFormattedContentDescription(subtitleTextView!!, subtitle, charSequence2)
     }
 
@@ -192,7 +196,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
     private fun updateIconTint() {
         val icon = iconDrawable ?: return
         when (target.featureType) {
-            SmartspaceTarget.FeatureType.FEATURE_WEATHER -> icon.setTintList(null)
+            SmartspaceTarget.FEATURE_WEATHER -> icon.setTintList(null)
             else -> icon.setTint(iconTintColor)
         }
     }

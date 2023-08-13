@@ -82,10 +82,10 @@ class CardPagerAdapter(context: Context) : PagerAdapter() {
 
     private fun createBaseCard(
         container: ViewGroup,
-        featureType: SmartspaceTarget.FeatureType
+        featureType: Int
     ): BcSmartspaceCard {
         val layout = when (featureType) {
-            SmartspaceTarget.FeatureType.FEATURE_WEATHER -> R.layout.smartspace_card_date
+            SmartspaceTarget.FEATURE_WEATHER -> R.layout.smartspace_card_date
             else -> R.layout.smartspace_card
         }
         return LayoutInflater.from(container.context)

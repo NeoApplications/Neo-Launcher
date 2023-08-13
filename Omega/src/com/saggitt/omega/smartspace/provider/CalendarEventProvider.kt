@@ -74,7 +74,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
                     pendingIntent = getPendingIntent(event)
                 ),
                 score = SmartspaceScores.SCORE_CALENDAR,
-                featureType = SmartspaceTarget.FeatureType.FEATURE_CALENDAR,
+                featureType = SmartspaceTarget.FEATURE_CALENDAR,
             )
             return listOf(target)
         } else {

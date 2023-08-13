@@ -109,7 +109,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                     pendingIntent = pendingIntent
                 ),
                 score = SmartspaceScores.SCORE_CALENDAR,
-                featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER
+                featureType = SmartspaceTarget.FEATURE_WEATHER
             )
         } else {
             null
@@ -136,7 +136,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                 pendingIntent = weatherData.pendingIntent
             ),
             score = SmartspaceScores.SCORE_WEATHER,
-            featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER
+            featureType = SmartspaceTarget.FEATURE_WEATHER
         )
     }
 
@@ -151,7 +151,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
 
         val dummyTarget = SmartspaceTarget(
             id = "dummyTarget",
-            featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER
+            featureType = SmartspaceTarget.FEATURE_WEATHER
         )
 
         fun parseWeatherData(

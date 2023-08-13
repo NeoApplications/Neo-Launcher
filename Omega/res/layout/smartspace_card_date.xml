@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.saggitt.omega.smartspace.BcSmartspaceCard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:paddingTop="@dimen/enhanced_smartspace_padding_top">
 
     <RelativeLayout
-        android:layout_width="0dp"
+        android:id="@id/text_group"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.saggitt.omega.smartspace.superg.IcuDateTextView
             android:id="@+id/date"

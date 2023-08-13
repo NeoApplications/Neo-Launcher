@@ -19,6 +19,15 @@
         android:layout_marginEnd="4dp"
         android:visibility="gone" />
 
+    <com.saggitt.omega.smartspace.superg.DoubleShadowTextView
+        android:id="@+id/supplemental_line_text"
+        style="@style/EnhancedSmartspaceTextSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="4dp"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/dnd_icon"
         android:layout_width="@dimen/enhanced_smartspace_icon_size"

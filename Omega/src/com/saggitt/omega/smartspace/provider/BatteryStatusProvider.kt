@@ -81,7 +81,7 @@ class BatteryStatusProvider(context: Context) : SmartspaceDataSource(
                 subtitle = subtitle
             ),
             score = SmartspaceScores.SCORE_BATTERY,
-            featureType = SmartspaceTarget.FeatureType.FEATURE_BATTERY
+            featureType = SmartspaceTarget.FEATURE_BATTERY
         )
     }
 

@@ -39,6 +39,7 @@ class SmartspaceProvider private constructor(context: Context) {
             BatteryStatusProvider::class.java.name -> BatteryStatusProvider(context)
             NowPlayingProvider::class.java.name -> NowPlayingProvider(context)
             CalendarEventProvider::class.java.name -> CalendarEventProvider(context)
+            AlarmEventProvider::class.java.name -> AlarmEventProvider(context)
             else -> null
         }?.let { dataSources.add(it) }
     }
@@ -70,8 +71,8 @@ class SmartspaceProvider private constructor(context: Context) {
             title = context.getString(R.string.smartspace_setup_text),
             intent = PreferenceActivity.createIntent(context, "${Routes.PREFS_WIDGETS}/")
         ),
-        score = 999f,
-        featureType = SmartspaceTarget.FeatureType.FEATURE_TIPS
+        score = 42,
+        featureType = SmartspaceTarget.FEATURE_TIPS
     )
 
     suspend fun startSetup(activity: Activity) {

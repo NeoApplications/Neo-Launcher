@@ -89,7 +89,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                     pendingIntent = weatherData?.pendingIntent
                 ),
                 score = SmartspaceScores.SCORE_WEATHER,
-                featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER,
+                featureType = SmartspaceTarget.FEATURE_WEATHER,
             )
             return listOf(target)
         } else {
