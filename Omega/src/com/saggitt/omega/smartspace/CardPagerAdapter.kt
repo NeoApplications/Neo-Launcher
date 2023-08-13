@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.android.launcher3.R
 import com.android.launcher3.util.Themes
+import com.saggitt.omega.smartspace.bcsmartspace.BcSmartspaceCard
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
 
 class CardPagerAdapter(context: Context) : PagerAdapter() {

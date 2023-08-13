@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.bcsmartspace
 
 import android.content.Context
 import android.text.TextUtils

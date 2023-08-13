@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.bcsmartspace
 
 import android.content.ContentUris
 import android.content.Context
@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.View
 import com.android.launcher3.R
 import com.saggitt.omega.smartspace.model.SmartspaceAction
+import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saggitt.omega.smartspace.uitemplatedata.TapAction
 
 
 object BcSmartSpaceUtil {
@@ -20,6 +22,30 @@ object BcSmartSpaceUtil {
             context.resources.getDimensionPixelSize(R.dimen.enhanced_smartspace_icon_size)
         drawable.setBounds(0, 0, iconSize, iconSize)
         return drawable
+    }
+
+    fun setOnClickListener(
+        view: View?,
+        smartspaceTarget: SmartspaceTarget?,
+        smartspaceAction: SmartspaceAction?,
+        smartspaceEventNotifier: BcSmartspaceDataPlugin.SmartspaceEventNotifier,
+        str: String?,
+        bcSmartspaceCardLoggingInfo: BcSmartspaceCardLoggingInfo?,
+        i: Int
+    ) {
+
+    }
+
+    fun setOnClickListener(
+        view: View?,
+        smartspaceTarget: SmartspaceTarget?,
+        tapAction: TapAction,
+        smartspaceEventNotifier: BcSmartspaceDataPlugin.SmartspaceEventNotifier,
+        str: String?,
+        bcSmartspaceCardLoggingInfo: BcSmartspaceCardLoggingInfo?,
+        i: Int
+    ) {
+
     }
 
     fun setOnClickListener(

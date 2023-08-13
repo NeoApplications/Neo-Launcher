@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.bcsmartspace
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewpager.widget.ViewPager
 import com.android.launcher3.R
+import com.saggitt.omega.smartspace.CardPagerAdapter
+import com.saggitt.omega.smartspace.PageIndicator
 import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider
 import com.saggitt.omega.util.repeatOnAttached

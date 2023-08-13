@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.saggitt.omega.smartspace.bcsmartspace
 
 import com.android.launcher3.logging.StatsLogManager.EventEnum
 

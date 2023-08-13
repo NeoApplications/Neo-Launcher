@@ -15,6 +15,7 @@ import com.android.launcher3.logging.StatsLogManager
 import com.android.launcher3.views.OptionsPopupView
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.PreferenceActivity
+import com.saggitt.omega.smartspace.bcsmartspace.BcSmartspaceView
 
 class SmartspaceViewContainer @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, private val previewMode: Boolean = false
