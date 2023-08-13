@@ -109,7 +109,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                     pendingIntent = pendingIntent
                 ),
                 score = SmartspaceScores.SCORE_CALENDAR,
-                featureType = SmartspaceTarget.FeatureType.FEATURE_CALENDAR
+                featureType = SmartspaceTarget.FeatureType.FEATURE_WEATHER
             )
         } else {
             null
