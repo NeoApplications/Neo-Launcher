@@ -61,7 +61,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             val subtitle = if (event.location != null) {
                 "${event.location} $timeText"
             } else {
-                "${formatTime(event.start)} – ${formatTime(event.end)}"
+                timeText
             }
 
             val target = SmartspaceTarget(
