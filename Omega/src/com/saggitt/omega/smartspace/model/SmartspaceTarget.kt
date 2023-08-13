@@ -52,5 +52,5 @@ data class SmartspaceTarget(
         FEATURE_BLAZE_BUILD_PROGRESS,
         FEATURE_EARTHQUAKE_OCCURRED,
         FEATURE_BATTERY
-    };
+    }
 }
