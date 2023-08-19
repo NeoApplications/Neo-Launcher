@@ -67,6 +67,7 @@ fun IconShapePage() {
             IconShape.Teardrop,
             IconShape.Cylinder,
             IconShape.Cupertino,
+            IconShape.Hexagon,
             IconShape.Octagon,
             IconShape.Egg,
         )

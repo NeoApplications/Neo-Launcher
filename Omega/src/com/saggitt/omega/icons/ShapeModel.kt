@@ -41,6 +41,7 @@ class ShapeModel(val shapeName: String) {
             "teardrop" -> TearDropShape
             "cylinder" -> CylinderShape()
             "cupertino" -> RoundedCornerShape(corner = CornerSize(12.dp))
+            "hexagon" -> HexagonShape()
             "octagon" -> CutCornerShape(25)
             "egg" -> Egg
             else -> CircleShape
@@ -149,6 +150,32 @@ class CylinderShape : Shape {
                 size.width / 13, 0.0f,
                 0.0f, size.height * 2 / 7
             )
+            close()
+        })
+    }
+}
+
+class HexagonShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val width = size.width
+        val height = size.height
+        val centerX = width / 2
+        val centerY = height / 2
+        val sideLength = Math.min(width, height) / 2
+        val apothem = (sideLength * Math.sqrt(3.0) / 2).toFloat()
+
+        return Outline.Generic(Path().apply {
+            reset()
+            moveTo(centerX, centerY - sideLength)
+            lineTo(centerX + apothem, centerY - sideLength / 2)
+            lineTo(centerX + apothem, centerY + sideLength / 2)
+            lineTo(centerX, centerY + sideLength)
+            lineTo(centerX - apothem, centerY + sideLength / 2)
+            lineTo(centerX - apothem, centerY - sideLength / 2)
             close()
         })
     }
