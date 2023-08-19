@@ -322,14 +322,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
-    fun scheduleRestart() {
-        if (paused) {
-            sRestart = true
-        } else {
-            Utilities.restartLauncher(this)
-        }
-    }
-
     fun shouldRecreate() = !sRestart
 
     inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {

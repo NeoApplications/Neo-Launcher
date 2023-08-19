@@ -43,5 +43,4 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     fun reloadAll() {
         launcher.model.forceReload()
     }
-
 }
