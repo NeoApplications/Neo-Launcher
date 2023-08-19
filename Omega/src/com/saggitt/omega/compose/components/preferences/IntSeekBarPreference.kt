@@ -32,6 +32,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -123,7 +124,7 @@ fun IntSeekBarPreference(
     isEnabled: Boolean = true,
     onValueChange: ((Float) -> Unit) = {},
 ) {
-    var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
+    var currentValue by remember(pref) { mutableIntStateOf(pref.getValue()) }
     val defaultValue = pref.defaultValue
     BasePreference(
         modifier = modifier,
