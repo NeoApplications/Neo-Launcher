@@ -1,7 +1,6 @@
-package com.saggitt.omega.smartspace.bcsmartspace
+package com.google.android.systemui.smartspace
 
 import com.android.launcher3.logging.StatsLogManager.EventEnum
-
 
 enum class BcSmartspaceEvent(private val mId: Int) : EventEnum {
     IGNORE(-1),

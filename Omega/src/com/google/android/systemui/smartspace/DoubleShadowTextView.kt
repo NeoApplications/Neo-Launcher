@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.smartspace.superg
+package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.graphics.Canvas

@@ -2,8 +2,8 @@ package com.saggitt.omega.smartspace.weather
 
 import android.content.Context
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 

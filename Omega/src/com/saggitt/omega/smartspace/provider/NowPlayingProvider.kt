@@ -8,9 +8,9 @@ import com.saggitt.omega.compose.components.preferences.isNotificationServiceEna
 import com.saggitt.omega.compose.components.preferences.notificationDotsEnabled
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.PreferenceActivity
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
@@ -42,7 +42,7 @@ class NowPlayingProvider(context: Context) : SmartspaceDataSource(
             ?: context.getAppName(tracking.packageName)
         val intent = sbn?.notification?.contentIntent
         return SmartspaceTarget(
-            id = "nowPlaying-${mediaInfo.hashCode()}",
+            smartspaceTargetId = "nowPlaying-${mediaInfo.hashCode()}",
             headerAction = SmartspaceAction(
                 id = "nowPlayingAction-${mediaInfo.hashCode()}",
                 icon = icon,

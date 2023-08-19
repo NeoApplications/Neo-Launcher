@@ -1,4 +1,6 @@
-package com.saggitt.omega.smartspace.uitemplatedata
+package com.saulhdev.smartspace.uitemplatedata
+
+import com.saulhdev.smartspace.SmartspaceUtils
 
 data class Icon(
     val icon: android.graphics.drawable.Icon?,
@@ -12,5 +14,9 @@ data class Icon(
             contentDescription,
             other.contentDescription
         ) && shouldTint == other.shouldTint
+    }
+
+    fun shouldTint(): Boolean {
+        return shouldTint
     }
 }

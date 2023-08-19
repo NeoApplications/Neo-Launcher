@@ -1,6 +1,7 @@
-package com.saggitt.omega.smartspace.uitemplatedata
+package com.saulhdev.smartspace.uitemplatedata
 
 import android.text.TextUtils
+import com.saulhdev.smartspace.SmartspaceUtils
 
 data class Text(
     val text: CharSequence,

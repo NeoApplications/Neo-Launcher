@@ -226,6 +226,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
+    implementation(project(":smartspace"))
     implementation(kotlin("stdlib", vKotlin))
 
     //UI

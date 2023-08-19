@@ -1,9 +1,10 @@
-package com.saggitt.omega.smartspace.uitemplatedata
+package com.saulhdev.smartspace.uitemplatedata
 
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.os.UserHandle
+import com.saulhdev.smartspace.SmartspaceUtils
 
 data class TapAction(
     val id: CharSequence?,

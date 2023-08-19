@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace.bcsmartspace
+package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.text.TextUtils
@@ -11,12 +11,9 @@ import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.model.SmartspaceAction
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
-import com.saggitt.omega.smartspace.model.hasIntent
-import com.saggitt.omega.smartspace.superg.DoubleShadowIconDrawable
-import com.saggitt.omega.smartspace.superg.DoubleShadowTextView
-import com.saggitt.omega.smartspace.superg.IcuDateTextView
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
+import com.saulhdev.smartspace.hasIntent
 import java.util.Locale
 import java.util.UUID
 
@@ -64,7 +61,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
         usePageIndicatorUi = multipleCards
 
         if (headerAction != null) {
-            iconDrawable = BcSmartSpaceUtil.getIconDrawable(headerAction.icon, context)
+            iconDrawable = BcSmartSpaceUtil.getIconDrawable(context, headerAction.icon)
                 ?.let { DoubleShadowIconDrawable(it, context) }
 
             var title: CharSequence? = headerAction.title
@@ -87,7 +84,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
         }
 
         if (baseAction != null && baseActionIconSubtitleView != null) {
-            val icon = BcSmartSpaceUtil.getIconDrawable(baseAction.icon, context)
+            val icon = BcSmartSpaceUtil.getIconDrawable(context, baseAction.icon)
                 ?.let { DoubleShadowIconDrawable(it, context) }
             val iconView = baseActionIconSubtitleView!!
             if (icon != null) {

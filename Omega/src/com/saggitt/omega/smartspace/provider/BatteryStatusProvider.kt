@@ -26,11 +26,11 @@ import android.os.BatteryManager
 import androidx.core.content.getSystemService
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.util.broadcastReceiverFlow
 import com.saggitt.omega.util.formatShortElapsedTimeRoundingUpToMinutes
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.flow.map
 
 class BatteryStatusProvider(context: Context) : SmartspaceDataSource(
@@ -73,7 +73,7 @@ class BatteryStatusProvider(context: Context) : SmartspaceDataSource(
         }
         val iconResId = if (charging) R.drawable.ic_charging else R.drawable.ic_battery_low
         return SmartspaceTarget(
-            id = "batteryStatus",
+            smartspaceTargetId = "batteryStatus",
             headerAction = SmartspaceAction(
                 id = "batteryStatusAction",
                 icon = Icon.createWithResource(context, iconResId),

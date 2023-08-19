@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_weight="1" />
 
-    <com.saggitt.omega.smartspace.superg.DoubleShadowTextView
+    <com.google.android.systemui.smartspace.DoubleShadowTextView
         android:id="@+id/title_text"
         android:focusable="true"
         android:layout_width="wrap_content"

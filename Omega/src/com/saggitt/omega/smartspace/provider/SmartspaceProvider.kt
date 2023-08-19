@@ -7,13 +7,13 @@ import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
-import com.saggitt.omega.smartspace.model.SmartspaceAction
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.weather.BlankWeatherProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.smartspace.weather.PixelWeatherProvider
 import com.saggitt.omega.util.dropWhileBusy
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -65,7 +65,7 @@ class SmartspaceProvider private constructor(context: Context) {
         .map { it.targets }
 
     private val setupTarget = SmartspaceTarget(
-        id = "smartspaceSetup",
+        smartspaceTargetId = "smartspaceSetup",
         headerAction = SmartspaceAction(
             id = "smartspaceSetupAction",
             title = context.getString(R.string.smartspace_setup_text),

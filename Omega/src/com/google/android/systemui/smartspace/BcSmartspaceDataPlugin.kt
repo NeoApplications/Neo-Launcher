@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace.bcsmartspace
+package com.google.android.systemui.smartspace
 
 import android.app.PendingIntent
 import android.content.ActivityNotFoundException
@@ -7,18 +7,15 @@ import android.util.Log
 import android.view.View
 import com.android.systemui.plugins.Plugin
 import com.android.systemui.plugins.annotations.ProvidesInterface
-import com.saggitt.omega.smartspace.model.SmartspaceAction
-import com.saggitt.omega.smartspace.model.SmartspaceTargetEvent
-
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTargetEvent
 
 @ProvidesInterface(action = BcSmartspaceDataPlugin.ACTION, version = BcSmartspaceDataPlugin.VERSION)
 class BcSmartspaceDataPlugin : Plugin {
 
-
     interface SmartspaceEventNotifier {
         fun notifySmartspaceEvent(event: SmartspaceTargetEvent?)
     }
-
 
     interface IntentStarter {
         fun startFromAction(action: SmartspaceAction, v: View?, showOnLockscreen: Boolean) {

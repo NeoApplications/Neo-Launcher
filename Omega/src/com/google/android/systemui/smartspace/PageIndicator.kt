@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.util.AttributeSet

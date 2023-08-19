@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace
+package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.util.SparseArray
@@ -8,8 +8,7 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.android.launcher3.R
 import com.android.launcher3.util.Themes
-import com.saggitt.omega.smartspace.bcsmartspace.BcSmartspaceCard
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saulhdev.smartspace.SmartspaceTarget
 
 class CardPagerAdapter(context: Context) : PagerAdapter() {
 
@@ -51,8 +50,8 @@ class CardPagerAdapter(context: Context) : PagerAdapter() {
             return POSITION_UNCHANGED
         }
         if (target == null
-            || getFeatureType(target) !== getFeatureType(viewHolder.target)
-            || target.id != viewHolder.target.id
+            || getFeatureType(target) != getFeatureType(viewHolder.target)
+            || target.smartspaceTargetId != viewHolder.target.smartspaceTargetId
         ) {
             return POSITION_NONE
         }

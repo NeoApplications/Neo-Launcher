@@ -1,5 +1,4 @@
-package com.saggitt.omega.smartspace.bcsmartspace
-
+package com.google.android.systemui.smartspace.logging
 
 class BcSmartspaceCardLoggingInfo(builder: Builder) {
     var cardinality = 0

@@ -15,15 +15,15 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.PreferenceActivity
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
 import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.pendingIntent
 import com.saggitt.omega.widget.HeadlessWidgetsManager
 import com.saggitt.omega.widget.Temperature
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -100,7 +100,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                 title.text.toString() + if (subtitle2 != null) subtitle.text.toString() else ""
             val sub = subtitle2 ?: subtitle
             SmartspaceTarget(
-                id = "smartspaceWidgetCard",
+                smartspaceTargetId = "smartspaceWidgetCard",
                 headerAction = SmartspaceAction(
                     id = "smartspaceWidgetCardAction",
                     icon = Icon.createWithBitmap(cardIcon),
@@ -127,7 +127,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
             weatherIcon, temperature, pendingIntent
         ) ?: return null
         return SmartspaceTarget(
-            id = "smartspaceWidgetWeather",
+            smartspaceTargetId = "smartspaceWidgetWeather",
             headerAction = SmartspaceAction(
                 id = "smartspaceWidgetWeatherAction",
                 icon = weatherIcon?.let { Icon.createWithBitmap(it) },
@@ -150,7 +150,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
             "com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider"
 
         val dummyTarget = SmartspaceTarget(
-            id = "dummyTarget",
+            smartspaceTargetId = "dummyTarget",
             featureType = SmartspaceTarget.FEATURE_WEATHER
         )
 

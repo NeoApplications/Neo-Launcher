@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace.superg
+package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.graphics.Bitmap

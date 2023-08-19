@@ -1,4 +1,4 @@
-package com.saggitt.omega.smartspace.bcsmartspace
+package com.google.android.systemui.smartspace
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -13,11 +13,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewpager.widget.ViewPager
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.CardPagerAdapter
-import com.saggitt.omega.smartspace.PageIndicator
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider
 import com.saggitt.omega.util.repeatOnAttached
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.roundToInt

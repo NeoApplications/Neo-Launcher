@@ -29,13 +29,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.saggitt.omega.widget.Temperature
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -70,7 +70,7 @@ class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
         if (weatherData != null) {
             Log.d("PixelWeatherProvider", "Updating weather data " + weatherData?.getTitle())
             val target = SmartspaceTarget(
-                id = "PixelWeatherProvider",
+                smartspaceTargetId = "PixelWeatherProvider",
                 headerAction = SmartspaceAction(
                     id = "PixelWeatherProvider",
                     icon = Icon.createWithBitmap(weatherData!!.icon),

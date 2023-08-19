@@ -7,10 +7,10 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.provider.AlarmClock
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.util.formatTime
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -46,7 +46,7 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
             val subTitle = formatTime(calendarTrigerTime, context)
 
             val target = SmartspaceTarget(
-                id = "AlarmEvent",
+                smartspaceTargetId = "AlarmEvent",
                 headerAction = SmartspaceAction(
                     id = "AlarmEvent",
                     icon = Icon.createWithResource(context, R.drawable.ic_alarm_on_black_24dp),

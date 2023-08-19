@@ -32,15 +32,15 @@ import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
 import com.saggitt.omega.neoApp
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.saggitt.omega.smartspace.weather.icons.WeatherIconProvider
 import com.saggitt.omega.util.checkLocationAccess
 import com.saggitt.omega.widget.Temperature
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -80,7 +80,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         if (weatherData != null) {
             Log.d("OWM", "Updating weather data " + weatherData?.getTitle())
             val target = SmartspaceTarget(
-                id = "OWMWeatherMap",
+                smartspaceTargetId = "OWMWeatherMap",
                 headerAction = SmartspaceAction(
                     id = "OWMWeatherMap",
                     icon = Icon.createWithBitmap(weatherData!!.icon),

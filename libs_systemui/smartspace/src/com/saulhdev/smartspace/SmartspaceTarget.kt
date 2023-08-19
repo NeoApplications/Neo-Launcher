@@ -1,15 +1,22 @@
-package com.saggitt.omega.smartspace.model
+package com.saulhdev.smartspace
 
+import android.content.ComponentName
+import android.os.Process
+import android.os.UserHandle
 import androidx.annotation.IntDef
-import com.saggitt.omega.smartspace.uitemplatedata.BaseTemplateData
+import com.saulhdev.smartspace.uitemplatedata.BaseTemplateData
 
 data class SmartspaceTarget(
-    val id: String,
+    val smartspaceTargetId: String,
     val headerAction: SmartspaceAction? = null,
     val baseAction: SmartspaceAction? = null,
+    val creationTimeMillis: Long = 0,
     val score: Int = 0,
     val featureType: Int,
-    val templateData: BaseTemplateData? = null
+    val templateData: BaseTemplateData? = null,
+    val actionChips: List<SmartspaceAction> = listOf(),
+    val iconGrid: List<SmartspaceAction> = listOf(),
+    val componentName: ComponentName? = null,
 ) {
     @IntDef(
         value = [FEATURE_UNDEFINED, FEATURE_WEATHER, FEATURE_CALENDAR, FEATURE_COMMUTE_TIME, FEATURE_FLIGHT, FEATURE_TIPS, FEATURE_REMINDER, FEATURE_ALARM, FEATURE_ONBOARDING, FEATURE_SPORTS, FEATURE_WEATHER_ALERT, FEATURE_CONSENT, FEATURE_STOCK_PRICE_CHANGE, FEATURE_SHOPPING_LIST, FEATURE_LOYALTY_CARD, FEATURE_MEDIA, FEATURE_BEDTIME_ROUTINE, FEATURE_FITNESS_TRACKING, FEATURE_ETA_MONITORING, FEATURE_MISSED_CALL, FEATURE_PACKAGE_TRACKING, FEATURE_TIMER, FEATURE_STOPWATCH, FEATURE_UPCOMING_ALARM, FEATURE_GAS_STATION_PAYMENT, FEATURE_PAIRED_DEVICE_STATE, FEATURE_DRIVING_MODE, FEATURE_SLEEP_SUMMARY, FEATURE_FLASHLIGHT, FEATURE_TIME_TO_LEAVE, FEATURE_DOORBELL, FEATURE_MEDIA_RESUME, FEATURE_CROSS_DEVICE_TIMER, FEATURE_SEVERE_WEATHER_ALERT, FEATURE_HOLIDAY_ALARM, FEATURE_SAFETY_CHECK, FEATURE_MEDIA_HEADS_UP, FEATURE_STEP_COUNTING, FEATURE_EARTHQUAKE_ALERT, FEATURE_STEP_DATE, FEATURE_BLAZE_BUILD_PROGRESS, FEATURE_EARTHQUAKE_OCCURRED, FEATURE_BATTERY]
@@ -26,6 +33,38 @@ data class SmartspaceTarget(
         AnnotationRetention.SOURCE
     )
     annotation class UiTemplateType {}
+
+    class Builder(
+        val smartspaceTargetId: String,
+        val componentName: ComponentName,
+        val user: UserHandle = Process.myUserHandle()
+    ) {
+        private var mFeatureType: Int = -1
+        private val score = 0
+        private val actionChips: List<SmartspaceAction> = ArrayList()
+        private val iconGrid: List<SmartspaceAction> = ArrayList()
+        private val headerAction: SmartspaceAction? = null
+        private val baseAction: SmartspaceAction? = null
+        private val templateData: BaseTemplateData? = null
+        fun setFeatureType(featureType: Int): Builder {
+            mFeatureType = featureType
+            return this
+        }
+
+        fun build(): SmartspaceTarget {
+            check(!(smartspaceTargetId == null || componentName == null || user == null)) { "Please assign a value to all @NonNull args." }
+            return SmartspaceTarget(
+                smartspaceTargetId = smartspaceTargetId,
+                headerAction = headerAction,
+                baseAction = baseAction,
+                score = score,
+                featureType = mFeatureType,
+                templateData = templateData,
+                actionChips = actionChips,
+                iconGrid = iconGrid
+            )
+        }
+    }
 
     companion object {
         //FeatureType

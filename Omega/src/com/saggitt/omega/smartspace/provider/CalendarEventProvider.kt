@@ -14,9 +14,9 @@ import android.util.Log
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.PreferenceActivity
-import com.saggitt.omega.smartspace.model.SmartspaceAction
 import com.saggitt.omega.smartspace.model.SmartspaceScores
-import com.saggitt.omega.smartspace.model.SmartspaceTarget
+import com.saulhdev.smartspace.SmartspaceAction
+import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -65,7 +65,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             }
 
             val target = SmartspaceTarget(
-                id = "CalendarEvent",
+                smartspaceTargetId = "CalendarEvent",
                 headerAction = SmartspaceAction(
                     id = "CalendarEvent",
                     icon = Icon.createWithResource(context, R.drawable.ic_calendar),
