@@ -18,16 +18,9 @@
 
 package com.saggitt.omega.compose.navigation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -74,9 +67,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 }
 
 @Composable
-fun PrefsComposeView(navController: NavHostController) { // TODO check the animation if works as excpected
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val density = LocalDensity.current
+fun PrefsComposeView(navController: NavHostController) {
     val inMotionSpec = materialSharedAxisXIn(true, 3)
     val outMotionSpec = materialSharedAxisXOut(true, 3)
     CompositionLocalProvider(
@@ -92,15 +83,5 @@ fun PrefsComposeView(navController: NavHostController) { // TODO check the anima
         ) {
             mainPrefsGraph(route = "/")
         }
-    }
-}
-
-@Composable
-fun BlankScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxHeight()
-    ) {
     }
 }
