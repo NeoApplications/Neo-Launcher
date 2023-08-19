@@ -45,6 +45,8 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -202,7 +204,7 @@ fun ColorIntPreference(
     val route = subRoute(pref.navRoute)
 
     val currentColor by remember(pref) {
-        mutableStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
+        mutableIntStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
     }
 
     BasePreference(
@@ -241,7 +243,7 @@ fun SeekBarPreference(
     isEnabled: Boolean = true,
     onValueChange: ((Float) -> Unit) = {},
 ) {
-    var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
+    var currentValue by remember(pref) { mutableFloatStateOf(pref.getValue()) }
 
     BasePreference(
         modifier = modifier,
