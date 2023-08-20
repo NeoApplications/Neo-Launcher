@@ -46,6 +46,6 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
     implementation("androidx.annotation:annotation:1.6.0")
 }
