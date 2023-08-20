@@ -9,13 +9,13 @@ buildscript {
     }
 }
 
-val vAccompanist = "0.31.2-alpha"
-val vCompose = "1.5.0-beta03"
-val vComposeCompiler = "1.5.0"
+val vAccompanist = "0.31.4-beta"
+val vCompose = "1.5.0"
+val vComposeCompiler = "1.5.1"
 val vKotlin = "1.9.0"
 val vLifecycle = "2.6.1"
-val vMaterial3 = "1.2.0-alpha02"
-val vNavigation = "2.7.0-beta02"
+val vMaterial3 = "1.2.0-alpha05"
+val vNavigation = "2.7.0"
 val vOkhttp = "5.0.0-alpha.11"
 val vProtobuf = "3.22.2"
 val vRoom = "2.5.2"
@@ -235,8 +235,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
 
     implementation("com.google.android.material:material:1.9.0")
 
@@ -250,7 +250,7 @@ dependencies {
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
     implementation("com.github.samanzamani:PersianDate:1.6.1")
     implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.1.0") {
