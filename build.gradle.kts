@@ -137,7 +137,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = compileOptions.sourceCompatibility.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

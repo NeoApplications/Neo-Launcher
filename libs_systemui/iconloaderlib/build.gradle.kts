@@ -39,7 +39,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = compileOptions.sourceCompatibility.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 
