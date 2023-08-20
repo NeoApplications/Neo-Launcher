@@ -96,7 +96,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final NeoPrefs prefs;
     private final BaseDraggingActivity mLauncher;
 
-    public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
+    public AlphabeticalAppsList(Context context, AllAppsStore appsStore,
                                 WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);

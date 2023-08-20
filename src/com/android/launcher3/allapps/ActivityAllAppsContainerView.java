@@ -869,7 +869,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private void createHolders() {
         mAH = mTabsController.createHolders();
         mAH.add(new AdapterHolder(SEARCH,
-                new AlphabeticalAppsList<>(mActivityContext, null, null)));
+                new AlphabeticalAppsList<>(mActivityContext, mAllAppsStore, null)));
     }
 
     public AllAppsStore getAppsStore() {
@@ -1375,7 +1375,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                         new AlphabeticalAppsList<>(mActivityContext, mAllAppsStore, mWorkManager));
             case AdapterHolder.SEARCH:
                 new AdapterHolder(SEARCH,
-                        new AlphabeticalAppsList<>(mActivityContext, null, null));
+                        new AlphabeticalAppsList<>(mActivityContext, mAllAppsStore, null));
             default:
                 throw new RuntimeException("Unexpected adapter type");
         }
