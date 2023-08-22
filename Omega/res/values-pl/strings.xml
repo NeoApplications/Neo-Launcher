@@ -505,4 +505,8 @@
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
+    <string name="title__folder_badge_count">Pokaż odznakę ilości obiektów folderu</string>
+    <string name="pref_category__incubating">Inkubacja</string>
+    <string name="edit_dash">Edytuj szufladę aplikacji</string>
+    <string name="action_open_dash">Otwórz szufladę aplikacji</string>
 </resources>
