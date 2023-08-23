@@ -69,6 +69,8 @@ import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.popup.OmegaShortcuts
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
+import com.saggitt.omega.theme.ThemeManager
+import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.hasStoragePermission
@@ -81,7 +83,13 @@ import java.util.stream.Stream
 
 // compiler is misidentifying lifecycle's getter(s), ignore the warning for now
 class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-                    ActivityResultRegistryOwner {
+    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
+
+    override var currentTheme = 0
+    override var currentAccent = 0
+    private lateinit var themeOverride: ThemeOverride
+    private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
+
 
     val prefs: NeoPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
@@ -142,7 +150,21 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             }
             loadHiddenApps(prefs.drawerHiddenAppSet.getValue())
         }
+
+        themeOverride = ThemeOverride(themeSet, this)
+        themeOverride.applyTheme(this)
+        currentAccent = prefs.profileAccentColor.getColor()
+        currentTheme = themeOverride.getTheme(this)
+        theme.applyStyle(
+            resources.getIdentifier(
+                Integer.toHexString(currentAccent),
+                "style",
+                packageName
+            ), true
+        )
     }
+
+    override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
     override val activityResultRegistry: ActivityResultRegistry
         get() = object : ActivityResultRegistry() {

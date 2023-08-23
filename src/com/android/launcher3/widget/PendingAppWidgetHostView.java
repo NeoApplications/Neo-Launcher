@@ -72,7 +72,7 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
 
     public PendingAppWidgetHostView(Context context, LauncherAppWidgetInfo info,
             IconCache cache, boolean disabledForSafeMode) {
-        super(new ContextThemeWrapper(context, R.style.WidgetContainerTheme_Light));
+        super(new ContextThemeWrapper(context, R.style.WidgetContainerTheme));
 
         mInfo = info;
         mStartState = info.restoreStatus;

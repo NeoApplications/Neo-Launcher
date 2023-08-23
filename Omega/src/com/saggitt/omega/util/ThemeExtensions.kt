@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Configuration
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.ColorUtils
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
@@ -38,6 +39,9 @@ fun AlertDialog.applyAccent() {
 }
 
 val Configuration.usingNightMode get() = uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+val Int.luminance get() = ColorUtils.calculateLuminance(this)
+
+val Int.isDark get() = luminance < 0.5f
 
 fun getWindowCornerRadius(context: Context): Float {
     val prefs = Utilities.getOmegaPrefs(context)

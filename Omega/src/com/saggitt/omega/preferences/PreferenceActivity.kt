@@ -30,7 +30,6 @@ import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import androidx.core.net.toUri
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.saggitt.omega.compose.navigation.PrefsComposeView
@@ -54,7 +53,10 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         currentTheme = themeOverride.getTheme(this)
         currentAccent = Color.Green.hashCode()
         setContent {
-            OmegaAppTheme {
+            OmegaAppTheme(
+                darkTheme = themeOverride.getTheme(this) == themeSet.darkTheme,
+                blackTheme = themeOverride.getTheme(this) == themeSet.blackTheme
+            ) {
                 navController = rememberNavController()
                 PrefsComposeView(navController)
             }
@@ -67,10 +69,6 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         fun createIntent(context: Context, destination: String): Intent {
             val uri = "android-app://androidx.navigation//$destination".toUri()
             return Intent(Intent.ACTION_VIEW, uri, context, PreferenceActivity::class.java)
-        }
-
-        fun getFragmentManager(context: Context): FragmentManager {
-            return (context as PreferenceActivity).supportFragmentManager
         }
 
         suspend fun startBlankActivityDialog(

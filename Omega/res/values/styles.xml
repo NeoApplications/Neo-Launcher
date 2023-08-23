@@ -18,16 +18,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme.Light" parent="@style/LauncherTheme">
+        <item name="allAppsScrimColor">@color/grey_50</item>
         <item name="allAppsInterimScrimAlpha">46</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
     </style>
 
+    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
+        <item name="allAppsScrimColor">@color/grey_800</item>
+    </style>
+
+    <style name="AppTheme.Black" parent="AppTheme.Dark">
+        <item name="allAppsScrimColor">@android:color/black</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
+        <item name="alertDialogTheme">@style/AlertDialog.Black</item>
+        <item name="folderBackgroundColor">@android:color/black</item>
+        <item name="popupColorPrimary">@color/grey_800</item>
+    </style>
+
     <style name="AppTheme.Light.DarkMainColor" parent="@style/LauncherTheme.DarkMainColor">
         <item name="allAppsInterimScrimAlpha">46</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
@@ -35,18 +47,10 @@
 
     <style name="AppTheme.Light.DarkText" parent="@style/LauncherTheme.DarkText">
         <item name="allAppsInterimScrimAlpha">46</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme</item>
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
-    </style>
-
-    <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark">
-        <item name="allAppsInterimScrimAlpha">102</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
-        <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
-        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
-        <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor">
@@ -65,21 +69,16 @@
         <item name="folderBackgroundColor">@color/folder_background_dark</item>
     </style>
 
-    <style name="AppTheme.Black" parent="AppTheme.Dark">
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
-        <item name="alertDialogTheme">@style/AlertDialog.Black</item>
-        <item name="folderBackgroundColor">#DD000000</item>
-    </style>
-
     <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar">
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
         <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
-        <item name="widgetsTheme">@style/WidgetContainerTheme.Light</item>
+        <item name="widgetsTheme">@style/WidgetContainerTheme</item>
     </style>
 
     <style name="SettingsTheme.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/grey_800</item>
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
         <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
@@ -88,15 +87,20 @@
     </style>
 
     <style name="SettingsTheme.Black" parent="SettingsTheme.Dark">
+        <item name="android:windowBackground">@android:color/black</item>
         <item name="alertDialogTheme">@style/AlertDialog.Black</item>
         <item name="widgetsTheme">@style/WidgetContainerTheme.Black</item>
     </style>
 
     <style name="AlertDialog.Light" parent="Theme.Material3.Light.Dialog.Alert" />
 
-    <style name="AlertDialog.Dark" parent="Theme.Material3.Dark.Dialog.Alert" />
+    <style name="AlertDialog.Dark" parent="Theme.Material3.Dark.Dialog.Alert">
+        <item name="android:colorBackground">@color/grey_600</item>
+    </style>
 
-    <style name="AlertDialog.Black" parent="Theme.Material3.Dark.Dialog.Alert" />
+    <style name="AlertDialog.Black" parent="Theme.Material3.Dark.Dialog.Alert">
+        <item name="android:colorBackground">@color/grey_800</item>
+    </style>
 
     <style name="Theme.Transparent" parent="Theme.AppCompat.Light">
         <item name="android:windowIsTranslucent">true</item>
@@ -138,21 +142,7 @@
         <item name="android:dropDownHorizontalOffset">-16dp</item>
     </style>
 
-    <style name="WidgetContainerTheme.Light" parent="SettingsTheme.Light">
-        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
-        <item name="bottomSheetNavBarColor">@color/all_apps_navbar_color</item>
-        <item name="colorBackgroundFloating">?backgroundColor</item>
-        <item name="android:colorPrimary">@color/grey_100</item>
-    </style>
-
-    <style name="WidgetContainerTheme.Dark" parent="SettingsTheme.Dark">
-        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
-        <item name="bottomSheetNavBarColor">@color/grey_900</item>
-        <item name="colorBackgroundFloating">?backgroundColor</item>
-        <item name="android:colorPrimary">@color/grey_800</item>
-    </style>
-
-    <style name="WidgetContainerTheme.Black" parent="SettingsTheme.Black">
+    <style name="WidgetContainerTheme.Black" parent="AppTheme.Black">
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
         <item name="bottomSheetNavBarColor">#00000000</item>
         <item name="colorBackgroundFloating">?backgroundColor</item>

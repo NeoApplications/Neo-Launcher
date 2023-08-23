@@ -67,7 +67,6 @@
         <item name="preloadIconAccentColor">@color/preload_icon_accent_color_light</item>
         <item name="preloadIconBackgroundColor">@color/preload_icon_background_color_light</item>
 
-
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

@@ -27,7 +27,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -35,10 +34,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +57,6 @@ import com.android.launcher3.views.BaseDragLayer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A container for shortcuts to deep links and notifications associated with an app.
@@ -313,22 +309,6 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
      */
     boolean isShortcutContainer(View view) {
         return mIterateChildrenTag.equals(view.getTag());
-    }
-
-    @TargetApi(Build.VERSION_CODES.S)
-    private int getExtractedColor(SparseIntArray colors) {
-        int index = Utilities.isDarkTheme(getContext())
-                ? DARK_COLOR_EXTRACTION_INDEX
-                : LIGHT_COLOR_EXTRACTION_INDEX;
-        return colors.get(index, mBackgroundColor);
-    }
-
-    /**
-     * Returns list of child views that will receive local color extraction treatment.
-     * Note: Order should match the view hierarchy.
-     */
-    protected List<View> getChildrenForColorExtraction() {
-        return Collections.emptyList();
     }
 
     /**

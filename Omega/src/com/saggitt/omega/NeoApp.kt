@@ -21,6 +21,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -30,6 +31,7 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.theme.ThemeManager
 import org.chickenhook.restrictionbypass.Unseal
 import java.io.File
 
@@ -123,6 +125,11 @@ class NeoApp : Application() {
 
     private fun getJournalFile(file: File): File =
         File(file.parentFile, "${file.name}-journal")
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        ThemeManager.getInstance(this).updateNightMode(newConfig)
+    }
 
     class ActivityHandler : ActivityLifecycleCallbacks {
 

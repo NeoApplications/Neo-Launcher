@@ -162,21 +162,12 @@ open class FloatPref(
 open class IntSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
-    private val dataStore: DataStore<Preferences>,
-    private val key: Preferences.Key<Int>,
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<Int>,
     val defaultValue: Int = 0,
     val entries: Map<Int, Int>,
 ) :
-    PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
-
-    override fun get(): Flow<Int> {
-        return dataStore.data.map { it[key] ?: defaultValue }
-    }
-
-    override suspend fun set(value: Int) {
-        dataStore.edit { it[key] = value }
-    }
-}
+    PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue)
 
 open class ColorIntPref(
     @StringRes titleId: Int,
@@ -473,7 +464,11 @@ abstract class PrefDelegate<T : Any>(
         }
     }
 
-    abstract fun get(): Flow<T>
+    open fun get(): Flow<T> {
+        return dataStore.data.map { it[key] ?: defaultValue }
+    }
 
-    abstract suspend fun set(value: T)
+    open suspend fun set(value: T) {
+        dataStore.edit { it[key] = value }
+    }
 }

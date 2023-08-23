@@ -74,7 +74,6 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -253,12 +252,6 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
         mPopupItemDragHandler = new LauncherPopupItemDragHandler(launcher, this);
         mAccessibilityDelegate = new ShortcutMenuAccessibilityDelegate(launcher);
         launcher.getDragController().addDragListener(this);
-    }
-
-    @Override
-    protected List<View> getChildrenForColorExtraction() {
-        return Arrays.asList(mSystemShortcutContainer, mWidgetContainer, mDeepShortcutContainer,
-                mNotificationContainer);
     }
 
     private void initializeSystemShortcuts(List<SystemShortcut> shortcuts) {
