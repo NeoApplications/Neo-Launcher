@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Neo Launcher
+  ~ Copyright (c) 2023 Neo Launcher Team
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<com.saggitt.omega.allapps.search.AllAppsSearchLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_container_all_apps"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/all_apps_search_bar_field_height"
+    android:layout_gravity="top"
+    android:layout_marginHorizontal="12dp"
+    android:background="@drawable/bg_all_apps_searchbox"
+    android:contentDescription="@string/label_search"
+    android:elevation="8dp"
+    android:focusableInTouchMode="true"
+    android:imeOptions="actionSearch|flagNoExtractUi"
+    android:importantForAutofill="no"
+    android:inputType="text|textNoSuggestions|textCapWords"
+    android:maxLines="1"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:saveEnabled="false"
+    android:scrollHorizontally="true"
+    android:singleLine="true"
+    android:textColor="?android:attr/textColorSecondary"
+    android:textColorHint="@drawable/all_apps_search_hint"
+    android:textSize="16sp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/search_engine_logo"
+        android:layout_width="@dimen/qsb_mic_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center"
+        android:padding="@dimen/qsb_icon_padding"
+        android:scaleType="center"
+        tools:srcCompat="@drawable/ic_super_g_color" />
+
+    <com.saggitt.omega.allapps.search.AllAppsSearchBlock
+        android:id="@+id/search_container_all_apps_bar"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:focusableInTouchMode="true"
+        android:hint="@string/all_apps_search_bar_hint"
+        android:imeOptions="actionSearch|flagNoExtractUi"
+        android:importantForAutofill="no"
+        android:inputType="text|textNoSuggestions|textCapWords"
+        android:maxLines="1"
+        android:saveEnabled="false"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textColorHint="@drawable/all_apps_search_hint"
+        android:textSize="16sp" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/search_cancel_button"
+        android:layout_width="@dimen/qsb_mic_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/pill_ripple"
+        android:contentDescription="@string/widgets_full_sheet_cancel_button_description"
+        android:scaleType="center"
+        android:src="@drawable/ic_remove_no_shadow"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/mic_icon"
+        android:layout_width="@dimen/qsb_mic_width"
+        android:layout_height="match_parent"
+        android:background="@drawable/pill_ripple"
+        android:clickable="true"
+        android:contentDescription="@string/label_voice_search"
+        android:scaleType="center"
+        android:src="@drawable/ic_mic_color"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/search_settings_button"
+        android:layout_width="@dimen/qsb_mic_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/pill_ripple"
+        android:contentDescription="@string/title_change_settings"
+        android:scaleType="center"
+        android:src="@drawable/ic_edit_no_shadow" />
+
+</com.saggitt.omega.allapps.search.AllAppsSearchLayout>
