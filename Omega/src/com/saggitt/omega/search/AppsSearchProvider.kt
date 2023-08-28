@@ -23,10 +23,10 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.annotation.Keep
 import androidx.core.content.res.ResourcesCompat
-import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.anim.AnimatorListeners
+import com.saggitt.omega.nLauncher
 import com.saggitt.omega.util.prefs
 
 @Keep
@@ -39,8 +39,9 @@ class AppsSearchProvider(context: Context) : SearchProvider(context) {
     override val packageName: String
         get() = "AppsSearchProvider"
 
-    override fun startSearch(callback: (intent: Intent) -> Unit) {
-        val launcher = LauncherAppState.getInstanceNoCreate().launcher
+
+    override fun startSearch(context: Context, callback: (intent: Intent) -> Unit) {
+        val launcher = context.nLauncher
         launcher.stateManager.goToState(
             LauncherState.ALL_APPS,
             true,

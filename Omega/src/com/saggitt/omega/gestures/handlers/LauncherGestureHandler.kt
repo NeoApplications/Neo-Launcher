@@ -296,7 +296,7 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     override val requiresForeground = false
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        searchProvider.startSearch {
+        searchProvider.startSearch(context) {
             try {
                 if (context !is AppCompatActivity) {
                     it.flags = it.flags or Intent.FLAG_ACTIVITY_NEW_TASK

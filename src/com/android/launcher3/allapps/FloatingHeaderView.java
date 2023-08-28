@@ -240,7 +240,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
         mSearchRV = searchRV;
         mParent = (ViewGroup) mRVs.get(0).getParent();
-        setActiveRV(Math.min(activeRV, mRVs.size() - 1));
+        setActiveRV(activeRV, false);
         reset(false);
     }
 
@@ -254,12 +254,11 @@ public class FloatingHeaderView extends LinearLayout implements
     /**
      * Set the active AllApps RV which will adjust the alpha of the header when scrolled.
      */
-    public void setActiveRV(int active) {
-        if (mCurrentRV != null) {
-            mCurrentRV.removeOnScrollListener(mOnScrollListener);
-        }
-        mCurrentRV = mRVs.get(active);
+    public void setActiveRV(int active, boolean search) {
+        if (mCurrentRV != null) mCurrentRV.removeOnScrollListener(mOnScrollListener);
 
+        if (!search || mSearchRV == null) mCurrentRV = mRVs.get(Math.min(active, mRVs.size() - 1));
+        else mCurrentRV = mSearchRV;
         mCurrentRV.addOnScrollListener(mOnScrollListener);
     }
 
@@ -424,7 +423,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // calcOffset(mTempOffset);
+        calcOffset(mTempOffset);
         ev.offsetLocation(mTempOffset.x, mTempOffset.y);
         mForwardToRecyclerView = mCurrentRV.onInterceptTouchEvent(ev);
         ev.offsetLocation(-mTempOffset.x, -mTempOffset.y);
