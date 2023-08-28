@@ -141,7 +141,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
                 context.getIcon()
             }
 
-            else -> context.getIcon()
+            else           -> context.getIcon()
         }
 
     private val displayNameWithoutTarget: String = context.getString(R.string.action_open_app)
@@ -178,7 +178,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         config.put("appName", appName)
         config.put("type", type)
         when (type) {
-            "app" -> {
+            "app"      -> {
                 config.put("target", target.toString())
             }
 
@@ -200,7 +200,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             appName = data.getStringExtra("appName")
             type = data.getStringExtra("type")
             when (type) {
-                "app" ->
+                "app"      ->
                     target = Utilities
                         .makeComponentKey(context, data.getStringExtra("target") ?: "")
 
@@ -230,7 +230,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         }
 
         when (type) {
-            "app" -> {
+            "app"      -> {
                 target?.let {
                     try {
                         context.getSystemService(LauncherApps::class.java)

@@ -123,7 +123,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
 
     /**
      * @return {@code true} if the state matches the current state and there is no active
-     *         transition to different state.
+     * transition to different state.
      */
     public boolean isInStableState(STATE_TYPE state) {
         return mState == state && mCurrentStableState == state
@@ -155,7 +155,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
      * Changes the Launcher state to the provided state.
      *
      * @param animated false if the state should change immediately without any animation,
-     *                true otherwise
+     *                 true otherwise
      * @paras onCompleteRunnable any action to perform at the end of the transition, of null.
      */
     public void goToState(STATE_TYPE state, boolean animated, AnimatorListener listener) {
@@ -317,9 +317,10 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     /**
      * Creates a {@link AnimatorPlaybackController} that can be used for a controlled
      * state transition.
-     * @param state the final state for the transition.
+     *
+     * @param state    the final state for the transition.
      * @param duration intended duration for state playback. Use higher duration for better
-     *                accuracy.
+     *                 accuracy.
      */
     public AnimatorPlaybackController createAnimationToNewWorkspace(
             STATE_TYPE state, long duration) {
@@ -446,11 +447,11 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     /**
+     * @param anim    The custom animation to the given state.
+     * @param toState The state we are animating towards.
      * @see #setCurrentAnimation(AnimatorSet, Animator...). Using this method tells the StateManager
      * that this is a custom animation to the given state, and thus the StateManager will add an
      * animation listener to call {@link #onStateTransitionStart} and {@link #onStateTransitionEnd}.
-     * @param anim The custom animation to the given state.
-     * @param toState The state we are animating towards.
      */
     public void setCurrentAnimation(AnimatorSet anim, STATE_TYPE toState) {
         cancelAnimation();

@@ -93,7 +93,9 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
      * Info about a particular adapter item (can be either section or app)
      */
     public static class AdapterItem {
-        /** Common properties */
+        /**
+         * Common properties
+         */
         // The type of this item
         public final int viewType;
 
@@ -184,12 +186,16 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         mOnIconLongClickListener = listener;
     }
 
-    /** Checks if the passed viewType represents all apps divider. */
+    /**
+     * Checks if the passed viewType represents all apps divider.
+     */
     public static boolean isDividerViewType(int viewType) {
         return isViewType(viewType, VIEW_TYPE_MASK_DIVIDER);
     }
 
-    /** Checks if the passed viewType represents all apps icon. */
+    /**
+     * Checks if the passed viewType represents all apps icon.
+     */
     public static boolean isIconViewType(int viewType) {
         return isViewType(viewType, VIEW_TYPE_MASK_ICON);
     }

@@ -93,7 +93,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
      * Filters {@link AppInfo}s matching specified query
      */
     @AnyThread
-    public static ArrayList<AdapterItem> getTitleMatchResult(List<AppInfo> apps, String query) {
+    public ArrayList<AdapterItem> getTitleMatchResult(List<AppInfo> apps, String query) {
         // Do an intersection of the words in the query and each title, and filter out all the
         // apps that don't match all of the words in the query.
         final String queryTextLower = query.toLowerCase();

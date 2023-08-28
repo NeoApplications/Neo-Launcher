@@ -223,8 +223,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             appSteam = appSteam.filter(mItemFilter);
         }
 
-        //appSteam = appSteam.sorted(mAppNameComparator);
-
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
         Locale curLocale = mActivityContext.getResources().getConfiguration().locale;
