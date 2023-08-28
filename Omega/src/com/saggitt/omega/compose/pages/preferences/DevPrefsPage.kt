@@ -35,7 +35,6 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
-import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
 fun DevPrefsPage() {
@@ -54,24 +53,22 @@ fun DevPrefsPage() {
         prefs.showDebugInfo
     )
 
-    OmegaAppTheme {
-        ViewWithActionBar(
+    ViewWithActionBar(
             title = stringResource(R.string.developer_options_title)
-        ) { paddingValues ->
-            LazyColumn(
+    ) { paddingValues ->
+        LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
+        ) {
+            item {
+                PreferenceGroup(
                         heading = null,
                         prefs = developerPrefs,
                         onPrefDialog = onPrefDialog
-                    )
-                }
+                )
             }
         }
     }

@@ -55,7 +55,6 @@ import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
 import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.prefs
 
@@ -107,7 +106,6 @@ fun WidgetsPrefsPage() {
         )
     }
 
-    OmegaAppTheme {
         ViewWithActionBar(
             title = stringResource(R.string.title__general_widgets_notifications)
         ) { paddingValues ->
@@ -167,7 +165,6 @@ fun WidgetsPrefsPage() {
             }
         }
     }
-}
 
 fun NavGraphBuilder.widgetsPrefsGraph(route: String) {
     preferenceGraph(route, { WidgetsPrefsPage() }) { subRoute ->

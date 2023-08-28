@@ -55,7 +55,6 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.collectAsStateBlocking
 import com.saggitt.omega.util.prefs
 
@@ -104,57 +103,55 @@ fun ProfilePrefsPage() {
         )
     }
 
-    OmegaAppTheme {
-        ViewWithActionBar(
+    ViewWithActionBar(
             title = stringResource(R.string.title__general_profile)
-        ) { paddingValues ->
-            LazyColumn(
+    ) { paddingValues ->
+        LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
+        ) {
+            item {
+                PreferenceGroup(
                         stringResource(id = R.string.title__general_profile),
                         prefs = profilePrefs,
                         onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
+                )
+            }
+            item {
+                PreferenceGroup(
                         stringResource(id = R.string.pref_category__others),
                         prefs = others,
                         onPrefDialog = onPrefDialog
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
+        }
 
-            if (openDialog.value) {
-                BaseDialog(openDialogCustom = openDialog) {
-                    when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+        if (openDialog.value) {
+            BaseDialog(openDialogCustom = openDialog) {
+                when (dialogPref) {
+                    is IntSelectionPref -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
+                    is StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
                             pref = dialogPref as StringMultiSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is DialogPref -> ResetCustomIconsDialog(
+                    is DialogPref -> ResetCustomIconsDialog(
                             pref = dialogPref as DialogPref,
                             openDialogCustom = openDialog
-                        )
-                    }
+                    )
                 }
             }
         }

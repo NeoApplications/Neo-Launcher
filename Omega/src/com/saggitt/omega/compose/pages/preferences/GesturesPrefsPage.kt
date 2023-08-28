@@ -49,7 +49,6 @@ import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.prefs
 
 @Composable
@@ -85,7 +84,6 @@ fun GesturesPrefsPage() {
         prefs.dashEdit
     )
 
-    OmegaAppTheme {
         ViewWithActionBar(
             title = stringResource(R.string.title__general_gestures_dash)
         ) { paddingValues ->
@@ -135,7 +133,6 @@ fun GesturesPrefsPage() {
             }
         }
     }
-}
 
 fun NavGraphBuilder.gesturesPrefsGraph(route: String) {
     preferenceGraph(route, { GesturesPrefsPage() }) { subRoute ->

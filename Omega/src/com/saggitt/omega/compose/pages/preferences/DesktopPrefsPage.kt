@@ -52,7 +52,6 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.prefs
 
 @Composable
@@ -100,14 +99,13 @@ fun DesktopPrefsPage() {
         prefs.desktopLock
     )
 
-    OmegaAppTheme {
         ViewWithActionBar(
             title = stringResource(R.string.title__general_desktop)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -169,7 +167,7 @@ fun DesktopPrefsPage() {
             }
         }
     }
-}
+
 
 fun NavGraphBuilder.desktopPrefsGraph(route: String) {
     preferenceGraph(route, { DesktopPrefsPage() }) { subRoute ->

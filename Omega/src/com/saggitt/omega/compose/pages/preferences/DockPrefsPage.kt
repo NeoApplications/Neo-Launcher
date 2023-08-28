@@ -50,7 +50,6 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.prefs
 
 @Composable
@@ -80,7 +79,6 @@ fun DockPrefsPage() {
         )
     }
 
-    OmegaAppTheme {
         ViewWithActionBar(
             title = stringResource(R.string.title__general_dock)
         ) { paddingValues ->
@@ -126,7 +124,6 @@ fun DockPrefsPage() {
             }
         }
     }
-}
 
 fun NavGraphBuilder.dockPrefsGraph(route: String) {
     preferenceGraph(route, { DockPrefsPage() }) { subRoute ->
