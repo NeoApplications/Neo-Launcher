@@ -18,7 +18,8 @@
 package com.saggitt.omega.dash.actionprovider
 
 import android.content.Context
-import com.android.launcher3.LauncherAppState
+import com.android.launcher3.AbstractFloatingView
+import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.saggitt.omega.compose.icons.Phosphor
@@ -32,8 +33,9 @@ class AllAppsShortcut(context: Context) : DashActionProvider(context) {
     override val icon = Phosphor.DotsNine
 
     override fun runAction(context: Context) {
-        if (LauncherAppState.getInstance(context).launcher.stateManager.state != LauncherState.ALL_APPS) {
-            LauncherAppState.getInstance(context).launcher.stateManager.goToState(LauncherState.ALL_APPS)
-        }
+        val launcher = Launcher.getLauncher(context)
+        AbstractFloatingView.closeAllOpenViews(launcher)
+        if (launcher.isInState(LauncherState.ALL_APPS)) return
+        launcher.stateManager.goToState(LauncherState.ALL_APPS)
     }
 }
