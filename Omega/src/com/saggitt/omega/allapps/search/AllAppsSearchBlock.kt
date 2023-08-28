@@ -77,7 +77,10 @@ class AllAppsSearchBlock(context: Context, attrs: AttributeSet? = null) :
 
     fun setCancelButton(cancelButton: ImageButton) {
         mCancelButton = cancelButton
-        mCancelButton!!.setOnClickListener { v: View? -> clearSearchResult() }
+        mCancelButton!!.setOnClickListener { v: View? ->
+            clearSearchResult()
+            mSearchBarController.reset()
+        }
     }
 
     override fun initializeSearch(appsView: ActivityAllAppsContainerView<*>) {
