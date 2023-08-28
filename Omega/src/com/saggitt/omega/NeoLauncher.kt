@@ -99,7 +99,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     private val prefCallback = PreferencesChangeCallback(this)
 
     private val hiddenApps = ArrayList<AppInfo>()
-    private val allApps = ArrayList<AppInfo>()
+    internal val allApps = ArrayList<AppInfo>()
     private var paused = false
     private var sRestart = false
 
