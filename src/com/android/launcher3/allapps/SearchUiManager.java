@@ -51,6 +51,10 @@ public interface SearchUiManager {
     @Nullable
     ExtendedEditText getEditText();
 
+    default void hideSoftwareKeyboard() {
+        getEditText().hideKeyboard();
+    }
+
     /**
      * Sets whether EditText background should be visible
      *
