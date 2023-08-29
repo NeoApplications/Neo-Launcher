@@ -792,7 +792,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
      * Inflates the search box
      */
     protected View inflateSearchBox() {
-        return getLayoutInflater().inflate(R.layout.search_container_all_apps_neo, this, false);
+        return getLayoutInflater().inflate(R.layout.search_container_all_apps_compose, this, false);
     }
 
     /**
