@@ -423,7 +423,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        calcOffset(mTempOffset);
+        //calcOffset(mTempOffset); todo fix this
         ev.offsetLocation(mTempOffset.x, mTempOffset.y);
         mForwardToRecyclerView = mCurrentRV.onInterceptTouchEvent(ev);
         ev.offsetLocation(-mTempOffset.x, -mTempOffset.y);
