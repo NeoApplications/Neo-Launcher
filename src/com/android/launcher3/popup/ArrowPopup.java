@@ -19,6 +19,8 @@ package com.android.launcher3.popup;
 import static androidx.core.content.ContextCompat.getColorStateList;
 import static com.android.launcher3.anim.Interpolators.ACCELERATED_EASE;
 import static com.android.launcher3.anim.Interpolators.DECELERATED_EASE;
+import static com.android.launcher3.anim.Interpolators.EMPHASIZED_ACCELERATE;
+import static com.android.launcher3.anim.Interpolators.EMPHASIZED_DECELERATE;
 import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.config.FeatureFlags.ENABLE_MATERIAL_U_POPUP;
 
@@ -36,11 +38,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.util.Property;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
+import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
 
 import com.android.launcher3.AbstractFloatingView;
@@ -54,9 +58,7 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * A container for shortcuts to deep links and notifications associated with an app.
@@ -79,9 +81,18 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
     protected int CLOSE_CHILD_FADE_START_DELAY = 0;
     protected int CLOSE_CHILD_FADE_DURATION = 140;
 
-    // Index used to get background color when using local wallpaper color extraction,
-    private static final int DARK_COLOR_EXTRACTION_INDEX = android.R.color.system_neutral2_800;
-    private static final int LIGHT_COLOR_EXTRACTION_INDEX = android.R.color.system_accent2_50;
+    private static final int OPEN_DURATION_U = 200;
+    private static final int OPEN_FADE_START_DELAY_U = 0;
+    private static final int OPEN_FADE_DURATION_U = 83;
+    private static final int OPEN_CHILD_FADE_START_DELAY_U = 0;
+    private static final int OPEN_CHILD_FADE_DURATION_U = 83;
+    private static final int OPEN_OVERSHOOT_DURATION_U = 200;
+
+    private static final int CLOSE_DURATION_U = 233;
+    private static final int CLOSE_FADE_START_DELAY_U = 150;
+    private static final int CLOSE_FADE_DURATION_U = 83;
+    private static final int CLOSE_CHILD_FADE_START_DELAY_U = 150;
+    private static final int CLOSE_CHILD_FADE_DURATION_U = 83;
 
     protected final Rect mTempRect = new Rect();
 
@@ -106,6 +117,7 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
     protected AnimatorSet mOpenCloseAnimator;
     protected boolean mDeferContainerRemoval;
     protected boolean shouldScaleArrow = false;
+    protected boolean mIsArrowRotated = false;
 
     private final GradientDrawable mRoundedTop;
     private final GradientDrawable mRoundedBottom;
@@ -116,7 +128,6 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
     protected int mArrowColor;
 
     protected final float mElevation;
-    private final int mBackgroundColor;
 
     private final String mIterateChildrenTag;
 
@@ -129,8 +140,8 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         mActivityContext = ActivityContext.lookupContext(context);
         mIsRtl = Utilities.isRtl(getResources());
 
-        mBackgroundColor = Themes.getAttrColor(context, R.attr.popupColorPrimary);
-        mArrowColor = mBackgroundColor;
+        int popupPrimaryColor = Themes.getAttrColor(context, R.attr.popupColorPrimary);
+        mArrowColor = popupPrimaryColor;
         mElevation = getResources().getDimension(R.dimen.deep_shortcuts_elevation);
 
         // Initialize arrow view
@@ -147,14 +158,15 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
 
         int smallerRadius = resources.getDimensionPixelSize(R.dimen.popup_smaller_radius);
         mRoundedTop = new GradientDrawable();
-        mRoundedTop.setColor(mBackgroundColor);
+        mRoundedTop.setColor(popupPrimaryColor);
         mRoundedTop.setCornerRadii(new float[]{mOutlineRadius, mOutlineRadius, mOutlineRadius,
                 mOutlineRadius, smallerRadius, smallerRadius, smallerRadius, smallerRadius});
 
         mRoundedBottom = new GradientDrawable();
-        mRoundedBottom.setColor(mBackgroundColor);
+        mRoundedBottom.setColor(popupPrimaryColor);
         mRoundedBottom.setCornerRadii(new float[]{smallerRadius, smallerRadius, smallerRadius,
                 smallerRadius, mOutlineRadius, mOutlineRadius, mOutlineRadius, mOutlineRadius});
+
 
         mIterateChildrenTag = getContext().getString(R.string.popup_container_iterate_children);
 
@@ -199,12 +211,6 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         View view = mInflater.inflate(resId, container, false);
         container.addView(view, index);
         return (R) view;
-    }
-
-    /**
-     * Called when all view inflation and reordering in complete.
-     */
-    protected void onInflationComplete(boolean isReversed) {
     }
 
     /**
@@ -328,29 +334,10 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
     }
 
     /**
-     * Shows the popup at the desired location, optionally reversing the children.
-     * @param viewsToFlip number of views from the top to to flip in case of reverse order
-     */
-    protected void reorderAndShow(int viewsToFlip) {
-        setupForDisplay();
-        boolean reverseOrder = mIsAboveIcon;
-        if (reverseOrder) {
-            reverseOrder(viewsToFlip);
-        }
-        onInflationComplete(reverseOrder);
-        assignMarginsAndBackgrounds(this);
-        if (shouldAddArrow()) {
-            addArrow();
-        }
-        animateOpen();
-    }
-
-    /**
      * Shows the popup at the desired location.
      */
     public void show() {
         setupForDisplay();
-        onInflationComplete(false);
         assignMarginsAndBackgrounds(this);
         if (shouldAddArrow()) {
             addArrow();
@@ -363,22 +350,6 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         mIsOpen = true;
         getPopupContainer().addView(this);
         orientAboutObject();
-    }
-
-    private void reverseOrder(int viewsToFlip) {
-        int count = getChildCount();
-        ArrayList<View> allViews = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            if (i == viewsToFlip) {
-                Collections.reverse(allViews);
-            }
-            allViews.add(getChildAt(i));
-        }
-        Collections.reverse(allViews);
-        removeAllViews();
-        for (int i = 0; i < count; i++) {
-            addView(allViews.get(i));
-        }
     }
 
     private int getArrowLeft() {
@@ -601,10 +572,24 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
 
     protected void animateOpen() {
         setVisibility(View.VISIBLE);
-
-        mOpenCloseAnimator = getOpenCloseAnimator(true, OPEN_DURATION, OPEN_FADE_START_DELAY,
-                OPEN_FADE_DURATION, OPEN_CHILD_FADE_START_DELAY, OPEN_CHILD_FADE_DURATION,
+        mOpenCloseAnimator = ENABLE_MATERIAL_U_POPUP.get()
+                ? getMaterialUOpenCloseAnimator(
+                true,
+                OPEN_DURATION_U,
+                OPEN_FADE_START_DELAY_U,
+                OPEN_FADE_DURATION_U,
+                OPEN_CHILD_FADE_START_DELAY_U,
+                OPEN_CHILD_FADE_DURATION_U,
+                EMPHASIZED_DECELERATE)
+                : getOpenCloseAnimator(
+                true,
+                OPEN_DURATION,
+                OPEN_FADE_START_DELAY,
+                OPEN_FADE_DURATION,
+                OPEN_CHILD_FADE_START_DELAY,
+                OPEN_CHILD_FADE_DURATION,
                 DECELERATED_EASE);
+
         onCreateOpenAnimation(mOpenCloseAnimator);
         mOpenCloseAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -678,6 +663,7 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         }
     }
 
+
     protected void animateClose() {
         if (!mIsOpen) {
             return;
@@ -690,6 +676,24 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         mOpenCloseAnimator = getOpenCloseAnimator(false, CLOSE_DURATION, CLOSE_FADE_START_DELAY,
                 CLOSE_FADE_DURATION, CLOSE_CHILD_FADE_START_DELAY, CLOSE_CHILD_FADE_DURATION,
                 ACCELERATED_EASE);
+
+        mOpenCloseAnimator = ENABLE_MATERIAL_U_POPUP.get()
+                ? getMaterialUOpenCloseAnimator(
+                false,
+                CLOSE_DURATION_U,
+                CLOSE_FADE_START_DELAY_U,
+                CLOSE_FADE_DURATION_U,
+                CLOSE_CHILD_FADE_START_DELAY_U,
+                CLOSE_CHILD_FADE_DURATION_U,
+                EMPHASIZED_ACCELERATE)
+                : getOpenCloseAnimator(false,
+                CLOSE_DURATION,
+                CLOSE_FADE_START_DELAY,
+                CLOSE_FADE_DURATION,
+                CLOSE_CHILD_FADE_START_DELAY,
+                CLOSE_CHILD_FADE_DURATION,
+                ACCELERATED_EASE);
+
         onCreateCloseAnimation(mOpenCloseAnimator);
         mOpenCloseAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -703,6 +707,59 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
             }
         });
         mOpenCloseAnimator.start();
+    }
+
+    protected AnimatorSet getMaterialUOpenCloseAnimator(boolean isOpening, int scaleDuration,
+                                                        int fadeStartDelay, int fadeDuration, int childFadeStartDelay, int childFadeDuration,
+                                                        Interpolator interpolator) {
+
+        int arrowCenter = mArrowOffsetHorizontal + mArrowWidth / 2;
+        if (mIsArrowRotated) {
+            setPivotX(mIsLeftAligned ? 0f : getMeasuredWidth());
+            setPivotY(arrowCenter);
+        } else {
+            setPivotX(mIsLeftAligned ? arrowCenter : getMeasuredWidth() - arrowCenter);
+            setPivotY(mIsAboveIcon ? getMeasuredHeight() : 0f);
+        }
+
+        float[] alphaValues = isOpening ? new float[]{0, 1} : new float[]{1, 0};
+        float[] scaleValues = isOpening ? new float[]{0.5f, 1.02f} : new float[]{1f, 0.5f};
+        Animator alpha = getAnimatorOfFloat(this, View.ALPHA, fadeDuration, fadeStartDelay,
+                LINEAR, alphaValues);
+        Animator arrowAlpha = getAnimatorOfFloat(mArrow, View.ALPHA, fadeDuration, fadeStartDelay,
+                LINEAR, alphaValues);
+        Animator scaleY = getAnimatorOfFloat(this, View.SCALE_Y, scaleDuration, 0, interpolator,
+                scaleValues);
+        Animator scaleX = getAnimatorOfFloat(this, View.SCALE_X, scaleDuration, 0, interpolator,
+                scaleValues);
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        if (isOpening) {
+            float[] scaleValuesOvershoot = new float[]{1.02f, 1f};
+            PathInterpolator overshootInterpolator = new PathInterpolator(0.3f, 0, 0.33f, 1f);
+            Animator overshootY = getAnimatorOfFloat(this, View.SCALE_Y,
+                    OPEN_OVERSHOOT_DURATION_U, scaleDuration, overshootInterpolator,
+                    scaleValuesOvershoot);
+            Animator overshootX = getAnimatorOfFloat(this, View.SCALE_X,
+                    OPEN_OVERSHOOT_DURATION_U, scaleDuration, overshootInterpolator,
+                    scaleValuesOvershoot);
+
+            animatorSet.playTogether(alpha, arrowAlpha, scaleY, scaleX, overshootX, overshootY);
+        } else {
+            animatorSet.playTogether(alpha, arrowAlpha, scaleY, scaleX);
+        }
+
+        fadeInChildViews(this, alphaValues, childFadeStartDelay, childFadeDuration, animatorSet);
+        return animatorSet;
+    }
+
+    private Animator getAnimatorOfFloat(View view, Property<View, Float> property,
+                                        int duration, int startDelay, Interpolator interpolator, float... values) {
+        Animator animator = ObjectAnimator.ofFloat(view, property, values);
+        animator.setDuration(duration);
+        animator.setInterpolator(interpolator);
+        animator.setStartDelay(startDelay);
+        return animator;
     }
 
     /**

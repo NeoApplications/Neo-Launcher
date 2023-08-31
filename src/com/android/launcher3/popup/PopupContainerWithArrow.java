@@ -295,17 +295,7 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
             mDeepShortcutContainer = findViewById(R.id.deep_shortcuts_container);
         }
         if (hasDeepShortcuts) {
-            // Remove the widget shortcut fom the list
-            List<SystemShortcut> systemShortcuts = shortcuts
-                    .stream()
-                    .filter(shortcut -> !(shortcut instanceof SystemShortcut.Widgets))
-                    .collect(Collectors.toList());
-            Optional<SystemShortcut.Widgets> widgetShortcutOpt = shortcuts
-                    .stream()
-                    .filter(shortcut -> shortcut instanceof SystemShortcut.Widgets)
-                    .map(SystemShortcut.Widgets.class::cast)
-                    .findFirst();
-
+            List<SystemShortcut> systemShortcuts = getNonWidgetSystemShortcuts(shortcuts);
             // if there are deep shortcuts, we might want to increase the width of shortcuts to fit
             // horizontally laid out system shortcuts.
             mContainerWidth = Math.max(mContainerWidth,
@@ -321,11 +311,10 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
                 mDeepShortcuts.add(v);
             }
             updateHiddenShortcuts();
-
+            Optional<SystemShortcut.Widgets> widgetShortcutOpt = getWidgetShortcut(shortcuts);
             if (widgetShortcutOpt.isPresent()) {
                 if (mWidgetContainer == null) {
-                    mWidgetContainer = inflateAndAdd(R.layout.widget_shortcut_container,
-                            this);
+                    mWidgetContainer = inflateAndAdd(R.layout.widget_shortcut_container, this, 0);
                 }
                 initializeWidgetShortcut(mWidgetContainer, widgetShortcutOpt.get());
             }
@@ -614,17 +603,6 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
         view.setTag(info);
         view.setOnClickListener(info);
         return view;
-    }
-
-    /**
-     * Returns an index for inserting a shortcut into a container.
-     */
-    private int getInsertIndexForSystemShortcut(ViewGroup container, SystemShortcut shortcut) {
-        final View separator = container.findViewById(R.id.separator);
-
-        return separator != null && shortcut.isLeftGroup() ?
-                container.indexOfChild(separator) :
-                container.getChildCount();
     }
 
     /**
