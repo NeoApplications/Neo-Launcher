@@ -10,7 +10,7 @@ buildscript {
 }
 
 val vAccompanist = "0.31.4-beta"
-val vCompose = "1.5.0"
+val vCompose = "1.5.0-beta03"
 val vComposeCompiler = "1.5.1"
 val vKotlin = "1.9.0"
 val vLifecycle = "2.6.1"
