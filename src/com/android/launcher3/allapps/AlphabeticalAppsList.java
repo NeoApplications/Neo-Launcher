@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
+
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -34,10 +36,9 @@ import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.OmegaUtilsKt;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -88,7 +89,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     // The of ordered component names as a result of a search query
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
     private AllAppsGridAdapter<T> mAdapter;
-    private AppInfoComparator mAppNameComparator;
+    private Comparator<AppInfo> mAppNameComparator;
     private final int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
@@ -100,7 +101,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                                 WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
-        mAppNameComparator = new AppInfoComparator(context);
         mWorkProviderManager = workProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().inv.numAllAppsColumns;
         if (mAllAppsStore != null) {
@@ -108,6 +108,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
 
         prefs = Utilities.getOmegaPrefs(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
         mLauncher = BaseDraggingActivity.fromContext(context);
     }
 
@@ -212,16 +213,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         // Sort the list of apps
         mApps.clear();
+        mAppNameComparator = getAllAppsComparator(mLauncher, prefs.getDrawerSortMode().getValue());
 
-        // Sort the list of apps
-        List<AppInfo> unsortedApps = Arrays.asList(mAllAppsStore.getApps());
-        OmegaUtilsKt.sortApps(unsortedApps, mLauncher, prefs.getDrawerSortMode().getValue());
-        AppInfo[] sortedApps = unsortedApps.toArray(AppInfo.EMPTY_ARRAY);
-
-        Stream<AppInfo> appSteam = Stream.of(sortedApps);
+        Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
         if (!hasSearchResults() && mItemFilter != null) {
             appSteam = appSteam.filter(mItemFilter);
         }
+        appSteam = appSteam.sorted(mAppNameComparator);
 
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections

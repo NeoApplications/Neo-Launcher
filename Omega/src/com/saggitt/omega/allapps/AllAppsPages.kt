@@ -8,8 +8,8 @@ import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.groups.CustomFilter
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.getAllAppsComparator
 import com.saggitt.omega.util.prefs
-import com.saggitt.omega.util.sortApps
 
 class AllAppsPages(
     val context: Context,
@@ -40,10 +40,7 @@ class AllAppsPages(
             pageCount++
         }
 
-        appList.sortApps(
-            context,
-            context.prefs.drawerSortMode.getValue()
-        )
+        appList.sortWith(getAllAppsComparator(context, context.prefs.drawerSortMode.getValue()))
         var initialApp = 0
         var endApp = appsPerPage
         for (page in 0 until pageCount) {
