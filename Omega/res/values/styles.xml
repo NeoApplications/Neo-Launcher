@@ -147,6 +147,7 @@
         <item name="bottomSheetNavBarColor">#00000000</item>
         <item name="colorBackgroundFloating">?backgroundColor</item>
         <item name="android:colorPrimary">@color/grey_900</item>
+        <item name="backgroundColor">?backgroundColor</item>
     </style>
 
     <style name="WeatherWidget" />

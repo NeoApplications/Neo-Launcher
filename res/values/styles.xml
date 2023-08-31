@@ -252,7 +252,6 @@
         <item name="android:paddingRight">@dimen/dynamic_grid_cell_padding_x</item>
     </style>
 
-
     <!-- Icon displayed on the workspace -->
     <style name="BaseIcon.Workspace.Shadows" parent="BaseIcon">
         <item name="android:shadowRadius">2.0</item>
