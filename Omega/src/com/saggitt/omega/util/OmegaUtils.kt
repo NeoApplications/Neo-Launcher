@@ -290,29 +290,29 @@ fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, option
 fun UserCache.getUserForProfileId(profileId: Int) =
     userProfiles.find { it.toString() == "UserHandle{$profileId}" }
 
-fun MutableList<AppInfo>.sortApps(context: Context, sortType: Int) {
+fun getAllAppsComparator(context: Context, sortType: Int): Comparator<AppInfo> {
     val pm: PackageManager = context.packageManager
-    when (sortType) {
-        Config.SORT_ZA -> sortWith(compareBy(Collator.getInstance().reversed()) {
+    return when (sortType) {
+        Config.SORT_ZA              -> compareBy(Collator.getInstance().reversed()) {
             it.title.toString().lowercase()
-        })
+        }
 
-        Config.SORT_MOST_USED -> {
+        Config.SORT_MOST_USED       -> {
             val repository = AppTrackerRepository.INSTANCE[context]
             val appsCounter = repository.getAppsCount()
             val mostUsedComparator = AppUsageComparator(appsCounter)
-            sortWith(mostUsedComparator)
+            mostUsedComparator
         }
 
-        Config.SORT_BY_COLOR -> sortWith(AppColorComparator(context))
+        Config.SORT_BY_COLOR        -> AppColorComparator(context)
 
-        Config.SORT_BY_INSTALL_DATE -> sortWith(InstallTimeComparator(pm))
+        Config.SORT_BY_INSTALL_DATE -> InstallTimeComparator(pm)
 
-        Config.SORT_AZ -> sortWith(compareBy(Collator.getInstance()) {
+        Config.SORT_AZ              -> compareBy(Collator.getInstance()) {
             it.title.toString().lowercase()
-        })
+        }
 
-        else -> sortWith(AppInfoComparator(context))
+        else                        -> AppInfoComparator(context)
     }
 }
 
