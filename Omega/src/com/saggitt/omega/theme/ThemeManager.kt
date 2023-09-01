@@ -82,7 +82,7 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         updateTheme()
     }
 
-    fun updateTheme(accentUpdated: Boolean = false) {
+    private fun updateTheme(accentUpdated: Boolean = false) {
         val theme = prefs.profileTheme.getValue()
         val isDark = when {
             theme.hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode

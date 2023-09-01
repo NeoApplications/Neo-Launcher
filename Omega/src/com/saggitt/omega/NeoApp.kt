@@ -32,14 +32,13 @@ import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.ThemeManager
+import com.saggitt.omega.util.minSDK
 import org.chickenhook.restrictionbypass.Unseal
 import java.io.File
 
 class NeoApp : Application() {
-    private val TAG = "OmegaApp"
     val activityHandler = ActivityHandler()
     var accessibilityService: OmegaAccessibilityService? = null
-    //val smartspace by lazy { OmegaSmartSpaceController(this) }
 
     override fun onCreate() {
         super.onCreate()
@@ -49,7 +48,7 @@ class NeoApp : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-        if (NeoApp.minSDK(Build.VERSION_CODES.P)) {
+        if (minSDK(Build.VERSION_CODES.P)) {
             try {
                 Unseal.unseal()
                 Log.i(TAG, "Unseal success!")
@@ -172,9 +171,7 @@ class NeoApp : Application() {
         var instance: NeoApp? = null
             private set
 
-        fun minSDK(sdk: Int): Boolean {
-            return Build.VERSION.SDK_INT >= sdk
-        }
+        private const val TAG = "OmegaApp"
     }
 }
 

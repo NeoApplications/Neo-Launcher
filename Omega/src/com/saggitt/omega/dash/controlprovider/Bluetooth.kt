@@ -27,17 +27,17 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import com.android.launcher3.R
-import com.saggitt.omega.NeoApp
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Bluetooth
 import com.saggitt.omega.dash.DashControlProvider
+import com.saggitt.omega.util.minSDK
 
 class Bluetooth(context: Context) : DashControlProvider(context) {
     private val bm = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     override val itemId = 13
     override val name = context.getString(R.string.dash_bluetooth)
     override val description = context.getString(R.string.dash_bluetooth_summary)
-    override val extendable = NeoApp.minSDK(Build.VERSION_CODES.TIRAMISU)
+    override val extendable = minSDK(Build.VERSION_CODES.TIRAMISU)
     override val icon = Phosphor.Bluetooth
 
     override var state: Boolean
@@ -50,7 +50,7 @@ class Bluetooth(context: Context) : DashControlProvider(context) {
                         Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    if (NeoApp.minSDK(Build.VERSION_CODES.S)) {
+                    if (minSDK(Build.VERSION_CODES.S)) {
                         ActivityCompat.requestPermissions(
                             context as Activity,
                             arrayOf(Manifest.permission.BLUETOOTH_CONNECT),

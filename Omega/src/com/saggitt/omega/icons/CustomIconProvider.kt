@@ -22,7 +22,13 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.*
+import android.content.Intent.ACTION_DATE_CHANGED
+import android.content.Intent.ACTION_PACKAGE_ADDED
+import android.content.Intent.ACTION_PACKAGE_CHANGED
+import android.content.Intent.ACTION_PACKAGE_REMOVED
+import android.content.Intent.ACTION_TIMEZONE_CHANGED
+import android.content.Intent.ACTION_TIME_CHANGED
+import android.content.Intent.ACTION_TIME_TICK
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
@@ -44,7 +50,6 @@ import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
-import com.saggitt.omega.NeoApp
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconPack
@@ -54,6 +59,7 @@ import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
 import com.saggitt.omega.util.getPackageVersionCode
 import com.saggitt.omega.util.isPackageInstalled
+import com.saggitt.omega.util.minSDK
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import org.xmlpull.v1.XmlPullParser
 import java.util.function.Supplier
@@ -170,7 +176,7 @@ class CustomIconProvider @JvmOverloads constructor(
         var defaultIcon =
             super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
         if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
-            NeoApp.minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
+                minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
         ) {
             defaultIcon = defaultIcon.monochrome
             return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {

@@ -16,11 +16,10 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.icons.ClockDrawableWrapper
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.saggitt.omega.NeoApp
-import com.saggitt.omega.NeoApp.Companion.minSDK
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
+import com.saggitt.omega.util.minSDK
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 
@@ -149,7 +148,7 @@ class IconPackProvider(private val context: Context) {
         val bg: Drawable = ColorDrawable(themedColors[0])
         val td = ThemedIconDrawable.ThemeData(res, iconEntry.packPackageName, resId)
         return if (drawable is AdaptiveIconDrawable) {
-            if (NeoApp.minSDK(Build.VERSION_CODES.TIRAMISU) && drawable.monochrome != null) {
+            if (minSDK(Build.VERSION_CODES.TIRAMISU) && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }
             } else {
                 val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }

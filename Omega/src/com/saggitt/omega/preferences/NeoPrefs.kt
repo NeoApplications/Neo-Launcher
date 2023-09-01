@@ -38,7 +38,6 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
-import com.saggitt.omega.NeoApp
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash
@@ -134,7 +133,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_GLOBAL_THEME,
         titleId = R.string.title__general_theme,
-        defaultValue = if (NeoApp.minSDK(Build.VERSION_CODES.S)) THEME_SYSTEM else THEME_WALLPAPER,
+            defaultValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_SYSTEM else THEME_WALLPAPER,
         entries = themeItems,
     )
 

@@ -24,10 +24,10 @@ import android.location.LocationManager
 import android.os.Build
 import android.provider.Settings
 import com.android.launcher3.R
-import com.saggitt.omega.NeoApp
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.MapPin
 import com.saggitt.omega.dash.DashControlProvider
+import com.saggitt.omega.util.minSDK
 
 class Location(context: Context) : DashControlProvider(context) {
     override val itemId = 14
@@ -40,7 +40,7 @@ class Location(context: Context) : DashControlProvider(context) {
         context.getSystemService(LOCATION_SERVICE) as LocationManager
 
     override var state: Boolean
-        get() = if (NeoApp.minSDK(Build.VERSION_CODES.P)) {
+        get() = if (minSDK(Build.VERSION_CODES.P)) {
             locationManager.isLocationEnabled
         } else {
             locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(

@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -371,4 +372,8 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
 fun getFolderPreviewAlpha(context: Context): Int {
     val prefs = NeoPrefs.getInstance(context)
     return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
+}
+
+fun minSDK(sdk: Int): Boolean {
+    return Build.VERSION.SDK_INT >= sdk
 }
