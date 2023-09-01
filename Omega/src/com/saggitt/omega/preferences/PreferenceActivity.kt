@@ -53,10 +53,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         currentTheme = themeOverride.getTheme(this)
         currentAccent = Color.Green.hashCode()
         setContent {
-            OmegaAppTheme(
-                darkTheme = themeOverride.getTheme(this) == themeSet.darkTheme,
-                blackTheme = themeOverride.getTheme(this) == themeSet.blackTheme
-            ) {
+            OmegaAppTheme {
                 navController = rememberNavController()
                 PrefsComposeView(navController)
             }

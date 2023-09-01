@@ -23,28 +23,85 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.saggitt.omega.util.isBlackTheme
+import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.preferences.THEME_BLACK
+import com.saggitt.omega.preferences.THEME_DARK
+import com.saggitt.omega.preferences.THEME_LIGHT
 import com.saggitt.omega.util.prefs
+import com.saggitt.omega.wallpaper.WallpaperColorsCompat
+import com.saggitt.omega.wallpaper.WallpaperManagerCompat
 
 @Composable
 fun OmegaAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    blackTheme: Boolean = isBlackTheme,
+        darkTheme: Boolean = isDarkTheme(),
+        blackTheme: Boolean = isBlackTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = when {
-            darkTheme && blackTheme -> BlackColors
-            darkTheme               -> DarkColors
-            else                    -> LightColors
-        }.copy(
+    val colorScheme = when {
+        darkTheme && blackTheme -> BlackColors
+        darkTheme -> DarkColors
+        else -> LightColors
+    }.copy(
             primary = Color(LocalContext.current.prefs.profileAccentColor.getColor()),
             surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getColor())
-        ),
-        content = content
     )
+
+    MaterialTheme(
+            colorScheme = colorScheme
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun isDarkTheme(): Boolean {
+    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.get().collectAsState(-1)
+    return when (theme.value) {
+        THEME_LIGHT -> false
+        THEME_DARK -> true
+        else -> isAutoThemeDark()
+    }
+}
+
+@Composable
+fun isBlackTheme(): Boolean {
+    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.get().collectAsState(-1)
+    return when (theme.value) {
+        THEME_BLACK -> true
+        else -> false
+    }
+}
+
+@Composable
+fun isAutoThemeDark() = when {
+    Utilities.ATLEAST_P -> isSystemInDarkTheme()
+    else -> wallpaperSupportsDarkTheme()
+}
+
+@Composable
+fun wallpaperSupportsDarkTheme(): Boolean {
+    val wallpaperManager = WallpaperManagerCompat.INSTANCE.get(LocalContext.current)
+    var supportsDarkTheme by remember { mutableStateOf(wallpaperManager.supportsDarkTheme) }
+
+    DisposableEffect(wallpaperManager) {
+        val listener = object : WallpaperManagerCompat.OnColorsChangedListenerCompat {
+            override fun onColorsChanged(colors: WallpaperColorsCompat?, which: Int) {
+                supportsDarkTheme = wallpaperManager.supportsDarkTheme
+            }
+        }
+        wallpaperManager.addOnChangeListener(listener)
+        onDispose { wallpaperManager.removeOnChangeListener(listener) }
+    }
+    return supportsDarkTheme
 }
 
 private val LightColors = lightColorScheme(
