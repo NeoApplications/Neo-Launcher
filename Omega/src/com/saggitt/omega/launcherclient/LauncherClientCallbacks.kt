@@ -20,5 +20,5 @@ package com.saggitt.omega.launcherclient
 
 interface LauncherClientCallbacks {
     fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean)
-    fun setPersistentFlags(flags: Int)
+    fun setPersistentFlags(myFlags: Int)
 }

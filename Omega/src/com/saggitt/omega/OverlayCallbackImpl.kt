@@ -19,6 +19,7 @@
 package com.saggitt.omega
 
 import android.app.Activity
+import androidx.lifecycle.asLiveData
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -29,23 +30,25 @@ import com.saggitt.omega.launcherclient.LauncherClientCallbacks
 import com.saggitt.omega.launcherclient.StaticInteger
 import com.saggitt.omega.preferences.NeoPrefs
 
-class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
+class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
     LauncherClientCallbacks, LauncherOverlayManager,
     IScrollCallback {
 
     private var mClient: LauncherClient? = null
-    private val mLauncher = launcher
-    private val prefs = NeoPrefs.getInstance(mLauncher)
-    private var enableFeed: Boolean = prefs.feedProvider.getValue() != ""
     private var mLauncherOverlayCallbacks: LauncherOverlayCallbacks? = null
     private var mWasOverlayAttached = false
-    var mFlagsChanged = false
+    private var mFlagsChanged = false
     private var mFlags = 0
+    private var feedEnabled = false
 
     init {
+        NeoPrefs.getInstance(launcher).feedProvider.get().asLiveData().observeForever {
+            feedEnabled = it != ""
+        }
+
         mClient = LauncherClient(
-            mLauncher, this, StaticInteger(
-                (if (enableFeed) 1 else 0) or 2 or 4 or 8
+                launcher, this, StaticInteger(
+                (if (feedEnabled) 1 else 0) or 2 or 4 or 8
             )
         )
     }
@@ -120,17 +123,17 @@ class OverlayCallbackImpl(launcher: Launcher) : LauncherOverlayManager.LauncherO
     override fun onServiceStateChanged(overlayAttached: Boolean) {
         if (overlayAttached != mWasOverlayAttached) {
             mWasOverlayAttached = overlayAttached
-            mLauncher.setLauncherOverlay(if (overlayAttached) this else null)
+            launcher.setLauncherOverlay(if (overlayAttached) this else null)
         }
     }
 
-    override fun setPersistentFlags(flags: Int) {
-        var flags = flags
+    override fun setPersistentFlags(myFlags: Int) {
+        var flags = myFlags
         flags = flags and (8 or 16)
         if (flags != mFlags) {
             mFlagsChanged = true
             mFlags = flags
-            Utilities.getDevicePrefs(mLauncher).edit().putInt(PREF_PERSIST_FLAGS, flags).apply()
+            Utilities.getDevicePrefs(launcher).edit().putInt(PREF_PERSIST_FLAGS, flags).apply()
         }
     }
 

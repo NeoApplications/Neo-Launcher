@@ -209,9 +209,7 @@ public class LauncherClient {
     }
 
     public final void onStart() {
-        Log.i("FEED", "1");
         if (!mDestroyed) {
-            Log.i("FEED", "2");
             mLauncherService.setStopped(false);
             reconnect();
             mActivityState |= 1;

@@ -25,20 +25,18 @@ import android.os.IBinder
 import android.util.Log
 import com.saggitt.omega.preferences.NeoPrefs
 
-open class BaseClientService(context: Context, flags: Int) : ServiceConnection {
+open class BaseClientService(val context: Context, flags: Int) : ServiceConnection {
     private var mConnected = false
-    private val mContext: Context = context
     private val mFlags = flags
-    private val mBridge: ServiceConnection = this
 
     fun connect(): Boolean {
         if (!mConnected) {
             try {
-                val prefs = NeoPrefs.getInstance(mContext)
+                val prefs = NeoPrefs.getInstance(context)
                 if (prefs.feedProvider.getValue() != "") {
-                    mConnected = mContext.bindService(
-                        LauncherClient.getIntent(mContext, false),
-                        mBridge,
+                    mConnected = context.bindService(
+                            LauncherClient.getIntent(context, false),
+                            this,
                         mFlags
                     )
                 }
@@ -51,7 +49,7 @@ open class BaseClientService(context: Context, flags: Int) : ServiceConnection {
 
     fun disconnect() {
         if (mConnected) {
-            mContext.unbindService(mBridge)
+            context.unbindService(this)
             mConnected = false
         }
     }
