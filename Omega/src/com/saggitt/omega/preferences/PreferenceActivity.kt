@@ -28,7 +28,6 @@ import android.os.ResultReceiver
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -36,6 +35,7 @@ import com.saggitt.omega.compose.navigation.PrefsComposeView
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.theme.ThemeOverride
+import com.saggitt.omega.util.prefs
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -51,7 +51,7 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         themeOverride = ThemeOverride(themeSet, this)
         themeOverride.applyTheme(this)
         currentTheme = themeOverride.getTheme(this)
-        currentAccent = Color.Green.hashCode()
+        currentAccent = prefs.profileAccentColor.getColor()
         setContent {
             OmegaAppTheme {
                 navController = rememberNavController()
