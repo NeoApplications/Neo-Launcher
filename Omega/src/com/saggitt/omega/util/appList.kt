@@ -23,7 +23,6 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.graphics.Bitmap
 import android.os.Handler
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -43,7 +42,6 @@ fun appsState(
     comparator: Comparator<App> = appComparator
 ): State<List<App>> {
     val context = LocalContext.current
-    val loadingState = remember { mutableStateOf(true) }
     val appsState = remember { mutableStateOf(emptyList<App>()) }
     LaunchedEffect(true) {
         Utilities.postAsyncCallback(Handler(MODEL_EXECUTOR.looper)) {
@@ -54,14 +52,8 @@ fun appsState(
                     .sortedWith(comparator)
                     .toList()
             appsState.value = appsList
-
-            loadingState.value = false
         }
     }
-    if (loadingState.value) {
-        CircularProgressIndicator()
-    }
-
     return appsState
 }
 
