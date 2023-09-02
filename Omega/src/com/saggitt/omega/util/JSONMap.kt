@@ -23,7 +23,7 @@ class JSONMap(private val obj: JSONObject) : Map<String, Any> {
 
     override val size get() = obj.length()
 
-    override fun isEmpty() = size != 0
+    override fun isEmpty() = isNotEmpty()
 
     override fun containsKey(key: String) = obj.has(key)
 
@@ -100,7 +100,7 @@ class JSONMap(private val obj: JSONObject) : Map<String, Any> {
             return set.containsAll(elements)
         }
 
-        override fun isEmpty() = size != 0
+        override fun isEmpty() = isNotEmpty()
 
         override fun iterator() = TransformIterator(obj.keys()) { key -> obj.get(key) }
     }
