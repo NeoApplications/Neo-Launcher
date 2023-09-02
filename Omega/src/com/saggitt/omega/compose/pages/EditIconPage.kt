@@ -40,7 +40,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,16 +104,16 @@ fun EditIconPage(
     }
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxHeight()
-            .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxHeight()
+                .fillMaxWidth()
 
     ) {
         Text(
             text = title,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 24.sp,
             textAlign = TextAlign.Center
@@ -123,11 +123,11 @@ fun EditIconPage(
 
         Row(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth()
-                .height(60.dp)
-                .clip(MaterialTheme.shapes.small)
-                .horizontalScroll(scrollState)
+                    .padding(24.dp)
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .horizontalScroll(scrollState)
 
         ) {
             //Original Icon
@@ -137,12 +137,12 @@ fun EditIconPage(
                 modifier = Modifier.requiredSize(60.dp)
             )
 
-            Divider(
+            HorizontalDivider(
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(start = 16.dp, end = 16.dp)
-                    .width(1.dp)
+                        .fillMaxHeight()
+                        .padding(start = 16.dp, end = 16.dp)
+                        .width(1.dp)
             )
 
             //Package Icons
@@ -168,20 +168,20 @@ fun EditIconPage(
                                     bitmap = drawableToBitmap(mIcon).asImageBitmap(),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .requiredSize(64.dp)
-                                        .padding(start = 8.dp, end = 8.dp)
-                                        .clickable {
-                                            val iconPickerItem = IconPickerItem(
-                                                pack.packPackageName,
-                                                iconEntry.name,
-                                                iconEntry.name,
-                                                iconEntry.type
-                                            )
-                                            scope.launch {
-                                                repo.setOverride(componentKey, iconPickerItem)
-                                                (context as Activity).finish()
+                                            .requiredSize(64.dp)
+                                            .padding(start = 8.dp, end = 8.dp)
+                                            .clickable {
+                                                val iconPickerItem = IconPickerItem(
+                                                        pack.packPackageName,
+                                                        iconEntry.name,
+                                                        iconEntry.name,
+                                                        iconEntry.type
+                                                )
+                                                scope.launch {
+                                                    repo.setOverride(componentKey, iconPickerItem)
+                                                    (context as Activity).finish()
+                                                }
                                             }
-                                        }
                                 )
                             }
                         }
@@ -190,12 +190,12 @@ fun EditIconPage(
             }
         }
 
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.outline,
             modifier = Modifier
-                .height(1.dp)
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp)
+                    .height(1.dp)
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp)
         )
 
         //Icon Packs
@@ -205,24 +205,24 @@ fun EditIconPage(
                     ListItemWithIcon(
                         title = iconPack.name,
                         modifier = Modifier
-                            .clickable {
-                                if (iconPack.packageName == "") {
-                                    navController.navigate("/${Routes.ICON_PICKER}/")
-                                } else {
-                                    navController.navigate("/${Routes.ICON_PICKER}/${iconPack.packageName}/")
+                                .clickable {
+                                    if (iconPack.packageName == "") {
+                                        navController.navigate("/${Routes.ICON_PICKER}/")
+                                    } else {
+                                        navController.navigate("/${Routes.ICON_PICKER}/${iconPack.packageName}/")
+                                    }
                                 }
-                            }
-                            .padding(start = 16.dp),
+                                .padding(start = 16.dp),
                         startIcon = {
                             Image(
                                 bitmap = drawableToBitmap(iconPack.icon).asImageBitmap(),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(44.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.background.copy(alpha = 0.12F)
-                                    )
+                                        .clip(CircleShape)
+                                        .size(44.dp)
+                                        .background(
+                                                MaterialTheme.colorScheme.background.copy(alpha = 0.12F)
+                                        )
                             )
                         },
                         horizontalPadding = 8.dp,
