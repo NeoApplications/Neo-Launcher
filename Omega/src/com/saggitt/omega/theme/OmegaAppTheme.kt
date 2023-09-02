@@ -47,7 +47,7 @@ fun OmegaAppTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
-        darkTheme && blackTheme -> BlackColors
+        blackTheme -> BlackColors
         darkTheme -> DarkColors
         else -> LightColors
     }.copy(
@@ -74,8 +74,8 @@ fun isDarkTheme(): Boolean {
 
 @Composable
 fun isBlackTheme(): Boolean {
-    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.get().collectAsState(-1)
-    return when (theme.value) {
+    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.getValue()
+    return when (theme) {
         THEME_BLACK -> true
         else -> false
     }
