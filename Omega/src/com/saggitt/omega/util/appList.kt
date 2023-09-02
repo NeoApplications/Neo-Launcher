@@ -23,8 +23,9 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.graphics.Bitmap
 import android.os.Handler
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,19 +43,25 @@ fun appsState(
     comparator: Comparator<App> = appComparator
 ): State<List<App>> {
     val context = LocalContext.current
+    val loadingState = remember { mutableStateOf(true) }
     val appsState = remember { mutableStateOf(emptyList<App>()) }
-    DisposableEffect(Unit) {
+    LaunchedEffect(true) {
         Utilities.postAsyncCallback(Handler(MODEL_EXECUTOR.looper)) {
             val launcherApps = context.getSystemService(LauncherApps::class.java)
+            val appsList = UserCache.INSTANCE.get(context).userProfiles.asSequence()
+                    .flatMap { launcherApps.getActivityList(null, it) }
+                    .map { App(context, it) }
+                    .sortedWith(comparator)
+                    .toList()
+            appsState.value = appsList
 
-            appsState.value = UserCache.INSTANCE.get(context).userProfiles.asSequence()
-                .flatMap { launcherApps.getActivityList(null, it) }
-                .map { App(context, it) }
-                .sortedWith(comparator)
-                .toList()
+            loadingState.value = false
         }
-        onDispose { }
     }
+    if (loadingState.value) {
+        CircularProgressIndicator()
+    }
+
     return appsState
 }
 
