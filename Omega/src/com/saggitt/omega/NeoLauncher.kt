@@ -72,7 +72,6 @@ import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.hasStoragePermission
 import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
@@ -139,15 +138,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             }
         }, null)
 
-        val idp = LauncherAppState.getIDP(this)
         coroutineScope.launch {
-            if (prefs.firstTimeRun.get().firstBlocking()) {
-                prefs.drawerGridColumns.set(idp.numAllAppsColumns)
-                prefs.desktopGridColumns.set(idp.numColumns)
-                prefs.desktopGridRows.set(idp.numRows)
-                prefs.dockNumIcons.set(idp.numShownHotseatIcons)
-                prefs.firstTimeRun.set(false)
-            }
             loadHiddenApps(prefs.drawerHiddenAppSet.getValue())
         }
 
