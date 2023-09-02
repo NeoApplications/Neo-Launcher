@@ -49,6 +49,6 @@ val BlackSurface = Color(0xFF212121)
 val BlackOnSurface = Color(0xFFE9ECEF)
 val BlackPrimary = Color(0xFF009688)
 val BlackOnPrimary = Color(0xFFE9E9E9)
-val BlackSurfaceVariant = Color(0xFF323639)
+val BlackSurfaceVariant = Color(0xFF212121)
 val BlackOnSurfaceVariant = Color(0xFFD9D9D9) // use for secondary text
 val BlackOutline = Color(0xFFE9E9E9)
