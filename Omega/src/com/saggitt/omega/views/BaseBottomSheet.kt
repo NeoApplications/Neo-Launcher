@@ -24,10 +24,12 @@ import android.util.AttributeSet
 import android.util.IntProperty
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Interpolator
 import com.android.launcher3.Insettable
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.anim.Interpolators
+import com.android.launcher3.anim.PendingAnimation
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.AbstractSlideInView
@@ -57,13 +59,13 @@ open class BaseBottomSheet @JvmOverloads constructor(
         clearNavBarColor()
     }
 
-    protected fun clearNavBarColor() {
+    private fun clearNavBarColor() {
         mLauncher.systemUiController.updateUiState(
             SystemUiController.UI_STATE_WIDGET_BOTTOM_SHEET, 0
         )
     }
 
-    protected fun setupNavBarColor() {
+    private fun setupNavBarColor() {
         val isSheetDark = Themes.getAttrBoolean(mLauncher, R.attr.isMainColorDark)
         mLauncher.systemUiController.updateUiState(
             SystemUiController.UI_STATE_WIDGET_BOTTOM_SHEET,
@@ -107,6 +109,11 @@ open class BaseBottomSheet @JvmOverloads constructor(
         )
     }
 
+    override fun addHintCloseAnim(
+            distanceToMove: Float, interpolator: Interpolator?, target: PendingAnimation) {
+        target.setInt(this, PADDING_BOTTOM, (distanceToMove + mInsets.bottom).toInt(), interpolator)
+    }
+
     companion object {
         private val PADDING_BOTTOM: IntProperty<View> =
             object : IntProperty<View>("paddingBottom") {
@@ -126,10 +133,5 @@ open class BaseBottomSheet @JvmOverloads constructor(
             return launcher.layoutInflater
                 .inflate(R.layout.base_bottom_sheet, launcher.dragLayer, false) as BaseBottomSheet
         }
-    }
-
-    init {
-        setWillNotDraw(false)
-        mContent = this
     }
 }
