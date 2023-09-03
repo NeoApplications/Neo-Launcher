@@ -158,7 +158,7 @@ fun StringSelectionPrefDialogUI(
         shape = RoundedCornerShape(cornerRadius),
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -225,7 +225,7 @@ fun StringMultiSelectionPrefDialogUI(
         shape = RoundedCornerShape(cornerRadius),
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -295,7 +295,7 @@ fun ResetCustomIconsDialog(
         shape = RoundedCornerShape(cornerRadius),
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
