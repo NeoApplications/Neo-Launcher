@@ -171,6 +171,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_THEMED_ICONS,
         defaultValue = Utilities.ATLEAST_T
     )
+
     var profileTransparentBgIcons = BooleanPref(
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,
@@ -218,13 +219,6 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = {
             legacyPrefs.savePreference(PrefKey.PROFILE_ICON_ADAPTIFY.name, it)
         }
-    )
-    var profileIconForceShapeless = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_SHAPELESS,
-        titleId = R.string.title_force_shapeless,
-        summaryId = R.string.summary_force_shapeless,
-        defaultValue = false,
     )
 
     var profileWindowCornerRadius = FloatPref(
@@ -276,13 +270,6 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = {
             legacyPrefs.savePreference(PrefKey.DESKTOP_ICON_ADD_INSTALLED.name, it)
         }
-    )
-
-    var desktopIconScaleEnforce = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DESKTOP_ICON_SCALE_ENFORCE,
-        titleId = R.string.title__dock_icon_size_enforce,
-        defaultValue = false,
     )
 
     val desktopIconScale = FloatPref(
@@ -499,13 +486,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    var dockIconScaleEnforce = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DOCK_ICON_SCALE_ENFORCE,
-        titleId = R.string.title__dock_icon_size_enforce,
-        defaultValue = false,
-    )
-
     val dockIconScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_ICON_SCALE,
@@ -689,17 +669,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
     val drawerLabelRows get() = if (drawerMultilineLabel.getValue()) 2 else 1
-
-    val drawerRowHeightScale = FloatPref(
-        dataStore = dataStore,
-        key = PrefKey.DRAWER_CELL_HEIGHT_SCALE,
-        titleId = R.string.title_drawer_row_height,
-        defaultValue = 1F,
-        maxValue = 2f,
-        minValue = 0.5f,
-        steps = 150,
-        specialOutputs = { "${(it * 100).roundToInt()}%" },
-    )
 
     val drawerSeparateWorkApps = BooleanPref(
         dataStore = dataStore,
@@ -1216,14 +1185,6 @@ class NeoPrefs private constructor(val context: Context) {
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
         CustomAdaptiveIconDrawable.sMask = shape.getMaskPath()
     }
-
-    var firstTimeRun = BooleanPref(
-        titleId = R.string.app_name,
-        dataStore = dataStore,
-        key = PrefKey.FIRST_TIME_RUN,
-        defaultValue = true,
-        onChange = {}
-    )
 
     companion object {
         @JvmField
