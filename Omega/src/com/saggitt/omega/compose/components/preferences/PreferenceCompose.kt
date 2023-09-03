@@ -103,13 +103,13 @@ fun BasePreference(
 
     ListItem(
         modifier = modifier
-            .fillMaxWidth()
-            .clip(
-                GroupItemShape(index, groupSize - 1)
-            )
-            .addIf(onClick != null) {
-                clickable(enabled = isEnabled, onClick = onClick!!)
-            },
+                .fillMaxWidth()
+                .clip(
+                        GroupItemShape(index, groupSize - 1)
+                )
+                .addIf(onClick != null) {
+                    clickable(enabled = isEnabled, onClick = onClick!!)
+                },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme
                 .surfaceColorAtElevation((rank * 24).dp),
@@ -264,13 +264,13 @@ fun SeekBarPreference(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                        .widthIn(min = 52.dp)
-                        .combinedClickable(
-                            onClick = {},
-                            onLongClick = {
-                                menuExpanded = !menuExpanded
-                            }
-                        )
+                            .widthIn(min = 52.dp)
+                            .combinedClickable(
+                                    onClick = {},
+                                    onLongClick = {
+                                        menuExpanded = !menuExpanded
+                                    }
+                            )
                 )
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
@@ -287,8 +287,8 @@ fun SeekBarPreference(
                 Spacer(modifier = Modifier.requiredWidth(8.dp))
                 Slider(
                     modifier = Modifier
-                        .requiredHeight(24.dp)
-                        .weight(1f),
+                            .requiredHeight(24.dp)
+                            .weight(1f),
                     value = currentValue,
                     valueRange = pref.minValue..pref.maxValue,
                     onValueChange = { currentValue = it },
@@ -451,10 +451,12 @@ fun GridSize2DPreference(
     isEnabled: Boolean = true,
     onClick: (() -> Unit) = {},
 ) {
+    val rows = pref.numRowsPref.get().collectAsState(initial = pref.numRowsPref.defaultValue)
+    val columns = pref.numColumnsPref.get().collectAsState(initial = pref.numColumnsPref.defaultValue)
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
-        summary = "${pref.numColumns}x${pref.numRows}",
+            summary = "${columns.value} x ${rows.value}",
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,

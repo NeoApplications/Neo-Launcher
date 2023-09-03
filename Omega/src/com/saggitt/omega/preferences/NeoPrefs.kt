@@ -360,8 +360,8 @@ class NeoPrefs private constructor(val context: Context) {
             titleId = R.string.title__desktop_grid_size,
             numColumnsPref = desktopGridColumns,
             numRowsPref = desktopGridRows,
-            columnsKey = "numRows",
-            rowsKey = "numColumns",
+                columnsKey = "numColumns",
+                rowsKey = "numRows",
             targetObject = LauncherAppState.getIDP(context),
             onChangeListener = reloadIcons
         )
