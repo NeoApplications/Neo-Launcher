@@ -18,29 +18,28 @@
 
 package com.saggitt.omega.preferences
 
-import com.android.launcher3.LauncherAppState
-import com.saggitt.omega.NeoLauncher
+import com.android.launcher3.InvariantDeviceProfile
+import com.android.launcher3.Launcher
 import com.saggitt.omega.blur.BlurWallpaperProvider
 
-class PreferencesChangeCallback(val launcher: NeoLauncher) {
-    fun recreate() {
-        if (launcher.shouldRecreate()) launcher.recreate()
-    }
+class PreferencesChangeCallback(val launcher: Launcher) {
 
-    fun reloadApps() {
-        val las = LauncherAppState.getInstance(launcher.applicationContext)
-        val idp = las.invariantDeviceProfile
-        idp.onPreferencesChanged(launcher.applicationContext)
-    }
+    private val idp: InvariantDeviceProfile
+        get() = InvariantDeviceProfile.INSTANCE.get(launcher)
 
-    fun updateSmartspaceProvider() {
-    }
-
-    fun updateBlur() {
-        BlurWallpaperProvider.getInstance(launcher).updateAsync()
+    fun reloadGrid() {
+        idp.onPreferencesChanged(launcher)
     }
 
     fun reloadAll() {
         launcher.model.forceReload()
+    }
+
+    fun recreate() {
+        launcher.recreate()
+    }
+
+    fun updateBlur() {
+        BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
 }

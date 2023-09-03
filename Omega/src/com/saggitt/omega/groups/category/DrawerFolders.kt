@@ -41,7 +41,7 @@ class DrawerFolders(val manager: AppGroupsManager) :
     }
 
     override fun onGroupsChanged(changeCallback: PreferencesChangeCallback) {
-        changeCallback.reloadApps()
+        changeCallback.reloadGrid()
     }
 
     override fun getGroupCreator(type: String): GroupCreator<Folder> {

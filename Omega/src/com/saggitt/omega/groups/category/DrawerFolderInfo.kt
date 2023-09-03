@@ -42,7 +42,7 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
     override fun onIconChanged() {
         super.onIconChanged()
         drawerFolder.context.prefs.withChangeCallback {
-            it.reloadApps()
+            it.reloadGrid()
         }
     }
 

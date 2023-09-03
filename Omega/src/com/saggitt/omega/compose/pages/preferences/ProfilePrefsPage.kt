@@ -83,7 +83,7 @@ fun ProfilePrefsPage() {
             null
         }
     )
-    val others = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val others = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {

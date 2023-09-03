@@ -72,6 +72,7 @@ import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
 import com.saggitt.omega.data.AppTrackerRepository;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
@@ -106,8 +107,10 @@ public class ItemClickHandler {
         } else if (tag instanceof AppInfo) {
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
             MODEL_EXECUTOR.execute(() -> {
-                if (Utilities.getOmegaPrefs(launcher).getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
-                    Utilities.getOmegaPrefs(launcher).reloadApps();
+                NeoPrefs prefs = NeoPrefs.getInstance(launcher);
+
+                if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
+                    prefs.reloadApps();
                 }
             });
 

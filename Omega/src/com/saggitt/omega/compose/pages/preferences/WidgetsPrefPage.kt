@@ -68,7 +68,7 @@ fun WidgetsPrefsPage() {
         dialogPref = pref
         openDialog.value = true
     }
-    val smartspacePrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val smartspacePrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.smartspaceEnable,
@@ -91,7 +91,7 @@ fun WidgetsPrefsPage() {
         )
     }
 
-    val notificationsPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val notificationsPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.notificationDots,
@@ -111,8 +111,8 @@ fun WidgetsPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

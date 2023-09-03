@@ -27,7 +27,6 @@ import android.provider.Settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -90,26 +89,16 @@ class NeoPrefs private constructor(val context: Context) {
 
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
-    val idp: InvariantDeviceProfile get() = InvariantDeviceProfile.INSTANCE.get(context)
 
-    private val reloadIcons = {
-        idp.onPreferencesChanged(context)
-    }
-
-    private val pokeChange = { pokeChange() }
-    private val updateBlur = { updateBlur() }
-    val recreate = { recreate() }
-    val reloadAll = { reloadAll() }
-    private val reloadGrid: () -> Unit = { idp.onPreferencesChanged(context) }
+    val updateBlur = { onChangeCallback?.updateBlur() }
+    val recreate = { onChangeCallback?.recreate() }
+    val reloadAll = { onChangeCallback?.reloadAll() }
+    val reloadGrid = { onChangeCallback?.reloadGrid() }
 
     fun reloadApps() {
         val las = LauncherAppState.getInstance(context)
         val idp = las.invariantDeviceProfile
         idp.onPreferencesChanged(context)
-    }
-
-    private fun updateSmartSpaceProvider() {
-        onChangeCallback?.updateSmartspaceProvider()
     }
 
     inline fun withChangeCallback(
@@ -119,7 +108,6 @@ class NeoPrefs private constructor(val context: Context) {
     }
 
     // Profile
-    // TODO themeResetCustomIcons (restore or revamp?)
 
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
@@ -153,7 +141,7 @@ class NeoPrefs private constructor(val context: Context) {
         entries = IconPackProvider.INSTANCE.get(context)
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
-        onChange = { reloadIcons }
+            onChange = { reloadGrid }
     )
 
     var profileIconShape = NavigationPref(
@@ -363,7 +351,7 @@ class NeoPrefs private constructor(val context: Context) {
                 columnsKey = "numColumns",
                 rowsKey = "numRows",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = reloadIcons
+                onChangeListener = { reloadGrid }
         )
     }
     val desktopGridSize by desktopGridSizeDelegate
@@ -373,7 +361,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_columns,
         selectDefaultValue = { numColumns },
         defaultValue = 4,
-        onChange = reloadGrid,
+            onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
@@ -384,7 +372,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_rows,
         selectDefaultValue = { numRows },
         defaultValue = 5,
-        onChange = reloadGrid,
+            onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
@@ -538,7 +526,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = dockNumIcons,
             columnsKey = "numHotseatIcons",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = reloadIcons
+                onChangeListener = { reloadGrid }
         )
     }
 
@@ -572,7 +560,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.HIDDEN_APPS,
-        onChange = { reloadApps() }
+            onChange = { reloadGrid }
     )
 
     var drawerProtectedAppsSet = StringSetPref(
@@ -581,7 +569,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.PROTECTED_APPS,
-        onChange = { reloadApps() }
+            onChange = { reloadGrid }
     )
 
     private val drawerGridSizeDelegate = ResettableLazy {
@@ -590,7 +578,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = drawerGridColumns,
             columnsKey = "numAllAppsColumns",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = reloadIcons
+                onChangeListener = { reloadGrid }
         )
     }
     val drawerGridSize by drawerGridSizeDelegate
@@ -603,7 +591,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
-        onChange = reloadGrid
+            onChange = { reloadGrid }
     )
 
     var drawerPopup = StringMultiSelectionPref(
@@ -822,7 +810,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
         defaultValue = true,
-        onChange = { pokeChange }
+            onChange = { pokeChange() }
     )
 
     val smartspaceCalendar = StringSelectionPref(
@@ -876,7 +864,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = OWMWeatherProvider::class.java.name,
         entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
     ) {
-        updateSmartSpaceProvider()
         pokeChange()
     }
 
@@ -892,7 +879,7 @@ class NeoPrefs private constructor(val context: Context) {
         ),
         entries = Config.smartspaceEventProviders,
         withIcons = true,
-        onChange = { updateSmartSpaceProvider() }
+            onChange = { pokeChange() }
     )
 
     val notificationCountFolder = BooleanPref(
@@ -1107,7 +1094,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     //Misc
     val customAppName =
-        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", reloadAll) {
+            object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll }) {
             override fun flattenKey(key: ComponentKey) = key.toString()
             override fun unflattenKey(key: String) = makeComponentKey(context, key)
             override fun flattenValue(value: String) = value
@@ -1158,18 +1145,6 @@ class NeoPrefs private constructor(val context: Context) {
 
     fun unregisterCallback() {
         onChangeCallback = null
-    }
-
-    fun recreate() {
-        onChangeCallback?.recreate()
-    }
-
-    private fun reloadAll() {
-        onChangeCallback?.reloadAll()
-    }
-
-    private fun updateBlur() {
-        onChangeCallback?.updateBlur()
     }
 
     private fun pokeChange() {

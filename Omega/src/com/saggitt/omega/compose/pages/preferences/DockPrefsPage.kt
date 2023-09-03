@@ -62,7 +62,7 @@ fun DockPrefsPage() {
         dialogPref = pref
         openDialog.value = true
     }
-    val dockPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val dockPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.dockHide,
@@ -84,8 +84,8 @@ fun DockPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

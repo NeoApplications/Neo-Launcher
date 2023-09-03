@@ -78,7 +78,7 @@ fun DesktopPrefsPage() {
         prefs.desktopAllowFullWidthWidgets,
             prefs.desktopWidgetCornerRadius
     )
-    val folderPrefs = remember(prefs.changePoker.collectAsState(initial = false).value) {
+    val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.desktopCustomFolderBackground,

@@ -84,7 +84,7 @@ fun DrawerPrefsPage() {
         prefs.drawerSeparateWorkApps,
         prefs.drawerSaveScrollPosition
     )
-    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = -1).value) {
+    val otherPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.drawerHiddenAppSet,
@@ -106,8 +106,8 @@ fun DrawerPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

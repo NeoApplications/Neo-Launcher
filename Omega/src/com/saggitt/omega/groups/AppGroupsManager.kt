@@ -38,7 +38,7 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         titleId = R.string.title_app_categorization_enable,
         summaryId = R.string.summary_app_categorization_enable,
         defaultValue = false,
-        onChange = {}
+            onChange = { onPrefsChanged() }
     )
 
     var categorizationType = StringPref(
@@ -47,13 +47,12 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         titleId = R.string.pref_appcategorization_style_text,
         defaultValue = "categorization_type_tabs",
         onChange = {
-
+            onPrefsChanged()
         }
     )
 
-
     val drawerTabs by lazy { CustomTabs(this) }
-    val flowerpotTabs by lazy { FlowerpotTabs(this) }
+    private val flowerpotTabs by lazy { FlowerpotTabs(this) }
     val drawerFolders by lazy { DrawerFolders(this) }
 
     fun getCurrentCategory(): Category {

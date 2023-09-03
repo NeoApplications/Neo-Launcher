@@ -89,7 +89,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
-
     val prefs: NeoPrefs by lazy { Utilities.getOmegaPrefs(this) }
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
@@ -334,8 +333,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             neoApp.restart(false)
         }
     }
-
-    fun shouldRecreate() = !sRestart
 
     inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
         val rect = Rect()
