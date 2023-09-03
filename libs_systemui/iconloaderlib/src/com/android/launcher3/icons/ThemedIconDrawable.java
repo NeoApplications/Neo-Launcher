@@ -75,7 +75,7 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
     private final Rect mBadgeBounds;
 
     protected ThemedIconDrawable(ThemedConstantState constantState) {
-        super(constantState.mBitmap, constantState.colorFg, constantState.mIsDisabled);
+        super(constantState.mBitmap, constantState.colorFg);
         bitmapInfo = constantState.bitmapInfo;
         colorBg = constantState.colorBg;
         colorFg = constantState.colorFg;
@@ -115,7 +115,7 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
 
     @Override
     public ConstantState getConstantState() {
-        return new ThemedConstantState(bitmapInfo, colorBg, colorFg, mIsDisabled);
+        return new ThemedConstantState(bitmapInfo, colorBg, colorFg);
     }
 
     static class ThemedConstantState extends FastBitmapConstantState {
@@ -123,9 +123,8 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
         final ThemedBitmapInfo bitmapInfo;
         final int colorFg, colorBg;
 
-        public ThemedConstantState(ThemedBitmapInfo bitmapInfo,
-                                   int colorBg, int colorFg, boolean isDisabled) {
-            super(bitmapInfo.icon, bitmapInfo.color, isDisabled);
+        public ThemedConstantState(ThemedBitmapInfo bitmapInfo, int colorBg, int colorFg) {
+            super(bitmapInfo.icon, bitmapInfo.color);
             this.bitmapInfo = bitmapInfo;
             this.colorBg = colorBg;
             this.colorFg = colorFg;
@@ -154,7 +153,7 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
         @Override
         public FastBitmapDrawable newThemedIcon(Context context) {
             int[] colors = getThemedColors(context);
-            FastBitmapDrawable drawable = new ThemedConstantState(this, colors[0], colors[1], false)
+            FastBitmapDrawable drawable = new ThemedConstantState(this, colors[0], colors[1])
                     .newDrawable();
             drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
             return drawable;
@@ -364,7 +363,7 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
 
     public static FastBitmapDrawable newDrawable(BitmapInfo info, Context context) {
         int[] colors = getColors(context);
-        return new ThemedConstantState((ThemedBitmapInfo) info, colors[0], colors[1], false).newDrawable();
+        return new ThemedConstantState((ThemedBitmapInfo) info, colors[0], colors[1]).newDrawable();
     }
 
     /**

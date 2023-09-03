@@ -68,14 +68,10 @@ public abstract class DragController<T extends ActivityContext>
      */
     protected DragDriver mDragDriver = null;
 
-    /**
-     * Options controlling the drag behavior.
-     */
+    /** Options controlling the drag behavior. */
     protected DragOptions mOptions;
 
-    /**
-     * Coordinate for motion down event
-     */
+    /** Coordinate for motion down event */
     protected final Point mMotionDown = new Point();
     /** Coordinate for last touch event **/
     protected final Point mLastTouch = new Point();
@@ -94,6 +90,7 @@ public abstract class DragController<T extends ActivityContext>
     protected int mDistanceSinceScroll = 0;
 
     protected boolean mIsInPreDrag;
+
     private final int DRAG_VIEW_SCALE_DURATION_MS = 500;
 
     /**
@@ -310,6 +307,7 @@ public abstract class DragController<T extends ActivityContext>
                 } else if (mIsInPreDrag) {
                     animateDragViewToOriginalPosition(null, null, -1);
                 }
+                mDragObject.dragView.clearAnimation();
                 mDragObject.dragView = null;
             }
 

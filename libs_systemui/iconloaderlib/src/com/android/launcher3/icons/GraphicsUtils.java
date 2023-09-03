@@ -15,10 +15,14 @@
  */
 package com.android.launcher3.icons;
 
+import static com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable.MASK_SIZE;
+
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Region;
@@ -28,6 +32,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.PathParser;
 
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
@@ -101,7 +107,20 @@ public class GraphicsUtils {
     /**
      * Returns the default path to be used by an icon
      */
-    public static Path getShapePath(int size) {
+    public static Path getShapePath(@NonNull Context context, int size) {
+        if (IconProvider.CONFIG_ICON_MASK_RES_ID != Resources.ID_NULL) {
+            Path path = PathParser.createPathFromPathData(
+                    context.getString(IconProvider.CONFIG_ICON_MASK_RES_ID));
+            if (path != null) {
+                if (size != MASK_SIZE) {
+                    Matrix m = new Matrix();
+                    float scale = ((float) size) / MASK_SIZE;
+                    m.setScale(scale, scale);
+                    path.transform(m);
+                }
+                return path;
+            }
+        }
         AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);

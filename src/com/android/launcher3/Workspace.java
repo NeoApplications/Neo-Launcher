@@ -2659,8 +2659,6 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             mTargetCell = findNearestArea((int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1], minSpanX, minSpanY, mDragTargetLayout,
                     mTargetCell);
-            mLastReorderX = mTargetCell[0];
-            mLastReorderY = mTargetCell[1];
 
             mTargetCell = mDragTargetLayout.performReorder((int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1], minSpanX, minSpanY, spanX, spanY,
@@ -2672,7 +2670,6 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
                 setDragMode(DRAG_MODE_REORDER);
             }
 
-            boolean resize = resultSpan[0] != spanX || resultSpan[1] != spanY;
             mDragTargetLayout.visualizeDropLocation(mTargetCell[0], mTargetCell[1],
                     resultSpan[0], resultSpan[1], dragObject);
         }

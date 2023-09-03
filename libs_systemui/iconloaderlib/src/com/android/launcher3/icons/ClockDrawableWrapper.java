@@ -536,15 +536,15 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
 
         @Override
         public ConstantState getConstantState() {
-            return new ClockConstantState(mInfo, isDisabled());
+            return new ClockConstantState(mInfo);
         }
 
         private static class ClockConstantState extends FastBitmapConstantState {
 
             private final ClockBitmapInfo mInfo;
 
-            ClockConstantState(ClockBitmapInfo info, boolean isDisabled) {
-                super(info.icon, info.color, isDisabled);
+            ClockConstantState(ClockBitmapInfo info) {
+                super(info.icon, info.color);
                 mInfo = info;
             }
 

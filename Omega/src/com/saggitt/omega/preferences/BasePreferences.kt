@@ -60,7 +60,7 @@ open class IntPref(
     private val key: Preferences.Key<Int>,
     val defaultValue: Int = -1,
     val minValue: Int = 0,
-    val maxValue: Int = "FFFFFF".toInt(16),
+    val maxValue: Int = 25,
     val steps: Int = 1,
     val specialOutputs: ((Int) -> String) = Int::toString,
 ) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
@@ -283,7 +283,6 @@ open class StringSetPref(
     val navRoute: String = "",
     val onChange: () -> Unit = {}
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
-    private val valueList = arrayListOf<String>()
     override fun get(): Flow<Set<String>> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
@@ -437,11 +436,6 @@ class ResettableLazy<out T : Any>(private val create: () -> T) {
             initialized = true
         }
         return currentValue!!
-    }
-
-    fun resetValue() {
-        initialized = false
-        currentValue = null
     }
 }
 

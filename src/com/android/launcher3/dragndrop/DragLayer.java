@@ -113,6 +113,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         mDragController = dragController;
         recreateControllers();
         mWorkspaceDragScrim = new Scrim(this);
+        workspace.addOverlayCallback(this);
     }
 
     @Override
@@ -482,16 +483,5 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         }
         setTranslationX(transX);
         getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
-    }
-
-    /**
-     * Called when one handed mode state changed.
-     *
-     * @param activated true if one handed mode activated, false otherwise.
-     */
-    public void onOneHandedModeStateChanged(boolean activated) {
-        for (TouchController controller : mControllers) {
-            controller.onOneHandedModeStateChanged(activated);
-        }
     }
 }

@@ -66,6 +66,9 @@ public class GridCustomizationsProvider extends ContentProvider {
 
     private static final String KEY_SURFACE_PACKAGE = "surface_package";
     private static final String KEY_CALLBACK = "callback";
+    public static final String KEY_HIDE_BOTTOM_ROW = "hide_bottom_row";
+
+    private static final int MESSAGE_ID_UPDATE_PREVIEW = 1337;
 
     private final ArrayMap<IBinder, PreviewLifecycleObserver> mActivePreviews = new ArrayMap<>();
 
@@ -223,7 +226,14 @@ public class GridCustomizationsProvider extends ContentProvider {
 
         @Override
         public boolean handleMessage(Message message) {
-            destroyObserver(this);
+            if (destroyed) {
+                return true;
+            }
+            if (message.what == MESSAGE_ID_UPDATE_PREVIEW) {
+                renderer.hideBottomRow(message.getData().getBoolean(KEY_HIDE_BOTTOM_ROW));
+            } else {
+                destroyObserver(this);
+            }
             return true;
         }
 

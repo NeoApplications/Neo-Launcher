@@ -229,6 +229,10 @@ public final class FeatureFlags {
     public static final BooleanFlag ENABLE_SEARCH_UNINSTALLED_APPS = getReleaseFlag(270395269,
             "ENABLE_SEARCH_UNINSTALLED_APPS", false, "Search uninstalled app results.");
 
+    public static final BooleanFlag ENABLE_DOWNLOAD_APP_UX_V2 = getReleaseFlag(270395134,
+            "ENABLE_DOWNLOAD_APP_UX_V2", true, "Updates the download app UX"
+                    + " to have better visuals");
+
     public static final BooleanFlag SECONDARY_DRAG_N_DROP_TO_PIN = getDebugFlag(270395140,
             "SECONDARY_DRAG_N_DROP_TO_PIN", false,
             "Enable dragging and dropping to pin apps within secondary display");

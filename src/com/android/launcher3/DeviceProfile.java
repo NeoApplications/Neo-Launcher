@@ -510,11 +510,13 @@ public class DeviceProfile {
 
         dimensionOverrideProvider.accept(this);
 
-        mDotRendererWorkSpace = createDotRenderer(iconSizePx, dotRendererCache);
-        mDotRendererAllApps = createDotRenderer(allAppsIconSizePx, dotRendererCache);
+        // This is done last, after iconSizePx is calculated above.
+        mDotRendererWorkSpace = createDotRenderer(context, iconSizePx, dotRendererCache);
+        mDotRendererAllApps = createDotRenderer(context, allAppsIconSizePx, dotRendererCache);
     }
 
-    private DotRenderer createDotRenderer(int size, @NonNull SparseArray<DotRenderer> cache) {
+    private DotRenderer createDotRenderer(
+            @NonNull Context context, int size, @NonNull SparseArray<DotRenderer> cache) {
         DotRenderer renderer = cache.get(size);
         // This is done last, after iconSizePx is calculated above.
         float dotSize = 0.228f;
@@ -523,7 +525,7 @@ public class DeviceProfile {
         }
 
         if (renderer == null) {
-            renderer = new DotRenderer(size, getShapePath(DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, dotSize);
+            renderer = new DotRenderer(size, getShapePath(context,DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, dotSize);
             cache.put(size, renderer);
         }
         return renderer;
