@@ -24,11 +24,12 @@ import android.util.AttributeSet
 import android.util.IntProperty
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Interpolator
 import com.android.launcher3.Insettable
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.android.launcher3.anim.Interpolators
+import com.android.launcher3.anim.PendingAnimation
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.AbstractSlideInView
@@ -36,7 +37,7 @@ import com.android.launcher3.views.AbstractSlideInView
 open class BaseBottomSheet @JvmOverloads constructor(
     context: Context?,
     attrs: AttributeSet?,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : AbstractSlideInView<Launcher>(context, attrs, defStyleAttr), Insettable {
     private val mInsets: Rect = Rect()
     private val mLauncher = Launcher.getLauncher(context)
@@ -58,13 +59,13 @@ open class BaseBottomSheet @JvmOverloads constructor(
         clearNavBarColor()
     }
 
-    protected fun clearNavBarColor() {
+    private fun clearNavBarColor() {
         mLauncher.systemUiController.updateUiState(
             SystemUiController.UI_STATE_WIDGET_BOTTOM_SHEET, 0
         )
     }
 
-    protected fun setupNavBarColor() {
+    private fun setupNavBarColor() {
         val isSheetDark = Themes.getAttrBoolean(mLauncher, R.attr.isMainColorDark)
         mLauncher.systemUiController.updateUiState(
             SystemUiController.UI_STATE_WIDGET_BOTTOM_SHEET,
@@ -100,19 +101,17 @@ open class BaseBottomSheet @JvmOverloads constructor(
         // Extend behind left, right, and bottom insets.
         val leftInset = insets.left - mInsets.left
         val rightInset = insets.right - mInsets.right
-        var bottomInset = insets.bottom - mInsets.bottom
+        val bottomInset = insets.bottom - mInsets.bottom
         mInsets.set(insets)
-        if (!Utilities.ATLEAST_OREO && !mLauncher.deviceProfile.isVerticalBarLayout) {
-            val navBarBg = findViewById<View>(R.id.nav_bar_bg)
-            val navBarBgLp = navBarBg.layoutParams
-            navBarBgLp.height = bottomInset
-            navBarBg.layoutParams = navBarBgLp
-            bottomInset = 0
-        }
         setPadding(
             paddingLeft + leftInset, paddingTop,
             paddingRight + rightInset, paddingBottom + bottomInset
         )
+    }
+
+    override fun addHintCloseAnim(
+            distanceToMove: Float, interpolator: Interpolator?, target: PendingAnimation) {
+        target.setInt(this, PADDING_BOTTOM, (distanceToMove + mInsets.bottom).toInt(), interpolator)
     }
 
     companion object {
@@ -134,10 +133,5 @@ open class BaseBottomSheet @JvmOverloads constructor(
             return launcher.layoutInflater
                 .inflate(R.layout.base_bottom_sheet, launcher.dragLayer, false) as BaseBottomSheet
         }
-    }
-
-    init {
-        setWillNotDraw(false)
-        mContent = this
     }
 }

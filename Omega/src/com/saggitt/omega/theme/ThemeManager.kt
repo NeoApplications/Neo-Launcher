@@ -21,8 +21,7 @@ package com.saggitt.omega.theme
 import android.content.Context
 import android.content.res.Configuration
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
-import com.saggitt.omega.omegaApp
+import com.saggitt.omega.neoApp
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.hasFlag
@@ -34,7 +33,7 @@ import com.saggitt.omega.wallpaper.WallpaperManagerCompat
 
 class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChangedListenerCompat {
 
-    private val app = context.omegaApp
+    private val app = context.neoApp
     private val wallpaperManager = WallpaperManagerCompat.INSTANCE.get(context)
     private val listeners = HashSet<ThemeOverride>()
     private val prefs = context.prefs
@@ -47,7 +46,6 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
             }
         }
 
-    val supportsDarkText get() = false
     val displayName: String
         get() {
             val values = context.resources.getIntArray(R.array.themeValues)
@@ -69,12 +67,6 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         themeOverride.applyTheme(themeFlags)
     }
 
-    fun removeOverride(themeOverride: ThemeOverride) {
-        synchronized(listeners) {
-            listeners.remove(themeOverride)
-        }
-    }
-
     fun getCurrentFlags() = themeFlags
 
     private fun removeDeadListeners() {
@@ -90,7 +82,7 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         updateTheme()
     }
 
-    fun updateTheme(accentUpdated: Boolean = false) {
+    private fun updateTheme(accentUpdated: Boolean = false) {
         val theme = prefs.profileTheme.getValue()
         val isDark = when {
             theme.hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
@@ -144,15 +136,7 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         const val THEME_AUTO_MASK = THEME_FOLLOW_WALLPAPER or THEME_FOLLOW_NIGHT_MODE
         const val THEME_DARK_MASK = THEME_DARK or THEME_AUTO_MASK
 
-        fun isDark(flags: Int) = flags.hasFlag(THEME_DARK)
+        fun isDark(flags: Int) = flags.hasFlag(THEME_DARK_MASK)
         fun isBlack(flags: Int) = flags.hasFlag(THEME_USE_BLACK)
-
-        fun getDefaultTheme(): Int {
-            return if (Utilities.ATLEAST_Q) {
-                THEME_FOLLOW_NIGHT_MODE
-            } else {
-                THEME_FOLLOW_WALLPAPER
-            }
-        }
     }
 }

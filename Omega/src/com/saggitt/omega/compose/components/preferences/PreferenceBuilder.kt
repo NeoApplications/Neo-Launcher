@@ -27,6 +27,7 @@ import com.saggitt.omega.preferences.FloatPref
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.preferences.IdpIntPref
+import com.saggitt.omega.preferences.IntPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
 import com.saggitt.omega.preferences.NavigationPref
@@ -39,65 +40,73 @@ import com.saggitt.omega.preferences.StringTextPref
 val PreferenceBuilder =
     @Composable { pref: Any, onDialogPref: (Any) -> Unit, index: Int, size: Int ->
         when (pref) {
-            is IntentLauncherPref -> IntentLauncherPreference(
+            is IntentLauncherPref       -> IntentLauncherPreference(
                 pref = pref,
                 index = index,
                 groupSize = size
             ) { onDialogPref(pref) }
 
-            is GridSize2D -> GridSize2DPreference(
-                pref = pref,
-                index = index,
-                groupSize = size
-            ) { onDialogPref(pref) }
-            is GridSize -> GridSizePreference(
+            is GridSize2D               -> GridSize2DPreference(
                 pref = pref,
                 index = index,
                 groupSize = size
             ) { onDialogPref(pref) }
 
-            is BooleanPref -> SwitchPreference(pref = pref, index = index, groupSize = size)
+            is GridSize                 -> GridSizePreference(
+                pref = pref,
+                index = index,
+                groupSize = size
+            ) { onDialogPref(pref) }
 
-            is NavigationPref ->
+            is BooleanPref              -> SwitchPreference(
+                pref = pref,
+                index = index,
+                groupSize = size
+            )
+
+            is NavigationPref           ->
                 NavigationPreference(pref = pref, index = index, groupSize = size)
 
-            is ColorIntPref ->
+            is ColorIntPref             ->
                 ColorIntPreference(pref = pref, index = index, groupSize = size)
 
-            is StringPref ->
+            is StringPref               ->
                 StringPreference(pref = pref, index = index, groupSize = size)
 
-            is StringSetPref ->
+            is StringSetPref            ->
                 StringSetPreference(pref = pref, index = index, groupSize = size)
 
-            is FloatPref ->
+            is FloatPref                ->
                 SeekBarPreference(pref = pref, index = index, groupSize = size)
 
-            is IdpIntPref ->
+            is IntPref                  ->
                 IntSeekBarPreference(pref = pref, index = index, groupSize = size)
 
-            is DialogPref ->
+            is IdpIntPref               ->
+                IntSeekBarPreference(pref = pref, index = index, groupSize = size)
+
+            is DialogPref               ->
                 AlertDialogPreference(pref = pref, index = index, groupSize = size) {
                     onDialogPref(
                         pref
                     )
                 }
 
-            is IntSelectionPref ->
+            is IntSelectionPref         ->
                 IntSelectionPreference(
                     pref = pref,
                     index = index,
                     groupSize = size
                 ) { onDialogPref(pref) }
 
-            is StringSelectionPref ->
+            is StringSelectionPref      ->
                 StringSelectionPreference(
                     pref = pref,
                     index = index,
                     groupSize = size
                 ) { onDialogPref(pref) }
 
-            is StringTextPref ->
+            is StringTextPref           ->
                 StringTextPreference(
                     pref = pref,
                     index = index,
@@ -110,7 +119,7 @@ val PreferenceBuilder =
                 groupSize = size
             ) { onDialogPref(pref) }
 
-            is PageItem ->
+            is PageItem                 ->
                 PagePreference(
                     titleId = pref.titleId,
                     icon = pref.icon,

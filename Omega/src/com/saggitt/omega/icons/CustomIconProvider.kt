@@ -59,13 +59,14 @@ import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
 import com.saggitt.omega.util.getPackageVersionCode
 import com.saggitt.omega.util.isPackageInstalled
+import com.saggitt.omega.util.minSDK
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import org.xmlpull.v1.XmlPullParser
 import java.util.function.Supplier
 
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
-    supportsIconTheme: Boolean = false
+    supportsIconTheme: Boolean = false,
 ) : IconProvider(context, supportsIconTheme) {
 
     private val prefs = Utilities.getOmegaPrefs(context)
@@ -122,7 +123,7 @@ class CustomIconProvider @JvmOverloads constructor(
         component: String,
         user: UserHandle,
         iconDpi: Int,
-        fallback: Supplier<Drawable>
+        fallback: Supplier<Drawable>,
     ): Drawable {
         val componentName = ComponentName(packageName, component)
         val iconEntry = resolveIconEntry(componentName, user)
@@ -175,7 +176,7 @@ class CustomIconProvider @JvmOverloads constructor(
         var defaultIcon =
             super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
         if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && defaultIcon.monochrome != null
+                minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
         ) {
             defaultIcon = defaultIcon.monochrome
             return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {
@@ -225,7 +226,7 @@ class CustomIconProvider @JvmOverloads constructor(
 
     override fun registerIconChangeListener(
         callback: IconChangeListener,
-        handler: Handler
+        handler: Handler,
     ): SafeCloseable {
         return MultiSafeCloseable().apply {
             add(super.registerIconChangeListener(callback, handler))
@@ -237,7 +238,7 @@ class CustomIconProvider @JvmOverloads constructor(
     private inner class IconPackChangeReceiver(
         private val context: Context,
         private val handler: Handler,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : SafeCloseable {
 
         private var calendarAndClockChangeReceiver: CalendarAndClockChangeReceiver? = null
@@ -282,7 +283,7 @@ class CustomIconProvider @JvmOverloads constructor(
     private class CalendarAndClockChangeReceiver(
         private val context: Context, handler: Handler,
         private val iconPack: IconPack,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
 
         init {
@@ -306,7 +307,7 @@ class CustomIconProvider @JvmOverloads constructor(
                     }
                 }
 
-                ACTION_DATE_CHANGED -> {
+                ACTION_DATE_CHANGED                                            -> {
                     context.getSystemService<UserManager>()?.userProfiles?.forEach { user ->
                         iconPack.getCalendars().forEach { componentName ->
                             callback.onAppIconChanged(componentName.packageName, user)
@@ -323,7 +324,7 @@ class CustomIconProvider @JvmOverloads constructor(
 
     private inner class LawniconsChangeReceiver(
         private val context: Context, handler: Handler,
-        private val callback: IconChangeListener
+        private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
 
         init {

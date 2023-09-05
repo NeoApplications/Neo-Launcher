@@ -57,7 +57,9 @@
         launcher:numFolderRows="3"
         launcher:numFolderColumns="4"
         launcher:numHotseatIcons="4"
+        launcher:numExtendedHotseatIcons="6"
         launcher:dbFile="launcher_4_by_4.db"
+        launcher:inlineNavButtonsEndSpacing="@dimen/taskbar_button_margin_split"
         launcher:defaultLayoutId="@xml/default_workspace_4x4"
         launcher:deviceCategory="phone|multi_display">
 
@@ -120,8 +122,10 @@
         launcher:numFolderRows="4"
         launcher:numFolderColumns="4"
         launcher:numHotseatIcons="5"
+        launcher:numExtendedHotseatIcons="6"
         launcher:dbFile="launcher.db"
         launcher:defaultLayoutId="@xml/default_workspace_5x5"
+        launcher:inlineNavButtonsEndSpacing="@dimen/taskbar_button_margin_split"
         launcher:deviceCategory="phone|multi_display">
 
         <display-option
@@ -167,6 +171,7 @@
         launcher:hotseatColumnSpanLandscape="4"
         launcher:numAllAppsColumns="6"
         launcher:isScalable="true"
+        launcher:inlineNavButtonsEndSpacing="@dimen/taskbar_button_margin_6_5"
         launcher:devicePaddingId="@xml/paddings_6x5"
         launcher:dbFile="launcher_6_by_5.db"
         launcher:defaultLayoutId="@xml/default_workspace_6x5"

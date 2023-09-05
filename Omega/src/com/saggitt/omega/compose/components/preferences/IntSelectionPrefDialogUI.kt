@@ -36,6 +36,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,6 +59,7 @@ import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -69,8 +72,8 @@ fun IntSelectionPrefDialogUI(
     val prefs = Utilities.getOmegaPrefs(context)
     val entryPairs = pref.entries.toList()
     val coroutineScope = rememberCoroutineScope()
-    var selected by remember { mutableStateOf(-1) }
-    var themeCornerRadius by remember { mutableStateOf(-1f) }
+    var selected by remember { mutableIntStateOf(-1) }
+    var themeCornerRadius by remember { mutableFloatStateOf(-1f) }
     SideEffect {
         coroutineScope.launch {
             selected = pref.get().first()
@@ -88,7 +91,7 @@ fun IntSelectionPrefDialogUI(
         shape = RoundedCornerShape(cornerRadius),
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -98,8 +101,8 @@ fun IntSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                        .padding(top = 16.dp, bottom = 8.dp)
+                        .weight(1f, false)
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -165,8 +168,8 @@ fun StringSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                        .padding(top = 16.dp, bottom = 8.dp)
+                        .weight(1f, false)
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -232,8 +235,8 @@ fun StringMultiSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                        .padding(top = 16.dp, bottom = 8.dp)
+                        .weight(1f, false)
             ) {
                 items(items = entryPairs) { item ->
                     val isSelected = rememberSaveable(selected) {
@@ -275,13 +278,12 @@ fun StringMultiSelectionPrefDialogUI(
 }
 
 @Composable
-fun AlertDialogUI(
+fun ResetCustomIconsDialog(
     pref: DialogPref,
     openDialogCustom: MutableState<Boolean>
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    val scope = rememberCoroutineScope()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {
@@ -322,7 +324,7 @@ fun AlertDialogUI(
                     cornerRadius = cornerRadius,
                     onClick = {
                         val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
-                        scope.launch {
+                        MainScope().launch {
                             overrideRepo.deleteAll()
                         }
                         openDialogCustom.value = false

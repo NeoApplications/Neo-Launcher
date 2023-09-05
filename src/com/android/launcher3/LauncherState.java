@@ -19,27 +19,29 @@ import static com.android.launcher3.anim.Interpolators.ACCEL_2;
 import static com.android.launcher3.anim.Interpolators.DEACCEL_2;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_HOME;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_OVERVIEW;
-import static com.android.launcher3.testing.TestProtocol.ALL_APPS_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.BACKGROUND_APP_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.HINT_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.HINT_STATE_TWO_BUTTON_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.NORMAL_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.OPTIONS_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.OVERVIEW_MODAL_TASK_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.OVERVIEW_SPLIT_SELECT_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.OVERVIEW_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.QUICK_SWITCH_STATE_ORDINAL;
-import static com.android.launcher3.testing.TestProtocol.SPRING_LOADED_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.ALL_APPS_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.BACKGROUND_APP_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.HINT_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.HINT_STATE_TWO_BUTTON_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.NORMAL_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.OPTIONS_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_MODAL_TASK_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_SPLIT_SELECT_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.QUICK_SWITCH_STATE_ORDINAL;
+import static com.android.launcher3.testing.shared.TestProtocol.SPRING_LOADED_STATE_ORDINAL;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.animation.Interpolator;
 
+import androidx.annotation.FloatRange;
+
 import com.android.launcher3.statemanager.BaseState;
 import com.android.launcher3.statemanager.StateManager;
 import com.android.launcher3.states.HintState;
 import com.android.launcher3.states.SpringLoadedState;
-import com.android.launcher3.testing.TestProtocol;
+import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.saggitt.omega.OptionsState;
@@ -342,6 +344,27 @@ public abstract class LauncherState implements BaseState<LauncherState> {
             LauncherState lastState = lsm.getLastState();
             lsm.goToState(lastState);
         }
+    }
+
+    /**
+     * Find {@link StateManager} and target {@link LauncherState} to handle back progress in
+     * predictive back gesture.
+     */
+    public void onBackProgressed(
+            Launcher launcher, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
+        StateManager<LauncherState> lsm = launcher.getStateManager();
+        LauncherState toState = lsm.getLastState();
+        lsm.onBackProgressed(toState, backProgress);
+    }
+
+    /**
+     * Find {@link StateManager} and target {@link LauncherState} to handle backProgress in
+     * predictive back gesture.
+     */
+    public void onBackCancelled(Launcher launcher) {
+        StateManager<LauncherState> lsm = launcher.getStateManager();
+        LauncherState toState = lsm.getLastState();
+        lsm.onBackCancelled(toState);
     }
 
     public static abstract class PageAlphaProvider {

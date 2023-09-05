@@ -66,14 +66,14 @@ import com.android.launcher3.Utilities.drawableToBitmap
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.PackageManagerHelper
 import com.saggitt.omega.allapps.CustomAppFilter
-import com.saggitt.omega.compose.PreferenceActivity
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.groups.ui.AppTabDialog
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addIfNotNull
 import kotlinx.coroutines.launch
 
@@ -85,7 +85,7 @@ fun CustomizeIconPage(
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     var title by remember { mutableStateOf("") }
     val request =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -132,7 +132,7 @@ fun CustomizeIconView(
     launchSelectIcon: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
     val repo = IconOverrideRepository.INSTANCE.get(context)

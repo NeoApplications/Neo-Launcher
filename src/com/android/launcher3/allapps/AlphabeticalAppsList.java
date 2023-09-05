@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package com.android.launcher3.allapps;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_ALL_APPS_DIVIDER;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_EMPTY_SEARCH;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_SEARCH_MARKET;
+
+import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
 
@@ -28,7 +27,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
-import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.celllayout.CellPosMapper;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
@@ -36,11 +35,10 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NLPrefs;
-import com.saggitt.omega.util.OmegaUtilsKt;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -49,6 +47,7 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 /**
  * The alphabetically sorted list of applications.
  *
@@ -57,7 +56,9 @@ import java.util.stream.Stream;
 public class AlphabeticalAppsList<T extends Context & ActivityContext> implements
         AllAppsStore.OnUpdateListener {
     public static final String TAG = "AlphabeticalAppsList";
-    private final WorkAdapterProvider mWorkAdapterProvider;
+
+    private final WorkProfileManager mWorkProviderManager;
+
     /**
      * Info about a fast scroller section, depending if sections are merged, the fast scroller
      * sections will not be the same set as the section headers.
@@ -67,15 +68,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         public final String sectionName;
         // The item position
         public final int position;
-        // The color of this fast scroll section
-        public int color;
 
         public FastScrollSectionInfo(String sectionName, int position) {
             this.sectionName = sectionName;
             this.position = position;
-            //this.color = color;
         }
     }
+
     private final T mActivityContext;
     // The set of apps from the system
     private final List<AppInfo> mApps = new ArrayList<>();
@@ -89,27 +88,27 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final List<FastScrollSectionInfo> mFastScrollerSections = new ArrayList<>();
     // The of ordered component names as a result of a search query
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
-    private BaseAllAppsAdapter<T> mAdapter;
-    private AppInfoComparator mAppNameComparator;
+    private AllAppsGridAdapter<T> mAdapter;
+    private Comparator<AppInfo> mAppNameComparator;
     private final int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final BaseDraggingActivity mLauncher;
 
-    public AlphabeticalAppsList(Context context, @Nullable AllAppsStore appsStore,
-                                WorkAdapterProvider adapterProvider) {
+    public AlphabeticalAppsList(Context context, AllAppsStore appsStore,
+                                WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
-        mAppNameComparator = new AppInfoComparator(context);
-        mWorkAdapterProvider = adapterProvider;
+        mWorkProviderManager = workProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().inv.numAllAppsColumns;
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
 
         prefs = Utilities.getOmegaPrefs(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
         mLauncher = BaseDraggingActivity.fromContext(context);
     }
 
@@ -117,24 +116,28 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         this.mItemFilter = itemFilter;
         onAppsUpdated();
     }
+
     /**
      * Sets the adapter to notify when this dataset changes.
      */
-    public void setAdapter(BaseAllAppsAdapter<T> adapter) {
+    public void setAdapter(AllAppsGridAdapter<T> adapter) {
         mAdapter = adapter;
     }
+
     /**
      * Returns fast scroller sections of all the current filtered applications.
      */
     public List<FastScrollSectionInfo> getFastScrollerSections() {
         return mFastScrollerSections;
     }
+
     /**
      * Returns the current filtered list of applications broken down into their sections.
      */
     public List<AdapterItem> getAdapterItems() {
         return mAdapterItems;
     }
+
     /**
      * Returns the child adapter item with IME launch focus.
      */
@@ -144,6 +147,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         return mAdapterItems.get(getFocusedChildIndex());
     }
+
     /**
      * Returns the index of the child with IME launch focus.
      */
@@ -155,12 +159,14 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         return -1;
     }
+
     /**
      * Returns the number of rows of applications
      */
     public int getNumAppRows() {
         return mNumAppRowsInAdapter;
     }
+
     /**
      * Returns the number of applications in this list.
      */
@@ -196,6 +202,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         updateAdapterItems();
         return true;
     }
+
     /**
      * Updates internals when the set of apps are updated.
      */
@@ -206,18 +213,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         // Sort the list of apps
         mApps.clear();
+        mAppNameComparator = getAllAppsComparator(mLauncher, prefs.getDrawerSortMode().getValue());
 
-        // Sort the list of apps
-        List<AppInfo> unsortedApps = Arrays.asList(mAllAppsStore.getApps());
-        OmegaUtilsKt.sortApps(unsortedApps, mLauncher, prefs.getDrawerSortMode().getValue());
-        AppInfo[] sortedApps = unsortedApps.toArray(AppInfo.EMPTY_ARRAY);
-
-        Stream<AppInfo> appSteam = Stream.of(sortedApps);
+        Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
         if (!hasSearchResults() && mItemFilter != null) {
             appSteam = appSteam.filter(mItemFilter);
         }
-
-        //appSteam = appSteam.sorted(mAppNameComparator);
+        appSteam = appSteam.sorted(mAppNameComparator);
 
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
@@ -240,6 +242,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             updateAdapterItems();
         }
     }
+
     /**
      * Updates the set of filtered apps with the current filter. At this point, we expect
      * mCachedSectionNames to have been calculated for the set of all apps in mApps.
@@ -254,24 +257,33 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // ordered set of sections
         if (hasSearchResults()) {
             mAdapterItems.addAll(mSearchResults);
-            if (!FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
-                // Append the search market item
-                if (hasNoFilteredResults()) {
-                    mAdapterItems.add(new AdapterItem(VIEW_TYPE_EMPTY_SEARCH));
-                } else {
-                    mAdapterItems.add(new AdapterItem(VIEW_TYPE_ALL_APPS_DIVIDER));
-                }
-                mAdapterItems.add(new AdapterItem(VIEW_TYPE_SEARCH_MARKET));
-            }
         } else {
             int position = 0;
-            if (mWorkAdapterProvider != null) {
-                position += mWorkAdapterProvider.addWorkItems(mAdapterItems);
-                if (!mWorkAdapterProvider.shouldShowWorkApps()) {
+            if (mWorkProviderManager != null) {
+                position += mWorkProviderManager.addWorkItems(mAdapterItems);
+                if (!mWorkProviderManager.shouldShowWorkApps()) {
                     return;
                 }
             }
             String lastSectionName = null;
+
+            if (mAllAppsStore != null) {
+                for (DrawerFolderInfo info : getFolderInfos()) {
+                    // Create an folder item
+                    mAdapterItems.add(AdapterItem.asFolder(info));
+                    String sectionName = "#";
+
+                    // Create a new section if the section names do not match
+                    if (!sectionName.equals(lastSectionName)) {
+                        lastSectionName = sectionName;
+                        mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
+                    }
+
+                    info.setAppsStore(mAllAppsStore);
+                    position++;
+                }
+            }
+
             for (AppInfo info : mApps) {
                 mAdapterItems.add(AdapterItem.asApp(info));
                 String sectionName = info.sectionName;
@@ -324,7 +336,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private List<DrawerFolderInfo> getFolderInfos() {
         LauncherAppState app = LauncherAppState.getInstance(mLauncher);
         LauncherModel model = app.getModel();
-        ModelWriter modelWriter = model.getWriter(false, true, null);
+        ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
         return Utilities.getOmegaPrefs(mLauncher)
                 .getDrawerAppGroupsManager()
                 .getDrawerFolders()
@@ -352,14 +364,17 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         public int getOldListSize() {
             return mOldList.size();
         }
+
         @Override
         public int getNewListSize() {
             return mNewList.size();
         }
+
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             return mOldList.get(oldItemPosition).isSameAs(mNewList.get(newItemPosition));
         }
+
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             return mOldList.get(oldItemPosition).isContentSame(mNewList.get(newItemPosition));

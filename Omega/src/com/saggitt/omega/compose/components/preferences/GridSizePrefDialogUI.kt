@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,8 +70,8 @@ fun GridSizePrefDialogUI(
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
-    var numColumns by remember { mutableStateOf(pref.numColumnsPref.getValue()) }
-    var numRows by remember { mutableStateOf(if (pref is GridSize2D) pref.numRowsPref.getValue() else 0) }
+    var numColumns by remember { mutableIntStateOf(pref.numColumnsPref.getValue()) }
+    var numRows by remember { mutableIntStateOf(if (pref is GridSize2D) pref.numRowsPref.getValue() else 0) }
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {
@@ -92,8 +93,8 @@ fun GridSizePrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                        .padding(top = 16.dp, bottom = 8.dp)
+                        .weight(1f, false)
             ) {
                 item {
 
@@ -104,13 +105,13 @@ fun GridSizePrefDialogUI(
                     ) {
                         Icon(
                             modifier = Modifier
-                                .size(32.dp)
-                                .combinedClickable(
-                                    onClick = {},
-                                    onLongClick = {
-                                        menuExpanded = !menuExpanded
-                                    }
-                                ),
+                                    .size(32.dp)
+                                    .combinedClickable(
+                                            onClick = {},
+                                            onLongClick = {
+                                                menuExpanded = !menuExpanded
+                                            }
+                                    ),
                             painter = painterResource(id = R.drawable.ic_columns),
                             contentDescription = stringResource(id = R.string.title__drawer_columns)
                         )
@@ -134,8 +135,8 @@ fun GridSizePrefDialogUI(
                         Spacer(modifier = Modifier.requiredWidth(8.dp))
                         Slider(
                             modifier = Modifier
-                                .requiredHeight(24.dp)
-                                .weight(1f),
+                                    .requiredHeight(24.dp)
+                                    .weight(1f),
                             value = numColumns.toFloat(),
                             valueRange = pref.numColumnsPref.minValue..pref.numColumnsPref.maxValue,
                             onValueChange = { numColumns = it.toInt() },
@@ -153,13 +154,13 @@ fun GridSizePrefDialogUI(
                         var menuExpanded by remember { mutableStateOf(false) }
                         Icon(
                             modifier = Modifier
-                                .size(32.dp)
-                                .combinedClickable(
-                                    onClick = {},
-                                    onLongClick = {
-                                        menuExpanded = !menuExpanded
-                                    }
-                                ),
+                                    .size(32.dp)
+                                    .combinedClickable(
+                                            onClick = {},
+                                            onLongClick = {
+                                                menuExpanded = !menuExpanded
+                                            }
+                                    ),
                             painter = painterResource(id = R.drawable.ic_rows),
                             contentDescription = stringResource(id = R.string.title__drawer_rows)
                         )
@@ -183,8 +184,8 @@ fun GridSizePrefDialogUI(
                         Spacer(modifier = Modifier.requiredWidth(8.dp))
                         Slider(
                             modifier = Modifier
-                                .requiredHeight(24.dp)
-                                .weight(1f),
+                                    .requiredHeight(24.dp)
+                                    .weight(1f),
                             value = numRows.toFloat(),
                             valueRange = pref.numRowsPref.minValue..pref.numRowsPref.maxValue,
                             onValueChange = { numRows = it.toInt() },

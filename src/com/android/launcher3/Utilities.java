@@ -21,6 +21,7 @@ import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ICON_BADGED
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
+import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -96,7 +97,6 @@ import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.SearchActionItemInfo;
-import com.android.launcher3.pm.ShortcutConfigActivityInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
@@ -108,8 +108,7 @@ import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
-import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 
 import java.lang.reflect.Method;
@@ -138,8 +137,6 @@ public final class Utilities {
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final Person[] EMPTY_PERSON_ARRAY = new Person[0];
-    @ChecksSdkIntAtLeast(api = VERSION_CODES.O)
-    public static final boolean ATLEAST_OREO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     @ChecksSdkIntAtLeast(api = VERSION_CODES.O_MR1)
     public static final boolean ATLEAST_OREO_MR1 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
     @ChecksSdkIntAtLeast(api = VERSION_CODES.P)
@@ -182,6 +179,12 @@ public final class Utilities {
     public static boolean isDevelopersOptionsEnabled(Context context) {
         return Settings.Global.getInt(context.getApplicationContext().getContentResolver(),
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
+    }
+
+    private static boolean sIsRunningInTestHarness = ActivityManager.isRunningInTestHarness();
+
+    public static boolean isRunningInTestHarness() {
+        return sIsRunningInTestHarness;
     }
 
     // An intent extra to indicate the horizontal scroll of the wallpaper.
@@ -754,12 +757,6 @@ public final class Utilities {
                     .getIconProvider().getIcon(
                             activityInfo, activity.getDeviceProfile().inv.fillResIconDpi);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
-            if (info instanceof PendingAddShortcutInfo) {
-                ShortcutConfigActivityInfo activityInfo =
-                        ((PendingAddShortcutInfo) info).activityInfo;
-                outObj[0] = activityInfo;
-                return activityInfo.getFullResIcon(appState.getIconCache());
-            }
             List<ShortcutInfo> si = ShortcutKey.fromItemInfo(info)
                     .buildRequest(context)
                     .query(ShortcutRequest.ALL);
@@ -999,8 +996,8 @@ public final class Utilities {
         return bitmap;
     }
 
-    public static NLPrefs getOmegaPrefs(Context context) {
-        return NLPrefs.getInstance(context);
+    public static NeoPrefs getOmegaPrefs(Context context) {
+        return NeoPrefs.getInstance(context);
     }
 
     /**
@@ -1069,6 +1066,11 @@ public final class Utilities {
     public static boolean hasPermission(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void requestStoragePermission(Activity activity) {
+        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION_STORAGE_ACCESS);
     }
 
     public static void requestLocationPermission(Activity activity) {

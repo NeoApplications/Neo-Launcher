@@ -27,6 +27,8 @@ import android.animation.AnimatorSet;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.FloatRange;
+
 import com.android.launcher3.anim.AnimationSuccessListener;
 import com.android.launcher3.anim.AnimatorPlaybackController;
 import com.android.launcher3.anim.PendingAnimation;
@@ -153,7 +155,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
      * Changes the Launcher state to the provided state.
      *
      * @param animated false if the state should change immediately without any animation,
-     *                true otherwise
+     *                 true otherwise
      * @paras onCompleteRunnable any action to perform at the end of the transition, of null.
      */
     public void goToState(STATE_TYPE state, boolean animated, AnimatorListener listener) {
@@ -181,6 +183,13 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     public void reapplyState(boolean cancelCurrentAnimation) {
         boolean wasInAnimation = mConfig.currentAnimation != null;
         if (cancelCurrentAnimation) {
+            // Animation canceling can trigger a cleanup routine, causing problems when we are in a
+            // launcher state that relies on member variable data. So if we are in one of those
+            // states, accelerate the current animation to its end point rather than canceling it
+            // outright.
+            if (mState.shouldPreserveDataStateOnReapply() && mConfig.currentAnimation != null) {
+                mConfig.currentAnimation.end();
+            }
             mAtomicAnimationFactory.cancelAllStateElementAnimation();
             cancelAnimation();
         }
@@ -191,6 +200,25 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
             if (wasInAnimation) {
                 onStateTransitionEnd(mState);
             }
+        }
+    }
+
+    /**
+     * Handles backProgress in predictive back gesture by passing it to state handlers.
+     */
+    public void onBackProgressed(
+            STATE_TYPE toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
+        for (StateHandler handler : getStateHandlers()) {
+            handler.onBackProgressed(toState, backProgress);
+        }
+    }
+
+    /**
+     * Handles back cancelled event in predictive back gesture by passing it to state handlers.
+     */
+    public void onBackCancelled(STATE_TYPE toState) {
+        for (StateHandler handler : getStateHandlers()) {
+            handler.onBackCancelled(toState);
         }
     }
 
@@ -342,7 +370,6 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
             public void onAnimationSuccess(Animator animator) {
                 onStateTransitionEnd(state);
             }
-
         };
     }
 
@@ -377,12 +404,16 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     public void moveToRestState() {
+        moveToRestState(shouldAnimateStateChange());
+    }
+
+    public void moveToRestState(boolean isAnimated) {
         if (mConfig.currentAnimation != null && mConfig.userControlled) {
             // The user is doing something. Lets not mess it up
             return;
         }
         if (mState.shouldDisableRestore()) {
-            goToState(getRestState());
+            goToState(getRestState(), isAnimated);
             // Reset history
             mLastStableState = mBaseState;
         }
@@ -416,11 +447,11 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     /**
+     * @param anim    The custom animation to the given state.
+     * @param toState The state we are animating towards.
      * @see #setCurrentAnimation(AnimatorSet, Animator...). Using this method tells the StateManager
      * that this is a custom animation to the given state, and thus the StateManager will add an
      * animation listener to call {@link #onStateTransitionStart} and {@link #onStateTransitionEnd}.
-     * @param anim The custom animation to the given state.
-     * @param toState The state we are animating towards.
      */
     public void setCurrentAnimation(AnimatorSet anim, STATE_TYPE toState) {
         cancelAnimation();
@@ -570,8 +601,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         }
 
         @Override
-        public void onAnimationRepeat(Animator animator) {
-        }
+        public void onAnimationRepeat(Animator animator) { }
     }
 
     public interface StateHandler<STATE_TYPE> {
@@ -586,6 +616,20 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
          */
         void setStateWithAnimation(
                 STATE_TYPE toState, StateAnimationConfig config, PendingAnimation animation);
+
+        /**
+         * Handles backProgress in predictive back gesture for target state.
+         */
+        default void onBackProgressed(
+                STATE_TYPE toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
+        }
+
+        ;
+
+        /**
+         * Handles back cancelled event in predictive back gesture for target state.
+         */
+        default void onBackCancelled(STATE_TYPE toState) {};
     }
 
     public interface StateListener<STATE_TYPE> {
@@ -593,8 +637,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         default void onStateTransitionStart(STATE_TYPE toState) {
         }
 
-        default void onStateTransitionComplete(STATE_TYPE finalState) {
-        }
+        default void onStateTransitionComplete(STATE_TYPE finalState) { }
     }
 
     /**
@@ -638,7 +681,6 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
          * - Setting some start values (e.g. scale) for views that are hidden but about to be shown.
          */
         public void prepareForAtomicAnimation(
-                STATE_TYPE fromState, STATE_TYPE toState, StateAnimationConfig config) {
-        }
+                STATE_TYPE fromState, STATE_TYPE toState, StateAnimationConfig config) { }
     }
 }

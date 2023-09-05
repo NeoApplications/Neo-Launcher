@@ -99,6 +99,42 @@ abstract class IconCornerShape {
         }
     }
 
+    class CutHex : BaseBezierPath() {
+
+        override fun addCorner(
+            path: Path, position: Position, size: PointF, progress: Float,
+            offsetX: Float, offsetY: Float
+        ) {
+            var paddingX = size.x - (size.x * Math.sqrt(3.0) / 2).toFloat()
+            var newOffsetX = offsetX
+
+            if (position is Position.BottomRight) {
+                path.rMoveTo(-paddingX, 0f)
+            }
+
+            if (position is Position.BottomLeft) {
+                newOffsetX += paddingX
+            }
+
+            if (position is Position.TopLeft) {
+                path.setLastPoint(paddingX, size.y)
+            }
+
+            if (position is Position.TopRight) {
+                newOffsetX -= paddingX
+            }
+
+            path.lineTo(
+                position.endX * size.x + newOffsetX,
+                position.endY * size.y + offsetY
+            )
+        }
+
+        override fun toString(): String {
+            return "cuthex"
+        }
+    }
+
     class LightSquircle : BaseBezierPath() {
 
         override val controlDistance = .1f
@@ -294,6 +330,7 @@ abstract class IconCornerShape {
     companion object {
 
         val cut = Cut()
+        val cuthex = CutHex()
         val lightsquircle = LightSquircle()
         val squircle = Squircle()
         val strongsquircle = StrongSquircle()
@@ -305,6 +342,7 @@ abstract class IconCornerShape {
         fun fromString(value: String): IconCornerShape {
             return when (value) {
                 "cut" -> cut
+                "cuthex" -> cuthex
                 "lightsquircle" -> lightsquircle
                 "cubic", "squircle" -> squircle
                 "strongsquircle" -> strongsquircle

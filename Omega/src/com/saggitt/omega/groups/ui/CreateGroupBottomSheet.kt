@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.groups.ui
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,7 +71,9 @@ import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
 
@@ -82,7 +85,7 @@ fun CreateGroupBottomSheet(
 ) {
 
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     val manager = prefs.drawerAppGroupsManager
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -90,7 +93,6 @@ fun CreateGroupBottomSheet(
     val openDialog = remember { mutableStateOf(false) }
     val colorPicker = remember { mutableStateOf(false) }
     var isHidden by remember { mutableStateOf(false) }
-    var flowerpotCategory by remember { mutableStateOf(AppGroups.KEY_FLOWERPOT_DEFAULT) }
 
     var color by remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
     val group = when (category) {
@@ -114,7 +116,7 @@ fun CreateGroupBottomSheet(
         )
     }
 
-    val selectedCategory by remember {
+    var selectedCategory by remember {
         mutableStateOf(
             AppGroups.StringCustomization(
                 FlowerpotTabs.KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
@@ -126,7 +128,7 @@ fun CreateGroupBottomSheet(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -167,7 +169,7 @@ fun CreateGroupBottomSheet(
             BasePreference(
                 titleId = R.string.pref_appcategorization_flowerpot_title,
                 summary = flowerpotManager.getAllPots()
-                    .find { it.name == flowerpotCategory }!!.displayName,
+                    .find { it.name == selectedCategory }!!.displayName,
                 startWidget = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_category),
@@ -187,9 +189,9 @@ fun CreateGroupBottomSheet(
 
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
-                    CategorySelectionDialogUI(selectedCategory = flowerpotCategory) {
-                        flowerpotCategory = it
-                        (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                    CategorySelectionDialogUI(selectedCategory = selectedCategory) {
+                        selectedCategory = it
+                        (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                             it
                         openDialog.value = false
                     }
@@ -219,6 +221,8 @@ fun CreateGroupBottomSheet(
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 },
+                index = 0,
+                groupSize = 3
             ) { openDialog.value = true }
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -264,7 +268,9 @@ fun CreateGroupBottomSheet(
                     }
                 )
             },
-            onClick = { isHidden = !isHidden }
+            onClick = { isHidden = !isHidden },
+            index = 1,
+            groupSize = 3
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -278,9 +284,11 @@ fun CreateGroupBottomSheet(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = Color(color)
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
-                }
+                },
+                index = 2,
+                groupSize = 3
             ) {
                 colorPicker.value = true
             }
@@ -327,6 +335,7 @@ fun CreateGroupBottomSheet(
 
             OutlinedButton(
                 onClick = {
+                    Log.d("GROUPS", "color: $color")
                     onClose(Config.BS_SELECT_TAB_TYPE)
                     coroutineScope.launch {
                         (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
@@ -337,12 +346,12 @@ fun CreateGroupBottomSheet(
                             (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                                 selectedApps.toMutableSet()
                         } else {
-                            (config[FlowerpotTabs.KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                            (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                                 selectedCategory
                         }
                         if (category != AppGroupsManager.Category.FOLDER) {
                             (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
-                                color.toString()
+                                color
                         }
                         group.customizations.applyFrom(config)
                         group.title = title

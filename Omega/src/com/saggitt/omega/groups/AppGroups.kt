@@ -54,6 +54,9 @@ abstract class AppGroups<T : AppGroups.Group>(
         manager.categorizationEnabled.getValue() && manager.categorizationType.getValue() == category.key
         private set
 
+
+    private val defaultGroups by lazy { getDefaultCreators().mapNotNull { it.createGroup(context) } }
+
     fun checkIsEnabled(changeCallback: PreferencesChangeCallback) {
         val enabled =
             manager.categorizationEnabled.getValue() && manager.categorizationType.getValue() == category.key
@@ -83,7 +86,7 @@ abstract class AppGroups<T : AppGroups.Group>(
 
     fun getGroups(): List<T> {
         if (!isEnabled) {
-            return emptyList()
+            return defaultGroups
         }
         return groups
     }
@@ -105,8 +108,7 @@ abstract class AppGroups<T : AppGroups.Group>(
     }
 
     fun addGroup(group: T) {
-        val updatedList = this.groups.plus(group)
-        setGroups(updatedList)
+        setGroups(this.groups.plus(group))
     }
 
     fun removeGroup(group: T) {
@@ -168,15 +170,12 @@ abstract class AppGroups<T : AppGroups.Group>(
 
         val customizations = CustomizationMap()
         private val _title = StringCustomization(KEY_TITLE, defaultTitle)
-
         open var title: String
             get() =
                 _title.value ?: defaultTitle
             set(value) {
                 _title.value = value
             }
-
-        var color: Int = 0
 
         open val summary: String?
             get() = null
@@ -277,21 +276,6 @@ abstract class AppGroups<T : AppGroups.Group>(
 
         override fun clone(): Customization<Long, Long> {
             return LongCustomization(key, default).also { it.value = value }
-        }
-    }
-
-    open class ColorCustomization(key: String, default: Int) :
-        Customization<Int, String>(key, default) {
-        override fun loadFromJson(context: Context, obj: String?) {
-            value = obj?.toInt()
-        }
-
-        override fun saveToJson(context: Context): String? {
-            return value.toString()
-        }
-
-        override fun clone(): Customization<Int, String> {
-            return ColorCustomization(key, default).also { it.value = value }
         }
     }
 

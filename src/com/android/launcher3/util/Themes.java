@@ -59,7 +59,7 @@ public class Themes {
         if (Utilities.isDarkTheme(context)) {
             return new ContextThemeWrapper(context, R.style.AppTheme_Dark);
         } else {
-            return new ContextThemeWrapper(context, R.style.AppTheme_DarkText);
+            return new ContextThemeWrapper(context, R.style.AppTheme_Light_DarkText);
         }
     }
 
@@ -73,8 +73,8 @@ public class Themes {
             return supportsDarkText ? R.style.AppTheme_Dark_DarkText
                     : isMainColorDark ? R.style.AppTheme_Dark_DarkMainColor : R.style.AppTheme_Dark;
         } else {
-            return supportsDarkText ? R.style.AppTheme_DarkText
-                    : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme;
+            return supportsDarkText ? R.style.AppTheme_Light_DarkText
+                    : isMainColorDark ? R.style.AppTheme_Light_DarkMainColor : R.style.AppTheme_Light;
         }
     }
 
@@ -154,10 +154,10 @@ public class Themes {
      * G' = g * G
      * B' = b * B
      * A' = a * A
-     *
+     * <p>
      * The matrix will, for instance, turn white into r g b a, and black will remain black.
      *
-     * @param color The color r g b a
+     * @param color  The color r g b a
      * @param target The ColorMatrix to scale
      */
     public static void setColorScaleOnMatrix(int color, ColorMatrix target) {
@@ -167,14 +167,14 @@ public class Themes {
 
     /**
      * Changes a color matrix such that, when applied to srcColor, it produces dstColor.
-     *
+     * <p>
      * Note that values on the last column of target ColorMatrix can be negative, and may result in
      * negative values when applied on a color. Such negative values will be automatically shifted
      * up to 0 by the framework.
      *
      * @param srcColor The color to start from
      * @param dstColor The color to create by applying target on srcColor
-     * @param target The ColorMatrix to transform the color
+     * @param target   The ColorMatrix to transform the color
      */
     public static void setColorChangeOnMatrix(int srcColor, int dstColor, ColorMatrix target) {
         target.reset();
@@ -189,7 +189,7 @@ public class Themes {
      * held in memory for later use.
      */
     public static SparseArray<TypedValue> createValueMap(Context context, AttributeSet attrSet,
-            IntArray keysToIgnore) {
+                                                         IntArray keysToIgnore) {
         int count = attrSet.getAttributeCount();
         IntArray attrNameArray = new IntArray(count);
         for (int i = 0; i < count; i++) {

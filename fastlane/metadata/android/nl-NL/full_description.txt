@@ -1,0 +1,12 @@
+Neo Launcher is gebaseerd op de launcher voor professionele gebruikers van AOSP
+Het kan volledig aangepast worden, en bevat veel functionaliteit, o.a.:
+- De _Dash_
+- Ondersteuning voor omvangrijke thema's.
+- Aanpasbare zoekmachines.
+- Ondersteuning voor gebaren.
+- Een uniek eigen widget.
+- Categorieën of mappen in de schuif
+- Ondersteuning voor pictogrampakketten.
+- Het verstoppen van apps
+
+Er wordt steeds gewerkt aan nieuwe functionaliteiten.

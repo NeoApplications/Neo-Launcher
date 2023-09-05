@@ -57,7 +57,7 @@ import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
 import com.saggitt.omega.iconpack.IconPack;
 import com.saggitt.omega.iconpack.IconPackProvider;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,7 +140,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                         if (DEBUG) Log.d(TAG, "mAllAppsList.updatePackage " + packages[i]);
 
                         //Reload appMap if the current icon pack is SystemIconPack
-                        NLPrefs prefs = Utilities.getOmegaPrefs(context);
+                        NeoPrefs prefs = Utilities.getOmegaPrefs(context);
                         if (prefs.getProfileIconPack().getValue().equals("")) {
                             IconPack iconPack = IconPackProvider.INSTANCE.get(context).getIconPackOrSystem("");
                             if (iconPack != null)
@@ -167,7 +167,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 for (int i = 0; i < N; i++) {
                     FileLog.d(TAG, "Removing app icon" + packages[i]);
                     iconCache.removeIconsForPkg(packages[i], mUser);
-                    NLPrefs prefs = Utilities.getOmegaPrefs(context);
+                    NeoPrefs prefs = Utilities.getOmegaPrefs(context);
                     if (packages[i].equals(prefs.getProfileIconPack().getValue())) {
                         prefs.getProfileIconPack().setValue("");
                     }

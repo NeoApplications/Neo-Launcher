@@ -106,7 +106,7 @@ import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.folder.FolderShortcut;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -245,7 +245,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private KeyboardInsetAnimationCallback mKeyboardInsetAnimationCallback;
 
     private GradientDrawable mBackground;
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
     private final Launcher mLauncher;
 
     /**
@@ -306,7 +306,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         mFolderName.forceDisableSuggestions(true);
 
         mFooter = findViewById(R.id.folder_footer);
-        mFooterHeight = getResources().getDimensionPixelSize(R.dimen.folder_label_height);
+        mFooterHeight = dp.folderFooterHeightPx;
 
         if (Utilities.ATLEAST_R) {
             mKeyboardInsetAnimationCallback = new KeyboardInsetAnimationCallback(this);
@@ -314,7 +314,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         }
 
         ImageView settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setColorFilter(prefs.getProfileAccentColor().getValue(), PorterDuff.Mode.SRC_IN);
+        settingsButton.setColorFilter(prefs.getProfileAccentColor().getColor(), PorterDuff.Mode.SRC_IN);
         if (prefs.getDesktopLock().getValue()) {
             settingsButton.setVisibility(View.GONE);
         } else {
@@ -333,14 +333,13 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private void customizeFolder() {
         int bgColor;
         if (prefs.getDesktopCustomFolderBackground().getValue()) {
-            bgColor = prefs.getDesktopFolderBackgroundColor().getValue();
+            bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
         } else {
-            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderFillColor);
+            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderBackgroundColor);
         }
         mBackground = new GradientDrawable();
         mBackground.setShape(GradientDrawable.RECTANGLE);
-        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_IN);
-
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
         mBackground.setCornerRadius(getCornerRadius());
     }
 
@@ -1329,7 +1328,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         PendingAddShortcutInfo pasi = d.dragInfo instanceof PendingAddShortcutInfo
                 ? (PendingAddShortcutInfo) d.dragInfo : null;
         WorkspaceItemInfo pasiSi =
-                pasi != null ? pasi.activityInfo.createWorkspaceItemInfo() : null;
+                pasi != null ? pasi.getActivityInfo(launcher).createWorkspaceItemInfo() : null;
         if (pasi != null && pasiSi == null) {
             // There is no WorkspaceItemInfo, so we have to go through a configuration activity.
             pasi.container = mInfo.id;
@@ -1734,6 +1733,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     public void setOnFolderStateChangedListener(@Nullable OnFolderStateChangedListener listener) {
         mOnFolderStateChangedListener = listener;
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo.container == ItemInfo.NO_ID;
     }
 
     /**

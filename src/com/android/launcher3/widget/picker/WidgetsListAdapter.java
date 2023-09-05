@@ -19,6 +19,7 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.recyclerview.ViewHolderBinder.POSITION_DEFAULT;
 import static com.android.launcher3.recyclerview.ViewHolderBinder.POSITION_FIRST;
 import static com.android.launcher3.recyclerview.ViewHolderBinder.POSITION_LAST;
+import static com.android.launcher3.widget.BaseWidgetSheet.DEFAULT_MAX_HORIZONTAL_SPANS;
 
 import android.content.Context;
 import android.os.Process;
@@ -32,13 +33,15 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.DiffUtil.DiffResult;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.launcher3.R;
-import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.data.PackageItemInfo;
 import com.android.launcher3.recyclerview.ViewHolderBinder;
 import com.android.launcher3.util.LabelComparator;
@@ -48,7 +51,7 @@ import com.android.launcher3.widget.model.WidgetListSpaceEntry;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 import com.android.launcher3.widget.model.WidgetsListContentEntry;
 import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
-import com.android.launcher3.widget.model.WidgetsListSearchHeaderEntry;
+import com.android.launcher3.widget.util.WidgetSizes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,13 +86,13 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
     public static final int VIEW_TYPE_WIDGETS_SPACE = R.id.view_type_widgets_space;
     public static final int VIEW_TYPE_WIDGETS_LIST = R.id.view_type_widgets_list;
     public static final int VIEW_TYPE_WIDGETS_HEADER = R.id.view_type_widgets_header;
-    public static final int VIEW_TYPE_WIDGETS_SEARCH_HEADER = R.id.view_type_widgets_search_header;
 
     private final Context mContext;
-    private final WidgetsDiffReporter mDiffReporter;
     private final SparseArray<ViewHolderBinder> mViewHolderBinders = new SparseArray<>();
     private final WidgetListBaseRowEntryComparator mRowComparator =
             new WidgetListBaseRowEntryComparator();
+    @Nullable
+    private final WidgetsFullSheet.HeaderChangeListener mHeaderChangeListener;
 
     private final List<WidgetsListBaseEntry> mAllEntries = new ArrayList<>();
     private ArrayList<WidgetsListBaseEntry> mVisibleEntries = new ArrayList<>();
@@ -98,7 +101,6 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
 
     private Predicate<WidgetsListBaseEntry> mHeaderAndSelectedContentFilter = entry ->
             entry instanceof WidgetsListHeaderEntry
-                    || entry instanceof WidgetsListSearchHeaderEntry
                     || PackageUserKey.fromPackageItemInfo(entry.mPkgItem)
                     .equals(mWidgetsContentVisiblePackageUserKey);
     @Nullable
@@ -107,32 +109,28 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
     private RecyclerView mRecyclerView;
     @Nullable
     private PackageUserKey mPendingClickHeader;
-    private int mMaxSpanSize = 4;
+    @Px
+    private int mMaxHorizontalSpan;
 
     public WidgetsListAdapter(Context context, LayoutInflater layoutInflater,
-                              IconCache iconCache, IntSupplier emptySpaceHeightProvider,
-                              OnClickListener iconClickListener, OnLongClickListener iconLongClickListener) {
+                              IntSupplier emptySpaceHeightProvider, OnClickListener iconClickListener,
+                              OnLongClickListener iconLongClickListener,
+                              WidgetsFullSheet.HeaderChangeListener headerChangeListener) {
+        mHeaderChangeListener = headerChangeListener;
         mContext = context;
-        mDiffReporter = new WidgetsDiffReporter(iconCache, this);
-        WidgetsListDrawableFactory listDrawableFactory = new WidgetsListDrawableFactory(context);
+        mMaxHorizontalSpan = WidgetSizes.getWidgetSizePx(
+                ActivityContext.lookupContext(context).getDeviceProfile(),
+                DEFAULT_MAX_HORIZONTAL_SPANS, 1).getWidth();
 
         mViewHolderBinders.put(
                 VIEW_TYPE_WIDGETS_LIST,
                 new WidgetsListTableViewHolderBinder(
-                        layoutInflater, iconClickListener, iconLongClickListener,
-                        listDrawableFactory));
+                        mContext, layoutInflater, iconClickListener, iconLongClickListener));
         mViewHolderBinders.put(
                 VIEW_TYPE_WIDGETS_HEADER,
                 new WidgetsListHeaderViewHolderBinder(
-                        layoutInflater,
-                        /* onHeaderClickListener= */ this,
-                        listDrawableFactory));
-        mViewHolderBinders.put(
-                VIEW_TYPE_WIDGETS_SEARCH_HEADER,
-                new WidgetsListSearchHeaderViewHolderBinder(
-                        layoutInflater,
-                        /* onHeaderClickListener= */ this,
-                        listDrawableFactory));
+                        layoutInflater, /* onHeaderClickListener= */ this,
+                        headerChangeListener != null));
         mViewHolderBinders.put(
                 VIEW_TYPE_WIDGETS_SPACE,
                 new WidgetsSpaceViewHolderBinder(emptySpaceHeightProvider));
@@ -165,23 +163,17 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
         return getItemCount() > 1;
     }
 
-    /**
-     * Returns all items that will be drawn in a recycler view.
-     */
+    /** Returns all items that will be drawn in a recycler view. */
     public List<WidgetsListBaseEntry> getItems() {
         return mVisibleEntries;
     }
 
-    /**
-     * Gets the section name for {@link com.android.launcher3.views.RecyclerViewFastScroller}.
-     */
+    /** Gets the section name for {@link com.android.launcher3.views.RecyclerViewFastScroller}. */
     public String getSectionName(int pos) {
         return mVisibleEntries.get(pos).mTitleSectionName;
     }
 
-    /**
-     * Updates the widget list based on {@code tempEntries}.
-     */
+    /** Updates the widget list based on {@code tempEntries}. */
     public void setWidgets(List<WidgetsListBaseEntry> tempEntries) {
         mAllEntries.clear();
         mAllEntries.add(new WidgetListSpaceEntry());
@@ -208,24 +200,31 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
                 getOffsetForPosition(previousPositionForPackageUserKey);
 
         List<WidgetsListBaseEntry> newVisibleEntries = mAllEntries.stream()
-                .filter(entry -> ((mFilter == null || mFilter.test(entry))
+                .filter(entry -> (((mFilter == null || mFilter.test(entry))
                         && mHeaderAndSelectedContentFilter.test(entry))
                         || entry instanceof WidgetListSpaceEntry)
+                        && (mHeaderChangeListener == null
+                        || !(entry instanceof WidgetsListContentEntry)))
                 .map(entry -> {
-                    if (entry instanceof WidgetsListBaseEntry.Header<?>
+                    if (entry instanceof WidgetsListHeaderEntry
                             && matchesKey(entry, mWidgetsContentVisiblePackageUserKey)) {
                         // Adjust the original entries to expand headers for the selected content.
-                        return ((WidgetsListBaseEntry.Header<?>) entry).withWidgetListShown();
+                        return ((WidgetsListHeaderEntry) entry).withWidgetListShown();
                     } else if (entry instanceof WidgetsListContentEntry) {
                         // Adjust the original content entries to accommodate for the current
                         // maxSpanSize.
-                        return ((WidgetsListContentEntry) entry).withMaxSpanSize(mMaxSpanSize);
+                        return ((WidgetsListContentEntry) entry).withMaxSpanSize(
+                                mMaxHorizontalSpan);
                     }
                     return entry;
                 })
                 .collect(Collectors.toList());
 
-        mDiffReporter.process(mVisibleEntries, newVisibleEntries, mRowComparator);
+        DiffResult diffResult = DiffUtil.calculateDiff(
+                new WidgetsDiffCallback(mVisibleEntries, newVisibleEntries), false);
+        mVisibleEntries.clear();
+        mVisibleEntries.addAll(newVisibleEntries);
+        diffResult.dispatchUpdatesTo(this);
 
         if (mPendingClickHeader != null) {
             // Get the position for the clicked header after adjusting the visible entries. The
@@ -237,13 +236,10 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
         }
     }
 
-
-    /**
-     * Returns whether {@code entry} matches {@code key}.
-     */
+    /** Returns whether {@code entry} matches {@code key}. */
     private static boolean isHeaderForPackageUserKey(
             @NonNull WidgetsListBaseEntry entry, @Nullable PackageUserKey key) {
-        return entry instanceof WidgetsListBaseEntry.Header && matchesKey(entry, key);
+        return entry instanceof WidgetsListHeaderEntry && matchesKey(entry, key);
     }
 
     private static boolean matchesKey(@NonNull WidgetsListBaseEntry entry,
@@ -272,7 +268,6 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos, List<Object> payloads) {
         ViewHolderBinder viewHolderBinder = mViewHolderBinders.get(getItemViewType(pos));
-        WidgetsListBaseEntry entry = mVisibleEntries.get(pos);
 
         // The first entry has an empty space, count from second entries.
         int listPos = (pos > 1) ? POSITION_DEFAULT : POSITION_FIRST;
@@ -280,6 +275,18 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
             listPos |= POSITION_LAST;
         }
         viewHolderBinder.bindViewHolder(holder, mVisibleEntries.get(pos), listPos, payloads);
+    }
+
+    /**
+     * Selects the first visible header. This is used in search as we want to always select the
+     * first header in the new list that gets generated as we search.
+     */
+    void selectFirstHeaderEntry() {
+        mVisibleEntries.stream()
+                .filter(entry -> entry instanceof WidgetsListHeaderEntry)
+                .findFirst()
+                .ifPresent(entry ->
+                        onHeaderClicked(true, PackageUserKey.fromPackageItemInfo(entry.mPkgItem)));
     }
 
     @Override
@@ -319,8 +326,6 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
             return VIEW_TYPE_WIDGETS_LIST;
         } else if (entry instanceof WidgetsListHeaderEntry) {
             return VIEW_TYPE_WIDGETS_HEADER;
-        } else if (entry instanceof WidgetsListSearchHeaderEntry) {
-            return VIEW_TYPE_WIDGETS_SEARCH_HEADER;
         } else if (entry instanceof WidgetListSpaceEntry) {
             return VIEW_TYPE_WIDGETS_SPACE;
         }
@@ -331,6 +336,9 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
     public void onHeaderClicked(boolean showWidgets, PackageUserKey packageUserKey) {
         // Ignore invalid clicks, such as collapsing a package that isn't currently expanded.
         if (!showWidgets && !packageUserKey.equals(mWidgetsContentVisiblePackageUserKey)) return;
+
+        if (mHeaderChangeListener != null
+                && packageUserKey.equals(mWidgetsContentVisiblePackageUserKey)) return;
 
         if (showWidgets) {
             mWidgetsContentVisiblePackageUserKey = packageUserKey;
@@ -345,6 +353,10 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
         mPendingClickHeader = packageUserKey;
 
         updateVisibleEntries();
+
+        if (mHeaderChangeListener != null && mWidgetsContentVisiblePackageUserKey != null) {
+            mHeaderChangeListener.onHeaderChanged(mWidgetsContentVisiblePackageUserKey);
+        }
     }
 
     /**
@@ -410,11 +422,11 @@ public class WidgetsListAdapter extends Adapter<ViewHolder> implements OnHeaderC
     }
 
     /**
-     * Sets the max horizontal span in cells that is allowed for grouping more than one widget in a
+     * Sets the max horizontal span in pixels that is allowed for grouping more than one widget in a
      * table row.
      */
-    public void setMaxHorizontalSpansPerRow(int maxHorizontalSpans) {
-        mMaxSpanSize = maxHorizontalSpans;
+    public void setMaxHorizontalSpansPxPerRow(@Px int maxHorizontalSpan) {
+        mMaxHorizontalSpan = maxHorizontalSpan;
         updateVisibleEntries();
     }
 

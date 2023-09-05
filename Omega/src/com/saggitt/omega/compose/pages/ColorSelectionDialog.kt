@@ -32,6 +32,7 @@ import com.android.launcher3.R
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.staticColors
@@ -39,30 +40,30 @@ import com.saggitt.omega.util.staticColors
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectionDialog(
-    defaultColor: Int,
-    onClose: (Int) -> Unit,
+    defaultColor: String,
+    onClose: (String) -> Unit,
 ) {
     val currentColor = remember { mutableStateOf(defaultColor) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
 
     val tabs = listOf(
-        TabItem(title = R.string.color_presets) {
+        TabItem(title = R.string.color_presets, icon = R.drawable.ic_setting) {
             PresetsPage(
                 presetColors = presetColors,
                 onSelectColor = { currentColor.value = it },
                 isColorSelected = { it == currentColor.value }
             )
         },
-        TabItem(title = R.string.custom) {
+        TabItem(title = R.string.custom, icon = R.drawable.ic_color_donut) {
             CustomPage(
-                initialColor = Color(currentColor.value),
+                initialColor = Color(AccentColorOption.fromString(currentColor.value).accentColor),
                 onSelectColor = {
                     currentColor.value = it
                 }
             )
         },
-        TabItem(title = R.string.color_dynamic) {
+        TabItem(title = R.string.color_dynamic, icon = R.drawable.ic_paint_bucket) {
             DynamicPage(
                 dynamicColors = dynamicColors,
                 onSelectColor = { currentColor.value = it },
@@ -71,8 +72,8 @@ fun ColorSelectionDialog(
         }
     )
     val defaultTabIndex = when {
-        presetColors.any { it.accentColor == currentColor.value } -> 0
-        dynamicColors.any { it.accentColor == currentColor.value } -> 2
+        presetColors.any { it.toString() == currentColor.value } -> 0
+        dynamicColors.any { it.toString() == currentColor.value } -> 2
         else -> 1
     }
     val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })

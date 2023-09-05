@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
+import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_Y;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
 import static com.android.launcher3.LauncherState.NORMAL;
@@ -23,30 +25,45 @@ import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_ALL_APPS_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_VERTICAL_PROGRESS;
-import static com.android.launcher3.util.SystemUiController.UI_STATE_ALLAPPS;
+import static com.android.launcher3.util.SystemUiController.FLAG_DARK_NAV;
+import static com.android.launcher3.util.SystemUiController.FLAG_LIGHT_NAV;
+import static com.android.launcher3.util.SystemUiController.UI_STATE_ALL_APPS;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.util.FloatProperty;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.Interpolator;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.anim.AnimatorListeners;
+import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.statemanager.StateManager.StateHandler;
 import com.android.launcher3.states.StateAnimationConfig;
-import com.android.launcher3.util.MultiAdditivePropertyFactory;
+import com.android.launcher3.touch.AllAppsSwipeController;
+import com.android.launcher3.util.MultiPropertyFactory;
+import com.android.launcher3.util.MultiPropertyFactory.MultiProperty;
 import com.android.launcher3.util.MultiValueAlpha;
-import com.android.launcher3.util.UiThreadHelper;
+import com.android.launcher3.util.ScrollableLayoutManager;
+import com.android.launcher3.util.Themes;
+import com.android.launcher3.util.VibratorWrapper;
 import com.android.launcher3.views.ScrimView;
 
 /**
@@ -63,6 +80,11 @@ public class AllAppsTransitionController
         implements StateHandler<LauncherState>, OnDeviceProfileChangeListener {
     // This constant should match the second derivative of the animator interpolator.
     public static final float INTERP_COEFF = 1.7f;
+    public static final int REVERT_SWIPE_ALL_APPS_TO_HOME_ANIMATION_DURATION_MS = 200;
+
+    private static final float NAV_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.1f;
+    private static final float SWIPE_DRAG_COMMIT_THRESHOLD =
+            1 - AllAppsSwipeController.ALL_APPS_STATE_TRANSITION_MANUAL;
 
     public static final FloatProperty<AllAppsTransitionController> ALL_APPS_PROGRESS =
             new FloatProperty<AllAppsTransitionController>("allAppsProgress") {
@@ -78,6 +100,8 @@ public class AllAppsTransitionController
                 }
             };
 
+    private static final float ALL_APPS_PULL_BACK_TRANSLATION_DEFAULT = 0f;
+
     public static final FloatProperty<AllAppsTransitionController> ALL_APPS_PULL_BACK_TRANSLATION =
             new FloatProperty<AllAppsTransitionController>("allAppsPullBackTranslation") {
 
@@ -86,8 +110,7 @@ public class AllAppsTransitionController
                     if (controller.mIsTablet) {
                         return controller.mAppsView.getActiveRecyclerView().getTranslationY();
                     } else {
-                        return controller.getAppsViewPullbackTranslationY().get(
-                                controller.mAppsView);
+                        return controller.getAppsViewPullbackTranslationY().getValue();
                     }
                 }
 
@@ -95,12 +118,17 @@ public class AllAppsTransitionController
                 public void setValue(AllAppsTransitionController controller, float translation) {
                     if (controller.mIsTablet) {
                         controller.mAppsView.getActiveRecyclerView().setTranslationY(translation);
+                        controller.getAppsViewPullbackTranslationY().setValue(
+                                ALL_APPS_PULL_BACK_TRANSLATION_DEFAULT);
                     } else {
-                        controller.getAppsViewPullbackTranslationY().set(controller.mAppsView,
-                                translation);
+                        controller.getAppsViewPullbackTranslationY().setValue(translation);
+                        controller.mAppsView.getActiveRecyclerView().setTranslationY(
+                                ALL_APPS_PULL_BACK_TRANSLATION_DEFAULT);
                     }
                 }
             };
+
+    private static final float ALL_APPS_PULL_BACK_ALPHA_DEFAULT = 1f;
 
     public static final FloatProperty<AllAppsTransitionController> ALL_APPS_PULL_BACK_ALPHA =
             new FloatProperty<AllAppsTransitionController>("allAppsPullBackAlpha") {
@@ -118,8 +146,12 @@ public class AllAppsTransitionController
                 public void setValue(AllAppsTransitionController controller, float alpha) {
                     if (controller.mIsTablet) {
                         controller.mAppsView.getActiveRecyclerView().setAlpha(alpha);
+                        controller.getAppsViewPullbackAlpha().setValue(
+                                ALL_APPS_PULL_BACK_ALPHA_DEFAULT);
                     } else {
                         controller.getAppsViewPullbackAlpha().setValue(alpha);
+                        controller.mAppsView.getActiveRecyclerView().setAlpha(
+                                ALL_APPS_PULL_BACK_ALPHA_DEFAULT);
                     }
                 }
             };
@@ -131,7 +163,13 @@ public class AllAppsTransitionController
     private ActivityAllAppsContainerView<Launcher> mAppsView;
 
     private final Launcher mLauncher;
+    private final AnimatedFloat mAllAppScale = new AnimatedFloat(this::onScaleProgressChanged);
+    private final int mNavScrimFlag;
+
     private boolean mIsVerticalLayout;
+
+    // Whether this class should take care of closing the keyboard.
+    private boolean mShouldControlKeyboard;
 
     // Animation in this class is controlled by a single variable {@link mProgress}.
     // Visually, it represents top y coordinate of the all apps container if multiplied with
@@ -144,21 +182,27 @@ public class AllAppsTransitionController
 
     private ScrimView mScrimView;
 
-    private final MultiAdditivePropertyFactory<View>
-            mAppsViewTranslationYPropertyFactory = new MultiAdditivePropertyFactory<>(
-            "appsViewTranslationY", View.TRANSLATION_Y);
     private MultiValueAlpha mAppsViewAlpha;
+    private MultiPropertyFactory<View> mAppsViewTranslationY;
 
     private boolean mIsTablet;
+
+    private boolean mHasScaleEffect;
+    private final VibratorWrapper mVibratorWrapper;
 
     public AllAppsTransitionController(Launcher l) {
         mLauncher = l;
         DeviceProfile dp = mLauncher.getDeviceProfile();
-        setShiftRange(dp.allAppsShiftRange);
         mProgress = 1f;
         mIsVerticalLayout = dp.isVerticalBarLayout();
         mIsTablet = dp.isTablet;
+        mNavScrimFlag = Themes.getAttrBoolean(l, R.attr.isMainColorDark)
+                ? FLAG_DARK_NAV : FLAG_LIGHT_NAV;
+
+        setShiftRange(dp.allAppsShiftRange);
+        mAllAppScale.value = 1;
         mLauncher.addOnDeviceProfileChangeListener(this);
+        mVibratorWrapper = VibratorWrapper.INSTANCE.get(mLauncher.getApplicationContext());
     }
 
     public float getShiftRange() {
@@ -188,28 +232,33 @@ public class AllAppsTransitionController
      */
     public void setProgress(float progress) {
         mProgress = progress;
-        getAppsViewProgressTranslationY().set(mAppsView, mProgress * mShiftRange);
+        getAppsViewProgressTranslationY().setValue(mProgress * mShiftRange);
         mLauncher.onAllAppsTransition(1 - progress);
+
+        boolean hasScrim = progress < NAV_BAR_COLOR_FORCE_UPDATE_THRESHOLD
+                && mLauncher.getAppsView().getNavBarScrimHeight() > 0;
+        mLauncher.getSystemUiController().updateUiState(
+                UI_STATE_ALL_APPS, hasScrim ? mNavScrimFlag : 0);
     }
 
     public float getProgress() {
         return mProgress;
     }
 
-    private FloatProperty<View> getAppsViewProgressTranslationY() {
-        return mAppsViewTranslationYPropertyFactory.get(INDEX_APPS_VIEW_PROGRESS);
+    private MultiProperty getAppsViewProgressTranslationY() {
+        return mAppsViewTranslationY.get(INDEX_APPS_VIEW_PROGRESS);
     }
 
-    private FloatProperty<View> getAppsViewPullbackTranslationY() {
-        return mAppsViewTranslationYPropertyFactory.get(INDEX_APPS_VIEW_PULLBACK);
+    private MultiProperty getAppsViewPullbackTranslationY() {
+        return mAppsViewTranslationY.get(INDEX_APPS_VIEW_PULLBACK);
     }
 
-    private MultiValueAlpha.AlphaProperty getAppsViewProgressAlpha() {
-        return mAppsViewAlpha.getProperty(INDEX_APPS_VIEW_PROGRESS);
+    private MultiProperty getAppsViewProgressAlpha() {
+        return mAppsViewAlpha.get(INDEX_APPS_VIEW_PROGRESS);
     }
 
-    private MultiValueAlpha.AlphaProperty getAppsViewPullbackAlpha() {
-        return mAppsViewAlpha.getProperty(INDEX_APPS_VIEW_PULLBACK);
+    private MultiProperty getAppsViewPullbackAlpha() {
+        return mAppsViewAlpha.get(INDEX_APPS_VIEW_PULLBACK);
     }
 
     /**
@@ -223,27 +272,109 @@ public class AllAppsTransitionController
         onProgressAnimationEnd();
     }
 
+    @Override
+    public void onBackProgressed(
+            LauncherState toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
+        if (!mLauncher.isInState(ALL_APPS) || !NORMAL.equals(toState)) {
+            return;
+        }
+
+        float deceleratedProgress =
+                Interpolators.PREDICTIVE_BACK_DECELERATED_EASE.getInterpolation(backProgress);
+        float scaleProgress = ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE
+                + (1 - ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE)
+                * (1 - deceleratedProgress);
+
+        mAllAppScale.updateValue(scaleProgress);
+    }
+
+    private void onScaleProgressChanged() {
+        final float scaleProgress = mAllAppScale.value;
+        SCALE_PROPERTY.set(mLauncher.getAppsView(), scaleProgress);
+        mLauncher.getScrimView().setScrimHeaderScale(scaleProgress);
+
+        AllAppsRecyclerView rv = mLauncher.getAppsView().getActiveRecyclerView();
+        if (rv != null && rv.getScrollbar() != null) {
+            rv.getScrollbar().setVisibility(scaleProgress < 1f ? View.INVISIBLE : View.VISIBLE);
+        }
+
+        // Disable view clipping from all apps' RecyclerView up to all apps view during scale
+        // animation, and vice versa. The goal is to display extra roll(s) app icons (rendered in
+        // {@link AppsGridLayoutManager#calculateExtraLayoutSpace}) during scale animation.
+        boolean hasScaleEffect = scaleProgress < 1f;
+        if (hasScaleEffect != mHasScaleEffect) {
+            mHasScaleEffect = hasScaleEffect;
+            if (mHasScaleEffect) {
+                setClipChildrenOnViewTree(rv, mLauncher.getAppsView(), false);
+            } else {
+                restoreClipChildrenOnViewTree(rv, mLauncher.getAppsView());
+            }
+        }
+    }
+
+    /**
+     * Animate all apps view to 1f scale.
+     */
+    public void animateAllAppsToNoScale() {
+        mAllAppScale.animateToValue(1f)
+                .setDuration(REVERT_SWIPE_ALL_APPS_TO_HOME_ANIMATION_DURATION_MS)
+                .start();
+    }
+
     /**
      * Creates an animation which updates the vertical transition progress and updates all the
      * dependent UI using various animation events
+     * <p>
+     * This method also dictates where along the progress the haptics should be played. As the user
+     * scrolls up from workspace or down from AllApps, a drag haptic is being played until the
+     * commit point where it plays a commit haptic. Where we play the haptics differs when going
+     * from workspace -> allApps and vice versa.
      */
     @Override
     public void setStateWithAnimation(LauncherState toState,
                                       StateAnimationConfig config, PendingAnimation builder) {
-        if (NORMAL.equals(toState) && mLauncher.isInState(ALL_APPS)) {
-            UiThreadHelper.hideKeyboardAsync(mLauncher, mLauncher.getAppsView().getWindowToken());
+        if (mLauncher.isInState(ALL_APPS) && !ALL_APPS.equals(toState)) {
+            // For atomic animations, we close the keyboard immediately.
+            if (!config.userControlled && mShouldControlKeyboard) {
+                mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
+            }
+
             builder.addEndListener(success -> {
                 // Reset pull back progress and alpha after switching states.
-                ALL_APPS_PULL_BACK_TRANSLATION.set(this, 0f);
-                ALL_APPS_PULL_BACK_ALPHA.set(this, 1f);
+                ALL_APPS_PULL_BACK_TRANSLATION.set(this, ALL_APPS_PULL_BACK_TRANSLATION_DEFAULT);
+                ALL_APPS_PULL_BACK_ALPHA.set(this, ALL_APPS_PULL_BACK_ALPHA_DEFAULT);
+
+                // We only want to close the keyboard if the animation has completed successfully.
+                // The reason is that with keyboard sync, if the user swipes down from All Apps with
+                // the keyboard open and then changes their mind and swipes back up, we want the
+                // keyboard to remain open. However an onCancel signal is sent to the listeners
+                // (success = false), so we need to check for that.
+                if (config.userControlled && success && mShouldControlKeyboard) {
+                    mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
+                }
+
+                mAllAppScale.updateValue(1f);
             });
+        }
+
+        if (FeatureFlags.ENABLE_PREMIUM_HAPTICS_ALL_APPS.get() && config.userControlled
+                && Utilities.ATLEAST_S) {
+            if (toState == ALL_APPS) {
+                builder.addOnFrameListener(
+                        new VibrationAnimatorUpdateListener(this, mVibratorWrapper,
+                                SWIPE_DRAG_COMMIT_THRESHOLD, 1));
+            } else {
+                builder.addOnFrameListener(
+                        new VibrationAnimatorUpdateListener(this, mVibratorWrapper,
+                                0, SWIPE_DRAG_COMMIT_THRESHOLD));
+            }
+            builder.addEndListener(mVibratorWrapper::cancelVibrate);
         }
 
         float targetProgress = toState.getVerticalProgress(mLauncher);
         if (Float.compare(mProgress, targetProgress) == 0) {
             setAlphas(toState, config, builder);
             // Fail fast
-            onProgressAnimationEnd();
             return;
         }
 
@@ -256,8 +387,9 @@ public class AllAppsTransitionController
         builder.add(anim);
 
         setAlphas(toState, config, builder);
-
-        if (ALL_APPS.equals(toState) && mLauncher.isInState(NORMAL)) {
+        // This controls both haptics for tapping on QSB and going to all apps.
+        if (ALL_APPS.equals(toState) && mLauncher.isInState(NORMAL) &&
+                !FeatureFlags.ENABLE_PREMIUM_HAPTICS_ALL_APPS.get()) {
             mLauncher.getAppsView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY,
                     HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
         }
@@ -275,7 +407,9 @@ public class AllAppsTransitionController
         boolean hasAllAppsContent = (visibleElements & ALL_APPS_CONTENT) != 0;
 
         Interpolator allAppsFade = config.getInterpolator(ANIM_ALL_APPS_FADE, LINEAR);
-        setter.setFloat(getAppsViewProgressAlpha(), MultiValueAlpha.VALUE,
+        setter.setFloat(getAppsViewProgressAlpha(), MultiPropertyFactory.MULTI_PROPERTY_VALUE,
+                hasAllAppsContent ? 1 : 0, allAppsFade);
+        setter.setFloat(getAppsViewPullbackAlpha(), MultiPropertyFactory.MULTI_PROPERTY_VALUE,
                 hasAllAppsContent ? 1 : 0, allAppsFade);
 
         boolean shouldProtectHeader =
@@ -293,14 +427,87 @@ public class AllAppsTransitionController
     public void setupViews(ScrimView scrimView, ActivityAllAppsContainerView<Launcher> appsView) {
         mScrimView = scrimView;
         mAppsView = appsView;
-        if (FeatureFlags.ENABLE_DEVICE_SEARCH.get() && Utilities.ATLEAST_R) {
-            mLauncher.getSystemUiController().updateUiState(UI_STATE_ALLAPPS,
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        }
         mAppsView.setScrimView(scrimView);
+
         mAppsViewAlpha = new MultiValueAlpha(mAppsView, APPS_VIEW_INDEX_COUNT);
         mAppsViewAlpha.setUpdateVisibility(true);
+        mAppsViewTranslationY = new MultiPropertyFactory<>(
+                mAppsView, VIEW_TRANSLATE_Y, APPS_VIEW_INDEX_COUNT, Float::sum);
+
+        mShouldControlKeyboard = !mLauncher.getSearchConfig().isKeyboardSyncEnabled();
+    }
+
+    /**
+     * Recursively call {@link ViewGroup#setClipChildren(boolean)} from {@link View} to ts parent
+     * (direct or indirect) inclusive. This method will also save the old clipChildren value on each
+     * view with {@link View#setTag(int, Object)}, which can be restored in
+     * {@link #restoreClipChildrenOnViewTree(View, ViewParent)}.
+     * <p>
+     * Note that if parent is null or not a parent of the view, this method will be applied all the
+     * way to root view.
+     *
+     * @param v            child view
+     * @param parent       direct or indirect parent of child view
+     * @param clipChildren whether we should clip children
+     */
+    private static void setClipChildrenOnViewTree(
+            @Nullable View v,
+            @Nullable ViewParent parent,
+            boolean clipChildren) {
+        if (v == null) {
+            return;
+        }
+
+        if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            boolean oldClipChildren = viewGroup.getClipChildren();
+            if (oldClipChildren != clipChildren) {
+                v.setTag(R.id.saved_clip_children_tag_id, oldClipChildren);
+                viewGroup.setClipChildren(clipChildren);
+            }
+        }
+
+        if (v == parent) {
+            return;
+        }
+
+        if (v.getParent() instanceof View) {
+            setClipChildrenOnViewTree((View) v.getParent(), parent, clipChildren);
+        }
+    }
+
+    /**
+     * Recursively call {@link ViewGroup#setClipChildren(boolean)} to restore clip children value
+     * set in {@link #setClipChildrenOnViewTree(View, ViewParent, boolean)} on view to its parent
+     * (direct or indirect) inclusive.
+     * <p>
+     * Note that if parent is null or not a parent of the view, this method will be applied all the
+     * way to root view.
+     *
+     * @param v      child view
+     * @param parent direct or indirect parent of child view
+     */
+    private static void restoreClipChildrenOnViewTree(
+            @Nullable View v, @Nullable ViewParent parent) {
+        if (v == null) {
+            return;
+        }
+        if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            Object viewTag = viewGroup.getTag(R.id.saved_clip_children_tag_id);
+            if (viewTag instanceof Boolean) {
+                viewGroup.setClipChildren((boolean) viewTag);
+                viewGroup.setTag(R.id.saved_clip_children_tag_id, null);
+            }
+        }
+
+        if (v == parent) {
+            return;
+        }
+
+        if (v.getParent() instanceof View) {
+            restoreClipChildrenOnViewTree((View) v.getParent(), parent);
+        }
     }
 
     /**
@@ -315,9 +522,52 @@ public class AllAppsTransitionController
      * TODO: This logic should go in {@link LauncherState}
      */
     private void onProgressAnimationEnd() {
-        if (FeatureFlags.ENABLE_DEVICE_SEARCH.get()) return;
         if (Float.compare(mProgress, 1f) == 0) {
             mAppsView.reset(false /* animate */);
+            if (mShouldControlKeyboard) {
+                mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
+            }
+        }
+    }
+
+    /**
+     * This VibrationAnimatorUpdateListener class takes in four parameters, a controller, start
+     * threshold, end threshold, and a Vibrator wrapper. We use the progress given by the controller
+     * as it gives an accurate progress that dictates where the vibrator should vibrate.
+     * Note: once the user begins a gesture and does the commit haptic, there should not be anymore
+     * haptics played for that gesture.
+     */
+    private static class VibrationAnimatorUpdateListener implements
+            ValueAnimator.AnimatorUpdateListener {
+        private final VibratorWrapper mVibratorWrapper;
+        private final AllAppsTransitionController mController;
+        private final float mStartThreshold;
+        private final float mEndThreshold;
+        private boolean mHasCommitted;
+
+        VibrationAnimatorUpdateListener(AllAppsTransitionController controller,
+                                        VibratorWrapper vibratorWrapper, float startThreshold,
+                                        float endThreshold) {
+            mController = controller;
+            mVibratorWrapper = vibratorWrapper;
+            mStartThreshold = startThreshold;
+            mEndThreshold = endThreshold;
+        }
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            if (mHasCommitted) {
+                return;
+            }
+            float currentProgress =
+                    AllAppsTransitionController.ALL_APPS_PROGRESS.get(mController);
+            if (currentProgress > mStartThreshold && currentProgress < mEndThreshold) {
+                mVibratorWrapper.vibrateForDragTexture();
+            } else if (!(currentProgress == 0 || currentProgress == 1)) {
+                // This check guards against committing at the location of the start of the gesture
+                mVibratorWrapper.vibrateForDragCommit();
+                mHasCommitted = true;
+            }
         }
     }
 }

@@ -18,10 +18,11 @@
 
 package com.saggitt.omega.theme
 
+import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.OmegaApp
+import com.saggitt.omega.NeoApp
 import com.saggitt.omega.util.getColorAttr
 import com.saggitt.omega.util.getSystemAccent
 import com.saggitt.omega.wallpaper.WallpaperManagerCompat
@@ -36,14 +37,16 @@ sealed class AccentColorOption {
         override val displayName = R.string.icon_shape_system_default
 
         override val accentColor: Int
-            get() = OmegaApp.instance?.applicationContext!!.getSystemAccent(false)
+            get() = NeoApp.instance?.applicationContext!!.getSystemAccent(false)
+
+        override fun toString() = "system_accent"
     }
 
     object WallpaperPrimary : AccentColorOption() {
         override val isSupported = Utilities.ATLEAST_OREO_MR1
         override val displayName = R.string.theme_auto
         override val accentColor: Int
-            get() = WallpaperManagerCompat.INSTANCE.get(OmegaApp.instance?.applicationContext)
+            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
                 .wallpaperColors?.getPrimaryColor() ?: LightPrimary.toArgb()
 
         override fun toString() = "wallpaper_primary"
@@ -53,7 +56,7 @@ sealed class AccentColorOption {
         override val isSupported = Utilities.ATLEAST_OREO_MR1
         override val displayName = R.string.color_wallpaper_secondary
         override val accentColor: Int
-            get() = WallpaperManagerCompat.INSTANCE.get(OmegaApp.instance?.applicationContext)
+            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
                 .wallpaperColors?.getSecondaryColor() ?: LightPrimary.toArgb()
 
         override fun toString() = "wallpaper_secondary"
@@ -68,6 +71,7 @@ sealed class AccentColorOption {
         override fun equals(other: Any?) = other is CustomColor && other.accentColor == accentColor
 
         override fun hashCode() = accentColor
+        override fun toString() = "custom|#${String.format("%08x", accentColor)}"
     }
 
     object LauncherDefault : AccentColorOption() {
@@ -75,7 +79,32 @@ sealed class AccentColorOption {
 
         override val displayName = -1
         override val accentColor: Int
-            get() = OmegaApp.instance?.applicationContext!!.getColorAttr(R.attr.colorAccent)
+            get() = NeoApp.instance?.applicationContext!!.getColorAttr(R.attr.colorAccent)
 
+    }
+
+    companion object {
+        fun fromString(stringValue: String) = when (stringValue) {
+            "system_accent" -> SystemAccent
+            "wallpaper_primary" -> WallpaperPrimary
+            "wallpaper_secondary" -> WallpaperSecondary
+            "default" -> LauncherDefault
+            else -> instantiateCustomColor(stringValue)
+        }
+
+        private fun instantiateCustomColor(stringValue: String): AccentColorOption {
+            try {
+                if (stringValue.startsWith("custom")) {
+                    val color = Color.parseColor(stringValue.substring(7))
+                    return CustomColor(color)
+                }
+            } catch (_: IllegalArgumentException) {
+            }
+            return when {
+                Utilities.ATLEAST_S -> SystemAccent
+                Utilities.ATLEAST_OREO_MR1 -> WallpaperPrimary
+                else -> LauncherDefault
+            }
+        }
     }
 }

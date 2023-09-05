@@ -19,8 +19,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import com.saggitt.omega.smartspace.SmartSpaceView;
-
 import java.io.PrintWriter;
 
 /**
@@ -70,9 +68,6 @@ public interface LauncherOverlayManager extends Application.ActivityLifecycleCal
     default void onActivityPaused(Activity activity) {
     }
 
-    default void registerSmartSpaceView(SmartSpaceView smartspace) {
-    }
-
     @Override
     default void onActivityStopped(Activity activity) {
     }
@@ -112,6 +107,6 @@ public interface LauncherOverlayManager extends Application.ActivityLifecycleCal
 
     interface LauncherOverlayCallbacks {
 
-        void onScrollChanged(float progress);
+        void onOverlayScrollChanged(float progress);
     }
 }

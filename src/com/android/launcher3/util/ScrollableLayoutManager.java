@@ -20,6 +20,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
@@ -30,6 +31,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
  * Extension of {@link GridLayoutManager} with support for smooth scrolling
  */
 public class ScrollableLayoutManager extends GridLayoutManager {
+
+    public static final float PREDICTIVE_BACK_MIN_SCALE = 0.9f;
+    private static final float EXTRA_BOTTOM_SPACE_BY_HEIGHT_PERCENT =
+            (1 - PREDICTIVE_BACK_MIN_SCALE) / 2;
 
     // keyed on item type
     protected final SparseIntArray mCachedSizes = new SparseIntArray();
@@ -44,8 +49,6 @@ public class ScrollableLayoutManager extends GridLayoutManager {
      * whereas widgets will have strictly increasing values
      * sample values: 0, 10, 50, 60, 110
      */
-
-    //
     private int[] mTotalHeightCache = new int[1];
     private int mLastValidHeightIndex = 0;
 
@@ -62,16 +65,23 @@ public class ScrollableLayoutManager extends GridLayoutManager {
     @Override
     public void layoutDecorated(@NonNull View child, int left, int top, int right, int bottom) {
         super.layoutDecorated(child, left, top, right, bottom);
-        mCachedSizes.put(
-                mRv.getChildViewHolder(child).getItemViewType(), child.getMeasuredHeight());
+        updateCachedSize(child);
     }
 
     @Override
     public void layoutDecoratedWithMargins(@NonNull View child, int left, int top, int right,
                                            int bottom) {
         super.layoutDecoratedWithMargins(child, left, top, right, bottom);
-        mCachedSizes.put(
-                mRv.getChildViewHolder(child).getItemViewType(), child.getMeasuredHeight());
+        updateCachedSize(child);
+    }
+
+    private void updateCachedSize(@NonNull View child) {
+        int viewType = mRv.getChildViewHolder(child).getItemViewType();
+        int size = child.getMeasuredHeight();
+        if (mCachedSizes.get(viewType, -1) != size) {
+            invalidateScrollCache();
+        }
+        mCachedSizes.put(viewType, size);
     }
 
     @Override
@@ -104,6 +114,13 @@ public class ScrollableLayoutManager extends GridLayoutManager {
     public int computeVerticalScrollRange(State state) {
         Adapter adapter = mRv == null ? null : mRv.getAdapter();
         return adapter == null ? 0 : getItemsHeight(adapter, adapter.getItemCount());
+    }
+
+    @Override
+    protected void calculateExtraLayoutSpace(RecyclerView.State state, int[] extraLayoutSpace) {
+        super.calculateExtraLayoutSpace(state, extraLayoutSpace);
+        @Px int extraSpacePx = (int) (getHeight() * EXTRA_BOTTOM_SPACE_BY_HEIGHT_PERCENT);
+        extraLayoutSpace[1] = Math.max(extraLayoutSpace[1], extraSpacePx);
     }
 
     /**

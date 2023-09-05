@@ -59,6 +59,7 @@ import com.android.launcher3.model.data.IconRequestInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.PackageItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.InstantAppResolver;
@@ -81,6 +82,10 @@ import java.util.stream.Stream;
  */
 public class IconCache extends BaseIconCache {
 
+    // Shortcut extra which can point to a packageName and can be used to indicate an alternate
+    // badge info. Launcher only reads this if the shortcut comes from a system app.
+    public static final String EXTRA_SHORTCUT_BADGE_OVERRIDE_PACKAGE =
+            "extra_shortcut_badge_override_package";
     private static final String TAG = "Launcher.IconCache";
 
     private final Predicate<ItemInfoWithIcon> mIsUsingFallbackOrNonDefaultIconCheck = w ->
@@ -170,6 +175,7 @@ public class IconCache extends BaseIconCache {
     public HandlerRunnable updateIconInBackground(final ItemInfoUpdateReceiver caller,
                                                   final ItemInfoWithIcon info) {
         Preconditions.assertUIThread();
+
         if (mPendingIconRequestCount <= 0) {
             MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
         }
@@ -260,8 +266,15 @@ public class IconCache extends BaseIconCache {
             getTitleAndIcon(appInfo, false);
             return appInfo.bitmap;
         } else {
-            PackageItemInfo pkgInfo = new PackageItemInfo(shortcutInfo.getPackage(),
-                    shortcutInfo.getUserHandle());
+            String pkg = shortcutInfo.getPackage();
+            String override = shortcutInfo.getExtras() == null ? null
+                    : shortcutInfo.getExtras().getString(EXTRA_SHORTCUT_BADGE_OVERRIDE_PACKAGE);
+            if (!TextUtils.isEmpty(override)
+                    && InstallSessionHelper.INSTANCE.get(mContext)
+                    .isTrustedPackage(pkg, shortcutInfo.getUserHandle())) {
+                pkg = override;
+            }
+            PackageItemInfo pkgInfo = new PackageItemInfo(pkg, shortcutInfo.getUserHandle());
             getTitleAndIconForApp(pkgInfo, false);
             return pkgInfo.bitmap;
         }
@@ -484,8 +497,7 @@ public class IconCache extends BaseIconCache {
         WidgetSection widgetSection = WidgetSections.getWidgetSections(mContext)
                 .get(infoInOut.widgetCategory);
         infoInOut.title = mContext.getString(widgetSection.mSectionTitle);
-        infoInOut.contentDescription = mPackageManager.getUserBadgedLabel(
-                infoInOut.title, infoInOut.user);
+        infoInOut.contentDescription = mPackageManager.getUserBadgedLabel(infoInOut.title, infoInOut.user);
         final BitmapInfo cachedBitmap = mWidgetCategoryBitmapInfos.get(infoInOut.widgetCategory);
         if (cachedBitmap != null) {
             infoInOut.bitmap = getBadgedIcon(cachedBitmap, infoInOut.user);

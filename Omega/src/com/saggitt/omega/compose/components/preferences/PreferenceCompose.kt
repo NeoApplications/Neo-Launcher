@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.components.preferences
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +32,8 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -41,11 +42,14 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -76,6 +80,7 @@ import com.saggitt.omega.preferences.StringPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 import kotlinx.coroutines.launch
@@ -98,13 +103,13 @@ fun BasePreference(
 
     ListItem(
         modifier = modifier
-            .fillMaxWidth()
-            .clip(
-                GroupItemShape(index, groupSize - 1)
-            )
-            .addIf(onClick != null) {
-                clickable(enabled = isEnabled, onClick = onClick!!)
-            },
+                .fillMaxWidth()
+                .clip(
+                        GroupItemShape(index, groupSize - 1)
+                )
+                .addIf(onClick != null) {
+                    clickable(enabled = isEnabled, onClick = onClick!!)
+                },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme
                 .surfaceColorAtElevation((rank * 24).dp),
@@ -182,7 +187,6 @@ fun NavigationPreference(
         isEnabled = isEnabled,
         onClick = {
             if (pref.navRoute != "") {
-                Log.d("NavigationPreference", "Navigating to $route")
                 navController.navigate(route)
             } else {
                 pref.onClick?.invoke()
@@ -202,7 +206,9 @@ fun ColorIntPreference(
     val navController = LocalNavController.current
     val route = subRoute(pref.navRoute)
 
-    val currentColor by remember(pref) { mutableStateOf(pref.getValue()) }
+    val currentColor by remember(pref) {
+        mutableIntStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
+    }
 
     BasePreference(
         modifier = modifier,
@@ -240,7 +246,7 @@ fun SeekBarPreference(
     isEnabled: Boolean = true,
     onValueChange: ((Float) -> Unit) = {},
 ) {
-    var currentValue by remember(pref) { mutableStateOf(pref.getValue()) }
+    var currentValue by remember(pref) { mutableFloatStateOf(pref.getValue()) }
 
     BasePreference(
         modifier = modifier,
@@ -258,13 +264,13 @@ fun SeekBarPreference(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                        .widthIn(min = 52.dp)
-                        .combinedClickable(
-                            onClick = {},
-                            onLongClick = {
-                                menuExpanded = !menuExpanded
-                            }
-                        )
+                            .widthIn(min = 52.dp)
+                            .combinedClickable(
+                                    onClick = {},
+                                    onLongClick = {
+                                        menuExpanded = !menuExpanded
+                                    }
+                            )
                 )
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
@@ -281,8 +287,8 @@ fun SeekBarPreference(
                 Spacer(modifier = Modifier.requiredWidth(8.dp))
                 Slider(
                     modifier = Modifier
-                        .requiredHeight(24.dp)
-                        .weight(1f),
+                            .requiredHeight(24.dp)
+                            .weight(1f),
                     value = currentValue,
                     valueRange = pref.minValue..pref.maxValue,
                     onValueChange = { currentValue = it },
@@ -356,6 +362,16 @@ fun SwitchPreference(
                     onCheckedChange(it)
                     check(it)
                     coroutineScope.launch { pref.set(it) }
+                },
+                thumbContent = {
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                            tint = Color.White
+                        )
+                    }
                 },
                 enabled = isEnabled,
             )
@@ -435,10 +451,12 @@ fun GridSize2DPreference(
     isEnabled: Boolean = true,
     onClick: (() -> Unit) = {},
 ) {
+    val rows = pref.numRowsPref.get().collectAsState(initial = pref.numRowsPref.defaultValue)
+    val columns = pref.numColumnsPref.get().collectAsState(initial = pref.numColumnsPref.defaultValue)
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
-        summary = "${pref.numColumns}x${pref.numRows}",
+            summary = "${columns.value} x ${rows.value}",
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,

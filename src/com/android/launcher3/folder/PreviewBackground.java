@@ -46,7 +46,7 @@ import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
@@ -129,6 +129,15 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                     previewBackground.invalidate();
                 }
             };
+    private boolean isInDrawer;
+
+    public PreviewBackground() {
+        this(false);
+    }
+
+    public PreviewBackground(boolean inDrawer) {
+        isInDrawer = inDrawer;
+    }
 
     /**
      * Draws folder background under cell layout
@@ -154,12 +163,12 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
-        NLPrefs prefs = NLPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance(context);
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
         mDotColor = ta.getColor(R.styleable.FolderIconPreview_folderDotColor, 0);
         DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
         if (DRAW_STROKE) {
-            mStrokeColor = prefs.getDesktopFolderStrokeColor().getValue();
+            mStrokeColor = prefs.getDesktopFolderStrokeColor().getColor();
         } else {
             mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
         }
@@ -169,7 +178,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
-        previewSize = grid.folderIconSizePx;
+        previewSize = isInDrawer ? grid.allAppsIconSizePx - 10 : grid.folderIconSizePx;
 
         basePreviewOffsetX = (availableSpaceX - previewSize) / 2;
         basePreviewOffsetY = topPadding + grid.folderIconOffsetYPx;
@@ -350,12 +359,15 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                 getOffsetX() + inset, getOffsetY() + inset, getScaledRadius() - inset, mPaint);
     }
 
-    public void drawLeaveBehind(Canvas canvas) {
+    /**
+     * Draws the leave-behind circle on the given canvas and in the given color.
+     */
+    public void drawLeaveBehind(Canvas canvas, int color) {
         float originalScale = mScale;
         mScale = 0.5f;
 
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.argb(160, 245, 245, 245));
+        mPaint.setColor(color);
         getShape().drawShape(canvas, getOffsetX(), getOffsetY(), getScaledRadius(), mPaint);
 
         mScale = originalScale;

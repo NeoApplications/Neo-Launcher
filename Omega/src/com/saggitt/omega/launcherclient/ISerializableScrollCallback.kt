@@ -1,5 +1,5 @@
 package com.saggitt.omega.launcherclient
 
 interface ISerializableScrollCallback : IScrollCallback {
-    fun setPersistentFlags(flags: Int)
+    fun setPersistentFlags(myFlags: Int)
 }

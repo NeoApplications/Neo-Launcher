@@ -31,8 +31,8 @@ import com.android.launcher3.views.ActivityContext;
  * Supports two indicator colors, dedicated for personal and work tabs.
  */
 public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageIndicator {
-    private OnActivePageChangedListener mOnActivePageChangedListener;
-    private int mLastActivePage = 0;
+    protected OnActivePageChangedListener mOnActivePageChangedListener;
+    protected int mLastActivePage = 0;
 
     public PersonalWorkSlidingTabStrip(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -72,17 +72,6 @@ public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageInd
     @Override
     public boolean hasOverlappingRendering() {
         return false;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (getPaddingLeft() == 0 && getPaddingRight() == 0) {
-            // If any padding is not specified, restrict the width to emulate padding
-            int size = MeasureSpec.getSize(widthMeasureSpec);
-            size = getTabWidth(getContext(), size);
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY);
-        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**

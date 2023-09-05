@@ -19,7 +19,6 @@
 package com.saggitt.omega.groups.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,7 +51,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -62,7 +61,6 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.BaseDialog
-import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.BasePreference
 import com.saggitt.omega.compose.pages.ColorSelectionDialog
 import com.saggitt.omega.flowerpot.Flowerpot
@@ -72,6 +70,7 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.TYPE_FLOWERPOT
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
@@ -117,15 +116,13 @@ fun EditGroupBottomSheet(
     val selectedApps = remember { mutableStateListOf(*apps) }
     var color by remember {
         mutableStateOf(
-            Color(
-                (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value
-                    ?: context.prefs.profileAccentColor.getValue()
-            )
+            (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value
+                ?: context.prefs.profileAccentColor.getValue()
         )
     }
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -188,9 +185,11 @@ fun EditGroupBottomSheet(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                         )
-                    }
+                    },
+                    index = 0,
+                    groupSize = 2
                 ) { openDialog.value = true }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 if (openDialog.value) {
                     BaseDialog(openDialogCustom = openDialog) {
@@ -236,16 +235,35 @@ fun EditGroupBottomSheet(
                                 tint = MaterialTheme.colorScheme.primary,
                             )
                         },
+                        index = 0,
+                        groupSize = 3
                     ) { openDialog.value = true }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ComposeSwitchView(
-                        title = stringResource(R.string.tab_hide_from_main),
-                        iconId = R.drawable.tab_hide_from_main,
-                        isChecked = isHidden,
-                        onCheckedChange = { isHidden = it },
-                        horizontalPadding = 4.dp
+                    Spacer(modifier = Modifier.height(4.dp))
+                    BasePreference(
+                        titleId = R.string.tab_hide_from_main,
+                        startWidget = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.tab_hide_from_main),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        },
+                        endWidget = {
+                            Switch(
+                                modifier = Modifier
+                                    .height(24.dp),
+                                checked = isHidden,
+                                onCheckedChange = {
+                                    isHidden = it
+                                }
+                            )
+                        },
+                        onClick = { isHidden = !isHidden },
+                        index = 1,
+                        groupSize = 3
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
@@ -287,9 +305,10 @@ fun EditGroupBottomSheet(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                             )
-                        }
+                        },
+                        index = 0
                     ) { openDialog.value = true }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
@@ -306,56 +325,39 @@ fun EditGroupBottomSheet(
         }
 
         if (group.type != DrawerFolders.TYPE_CUSTOM) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        colorPicker.value = true
-                    }
-            )
-            {
-
-                if (colorPicker.value) {
-                    BaseDialog(openDialogCustom = colorPicker) {
-                        Card(
-                            shape = MaterialTheme.shapes.large,
-                            modifier = Modifier.padding(8.dp),
-                            elevation = CardDefaults.elevatedCardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                        ) {
-                            ColorSelectionDialog(
-                                defaultColor = color.toArgb()
-                            ) {
-                                color = Color(it)
-                                colorPicker.value = false
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 16.dp)
-                ) {
+            BasePreference(
+                titleId = R.string.tab_color,
+                startWidget = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_color_donut),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp),
-                        tint = color
+                        tint = Color(AccentColorOption.fromString(color).accentColor)
                     )
-
-                    Text(
-                        text = stringResource(id = R.string.tab_color),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .align(Alignment.CenterVertically)
-                            .weight(1f)
-                    )
-                }
-
+                },
+                index = 2,
+                groupSize = 3
+            ) {
+                colorPicker.value = true
             }
+            if (colorPicker.value) {
+                BaseDialog(openDialogCustom = colorPicker) {
+                    Card(
+                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.padding(8.dp),
+                        elevation = CardDefaults.elevatedCardElevation(8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                    ) {
+                        ColorSelectionDialog(
+                            defaultColor = color
+                        ) {
+                            color = it
+                            colorPicker.value = false
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -388,8 +390,8 @@ fun EditGroupBottomSheet(
                     (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
                         selectedApps.toMutableSet()
                     if (category != AppGroupsManager.Category.FOLDER) {
-                        (config[AppGroups.KEY_COLOR] as? AppGroups.ColorCustomization)?.value =
-                            color.toArgb()
+                        (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
+                            color
                     }
                     group.customizations.applyFrom(config)
 
@@ -400,15 +402,15 @@ fun EditGroupBottomSheet(
 
                         AppGroupsManager.Category.TAB,
                         AppGroupsManager.Category.FLOWERPOT,
-                                                         -> {
+                        -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
                         }
 
-                        else                             -> {}
+                        else -> {}
                     }
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },
-                shape = MaterialTheme.shapes.large,
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -418,6 +420,6 @@ fun EditGroupBottomSheet(
                 Text(text = stringResource(id = R.string.tab_bottom_sheet_save))
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

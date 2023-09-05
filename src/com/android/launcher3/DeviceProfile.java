@@ -19,39 +19,52 @@ import static com.android.launcher3.InvariantDeviceProfile.INDEX_DEFAULT;
 import static com.android.launcher3.InvariantDeviceProfile.INDEX_LANDSCAPE;
 import static com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_LANDSCAPE;
 import static com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_PORTRAIT;
+import static com.android.launcher3.ResourceUtils.INVALID_RESOURCE_HANDLE;
 import static com.android.launcher3.ResourceUtils.pxFromDp;
 import static com.android.launcher3.Utilities.dpiFromPx;
 import static com.android.launcher3.Utilities.pxFromSp;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ICON_OVERLAP_FACTOR;
+import static com.android.launcher3.icons.GraphicsUtils.getShapePath;
+import static com.android.launcher3.testing.shared.ResourceUtils.roundPxValueFromFloat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Path;
+import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.SparseArray;
 import android.view.Surface;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.CellLayout.ContainerType;
 import com.android.launcher3.DevicePaddings.DevicePadding;
 import com.android.launcher3.icons.DotRenderer;
-import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
+import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.WindowBounds;
 import com.saggitt.omega.DeviceProfileOverrides;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.function.Consumer;
+
 @SuppressLint("NewApi")
 public class DeviceProfile {
     private static final int DEFAULT_DOT_SIZE = 100;
+    private static final float MIN_FOLDER_TEXT_SIZE_SP = 16f;
+    public static final PointF DEFAULT_SCALE = new PointF(1.0f, 1.0f);
+    public static final ViewScaleProvider DEFAULT_PROVIDER = itemInfo -> DEFAULT_SCALE;
+    public static final Consumer<DeviceProfile> DEFAULT_DIMENSION_PROVIDER = dp -> {
+    };
     // Ratio of empty space, qsb should take up to appear visually centered.
     private final float mQsbCenterFactor;
     public final InvariantDeviceProfile inv;
@@ -61,6 +74,7 @@ public class DeviceProfile {
     public final boolean isTablet;
     public final boolean isPhone;
     public final boolean transposeLayoutWithOrientation;
+    public final boolean isMultiDisplay;
     public final boolean isTwoPanels;
     public final boolean isQsbInline;
     // Device properties in current orientation
@@ -121,13 +135,15 @@ public class DeviceProfile {
     // Folder
     public float folderLabelTextScale;
     public int folderLabelTextSizePx;
+    public int folderFooterHeightPx;
     public int folderIconSizePx;
     public int folderIconOffsetYPx;
     // Folder content
-    public Point folderCellLayoutBorderSpacePx;
-    public int folderCellLayoutBorderSpaceOriginalPx;
+    public int folderCellLayoutBorderSpacePx;
     public int folderContentPaddingLeftRight;
     public int folderContentPaddingTop;
+
+    public int folderCellLayoutBorderSpaceOriginalPx;
     // Folder cell
     public int folderCellWidthPx;
     public int folderCellHeightPx;
@@ -154,11 +170,20 @@ public class DeviceProfile {
     public final float qsbBottomMarginOriginalPx;
     public int qsbBottomMarginPx;
     public int qsbWidth; // only used when isQsbInline
+
+    // Bottom sheets
+    public int bottomSheetTopPadding;
+    public int bottomSheetOpenDuration;
+    public int bottomSheetCloseDuration;
+    public float bottomSheetWorkspaceScale;
+    public float bottomSheetDepth;
+
     // All apps
     public Point allAppsBorderSpacePx;
     public int allAppsShiftRange;
     public int allAppsTopPadding;
-    public int bottomSheetTopPadding;
+    public int allAppsOpenDuration;
+    public int allAppsCloseDuration;
     public int allAppsCellHeightPx;
     public int allAppsCellWidthPx;
     public int allAppsIconSizePx;
@@ -180,7 +205,11 @@ public class DeviceProfile {
     public int overviewPageSpacing;
     public int overviewRowSpacing;
     public int overviewGridSideMargin;
+    // Split staging
+    public int splitPlaceholderInset;
+
     // Widgets
+    private final ViewScaleProvider mViewScaleProvider;
     public final PointF appWidgetScale = new PointF(1.0f, 1.0f);
     // Drop Target
     public int dropTargetBarSizePx;
@@ -210,15 +239,19 @@ public class DeviceProfile {
     // DragController
     public int flingToDeleteThresholdVelocity;
 
-    private final NLPrefs prefs;
+    private final NeoPrefs prefs;
 
     private final DeviceProfileOverrides.TextFactors mTextFactors;
+
     /**
      * TODO: Once we fully migrate to staged split, remove "isMultiWindowMode"
      */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
+                  SparseArray<DotRenderer> dotRendererCache,
                   boolean isMultiWindowMode, boolean transposeLayoutWithOrientation,
-                  boolean useTwoPanels, boolean isGestureMode) {
+                  boolean isMultiDisplay, boolean isGestureMode,
+                  @NonNull final ViewScaleProvider viewScaleProvider,
+                  @NonNull final Consumer<DeviceProfile> dimensionOverrideProvider) {
         prefs = Utilities.getOmegaPrefs(context);
         boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
 
@@ -227,6 +260,7 @@ public class DeviceProfile {
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
         this.transposeLayoutWithOrientation = transposeLayoutWithOrientation;
+        this.isMultiDisplay = isMultiDisplay;
         this.isGestureMode = isGestureMode;
         windowX = windowBounds.bounds.left;
         windowY = windowBounds.bounds.top;
@@ -237,7 +271,7 @@ public class DeviceProfile {
         mInfo = info;
         isTablet = info.isTablet(windowBounds);
         isPhone = !isTablet;
-        isTwoPanels = isTablet && useTwoPanels;
+        isTwoPanels = isTablet && isMultiDisplay;
         isTaskbarPresent = isTablet && ApiWrapper.TASKBAR_DRAWN_IN_PROCESS;
         // Some more constants.
         context = getContext(context, info, isVerticalBarLayout() || (isTablet && isLandscape)
@@ -281,22 +315,44 @@ public class DeviceProfile {
         bottomSheetTopPadding = mInsets.top // statusbar height
                 + res.getDimensionPixelSize(R.dimen.bottom_sheet_extra_top_padding)
                 + (isTablet ? 0 : edgeMarginPx); // phones need edgeMarginPx additional padding
+        bottomSheetOpenDuration = 500;//res.getInteger(R.integer.config_bottomSheetOpenDuration);
+        bottomSheetCloseDuration = 500;// res.getInteger(R.integer.config_bottomSheetCloseDuration);
         allAppsTopPadding = isTablet ? bottomSheetTopPadding : 0;
         allAppsShiftRange = isTablet
                 ? heightPx - allAppsTopPadding
                 : res.getDimensionPixelSize(R.dimen.all_apps_starting_vertical_translate);
         folderLabelTextScale = res.getFloat(R.dimen.folder_label_text_scale);
-        folderContentPaddingLeftRight =
-                res.getDimensionPixelSize(R.dimen.folder_content_padding_left_right);
-        folderContentPaddingTop = res.getDimensionPixelSize(R.dimen.folder_content_padding_top);
+
+        if (isScalableGrid && inv.folderStyle != INVALID_RESOURCE_HANDLE) {
+            TypedArray folderStyle = context.obtainStyledAttributes(inv.folderStyle,
+                    R.styleable.FolderStyle);
+            // These are re-set in #updateFolderCellSize if the grid is not scalable
+            folderCellHeightPx = folderStyle.getDimensionPixelSize(
+                    R.styleable.FolderStyle_folderCellHeight, 0);
+            folderCellWidthPx = folderStyle.getDimensionPixelSize(
+                    R.styleable.FolderStyle_folderCellWidth, 0);
+
+            folderContentPaddingTop = folderStyle.getDimensionPixelSize(
+                    R.styleable.FolderStyle_folderTopPadding, 0);
+            folderCellLayoutBorderSpacePx = folderStyle.getDimensionPixelSize(
+                    R.styleable.FolderStyle_folderBorderSpace, 0);
+            folderFooterHeightPx = folderStyle.getDimensionPixelSize(
+                    R.styleable.FolderStyle_folderFooterHeight, 0);
+            folderStyle.recycle();
+        } else {
+            folderCellLayoutBorderSpacePx = 0;
+            folderFooterHeightPx = res.getDimensionPixelSize(R.dimen.folder_footer_height_default);
+            folderContentPaddingTop = res.getDimensionPixelSize(R.dimen.folder_top_padding_default);
+        }
+
         cellLayoutBorderSpacePx = getCellLayoutBorderSpace(inv);
+        cellLayoutBorderSpaceOriginalPx = new Point(cellLayoutBorderSpacePx);
+
         allAppsBorderSpacePx = new Point(
                 pxFromDp(inv.allAppsBorderSpaces[mTypeIndex].x, mMetrics),
                 pxFromDp(inv.allAppsBorderSpaces[mTypeIndex].y, mMetrics));
-        cellLayoutBorderSpaceOriginalPx = new Point(cellLayoutBorderSpacePx);
-        folderCellLayoutBorderSpaceOriginalPx = pxFromDp(inv.folderBorderSpace, mMetrics);
-        folderCellLayoutBorderSpacePx = new Point(folderCellLayoutBorderSpaceOriginalPx,
-                folderCellLayoutBorderSpaceOriginalPx);
+        setupAllAppsStyle(context);
+
         workspacePageIndicatorHeight = res.getDimensionPixelSize(
                 R.dimen.workspace_page_indicator_height);
         mWorkspacePageIndicatorOverlapWorkspace =
@@ -386,6 +442,8 @@ public class DeviceProfile {
         overviewRowSpacing = res.getDimensionPixelSize(R.dimen.overview_grid_row_spacing)
                 - extraTopMargin;
         overviewGridSideMargin = res.getDimensionPixelSize(R.dimen.overview_grid_side_margin);
+
+        splitPlaceholderInset = res.getDimensionPixelSize(R.dimen.split_placeholder_inset);
         // Calculate all of the remaining variables.
         extraSpace = updateAvailableDimensions(res);
         // Now that we have all of the variables calculated, we can tune certain sizes.
@@ -401,7 +459,7 @@ public class DeviceProfile {
             extraHotseatBottomPadding = Math.round(paddingHotseatBottom * cellScaleToFit);
             hotseatBarSizePx += extraHotseatBottomPadding;
             qsbBottomMarginPx = Math.round(qsbBottomMarginOriginalPx * cellScaleToFit);
-        } else if (!isVerticalBarLayout() && isPhone && isTallDevice) {
+        }/* else if (!isVerticalBarLayout() && isPhone && isTallDevice) {
             // We increase the hotseat size when there is extra space.
             if (Float.compare(aspectRatio, TALLER_DEVICE_ASPECT_RATIO_THRESHOLD) >= 0
                     && extraSpace >= Utilities.dpToPx(TALL_DEVICE_EXTRA_SPACE_THRESHOLD_DP)) {
@@ -426,7 +484,11 @@ public class DeviceProfile {
             updateHotseatIconSize(iconSizePx);
             // Recalculate the available dimensions using the new hotseat size.
             updateAvailableDimensions(res);
-        }
+        }*/
+
+        updateHotseatIconSize(iconSizePx);
+        // Recalculate the available dimensions using the new hotseat size.
+        updateAvailableDimensions(res);
         int cellLayoutPadding =
                 isTwoPanels ? cellLayoutBorderSpacePx.x / 2 : res.getDimensionPixelSize(
                         R.dimen.cell_layout_padding);
@@ -438,20 +500,35 @@ public class DeviceProfile {
         // Hotseat and QSB width depends on updated cellSize and workspace padding
         hotseatBorderSpace = calculateHotseatBorderSpace();
         qsbWidth = calculateQsbWidth();
+
+        allAppsOpenDuration = res.getInteger(R.integer.config_allAppsOpenDuration);
+        allAppsCloseDuration = res.getInteger(R.integer.config_allAppsCloseDuration);
         flingToDeleteThresholdVelocity = res.getDimensionPixelSize(
                 R.dimen.drag_flingToDeleteMinVelocity);
 
-        // This is done last, after iconSizePx is calculated above.
-        float dotSize = 0.38f;
-        if (!Utilities.getOmegaPrefs(context).getNotificationCount().getValue()) {
-            dotSize = 0.228f;
-        }
+        mViewScaleProvider = viewScaleProvider;
+
+        dimensionOverrideProvider.accept(this);
 
         // This is done last, after iconSizePx is calculated above.
-        Path dotPath = GraphicsUtils.getShapePath(DEFAULT_DOT_SIZE);
-        mDotRendererWorkSpace = new DotRenderer(iconSizePx, dotPath, dotSize);
-        mDotRendererAllApps = iconSizePx == allAppsIconSizePx ? mDotRendererWorkSpace :
-                new DotRenderer(allAppsIconSizePx, dotPath, dotSize);
+        mDotRendererWorkSpace = createDotRenderer(context, iconSizePx, dotRendererCache);
+        mDotRendererAllApps = createDotRenderer(context, allAppsIconSizePx, dotRendererCache);
+    }
+
+    private DotRenderer createDotRenderer(
+            @NonNull Context context, int size, @NonNull SparseArray<DotRenderer> cache) {
+        DotRenderer renderer = cache.get(size);
+        // This is done last, after iconSizePx is calculated above.
+        float dotSize = 0.228f;
+        if (prefs.getNotificationCount().getValue()) {
+            dotSize = 0.38f;
+        }
+
+        if (renderer == null) {
+            renderer = new DotRenderer(size, getShapePath(context,DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, dotSize);
+            cache.put(size, renderer);
+        }
+        return renderer;
     }
 
     /**
@@ -533,7 +610,7 @@ public class DeviceProfile {
         bounds.insets.set(mInsets);
         return new Builder(context, inv, mInfo)
                 .setWindowBounds(bounds)
-                .setUseTwoPanels(isTwoPanels)
+                .setIsMultiDisplay(isMultiDisplay)
                 .setMultiWindowMode(isMultiWindowMode)
                 .setGestureMode(isGestureMode);
     }
@@ -596,6 +673,21 @@ public class DeviceProfile {
             allAppsLeftRightPadding = desiredWorkspaceHorizontalMarginPx + cellLayoutHorizontalPadding;
         }
     }
+
+    private void setupAllAppsStyle(Context context) {
+        TypedArray allAppsStyle;
+        if (inv.allAppsStyle != INVALID_RESOURCE_HANDLE) {
+            allAppsStyle = context.obtainStyledAttributes(inv.allAppsStyle,
+                    R.styleable.AllAppsStyle);
+        } else {
+            allAppsStyle = context.obtainStyledAttributes(R.style.AllAppsStyleDefault,
+                    R.styleable.AllAppsStyle);
+        }
+        allAppsLeftRightPadding = allAppsStyle.getDimensionPixelSize(
+                R.styleable.AllAppsStyle_horizontalPadding, 0);
+        allAppsStyle.recycle();
+    }
+
     /**
      * Returns the amount of extra (or unused) vertical space.
      */
@@ -738,59 +830,80 @@ public class DeviceProfile {
             hideWorkspaceLabelsIfNotEnoughSpace();
         }
     }
+
     private void updateAvailableFolderCellDimensions(Resources res) {
         updateFolderCellSize(1f, res);
-        final int folderBottomPanelSize = res.getDimensionPixelSize(R.dimen.folder_label_height);
-        // Don't let the folder get too close to the edges of the screen.
-        int folderMargin = edgeMarginPx * 2;
+
+        // For usability we can't have the folder use the whole width of the screen
         Point totalWorkspacePadding = getTotalWorkspacePadding();
-        // Check if the icons fit within the available height.
+
+        // Check if the folder fit within the available height.
         float contentUsedHeight = folderCellHeightPx * inv.numFolderRows
-                + ((inv.numFolderRows - 1) * folderCellLayoutBorderSpacePx.y);
-        int contentMaxHeight = availableHeightPx - totalWorkspacePadding.y - folderBottomPanelSize
-                - folderMargin - folderContentPaddingTop;
+                + ((inv.numFolderRows - 1) * folderCellLayoutBorderSpacePx)
+                + folderFooterHeightPx
+                + folderContentPaddingTop;
+        int contentMaxHeight = availableHeightPx - totalWorkspacePadding.y;
         float scaleY = contentMaxHeight / contentUsedHeight;
-        // Check if the icons fit within the available width.
+
+        // Check if the folder fit within the available width.
         float contentUsedWidth = folderCellWidthPx * inv.numFolderColumns
-                + ((inv.numFolderColumns - 1) * folderCellLayoutBorderSpacePx.x);
-        int contentMaxWidth = availableWidthPx - totalWorkspacePadding.x - folderMargin
-                - folderContentPaddingLeftRight * 2;
+                + ((inv.numFolderColumns - 1) * folderCellLayoutBorderSpacePx)
+                + folderContentPaddingLeftRight * 2;
+        int contentMaxWidth = availableWidthPx - totalWorkspacePadding.x;
         float scaleX = contentMaxWidth / contentUsedWidth;
+
         float scale = Math.min(scaleX, scaleY);
         if (scale < 1f) {
             updateFolderCellSize(scale, res);
         }
     }
+
     private void updateFolderCellSize(float scale, Resources res) {
-        float invIconSizeDp = isVerticalBarLayout()
-                ? inv.iconSize[INDEX_LANDSCAPE]
-                : inv.iconSize[INDEX_DEFAULT];
+        float invIconSizeDp = inv.iconSize[mTypeIndex];
         folderChildIconSizePx = Math.max(1, pxFromDp(invIconSizeDp, mMetrics, scale));
-        folderChildTextSizePx =
-                pxFromSp(inv.iconTextSize[INDEX_DEFAULT], mMetrics, scale);
-        folderLabelTextSizePx = (int) (folderChildTextSizePx * folderLabelTextScale);
-        folderChildTextSizePx *= mTextFactors.getIconTextSizeFactor();
+        folderChildTextSizePx = pxFromSp(inv.iconTextSize[mTypeIndex], mMetrics, scale);
+        folderLabelTextSizePx = Math.max(pxFromSp(MIN_FOLDER_TEXT_SIZE_SP, mMetrics, scale),
+                (int) (folderChildTextSizePx * folderLabelTextScale));
+
         int textHeight = Utilities.calculateTextHeight(folderChildTextSizePx);
+
         if (isScalableGrid) {
-            int minWidth = folderChildIconSizePx + iconDrawablePaddingPx * 2;
-            int minHeight = folderChildIconSizePx + iconDrawablePaddingPx * 2 + textHeight;
-            folderCellWidthPx = (int) Math.max(minWidth, cellWidthPx * scale);
-            folderCellHeightPx = (int) Math.max(minHeight, cellHeightPx * scale);
-            int scaledSpace = (int) (folderCellLayoutBorderSpaceOriginalPx * scale);
-            folderCellLayoutBorderSpacePx = new Point(scaledSpace, scaledSpace);
-            folderContentPaddingLeftRight = scaledSpace;
-            folderContentPaddingTop = scaledSpace;
+            if (inv.folderStyle == INVALID_RESOURCE_HANDLE) {
+                folderCellWidthPx = roundPxValueFromFloat(getCellSize().x * scale);
+                folderCellHeightPx = roundPxValueFromFloat(getCellSize().y * scale);
+            } else {
+                folderCellWidthPx = roundPxValueFromFloat(folderCellWidthPx * scale);
+                folderCellHeightPx = roundPxValueFromFloat(folderCellHeightPx * scale);
+            }
+
+            folderContentPaddingTop = roundPxValueFromFloat(folderContentPaddingTop * scale);
+            folderCellLayoutBorderSpacePx = roundPxValueFromFloat(
+                    folderCellLayoutBorderSpacePx * scale);
+            folderFooterHeightPx = roundPxValueFromFloat(folderFooterHeightPx * scale);
+
+            folderContentPaddingLeftRight = folderCellLayoutBorderSpacePx;
         } else {
             int cellPaddingX = (int) (res.getDimensionPixelSize(R.dimen.folder_cell_x_padding)
                     * scale);
             int cellPaddingY = (int) (res.getDimensionPixelSize(R.dimen.folder_cell_y_padding)
                     * scale);
+
             folderCellWidthPx = folderChildIconSizePx + 2 * cellPaddingX;
             folderCellHeightPx = folderChildIconSizePx + 2 * cellPaddingY + textHeight;
+            folderContentPaddingTop = roundPxValueFromFloat(folderContentPaddingTop * scale);
+            folderContentPaddingLeftRight =
+                    res.getDimensionPixelSize(R.dimen.folder_content_padding_left_right);
+            folderFooterHeightPx =
+                    roundPxValueFromFloat(
+                            res.getDimensionPixelSize(R.dimen.folder_footer_height_default)
+                                    * scale);
+
         }
+
         folderChildDrawablePaddingPx = Math.max(0,
                 (folderCellHeightPx - folderChildIconSizePx - textHeight) / 3);
     }
+
     public void updateInsets(Rect insets) {
         mInsets.set(insets);
     }
@@ -1085,11 +1198,27 @@ public class DeviceProfile {
         return isTaskbarPresent ? stashedTaskbarSize : mInsets.bottom;
     }
 
-    /** Gets the space that the overview actions will take, including bottom margin. */
+    /**
+     * Gets the space that the overview actions will take, including bottom margin.
+     */
     public int getOverviewActionsClaimedSpace() {
         return overviewActionsTopMarginPx + overviewActionsHeight
                 + getOverviewActionsClaimedSpaceBelow();
     }
+
+    /**
+     * Takes the View and return the scales of width and height depending on the DeviceProfile
+     * specifications
+     *
+     * @param itemInfo The tag of the widget view
+     * @return A PointF instance with the x set to be the scale of width, and y being the scale of
+     * height
+     */
+    @NonNull
+    public PointF getAppWidgetScale(@Nullable final ItemInfo itemInfo) {
+        return mViewScaleProvider.getScaleFromItemInfo(itemInfo);
+    }
+
     /**
      * @return the bounds for which the open folders should be contained within
      */
@@ -1218,13 +1347,19 @@ public class DeviceProfile {
                 folderChildDrawablePaddingPx));
         writer.println(prefix + pxToDpStr("folderCellLayoutBorderSpaceOriginalPx",
                 folderCellLayoutBorderSpaceOriginalPx));
-        writer.println(prefix + pxToDpStr("folderCellLayoutBorderSpacePx Horizontal",
-                folderCellLayoutBorderSpacePx.x));
-        writer.println(prefix + pxToDpStr("folderCellLayoutBorderSpacePx Vertical",
-                folderCellLayoutBorderSpacePx.y));
+        writer.println(prefix + pxToDpStr("folderCellLayoutBorderSpacePx",
+                folderCellLayoutBorderSpacePx));
+        writer.println(prefix + pxToDpStr("folderContentPaddingLeftRight",
+                folderContentPaddingLeftRight));
+        writer.println(prefix + pxToDpStr("folderTopPadding", folderContentPaddingTop));
+        writer.println(prefix + pxToDpStr("folderFooterHeight", folderFooterHeightPx));
         writer.println(prefix + pxToDpStr("bottomSheetTopPadding", bottomSheetTopPadding));
+        writer.println(prefix + "\tbottomSheetOpenDuration: " + bottomSheetOpenDuration);
+        writer.println(prefix + "\tbottomSheetCloseDuration: " + bottomSheetCloseDuration);
         writer.println(prefix + pxToDpStr("allAppsShiftRange", allAppsShiftRange));
         writer.println(prefix + pxToDpStr("allAppsTopPadding", allAppsTopPadding));
+        writer.println(prefix + "\tallAppsOpenDuration: " + allAppsOpenDuration);
+        writer.println(prefix + "\tallAppsCloseDuration: " + allAppsCloseDuration);
         writer.println(prefix + pxToDpStr("allAppsIconSizePx", allAppsIconSizePx));
         writer.println(prefix + pxToDpStr("allAppsIconTextSizePx", allAppsIconTextSizePx));
         writer.println(prefix + pxToDpStr("allAppsIconDrawablePaddingPx",
@@ -1328,65 +1463,83 @@ public class DeviceProfile {
         void onDeviceProfileChanged(DeviceProfile dp);
     }
 
-    /** Allows registering listeners for {@link DeviceProfile} changes. */
-    public interface DeviceProfileListenable {
-        /** The current device profile. */
-        DeviceProfile getDeviceProfile();
-
-        /** Registered {@link OnDeviceProfileChangeListener} instances. */
-        List<OnDeviceProfileChangeListener> getOnDeviceProfileChangeListeners();
-
-        /** Notifies listeners of a {@link DeviceProfile} change. */
-        default void dispatchDeviceProfileChanged() {
-            DeviceProfile deviceProfile = getDeviceProfile();
-            List<OnDeviceProfileChangeListener> listeners = getOnDeviceProfileChangeListeners();
-            for (int i = listeners.size() - 1; i >= 0; i--) {
-                listeners.get(i).onDeviceProfileChanged(deviceProfile);
-            }
-        }
-
-        /** Register listener for {@link DeviceProfile} changes. */
-        default void addOnDeviceProfileChangeListener(OnDeviceProfileChangeListener listener) {
-            getOnDeviceProfileChangeListeners().add(listener);
-        }
-
-        /** Unregister listener for {@link DeviceProfile} changes. */
-        default void removeOnDeviceProfileChangeListener(OnDeviceProfileChangeListener listener) {
-            getOnDeviceProfileChangeListeners().remove(listener);
-        }
+    /**
+     * Handler that deals with ItemInfo of the views for the DeviceProfile
+     */
+    @FunctionalInterface
+    public interface ViewScaleProvider {
+        /**
+         * Get the scales from the view
+         *
+         * @param itemInfo The tag of the widget view
+         * @return PointF instance containing the scale information, or null if using the default
+         * app widget scale of this device profile.
+         */
+        @NonNull
+        PointF getScaleFromItemInfo(@Nullable ItemInfo itemInfo);
     }
+
     public static class Builder {
-        private Context mContext;
-        private InvariantDeviceProfile mInv;
-        private Info mInfo;
+        private final Context mContext;
+        private final InvariantDeviceProfile mInv;
+        private final Info mInfo;
         private WindowBounds mWindowBounds;
-        private boolean mUseTwoPanels;
+        private boolean mIsMultiDisplay;
         private boolean mIsMultiWindowMode = false;
         private Boolean mTransposeLayoutWithOrientation;
         private Boolean mIsGestureMode;
+        private ViewScaleProvider mViewScaleProvider = null;
+
+        private SparseArray<DotRenderer> mDotRendererCache;
+
+        private Consumer<DeviceProfile> mOverrideProvider;
+
         public Builder(Context context, InvariantDeviceProfile inv, Info info) {
             mContext = context;
             mInv = inv;
             mInfo = info;
         }
+
         public Builder setMultiWindowMode(boolean isMultiWindowMode) {
             mIsMultiWindowMode = isMultiWindowMode;
             return this;
         }
-        public Builder setUseTwoPanels(boolean useTwoPanels) {
-            mUseTwoPanels = useTwoPanels;
+
+        public Builder setIsMultiDisplay(boolean isMultiDisplay) {
+            mIsMultiDisplay = isMultiDisplay;
             return this;
         }
+
         public Builder setWindowBounds(WindowBounds bounds) {
             mWindowBounds = bounds;
             return this;
         }
+
         public Builder setTransposeLayoutWithOrientation(boolean transposeLayoutWithOrientation) {
             mTransposeLayoutWithOrientation = transposeLayoutWithOrientation;
             return this;
         }
+
         public Builder setGestureMode(boolean isGestureMode) {
             mIsGestureMode = isGestureMode;
+            return this;
+        }
+
+        public Builder withDimensionsOverride(Consumer<DeviceProfile> overrideProvider) {
+            mOverrideProvider = overrideProvider;
+            return this;
+        }
+
+        /**
+         * Set the viewScaleProvider for the builder
+         *
+         * @param viewScaleProvider The viewScaleProvider to be set for the
+         *                          DeviceProfile
+         * @return This builder
+         */
+        @NonNull
+        public Builder setViewScaleProvider(@Nullable ViewScaleProvider viewScaleProvider) {
+            mViewScaleProvider = viewScaleProvider;
             return this;
         }
 
@@ -1400,8 +1553,18 @@ public class DeviceProfile {
             if (mIsGestureMode == null) {
                 mIsGestureMode = DisplayController.getNavigationMode(mContext).hasGestures;
             }
-            return new DeviceProfile(mContext, mInv, mInfo, mWindowBounds, mIsMultiWindowMode,
-                    mTransposeLayoutWithOrientation, mUseTwoPanels, mIsGestureMode);
+            if (mDotRendererCache == null) {
+                mDotRendererCache = new SparseArray<>();
+            }
+            if (mViewScaleProvider == null) {
+                mViewScaleProvider = DEFAULT_PROVIDER;
+            }
+            if (mOverrideProvider == null) {
+                mOverrideProvider = DEFAULT_DIMENSION_PROVIDER;
+            }
+            return new DeviceProfile(mContext, mInv, mInfo, mWindowBounds, mDotRendererCache,
+                    mIsMultiWindowMode, mTransposeLayoutWithOrientation, mIsMultiDisplay,
+                    mIsGestureMode, mViewScaleProvider, mOverrideProvider);
         }
     }
 }

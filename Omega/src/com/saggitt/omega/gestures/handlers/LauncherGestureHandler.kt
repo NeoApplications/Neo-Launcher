@@ -36,6 +36,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.widget.picker.WidgetsFullSheet
+import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.search.SearchProviderController
@@ -140,7 +141,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
                 context.getIcon()
             }
 
-            else -> context.getIcon()
+            else           -> context.getIcon()
         }
 
     private val displayNameWithoutTarget: String = context.getString(R.string.action_open_app)
@@ -177,7 +178,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         config.put("appName", appName)
         config.put("type", type)
         when (type) {
-            "app" -> {
+            "app"      -> {
                 config.put("target", target.toString())
             }
 
@@ -199,7 +200,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             appName = data.getStringExtra("appName")
             type = data.getStringExtra("type")
             when (type) {
-                "app" ->
+                "app"      ->
                     target = Utilities
                         .makeComponentKey(context, data.getStringExtra("target") ?: "")
 
@@ -229,7 +230,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         }
 
         when (type) {
-            "app" -> {
+            "app"      -> {
                 target?.let {
                     try {
                         context.getSystemService(LauncherApps::class.java)
@@ -270,6 +271,21 @@ class OpenWidgetsGestureHandler(context: Context, config: JSONObject?) :
 }
 
 @Keep
+class OpenDashGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+
+    override val displayName = context.getString(R.string.action_open_dash)
+    override val displayNameRes: Int = R.string.action_open_dash
+
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_edit_dash)
+    override val requiresForeground = true
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        DashSheet.show(controller.launcher, true)
+    }
+}
+
+@Keep
 class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
@@ -280,7 +296,7 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     override val requiresForeground = false
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        searchProvider.startSearch {
+        searchProvider.startSearch(context) {
             try {
                 if (context !is AppCompatActivity) {
                     it.flags = it.flags or Intent.FLAG_ACTIVITY_NEW_TASK

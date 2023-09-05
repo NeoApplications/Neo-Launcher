@@ -20,13 +20,13 @@ package com.saggitt.omega.compose.pages
 
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -63,12 +63,12 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import com.google.accompanist.navigation.animation.composable
 import com.saggitt.omega.compose.components.ExpandableListItem
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
@@ -85,7 +85,6 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.appsState
 import org.json.JSONObject
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.gesturesPageGraph(route: String) {
     preferenceGraph(route, { }) { subRoute ->
         composable(
@@ -175,7 +174,8 @@ fun LauncherScreen(
     ) {
         PreferenceGroup {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
             ) {
                 itemsIndexed(launcherItems) { index, item ->
                     ListItem(
@@ -239,7 +239,10 @@ fun AppsScreen(
         val groupSize = apps.size
 
         PreferenceGroup {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
                 itemsIndexed(apps) { index, item ->
                     val config = JSONObject("{}")
                     config.apply {
@@ -321,7 +324,10 @@ fun ShortcutsScreen(
 
         val appsSize = appsWithShortcuts.size
         PreferenceGroup {
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
                 itemsIndexed(appsWithShortcuts) { appIndex, app ->
                     var expanded by remember { mutableStateOf(false) }
 
@@ -401,7 +407,6 @@ fun ShortcutsScreen(
                             if (index < groupSize - 1) Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
-                    if (appIndex < appsSize - 1) Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }

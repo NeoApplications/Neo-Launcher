@@ -28,7 +28,6 @@ import com.android.launcher3.search.StringMatcherUtility.StringMatcher;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 import com.android.launcher3.widget.model.WidgetsListContentEntry;
 import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
-import com.android.launcher3.widget.model.WidgetsListSearchHeaderEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public final class SimpleWidgetsSearchAlgorithm implements SearchAlgorithm<Widge
     @Override
     public void doSearch(String query, SearchCallback<WidgetsListBaseEntry> callback) {
         ArrayList<WidgetsListBaseEntry> result = getFilteredWidgets(mDataProvider, query);
-        mResultHandler.post(() -> callback.onSearchResult(query, result));
+        mResultHandler.post(() -> callback.onSearchResult(query, result, new ArrayList<>()));
     }
 
     @Override
@@ -72,7 +71,7 @@ public final class SimpleWidgetsSearchAlgorithm implements SearchAlgorithm<Widge
                     List<WidgetItem> matchedWidgetItems = filterWidgetItems(
                             input, headerEntry.mPkgItem.title.toString(), headerEntry.mWidgets);
                     if (matchedWidgetItems.size() > 0) {
-                        results.add(new WidgetsListSearchHeaderEntry(headerEntry.mPkgItem,
+                        results.add(WidgetsListHeaderEntry.createForSearch(headerEntry.mPkgItem,
                                 headerEntry.mTitleSectionName, matchedWidgetItems));
                         results.add(new WidgetsListContentEntry(headerEntry.mPkgItem,
                                 headerEntry.mTitleSectionName, matchedWidgetItems));

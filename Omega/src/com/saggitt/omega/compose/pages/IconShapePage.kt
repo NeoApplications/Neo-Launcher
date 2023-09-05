@@ -30,7 +30,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -67,6 +67,7 @@ fun IconShapePage() {
             IconShape.Teardrop,
             IconShape.Cylinder,
             IconShape.Cupertino,
+            IconShape.Hexagon,
             IconShape.Octagon,
             IconShape.Egg,
         )
@@ -74,13 +75,13 @@ fun IconShapePage() {
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = paddingValues.calculateBottomPadding() + 8.dp
-                ),
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(
+                            start = 8.dp,
+                            end = 8.dp,
+                            bottom = paddingValues.calculateBottomPadding() + 8.dp
+                    ),
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
@@ -104,10 +105,10 @@ fun IconShapePage() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .height(1.dp)
+                        .padding(start = 16.dp, end = 16.dp)
+                        .height(1.dp)
             )
 
             val openDialog = remember { mutableStateOf(false) }

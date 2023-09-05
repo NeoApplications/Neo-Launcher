@@ -47,7 +47,7 @@ import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
-import com.saggitt.omega.data.GestureItemInfo;
+import com.saggitt.omega.data.models.GestureItemInfo;
 import com.saggitt.omega.data.GestureItemInfoRepository;
 import com.saggitt.omega.folder.FirstItemProvider;
 

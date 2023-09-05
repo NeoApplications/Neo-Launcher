@@ -28,6 +28,12 @@
     with some minor changed based on the derivative app.
     -->
 
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
@@ -66,7 +72,6 @@
         android:backupInForeground="true"
         android:fullBackupContent="@xml/backupscheme"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_launcher_home"
         android:label="@string/derived_app_name"
         android:largeHeap="@bool/config_largeHeap"
         android:restoreAnyVersion="true"
@@ -166,7 +171,7 @@
         -->
         <activity
             android:name="com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.Light"
             android:launchMode="singleTop"
             android:exported="true"
             android:enabled="true">

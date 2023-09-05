@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,14 +40,14 @@ import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
-import com.saggitt.omega.compose.components.preferences.AlertDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
+import com.saggitt.omega.compose.components.preferences.ResetCustomIconsDialog
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectorPage
+import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.compose.pages.IconShapePage
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
@@ -54,7 +55,6 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.collectAsStateBlocking
 import com.saggitt.omega.util.prefs
 
@@ -86,8 +86,12 @@ fun ProfilePrefsPage() {
     val others = remember(prefs.changePoker.collectAsState(initial = false).value) {
         mutableStateListOf(
             *listOfNotNull(
-                prefs.profileBlurEnable,
-                if (prefs.profileBlurEnable.getValue()) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+                    prefs.profileBlurEnable
+                } else {
+                    null
+                },
+                if (prefs.profileBlurEnable.getValue() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
                     prefs.profileBlurRadius
                 } else {
                     null
@@ -99,57 +103,55 @@ fun ProfilePrefsPage() {
         )
     }
 
-    OmegaAppTheme {
-        ViewWithActionBar(
+    ViewWithActionBar(
             title = stringResource(R.string.title__general_profile)
-        ) { paddingValues ->
-            LazyColumn(
+    ) { paddingValues ->
+        LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
+        ) {
+            item {
+                PreferenceGroup(
                         stringResource(id = R.string.title__general_profile),
                         prefs = profilePrefs,
                         onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
+                )
+            }
+            item {
+                PreferenceGroup(
                         stringResource(id = R.string.pref_category__others),
                         prefs = others,
                         onPrefDialog = onPrefDialog
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
+        }
 
-            if (openDialog.value) {
-                BaseDialog(openDialogCustom = openDialog) {
-                    when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
+        if (openDialog.value) {
+            BaseDialog(openDialogCustom = openDialog) {
+                when (dialogPref) {
+                    is IntSelectionPref -> IntSelectionPrefDialogUI(
                             pref = dialogPref as IntSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
+                    is StringSelectionPref -> StringSelectionPrefDialogUI(
                             pref = dialogPref as StringSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
                             pref = dialogPref as StringMultiSelectionPref,
                             openDialogCustom = openDialog
-                        )
+                    )
 
-                        is DialogPref -> AlertDialogUI(
+                    is DialogPref -> ResetCustomIconsDialog(
                             pref = dialogPref as DialogPref,
                             openDialogCustom = openDialog
-                        )
-                    }
+                    )
                 }
             }
         }
@@ -161,6 +163,6 @@ fun NavGraphBuilder.profilePrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
         preferenceGraph(
             route = subRoute(Routes.COLOR_ACCENT),
-            { ColorSelectorPage(PrefKey.PROFILE_ACCENT_COLOR) })
+            { ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

@@ -5,22 +5,27 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.0.1")
+        classpath("com.android.tools.build:gradle:8.1.0")
     }
 }
-val vKotlin = "1.8.21"
-val vCompose = "1.5.0-alpha04"
-val vComposeCompiler = "1.4.7"
-val vAccompanist = "0.31.2-alpha"
-val vRoom = "2.5.1"
+
+val vAccompanist = "0.31.4-beta"
+val vCompose = "1.5.0-beta03"
+val vComposeCompiler = "1.5.1"
+val vKotlin = "1.9.0"
+val vLifecycle = "2.6.1"
+val vMaterial3 = "1.2.0-alpha05"
+val vNavigation = "2.7.0"
+val vOkhttp = "5.0.0-alpha.11"
 val vProtobuf = "3.22.2"
+val vRoom = "2.5.2"
 
 plugins {
     id("com.android.application").version("8.0.1")
-    kotlin("android").version("1.8.21")
-    kotlin("plugin.parcelize").version("1.8.21")
-    kotlin("plugin.serialization").version("1.8.21")
-    id("com.google.devtools.ksp").version("1.8.21-1.0.11")
+    kotlin("android").version("1.9.0")
+    kotlin("plugin.parcelize").version("1.9.0")
+    kotlin("plugin.serialization").version("1.9.0")
+    id("com.google.devtools.ksp").version("1.9.0-1.0.11")
     id("com.google.protobuf").version("0.9.1")
 }
 
@@ -35,7 +40,7 @@ allprojects {
 val prebuiltsDir: String = "prebuilts/"
 android {
     namespace = "com.android.launcher3"
-    compileSdk = 33
+    compileSdk = 34
 
     val name = "1.0"
     val code = 950
@@ -53,6 +58,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                ksp {
+                    arg("room.schemaLocation", "$projectDir/schemas")
+                    arg("room.incremental", "true")
+                }
+            }
+        }
     }
 
     applicationVariants.all { variant ->
@@ -72,22 +86,22 @@ android {
         named("debug") {
             isMinifyEnabled = false
             applicationIdSuffix = ".alpha"
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_debug"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round_debug"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
             signingConfig = signingConfigs.getByName("debug")
         }
         create("neo") {
             isMinifyEnabled = false
             applicationIdSuffix = ".neo"
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_debug"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round_debug"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
         }
 
         named("release") {
             isMinifyEnabled = false
             setProguardFiles(listOf("proguard-android-optimize.txt", "proguard.flags"))
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher"
+            manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round"
         }
     }
 
@@ -123,7 +137,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = compileOptions.sourceCompatibility.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -212,6 +226,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
+    implementation(project(":smartspace"))
     implementation(kotlin("stdlib", vKotlin))
 
     //UI
@@ -220,19 +235,23 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
 
     implementation("com.google.android.material:material:1.9.0")
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-common-java8:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
+
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     implementation("com.github.ChickenHook:RestrictionBypass:2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
     implementation("com.github.samanzamani:PersianDate:1.6.1")
     implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.1.0") {
         exclude("com.android.support", "support-compat")
@@ -243,24 +262,23 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.7.1")
+    implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
     implementation("androidx.compose.runtime:runtime:$vCompose")
     implementation("androidx.compose.ui:ui:$vCompose")
     implementation("androidx.compose.ui:ui-tooling:$vCompose")
     implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
     implementation("androidx.compose.foundation:foundation:$vCompose")
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.navigation:navigation-compose:$vNavigation")
     implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
 
-    implementation("androidx.compose.material:material:$vCompose")
-    implementation("androidx.compose.material3:material3:1.1.0")
+    implementation("androidx.compose.material3:material3:$vMaterial3")
 
     //Accompanist
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
-    implementation("com.google.accompanist:accompanist-navigation-animation:$vAccompanist")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
 
@@ -268,9 +286,6 @@ dependencies {
     implementation("androidx.room:room-runtime:$vRoom")
     implementation("androidx.room:room-ktx:$vRoom")
     ksp("androidx.room:room-compiler:$vRoom")
-
-    //DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))

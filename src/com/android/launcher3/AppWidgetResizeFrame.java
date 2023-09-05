@@ -32,6 +32,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import com.android.launcher3.accessibility.DragViewStateAnnouncer;
+import com.android.launcher3.celllayout.CellLayoutLayoutParams;
+import com.android.launcher3.celllayout.CellPosMapper.CellPos;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.logging.InstanceId;
@@ -257,7 +259,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
                                 /* widgetHandler= */ null,
                                 (ItemInfo) mWidgetView.getTag()));
                 mLauncher
-                        .getAppWidgetHost()
+                        .getAppWidgetHolder()
                         .startConfigActivity(
                                 mLauncher,
                                 mWidgetView.getAppWidgetId(),
@@ -274,10 +276,13 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
             }
         }
 
-        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) mWidgetView.getLayoutParams();
+        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) mWidgetView.getLayoutParams();
         ItemInfo widgetInfo = (ItemInfo) mWidgetView.getTag();
-        lp.cellX = lp.tmpCellX = widgetInfo.cellX;
-        lp.cellY = lp.tmpCellY = widgetInfo.cellY;
+        CellPos presenterPos = mLauncher.getCellPosMapper().mapModelToPresenter(widgetInfo);
+        lp.setCellX(presenterPos.cellX);
+        lp.setTmpCellX(presenterPos.cellX);
+        lp.setCellY(presenterPos.cellY);
+        lp.setTmpCellY(presenterPos.cellY);
         lp.cellHSpan = widgetInfo.spanX;
         lp.cellVSpan = widgetInfo.spanY;
         lp.isLockedToGrid = true;
@@ -429,12 +434,12 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
         mDirectionVector[0] = 0;
         mDirectionVector[1] = 0;
 
-        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) wlp;
+        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) wlp;
 
         int spanX = lp.cellHSpan;
         int spanY = lp.cellVSpan;
-        int cellX = lp.useTmpCoords ? lp.tmpCellX : lp.cellX;
-        int cellY = lp.useTmpCoords ? lp.tmpCellY : lp.cellY;
+        int cellX = lp.useTmpCoords ? lp.getTmpCellX() : lp.getCellX();
+        int cellY = lp.useTmpCoords ? lp.getTmpCellY() : lp.getCellY();
 
         // For each border, we bound the resizing based on the minimum width, and the maximum
         // expandability.
@@ -470,13 +475,13 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
 
         if (mCellLayout.createAreaForResize(cellX, cellY, spanX, spanY, mWidgetView,
                 mDirectionVector, onDismiss)) {
-            if (mStateAnnouncer != null && (lp.cellHSpan != spanX || lp.cellVSpan != spanY) ) {
+            if (mStateAnnouncer != null && (lp.cellHSpan != spanX || lp.cellVSpan != spanY)) {
                 mStateAnnouncer.announce(
                         mLauncher.getString(R.string.widget_resized, spanX, spanY));
             }
 
-            lp.tmpCellX = cellX;
-            lp.tmpCellY = cellY;
+            lp.setTmpCellX(cellX);
+            lp.setTmpCellY(cellY);
             lp.cellHSpan = spanX;
             lp.cellVSpan = spanY;
             mRunningVInc += vSpanDelta;

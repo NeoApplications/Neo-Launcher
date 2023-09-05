@@ -34,5 +34,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:focusable="false"
-        app:iconDisplay="all_apps" />
+        app:iconDisplay="drawer_folder" />
 </com.android.launcher3.folder.FolderIcon>

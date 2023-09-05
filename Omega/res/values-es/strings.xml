@@ -42,7 +42,7 @@
     <string name="delete">Borrar</string>
     <string name="developer_options_title">Opciones de Desarrollador</string>
     <string name="dismiss_drop_target_label">No mostrar</string>
-    <string name="default_folder_name">Nueva carpeta</string>
+    <string name="default_folder_name">Nueva carpeta1</string>
     <string name="cat_search_bar">Barra de busqueda</string>
     <string name="summary__general_desktop">Personaliza tu escritorio</string>
     <string name="title__general_notifications">Gestos y Notificaciones</string>
@@ -494,4 +494,17 @@
     <string name="folder_stroke_color">Color del trazo de la carpeta</string>
     <string name="smartspace_icu_date_pattern">ddMMMEEE</string>
     <string name="smartspace_widget_placeholder_date">Vier. 3 de Mar.</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
+    <string name="web_search_you">You (Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
+    <string name="color_wallpaper_secondary">Fondo de pantalla secundario</string>
+    <string name="web_search_phind">Phind (Web)</string>
+    <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="title_smartspace_time_format">Formato de la hora</string>
+    <string name="title_smartspace_calendar">Seleccionar calendario</string>
+    <string name="title_calendar_gregorian">Gregoriano</string>
+    <string name="title_calendar_persian">Persa</string>
+    <string name="gesture_press_recents">Botón de Recientes</string>
+    <string name="about_community_telegram">La Comunidad en Telegram</string>
+    <string name="about_community_matrix">La Comunidad en Matrix</string>
 </resources>

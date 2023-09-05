@@ -20,21 +20,14 @@ package com.saggitt.omega.util
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.drawable.DrawableCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 fun AlertDialog.applyAccent() {
-    val color = Utilities.getOmegaPrefs(context).profileAccentColor.getValue()
+    val color = Utilities.getOmegaPrefs(context).profileAccentColor.getColor()
     val buttons = listOf(
         getButton(DialogInterface.BUTTON_NEGATIVE),
         getButton(DialogInterface.BUTTON_NEUTRAL),
@@ -45,34 +38,7 @@ fun AlertDialog.applyAccent() {
     }
 }
 
-fun ImageView.tintDrawable(color: Int) {
-    val drawable = drawable.mutate()
-    drawable.setTint(color)
-    setImageDrawable(drawable)
-}
-
-fun GradientDrawable.getCornerRadiiCompat(): FloatArray? {
-    return try {
-        cornerRadii
-    } catch (e: NullPointerException) {
-        null
-    }
-}
-
-fun Button.applyColor(color: Int) {
-    val rippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(color, 31))
-    background?.let {
-        (it as RippleDrawable).setColor(rippleColor)
-        DrawableCompat.setTint(background, color)
-    }
-    val tintList = ColorStateList.valueOf(color)
-    if (this is RadioButton) {
-        buttonTintList = tintList
-    }
-}
-
 val Configuration.usingNightMode get() = uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
 val Int.luminance get() = ColorUtils.calculateLuminance(this)
 
 val Int.isDark get() = luminance < 0.5f
@@ -84,12 +50,3 @@ fun getWindowCornerRadius(context: Context): Float {
     }
     return context.resources.getDimension(R.dimen.enforced_rounded_corner_max_radius)
 }
-/*
-fun supportsRoundedCornersOnWindows(context: Context): Boolean {
-    val pref = Utilities.getOmegaPrefs(context)
-    if (!Utilities.ATLEAST_R || pref.themeCornerRadius.onGetValue() > -1) {
-        return true
-    }
-    return QuickStepContract.supportsRoundedCornersOnWindows(context.resources)
-}
-*/

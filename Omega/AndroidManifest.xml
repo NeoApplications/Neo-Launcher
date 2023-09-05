@@ -26,25 +26,31 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission
         android:name="android.permission.STATUS_BAR"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
-        android:name="com.saggitt.omega.OmegaApp"
-        android:networkSecurityConfig="@xml/network_security_config"
+        android:name="com.saggitt.omega.NeoApp"
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
         android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
         android:icon="${appIcon}"
         android:label="@string/derived_app_name"
         android:largeHeap="@bool/config_largeHeap"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:restoreAnyVersion="true"
         android:roundIcon="${appIconRound}"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.Light"
         tools:replace="android:label, android:icon">
 
         <activity
@@ -57,7 +63,7 @@
             attributes and intent filters the same
             -->
         <activity
-            android:name="com.saggitt.omega.OmegaLauncher"
+            android:name="com.saggitt.omega.NeoLauncher"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize|density"
             android:enabled="true"
@@ -70,15 +76,15 @@
             android:taskAffinity=""
             android:windowSoftInputMode="adjustPan">
 
-        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY" />
                 <category android:name="android.intent.category.LAUNCHER_APP" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
             <meta-data
                 android:name="com.android.launcher3.grid.control"
@@ -93,11 +99,11 @@
             android:exported="true"
             tools:node="remove" />
         <activity
-            android:name="com.saggitt.omega.compose.PreferenceActivity"
+            android:name="com.saggitt.omega.preferences.PreferenceActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true"
             android:label="@string/settings_button_text"
-            android:theme="@style/SettingsTheme.Dark">
+            android:theme="@style/SettingsTheme.Light">
             <intent-filter android:priority="-1">
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -105,8 +111,7 @@
         </activity>
 
         <activity
-            android:name="com.saggitt.omega.BlankActivity"
-            android:exported="true"
+            android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
             android:theme="@style/Theme.Transparent" />
 
         <activity
@@ -147,20 +152,14 @@
         </service>
 
         <receiver
-            android:name="com.saggitt.omega.smartspace.superg.OPAStatusReceiver"
-            android:exported="false"
-            android:permission="android.permission.CAPTURE_AUDIO_HOTWORD">
-            <intent-filter>
-                <action android:name="com.google.android.systemui.OPA_ENABLED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name="com.saggitt.omega.smartspace.SmartSpaceBroadcastReceiver"
+            android:name="com.saggitt.omega.smartspace.SmartSpaceAppWidgetProvider"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.apps.nexuslauncher.UPDATE_SMARTSPACE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/smartspace_appwidget_info" />
         </receiver>
 
     </application>

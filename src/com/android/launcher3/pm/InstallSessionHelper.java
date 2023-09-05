@@ -65,7 +65,7 @@ public class InstallSessionHelper {
     // Set<String> of session ids of promise icons that have been added to the home screen
     // as FLAG_PROMISE_NEW_INSTALLS.
     @NonNull
-    protected static final String PROMISE_ICON_IDS = "promise_icon_ids";
+    public static final String PROMISE_ICON_IDS = "promise_icon_ids";
 
     private static final boolean DEBUG = false;
 
@@ -173,15 +173,22 @@ public class InstallSessionHelper {
             }
             return null;
         }
-        String pkg = sessionInfo.getInstallerPackageName();
+        return isTrustedPackage(sessionInfo.getInstallerPackageName(), getUserHandle(sessionInfo))
+                ? sessionInfo : null;
+    }
+
+    /**
+     * Returns true if the provided packageName can be trusted for user configurations
+     */
+    public boolean isTrustedPackage(String pkg, UserHandle user) {
         synchronized (mSessionVerifiedMap) {
             if (!mSessionVerifiedMap.containsKey(pkg)) {
                 boolean hasSystemFlag = new PackageManagerHelper(mAppContext).getApplicationInfo(
-                        pkg, getUserHandle(sessionInfo), ApplicationInfo.FLAG_SYSTEM) != null;
+                        pkg, user, ApplicationInfo.FLAG_SYSTEM) != null;
                 mSessionVerifiedMap.put(pkg, DEBUG || hasSystemFlag);
             }
         }
-        return mSessionVerifiedMap.get(pkg) ? sessionInfo : null;
+        return mSessionVerifiedMap.get(pkg);
     }
 
     @NonNull

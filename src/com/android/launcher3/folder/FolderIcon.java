@@ -57,6 +57,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.anim.Interpolators;
+import com.android.launcher3.celllayout.CellLayoutLayoutParams;
 import com.android.launcher3.dot.FolderDotInfo;
 import com.android.launcher3.dragndrop.BaseItemDragListener;
 import com.android.launcher3.dragndrop.DragLayer;
@@ -75,17 +76,20 @@ import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Executors;
+import com.android.launcher3.util.MultiTranslateDelegate;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.gestures.BlankGestureHandler;
 import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
@@ -98,6 +102,8 @@ import java.util.function.Predicate;
  */
 public class FolderIcon extends FrameLayout implements FolderListener, IconLabelDotView,
         DraggableView, Reorderable {
+
+    private final MultiTranslateDelegate mTranslateDelegate = new MultiTranslateDelegate(this);
 
     @Thunk
     ActivityContext mActivity;
@@ -215,7 +221,13 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         icon.mFolderName.setText(folderInfo.title);
         icon.mFolderName.setCompoundDrawablePadding(0);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
-        lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        if (folderInfo instanceof DrawerFolderInfo) {
+            lp.topMargin = grid.allAppsIconSizePx + grid.allAppsIconDrawablePaddingPx;
+            icon.mBackground = new PreviewBackground(true);
+            ((DrawerFolderInfo) folderInfo).getAppsStore().registerFolderIcon(icon);
+        } else {
+            lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
+        }
 
         icon.setTag(folderInfo);
         icon.setOnClickListener(ItemClickHandler.INSTANCE);
@@ -301,10 +313,10 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onDragEnter(ItemInfo dragInfo) {
         if (mFolder.isDestroyed() || !willAcceptItem(dragInfo)) return;
-        CellLayout.LayoutParams lp = (CellLayout.LayoutParams) getLayoutParams();
+        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) getLayoutParams();
         CellLayout cl = (CellLayout) getParent().getParent();
 
-        mBackground.animateToAccept(cl, lp.cellX, lp.cellY);
+        mBackground.animateToAccept(cl, lp.getCellX(), lp.getCellY());
         mOpenAlarm.setOnAlarmListener(mOnOpenListener);
         if (SPRING_LOADING_ENABLED &&
                 ((dragInfo instanceof WorkspaceItemFactory)
@@ -638,7 +650,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
-            NLPrefs prefs = Utilities.getOmegaPrefs(getContext());
+            NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
             Rect iconBounds = mDotParams.iconBounds;
 
             Utilities.setRectToViewCenter(this, mActivity.getDeviceProfile().iconSizePx,
@@ -650,7 +662,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
             // If we are animating to the accepting state, animate the dot out.
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getScaleProgress());
             if (prefs.getNotificationCustomColor().getValue()) {
-                mDotParams.dotColor = prefs.getNotificationBackground().getValue();
+                mDotParams.dotColor = prefs.getNotificationBackground().getColor();
             } else {
                 mDotParams.dotColor = mBackground.getDotColor();
             }
@@ -750,8 +762,8 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         // Keep receiving the rest of the events
 
         Launcher launcher = ContextExtensionsKt.getLauncherOrNull(getContext());
-        if (launcher instanceof OmegaLauncher && mSwipeUpHandler != null) {
-            ((OmegaLauncher) launcher).getGestureController()
+        if (launcher instanceof NeoLauncher && mSwipeUpHandler != null) {
+            ((NeoLauncher) launcher).getGestureController()
                     .setSwipeUpOverride(mSwipeUpHandler, event.getDownTime());
         }
         return true;
@@ -811,55 +823,9 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         mPreviewItemManager.onFolderClose(currentPage);
     }
 
-    private void updateTranslation() {
-        super.setTranslationX(mTranslationForReorderBounce.x + mTranslationForReorderPreview.x
-                + mTranslationForMoveFromCenterAnimation.x
-                + mTranslationXForTaskbarAlignmentAnimation);
-        super.setTranslationY(mTranslationForReorderBounce.y + mTranslationForReorderPreview.y
-                + mTranslationForMoveFromCenterAnimation.y);
-    }
-
-    public void setReorderBounceOffset(float x, float y) {
-        mTranslationForReorderBounce.set(x, y);
-        updateTranslation();
-    }
-
-    public void getReorderBounceOffset(PointF offset) {
-        offset.set(mTranslationForReorderBounce);
-    }
-
-    /**
-     * Sets translationX value for taskbar to launcher alignment animation
-     */
-    public void setTranslationForTaskbarAlignmentAnimation(float translationX) {
-        mTranslationXForTaskbarAlignmentAnimation = translationX;
-        updateTranslation();
-    }
-
-    /**
-     * Returns translation values for taskbar to launcher alignment animation
-     */
-    public float getTranslationXForTaskbarAlignmentAnimation() {
-        return mTranslationXForTaskbarAlignmentAnimation;
-    }
-
-    /**
-     * Sets translation values for move from center animation
-     */
-    public void setTranslationForMoveFromCenterAnimation(float x, float y) {
-        mTranslationForMoveFromCenterAnimation.set(x, y);
-        updateTranslation();
-    }
-
     @Override
-    public void setReorderPreviewOffset(float x, float y) {
-        mTranslationForReorderPreview.set(x, y);
-        updateTranslation();
-    }
-
-    @Override
-    public void getReorderPreviewOffset(PointF offset) {
-        offset.set(mTranslationForReorderPreview);
+    public MultiTranslateDelegate getTranslateDelegate() {
+        return mTranslateDelegate;
     }
 
     public void setReorderBounceScale(float scale) {
@@ -896,6 +862,34 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         } else {
             return getContext().getString(R.string.folder_name_format_overflow, title,
                     MAX_NUM_ITEMS_IN_PREVIEW);
+        }
+    }
+
+    public boolean isInAppDrawer() {
+        return mInfo instanceof DrawerFolderInfo;
+    }
+
+    public WorkspaceItemInfo getCoverInfo() {
+        return mInfo.getCoverInfo();
+    }
+
+    public void applyCoverDotState(ItemInfo itemInfo, boolean animate) {
+        mFolderName.applyDotState(itemInfo, animate);
+    }
+
+    public void updateIconDots(Predicate<PackageUserKey> updatedBadges, PackageUserKey tmpKey) {
+        FolderDotInfo folderDotInfo = new FolderDotInfo();
+        for (WorkspaceItemInfo si : mInfo.contents) {
+            folderDotInfo.addDotInfo(mActivity.getDotInfoForItem(si));
+        }
+        setDotInfo(folderDotInfo);
+
+        if (mInfo.isCoverMode()) {
+            WorkspaceItemInfo coverInfo = getCoverInfo();
+            if (tmpKey.updateFromItemInfo(coverInfo) &&
+                    updatedBadges.test(tmpKey)) {
+                applyCoverDotState(coverInfo, true);
+            }
         }
     }
 

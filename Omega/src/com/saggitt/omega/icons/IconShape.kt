@@ -326,6 +326,21 @@ open class IconShape(
         }
     }
 
+    object Hexagon : IconShape(
+        IconCornerShape.cuthex,
+        IconCornerShape.cuthex,
+        IconCornerShape.cuthex,
+        IconCornerShape.cuthex,
+        PointF(1f, .5f),
+        PointF(1f, .5f),
+        PointF(1f, .5f),
+        PointF(1f, .5f)
+    ) {
+        override fun toString(): String {
+            return "hexagon"
+        }
+    }
+
     object Octagon : IconShape(
         IconCornerShape.cut,
         IconCornerShape.cut,
@@ -374,6 +389,7 @@ open class IconShape(
             "teardrop" -> Teardrop
             "cylinder" -> Cylinder
             "cupertino" -> Cupertino
+            "hexagon" -> Hexagon
             "octagon" -> Octagon
             "egg" -> Egg
             "" -> Circle

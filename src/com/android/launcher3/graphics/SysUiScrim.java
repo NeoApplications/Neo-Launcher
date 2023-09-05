@@ -48,7 +48,7 @@ import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.DynamicResource;
 import com.android.launcher3.util.Themes;
 import com.android.systemui.plugins.ResourceProvider;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * View scrim which draws behind hotseat and workspace
@@ -131,7 +131,8 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
                 view.getResources().getDisplayMetrics());
         mTopScrim = Themes.getAttrDrawable(view.getContext(), R.attr.workspaceStatusBarScrim);
         mBottomMask = mTopScrim == null ? null : createDitheredAlphaMask();
-        mHideSysUiScrim = mTopScrim == null;
+        NeoPrefs prefs = NeoPrefs.Companion.getInstance(view.getContext());
+        mHideSysUiScrim = mTopScrim == null || !prefs.getProfileShowTopShadow().getValue();
 
         mDrawWallpaperScrim = FeatureFlags.ENABLE_WALLPAPER_SCRIM.get()
                 && !Themes.getAttrBoolean(view.getContext(), R.attr.isMainColorDark)
@@ -142,11 +143,6 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mWallpaperScrimPaint.setColor(wallpaperScrimColor);
 
         view.addOnAttachStateChangeListener(this);
-        NLPrefs prefs = NLPrefs.Companion.getInstance(view.getContext());
-        if (prefs.getProfileShowTopShadow().getValue()) {
-            mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
-            mRoot.invalidate();
-        }
     }
 
     /**

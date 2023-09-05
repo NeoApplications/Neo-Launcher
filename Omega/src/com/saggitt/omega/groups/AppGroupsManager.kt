@@ -27,18 +27,18 @@ import com.saggitt.omega.groups.category.CustomTabs
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.FlowerpotTabs
 import com.saggitt.omega.preferences.BooleanPref
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringPref
 
-class AppGroupsManager(val prefs: NLPrefs, val dataStore: DataStore<Preferences>) {
+class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences>) {
     var categorizationEnabled = BooleanPref(
         key = PrefKey.DRAWER_CATEGORIZATION_ENABLED,
         dataStore = dataStore,
         titleId = R.string.title_app_categorization_enable,
         summaryId = R.string.summary_app_categorization_enable,
         defaultValue = false,
-        onChange = { onPrefsChanged() }
+        onChange = {}
     )
 
     var categorizationType = StringPref(
@@ -46,7 +46,9 @@ class AppGroupsManager(val prefs: NLPrefs, val dataStore: DataStore<Preferences>
         dataStore = dataStore,
         titleId = R.string.pref_appcategorization_style_text,
         defaultValue = "categorization_type_tabs",
-        onChange = { onPrefsChanged() }
+        onChange = {
+
+        }
     )
 
 

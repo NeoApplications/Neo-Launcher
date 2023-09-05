@@ -131,7 +131,7 @@ fun AboutPrefPage() {
                         leadingContent = {
                             ResourcesCompat.getDrawable(
                                 LocalContext.current.resources,
-                                R.mipmap.ic_launcher,
+                                R.drawable.ic_launcher,
                                 LocalContext.current.theme
                             )?.let { drawable ->
                                 val bitmap = Bitmap.createBitmap(

@@ -31,8 +31,11 @@ import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.ResourceBasedOverride;
 import com.android.launcher3.views.ActivityContext;
+
+import java.util.List;
 
 /**
  * Handles the user event logging in R+.
@@ -555,6 +558,17 @@ public class StatsLogManager implements ResourceBasedOverride {
                 + "result page etc.")
         LAUNCHER_ALLAPPS_SCROLLED(985),
 
+        @UiEvent(doc = "User scrolled up on the all apps personal A-Z list.")
+        LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_UP(1287),
+
+        @UiEvent(doc = "User scrolled down on the all apps personal A-Z list.")
+        LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_DOWN(1288),
+
+        @UiEvent(doc = "User scrolled on one of the all apps surfaces such as A-Z list, search "
+                + "result page etc and we don't know the direction since user came back to "
+                + "original position from which they scrolled.")
+        LAUNCHER_ALLAPPS_SCROLLED_UNKNOWN_DIRECTION(1231),
+
         @UiEvent(doc = "User tapped taskbar home button")
         LAUNCHER_TASKBAR_HOME_BUTTON_TAP(1003),
 
@@ -598,7 +612,37 @@ public class StatsLogManager implements ResourceBasedOverride {
         LAUNCHER_APP_ICON_MENU_SPLIT_RIGHT_BOTTOM(1199),
 
         @UiEvent(doc = "User has invoked split to left half from an app icon menu")
-        LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP(1200);
+        LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP(1200),
+
+        @UiEvent(doc = "Number of apps in A-Z list (personal and work profile)")
+        LAUNCHER_ALLAPPS_COUNT(1225),
+
+        @UiEvent(doc = "User has invoked split to right half with a keyboard shortcut.")
+        LAUNCHER_KEYBOARD_SHORTCUT_SPLIT_RIGHT_BOTTOM(1232),
+
+        @UiEvent(doc = "User has invoked split to left half with a keyboard shortcut.")
+        LAUNCHER_KEYBOARD_SHORTCUT_SPLIT_LEFT_TOP(1233),
+
+        @UiEvent(doc = "User has collapsed the work FAB button by scrolling down in the all apps"
+                + " work A-Z list.")
+        LAUNCHER_WORK_FAB_BUTTON_COLLAPSE(1276),
+
+        @UiEvent(doc = "User has collapsed the work FAB button by scrolling up in the all apps"
+                + " work A-Z list.")
+        LAUNCHER_WORK_FAB_BUTTON_EXTEND(1277),
+
+        @UiEvent(doc = "User scrolled down on the search result page.")
+        LAUNCHER_ALLAPPS_SEARCH_SCROLLED_DOWN(1285),
+
+        @UiEvent(doc = "User scrolled up on the search result page.")
+        LAUNCHER_ALLAPPS_SEARCH_SCROLLED_UP(1286),
+
+        @UiEvent(doc = "User or automatic timeout has hidden transient taskbar.")
+        LAUNCHER_TRANSIENT_TASKBAR_HIDE(1330),
+
+        @UiEvent(doc = "User has swiped upwards from the gesture handle to show transient taskbar.")
+        LAUNCHER_TRANSIENT_TASKBAR_SHOW(1331),
+        ;
 
         // ADD MORE
 
@@ -707,14 +751,21 @@ public class StatsLogManager implements ResourceBasedOverride {
         /**
          * Sets logging fields from provided {@link SliceItem}.
          */
-        //default StatsLogger withSliceItem(SliceItem sliceItem) {
-        //    return this;
-        //}
+        /*default StatsLogger withSliceItem(SliceItem sliceItem) {
+            return this;
+        }*/
 
         /**
          * Sets logging fields from provided {@link LauncherAtom.Slice}.
          */
         default StatsLogger withSlice(LauncherAtom.Slice slice) {
+            return this;
+        }
+
+        /**
+         * Sets cardinality of log message.
+         */
+        default StatsLogger withCardinality(int cardinality) {
             return this;
         }
 
@@ -745,7 +796,8 @@ public class StatsLogManager implements ResourceBasedOverride {
             FAIL(4),
             COLD_USERWAITING(5),
             ATOMIC(6),
-            CONTROLLED(7);
+            CONTROLLED(7),
+            CACHED(8);
             private final int mId;
 
             LatencyType(int id) {
@@ -755,7 +807,6 @@ public class StatsLogManager implements ResourceBasedOverride {
             public int getId() {
                 return mId;
             }
-
         }
 
         /**
@@ -788,9 +839,87 @@ public class StatsLogManager implements ResourceBasedOverride {
         }
 
         /**
+         * Sets sub event type.
+         */
+        default StatsLatencyLogger withSubEventType(int type) {
+            return this;
+        }
+
+        /**
          * Sets packageId of log message.
          */
         default StatsLatencyLogger withPackageId(int packageId) {
+            return this;
+        }
+
+        /**
+         * Builds the final message and logs it as {@link EventEnum}.
+         */
+        default void log(EventEnum event) {
+        }
+    }
+
+    /**
+     * Helps to construct and log impression event.
+     */
+    public interface StatsImpressionLogger {
+
+        enum State {
+            UNKNOWN(0),
+            ALLAPPS(1),
+            SEARCHBOX_WIDGET(2);
+            private final int mLauncherState;
+
+            State(int id) {
+                this.mLauncherState = id;
+            }
+
+            public int getLauncherState() {
+                return mLauncherState;
+            }
+        }
+
+        /**
+         * Sets {@link InstanceId} of log message.
+         */
+        default StatsImpressionLogger withInstanceId(InstanceId instanceId) {
+            return this;
+        }
+
+        /**
+         * Sets {@link State} of impression event.
+         */
+        default StatsImpressionLogger withState(State state) {
+            return this;
+        }
+
+        /**
+         * Sets query length of the event.
+         */
+        default StatsImpressionLogger withQueryLength(int queryLength) {
+            return this;
+        }
+
+        /**
+         * Sets list of {@link } for the impression event.
+         */
+        default StatsImpressionLogger withResultType(IntArray resultType) {
+            return this;
+        }
+
+        /**
+         * Sets list of count for each of {@link } for the
+         * impression event.
+         */
+        default StatsImpressionLogger withResultCount(IntArray resultCount) {
+            return this;
+        }
+
+        /**
+         * Sets list of boolean for each of {@link } that indicates
+         * if this result is above keyboard or not for the impression event.
+         */
+        default StatsImpressionLogger withAboveKeyboard(List<Boolean> aboveKeyboard) {
             return this;
         }
 
@@ -824,6 +953,17 @@ public class StatsLogManager implements ResourceBasedOverride {
     }
 
     /**
+     * Returns new impression logger object.
+     */
+    public StatsImpressionLogger impressionLogger() {
+        StatsImpressionLogger logger = createImpressionLogger();
+        if (mInstanceId != null) {
+            logger.withInstanceId(mInstanceId);
+        }
+        return logger;
+    }
+
+    /**
      * Returns a singleton KeyboardStateManager.
      */
     public KeyboardStateManager keyboardStateManager() {
@@ -840,6 +980,11 @@ public class StatsLogManager implements ResourceBasedOverride {
 
     protected StatsLatencyLogger createLatencyLogger() {
         return new StatsLatencyLogger() {
+        };
+    }
+
+    protected StatsImpressionLogger createImpressionLogger() {
+        return new StatsImpressionLogger() {
         };
     }
 

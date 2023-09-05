@@ -50,7 +50,6 @@ public class AllAppsFastScrollHelper {
         mLastSelectedViewHolder = null;
     }
 
-
     private void setLastHolderSelected(boolean isSelected) {
         if (mLastSelectedViewHolder != null) {
             mLastSelectedViewHolder.itemView.setActivated(isSelected);

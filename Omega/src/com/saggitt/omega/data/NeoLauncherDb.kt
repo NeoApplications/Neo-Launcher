@@ -18,18 +18,34 @@
 
 package com.saggitt.omega.data
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.saggitt.omega.data.models.AppTracker
+import com.saggitt.omega.data.models.GestureItemInfo
+import com.saggitt.omega.data.models.IconOverride
+import com.saggitt.omega.data.models.PeopleInfo
+import com.saggitt.omega.data.models.SearchProvider
 
 @Database(
-    entities = [IconOverride::class, AppTracker::class, PeopleInfo::class, GestureItemInfo::class],
-    version = 4,
-    exportSchema = false
+    entities = [
+        IconOverride::class,
+        AppTracker::class,
+        PeopleInfo::class,
+        GestureItemInfo::class,
+        SearchProvider::class,
+    ],
+    version = 5,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(
+            from = 4,
+            to = 5,
+        ),
+    ]
 )
 @TypeConverters(Converters::class)
 abstract class NeoLauncherDb : RoomDatabase() {
@@ -38,42 +54,12 @@ abstract class NeoLauncherDb : RoomDatabase() {
     abstract fun appTrackerDao(): AppTrackerDao
     abstract fun peopleDao(): PeopleDao
     abstract fun gestureItemInfoDao(): GestureItemInfoDao
+    abstract fun searchProviderDao(): SearchProviderDao
 
     companion object {
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE AppTracker (packageName TEXT not Null, count INTEGER not Null, PRIMARY KEY(packageName))")
-            }
-        }
-
-        /*
-        * Add Migration for Contacts
-        */
-        private val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE PeopleInfo (contactId TEXT NOT NULL, contactName TEXT not Null, contactPhone TEXT not Null, PRIMARY KEY(contactId))")
-            }
-        }
-
-        /*
-        * Add Migration for SwipeUp action
-        */
-        private val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
-                    "CREATE TABLE GestureItemInfo (" +
-                            "packageName TEXT not Null, " +
-                            "swipeUp TEXT NULL DEFAULT '', " +
-                            "swipeDown TEXT NULL DEFAULT '', " +
-                            "PRIMARY KEY(packageName))"
-                )
-            }
-        }
-
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
         }
     }

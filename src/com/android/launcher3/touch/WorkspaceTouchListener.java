@@ -44,7 +44,7 @@ import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
-import com.saggitt.omega.OmegaLauncher;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.gestures.GestureController;
 
 /**
@@ -82,7 +82,7 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
         // likely to cause movement.
         mTouchSlop = 2 * ViewConfiguration.get(launcher).getScaledTouchSlop();
         mGestureDetector = new GestureDetector(workspace.getContext(), this);
-        mGestureController = ((OmegaLauncher) launcher).getGestureController();
+        mGestureController = ((NeoLauncher) launcher).getGestureController();
         mGestureController.attachDoubleTapListener(mGestureDetector);
     }
 

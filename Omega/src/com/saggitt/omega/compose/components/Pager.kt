@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,7 +48,7 @@ fun HorizontalPagerPage(
                 .fillMaxWidth()
                 .weight(1f)
                 .blockBorder(),
-            state = pagerState
+            state = pagerState,
         ) { page ->
             tabs[page].screen()
         }
@@ -87,7 +86,6 @@ fun NavBarItem(
         horizontalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

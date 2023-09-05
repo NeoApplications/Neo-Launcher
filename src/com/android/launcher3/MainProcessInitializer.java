@@ -19,12 +19,11 @@ package com.android.launcher3;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.BitmapCreationCheck;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ResourceBasedOverride;
-import com.saggitt.omega.preferences.NLPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import org.chickenhook.restrictionbypass.Unseal;
 
@@ -42,7 +41,7 @@ public class MainProcessInitializer implements ResourceBasedOverride {
             Log.e(TAG, "Unseal fail!");
             e.printStackTrace();
         }
-        NLPrefs.getInstance(context);
+        NeoPrefs.getInstance(context);
         Overrides.getObject(
                         MainProcessInitializer.class, context, R.string.main_process_initializer_class)
                 .init(context);
@@ -50,7 +49,6 @@ public class MainProcessInitializer implements ResourceBasedOverride {
 
     protected void init(Context context) {
         FileLog.setDir(context.getApplicationContext().getFilesDir());
-        FeatureFlags.initialize(context);
         IconShape.init(context);
 
         if (BitmapCreationCheck.ENABLED) {

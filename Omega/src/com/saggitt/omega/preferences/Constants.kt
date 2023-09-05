@@ -1,6 +1,23 @@
 package com.saggitt.omega.preferences
 
 import com.android.launcher3.R
+import com.saggitt.omega.dash.actionprovider.AllAppsShortcut
+import com.saggitt.omega.dash.actionprovider.AudioPlayer
+import com.saggitt.omega.dash.actionprovider.ChangeWallpaper
+import com.saggitt.omega.dash.actionprovider.DeviceSettings
+import com.saggitt.omega.dash.actionprovider.EditDash
+import com.saggitt.omega.dash.actionprovider.LaunchAssistant
+import com.saggitt.omega.dash.actionprovider.ManageApps
+import com.saggitt.omega.dash.actionprovider.ManageVolume
+import com.saggitt.omega.dash.actionprovider.OmegaSettings
+import com.saggitt.omega.dash.actionprovider.SleepDevice
+import com.saggitt.omega.dash.actionprovider.Torch
+import com.saggitt.omega.dash.controlprovider.AutoRotation
+import com.saggitt.omega.dash.controlprovider.Bluetooth
+import com.saggitt.omega.dash.controlprovider.Location
+import com.saggitt.omega.dash.controlprovider.MobileData
+import com.saggitt.omega.dash.controlprovider.Sync
+import com.saggitt.omega.dash.controlprovider.Wifi
 import com.saggitt.omega.widget.Temperature
 
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
@@ -63,4 +80,22 @@ val iconIds = mapOf(
     // Drawer Popup
     PREFS_DRAWER_POPUP_UNINSTALL to R.drawable.ic_uninstall_no_shadow,
     PREFS_DRAWER_POPUP_EDIT to R.drawable.ic_edit_no_shadow,
+    // Dash Providers
+    EditDash::class.java.name to R.drawable.ic_edit_dash,
+    ChangeWallpaper::class.java.name to R.drawable.ic_wallpaper,
+    OmegaSettings::class.java.name to R.drawable.ic_omega_settings,
+    ManageVolume::class.java.name to R.drawable.ic_volume,
+    DeviceSettings::class.java.name to R.drawable.ic_setting,
+    ManageApps::class.java.name to R.drawable.ic_build,
+    AllAppsShortcut::class.java.name to R.drawable.ic_apps,
+    SleepDevice::class.java.name to R.drawable.ic_sleep,
+    LaunchAssistant::class.java.name to R.drawable.ic_assistant,
+    Torch::class.java.name to R.drawable.ic_torch,
+    AudioPlayer::class.java.name to R.drawable.ic_music_play,
+    Wifi::class.java.name to R.drawable.ic_wifi,
+    MobileData::class.java.name to R.drawable.ic_mobile_network,
+    Location::class.java.name to R.drawable.ic_location,
+    Bluetooth::class.java.name to R.drawable.ic_bluetooth,
+    AutoRotation::class.java.name to R.drawable.ic_auto_rotation,
+    Sync::class.java.name to R.drawable.ic_sync,
 )

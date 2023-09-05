@@ -36,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.saggitt.omega.groups.AppGroupsManager
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
 
 @Composable
@@ -44,7 +44,7 @@ fun SelectTabBottomSheet(
     onClose: (Int, AppGroupsManager.Category) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -63,7 +63,7 @@ fun SelectTabBottomSheet(
         Text(
             text = stringResource(id = R.string.default_tab_name),
             modifier = Modifier.fillMaxWidth(),
-            color = Color(prefs.profileAccentColor.getValue()),
+            color = Color(prefs.profileAccentColor.getColor()),
             style = MaterialTheme.typography.titleLarge
         )
 

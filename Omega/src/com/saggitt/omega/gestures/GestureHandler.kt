@@ -33,7 +33,7 @@ abstract class GestureHandler(val context: Context, val config: JSONObject?) {
     open val isAvailable: Boolean = true
     open val icon: Drawable? = null
     open val iconResource: Intent.ShortcutIconResource
-            by lazy { Intent.ShortcutIconResource.fromContext(context, R.mipmap.ic_launcher) }
+            by lazy { Intent.ShortcutIconResource.fromContext(context, R.drawable.ic_launcher) }
 
     abstract fun onGestureTrigger(controller: GestureController, view: View? = null)
 

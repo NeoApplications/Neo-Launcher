@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.data.models.IconOverride
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +18,9 @@ interface IconOverrideDao {
 
     @Query("SELECT * FROM iconoverride")
     fun observeAll(): Flow<List<IconOverride>>
+
+    @Query("SELECT * FROM iconoverride")
+    suspend fun getAll(): List<IconOverride>
 
     @Query("SELECT * FROM iconoverride WHERE target = :target")
     fun observeTarget(target: ComponentKey): Flow<IconOverride?>

@@ -49,7 +49,6 @@ import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.compose.pages.editIconGraph
 import com.saggitt.omega.compose.pages.iconPickerGraph
-import com.saggitt.omega.theme.OmegaAppTheme
 
 @Composable
 fun MainPrefsPage() {
@@ -88,67 +87,66 @@ fun MainPrefsPage() {
         }
     }
 
-    OmegaAppTheme {
-        ViewWithActionBar(
+    ViewWithActionBar(
             title = stringResource(R.string.settings_button_text),
             showBackButton = false,
             actions = {
                 OverflowMenu {
                     if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
                         DropdownMenuItem(
-                            onClick = {
-                                changeDefaultHome(context)
-                                hideMenu()
-                            },
-                            text = { Text(text = stringResource(id = R.string.change_default_home)) }
+                                onClick = {
+                                    changeDefaultHome(context)
+                                    hideMenu()
+                                },
+                                text = { Text(text = stringResource(id = R.string.change_default_home)) }
                         )
                     }
                     DropdownMenuItem(
-                        onClick = {
-                            Utilities.killLauncher()
-                            hideMenu()
-                        },
-                        text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
+                            onClick = {
+                                Utilities.killLauncher()
+                                hideMenu()
+                            },
+                            text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
                     )
                     DropdownMenuItem(
-                        onClick = {
-                            navController.navigate(destination)
-                            hideMenu()
-                        },
-                        text = { Text(text = stringResource(id = R.string.developer_options_title)) }
+                            onClick = {
+                                navController.navigate(destination)
+                                hideMenu()
+                            },
+                            text = { Text(text = stringResource(id = R.string.developer_options_title)) }
                     )
                 }
             }
-        ) { paddingValues ->
-            LazyColumn(
+    ) { paddingValues ->
+        LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
+        ) {
+            item {
+                PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__interfaces),
                         prefs = uiPrefs
-                    )
-                }
-                item {
-                    PreferenceGroup(
+                )
+            }
+            item {
+                PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__features),
                         prefs = featuresPrefs
-                    )
-                }
-                item {
-                    PreferenceGroup(
+                )
+            }
+            item {
+                PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
+
 }
 
 fun NavGraphBuilder.mainPrefsGraph(route: String) {

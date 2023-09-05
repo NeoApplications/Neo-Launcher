@@ -16,7 +16,7 @@
 package com.android.launcher3.model;
 
 import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_GET_KEY_FIELDS_ONLY;
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_SHORTCUTS;
+import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
 import static com.android.launcher3.shortcuts.ShortcutRequest.PINNED;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -51,7 +51,7 @@ import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.IntSparseArrayMap;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
-import com.saggitt.omega.OmegaApp;
+import com.saggitt.omega.NeoApp;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -145,7 +145,7 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if (FeatureFlags.QSbOnFirstScreen(OmegaApp.getInstance()) || screenSet.isEmpty()) {
+        if (FeatureFlags.QSbOnFirstScreen(NeoApp.getInstance()) || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);
         }
         return screenSet.getArray();
@@ -285,10 +285,9 @@ public class BgDataModel {
      * shortcuts and unpinning any extra shortcuts.
      */
     public synchronized void updateShortcutPinnedState(Context context, UserHandle user) {
-        if (GO_DISABLE_SHORTCUTS) {
+        if (GO_DISABLE_WIDGETS) {
             return;
         }
-
         // Collect all system shortcuts
         QueryResult result = new ShortcutRequest(context, user)
                 .query(PINNED | FLAG_GET_KEY_FIELDS_ONLY);
@@ -438,23 +437,9 @@ public class BgDataModel {
 
         public FixedContainerItems(int containerId, List<ItemInfo> items) {
             this.containerId = containerId;
-            this.items = items;
-        }
-
-        @Override
-        public FixedContainerItems clone() {
-            return new FixedContainerItems(containerId, new ArrayList<>(items));
-        }
-
-        public void setItems(List<ItemInfo> newItems) {
-            items.clear();
-            newItems.forEach(item -> {
-                item.container = containerId;
-                items.add(item);
-            });
+            this.items = Collections.unmodifiableList(items);
         }
     }
-
 
     public interface Callbacks {
         // If the launcher has permission to access deep shortcuts.

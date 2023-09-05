@@ -21,6 +21,7 @@ package com.saggitt.omega.data
 
 import android.content.Context
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.saggitt.omega.data.models.AppTracker
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

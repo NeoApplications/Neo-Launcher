@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -45,6 +46,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.children
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.launcher3.Launcher
@@ -60,7 +62,7 @@ import com.saggitt.omega.allapps.AppColorComparator
 import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator
 import com.saggitt.omega.data.AppTrackerRepository
-import com.saggitt.omega.preferences.NLPrefs
+import com.saggitt.omega.preferences.NeoPrefs
 import org.json.JSONObject
 import java.lang.reflect.Field
 import java.text.Collator
@@ -104,6 +106,12 @@ fun <E> MutableSet<E>.addOrRemove(obj: E, exists: Boolean): Boolean {
     return false
 }
 
+val ViewGroup.recursiveChildren: Sequence<View>
+    get() = children.flatMap {
+        if (it is ViewGroup) {
+            it.recursiveChildren + sequenceOf(it)
+        } else sequenceOf(it)
+    }
 
 val Long.Companion.random get() = Random.nextLong()
 
@@ -251,7 +259,7 @@ val isBlackTheme: Boolean = false //TODO add black theme support
 fun getAllAppsScrimColor(context: Context): Int {
     val opacity = context.prefs.drawerBackgroundOpacity.getValue()
     val scrimColor = if (context.prefs.drawerCustomBackground.getValue()) {
-        context.prefs.drawerBackgroundColor.getValue()
+        context.prefs.drawerBackgroundColor.getColor()
     } else {
         Themes.getAttrColor(context, R.attr.allAppsScrimColor)
     }
@@ -283,29 +291,29 @@ fun openURLInBrowser(context: Context, url: String?, sourceBounds: Rect?, option
 fun UserCache.getUserForProfileId(profileId: Int) =
     userProfiles.find { it.toString() == "UserHandle{$profileId}" }
 
-fun MutableList<AppInfo>.sortApps(context: Context, sortType: Int) {
+fun getAllAppsComparator(context: Context, sortType: Int): Comparator<AppInfo> {
     val pm: PackageManager = context.packageManager
-    when (sortType) {
-        Config.SORT_ZA -> sortWith(compareBy(Collator.getInstance().reversed()) {
+    return when (sortType) {
+        Config.SORT_ZA              -> compareBy(Collator.getInstance().reversed()) {
             it.title.toString().lowercase()
-        })
+        }
 
-        Config.SORT_MOST_USED -> {
+        Config.SORT_MOST_USED       -> {
             val repository = AppTrackerRepository.INSTANCE[context]
             val appsCounter = repository.getAppsCount()
             val mostUsedComparator = AppUsageComparator(appsCounter)
-            sortWith(mostUsedComparator)
+            mostUsedComparator
         }
 
-        Config.SORT_BY_COLOR -> sortWith(AppColorComparator(context))
+        Config.SORT_BY_COLOR        -> AppColorComparator(context)
 
-        Config.SORT_BY_INSTALL_DATE -> sortWith(InstallTimeComparator(pm))
+        Config.SORT_BY_INSTALL_DATE -> InstallTimeComparator(pm)
 
-        Config.SORT_AZ -> sortWith(compareBy(Collator.getInstance()) {
+        Config.SORT_AZ              -> compareBy(Collator.getInstance()) {
             it.title.toString().lowercase()
-        })
+        }
 
-        else -> sortWith(AppInfoComparator(context))
+        else                        -> AppInfoComparator(context)
     }
 }
 
@@ -317,6 +325,25 @@ fun dpToPx(size: Float): Float {
         size,
         Resources.getSystem().displayMetrics
     )
+}
+
+fun View.runOnAttached(runnable: Runnable) {
+    if (isAttachedToWindow) {
+        runnable.run()
+    } else {
+        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+
+            override fun onViewAttachedToWindow(v: View) {
+                runnable.run()
+                removeOnAttachStateChangeListener(this)
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                removeOnAttachStateChangeListener(this)
+            }
+        })
+
+    }
 }
 
 fun pxToDp(size: Float): Float {
@@ -343,6 +370,10 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
 }
 
 fun getFolderPreviewAlpha(context: Context): Int {
-    val prefs = NLPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance(context)
     return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
+}
+
+fun minSDK(sdk: Int): Boolean {
+    return Build.VERSION.SDK_INT >= sdk
 }

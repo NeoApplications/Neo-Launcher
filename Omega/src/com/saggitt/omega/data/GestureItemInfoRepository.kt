@@ -20,6 +20,7 @@ package com.saggitt.omega.data
 
 import android.content.Context
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.data.models.GestureItemInfo
 import com.saggitt.omega.util.firstBlocking
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.MainScope

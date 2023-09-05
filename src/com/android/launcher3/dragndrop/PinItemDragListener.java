@@ -19,11 +19,9 @@ package com.android.launcher3.dragndrop;
 
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_PIN_WIDGETS;
 
-import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.content.pm.LauncherApps.PinItemRequest;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.view.DragEvent;
@@ -43,7 +41,6 @@ import com.android.launcher3.widget.WidgetAddFlowHandler;
  * {@link DragSource} for handling drop from a different window. This object is initialized
  * in the source window and is passed on to the Launcher activity as an Intent extra.
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class PinItemDragListener extends BaseItemDragListener {
 
     private final PinItemRequest mRequest;

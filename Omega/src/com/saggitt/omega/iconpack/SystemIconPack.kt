@@ -9,7 +9,7 @@ import androidx.core.content.getSystemService
 import com.android.launcher3.R
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.data.IconPickerItem
+import com.saggitt.omega.data.models.IconPickerItem
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

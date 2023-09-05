@@ -66,6 +66,9 @@ public class GridCustomizationsProvider extends ContentProvider {
 
     private static final String KEY_SURFACE_PACKAGE = "surface_package";
     private static final String KEY_CALLBACK = "callback";
+    public static final String KEY_HIDE_BOTTOM_ROW = "hide_bottom_row";
+
+    private static final int MESSAGE_ID_UPDATE_PREVIEW = 1337;
 
     private final ArrayMap<IBinder, PreviewLifecycleObserver> mActivePreviews = new ArrayMap<>();
 
@@ -82,7 +85,7 @@ public class GridCustomizationsProvider extends ContentProvider {
                 MatrixCursor cursor = new MatrixCursor(new String[]{
                         KEY_NAME, KEY_ROWS, KEY_COLS, KEY_PREVIEW_COUNT, KEY_IS_DEFAULT});
                 InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(getContext());
-                for (GridOption gridOption : idp.parseAllGridOptions(getContext())) {
+                for (GridOption gridOption : InvariantDeviceProfile.parseAllGridOptions(getContext())) {
                     cursor.newRow()
                             .add(KEY_NAME, gridOption.name)
                             .add(KEY_ROWS, gridOption.numRows)
@@ -127,7 +130,7 @@ public class GridCustomizationsProvider extends ContentProvider {
                 InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(getContext());
                 // Verify that this is a valid grid option
                 GridOption match = null;
-                for (GridOption option : idp.parseAllGridOptions(getContext())) {
+                for (GridOption option : InvariantDeviceProfile.parseAllGridOptions(getContext())) {
                     if (option.name.equals(gridName)) {
                         match = option;
                         break;
@@ -223,7 +226,14 @@ public class GridCustomizationsProvider extends ContentProvider {
 
         @Override
         public boolean handleMessage(Message message) {
-            destroyObserver(this);
+            if (destroyed) {
+                return true;
+            }
+            if (message.what == MESSAGE_ID_UPDATE_PREVIEW) {
+                renderer.hideBottomRow(message.getData().getBoolean(KEY_HIDE_BOTTOM_ROW));
+            } else {
+                destroyObserver(this);
+            }
             return true;
         }
 
