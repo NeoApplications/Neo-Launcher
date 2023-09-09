@@ -183,7 +183,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public ActivityAllAppsContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mActivityContext = ActivityContext.lookupContext(context);
-        prefs = NeoPrefs.getInstance(mActivityContext);
+        prefs = NeoPrefs.getInstance(context);
         mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
         mHeaderThreshold = getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
@@ -249,7 +249,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mAH.get(getSearchHolder()).setup(mSearchRecyclerView,
+        mAH.get(getSearchHolderIndex()).setup(mSearchRecyclerView,
                 /* Filter out A-Z apps */ itemInfo -> false);
         rebindAdapters(mUsingTabs, true);
         float cornerRadius = Themes.getDialogCornerRadius(getContext());
@@ -297,7 +297,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
         rebindAdapters(mUsingTabs);
-        //getActiveRecyclerView().scrollToTop();
     }
 
     /**
@@ -339,7 +338,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mFastScroller.setVisibility(goingToSearch ? INVISIBLE : VISIBLE);
         if (goingToSearch) {
             // Fade out the button to pause work apps.
-            mWorkManager.onActivePageChanged(getSearchHolder());
+            mWorkManager.onActivePageChanged(getSearchHolderIndex());
         } else if (mAllAppsTransitionController != null) {
             // If exiting search, revert predictive back scale on all apps
             mAllAppsTransitionController.animateAllAppsToNoScale();
@@ -603,7 +602,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             });
             if (mTabsController.getTabs().getHasWorkApps()) {
                 mWorkManager.reset();
-                post(() -> mAH.get(getWorkHolder()).applyPadding());
+                post(() -> mAH.get(getWorkHolderIndex()).applyPadding());
             }
 
         } else {
@@ -642,7 +641,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mHeader.setVisibility(View.VISIBLE);
         boolean tabsHidden = !mUsingTabs;
         mHeader.setup(mAH,
-                (SearchRecyclerView) mAH.get(getSearchHolder()).mRecyclerView,
+                (SearchRecyclerView) mAH.get(getSearchHolderIndex()).mRecyclerView,
                 getCurrentPage(),
                 tabsHidden);
 
@@ -824,7 +823,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         Bundle state = (Bundle) sparseArray.get(R.id.work_tab_state_id, null);
         if (state != null) {
             int currentPage = state.getInt(BUNDLE_KEY_CURRENT_PAGE, 0);
-            if (currentPage == getWorkHolder() && mViewPager != null) {
+            if (currentPage == getWorkHolderIndex() && mViewPager != null) {
                 mViewPager.setCurrentPage(currentPage);
                 rebindAdapters(false);
             } else {
@@ -1123,7 +1122,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     public AlphabeticalAppsList<T> getSearchResultList() {
-        return (AlphabeticalAppsList<T>) mAH.get(getSearchHolder()).mAppsList;
+        return (AlphabeticalAppsList<T>) mAH.get(getSearchHolderIndex()).mAppsList;
     }
 
     public FloatingHeaderView getFloatingHeaderView() {
@@ -1140,11 +1139,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
      */
     public int getCurrentPage() {
         return isSearching()
-                ? getSearchHolder()
+                ? getSearchHolderIndex()
                 : mViewPager == null ? AdapterHolder.MAIN : mViewPager.getNextPage();
     }
 
-    public int getSearchHolder() {
+    public int getSearchHolderIndex() {
         for (int index = 0; index < mAH.size(); index++) {
             if (mAH.get(index).isSearch()) {
                 return index;
@@ -1153,7 +1152,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         return -1;
     }
 
-    public int getWorkHolder() {
+    public int getWorkHolderIndex() {
         for (int index = 0; index < mAH.size(); index++) {
             if (mAH.get(index).isWork()) {
                 return index;

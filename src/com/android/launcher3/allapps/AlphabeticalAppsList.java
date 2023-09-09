@@ -88,7 +88,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final List<FastScrollSectionInfo> mFastScrollerSections = new ArrayList<>();
     // The of ordered component names as a result of a search query
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
-    private AllAppsGridAdapter<T> mAdapter;
+    private BaseAllAppsAdapter<T> mAdapter;
     private Comparator<AppInfo> mAppNameComparator;
     private final int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
@@ -120,7 +120,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     /**
      * Sets the adapter to notify when this dataset changes.
      */
-    public void setAdapter(AllAppsGridAdapter<T> adapter) {
+    public void setAdapter(BaseAllAppsAdapter<T> adapter) {
         mAdapter = adapter;
     }
 
@@ -179,13 +179,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
      */
     public boolean hasSearchResults() {
         return !mSearchResults.isEmpty();
-    }
-
-    /**
-     * Returns whether there are no filtered results.
-     */
-    public boolean hasNoFilteredResults() {
-        return hasSearchResults() && mAccessibilityResultsCount == 0;
     }
 
     /**
