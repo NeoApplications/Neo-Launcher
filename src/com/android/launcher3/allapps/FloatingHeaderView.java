@@ -231,7 +231,7 @@ public class FloatingHeaderView extends LinearLayout implements
         mTabLayout.setVisibility(tabsHidden ? View.GONE : View.VISIBLE);
 
         for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
-            if (holder.mRecyclerView != null && !holder.isSearch()) {
+            if (holder.mRecyclerView != null) {
                 AllAppsRecyclerView newHolder = holder.mRecyclerView;
                 newHolder.addOnScrollListener(mOnScrollListener);
                 mRVs.add(newHolder);

@@ -203,6 +203,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         mAllAppsStore.addUpdateListener(onAppsUpdated);
 
+        AllAppsTabs allAppsTabs = new AllAppsTabs(context);
+        mTabsController = new AllAppsTabsController(allAppsTabs, this);
+
         // This is a focus listener that proxies focus from a view into the list view.  This is to
         // work around the search box from getting first focus and showing the cursor.
         setOnFocusChangeListener((v, hasFocus) -> {
@@ -210,9 +213,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 getActiveRecyclerView().requestFocus();
             }
         });
-
-        AllAppsTabs allAppsTabs = new AllAppsTabs(context);
-        mTabsController = new AllAppsTabsController(allAppsTabs, this);
 
         initContent();
 
@@ -306,6 +306,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         if (getSearchResultList().setSearchResults(results)) {
             getSearchRecyclerView().onSearchResultsChanged();
+            if (results != null && !results.isEmpty()) {
+                mSearchRecyclerView.mApps.setSearchResults(results);
+            }
         }
         if (results != null) {
             animateToSearchState(true);
@@ -485,7 +488,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         updateSearchResultsVisibility();
 
         int currentTab = mViewPager != null ? mViewPager.getNextPage() : 0;
-        mTabsController.unregisterIconContainers(mAllAppsStore);
         if (showTabs == mUsingTabs && !force) {
             return;
         }
@@ -502,17 +504,16 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             getSearchRecyclerView().addItemDecoration(decoration);
         }
 
-        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
-            if (holder.mRecyclerView != null) {
-                mAllAppsStore.unregisterIconContainer(holder.mRecyclerView);
-            }
-        }
         // replaceAppsRVcontainer() needs to use both mUsingTabs value to remove the old view AND
         // showTabs value to create new view. Hence the mUsingTabs new value assignment MUST happen
         // after this call.
         createHolders();
         replaceAppsRVContainer(showTabs);
         mUsingTabs = showTabs;
+
+        mTabsController.unregisterIconContainers(mAllAppsStore);
+        mAllAppsStore.unregisterIconContainer(mAH.get(getSearchHolderIndex()).mRecyclerView);
+
         if (mTabsController.getTabs().getHasWorkApps()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 mWorkManager.attachWorkModeSwitch();
@@ -566,16 +567,19 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
 
         mTabsController.registerIconContainers(mAllAppsStore);
+        mAllAppsStore.registerIconContainer(mAH.get(getSearchHolderIndex()).mRecyclerView);
     }
 
     protected View replaceAppsRVContainer(boolean showTabs) {
-        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
+        for (int i = 0; i < mAH.size() - 1; i++) {
+            ActivityAllAppsContainerView<?>.AdapterHolder holder = mAH.get(i);
             AllAppsRecyclerView rv = holder.mRecyclerView;
             if (rv != null) {
                 rv.setLayoutManager(null);
                 rv.setAdapter(null);
             }
         }
+
         View oldView = getAppsRecyclerViewContainer();
         int index = indexOfChild(oldView);
         removeView(oldView);
@@ -825,7 +829,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             int currentPage = state.getInt(BUNDLE_KEY_CURRENT_PAGE, 0);
             if (currentPage == getWorkHolderIndex() && mViewPager != null) {
                 mViewPager.setCurrentPage(currentPage);
-                rebindAdapters(false);
+                rebindAdapters(mUsingTabs);
             } else {
                 reset(true);
             }
@@ -850,9 +854,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     private void createHolders() {
-        mAH.removeIf(adapterHolder -> !adapterHolder.isSearch());
-        if (mAH.isEmpty()) mAH.add(createHolder(SEARCH));
-        mAH.addAll(0, mTabsController.createHolders());
+        mAH.clear();
+        mAH.addAll(mTabsController.createHolders());
+        mAH.add(createHolder(SEARCH));
+
     }
 
     public AllAppsStore getAppsStore() {
@@ -893,7 +898,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                         mHasWorkApps + " allApps: " + mAllAppsStore.getApps().length);
             }
             if (!isSearching()) {
-                rebindAdapters(mHasWorkApps);
+                rebindAdapters(mUsingTabs);
                 if (mHasWorkApps) {
                     resetWorkProfile();
                 }
@@ -1139,22 +1144,22 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
      */
     public int getCurrentPage() {
         return isSearching()
-                ? getSearchHolderIndex()
+                ? 0 //FIX
                 : mViewPager == null ? AdapterHolder.MAIN : mViewPager.getNextPage();
     }
 
-    public int getSearchHolderIndex() {
+    public int getWorkHolderIndex() {
         for (int index = 0; index < mAH.size(); index++) {
-            if (mAH.get(index).isSearch()) {
+            if (mAH.get(index).isWork()) {
                 return index;
             }
         }
         return -1;
     }
 
-    public int getWorkHolderIndex() {
+    public int getSearchHolderIndex() {
         for (int index = 0; index < mAH.size(); index++) {
-            if (mAH.get(index).isWork()) {
+            if (mAH.get(index).mType == SEARCH) {
                 return index;
             }
         }
@@ -1403,12 +1408,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             return mType == WORK;
         }
 
-        public void setIsWork(boolean isWork) {
-            this.mType = isWork ? WORK : MAIN;
-        }
-
         public boolean isSearch() {
             return mType == SEARCH;
+        }
+
+        public void setIsWork(boolean isWork) {
+            this.mType = isWork ? WORK : MAIN;
         }
     }
 }
