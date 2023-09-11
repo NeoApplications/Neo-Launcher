@@ -657,6 +657,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 adapterHolder.mRecyclerView.scrollToTop();
             }
         });
+        mSearchRecyclerView.setPadding(0, padding, 0, 0);
 
         removeCustomRules(mHeader);
         if (!isSearchSupported()) {
