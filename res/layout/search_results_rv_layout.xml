@@ -19,5 +19,4 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:descendantFocusability="afterDescendants"
-    android:background="@color/colorAccent"
     android:focusable="true" />
