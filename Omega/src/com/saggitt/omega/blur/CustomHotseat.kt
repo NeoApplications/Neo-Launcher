@@ -26,16 +26,18 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Hotseat
-import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.icons.ShadowGenerator
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.graphics.NinePatchDrawHelper
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.dpToPx
-import com.saggitt.omega.util.getWindowCornerRadius
-import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.runOnMainThread
-import kotlin.math.max
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlin.math.roundToInt
 
 class CustomHotseat @JvmOverloads constructor(
@@ -44,12 +46,17 @@ class CustomHotseat @JvmOverloads constructor(
     Hotseat(context, attrs, defStyleAttr),
     BlurWallpaperProvider.Listener {
 
-    private val launcher = Launcher.getLauncher(context)
-    private val prefs by lazy { context.prefs }
+    private val launcher = NeoLauncher.getLauncher(context)
+    private val prefs by lazy { NeoPrefs.getInstance(context) }
 
-    private var bgEnabled = prefs.dockCustomBackground.getValue()
-    private val hotseatDisabled = context.prefs.dockHide.getValue()
-    private var radius = getWindowCornerRadius(context)
+    private var backgroundEnable = false
+    private var hotseatDisabled = false
+    private var radius = context.resources.getDimension(R.dimen.enforced_rounded_corner_max_radius)
+    private var defaultRadius = radius
+
+    val scope = launcher.lifecycleScope.coroutineContext
+
+    private var backgroundColor = 0
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val shadowBlur = resources.getDimension(R.dimen.all_apps_scrim_blur)
@@ -66,16 +73,6 @@ class CustomHotseat @JvmOverloads constructor(
                 field?.startListening()
             }
         }
-    private var viewAlpha = 1f
-        set(value) {
-            field = value
-            setBgColor()
-        }
-    private var bgColor = prefs.dockBackgroundColor.getColor()
-        set(value) {
-            field = value
-            setBgColor()
-        }
 
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
@@ -91,8 +88,33 @@ class CustomHotseat @JvmOverloads constructor(
         if (hotseatDisabled) {
             super.setVisibility(View.GONE)
         }
+        setWillNotDraw(!backgroundEnable || launcher.useVerticalBarLayout())
+        createBlurDrawable()
+        combine(
+                prefs.dockCustomBackground.get(),
+                prefs.dockBackgroundColor.get(),
+                prefs.dockHide.get(),
+                prefs.profileWindowCornerRadius.get()
+        ) { customBackground, color, hide, dockRadius ->
+            backgroundEnable = customBackground
+            backgroundColor = AccentColorOption.fromString(color).accentColor
+            hotseatDisabled = hide
+            radius = dpToPx(if (dockRadius > -1) dockRadius else defaultRadius)
+            if (hotseatDisabled) {
+                super.setVisibility(View.GONE)
+            } else {
+                super.setVisibility(View.VISIBLE)
+            }
+            reload()
+        }.launchIn(launcher.lifecycleScope)
+    }
 
-        reloadPrefs()
+    private fun reload() {
+        shadowBitmap = generateShadowBitmap()
+        setWillNotDraw(!backgroundEnable || launcher.useVerticalBarLayout())
+        createBlurDrawable()
+        paint.color = backgroundColor
+        invalidate()
     }
 
     override fun setVisibility(visibility: Int) {
@@ -113,17 +135,8 @@ class CustomHotseat @JvmOverloads constructor(
         blurDrawable?.stopListening()
     }
 
-    private fun reloadPrefs() {
-        bgEnabled = prefs.dockCustomBackground.getValue()
-        radius = dpToPx(getWindowCornerRadius(context))
-        shadowBitmap = generateShadowBitmap()
-        setWillNotDraw(!bgEnabled || launcher.useVerticalBarLayout())
-        createBlurDrawable()
-        invalidate()
-    }
-
     override fun draw(canvas: Canvas) {
-        if (bgEnabled) {
+        if (backgroundEnable) {
             drawBackground(canvas)
         }
         super.draw(canvas)
@@ -143,12 +156,10 @@ class CustomHotseat @JvmOverloads constructor(
             blurScaleY = 1 / scaleY
             blurPivotX = pivotX
             blurPivotY = pivotY
-            alpha = (viewAlpha * 255).toInt()
             setBlurBounds(left, top, right, bottom)
             draw(canvas)
         }
         canvas.drawRoundRect(left, top, right, bottom, radius, radius, paint)
-            shadowHelper.paint.alpha = (viewAlpha * 255).toInt()
             shadowHelper.drawVerticallyStretched(
                 shadowBitmap, canvas,
                 left - shadowBlur,
@@ -159,13 +170,7 @@ class CustomHotseat @JvmOverloads constructor(
         canvas.restore()
     }
 
-    private fun setBgColor() {
-        paint.color = bgColor
-        invalidate()
-    }
-
     override fun setAlpha(alpha: Float) {
-        viewAlpha = max(0f, alpha)
         shortcutsAndWidgets.alpha = alpha
     }
 
