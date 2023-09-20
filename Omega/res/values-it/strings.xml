@@ -500,7 +500,7 @@
     <string name="smartspace_flight_qr_code">Codice QR</string>
     <string name="smartspace_time_follow_system">Segui sistema</string>
     <string name="smartspace_time_12_hour_format">Formato 12 ore</string>
-    <string name="folder_swipe_up">Scorri verso l\'alto</string>
+    <string name="folder_swipe_up">Azione scorri verso l\'alto</string>
     <string name="folder_stroke_color">Colore contorno cartella</string>
     <string name="accessibility_smartspace_page">Pagina %1$d di %2$d</string>
     <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
