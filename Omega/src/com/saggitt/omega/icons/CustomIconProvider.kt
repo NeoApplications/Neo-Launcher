@@ -32,6 +32,7 @@ import android.content.Intent.ACTION_TIME_TICK
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.ColorDrawable
@@ -43,6 +44,7 @@ import android.os.UserManager
 import android.util.ArrayMap
 import android.util.Log
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -55,13 +57,18 @@ import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.iconpack.IconType
+import com.saggitt.omega.iconpack.SystemIconPack
+import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
 import com.saggitt.omega.util.getPackageVersionCode
 import com.saggitt.omega.util.isPackageInstalled
 import com.saggitt.omega.util.minSDK
+import com.saggitt.omega.util.overrideSdk
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 import java.util.function.Supplier
 
 class CustomIconProvider @JvmOverloads constructor(
@@ -205,15 +212,100 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun getIcon(info: ActivityInfo?): Drawable {
-        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
+        return if (prefs.profileShapeLessIcon.getValue()) {
+            getLegacyIcon(ComponentName(info!!.packageName, info.name), context.resources.displayMetrics.densityDpi)
+                    ?: CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, context.resources.displayMetrics.densityDpi))
+        } else {
+            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
+        }
     }
 
     override fun getIcon(info: ActivityInfo?, iconDpi: Int): Drawable {
-        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        return if (prefs.profileShapeLessIcon.getValue()) {
+            getLegacyIcon(ComponentName(info!!.packageName, info.name), iconDpi)
+                    ?: CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        } else {
+            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        }
     }
 
     override fun getIcon(info: LauncherActivityInfo?, iconDpi: Int): Drawable {
-        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        return if (prefs.profileShapeLessIcon.getValue()) {
+            getLegacyIcon(info!!.componentName, iconDpi)
+                    ?: CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        } else {
+            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
+        }
+    }
+
+    private fun getLegacyIcon(componentName: ComponentName, iconDpi: Int): Drawable? {
+        var appIcon: String? = null
+        val elementTags = HashMap<String, String>()
+        try {
+            val resourcesForApplication =
+                    context.packageManager.getResourcesForApplication(componentName.packageName)
+            val info = context.packageManager.getApplicationInfo(
+                    componentName.packageName,
+                    PackageManager.GET_SHARED_LIBRARY_FILES or PackageManager.GET_META_DATA
+            )
+            val parseXml = try {
+                // For apps which are installed as Split APKs the asset instance we can get via PM won't hold the right Manifest for us.
+                ApkAssets(info.publicSourceDir).openXml(SystemIconPack.MANIFEST_XML)
+            } catch (ex: Exception) {
+                ex.message
+                val assets = resourcesForApplication.assets
+                assets.openXmlResourceParser(SystemIconPack.MANIFEST_XML)
+            }
+
+            while (parseXml.next() != XmlPullParser.END_DOCUMENT) {
+                if (parseXml.eventType == XmlPullParser.START_TAG) {
+                    val name = parseXml.name
+                    for (i in 0 until parseXml.attributeCount) {
+                        elementTags[parseXml.getAttributeName(i)] = parseXml.getAttributeValue(i)
+                    }
+                    if (elementTags.containsKey("icon")) {
+                        if (name == "application") {
+                            appIcon = elementTags["icon"]
+                        } else if ((name == "activity" || name == "activity-alias") &&
+                                elementTags.containsKey("name") &&
+                                elementTags["name"] == componentName.className
+                        ) {
+                            appIcon = elementTags["icon"]
+                            break
+                        }
+                    }
+                    elementTags.clear()
+                }
+            }
+            parseXml.close()
+            if (appIcon != null) {
+                val resId = Utilities.parseResourceIdentifier(
+                        resourcesForApplication,
+                        appIcon,
+                        componentName.packageName
+                )
+                if (prefs.profileShapeLessIcon.getValue()) {
+                    return resourcesForApplication.overrideSdk(Build.VERSION_CODES.M) {
+                        ResourcesCompat.getDrawable(
+                                this,
+                                resId,
+                                null
+                        )
+                    }
+                }
+                return resourcesForApplication.getDrawableForDensity(resId, iconDpi, null)
+            }
+        } catch (ex: PackageManager.NameNotFoundException) {
+            ex.printStackTrace()
+        } catch (ex: Resources.NotFoundException) {
+            ex.printStackTrace()
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        } catch (ex: XmlPullParserException) {
+            ex.printStackTrace()
+        }
+
+        return null
     }
 
     override fun getSystemStateForPackage(systemState: String, packageName: String): String {

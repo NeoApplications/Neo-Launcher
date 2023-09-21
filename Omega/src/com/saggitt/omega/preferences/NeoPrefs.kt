@@ -168,6 +168,15 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = Utilities.ATLEAST_T
     )
 
+    var profileShapeLessIcon = BooleanPref(
+            titleId = R.string.title_force_shapeless,
+            summaryId = R.string.summary_force_shapeless,
+            dataStore = dataStore,
+            key = PrefKey.PROFILE_ICON_SHAPE_LESS,
+            defaultValue = false,
+            onChange = { reloadAll }
+    )
+
     var profileBlurEnable = BooleanPref(
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,

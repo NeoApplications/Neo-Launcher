@@ -120,7 +120,8 @@ fun IconShapePage() {
 
             val iconPrefs = listOfNotNull(
                 prefs.profileIconAdaptify,
-                prefs.profileIconColoredBackground
+                    prefs.profileIconColoredBackground,
+                    prefs.profileShapeLessIcon
             )
 
             LazyColumn(

@@ -1000,6 +1000,14 @@ public final class Utilities {
         return NeoPrefs.getInstance(context);
     }
 
+    public static int parseResourceIdentifier(Resources res, String identifier, String packageName) {
+        try {
+            return Integer.parseInt(identifier.substring(1));
+        } catch (NumberFormatException e) {
+            return res.getIdentifier(identifier.substring(1), null, packageName);
+        }
+    }
+
     /**
      * Creates a new component key from an encoded component key string in the form of
      * [flattenedComponentString#userId].  If the userId is not present, then it defaults
