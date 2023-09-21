@@ -57,7 +57,6 @@ import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.iconpack.IconType
-import com.saggitt.omega.iconpack.SystemIconPack
 import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
@@ -250,11 +249,11 @@ class CustomIconProvider @JvmOverloads constructor(
             )
             val parseXml = try {
                 // For apps which are installed as Split APKs the asset instance we can get via PM won't hold the right Manifest for us.
-                ApkAssets(info.publicSourceDir).openXml(SystemIconPack.MANIFEST_XML)
+                ApkAssets(info.publicSourceDir).openXml(MANIFEST_XML)
             } catch (ex: Exception) {
                 ex.message
                 val assets = resourcesForApplication.assets
-                assets.openXmlResourceParser(SystemIconPack.MANIFEST_XML)
+                assets.openXmlResourceParser(MANIFEST_XML)
             }
 
             while (parseXml.next() != XmlPullParser.END_DOCUMENT) {
@@ -494,5 +493,6 @@ class CustomIconProvider @JvmOverloads constructor(
         const val TAG = "CustomIconProvider"
 
         val DISABLED_MAP = emptyMap<ComponentName, ThemedIconDrawable.ThemeData>()
+        const val MANIFEST_XML = "AndroidManifest.xml"
     }
 }
