@@ -66,7 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0.1dp"
-            android:background="?android:attr/colorBackground"
+            android:background="?backgroundColor"
             android:paddingBottom="8dp"
             launcher:layout_sticky="true">
 
@@ -89,7 +89,7 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:paddingVertical="8dp"
-            android:background="?android:attr/colorBackground"
+            android:background="?backgroundColor"
             style="@style/TextHeadline"
             launcher:layout_sticky="true">
 

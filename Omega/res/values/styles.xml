@@ -148,6 +148,15 @@
         <item name="android:dropDownHorizontalOffset">-16dp</item>
     </style>
 
+    <style name="WidgetContainerTheme.Dark" parent="AppTheme.Dark">
+        <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
+        <item name="android:colorPrimaryDark">#616161</item> <!-- Gray 700 -->
+        <item name="widgetPickerHeaderAppTitleColor">@color/app_title_text_dark</item>
+        <item name="widgetPickerHeaderAppSubtitleColor">@color/app_subtitle_text_dark</item>
+        <item name="backgroundColor">@color/grey_800</item>
+        <item name="colorSurfaceVariant">@color/grey_100</item>
+    </style>
+
     <style name="WidgetContainerTheme.Black" parent="AppTheme.Black">
         <item name="android:colorEdgeEffect">?android:attr/textColorSecondary</item>
         <item name="bottomSheetNavBarColor">#00000000</item>
