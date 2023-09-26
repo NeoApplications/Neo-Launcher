@@ -104,7 +104,7 @@
     <string name="summary__search_show_as_assistant_summary">Открыть Ассистент вместо голосового поиска</string>
     <string name="title__search_bar_radius">Радиус скругления</string>
     <string name="title_search_provider">Поисковая система</string>
-    <string name="title__search_show_assistant">Показать кнопку голосового поиска</string>
+    <string name="title__search_show_assistant">Кнопка голосового поиска</string>
     <string name="title__search_action_assistant">Открыть Ассистент</string>
     <string name="dt2s_admin_warning">Двойное нажатие для перехода в спящий режим будет отключено.</string>
     <string name="dt2s_admin_hint">Чтобы использовать двойное касание для перехода в спящий режим, предоставьте разрешение администратора.</string>
@@ -128,7 +128,7 @@
     <string name="pref_category__notifications">Уведомления</string>
     <string name="title__gesture_swipe_down">Проведите вниз</string>
     <string name="title__notification_background">Цвет фона уведомлений</string>
-    <string name="title__notification_count">Показать количество уведомлений</string>
+    <string name="title__notification_count">Количество уведомлений</string>
     <string name="units_kelvin">Кельвина</string>
     <string name="units_imperial">Фаренгейта</string>
     <string name="units_metric">Цельсия</string>
@@ -163,7 +163,7 @@
     <string name="title_smartspace_event_providers">Источники событий</string>
     <string name="title_smartspace_weather_units">Единица измерения температуры</string>
     <string name="title_smartspace_widget_provider">Источник погоды</string>
-    <string name="title_smartspace_time_above">Показывать большие часы</string>
+    <string name="title_smartspace_time_above">Большие часы</string>
     <string name="title_smartspace_time_24_h">24-часовой формат</string>
     <string name="title_smartspace_date">Показать дату</string>
     <string name="title_smartspace_time">Показать время</string>
@@ -360,7 +360,7 @@
     <string name="folder_radius">Радиус для углов папок</string>
     <string name="disable_protected_apps">Отключить защищенные приложения</string>
     <string name="label_search">Поиск</string>
-    <string name="title_app_categorization_enable">Включить категории приложений</string>
+    <string name="title_app_categorization_enable">Категории приложений</string>
     <string name="summary_app_suggestions">Для всех приложений и главного экрана</string>
     <string name="trust_apps_manager_name">Скрытые и защищенные приложения</string>
     <string name="enable_protected_apps">Включить защищенные приложения</string>
