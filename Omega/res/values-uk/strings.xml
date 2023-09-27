@@ -104,7 +104,7 @@
     <string name="units_imperial">Фаренгейт</string>
     <string name="owm_get_your_own_key">Отримати ключ API на api.openweathermap.org.</string>
     <string name="title_separate_work_apps">Друга вкладка для робочих застосунків</string>
-    <string name="pref_app_groups_edit_tip">Торкніться, щоб редагувати, перетягніть, щоб змінити порядок.</string>
+    <string name="pref_app_groups_edit_tip">Натисніть, щоб редагувати, перетягніть, щоб змінити порядок.</string>
     <string name="title_search_hidden_apps">Знайти приховані застосунки</string>
     <string name="summary_fuzzy_search">Приблизна відповідність для пошуку застосунків.</string>
     <string name="title__drawer_icon_size">Розмір значків усіх застосунків</string>
@@ -121,7 +121,7 @@
     <string name="title_smartspace_event_providers">Джерела подій</string>
     <string name="pref_shelf_summary">Ліворуч від головного екрану</string>
     <string name="smartspace_preferences">Параметри</string>
-    <string name="smartspace_setup_text">Торкніться, щоб налаштувати</string>
+    <string name="smartspace_setup_text">Натисніть, щоб налаштувати</string>
     <string name="smartspace_in_time">в %1$s</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
@@ -159,7 +159,7 @@
     <string name="title_search_contacts">Пошук контактів</string>
     <string name="title__feed">Новини</string>
     <string name="cat_search_bar">Панель пошуку</string>
-    <string name="error_no_browser">Спочатку встановіть програму, щоб відкривати URL-адреси</string>
+    <string name="error_no_browser">Спочатку встановіть застосунок, щоб відкривати URL-адреси</string>
     <string name="folder_background">Колір фону теки</string>
     <string name="folder_opacity">Непрозорість значка теки</string>
     <string name="summary__advanced_language">Змініть мову цього застосунку</string>
@@ -189,7 +189,7 @@
     <string name="about_team">Учасники команди</string>
     <string name="about_translators_group">Учасники та перекладачі</string>
     <string name="dash_mobile_network_title">Мобільна мережа</string>
-    <string name="tap_to_enable">Торкніться елемента, щоб увімкнути</string>
+    <string name="tap_to_enable">Натисніть на елемент, щоб увімкнути</string>
     <string name="dash_wifi_summary">Стан Wi-Fi та з’єднання</string>
     <string name="dash_bluetooth_summary">Увімкнення/вимкнення Bluetooth</string>
     <string name="dash_location">Місцезнаходження</string>
@@ -261,7 +261,7 @@
     <string name="tab_color">Колір вкладок</string>
     <string name="tab_shortcuts">Ярлики</string>
     <string name="button_organize_screens">Упорядкувати сторінки</string>
-    <string name="uninstall_failed">Не вдалося видалити програму</string>
+    <string name="uninstall_failed">Не вдалося видалити застосунок</string>
     <string name="tab_launcher">Лончер</string>
     <string name="web_search_metager">Metager (Веб)</string>
     <string name="pref_desktop_mode_settings">Параметри настільного режиму</string>
@@ -307,7 +307,7 @@
     <string name="title_adaptify_pack">Cтворити адаптивні значки для пакета значків</string>
     <string name="summary_white_only_treatment">Розфарбуйте всі адаптивні фони значків.</string>
     <string name="personality_provider">Вітання</string>
-    <string name="onbording_settings_summary">Торкніться та утримуйте на робочому столі.</string>
+    <string name="onbording_settings_summary">Натисніть та утримуйте на робочому столі.</string>
     <string name="icu_abbrev_time">HH:mm</string>
     <string name="units_reaumur">Реомюр</string>
     <string name="units_newton">Ньютон</string>
@@ -324,7 +324,7 @@
     <string name="backup_delete">Сховати</string>
     <string name="backup_share_text">Файл резервної копії Neo Launcher</string>
     <string name="local_backups">У сховищі</string>
-    <string name="category__about_licenses">Ліцензії</string>
+    <string name="category__about_licenses">Ліцензія</string>
     <string name="about_translators">Перекладачі</string>
     <string name="accessibility_undo">Скасувати</string>
     <string name="dash_device_settings_title">Налаштування пристрою</string>
@@ -414,13 +414,13 @@
     <string name="about_community">Спільнота</string>
     <string name="about_source">Вихідний код</string>
     <string name="author_role">Розробник</string>
-    <string name="contributor_role">Контриб\'ютор</string>
+    <string name="contributor_role">Учасник</string>
     <string name="wallpaper_pick">Вибрати шпалери</string>
     <string name="edit_dash">Редагувати Dash</string>
     <string name="dash_all_apps_title">Відкрити всі застосунки</string>
     <string name="dash_manage_apps_summary">Відкрийте менеджер застосунків Android</string>
     <string name="dash_mobile_network_summary">Показати параметри мобільних мереж</string>
-    <string name="dash_all_apps_summary">Кнопка \"Показати всі програми\"</string>
+    <string name="dash_all_apps_summary">Кнопка \"Показати всі застосунки\"</string>
     <string name="dash_launcher_settings_summary">Відобразити налаштування лончера</string>
     <string name="edit_dash_summary">Увімкнення/вимкнення ярликів</string>
     <string name="wallpaper_pick_summary">Відкрити вікно вибору шпалер</string>
@@ -455,7 +455,7 @@
     <string name="pref_appcategorization_tabs_summary">Гортання між групами.</string>
     <string name="title__theme_icon_shape">Форма значка</string>
     <string name="debug_component_name_copied">Скопійовано в буфер обміну.</string>
-    <string name="folder_cover_mode_desc">Торкніться, щоб відкрити першу програму. Проведіть пальцем догори, щоб переглянути всі.</string>
+    <string name="folder_cover_mode_desc">Натисніть, щоб відкрити перший застосунок. Проведіть догори, щоб переглянути усі.</string>
     <string name="loading">Завантаження…</string>
     <string name="web_search_searx">Searx (Веб)</string>
     <string name="title__drawer_rows">Кількість рядків</string>
@@ -500,7 +500,7 @@
     <string name="title_smartspace_calendar">Виберіть Календар</string>
     <string name="title_calendar_gregorian">Григоріанський</string>
     <string name="gesture_press_recents">Кнопка \"Останні\"</string>
-    <string name="about_community_matrix">Спільнота на Matrix</string>
+    <string name="about_community_matrix">Спільнота у Matrix</string>
     <string name="title_calendar_persian">Персидський</string>
-    <string name="about_community_telegram">Спільнота в Telegram</string>
+    <string name="about_community_telegram">Спільнота у Telegram</string>
 </resources>
