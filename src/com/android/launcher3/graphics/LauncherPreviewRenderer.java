@@ -110,6 +110,7 @@ import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.android.launcher3.widget.util.WidgetSizes;
 import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.data.IconOverrideRepository;
+import com.saggitt.omega.data.SearchProviderRepository;
 import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider;
@@ -155,6 +156,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
             putBaseInstance(IconOverrideRepository.INSTANCE);
             putBaseInstance(SmartspaceProvider.INSTANCE);
             putBaseInstance(DeviceProfileOverrides.INSTANCE);
+            putBaseInstance(SearchProviderRepository.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,
                     new LauncherAppState(this, null /* iconCacheFileName */));

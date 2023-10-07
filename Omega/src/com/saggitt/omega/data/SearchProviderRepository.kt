@@ -81,6 +81,7 @@ class SearchProviderRepository(context: Context) {
     }
 
     companion object {
+        @JvmField
         val INSTANCE = MainThreadInitializedObject(::SearchProviderRepository)
     }
 }
