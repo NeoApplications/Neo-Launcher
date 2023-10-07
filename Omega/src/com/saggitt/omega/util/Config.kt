@@ -41,9 +41,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.PrefKey
-import com.saggitt.omega.smartspace.provider.AlarmEventProvider
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
-import com.saggitt.omega.smartspace.provider.CalendarEventProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.BlankWeatherProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
@@ -137,8 +135,8 @@ class Config(val context: Context) {
         val smartspaceEventProviders = mapOf(
             BatteryStatusProvider::class.java.name to R.string.battery_status,
             NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
-            CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
-            AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events,
+            //CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
+            //AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events,
         )
 
         fun smartspaceWeatherProviders(context: Context) = mapOf(
