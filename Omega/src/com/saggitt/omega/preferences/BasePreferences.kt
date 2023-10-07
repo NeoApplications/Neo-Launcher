@@ -169,6 +169,16 @@ open class IntSelectionPref(
 ) :
     PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue)
 
+open class LongSelectionPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    val dataStore: DataStore<Preferences>,
+    val key: Preferences.Key<Long>,
+    val defaultValue: Long = 0,
+    val entries: () -> Map<Long, String>,
+) :
+    PrefDelegate<Long>(titleId, summaryId, dataStore, key, defaultValue)
+
 open class ColorIntPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,

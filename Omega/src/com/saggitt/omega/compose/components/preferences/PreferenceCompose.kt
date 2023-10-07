@@ -74,6 +74,7 @@ import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringPref
@@ -394,6 +395,29 @@ fun IntSelectionPreference(
         titleId = pref.titleId,
         summaryId = pref.summaryId,
         summary = pref.entries[value.value]?.let { stringResource(id = it) },
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun LongSelectionPreference(
+    modifier: Modifier = Modifier,
+    pref: LongSelectionPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    val value = pref.get().collectAsState(initial = pref.defaultValue)
+    val entries = pref.entries()
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        summary = entries[value.value],
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,

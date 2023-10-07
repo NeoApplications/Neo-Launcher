@@ -30,6 +30,7 @@ import com.saggitt.omega.preferences.IdpIntPref
 import com.saggitt.omega.preferences.IntPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringPref
@@ -94,6 +95,13 @@ val PreferenceBuilder =
 
             is IntSelectionPref         ->
                 IntSelectionPreference(
+                    pref = pref,
+                    index = index,
+                    groupSize = size
+                ) { onDialogPref(pref) }
+
+            is LongSelectionPref        ->
+                LongSelectionPreference(
                     pref = pref,
                     index = index,
                     groupSize = size

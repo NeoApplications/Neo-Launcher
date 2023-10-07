@@ -38,6 +38,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,8 +58,10 @@ import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.util.blockBorder
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -127,6 +130,83 @@ fun IntSelectionPrefDialogUI(
                 Spacer(Modifier.weight(1f))
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
+                    cornerRadius = cornerRadius,
+                    onClick = {
+                        coroutineScope.launch { pref.set(selected) }
+                        openDialogCustom.value = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LongSelectionPrefDialogUI(
+    pref: LongSelectionPref,
+    openDialogCustom: MutableState<Boolean>,
+) {
+    val context = LocalContext.current
+    val prefs = Utilities.getOmegaPrefs(context)
+    val entryPairs = pref.entries().toList()
+    val coroutineScope = rememberCoroutineScope()
+    var selected by remember { mutableLongStateOf(-1L) }
+    var themeCornerRadius by remember { mutableFloatStateOf(-1f) }
+    SideEffect {
+        coroutineScope.launch {
+            selected = pref.get().first()
+            themeCornerRadius = prefs.profileWindowCornerRadius.get().first()
+        }
+    }
+
+    var radius = 16.dp
+    if (themeCornerRadius > -1) {
+        radius = themeCornerRadius.dp
+    }
+    val cornerRadius by remember { mutableStateOf(radius) }
+
+    Card(
+        shape = RoundedCornerShape(cornerRadius),
+        modifier = Modifier.padding(12.dp),
+        elevation = CardDefaults.elevatedCardElevation(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
+            LazyColumn(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .weight(1f, false)
+                    .blockBorder(),
+            ) {
+                items(items = entryPairs) {
+                    val isSelected = rememberSaveable(selected) {
+                        mutableStateOf(selected == it.first)
+                    }
+                    SingleSelectionListItem(
+                        text = it.second,
+                        isSelected = isSelected.value
+                    ) {
+                        selected = it.first
+                    }
+                }
+            }
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                DialogNegativeButton(
+                    cornerRadius = cornerRadius,
+                    onClick = { openDialogCustom.value = false }
+                )
+                DialogPositiveButton(
                     cornerRadius = cornerRadius,
                     onClick = {
                         coroutineScope.launch { pref.set(selected) }
