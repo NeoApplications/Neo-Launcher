@@ -40,15 +40,14 @@ open class BooleanPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Boolean>,
     private val defaultValue: Boolean = false,
-    val onChange: (Boolean) -> Unit = {}
-) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Boolean) -> Unit = {}
+) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<Boolean> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
     override suspend fun set(value: Boolean) {
-        onChange(value)
         dataStore.edit { it[key] = value }
     }
 }
@@ -63,7 +62,8 @@ open class IntPref(
     val maxValue: Int = 25,
     val steps: Int = 1,
     val specialOutputs: ((Int) -> String) = Int::toString,
-) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Int) -> Unit = {}
+) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<Int> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -85,8 +85,8 @@ class IdpIntPref(
     val minValue: Float,
     val maxValue: Float,
     val steps: Int,
-    onChange: () -> Unit = {},
-) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Int) -> Unit = {},
+) : PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<Int> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -128,7 +128,8 @@ open class IntentLauncherPref(
     val defaultValue: Boolean = false,
     val intent: () -> Intent,
     val getter: () -> Boolean,
-) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Boolean) -> Unit = {}
+) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
     override fun get(): Flow<Boolean> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
@@ -148,7 +149,8 @@ open class FloatPref(
     val maxValue: Float,
     val steps: Int,
     val specialOutputs: ((Float) -> String) = Float::toString,
-) : PrefDelegate<Float>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Float) -> Unit = {}
+) : PrefDelegate<Float>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<Float> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -166,8 +168,9 @@ open class IntSelectionPref(
     key: Preferences.Key<Int>,
     val defaultValue: Int = 0,
     val entries: Map<Int, Int>,
+    onChange: (Int) -> Unit = {}
 ) :
-    PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue)
+    PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
 open class ColorIntPref(
     @StringRes titleId: Int,
@@ -175,8 +178,9 @@ open class ColorIntPref(
     private val dataStore: DataStore<Preferences>,
     val defaultValue: String = "system_accent",
     private val key: Preferences.Key<String>,
-    val navRoute: String = ""
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    val navRoute: String = "",
+    onChange: (String) -> Unit = {}
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
@@ -199,8 +203,9 @@ open class NavigationPref(
     val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
-    val navRoute: String = ""
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    val navRoute: String = "",
+    onChange: (String) -> Unit = {}
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
@@ -243,7 +248,8 @@ open class StringTextPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val predicate: (String) -> Boolean = { true },
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (String) -> Unit = {}
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -261,15 +267,14 @@ open class StringSelectionPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val entries: Map<String, String>,
-    val onChange: () -> Unit = { }
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (String) -> Unit = { }
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
     override suspend fun set(value: String) {
-        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -281,14 +286,13 @@ open class StringSetPref(
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
     val navRoute: String = "",
-    val onChange: () -> Unit = {}
-) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Set<String>) -> Unit = {}
+) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
     override fun get(): Flow<Set<String>> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
     override suspend fun set(value: Set<String>) {
-        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -301,8 +305,8 @@ open class StringMultiSelectionPref(
     val defaultValue: Set<String> = emptySet(),
     val withIcons: Boolean = false,
     val entries: Map<String, Int>,
-    onChange: () -> Unit = { }
-) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (Set<String>) -> Unit = { }
+) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     private val valueList = arrayListOf<String>()
 
@@ -341,7 +345,8 @@ open class DialogPref(
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (String) -> Unit = {}
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
@@ -359,8 +364,8 @@ open class StringPref(
     private val key: Preferences.Key<String>,
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
-    val onChange: (String) -> Unit = {},
-) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue) {
+    onChange: (String) -> Unit = {},
+) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
     override fun get(): Flow<String> {
         return dataStore.data.map { it[key] ?: defaultValue }
     }
@@ -444,7 +449,8 @@ abstract class PrefDelegate<T : Any>(
     @StringRes var summaryId: Int = -1,
     private val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<T>,
-    private val defaultValue: T
+    private val defaultValue: T,
+    val onChange: (T) -> Unit
 ) {
     fun getValue(): T {
         return runBlocking(Dispatchers.IO) {
@@ -463,6 +469,7 @@ abstract class PrefDelegate<T : Any>(
     }
 
     open suspend fun set(value: T) {
+        onChange(value).run { }
         dataStore.edit { it[key] = value }
     }
 }
