@@ -66,14 +66,14 @@ fun SearchPrefsPage() {
     )
 
     ViewWithActionBar(
-            title = stringResource(R.string.title__general_search_feed)
+        title = stringResource(R.string.title__general_search_feed)
     ) { paddingValues ->
         LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 PreferenceGroup(
@@ -91,9 +91,9 @@ fun SearchPrefsPage() {
             }*/
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.title_feed_provider),
-                        prefs = feedPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.title_feed_provider),
+                    prefs = feedPrefs,
+                    onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -102,19 +102,24 @@ fun SearchPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
+                    is LongSelectionPref        -> LongSelectionPrefDialogUI(
+                        pref = dialogPref as LongSelectionPref,
+                        openDialogCustom = openDialog
+                    )
+
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
                     is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
                     )
                 }
             }

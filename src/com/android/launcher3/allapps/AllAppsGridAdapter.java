@@ -33,6 +33,7 @@ import com.android.launcher3.util.ScrollableLayoutManager;
 import com.android.launcher3.views.ActivityContext;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The grid view adapter of all the apps.
@@ -44,6 +45,31 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
 
     public static final String TAG = "AppsGridAdapter";
     private final AppsGridLayoutManager mGridLayoutMgr;
+    private final CopyOnWriteArrayList<OnLayoutCompletedListener> mOnLayoutCompletedListeners =
+            new CopyOnWriteArrayList<>();
+
+    /**
+     * Listener for {@link RecyclerView.LayoutManager#onLayoutCompleted(RecyclerView.State)}
+     */
+    public interface OnLayoutCompletedListener {
+        void onLayoutCompleted();
+    }
+
+    /**
+     * Adds a {@link OnLayoutCompletedListener} to receive a callback when {@link
+     * RecyclerView.LayoutManager#onLayoutCompleted(RecyclerView.State)} is called
+     */
+    public void addOnLayoutCompletedListener(OnLayoutCompletedListener listener) {
+        mOnLayoutCompletedListeners.add(listener);
+    }
+
+    /**
+     * Removes a {@link OnLayoutCompletedListener} to not receive a callback when {@link
+     * RecyclerView.LayoutManager#onLayoutCompleted(RecyclerView.State)} is called
+     */
+    public void removeOnLayoutCompletedListener(OnLayoutCompletedListener listener) {
+        mOnLayoutCompletedListeners.remove(listener);
+    }
 
     public AllAppsGridAdapter(T activityContext, LayoutInflater inflater,
                               AlphabeticalAppsList apps, SearchAdapterProvider<?> adapterProvider) {
@@ -133,6 +159,14 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
                 }
             }
             return extraRows;
+        }
+
+        @Override
+        public void onLayoutCompleted(RecyclerView.State state) {
+            super.onLayoutCompleted(state);
+            for (OnLayoutCompletedListener listener : mOnLayoutCompletedListeners) {
+                listener.onLayoutCompleted();
+            }
         }
 
         @Override

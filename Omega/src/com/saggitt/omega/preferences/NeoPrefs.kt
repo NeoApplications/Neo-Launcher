@@ -121,7 +121,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_GLOBAL_THEME,
         titleId = R.string.title__general_theme,
-            defaultValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_SYSTEM else THEME_WALLPAPER,
+        defaultValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_SYSTEM else THEME_WALLPAPER,
         entries = themeItems,
     )
 
@@ -141,7 +141,7 @@ class NeoPrefs private constructor(val context: Context) {
         entries = IconPackProvider.INSTANCE.get(context)
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
-            onChange = { reloadGrid }
+        onChange = { reloadGrid }
     )
 
     var profileIconShape = NavigationPref(
@@ -169,12 +169,12 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     var profileShapeLessIcon = BooleanPref(
-            titleId = R.string.title_force_shapeless,
-            summaryId = R.string.summary_force_shapeless,
-            dataStore = dataStore,
-            key = PrefKey.PROFILE_ICON_SHAPE_LESS,
-            defaultValue = false,
-            onChange = { reloadAll }
+        titleId = R.string.title_force_shapeless,
+        summaryId = R.string.summary_force_shapeless,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_SHAPE_LESS,
+        defaultValue = false,
+        onChange = { reloadAll }
     )
 
     var profileBlurEnable = BooleanPref(
@@ -357,10 +357,10 @@ class NeoPrefs private constructor(val context: Context) {
             titleId = R.string.title__desktop_grid_size,
             numColumnsPref = desktopGridColumns,
             numRowsPref = desktopGridRows,
-                columnsKey = "numColumns",
-                rowsKey = "numRows",
+            columnsKey = "numColumns",
+            rowsKey = "numRows",
             targetObject = LauncherAppState.getIDP(context),
-                onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid }
         )
     }
     val desktopGridSize by desktopGridSizeDelegate
@@ -370,7 +370,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_columns,
         selectDefaultValue = { numColumns },
         defaultValue = 4,
-            onChange = { reloadGrid },
+        onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
@@ -381,7 +381,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_rows,
         selectDefaultValue = { numRows },
         defaultValue = 5,
-            onChange = { reloadGrid },
+        onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
@@ -535,7 +535,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = dockNumIcons,
             columnsKey = "numHotseatIcons",
             targetObject = LauncherAppState.getIDP(context),
-                onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid }
         )
     }
 
@@ -569,7 +569,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.HIDDEN_APPS,
-            onChange = { reloadGrid }
+        onChange = { reloadGrid }
     )
 
     var drawerProtectedAppsSet = StringSetPref(
@@ -578,7 +578,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.PROTECTED_APPS,
-            onChange = { reloadGrid }
+        onChange = { reloadGrid }
     )
 
     private val drawerGridSizeDelegate = ResettableLazy {
@@ -587,7 +587,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = drawerGridColumns,
             columnsKey = "numAllAppsColumns",
             targetObject = LauncherAppState.getIDP(context),
-                onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid }
         )
     }
     val drawerGridSize by drawerGridSizeDelegate
@@ -600,7 +600,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 2f,
         maxValue = 16f,
         steps = 15,
-            onChange = { reloadGrid }
+        onChange = { reloadGrid }
     )
 
     var drawerPopup = StringMultiSelectionPref(
@@ -819,7 +819,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,
         titleId = R.string.title_smartspace_date,
         defaultValue = true,
-            onChange = { pokeChange() }
+        onChange = { pokeChange() }
     )
 
     val smartspaceCalendar = StringSelectionPref(
@@ -888,7 +888,7 @@ class NeoPrefs private constructor(val context: Context) {
         ),
         entries = Config.smartspaceEventProviders,
         withIcons = true,
-            onChange = { pokeChange() }
+        onChange = { pokeChange() }
     )
 
     val notificationCountFolder = BooleanPref(
@@ -1102,7 +1102,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     //Misc
     val customAppName =
-            object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll }) {
+        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll }) {
             override fun flattenKey(key: ComponentKey) = key.toString()
             override fun unflattenKey(key: String) = makeComponentKey(context, key)
             override fun flattenValue(value: String) = value
