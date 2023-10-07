@@ -1,10 +1,16 @@
 package com.saggitt.omega.data.models
 
+import android.content.Context
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android.launcher3.R
+import com.saggitt.omega.util.toArrayList
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
 
 @Entity
 data class SearchProvider(
@@ -19,6 +25,16 @@ data class SearchProvider(
     val order: Int,
 ) {
     companion object {
+        fun offlineSearchProvider(context: Context) = SearchProvider(
+            id = 1,
+            name = context.getString(R.string.search_provider_appsearch),
+            iconId = R.drawable.ic_search,
+            searchUrl = "",
+            suggestionUrl = "",
+            enabled = false,
+            order = -1,
+        )
+
         private fun defaultProvider(
             name: String,
             iconId: Int,
