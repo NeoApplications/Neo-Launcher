@@ -918,7 +918,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_search_provider,
         key = PrefKey.SEARCH_PROVIDER,
         defaultValue = 1L,
-        entries = { SearchProviderController.getSearchProvidersMap(context) },
+        entries = { SearchProviderController.getSearchProvidersMap(context) }
     )
 
     // TODO DimensionPref?

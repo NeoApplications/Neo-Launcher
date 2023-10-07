@@ -37,21 +37,11 @@ import kotlin.reflect.KProperty
 open class BooleanPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
-    private val dataStore: DataStore<Preferences>,
-    private val key: Preferences.Key<Boolean>,
-    private val defaultValue: Boolean = false,
+    dataStore: DataStore<Preferences>,
+    key: Preferences.Key<Boolean>,
+    defaultValue: Boolean = false,
     onChange: (Boolean) -> Unit = {}
-) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
-
-    override fun get(): Flow<Boolean> {
-        return dataStore.data.map { it[key] ?: defaultValue }
-    }
-
-    override suspend fun set(value: Boolean) {
-        onChange(value)
-        dataStore.edit { it[key] = value }
-    }
-}
+) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
 open class IntPref(
     @StringRes titleId: Int,
@@ -180,8 +170,9 @@ open class LongSelectionPref(
     val key: Preferences.Key<Long>,
     val defaultValue: Long = 0,
     val entries: () -> Map<Long, String>,
+    onChange: (Long) -> Unit = {}
 ) :
-    PrefDelegate<Long>(titleId, summaryId, dataStore, key, defaultValue)
+    PrefDelegate<Long>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
 open class ColorIntPref(
     @StringRes titleId: Int,
@@ -286,7 +277,6 @@ open class StringSelectionPref(
     }
 
     override suspend fun set(value: String) {
-        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -305,7 +295,6 @@ open class StringSetPref(
     }
 
     override suspend fun set(value: Set<String>) {
-        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -483,5 +472,6 @@ abstract class PrefDelegate<T : Any>(
 
     open suspend fun set(value: T) {
         dataStore.edit { it[key] = value }
+        onChange(value)
     }
 }
