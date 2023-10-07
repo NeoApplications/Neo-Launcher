@@ -22,10 +22,12 @@ package com.saggitt.omega.data
 import android.content.Context
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.data.models.SearchProvider
+import com.saggitt.omega.util.prefs
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -49,10 +51,15 @@ class SearchProviderRepository(context: Context) {
         SharingStarted.Eagerly,
         emptyList()
     )
+    val activeProvider = combine(allProviders, context.prefs.searchProvider.get()) { ps, pref ->
+        ps.find { it.id == pref } ?: SearchProvider.offlineSearchProvider(context)
+    }.stateIn(
+        scope,
+        SharingStarted.Eagerly,
+        SearchProvider.offlineSearchProvider(context)
+    )
 
-    fun getLatest(): List<SearchProvider> {
-        return allProviders.value
-    }
+    fun get(id: Long): SearchProvider? = allProviders.value.find { it.id == id }
 
     fun insert(provider: SearchProvider) {
         scope.launch {
