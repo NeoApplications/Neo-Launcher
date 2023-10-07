@@ -40,24 +40,30 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.Launc
     private var mFlagsChanged = false
     private var mFlags = 0
     private var feedEnabled = false
+    private val prefs = NeoPrefs.getInstance(context = launcher)
 
     init {
-        NeoPrefs.getInstance(launcher).feedProvider.get().asLiveData().observeForever {
-            feedEnabled = it != ""
-        }
-
         mClient = LauncherClient(
-                launcher, this, StaticInteger(
+            launcher, this, StaticInteger(
                 (if (feedEnabled) 1 else 0) or 2 or 4 or 8
             )
         )
     }
 
     override fun onAttachedToWindow() {
+        prefs.feedProvider.get().asLiveData().observeForever {
+            feedEnabled = it != ""
+            mClient = LauncherClient(
+                launcher, this, StaticInteger(
+                    (if (feedEnabled) 1 else 0) or 2 or 4 or 8
+            )
+            )
+        }
         mClient?.onAttachedToWindow()
     }
 
     override fun onDetachedFromWindow() {
+        prefs.feedProvider.get().asLiveData().removeObserver { }
         mClient?.onDetachedFromWindow()
     }
 

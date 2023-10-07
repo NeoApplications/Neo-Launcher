@@ -44,7 +44,7 @@ class SmartspaceProvider private constructor(context: Context) {
         }?.let { dataSources.add(it) }
     }
 
-    private val state = dataSources
+    val state = dataSources
         .map { it.targets }
         .reduce { acc, flow -> flow.combine(acc) { a, b -> a + b } }
         .shareIn(
@@ -71,7 +71,7 @@ class SmartspaceProvider private constructor(context: Context) {
             title = context.getString(R.string.smartspace_setup_text),
             intent = PreferenceActivity.createIntent(context, "${Routes.PREFS_WIDGETS}/")
         ),
-        score = 42,
+        score = 43,
         featureType = SmartspaceTarget.FEATURE_TIPS
     )
 

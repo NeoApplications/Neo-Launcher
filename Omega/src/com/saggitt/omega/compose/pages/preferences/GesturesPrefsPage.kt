@@ -84,55 +84,55 @@ fun GesturesPrefsPage() {
         prefs.dashEdit
     )
 
-        ViewWithActionBar(
-            title = stringResource(R.string.title__general_gestures_dash)
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.pref_category__gestures),
-                        prefs = gesturesPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.pref_category__dash),
-                        prefs = dashPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+    ViewWithActionBar(
+        title = stringResource(R.string.title__general_gestures_dash)
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                PreferenceGroup(
+                    stringResource(id = R.string.pref_category__gestures),
+                    prefs = gesturesPrefs,
+                    onPrefDialog = onPrefDialog
+                )
             }
+            item {
+                PreferenceGroup(
+                    stringResource(id = R.string.pref_category__dash),
+                    prefs = dashPrefs,
+                    onPrefDialog = onPrefDialog
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
 
-            if (openDialog.value) {
-                BaseDialog(openDialogCustom = openDialog) {
-                    when (dialogPref) {
-                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
-                        )
+        if (openDialog.value) {
+            BaseDialog(openDialogCustom = openDialog) {
+                when (dialogPref) {
+                    is IntSelectionPref -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
-                        )
+                    is StringSelectionPref -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
-                        )
-                    }
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
+                    )
                 }
             }
         }
     }
+}
 
 fun NavGraphBuilder.gesturesPrefsGraph(route: String) {
     preferenceGraph(route, { GesturesPrefsPage() }) { subRoute ->

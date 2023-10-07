@@ -79,6 +79,8 @@ public class LauncherClient {
     public boolean mDestroyed = false;
     private Bundle mLayoutBundle;
 
+    private NeoPrefs prefs;
+    private String feedProvider = "";
     public class OverlayCallback extends ILauncherOverlayCallback.Stub implements Callback {
         public LauncherClient mClient;
         private final Handler mUIHandler = new Handler(Looper.getMainLooper(), this);
@@ -139,6 +141,7 @@ public class LauncherClient {
 
     public LauncherClient(Activity activity, IScrollCallback scrollCallback, StaticInteger flags) {
         mActivity = activity;
+        prefs = NeoPrefs.getInstance(activity);
         mScrollCallback = scrollCallback;
         mBaseService = new BaseClientService(activity, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mFlags = flags.mData;
