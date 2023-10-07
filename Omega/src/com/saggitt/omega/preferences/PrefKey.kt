@@ -21,6 +21,7 @@ package com.saggitt.omega.preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.android.launcher3.SessionCommitReceiver.ADD_ICON_PREFERENCE_KEY
@@ -122,7 +123,7 @@ object PrefKey {
     const val NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners"
 
     // Search
-    val SEARCH_PROVIDER = stringPreferencesKey("search_provider")
+    val SEARCH_PROVIDER = longPreferencesKey("search_provider")
     val SEARCH_SHOW_MIC = booleanPreferencesKey("search_bar_show_mic")
     val SEARCH_SHOW_ASSISTANT = booleanPreferencesKey("search_bar_show_assistant")
     val SEARCH_GLOBAL_ENABLED = booleanPreferencesKey("search_global_enable") // is it needed?

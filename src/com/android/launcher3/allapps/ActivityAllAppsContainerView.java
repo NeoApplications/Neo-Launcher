@@ -334,7 +334,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mAllAppsTransitionController = allAppsTransitionController;
     }
 
-    private void animateToSearchState(boolean goingToSearch, long durationMs) {
+    public void animateToSearchState(boolean goingToSearch, long durationMs) {
         if (!mSearchTransitionController.isRunning() && goingToSearch == isSearching()) {
             return;
         }
@@ -504,6 +504,13 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             getSearchRecyclerView().addItemDecoration(decoration);
         }
 
+        // Un-register icon containers
+        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
+            if (holder.mRecyclerView != null) {
+                mAllAppsStore.unregisterIconContainer(holder.mRecyclerView);
+            }
+        }
+        mTabsController.unregisterIconContainers(mAllAppsStore);
         // replaceAppsRVcontainer() needs to use both mUsingTabs value to remove the old view AND
         // showTabs value to create new view. Hence the mUsingTabs new value assignment MUST happen
         // after this call.
@@ -536,8 +543,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     }
                 }
             }
-
-            setDeviceManagementResources();
             onActivePageChanged(mViewPager.getNextPage());
         } else {
             mAH.get(AdapterHolder.MAIN).setup(findViewById(R.id.apps_list_view), null);
@@ -560,6 +565,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     R.dimen.fastscroll_bottom_margin_floating_search);
         }
 
+        // Re-register icon containers
         for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
             if (holder.mRecyclerView != null) {
                 mAllAppsStore.registerIconContainer(holder.mRecyclerView);
@@ -694,12 +700,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         mSearchUiManager.setBackgroundVisibility(bgVisible, 1 - prog);
     }
-
-    /*protected int getHeaderColor(float blendRatio) {
-        return ColorUtils.setAlphaComponent(
-                ColorUtils.blendARGB(mScrimColor, mHeaderProtectionColor, blendRatio),
-                (int) (mSearchContainer.getAlpha() * 255));
-    }*/
 
     /**
      * It is up to the search container view created by {@link #inflateSearchBox()} to use the
@@ -858,7 +858,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mAH.clear();
         mAH.addAll(mTabsController.createHolders());
         mAH.add(createHolder(SEARCH));
-
     }
 
     public AllAppsStore getAppsStore() {
@@ -1105,16 +1104,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     adapterHolder.mPadding.right = grid.allAppsLeftRightPadding;
             adapterHolder.applyPadding();
         });
-    }
-
-    private void setDeviceManagementResources() {
-        /*if (mActivityContext.getStringCache() != null) {
-            Button personalTab = findViewById(R.id.tab_personal);
-            personalTab.setText(mActivityContext.getStringCache().allAppsPersonalTab);
-
-            Button workTab = findViewById(R.id.tab_work);
-            workTab.setText(mActivityContext.getStringCache().allAppsWorkTab);
-        }*/
     }
 
     // Used by tests only

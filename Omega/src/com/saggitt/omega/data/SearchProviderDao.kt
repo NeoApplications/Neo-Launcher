@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchProviderDao {
+    @Query("SELECT COUNT(id) FROM searchprovider")
+    fun getCount(): Int
 
     @get:Query("SELECT * FROM searchprovider")
     val all: List<SearchProvider>
@@ -50,10 +52,10 @@ interface SearchProviderDao {
     val disabledFlow: Flow<List<SearchProvider>>
 
     @Query("SELECT * FROM searchprovider WHERE id = :id")
-    fun get(id: String): SearchProvider
+    fun get(id: Long): SearchProvider?
 
     @Query("SELECT * FROM searchprovider WHERE id = :id")
-    fun getFlow(id: String): Flow<SearchProvider>
+    fun getFlow(id: Long): Flow<SearchProvider?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(appTracker: SearchProvider)

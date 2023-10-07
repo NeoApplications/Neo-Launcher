@@ -29,6 +29,11 @@ import com.saggitt.omega.data.models.GestureItemInfo
 import com.saggitt.omega.data.models.IconOverride
 import com.saggitt.omega.data.models.PeopleInfo
 import com.saggitt.omega.data.models.SearchProvider
+import com.saggitt.omega.data.models.SearchProvider.Companion.defaultProviders
+import com.saggitt.omega.data.models.SearchProvider.Companion.offlineSearchProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [
@@ -61,6 +66,14 @@ abstract class NeoLauncherDb : RoomDatabase() {
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
                 .build()
+                .apply {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        if (searchProviderDao().getCount() == 0) {
+                            searchProviderDao().insert(offlineSearchProvider(context))
+                            defaultProviders.forEach(searchProviderDao()::insert)
+                        }
+                    }
+                }
         }
     }
 }

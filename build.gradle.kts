@@ -5,28 +5,46 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.android.tools.build:gradle:8.1.2")
     }
 }
 
-val vAccompanist = "0.31.4-beta"
-val vCompose = "1.5.0-beta03"
-val vComposeCompiler = "1.5.1"
-val vKotlin = "1.9.0"
-val vLifecycle = "2.6.1"
-val vMaterial3 = "1.2.0-alpha05"
-val vNavigation = "2.7.0"
+val vAccompanist = "0.32.0"
+val vActivity = "1.8.0"
+val vAlwan = "1.0.1"
+val vCoil = "2.4.0"
+val vComposeBOM = "2023.10.00"
+val vComposeCompiler = "1.5.3"
+val vConstraintLayout = "2.1.4"
+val vCoordinatorLayout = "1.2.0"
+val vCoroutines = "1.7.3"
+val vDynamicanimation = "1.1.0-alpha03"
+val vDSP = "1.0.0"
+val vHokoBlur = "1.5.2"
+val vKotlin = "1.9.10"
+val vLifecycle = "2.6.2"
+val vLifecycleExt = "2.2.0"
+val vMaterial = "1.10.0"
+val vNavigation = "2.7.4"
 val vOkhttp = "5.0.0-alpha.11"
-val vProtobuf = "3.22.2"
+val vOWM = "2.1.0"
+val vPersianDate = "1.7.1"
+val vPalette = "1.0.0"
+val vPrefs = "1.2.1"
+val vProtobuf = "3.24.4"
+val vReorderable = "0.9.6"
 val vRoom = "2.5.2"
+val vRV = "1.3.1"
+val vResBypass = "2.2"
+val vSerialization = "1.5.1"
 
 plugins {
-    id("com.android.application").version("8.0.1")
-    kotlin("android").version("1.9.0")
-    kotlin("plugin.parcelize").version("1.9.0")
-    kotlin("plugin.serialization").version("1.9.0")
-    id("com.google.devtools.ksp").version("1.9.0-1.0.11")
-    id("com.google.protobuf").version("0.9.1")
+    id("com.android.application").version("8.1.2")
+    kotlin("android").version("1.9.10")
+    kotlin("plugin.parcelize").version("1.9.10")
+    kotlin("plugin.serialization").version("1.9.10")
+    id("com.google.devtools.ksp").version("1.9.10-1.0.13")
+    id("com.google.protobuf").version("0.9.4")
 }
 
 allprojects {
@@ -230,57 +248,53 @@ dependencies {
     implementation(kotlin("stdlib", vKotlin))
 
     //UI
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03")
-    implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:$vConstraintLayout")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:$vCoordinatorLayout")
+    implementation("androidx.dynamicanimation:dynamicanimation:$vDynamicanimation")
+    implementation("androidx.palette:palette-ktx:$vPalette")
+    implementation("androidx.preference:preference-ktx:$vPrefs")
+    implementation("androidx.recyclerview:recyclerview:$vRV")
 
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:$vMaterial")
 
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:$vDSP")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$vLifecycle")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-extensions:$vLifecycleExt")
     implementation("androidx.lifecycle:lifecycle-common-java8:$vLifecycle")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
-    implementation("com.github.ChickenHook:RestrictionBypass:2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.github.ChickenHook:RestrictionBypass:$vResBypass")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$vCoroutines")
     implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
-    implementation("com.github.samanzamani:PersianDate:1.6.1")
-    implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.1.0") {
+    implementation("com.github.samanzamani:PersianDate:$vPersianDate")
+    implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:$vOWM") {
         exclude("com.android.support", "support-compat")
         exclude("com.android.support", "appcompat-v7")
     }
-    implementation("com.raedapps:alwan:1.0.1")
-    implementation("io.github.hokofly:hoko-blur:1.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("com.raedapps:alwan:$vAlwan")
+    implementation("io.github.hokofly:hoko-blur:$vHokoBlur")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$vSerialization")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:$vActivity")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
-    implementation("androidx.compose.runtime:runtime:$vCompose")
-    implementation("androidx.compose.ui:ui:$vCompose")
-    implementation("androidx.compose.ui:ui-tooling:$vCompose")
-    implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
-    implementation("androidx.compose.foundation:foundation:$vCompose")
-    implementation("androidx.navigation:navigation-compose:$vNavigation")
-    implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
-    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
-
-    implementation("androidx.compose.material3:material3:$vMaterial3")
-
-    //Accompanist
+    api(platform("androidx.compose:compose-bom:$vComposeBOM"))
+    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
+    implementation("androidx.navigation:navigation-compose:$vNavigation")
+    implementation("io.coil-kt:coil-compose:$vCoil")
+    implementation("org.burnoutcrew.composereorderable:reorderable:$vReorderable")
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
@@ -290,8 +304,6 @@ dependencies {
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
-
-    api("com.airbnb.android:lottie:6.0.0")
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
@@ -306,11 +318,11 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
 
-    androidTestImplementation("com.google.truth:truth:0.40")
+    androidTestImplementation("com.google.truth:truth:1.1.5")
     androidTestImplementation("org.mockito:mockito-core:5.0.0")
     androidTestImplementation("com.google.dexmaker:dexmaker:1.2")
     androidTestImplementation("com.google.dexmaker:dexmaker-mockito:1.2")
-    androidTestImplementation("androidx.annotation:annotation:1.6.0")
+    androidTestImplementation("androidx.annotation:annotation:1.7.0")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
     androidTestImplementation("com.android.support.test.uiautomator:uiautomator-v18:2.1.3")

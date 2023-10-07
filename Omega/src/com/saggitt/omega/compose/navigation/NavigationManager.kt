@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -25,8 +26,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.saggitt.omega.compose.pages.preferences.mainPrefsGraph
-import soup.compose.material.motion.animation.materialSharedAxisXIn
-import soup.compose.material.motion.animation.materialSharedAxisXOut
 
 object Routes {
     const val PREFS_MAIN = "prefs_main"
@@ -68,18 +67,24 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 
 @Composable
 fun PrefsComposeView(navController: NavHostController) {
-    val inMotionSpec = materialSharedAxisXIn(true, 3)
-    val outMotionSpec = materialSharedAxisXOut(true, 3)
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
         NavHost(
             navController = navController,
             startDestination = "/",
-            enterTransition = { inMotionSpec },
-            exitTransition = { outMotionSpec },
-            popEnterTransition = { inMotionSpec },
-            popExitTransition = { outMotionSpec },
+            enterTransition = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
+            },
+            exitTransition = {
+                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start)
+            },
+            popEnterTransition = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End)
+            },
+            popExitTransition = {
+                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
+            },
         ) {
             mainPrefsGraph(route = "/")
         }

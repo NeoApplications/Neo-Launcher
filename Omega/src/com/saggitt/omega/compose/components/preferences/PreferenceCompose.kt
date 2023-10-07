@@ -74,6 +74,7 @@ import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringPref
@@ -103,13 +104,13 @@ fun BasePreference(
 
     ListItem(
         modifier = modifier
-                .fillMaxWidth()
-                .clip(
-                        GroupItemShape(index, groupSize - 1)
-                )
-                .addIf(onClick != null) {
-                    clickable(enabled = isEnabled, onClick = onClick!!)
-                },
+            .fillMaxWidth()
+            .clip(
+                GroupItemShape(index, groupSize - 1)
+            )
+            .addIf(onClick != null) {
+                clickable(enabled = isEnabled, onClick = onClick!!)
+            },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme
                 .surfaceColorAtElevation((rank * 24).dp),
@@ -264,13 +265,13 @@ fun SeekBarPreference(
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                            .widthIn(min = 52.dp)
-                            .combinedClickable(
-                                    onClick = {},
-                                    onLongClick = {
-                                        menuExpanded = !menuExpanded
-                                    }
-                            )
+                        .widthIn(min = 52.dp)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                menuExpanded = !menuExpanded
+                            }
+                        )
                 )
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
@@ -287,8 +288,8 @@ fun SeekBarPreference(
                 Spacer(modifier = Modifier.requiredWidth(8.dp))
                 Slider(
                     modifier = Modifier
-                            .requiredHeight(24.dp)
-                            .weight(1f),
+                        .requiredHeight(24.dp)
+                        .weight(1f),
                     value = currentValue,
                     valueRange = pref.minValue..pref.maxValue,
                     onValueChange = { currentValue = it },
@@ -402,6 +403,29 @@ fun IntSelectionPreference(
 }
 
 @Composable
+fun LongSelectionPreference(
+    modifier: Modifier = Modifier,
+    pref: LongSelectionPref,
+    index: Int = 1,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+    val value = pref.get().collectAsState(initial = pref.defaultValue)
+    val entries = pref.entries()
+    BasePreference(
+        modifier = modifier,
+        titleId = pref.titleId,
+        summaryId = pref.summaryId,
+        summary = entries[value.value],
+        index = index,
+        groupSize = groupSize,
+        isEnabled = isEnabled,
+        onClick = onClick
+    )
+}
+
+@Composable
 fun StringSelectionPreference(
     modifier: Modifier = Modifier,
     pref: StringSelectionPref,
@@ -452,11 +476,12 @@ fun GridSize2DPreference(
     onClick: (() -> Unit) = {},
 ) {
     val rows = pref.numRowsPref.get().collectAsState(initial = pref.numRowsPref.defaultValue)
-    val columns = pref.numColumnsPref.get().collectAsState(initial = pref.numColumnsPref.defaultValue)
+    val columns =
+        pref.numColumnsPref.get().collectAsState(initial = pref.numColumnsPref.defaultValue)
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
-            summary = "${columns.value} x ${rows.value}",
+        summary = "${columns.value} x ${rows.value}",
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,

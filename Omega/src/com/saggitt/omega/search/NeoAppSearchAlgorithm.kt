@@ -145,7 +145,7 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         }
         val provider = SearchProviderController
             .getInstance(context).searchProvider
-        return if (provider is WebSearchProvider) {
+        return if (!provider.suggestionUrl.isNullOrEmpty()) {
             provider.getSuggestions(query)
         } else emptyList<String>()
     }

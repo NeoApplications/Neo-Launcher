@@ -28,17 +28,19 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.Keep
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.anim.AnimatorListeners
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
+import com.saggitt.omega.nLauncher
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
@@ -292,20 +294,20 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     private val searchProvider get() = SearchProviderController.getInstance(context).searchProvider
     override val displayName: String = context.getString(R.string.action_global_search)
     override val displayNameRes: Int = R.string.action_global_search
-    override val icon: Drawable? by lazy { searchProvider.icon }
+    override val icon: Drawable? by lazy {
+        AppCompatResources.getDrawable(
+            context,
+            searchProvider.iconId
+        )
+    }
     override val requiresForeground = false
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        searchProvider.startSearch(context) {
-            try {
-                if (context !is AppCompatActivity) {
-                    it.flags = it.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(it)
-            } catch (e: Exception) {
-                Log.e("LauncherGestureHandler", "Failed to start global search", e)
-            }
-        }
+        context.nLauncher.stateManager.goToState(
+            LauncherState.ALL_APPS,
+            true,
+            AnimatorListeners.forEndCallback(Runnable { context.nLauncher.appsView.searchUiManager.startSearch() })
+        )
     }
 }
 

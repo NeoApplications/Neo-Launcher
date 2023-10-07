@@ -48,6 +48,7 @@ open class BooleanPref(
     }
 
     override suspend fun set(value: Boolean) {
+        onChange(value)
         dataStore.edit { it[key] = value }
     }
 }
@@ -172,6 +173,16 @@ open class IntSelectionPref(
 ) :
     PrefDelegate<Int>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
+open class LongSelectionPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    val dataStore: DataStore<Preferences>,
+    val key: Preferences.Key<Long>,
+    val defaultValue: Long = 0,
+    val entries: () -> Map<Long, String>,
+) :
+    PrefDelegate<Long>(titleId, summaryId, dataStore, key, defaultValue)
+
 open class ColorIntPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
@@ -275,6 +286,7 @@ open class StringSelectionPref(
     }
 
     override suspend fun set(value: String) {
+        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -293,6 +305,7 @@ open class StringSetPref(
     }
 
     override suspend fun set(value: Set<String>) {
+        onChange()
         dataStore.edit { it[key] = value }
     }
 }
@@ -469,7 +482,6 @@ abstract class PrefDelegate<T : Any>(
     }
 
     open suspend fun set(value: T) {
-        onChange(value).run { }
         dataStore.edit { it[key] = value }
     }
 }

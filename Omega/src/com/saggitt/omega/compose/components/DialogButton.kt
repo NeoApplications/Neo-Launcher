@@ -36,21 +36,21 @@ fun DialogPositiveButton(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 16.dp,
     textId: Int = android.R.string.ok,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     TextButton(
         shape = RoundedCornerShape(cornerRadius),
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(0.65f),
+            containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         Text(
             text = stringResource(id = textId),
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
+            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
         )
     }
 }
@@ -60,7 +60,7 @@ fun DialogNegativeButton(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 16.dp,
     textId: Int = android.R.string.cancel,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     TextButton(
         shape = RoundedCornerShape(cornerRadius),
@@ -70,7 +70,7 @@ fun DialogNegativeButton(
         Text(
             text = stringResource(id = textId),
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(vertical = 5.dp, horizontal = 8.dp)
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
         )
     }
 }

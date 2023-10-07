@@ -36,10 +36,12 @@ import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
+import com.saggitt.omega.compose.components.preferences.LongSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.preferences.IntSelectionPref
+import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.prefs
@@ -56,28 +58,31 @@ fun SearchPrefsPage() {
         openDialog.value = true
     }
 
+    val searchPrefs = listOf(
+        prefs.searchProvider,
+    )
     val feedPrefs = listOf(
         prefs.feedProvider,
     )
 
     ViewWithActionBar(
-            title = stringResource(R.string.title__general_search_feed)
+        title = stringResource(R.string.title__general_search_feed)
     ) { paddingValues ->
         LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*item {
+            item {
                 PreferenceGroup(
-                        stringResource(id = R.string.title__general_search),
-                        prefs = searchPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.title__general_search),
+                    prefs = searchPrefs,
+                    onPrefDialog = onPrefDialog
                 )
             }
-            item {
+            /*item {
                 PreferenceGroup(
                         stringResource(id = R.string.cat_dock_search),
                         prefs = showPrefs,
@@ -86,9 +91,9 @@ fun SearchPrefsPage() {
             }*/
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.title_feed_provider),
-                        prefs = feedPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.title_feed_provider),
+                    prefs = feedPrefs,
+                    onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -97,19 +102,24 @@ fun SearchPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
+                    is LongSelectionPref        -> LongSelectionPrefDialogUI(
+                        pref = dialogPref as LongSelectionPref,
+                        openDialogCustom = openDialog
+                    )
+
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
                     is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
                     )
                 }
             }

@@ -23,6 +23,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.TypedValue
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,15 +36,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -51,6 +55,7 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.android.launcher3.ExtendedEditText
 import com.android.launcher3.Insettable
 import com.android.launcher3.R
@@ -61,7 +66,6 @@ import com.android.launcher3.allapps.SearchUiManager
 import com.android.launcher3.allapps.search.AllAppsSearchBarController
 import com.android.launcher3.graphics.IconShape
 import com.android.launcher3.search.SearchCallback
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Nut
 import com.saggitt.omega.compose.icons.phosphor.X
@@ -70,22 +74,19 @@ import com.saggitt.omega.nLauncher
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.search.NeoAppSearchAlgorithm
-import com.saggitt.omega.search.SearchProvider
 import com.saggitt.omega.search.SearchProviderController
-import com.saggitt.omega.search.WebSearchProvider
 import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
 import kotlin.math.round
 
+@OptIn(ExperimentalComposeUiApi::class)
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
-    SearchCallback<BaseAllAppsAdapter.AdapterItem>,
-    SearchProviderController.OnProviderChangeListener {
-    //SharedPreferences.OnSharedPreferenceChangeListener {
+    SearchCallback<BaseAllAppsAdapter.AdapterItem> {
     var mContext: Context = context
     protected var prefs: NeoPrefs = mContext.prefs
-    protected var spController = SearchProviderController.getInstance(getContext())
-    private var searchProvider: SearchProvider = spController.searchProvider
+    private var spController = SearchProviderController.getInstance(getContext())
     private val searchAlgorithm = NeoAppSearchAlgorithm(mContext)
     private val mSearchBarController: AllAppsSearchBarController = AllAppsSearchBarController()
 
@@ -101,11 +102,12 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
             focusManager = LocalFocusManager.current
             keyboardController = LocalSoftwareKeyboardController.current
             val textFieldFocusRequester = remember { FocusRequester() }
-            val searchIcon = rememberDrawablePainter(drawable = searchProvider.icon)
-            val micIcon = rememberDrawablePainter(
+            val searchProvider = spController.searchProviderState.collectAsState()
+            val searchIcon = rememberAsyncImagePainter(searchProvider.value.iconId)
+            /*val micIcon = rememberDrawablePainter(
                 drawable = if (searchProvider.supportsAssistant) searchProvider.assistantIcon
                 else searchProvider.voiceIcon
-            )
+            )*/
 
             var textFieldValue by query
 
@@ -118,19 +120,23 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                     },
                     modifier = Modifier
                         .weight(1f, true)
-                        .focusRequester(textFieldFocusRequester),
-                    /*.onFocusChanged {
-                        if (it.isFocused) {
-                            context.startActivity(
-                                PreferenceActivity.createIntent(
-                                    context,
-                                    "${Routes.PREFS_SEARCH}/"
-                                )
-                            )
-                        } else {
+                        .focusRequester(textFieldFocusRequester)
+                        .onFocusChanged {
+                            when {
+                                !it.isFocused && query.value.isEmpty()   -> {
+                                    mAppsView?.animateToSearchState(false, 0)
+                                    keyboardController?.hide()
+                                }
 
-                        }
-                    }*/
+                                !it.isFocused                            -> {
+                                    keyboardController?.hide()
+                                }
+
+                                it.isFocused && query.value.isNotEmpty() -> {
+                                    mAppsView?.animateToSearchState(true, 0)
+                                }
+                            }
+                        },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -138,7 +144,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                     ),
                     shape = RoundedCornerShape(getCornerRadius().dp),
                     leadingIcon = {
-                        Icon(
+                        Image(
                             modifier = Modifier.size(24.dp),
                             painter = searchIcon,
                             contentDescription = stringResource(id = R.string.label_search),
@@ -160,7 +166,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                                     )
                                 }
                             }
-                            AnimatedVisibility(visible = searchProvider.supportsVoiceSearch) {
+                            /*AnimatedVisibility(visible = searchProvider.supportsVoiceSearch) {
                                 IconButton(onClick = {
                                     if (searchProvider.supportsAssistant) {
                                         searchProvider.startAssistant { intent ->
@@ -178,7 +184,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                                         contentDescription = stringResource(id = R.string.label_voice_search),
                                     )
                                 }
-                            }
+                            }*/
                         }
                     },
                     label = { Text(text = stringResource(id = R.string.all_apps_search_bar_hint)) },
@@ -186,7 +192,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         imeAction = ImeAction.Search
                     ),
                     keyboardActions = KeyboardActions(
-                        onSearch = { mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem() },
+                        onSearch = { onSubmitSearch(query.value) },
                     ),
                 )
                 IconButton(onClick = {
@@ -228,19 +234,9 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        SearchProviderController.getInstance(mContext).addOnProviderChangeListener(this)
-    }
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        SearchProviderController.getInstance(mContext).removeOnProviderChangeListener(this)
-    }
-
-    override fun onSearchProviderChanged() {
-        searchProvider = spController.searchProvider
+        keyboardController?.hide()
     }
 
     override fun initializeSearch(containerView: ActivityAllAppsContainerView<*>?) {
@@ -286,10 +282,13 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun onSubmitSearch(query: String?): Boolean =
-        if (searchProvider is WebSearchProvider) {
-            (searchProvider as WebSearchProvider).openResults(query!!)
+        if (spController.searchProvider.searchUrl.isNotEmpty()) {
+            openURLInBrowser(context, spController.searchProvider.searchUrl.format(query))
             true
-        } else false
+        } else {
+            mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
+            false
+        }
 
     override fun setInsets(insets: Rect) {
         val mlp = layoutParams as MarginLayoutParams
