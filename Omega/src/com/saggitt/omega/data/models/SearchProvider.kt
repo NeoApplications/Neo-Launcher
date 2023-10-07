@@ -24,6 +24,30 @@ data class SearchProvider(
     val enabled: Boolean,
     val order: Int,
 ) {
+
+    fun getSuggestions(query: String): List<String> {
+        val client = OkHttpClient()
+        if (suggestionUrl == null) return emptyList()
+        if (query.isEmpty()) return emptyList()
+        val request = Request.Builder()
+            .url(suggestionUrl.format(query))
+            .build()
+        try {
+            val response = client.newCall(request).execute()
+            val result = JSONArray(response.body.string())
+                .getJSONArray(1)
+                .toArrayList<String>()
+                .take(MAX_SUGGESTIONS)
+            response.close()
+            Log.d("WebSearchProvider", "Websearch Query: $query")
+            return result
+        } catch (ex: Exception) {
+            Log.e("WebSearchProvider", ex.message ?: "", ex)
+        }
+
+        return emptyList()
+    }
+
     companion object {
         fun offlineSearchProvider(context: Context) = SearchProvider(
             id = 1,
@@ -93,21 +117,21 @@ data class SearchProvider(
         )
 
         private val METAGER_ORG = defaultProvider(
-            name = "Metager",
+            name = "Metager (English)",
             iconId = R.drawable.ic_metager_search,
             searchUrl = "https://metager.org/meta/meta.ger3?eingabe=%s",
             suggestionUrl = null,
         )
 
         private val METAGER_DE = defaultProvider(
-            name = "Metager",
+            name = "Metager (German)",
             iconId = R.drawable.ic_metager_search,
             searchUrl = "https://metager.de/meta/meta.ger3?eingabe=%s",
             suggestionUrl = null,
         )
 
         private val METAGER_ES = defaultProvider(
-            name = "Metager",
+            name = "Metager (Spanish)",
             iconId = R.drawable.ic_metager_search,
             searchUrl = "https://metager.es/meta/meta.ger3?eingabe=%s",
             suggestionUrl = null,
@@ -182,5 +206,7 @@ data class SearchProvider(
             PERPLEXITY, PHIND, QWANT, SEARX_INFO,
             STARTPAGE, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
         )
+
+        const val MAX_SUGGESTIONS = 5
     }
 }

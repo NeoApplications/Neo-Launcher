@@ -19,78 +19,27 @@
 package com.saggitt.omega.search
 
 import android.content.Context
-import android.view.ContextThemeWrapper
-import com.android.launcher3.Utilities
+import com.saggitt.omega.data.SearchProviderRepository
+import com.saggitt.omega.data.models.SearchProvider
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.useApplicationContext
+import kotlinx.coroutines.flow.StateFlow
 
 class SearchProviderController(private val context: Context) {
-    private val prefs by lazy { Utilities.getOmegaPrefs(context) }
-    private var cache: SearchProvider? = null
-    private var cached: String = ""
-
     private val themeOverride = ThemeOverride(ThemeOverride.Launcher(), ThemeListener())
     private var themeRes: Int = 0
-
-    private val listeners = HashSet<OnProviderChangeListener>()
-
-    val isGoogle get() = false//searchProvider is GoogleSearchProvider
 
     init {
         ThemeManager.getInstance(context).addOverride(themeOverride)
     }
 
-    fun addOnProviderChangeListener(listener: OnProviderChangeListener) {
-        listeners.add(listener)
-    }
-
-    fun removeOnProviderChangeListener(listener: OnProviderChangeListener) {
-        listeners.remove(listener)
-    }
-
-    fun onSearchProviderChanged() {
-        cache = null
-        notifyProviderChanged()
-    }
-
-    private fun notifyProviderChanged() {
-        HashSet(listeners).forEach(OnProviderChangeListener::onSearchProviderChanged)
-    }
-
-    val searchProvider: SearchProvider
-        get() {
-            val curr = prefs.searchProvider.getValue()
-            if (cache == null || cached != curr) {
-                cache = createProvider(prefs.searchProvider.getValue()) {
-                    AppsSearchProvider(context)
-                }
-                cached = cache!!::class.java.name
-                if (prefs.searchProvider.getValue() != cached) {
-                    prefs.searchProvider.setValue(cached)
-                }
-                notifyProviderChanged()
-            }
-            return cache!!
-        }
-
-    private fun createProvider(
-        providerName: String,
-        fallback: () -> SearchProvider
-    ): SearchProvider {
-        try {
-            val constructor = Class.forName(providerName).getConstructor(Context::class.java)
-            val themedContext = ContextThemeWrapper(context, themeRes)
-            val prov = constructor.newInstance(themedContext) as SearchProvider
-            if (prov.isAvailable) {
-                return prov
-            }
-        } catch (ignored: Exception) {
-        }
-        return fallback()
-    }
+    val searchProviderState: StateFlow<SearchProvider>
+        get() = SearchProviderRepository.INSTANCE.get(context).activeProvider
+    val searchProvider: SearchProvider // TODO add support for multiple providers
+        get() = SearchProviderRepository.INSTANCE.get(context).activeProvider.value
 
     inner class ThemeListener : ThemeOverride.ThemeOverrideListener {
 
@@ -101,14 +50,8 @@ class SearchProviderController(private val context: Context) {
         }
 
         override fun reloadTheme() {
-            cache = null
             applyTheme(themeOverride.getTheme(context))
-            onSearchProviderChanged()
         }
-    }
-
-    interface OnProviderChangeListener {
-        fun onSearchProviderChanged()
     }
 
     companion object : SingletonHolder<SearchProviderController, Context>(
@@ -116,14 +59,12 @@ class SearchProviderController(private val context: Context) {
             useApplicationContext(::SearchProviderController)
         )
     ) {
-        fun getSearchProvidersMap(context: Context): Map<String, String> {
-            val providers = listOf(
-                AppsSearchProvider(context)
-            ).filter { it.isAvailable }
-
-            val entries = providers.map { it.displayName }.toTypedArray()
-            val entryValues = providers.map { it::class.java.name }.toTypedArray()
-            return entryValues.zip(entries).toMap()
-        }
+        fun getSearchProvidersMap(context: Context): Map<Long, String> =
+            SearchProviderRepository.INSTANCE.get(context)
+                .allProviders
+                .value
+                .associate {
+                    Pair(it.id, it.name)
+                }
     }
 }
