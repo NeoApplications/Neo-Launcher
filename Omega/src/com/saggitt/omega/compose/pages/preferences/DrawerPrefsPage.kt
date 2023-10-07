@@ -74,7 +74,6 @@ fun DrawerPrefsPage() {
         prefs.drawerHideLabels,
         prefs.drawerMultilineLabel,
         prefs.drawerLabelScale,
-        prefs.drawerIconScaleEnforce,
         prefs.drawerPopup,
     )
     val gridPrefs = listOf(
