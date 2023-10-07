@@ -306,6 +306,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_LABELS_HIDE,
         titleId = R.string.title__desktop_hide_icon_labels,
         defaultValue = false,
+        onChange = { reloadAll }
     )
 
     val desktopLabelScale = FloatPref(
