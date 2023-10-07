@@ -913,13 +913,12 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    var searchProvider = StringSelectionPref(
+    var searchProvider = LongSelectionPref(
         dataStore = dataStore,
         titleId = R.string.title_search_provider,
         key = PrefKey.SEARCH_PROVIDER,
-        defaultValue = "",
-        entries = SearchProviderController.getSearchProvidersMap(context),
-        onChange = { SearchProviderController.getInstance(context).onSearchProviderChanged() }
+        defaultValue = 1L,
+        entries = { SearchProviderController.getSearchProvidersMap(context) },
     )
 
     // TODO DimensionPref?
