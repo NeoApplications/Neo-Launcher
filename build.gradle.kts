@@ -275,9 +275,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
     implementation("androidx.navigation:navigation-compose:$vNavigation")
-    implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
     implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
 
     //Room
@@ -288,8 +286,6 @@ dependencies {
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
-
-    api("com.airbnb.android:lottie:6.0.0")
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
