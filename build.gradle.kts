@@ -9,9 +9,9 @@ buildscript {
     }
 }
 
-val vAccompanist = "0.31.4-beta"
-val vCompose = "1.5.0-beta03"
-val vComposeCompiler = "1.5.1"
+val vAccompanist = "0.32.0"
+val vComposeBOM = "2023.10.00"
+val vComposeCompiler = "1.5.3"
 val vKotlin = "1.9.0"
 val vLifecycle = "2.6.1"
 val vMaterial3 = "1.2.0-alpha05"
@@ -264,23 +264,21 @@ dependencies {
     //Compose
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.compose.compiler:compiler:$vComposeCompiler")
-    implementation("androidx.compose.runtime:runtime:$vCompose")
-    implementation("androidx.compose.ui:ui:$vCompose")
-    implementation("androidx.compose.ui:ui-tooling:$vCompose")
-    implementation("androidx.compose.ui:ui-tooling-preview:$vCompose")
-    implementation("androidx.compose.foundation:foundation:$vCompose")
+    api(platform("androidx.compose:compose-bom:$vComposeBOM"))
+    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
+    implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
+    implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
     implementation("androidx.navigation:navigation-compose:$vNavigation")
     implementation("io.github.fornewid:material-motion-compose-core:1.0.1")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.android.material:compose-theme-adapter-3:1.1.1")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.4")
-
-    implementation("androidx.compose.material3:material3:$vMaterial3")
-
-    //Accompanist
-    implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
-    implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
