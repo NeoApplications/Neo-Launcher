@@ -115,6 +115,9 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__advanced_language,
         defaultValue = "",
         entries = context.languageOptions(),
+        onChange = {
+            recreate()
+        }
     )
 
     var profileTheme = IntSelectionPref(

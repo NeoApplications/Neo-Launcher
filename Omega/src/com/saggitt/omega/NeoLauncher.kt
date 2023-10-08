@@ -99,7 +99,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     private val hiddenApps = ArrayList<AppInfo>()
     internal val allApps = ArrayList<AppInfo>()
     private var paused = false
-    private var sRestart = false
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
@@ -310,9 +309,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         super.onDestroy()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         prefs.unregisterCallback()
-        if (sRestart) {
-            sRestart = false
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -328,9 +324,19 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
+    fun recreateIfNotScheduled() {
+        if (sRestartFlags == 0) {
+            recreate()
+        }
+    }
+
     private fun restartIfPending() {
-        if (sRestart) {
-            neoApp.restart(false)
+        when {
+            sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
+            sRestartFlags and FLAG_RECREATE != 0 -> {
+                sRestartFlags = 0
+                recreate()
+            }
         }
     }
 
@@ -378,6 +384,11 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 ?: (context as ContextWrapper).baseContext as? NeoLauncher
                 ?: LauncherAppState.getInstance(context).launcher as NeoLauncher
         }
+
+        private const val FLAG_RECREATE = 1 shl 0
+        private const val FLAG_RESTART = 1 shl 1
+
+        var sRestartFlags = 0
     }
 }
 

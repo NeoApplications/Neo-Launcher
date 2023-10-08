@@ -19,10 +19,11 @@
 package com.saggitt.omega.preferences
 
 import com.android.launcher3.InvariantDeviceProfile
-import com.android.launcher3.Launcher
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
 
-class PreferencesChangeCallback(val launcher: Launcher) {
+class PreferencesChangeCallback(val launcher: NeoLauncher) {
 
     private val idp: InvariantDeviceProfile
         get() = InvariantDeviceProfile.INSTANCE.get(launcher)
@@ -36,7 +37,9 @@ class PreferencesChangeCallback(val launcher: Launcher) {
     }
 
     fun recreate() {
-        launcher.recreate()
+        MAIN_EXECUTOR.execute {
+            launcher.recreateIfNotScheduled()
+        }
     }
 
     fun updateBlur() {
