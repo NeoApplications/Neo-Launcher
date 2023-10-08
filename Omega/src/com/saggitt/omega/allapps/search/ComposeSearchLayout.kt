@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.android.launcher3.ExtendedEditText
@@ -123,12 +124,12 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         .focusRequester(textFieldFocusRequester)
                         .onFocusChanged {
                             when {
-                                !it.isFocused && query.value.isEmpty()   -> {
+                                !it.isFocused && query.value.isEmpty() -> {
                                     mAppsView?.animateToSearchState(false, 0)
                                     keyboardController?.hide()
                                 }
 
-                                !it.isFocused                            -> {
+                                !it.isFocused -> {
                                     keyboardController?.hide()
                                 }
 
@@ -187,7 +188,13 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                             }*/
                         }
                     },
-                    label = { Text(text = stringResource(id = R.string.all_apps_search_bar_hint)) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.all_apps_search_bar_hint),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Search
                     ),
