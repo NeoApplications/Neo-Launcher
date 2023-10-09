@@ -121,7 +121,8 @@ class IconPackProvider(private val context: Context) {
                             packageManager,
                             iconEntry,
                             drawable
-                        ) else drawable
+                        )
+                    else drawable
                 }
             if (clockDrawable != null) {
                 return if (isThemedIconsEnabled)

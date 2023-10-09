@@ -170,7 +170,7 @@ class NeoPrefs private constructor(val context: Context) {
         summaryId = R.string.summary__theme_blur,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
-        defaultValue = Utilities.ATLEAST_T
+        defaultValue = false
     )
 
     var profileShapeLessIcon = BooleanPref(
