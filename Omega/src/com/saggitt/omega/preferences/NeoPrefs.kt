@@ -125,7 +125,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_GLOBAL_THEME,
         titleId = R.string.title__general_theme,
         defaultValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_SYSTEM else THEME_WALLPAPER,
-        entries = themeItems,
+        entries = themeItems
     )
 
     val profileAccentColor = ColorIntPref(
@@ -144,7 +144,9 @@ class NeoPrefs private constructor(val context: Context) {
         entries = IconPackProvider.INSTANCE.get(context)
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
-        onChange = { reloadGrid }
+        onChange = {
+            reloadApps()
+        }
     )
 
     var profileIconShape = NavigationPref(

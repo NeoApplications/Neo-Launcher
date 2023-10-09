@@ -20,6 +20,7 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
 import com.saggitt.omega.util.minSDK
+import com.saggitt.omega.util.prefs
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 
@@ -115,11 +116,12 @@ class IconPackProvider(private val context: Context) {
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
-                    wrapThemedData(
-                        packageManager,
-                        iconEntry,
-                        drawable
-                    ) ?: drawable
+                    if (isThemedIconsEnabled && context.prefs.profileTransparentBgIcons.getValue())
+                        wrapThemedData(
+                            packageManager,
+                            iconEntry,
+                            drawable
+                        ) else drawable
                 }
             if (clockDrawable != null) {
                 return if (isThemedIconsEnabled)
