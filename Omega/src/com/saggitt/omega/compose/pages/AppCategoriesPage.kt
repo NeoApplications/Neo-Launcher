@@ -91,9 +91,7 @@ fun AppCategoriesPage() {
     val coroutineScope = rememberCoroutineScope()
     val prefs = NeoPrefs.getInstance(context)
     val manager by lazy { prefs.drawerAppGroupsManager }
-    val (categoriesEnabled, enableCategories) = remember(manager.categorizationEnabled.getValue()) {
-        mutableStateOf(manager.categorizationEnabled.getValue())
-    }
+    val categoriesEnabled = remember { mutableStateOf(manager.categorizationEnabled.getValue())}
 
     var categoryTitle by remember { mutableStateOf("") }
 
@@ -244,7 +242,7 @@ fun AppCategoriesPage() {
                 ComposeSwitchView(
                     modifier = Modifier
                         .background(
-                            if (categoriesEnabled) MaterialTheme.colorScheme.primary.copy(0.6f)
+                            if (categoriesEnabled.value) MaterialTheme.colorScheme.primary.copy(0.6f)
                             else MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                             MaterialTheme.shapes.extraLarge
                         )
@@ -253,9 +251,9 @@ fun AppCategoriesPage() {
                     summary = stringResource(id = R.string.summary_app_categorization_enable),
                     verticalPadding = 16.dp,
                     horizontalPadding = 16.dp,
-                    isChecked = categoriesEnabled,
+                    isChecked = categoriesEnabled.value,
                     onCheckedChange = {
-                        enableCategories(it)
+                        categoriesEnabled.value = it
                         manager.categorizationEnabled.setValue(it)
                     }
                 )
@@ -272,9 +270,9 @@ fun AppCategoriesPage() {
                     ).forEach {
                         CategorizationOption(
                             category = it,
-                            selected = selectedCategoryKey == it.key && categoriesEnabled
+                            selected = selectedCategoryKey == it.key && categoriesEnabled.value
                         ) {
-                            if (categoriesEnabled) {
+                            if (categoriesEnabled.value) {
                                 manager.categorizationType.setValue(it.key)
                                 selectedCategoryKey = it.key
                                 currentCategory = it

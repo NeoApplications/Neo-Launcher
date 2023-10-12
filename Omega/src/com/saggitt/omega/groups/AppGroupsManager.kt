@@ -23,6 +23,7 @@ import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.android.launcher3.R
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.groups.category.CustomTabs
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.FlowerpotTabs
@@ -38,7 +39,11 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         titleId = R.string.title_app_categorization_enable,
         summaryId = R.string.summary_app_categorization_enable,
         defaultValue = false,
-            onChange = { onPrefsChanged() }
+        onChange = {
+            MAIN_EXECUTOR.execute {
+                onPrefsChanged()
+            }
+        }
     )
 
     var categorizationType = StringPref(
@@ -47,7 +52,9 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         titleId = R.string.pref_appcategorization_style_text,
         defaultValue = "categorization_type_tabs",
         onChange = {
-            onPrefsChanged()
+            MAIN_EXECUTOR.execute {
+                onPrefsChanged()
+            }
         }
     )
 

@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -95,12 +96,6 @@ class NeoPrefs private constructor(val context: Context) {
     val reloadAll = { onChangeCallback?.reloadAll() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
 
-    fun reloadApps() {
-        val las = LauncherAppState.getInstance(context)
-        val idp = las.invariantDeviceProfile
-        idp.onPreferencesChanged(context)
-    }
-
     inline fun withChangeCallback(
         crossinline callback: (PreferencesChangeCallback) -> Unit,
     ): () -> Unit {
@@ -145,7 +140,7 @@ class NeoPrefs private constructor(val context: Context) {
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
         onChange = {
-            reloadApps()
+            reloadGrid()
         }
     )
 
@@ -282,7 +277,10 @@ class NeoPrefs private constructor(val context: Context) {
         maxValue = 2f,
         minValue = 0.5f,
         steps = 150,
-        specialOutputs = { "${(it * 100).roundToInt()}%" }
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = {
+            reloadGrid()
+        }
     )
 
     val desktopLock = BooleanPref(
@@ -311,7 +309,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_LABELS_HIDE,
         titleId = R.string.title__desktop_hide_icon_labels,
         defaultValue = false,
-        onChange = { reloadAll }
+        onChange = { reloadGrid() }
     )
 
     val desktopLabelScale = FloatPref(
@@ -323,6 +321,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0.5f,
         steps = 150,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() }
     )
 
     val desktopAllowFullWidthWidgets = BooleanPref(
@@ -369,6 +368,7 @@ class NeoPrefs private constructor(val context: Context) {
             onChangeListener = { reloadGrid }
         )
     }
+
     val desktopGridSize by desktopGridSizeDelegate
     val desktopGridColumns = IdpIntPref(
         dataStore = dataStore,
@@ -381,6 +381,7 @@ class NeoPrefs private constructor(val context: Context) {
         maxValue = 16f,
         steps = 15,
     )
+
     val desktopGridRows = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_GRID_ROWS,
@@ -392,6 +393,7 @@ class NeoPrefs private constructor(val context: Context) {
         maxValue = 16f,
         steps = 15,
     )
+
     var desktopFolderCornerRadius = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_CORNER_RADIUS,
@@ -487,6 +489,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_ENABLED,
         titleId = R.string.title__dock_hide,
         defaultValue = false,
+        onChange = { recreate() }
     )
 
     val dockIconScale = FloatPref(
@@ -645,6 +648,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0.5f,
         steps = 150,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() }
     )
 
     val drawerLabelScale = FloatPref(
@@ -656,6 +660,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0.3f,
         steps = 150,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() }
     )
 
     val drawerHideLabels = BooleanPref(
@@ -663,6 +668,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_LABELS_HIDE,
         titleId = R.string.title__drawer_hide_icon_labels,
         defaultValue = false,
+        onChange = { reloadGrid() }
     )
 
     val drawerMultilineLabel = BooleanPref(
@@ -670,6 +676,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_LABELS_MULTILINE,
         titleId = R.string.title__multiline_labels,
         defaultValue = false,
+        onChange = { reloadGrid() }
     )
     val drawerLabelRows get() = if (drawerMultilineLabel.getValue()) 2 else 1
 

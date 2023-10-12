@@ -110,7 +110,7 @@ public class ItemClickHandler {
                 NeoPrefs prefs = NeoPrefs.getInstance(launcher);
 
                 if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
-                    prefs.reloadApps();
+                    prefs.getReloadGrid();
                 }
             });
 
