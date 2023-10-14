@@ -164,6 +164,7 @@
 
         <!-- numHotseatIcons defaults to numColumns, if not specified -->
         <attr name="numHotseatIcons" format="integer" />
+        <attr name="numHotseatRows" format="integer" />
         <!-- Number of icons to use when shrinking the hotseat size,
          defaults to numHotseatIcons / 2 -->
         <attr name="numShrunkenHotseatIcons" format="integer" />

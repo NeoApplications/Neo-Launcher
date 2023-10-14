@@ -72,4 +72,11 @@
     <dimen name="all_apps_tabs_side_padding">12dp</dimen>
     <dimen name="all_apps_tabs_margin_top">8dp</dimen>
     <dimen name="all_apps_search_vertical_offset">16dp</dimen>
+
+    <dimen name="hotseat_handle_bar_width">24dp</dimen>
+    <dimen name="hotseat_handle_bar_height">4dp</dimen>
+    <dimen name="hotseat_handle_bar_padding_bottom">6dp</dimen>
+    <dimen name="hotseat_top_row_height">36dp</dimen>
+    <dimen name="hotseat_settings_button_padding_x">24dp</dimen>
+    <dimen name="hotseat_settings_button_padding_y">12dp</dimen>
 </resources>

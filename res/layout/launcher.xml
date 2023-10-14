@@ -55,7 +55,13 @@
         <!-- DO NOT CHANGE THE ID -->
         <include
             android:id="@+id/hotseat"
+            android:visibility="gone"
             layout="@layout/hotseat" />
+
+        <ViewStub
+            android:id="@+id/hotseat_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <include
             android:id="@+id/options_view"

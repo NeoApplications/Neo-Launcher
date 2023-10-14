@@ -17,6 +17,7 @@ class DeviceProfileOverrides(context: Context) {
         .map { option ->
             val gridInfo = DBGridInfo(
                 numHotseatIcons = option.numHotseatIcons,
+                numHotseatRows = option.numHotseatRows,
                 numRows = option.numRows,
                 numColumns = option.numColumns
             )
@@ -43,6 +44,7 @@ class DeviceProfileOverrides(context: Context) {
         prefs.desktopGridRows.setValue(gridInfo.numRows)
         prefs.desktopGridColumns.setValue(gridInfo.numColumns)
         prefs.dockNumIcons.setValue(gridInfo.numHotseatIcons)
+        prefs.dockNumRows.setValue(gridInfo.numHotseatRows)
     }
 
     fun getOverrides(defaultGrid: InvariantDeviceProfile.GridOption) =
@@ -55,6 +57,7 @@ class DeviceProfileOverrides(context: Context) {
 
     data class DBGridInfo(
         val numHotseatIcons: Int,
+        val numHotseatRows: Int,
         val numRows: Int,
         val numColumns: Int,
     ) {
@@ -62,6 +65,7 @@ class DeviceProfileOverrides(context: Context) {
 
         constructor(prefs: NeoPrefs) : this(
             numHotseatIcons = prefs.dockNumIcons.getValue(),
+            numHotseatRows = prefs.dockNumRows.getValue(),
             numRows = prefs.desktopGridRows.getValue(),
             numColumns = prefs.desktopGridColumns.getValue()
         )

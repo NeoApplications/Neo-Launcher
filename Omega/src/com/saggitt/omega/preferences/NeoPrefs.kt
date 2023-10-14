@@ -24,7 +24,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -491,7 +490,13 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
         onChange = { recreate() }
     )
-
+    var dockExpandable = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_EXPANDABLE,
+        titleId = R.string.title_expandable_dock,
+        defaultValue = false,
+        onChange = { recreate() }
+    )
     val dockIconScale = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_ICON_SCALE,
@@ -559,6 +564,15 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 2f,
         maxValue = 16f,
         steps = 15
+    )
+    val dockNumRows = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_ROWS,
+        titleId = R.string.num_hotseat_icons_pref_title,
+        defaultValue = 2,
+        minValue = 2,
+        maxValue = 3,
+        steps = 3
     )
 
     // Drawer

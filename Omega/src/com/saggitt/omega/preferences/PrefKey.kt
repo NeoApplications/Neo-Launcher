@@ -73,12 +73,14 @@ object PrefKey {
 
     // Dock
     val DOCK_ENABLED = booleanPreferencesKey("dock_enabled")
+    val DOCK_EXPANDABLE = booleanPreferencesKey("dock_expandable")
     val DOCK_BG_CUSTOM = booleanPreferencesKey("dock_custom_background")
     val DOCK_BG_COLOR = stringPreferencesKey("dock_custom_background_color")
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
     val DOCK_ICON_SCALE = floatPreferencesKey("dock_icon_scale")
     val DOCK_COLUMNS = intPreferencesKey("dock_columns")
+    val DOCK_ROWS = intPreferencesKey("dock_rows")
 
     // Drawer
     val DRAWER_ICON_SCALE_ENFORCE = booleanPreferencesKey("drawer_icon_scale_enforce")

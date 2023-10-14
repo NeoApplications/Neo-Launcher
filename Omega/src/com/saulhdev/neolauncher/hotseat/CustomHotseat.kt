@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.blur
+package com.saulhdev.neolauncher.hotseat
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -31,6 +31,8 @@ import com.android.launcher3.Hotseat
 import com.android.launcher3.R
 import com.android.launcher3.icons.ShadowGenerator
 import com.saggitt.omega.NeoLauncher
+import com.saggitt.omega.blur.BlurDrawable
+import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.graphics.NinePatchDrawHelper
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.AccentColorOption
@@ -40,14 +42,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlin.math.roundToInt
 
-class CustomHotseat @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
+open class CustomHotseat @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) :
     Hotseat(context, attrs, defStyleAttr),
     BlurWallpaperProvider.Listener {
 
-    private val launcher = NeoLauncher.getLauncher(context)
-    private val prefs by lazy { NeoPrefs.getInstance(context) }
+    val launcher = NeoLauncher.getLauncher(context)
+    val prefs by lazy { NeoPrefs.getInstance(context) }
 
     private var backgroundEnable = false
     private var hotseatDisabled = false

@@ -125,6 +125,7 @@ public class InvariantDeviceProfile {
     public int numHotseatIcons;
     public int numHotseatIconsOriginal;
 
+    public int numHotseatRows;
     public int numSearchContainerColumns;
     /**
      * Number of icons per row and column in the folder.
@@ -336,6 +337,7 @@ public class InvariantDeviceProfile {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
         numRows = dbGridInfo.getNumRows();
+        numHotseatRows = dbGridInfo.getNumHotseatRows();
         numRowsOriginal = numRows;
         numColumns = dbGridInfo.getNumColumns();
         numColumnsOriginal = numColumns;
@@ -365,6 +367,7 @@ public class InvariantDeviceProfile {
         folderBorderSpace = displayOption.folderBorderSpace;
         horizontalMargin = displayOption.horizontalMargin;
         numShownHotseatIcons = dbGridInfo.getNumHotseatIcons();
+        numHotseatRows = dbGridInfo.getNumHotseatRows();
         numShrunkenHotseatIcons = closestProfile.numShrunkenHotseatIcons;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseHotseatIcons : dbGridInfo.getNumHotseatIcons();
@@ -733,6 +736,7 @@ public class InvariantDeviceProfile {
         public final int numAllAppsColumns;
         private final int numDatabaseAllAppsColumns;
         public final int numHotseatIcons;
+        public final int numHotseatRows;
         public int numHotseatIconsOriginal;
         private final int numShrunkenHotseatIcons;
         private final int numDatabaseHotseatIcons;
@@ -767,6 +771,8 @@ public class InvariantDeviceProfile {
                     R.styleable.GridDisplayOption_numExtendedAllAppsColumns, 2 * numAllAppsColumns);
             numHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numHotseatIcons, numColumns);
+            numHotseatRows = a.getInt(
+                    R.styleable.GridDisplayOption_numHotseatRows, 1);
             numHotseatIconsOriginal = numHotseatIcons;
             numShrunkenHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numShrunkenHotseatIcons, numHotseatIcons / 2);

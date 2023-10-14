@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:height="@dimen/hotseat_handle_bar_width"
+        android:width="@dimen/hotseat_handle_bar_height" />
+    <corners android:radius="100dp" />
+</shape>

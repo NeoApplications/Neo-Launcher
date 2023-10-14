@@ -76,6 +76,7 @@
     <string name="title_dock_background_color">Background Color</string>
     <string name="title_dock_two_row">Show Second Row</string>
     <string name="title__dock_hide">Dock Hide</string>
+    <string name="title_expandable_dock">Expandable Dock</string>
     <string name="title__dock_hide_labels">Hide Labels</string>
     <string name="title__dock_colored_icons">Colored icons</string>
     <string name="title__dock_hotseat_icons">Icon Count</string>
@@ -403,6 +404,8 @@
     <string name="gesture_swipe_up">Swipe Upwards</string>
     <string name="folder_swipe_up">Swipe up action</string>
     <string name="gesture_dock_swipe_up">Swipe upwards from dock</string>
+    <string name="hotseat_accessibility_collapse">Dock collapsed</string>
+    <string name="hotseat_accessibility_expand">Dock expanded</string>
     <string name="gesture_press_home">Home Button Tap</string>
     <string name="gesture_press_back">Back button</string>
     <string name="gesture_press_recents">Recents button</string>

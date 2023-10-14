@@ -104,6 +104,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
@@ -218,7 +219,12 @@ import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
+import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
+import com.saulhdev.neolauncher.hotseat.ExpandableHotseatSwipeController;
+import com.saulhdev.neolauncher.hotseat.ExpandableHotseatTransitionController;
+import com.saulhdev.neolauncher.hotseat.HotseatTransitionController;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -284,7 +290,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     public static final String ON_RESUME_EVT = "Launcher.onResume";
     public static final String ON_NEW_INTENT_EVT = "Launcher.onNewIntent";
 
-    private StateManager<LauncherState> mStateManager;
+    public StateManager<LauncherState> mStateManager;
 
     private static final int ON_ACTIVITY_RESULT_ANIMATION_DELAY = 500;
 
@@ -318,6 +324,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     @Thunk
     Hotseat mHotseat;
+    public HotseatTransitionController mHotseatController;
 
     private DropTargetBar mDropTargetBar;
 
@@ -1247,7 +1254,23 @@ public class Launcher extends StatefulActivity<LauncherState>
         mWorkspace = mDragLayer.findViewById(R.id.workspace);
         mWorkspace.initParentViews(mDragLayer);
         mOverviewPanel = findViewById(R.id.overview_panel);
-        mHotseat = findViewById(R.id.hotseat);
+
+
+        ViewStub viewStub = (ViewStub) findViewById(R.id.hotseat_stub);
+        NeoPrefs prefs = NeoPrefs.getInstance(this);
+        if (prefs.getDockExpandable().getValue()) {
+            viewStub.setLayoutResource(R.layout.hotseat_expandable);
+            mHotseat = (ExpandableHotseat) viewStub.inflate();
+            ExpandableHotseatTransitionController expandableHotseatTransitionController = new ExpandableHotseatTransitionController(this);
+            mHotseatController = expandableHotseatTransitionController;
+            expandableHotseatTransitionController.setupViews(this.mHotseat);
+            mHotseat.bringToFront();
+        } else {
+            viewStub.setLayoutResource(R.layout.hotseat);
+            mHotseat = (Hotseat) viewStub.inflate();
+        }
+
+
         mHotseat.setWorkspace(mWorkspace);
 
         // Setup the drag layer
@@ -3148,7 +3171,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     public TouchController[] createTouchControllers() {
-        return new TouchController[]{getDragController(), new AllAppsSwipeController(this)};
+        return new TouchController[]{getDragController(), new AllAppsSwipeController(this), new ExpandableHotseatSwipeController(this)};
     }
 
     public void useFadeOutAnimationForLauncherStart(CancellationSignal signal) {

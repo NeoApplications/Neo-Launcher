@@ -23,7 +23,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.IntProperty;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,17 @@ import java.util.ArrayList;
  * Simple scrim which draws a flat color
  */
 public class ScrimView extends View implements Insettable {
+    public static final IntProperty<ScrimView> DRAG_HANDLE_ALPHA = new IntProperty<ScrimView>("dragHandleAlpha") {
+        @Override
+        public Integer get(ScrimView object) {
+            return Integer.valueOf(((ScrimView) object).mDragHandleAlpha);
+        }
+
+        @Override // android.util.IntProperty
+        public void setValue(ScrimView scrimView, int i2) {
+            scrimView.setDragHandleAlpha(i2);
+        }
+    };
     public static final float STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.9f;
 
     private final ArrayList<Runnable> mOpaquenessListeners = new ArrayList<>(1);
@@ -48,10 +61,34 @@ public class ScrimView extends View implements Insettable {
     private boolean mIsVisible = true;
     private boolean mLastDispatchedOpaqueness;
     private float mHeaderScale = 1f;
+    public int mDragHandleAlpha;
+    public Drawable mDragHandle;
 
     public ScrimView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFocusable(false);
+        mDragHandleAlpha = 255;
+    }
+
+    public boolean beforeDraw(Canvas canvas) {
+
+        if (this.mDragHandle != null) {
+            canvas.translate(0f, -0.0f);
+            this.mDragHandle.draw(canvas);
+            canvas.translate(0f, 0f);
+        }
+        return true;
+    }
+
+    public void setDragHandleAlpha(int i2) {
+        if (i2 != this.mDragHandleAlpha) {
+            this.mDragHandleAlpha = i2;
+            Drawable drawable = this.mDragHandle;
+            if (drawable != null) {
+                drawable.setAlpha(i2);
+                invalidate();
+            }
+        }
     }
 
     @Override

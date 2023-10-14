@@ -45,6 +45,7 @@ import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.saggitt.omega.OptionsState;
+import com.saulhdev.neolauncher.hotseat.ExpandableHotseatState;
 
 import java.util.Arrays;
 
@@ -108,7 +109,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
                 }
             };
 
-    private static final LauncherState[] sAllStates = new LauncherState[11];
+    private static final LauncherState[] sAllStates = new LauncherState[12];
 
     /**
      * TODO: Create a separate class for NORMAL state.
@@ -144,7 +145,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
     public static final LauncherState OVERVIEW_SPLIT_SELECT =
             OverviewState.newSplitSelectState(OVERVIEW_SPLIT_SELECT_ORDINAL);
     public static final LauncherState OPTIONS = new OptionsState(OPTIONS_STATE_ORDINAL);
-
+    public static final LauncherState EXPANDABLE_HOTSEAT = new ExpandableHotseatState(11);
     public final int ordinal;
 
     /**
