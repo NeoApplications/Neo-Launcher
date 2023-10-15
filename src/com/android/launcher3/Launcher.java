@@ -222,7 +222,6 @@ import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
-import com.saulhdev.neolauncher.hotseat.ExpandableHotseatSwipeController;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseatTransitionController;
 import com.saulhdev.neolauncher.hotseat.HotseatTransitionController;
 
@@ -3171,7 +3170,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     public TouchController[] createTouchControllers() {
-        return new TouchController[]{getDragController(), new AllAppsSwipeController(this), new ExpandableHotseatSwipeController(this)};
+        return new TouchController[]{getDragController(), new AllAppsSwipeController(this)};
     }
 
     public void useFadeOutAnimationForLauncherStart(CancellationSignal signal) {

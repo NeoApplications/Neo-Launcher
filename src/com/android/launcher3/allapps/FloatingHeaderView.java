@@ -434,7 +434,7 @@ public class FloatingHeaderView extends LinearLayout implements
     public boolean onTouchEvent(MotionEvent event) {
         if (mForwardToRecyclerView) {
             // take this view's and parent view's (view pager) location into account
-            calcOffset(mTempOffset);
+            //calcOffset(mTempOffset);
             event.offsetLocation(mTempOffset.x, mTempOffset.y);
             try {
                 return mCurrentRV.onTouchEvent(event);
