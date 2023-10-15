@@ -61,6 +61,7 @@ import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -76,7 +77,6 @@ import com.saggitt.omega.util.hasStoragePermission
 import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
@@ -96,8 +96,8 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
     private val prefCallback = PreferencesChangeCallback(this)
 
-    private val hiddenApps = ArrayList<AppInfo>()
-    internal val allApps = ArrayList<AppInfo>()
+    val hiddenApps = ArrayList<AppInfo>()
+    val allApps = ArrayList<AppInfo>()
     private var paused = false
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -117,6 +117,9 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         super.onCreate(savedInstanceState)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         prefs.registerCallback(prefCallback)
+
+        MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
+
         val coroutineScope = CoroutineScope(Dispatchers.IO)
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
@@ -135,10 +138,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 }
             }
         }, null)
-
-        coroutineScope.launch {
-            loadHiddenApps(prefs.drawerHiddenAppSet.getValue())
-        }
 
         themeOverride = ThemeOverride(themeSet, this)
         themeOverride.applyTheme(this)
@@ -235,27 +234,28 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
         }
 
-    private suspend fun loadHiddenApps(hiddenAppsSet: Set<String>) {
+    private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
+        val appFilter = AppFilter()
         CoroutineScope(Dispatchers.IO).launch {
-            val appFilter = AppFilter()
             for (user in UserCache.INSTANCE[mContext].userProfiles) {
                 val duplicatePreventionCache: MutableList<ComponentName> = ArrayList()
-                for (info in getSystemService(
-                    LauncherApps::class.java
-                ).getActivityList(null, user)) {
+                for (info in getSystemService(LauncherApps::class.java)
+                    .getActivityList(null, user)) {
                     val key = ComponentKey(info.componentName, info.user)
                     if (hiddenAppsSet.contains(key.toString())) {
                         val appInfo = AppInfo(info, info.user, false)
+                        appInfo.title = info.label
                         hiddenApps.add(appInfo)
                     }
-                    if (prefs.searchHiddenApps.get().first()) {
+                    if (prefs.searchHiddenApps.getValue()) {
                         if (!appFilter.shouldShowApp(info.componentName, user)) {
                             continue
                         }
                         if (!duplicatePreventionCache.contains(info.componentName)) {
                             duplicatePreventionCache.add(info.componentName)
                             val appInfo = AppInfo(mContext, info, user)
+                            appInfo.title = info.label
                             allApps.add(appInfo)
                         }
                     }

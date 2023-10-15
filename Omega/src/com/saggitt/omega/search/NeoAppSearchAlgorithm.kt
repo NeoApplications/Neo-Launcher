@@ -81,11 +81,7 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
 
     private fun getFuzzySearchResult(apps: List<AppInfo>, query: String): ArrayList<AdapterItem> {
         val result = ArrayList<AdapterItem>()
-        val mApps = if (prefs.searchHiddenApps.getValue()) {
-            context.nLauncher.allApps
-        } else {
-            apps
-        }
+
 
         /*val matcher = FuzzySearch.extractSorted( TODO
             query.lowercase(Locale.getDefault()), mApps,
@@ -118,16 +114,17 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         val matcher = StringMatcherUtility.StringMatcher.getInstance()
 
         var resultCount = 0
-        val total = apps.size
-        val mApps = if (prefs.searchHiddenApps.getValue()) {
-            context.nLauncher.allApps
-        } else {
-            apps
+
+        if (prefs.searchHiddenApps.getValue()) {
+            apps.clear()
+            apps.addAll(context.nLauncher.allApps)
         }
+
         var i = 0
 
-        while (i < total && resultCount < DefaultAppSearchAlgorithm.MAX_RESULTS_COUNT) {
-            val info = mApps[i]
+        val total = apps.size
+        while (i < total && resultCount < MAX_RESULTS_COUNT) {
+            val info = apps[i]
             if (StringMatcherUtility.matches(queryTextLower, info.title.toString(), matcher)) {
                 val appItem = AdapterItem.asApp(info)
                 result.add(appItem)
