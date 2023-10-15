@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -76,7 +75,7 @@ fun PreferenceGroup(
         val size = prefs.size
         prefs.forEachIndexed { i, it ->
             PreferenceBuilder(it, onPrefDialog, i, size)
-            if (i + 1 < size) Spacer(modifier = Modifier.height(4.dp))
+            if (i + 1 < size) Spacer(modifier = Modifier.height(2.dp))
         }
     }
 }
