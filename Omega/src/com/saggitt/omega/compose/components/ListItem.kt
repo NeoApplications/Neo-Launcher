@@ -38,8 +38,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.saggitt.omega.preferences.PREFS_DESKTOP_POPUP_REMOVE
 import com.saggitt.omega.preferences.iconIds
 
 @Composable
@@ -108,6 +110,7 @@ fun MultiSelectionListItem(
 
     Row(
         modifier = modifier
+            .padding(start = 16.dp)
             .fillMaxWidth()
             .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
@@ -129,4 +132,15 @@ fun MultiSelectionListItem(
         )
         if (withIcon) checkbox()
     }
+}
+
+@Preview
+@Composable
+fun MultiSelectionListItemPreview() {
+    MultiSelectionListItem(
+        text = "Test",
+        isChecked = true,
+        withIcon = true,
+        iconId = PREFS_DESKTOP_POPUP_REMOVE
+    )
 }
