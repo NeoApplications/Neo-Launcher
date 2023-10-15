@@ -1254,7 +1254,6 @@ public class Launcher extends StatefulActivity<LauncherState>
         mWorkspace.initParentViews(mDragLayer);
         mOverviewPanel = findViewById(R.id.overview_panel);
 
-
         ViewStub viewStub = (ViewStub) findViewById(R.id.hotseat_stub);
         NeoPrefs prefs = NeoPrefs.getInstance(this);
         if (prefs.getDockExpandable().getValue()) {
