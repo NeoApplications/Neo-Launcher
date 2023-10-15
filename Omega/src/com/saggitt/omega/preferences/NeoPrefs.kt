@@ -948,7 +948,6 @@ class NeoPrefs private constructor(val context: Context) {
         entries = { SearchProviderController.getSearchProvidersMap(context) }
     )
 
-    // TODO DimensionPref?
     var searchBarRadius = FloatPref(
         dataStore = dataStore,
         key = PrefKey.SEARCH_CORNER_RADIUS,
@@ -962,7 +961,7 @@ class NeoPrefs private constructor(val context: Context) {
                 it < 0f -> context.getString(R.string.automatic_short)
                 else    -> "${it.roundToInt()}dp"
             }
-        },
+        }
     )
 
     /*var searchProvider = StringSelectionPref(

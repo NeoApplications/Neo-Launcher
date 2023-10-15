@@ -61,6 +61,7 @@ fun SearchPrefsPage() {
     val searchPrefs = listOf(
         prefs.searchProvider,
         prefs.searchHiddenApps,
+        prefs.searchBarRadius
     )
     val feedPrefs = listOf(
         prefs.feedProvider,

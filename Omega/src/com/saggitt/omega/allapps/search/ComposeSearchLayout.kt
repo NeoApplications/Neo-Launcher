@@ -38,6 +38,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -79,7 +80,6 @@ import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
-import kotlin.math.round
 
 @OptIn(ExperimentalComposeUiApi::class)
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
@@ -109,6 +109,14 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                 drawable = if (searchProvider.supportsAssistant) searchProvider.assistantIcon
                 else searchProvider.voiceIcon
             )*/
+
+            var radius by remember { mutableFloatStateOf(0f) }
+            val radiusPrefs = prefs.searchBarRadius.get().collectAsState(initial = 0f)
+            radius = if (radiusPrefs.value < 0) {
+                getCornerRadius()
+            } else {
+                radiusPrefs.value
+            }
 
             var textFieldValue by query
 
@@ -143,7 +151,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                         focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                     ),
-                    shape = RoundedCornerShape(getCornerRadius().dp),
+                    shape = RoundedCornerShape(radius.dp),
                     leadingIcon = {
                         Image(
                             modifier = Modifier.size(24.dp),
@@ -223,10 +231,6 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     private fun getCornerRadius(): Float {
         val defaultRadius = ResourceUtils.pxFromDp(100f, resources.displayMetrics).toFloat()
-        val radius: Float = round(prefs.searchBarRadius.getValue())
-        if (radius >= 0f) {
-            return radius
-        }
         val edgeRadius: TypedValue? = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius)
         return edgeRadius?.getDimension(context.resources.displayMetrics) ?: defaultRadius
     }
