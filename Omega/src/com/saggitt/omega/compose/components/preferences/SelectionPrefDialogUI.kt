@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.components.preferences
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -104,10 +105,17 @@ fun IntSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp, horizontal = 4.dp)
                     .weight(1f, false)
+                    .background(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.shapes.extraLarge
+                    )
                     .blockBorder()
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
@@ -118,6 +126,9 @@ fun IntSelectionPrefDialogUI(
                     ) {
                         selected = it.first
                     }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
 
