@@ -92,7 +92,7 @@ fun CreateGroupBottomSheet(
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
     val openDialog = remember { mutableStateOf(false) }
     val colorPicker = remember { mutableStateOf(false) }
-    var isHidden by remember { mutableStateOf(false) }
+    var isHidden by remember { mutableStateOf(true) }
 
     var color by remember { mutableStateOf(prefs.profileAccentColor.getValue()) }
     val group = when (category) {
