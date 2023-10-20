@@ -82,13 +82,12 @@ import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
 
 @OptIn(ExperimentalComposeUiApi::class)
-open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
+open class ComposeSearchLayout(val context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
     SearchCallback<BaseAllAppsAdapter.AdapterItem> {
-    var mContext: Context = context
-    protected var prefs: NeoPrefs = mContext.prefs
+    protected var prefs: NeoPrefs = context.prefs
     private var spController = SearchProviderController.getInstance(getContext())
-    private val searchAlgorithm = NeoAppSearchAlgorithm(mContext)
+    private val searchAlgorithm = NeoAppSearchAlgorithm(context)
     private val mSearchBarController: AllAppsSearchBarController = AllAppsSearchBarController()
 
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
@@ -253,8 +252,8 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     override fun initializeSearch(containerView: ActivityAllAppsContainerView<*>?) {
         mAppsView = containerView
         mSearchBarController.initialize(
-            NeoAppSearchAlgorithm(mContext.nLauncher),
-            null, /*mCancelButton,*/ mContext.nLauncher, this
+            NeoAppSearchAlgorithm(context.nLauncher),
+            null, /*mCancelButton,*/ context.nLauncher, this
         )
     }
 
@@ -297,7 +296,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
             openURLInBrowser(context, spController.searchProvider.searchUrl.format(query))
             true
         } else {
-            mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
+            context.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
             false
         }
 
