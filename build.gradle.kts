@@ -278,6 +278,7 @@ dependencies {
     implementation("com.raedapps:alwan:$vAlwan")
     implementation("io.github.hokofly:hoko-blur:$vHokoBlur")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$vSerialization")
+    implementation("me.xdrop:fuzzywuzzy:1.4.0")
 
     //Compose
     implementation("androidx.activity:activity-compose:$vActivity")

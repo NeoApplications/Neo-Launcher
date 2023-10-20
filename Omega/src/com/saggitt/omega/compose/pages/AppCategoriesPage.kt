@@ -115,6 +115,7 @@ fun AppCategoriesPage() {
     val (openedOption, onOptionOpen) = remember(manager.getCurrentCategory(), categoriesEnabled) {
         mutableStateOf(manager.getCurrentCategory())
     }
+
     val editGroup = remember {
         mutableStateOf(groups.firstOrNull())
     }
@@ -168,6 +169,8 @@ fun AppCategoriesPage() {
                         SelectTabBottomSheet { changer, categorizationType ->
                             currentCategory = categorizationType
                             sheetChanger = changer
+                            groups.clear()
+                            groups.addAll(loadAppGroups(manager, hasWorkApps))
                         }
                 }
 
@@ -182,6 +185,8 @@ fun AppCategoriesPage() {
                             } else {
                                 Config.BS_CREATE_GROUP
                             }
+                            groups.clear()
+                            groups.addAll(loadAppGroups(manager, hasWorkApps))
                             sheetState.hide()
                         }
                     }

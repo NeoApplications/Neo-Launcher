@@ -53,7 +53,9 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
+import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.groups.category.DrawerTabs
+import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addOrRemove
 
 @Composable
@@ -144,7 +146,12 @@ fun AppTabDialogUI(
                     textId = R.string.tabs_manage,
                     onClick = {
                         openDialogCustom.value = false
-                        //TODO: Review this
+                        context.startActivity(
+                            PreferenceActivity.createIntent(
+                                context,
+                                "/${Routes.CATEGORIZE_APPS}/"
+                            )
+                        )
                     },
                 )
 

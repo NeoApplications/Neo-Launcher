@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.groups.ui
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -335,8 +334,6 @@ fun CreateGroupBottomSheet(
 
             OutlinedButton(
                 onClick = {
-                    Log.d("GROUPS", "color: $color")
-                    onClose(Config.BS_SELECT_TAB_TYPE)
                     coroutineScope.launch {
                         (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
                             title
@@ -375,6 +372,7 @@ fun CreateGroupBottomSheet(
                             else                             -> {}
                         }
                     }
+                    onClose(Config.BS_SELECT_TAB_TYPE)
                 },
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(

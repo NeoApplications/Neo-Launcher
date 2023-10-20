@@ -1,6 +1,7 @@
 package com.saggitt.omega.search
 
 import android.content.Context
+import androidx.lifecycle.asLiveData
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.Utilities
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
@@ -13,11 +14,27 @@ import com.android.launcher3.search.SearchCallback
 import com.android.launcher3.search.StringMatcherUtility
 import com.saggitt.omega.nLauncher
 import com.saggitt.omega.util.prefs
+import me.xdrop.fuzzywuzzy.FuzzySearch
+import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
 import java.util.Locale
 
 class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(context) {
 
     private val prefs = context.prefs
+    private var searchHiddenAppsEnable = false
+
+    init {
+        prefs.searchHiddenApps.get().asLiveData().observeForever {
+            searchHiddenAppsEnable = it
+        }
+    }
+
+    override fun destroy() {
+        super.destroy()
+        prefs.searchHiddenApps.get().asLiveData().removeObserver {
+            searchHiddenAppsEnable = false
+        }
+    }
 
     override fun doSearch(query: String, callback: SearchCallback<AdapterItem>?) {
         mAppState.model.enqueueModelUpdateTask(object : BaseModelUpdateTask() {
@@ -71,32 +88,38 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     private fun getSearchResult(apps: MutableList<AppInfo>, query: String): ArrayList<AdapterItem> {
-        return getTitleMatchResult(apps, query)
-        /*if (prefs.searchFuzzy.getValue()) { TODO
+        return if (prefs.searchFuzzy.getValue()) {
             getFuzzySearchResult(apps, query)
         } else {
             getTitleMatchResult(apps, query)
-        }*/
+        }
     }
 
-    private fun getFuzzySearchResult(apps: List<AppInfo>, query: String): ArrayList<AdapterItem> {
+    private fun getFuzzySearchResult(
+        apps: MutableList<AppInfo>,
+        query: String
+    ): ArrayList<AdapterItem> {
         val result = ArrayList<AdapterItem>()
+        val mApps = apps
+        if (searchHiddenAppsEnable) {
+            mApps.clear()
+            mApps.addAll(context.nLauncher.allApps)
+        }
 
-
-        /*val matcher = FuzzySearch.extractSorted( TODO
-            query.lowercase(Locale.getDefault()), mApps,
+        val matcher = FuzzySearch.extractSorted(
+            query.lowercase(Locale.getDefault()), apps,
             { it!!.title.toString() }, WeightedRatio(), 65
         )
         var resultCount = 0
         val total = matcher.size
         var i = 0
-        while (i < total && resultCount < DefaultAppSearchAlgorithm.MAX_RESULTS_COUNT) {
-            val info = matcher!![i]
-            val appItem = AdapterItem.asApp(resultCount, "", info.referent, resultCount)
+        while (i < total && resultCount < MAX_RESULTS_COUNT) {
+            val info = matcher[i].referent
+            val appItem = AdapterItem.asApp(info)
             result.add(appItem)
             resultCount++
             i++
-        }*/
+        }
 
         return result
     }
@@ -114,17 +137,17 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         val matcher = StringMatcherUtility.StringMatcher.getInstance()
 
         var resultCount = 0
-
-        if (prefs.searchHiddenApps.getValue()) {
-            apps.clear()
-            apps.addAll(context.nLauncher.allApps)
+        val mApps = apps
+        if (searchHiddenAppsEnable) {
+            mApps.clear()
+            mApps.addAll(context.nLauncher.allApps)
         }
 
         var i = 0
 
-        val total = apps.size
+        val total = mApps.size
         while (i < total && resultCount < MAX_RESULTS_COUNT) {
-            val info = apps[i]
+            val info = mApps[i]
             if (StringMatcherUtility.matches(queryTextLower, info.title.toString(), matcher)) {
                 val appItem = AdapterItem.asApp(info)
                 result.add(appItem)

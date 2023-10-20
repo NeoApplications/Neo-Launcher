@@ -33,6 +33,7 @@ import android.os.Looper
 import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.IntentSenderRequest
@@ -80,7 +81,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
-// compiler is misidentifying lifecycle's getter(s), ignore the warning for now
 class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
 
@@ -291,6 +291,20 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         super.onResume()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         restartIfPending()
+        dragLayer.viewTreeObserver.addOnDrawListener(object : ViewTreeObserver.OnDrawListener {
+            private var handled = false
+
+            override fun onDraw() {
+                if (handled) {
+                    return
+                }
+                handled = true
+
+                dragLayer.post {
+                    dragLayer.viewTreeObserver.removeOnDrawListener(this)
+                }
+            }
+        })
         paused = false
     }
 
@@ -316,9 +330,17 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         savedStateRegistryController.performSave(outState)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (activityResultRegistry.dispatchResult(requestCode, resultCode, data)) {
+            mPendingActivityRequestCode = -1
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     override fun setupViews() {
         super.setupViews()
-        findViewById<LauncherRootView>(R.id.launcher).let {
+        findViewById<LauncherRootView>(R.id.launcher).also {
             it.setViewTreeLifecycleOwner(this)
             it.setViewTreeSavedStateRegistryOwner(this)
         }
@@ -371,7 +393,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         list.add(dragController)
         list.add(AllAppsSwipeController(this))
         list.add(VerticalSwipeGestureController(this))
-
 
         return list.toTypedArray()
     }

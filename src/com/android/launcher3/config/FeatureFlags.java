@@ -80,7 +80,7 @@ public final class FeatureFlags {
             "PROMISE_APPS_IN_ALL_APPS", false, "Add promise icon in all-apps");
 
     public static final BooleanFlag KEYGUARD_ANIMATION = getDebugFlag(270390904,
-            "KEYGUARD_ANIMATION", true, "Enable animation for keyguard going away on wallpaper");
+            "KEYGUARD_ANIMATION", false, "Enable animation for keyguard going away on wallpaper");
 
     public static final BooleanFlag ENABLE_DEVICE_SEARCH = getReleaseFlag(270390907,
             "ENABLE_DEVICE_SEARCH", true, "Allows on device search in all apps");
@@ -234,15 +234,15 @@ public final class FeatureFlags {
                     + " to have better visuals");
 
     public static final BooleanFlag SECONDARY_DRAG_N_DROP_TO_PIN = getDebugFlag(270395140,
-            "SECONDARY_DRAG_N_DROP_TO_PIN", false,
+            "SECONDARY_DRAG_N_DROP_TO_PIN", true,
             "Enable dragging and dropping to pin apps within secondary display");
 
     public static final BooleanFlag SHOW_HOME_GARDENING = getDebugFlag(270395183,
-            "SHOW_HOME_GARDENING", true,
+            "SHOW_HOME_GARDENING", false,
             "Show the new home gardening mode");
 
     public static final BooleanFlag ENABLE_DISMISS_PREDICTION_UNDO = getDebugFlag(270394476,
-            "ENABLE_DISMISS_PREDICTION_UNDO", false,
+            "ENABLE_DISMISS_PREDICTION_UNDO", true,
             "Show an 'Undo' snackbar when users dismiss a predicted hotseat item");
 
     public static final BooleanFlag ENABLE_CACHED_WIDGET = getDebugFlag(270395008,

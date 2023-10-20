@@ -82,12 +82,13 @@ import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
 
 @OptIn(ExperimentalComposeUiApi::class)
-open class ComposeSearchLayout(val context: Context, attrs: AttributeSet? = null) :
+open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
     SearchCallback<BaseAllAppsAdapter.AdapterItem> {
-    protected var prefs: NeoPrefs = context.prefs
+    val mContext = context
+    protected var prefs: NeoPrefs = mContext.prefs
     private var spController = SearchProviderController.getInstance(getContext())
-    private val searchAlgorithm = NeoAppSearchAlgorithm(context)
+    private val searchAlgorithm = NeoAppSearchAlgorithm(mContext)
     private val mSearchBarController: AllAppsSearchBarController = AllAppsSearchBarController()
 
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
@@ -210,9 +211,9 @@ open class ComposeSearchLayout(val context: Context, attrs: AttributeSet? = null
                     ),
                 )
                 IconButton(onClick = {
-                    context.startActivity(
+                    mContext.startActivity(
                         PreferenceActivity.createIntent(
-                            context,
+                            mContext,
                             "${Routes.PREFS_SEARCH}/"
                         )
                     )
@@ -252,8 +253,8 @@ open class ComposeSearchLayout(val context: Context, attrs: AttributeSet? = null
     override fun initializeSearch(containerView: ActivityAllAppsContainerView<*>?) {
         mAppsView = containerView
         mSearchBarController.initialize(
-            NeoAppSearchAlgorithm(context.nLauncher),
-            null, /*mCancelButton,*/ context.nLauncher, this
+            NeoAppSearchAlgorithm(mContext.nLauncher),
+            null, /*mCancelButton,*/ mContext.nLauncher, this
         )
     }
 
@@ -293,10 +294,10 @@ open class ComposeSearchLayout(val context: Context, attrs: AttributeSet? = null
 
     override fun onSubmitSearch(query: String?): Boolean =
         if (spController.searchProvider.searchUrl.isNotEmpty()) {
-            openURLInBrowser(context, spController.searchProvider.searchUrl.format(query))
+            openURLInBrowser(mContext, spController.searchProvider.searchUrl.format(query))
             true
         } else {
-            context.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
+            mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
             false
         }
 
