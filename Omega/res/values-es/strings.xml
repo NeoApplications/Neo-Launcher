@@ -322,7 +322,7 @@
     <string name="action_open_overview">Mostrar Burbuja de Escritorio</string>
     <string name="title__search_bar_radius">Radio de Esquina</string>
     <string name="folder_background">Color del fondo de carpeta</string>
-    <string name="summary__dev_restart">Puede ser útil si algunas configuraciones no se aplican correctamente</string>
+    <string name="summary__dev_restart">Puede ser ayuda si algunos parámetros no son aplicados apropiadamente</string>
     <string name="feed_widget">Widgets</string>
     <string name="about_build_information">Informe de compilación</string>
     <string name="dash_launcher_settings_summary">Representa los parámetros del lanzador</string>
