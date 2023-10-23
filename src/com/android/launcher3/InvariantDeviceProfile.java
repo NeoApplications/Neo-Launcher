@@ -103,6 +103,11 @@ public class InvariantDeviceProfile {
     public static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
 
     /**
+     * Original profile before preference overrides
+     */
+    public GridOption closestProfile;
+
+    /**
      * These resources are used to override the device profile
      */
     private static final String RES_GRID_NUM_ROWS = "grid_num_rows";
@@ -264,11 +269,10 @@ public class InvariantDeviceProfile {
      * Reinitialize the current grid after a restore, where some grids might now be disabled.
      */
     public void reinitializeAfterRestore(Context context) {
-        String currentGridName = getCurrentGridName(context);
         String currentDbFile = dbFile;
+        String currentGridName = getCurrentGridName(context);
         String newGridName = initGrid(context, currentGridName);
-        String newDbFile = dbFile;
-        if (!newDbFile.equals(currentDbFile)) {
+        if (!newGridName.equals(currentGridName)) {
             Log.d(TAG, "Restored grid is disabled : " + currentGridName
                     + ", migrating to: " + newGridName
                     + ", removing all other grid db files");
@@ -280,7 +284,7 @@ public class InvariantDeviceProfile {
                     Log.d(TAG, "Removed old grid db file: " + gridDbFile);
                 }
             }
-            setCurrentGrid(context, newGridName);
+            setCurrentGrid(context, currentGridName);
         }
     }
 
@@ -335,13 +339,14 @@ public class InvariantDeviceProfile {
         DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
                 .getOverrides(displayOption.grid);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        GridOption closestProfile = displayOption.grid;
+        closestProfile = displayOption.grid;
         numRows = dbGridInfo.getNumRows();
-        numHotseatRows = dbGridInfo.getNumHotseatRows();
         numRowsOriginal = numRows;
         numColumns = dbGridInfo.getNumColumns();
         numColumnsOriginal = numColumns;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
+        numHotseatIcons = closestProfile.numHotseatIcons;
+        numHotseatIconsOriginal = closestProfile.numHotseatIcons;
         dbFile = dbGridInfo.getDbFile();
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
@@ -396,7 +401,7 @@ public class InvariantDeviceProfile {
         inlineQsb = displayOption.inlineQsb;
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
-        applyPartnerDeviceProfileOverrides(context, metrics);
+        //applyPartnerDeviceProfileOverrides(context, metrics);
         overrideOptions.applyUi(this);
         for (int i = 1; i < iconSize.length; i++) {
             maxIconSize = Math.max(maxIconSize, iconSize[i]);
@@ -438,7 +443,7 @@ public class InvariantDeviceProfile {
     public void setCurrentGrid(Context context, String gridName) {
         DeviceProfileOverrides.INSTANCE.get(context).setCurrentGrid(gridName);
         Context appContext = context.getApplicationContext();
-        Utilities.getPrefs(appContext).edit().putString(KEY_IDP_GRID_NAME, gridName).apply();
+        //Utilities.getPrefs(appContext).edit().putString(KEY_IDP_GRID_NAME, gridName).apply();
         MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
     }
     public void onPreferencesChanged(Context context) {
