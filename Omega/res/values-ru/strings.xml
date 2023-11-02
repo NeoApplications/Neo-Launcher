@@ -192,7 +192,7 @@
     <string name="icon_shape_circle">Круг</string>
     <string name="icon_shape_squircle">Скругленный квадрат</string>
     <string name="icon_shape_square">Квадрат</string>
-    <string name="icon_shape_system_default">Система</string>
+    <string name="icon_shape_system_default">Системная</string>
     <string name="icon_shape_override_label_location">на домашнем экране</string>
     <string name="icon_shape_override_label">Изменить форму иконки</string>
     <string name="icon_shape_override_progress">Применение изменений формы иконки</string>
@@ -212,7 +212,7 @@
     <string name="theme_with_dark_text">темный текст</string>
     <string name="theme_light">Светлый</string>
     <string name="theme_based">Задано темой</string>
-    <string name="theme_auto_night_mode">Система</string>
+    <string name="theme_auto_night_mode">Как в системе</string>
     <string name="theme_auto">В соответствии с обоями</string>
     <string name="summary__theme_blur">Размытие фона страницы</string>
     <string name="title_theme_icon_packs">Наборы иконок</string>
@@ -365,7 +365,7 @@
     <string name="trust_apps_manager_name">Скрытые и защищенные приложения</string>
     <string name="enable_protected_apps">Включить защищенные приложения</string>
     <string name="disable_protected_apps_message">Отключить защищенные приложения, требующие аутентификации</string>
-    <string name="theme_auto_night_mode_black">Система (черная)</string>
+    <string name="theme_auto_night_mode_black">Как в системе (чёрная)</string>
     <string name="about_community">Сообщество</string>
     <string name="dash_bluetooth">Bluetooth</string>
     <string name="pref_desktop_mode">Режим рабочего стола</string>
