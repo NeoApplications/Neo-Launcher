@@ -507,4 +507,7 @@
     <string name="gesture_press_recents">Botón de Recientes</string>
     <string name="about_community_telegram">La Comunidad en Telegram</string>
     <string name="about_community_matrix">La Comunidad en Matrix</string>
+    <string name="hotseat_accessibility_expand">Dock expandido</string>
+    <string name="hotseat_accessibility_collapse">Dock colapsado</string>
+    <string name="title_expandable_dock">Dock Ampliable</string>
 </resources>
