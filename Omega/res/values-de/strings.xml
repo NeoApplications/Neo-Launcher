@@ -505,4 +505,7 @@
     <string name="about_community_matrix">Community auf Matrix</string>
     <string name="title_smartspace_time_format">Zeitformat</string>
     <string name="title_calendar_persian">Persisch</string>
+    <string name="hotseat_accessibility_expand">Dock ausgeklappt</string>
+    <string name="hotseat_accessibility_collapse">Dock eingeklappt</string>
+    <string name="title_expandable_dock">Ausklappbares Dock</string>
 </resources>
