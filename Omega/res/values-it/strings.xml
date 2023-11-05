@@ -522,4 +522,7 @@
     <string name="title_smartspace_calendar">Seleziona calendario</string>
     <string name="gesture_press_recents">Pulsante recenti</string>
     <string name="about_community_matrix">Comunità su Matrix</string>
+    <string name="hotseat_accessibility_expand">Barra app aperta</string>
+    <string name="hotseat_accessibility_collapse">Barra app chiusa</string>
+    <string name="title_expandable_dock">Barra app espandibile</string>
 </resources>
