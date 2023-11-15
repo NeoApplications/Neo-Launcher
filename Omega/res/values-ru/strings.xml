@@ -509,4 +509,7 @@
     <string name="web_search_neeva">Neeva (Веб)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Веб)</string>
     <string name="web_search_perplexity">Perplexity (Веб)</string>
+    <string name="hotseat_accessibility_expand">Панель развёрнута</string>
+    <string name="hotseat_accessibility_collapse">Панель свёрнута</string>
+    <string name="title_expandable_dock">Разворачиваемая панель</string>
 </resources>
