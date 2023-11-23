@@ -66,7 +66,7 @@ fun MainPrefsPage() {
         PageItem.PrefsGesturesDash
     )
     val otherPrefs = listOfNotNull(
-        PageItem.PrefsBackup,
+            //PageItem.PrefsBackup,
         //PageItem.PrefsDesktopMode,
         if (prefs.developerOptionsEnabled.getValue()) PageItem.PrefsDeveloper
         else null,
