@@ -75,7 +75,6 @@ import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.theme.kaushanScript
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.blockBorder
 import java.io.InputStream
 
 @OptIn(ExperimentalCoilApi::class)
@@ -107,22 +106,21 @@ fun AboutPrefPage() {
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .blockBorder(),
+                    .fillMaxSize()
+                    .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface,
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .padding(12.dp),
+                            .fillMaxWidth()
+                            .padding(4.dp)
+                            .background(
+                                    MaterialTheme.colorScheme.surface,
+                                    MaterialTheme.shapes.extraLarge
+                            )
+                            .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -146,8 +144,8 @@ fun AboutPrefPage() {
                                     bitmap = bitmap.asImageBitmap(),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .requiredSize(84.dp)
-                                        .clip(MaterialTheme.shapes.large)
+                                            .requiredSize(84.dp)
+                                            .clip(MaterialTheme.shapes.large)
                                 )
                             }
                         },
