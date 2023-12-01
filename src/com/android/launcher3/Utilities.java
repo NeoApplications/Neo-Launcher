@@ -97,6 +97,7 @@ import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.SearchActionItemInfo;
+import com.android.launcher3.pm.ShortcutConfigActivityInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
@@ -108,6 +109,7 @@ import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
+import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 
@@ -757,6 +759,12 @@ public final class Utilities {
                     .getIconProvider().getIcon(
                             activityInfo, activity.getDeviceProfile().inv.fillResIconDpi);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
+            if (info instanceof PendingAddShortcutInfo) {
+                ShortcutConfigActivityInfo activityInfo =
+                        ((PendingAddShortcutInfo) info).mActivityInfo;
+                outObj[0] = activityInfo;
+                return activityInfo.getFullResIcon(appState.getIconCache());
+            }
             List<ShortcutInfo> si = ShortcutKey.fromItemInfo(info)
                     .buildRequest(context)
                     .query(ShortcutRequest.ALL);
