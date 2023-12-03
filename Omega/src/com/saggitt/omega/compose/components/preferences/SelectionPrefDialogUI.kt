@@ -105,13 +105,13 @@ fun IntSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 4.dp)
-                    .weight(1f, false)
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.shapes.extraLarge
-                    )
-                    .blockBorder()
+                        .padding(vertical = 8.dp, horizontal = 4.dp)
+                        .weight(1f, false)
+                        .background(
+                                MaterialTheme.colorScheme.background,
+                                MaterialTheme.shapes.extraLarge
+                        )
+                        .blockBorder()
             ) {
                 item {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -133,9 +133,9 @@ fun IntSelectionPrefDialogUI(
             }
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -193,9 +193,10 @@ fun LongSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(1f, false)
-                    .blockBorder(),
+                        .padding(vertical = 8.dp, horizontal = 4.dp)
+                        .weight(1f, false)
+                        .background(color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.extraLarge)
+                        .blockBorder(),
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -211,9 +212,9 @@ fun LongSelectionPrefDialogUI(
             }
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -262,9 +263,9 @@ fun StringSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(1f, false)
-                    .blockBorder()
+                        .padding(vertical = 8.dp)
+                        .weight(1f, false)
+                        .blockBorder()
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -280,9 +281,9 @@ fun StringSelectionPrefDialogUI(
             }
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -331,9 +332,9 @@ fun StringMultiSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(1f, false)
-                    .blockBorder()
+                        .padding(vertical = 8.dp)
+                        .weight(1f, false)
+                        .blockBorder()
             ) {
                 items(items = entryPairs) { item ->
                     val isSelected = rememberSaveable(selected) {
@@ -353,9 +354,9 @@ fun StringMultiSelectionPrefDialogUI(
             }
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -410,9 +411,9 @@ fun ResetCustomIconsDialog(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
