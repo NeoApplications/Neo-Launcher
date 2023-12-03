@@ -55,8 +55,8 @@ fun SingleSelectionListItem(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick, enabled = isEnabled),
+                .fillMaxWidth()
+                .clickable(onClick = onClick, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -110,22 +110,24 @@ fun MultiSelectionListItem(
 
     Row(
         modifier = modifier
-            .padding(start = 16.dp)
-            .fillMaxWidth()
-            .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
+                .fillMaxWidth()
+                .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (withIcon) iconIds[iconId]?.let {
             Icon(
-                modifier = Modifier.size(32.dp),
+                    modifier = Modifier
+                            .size(32.dp)
+                            .padding(start = 16.dp),
                 painter = painterResource(id = it),
                 contentDescription = text,
             )
-            Spacer(modifier = Modifier.width(12.dp))
         }
         else checkbox()
         Text(
-            modifier = Modifier.weight(1f),
+                modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp),
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
