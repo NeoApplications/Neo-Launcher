@@ -263,8 +263,12 @@ fun StringSelectionPrefDialogUI(
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp, horizontal = 4.dp)
                         .weight(1f, false)
+                        .background(
+                                color = MaterialTheme.colorScheme.background,
+                                shape = MaterialTheme.shapes.extraLarge
+                        )
                         .blockBorder()
             ) {
                 items(items = entryPairs) {
