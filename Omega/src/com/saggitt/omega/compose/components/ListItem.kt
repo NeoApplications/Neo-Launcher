@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -111,14 +112,15 @@ fun MultiSelectionListItem(
     Row(
         modifier = modifier
                 .fillMaxWidth()
+                .height(56.dp)
                 .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (withIcon) iconIds[iconId]?.let {
+            Spacer(modifier = Modifier.width(16.dp))
             Icon(
                     modifier = Modifier
-                            .size(32.dp)
-                            .padding(start = 16.dp),
+                            .size(32.dp),
                 painter = painterResource(id = it),
                 contentDescription = text,
             )
