@@ -18,10 +18,12 @@
 
 package com.saggitt.omega.compose.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,14 +40,15 @@ fun DialogPositiveButton(
     textId: Int = android.R.string.ok,
     onClick: () -> Unit = {},
 ) {
-    TextButton(
+    OutlinedButton(
         shape = RoundedCornerShape(cornerRadius),
         onClick = onClick,
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
             contentColor = MaterialTheme.colorScheme.onPrimary
-        )
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.65F))
     ) {
         Text(
             text = stringResource(id = textId),

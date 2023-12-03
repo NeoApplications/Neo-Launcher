@@ -57,6 +57,7 @@ fun SingleSelectionListItem(
     Row(
         modifier = modifier
                 .fillMaxWidth()
+                .height(48.dp)
                 .clickable(onClick = onClick, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -80,7 +81,6 @@ fun SingleSelectionListItem(
         if (endWidget != null) {
             Spacer(modifier = Modifier.width(8.dp))
             endWidget()
-            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
