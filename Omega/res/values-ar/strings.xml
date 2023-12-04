@@ -513,4 +513,7 @@
     <string name="title_calendar_persian">الفارسي</string>
     <string name="title_calendar_gregorian">الميلادي</string>
     <string name="about_community_matrix">المجتمع على ماتريكس</string>
+    <string name="hotseat_accessibility_expand">تن توسيع الرف</string>
+    <string name="hotseat_accessibility_collapse">تم طي الرف</string>
+    <string name="title_expandable_dock">رف قابل لتوسع</string>
 </resources>

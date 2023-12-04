@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -55,8 +56,9 @@ fun SingleSelectionListItem(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick, enabled = isEnabled),
+                .fillMaxWidth()
+                .height(48.dp)
+                .clickable(onClick = onClick, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -79,7 +81,6 @@ fun SingleSelectionListItem(
         if (endWidget != null) {
             Spacer(modifier = Modifier.width(8.dp))
             endWidget()
-            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
@@ -110,22 +111,25 @@ fun MultiSelectionListItem(
 
     Row(
         modifier = modifier
-            .padding(start = 16.dp)
-            .fillMaxWidth()
-            .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (withIcon) iconIds[iconId]?.let {
+            Spacer(modifier = Modifier.width(16.dp))
             Icon(
-                modifier = Modifier.size(32.dp),
+                    modifier = Modifier
+                            .size(32.dp),
                 painter = painterResource(id = it),
                 contentDescription = text,
             )
-            Spacer(modifier = Modifier.width(12.dp))
         }
         else checkbox()
         Text(
-            modifier = Modifier.weight(1f),
+                modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp),
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold

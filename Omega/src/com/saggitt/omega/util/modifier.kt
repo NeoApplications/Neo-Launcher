@@ -21,10 +21,10 @@ inline fun <T> Modifier.addIfNotNull(
 
 fun Modifier.blockBorder() = composed {
     this
-        .clip(MaterialTheme.shapes.extraLarge)
-        .border(
-            2.dp,
-            MaterialTheme.colorScheme.outlineVariant,
-            MaterialTheme.shapes.extraLarge,
-        )
+            .clip(MaterialTheme.shapes.extraLarge)
+            .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant,
+                    MaterialTheme.shapes.extraLarge,
+            )
 }
