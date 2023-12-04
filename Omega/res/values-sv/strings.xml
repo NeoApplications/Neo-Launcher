@@ -8,4 +8,17 @@
     <string name="title__general_about">Om</string>
     <string name="title__general_theme">Tema</string>
     <string name="title__general_notifications">Gester och Notifikationer</string>
+    <string name="title__general_drawer">Låda</string>
+    <string name="folder_name">Mappnamn</string>
+    <string name="summary__general_dock">Hotseat-ikoner, sökfält</string>
+    <string name="title__general_search_feed">Sök &amp; Flöde</string>
+    <string name="summary__general_drawer">Anpassa din låda</string>
+    <string name="title__general_gestures_dash">Gester &amp; Dash</string>
+    <string name="title__general_profile">Profil</string>
+    <string name="title__general_smartspace">Hemwidget</string>
+    <string name="title__general_widgets_notifications">Widgetar &amp; Notifikationer</string>
+    <string name="summary__general_search">Sökleverantör, stil, ikoner</string>
+    <string name="summary__general_theme">Ändra färger, ikonpack, ikonstorlek</string>
+    <string name="summary__general_smartspace">Datum, tid, hemwidget</string>
+    <string name="title__general_dock">Docka</string>
 </resources>
