@@ -32,7 +32,6 @@ import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.ItemInfoWithIcon
@@ -55,7 +54,7 @@ class OmegaShortcuts {
         private val launcher: NeoLauncher,
         private val appInfo: ModelAppInfo,
         itemInfo: ItemInfo,
-        originalView: View
+        originalView: View,
     ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_edit_no_shadow,
         R.string.action_preferences, launcher, itemInfo,
@@ -66,9 +65,9 @@ class OmegaShortcuts {
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
             var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
-            if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
+            /*if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
                 icon = icon.getThemedDrawable(launcher)
-            }
+            }*/
 
             val launcherActivityInfo = outObj[0] as LauncherActivityInfo
             val defaultTitle = launcherActivityInfo.label.toString()
@@ -104,7 +103,7 @@ class OmegaShortcuts {
     class AppRemove(
         private val launcher: NeoLauncher,
         itemInfo: ItemInfo,
-        originalView: View
+        originalView: View,
     ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_remove_no_shadow,
         R.string.remove_drop_target_label, launcher, itemInfo,
@@ -122,7 +121,7 @@ class OmegaShortcuts {
     class AppUninstall(
         private val launcher: NeoLauncher,
         itemInfo: ItemInfo,
-        originalView: View
+        originalView: View,
     ) : SystemShortcut<NeoLauncher>(
         R.drawable.ic_uninstall_no_shadow,
         R.string.uninstall_drop_target_label, launcher, itemInfo, originalView

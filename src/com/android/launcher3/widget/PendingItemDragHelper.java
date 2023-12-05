@@ -16,6 +16,8 @@
 
 package com.android.launcher3.widget;
 
+import static com.android.launcher3.icons.BaseIconFactory.MODE_HARDWARE;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -81,7 +83,9 @@ public class PendingItemDragHelper extends DragPreviewProvider {
         mRemoteViewsPreviewScale = previewScale;
     }
 
-    /** Sets a {@link NavigableAppWidgetHostView} which shows a preview layout of an app widget. */
+    /**
+     * Sets a {@link NavigableAppWidgetHostView} which shows a preview layout of an app widget.
+     */
     public void setAppWidgetHostViewPreview(
             @Nullable NavigableAppWidgetHostView appWidgetHostViewPreview) {
         mAppWidgetHostViewPreview = appWidgetHostViewPreview;
@@ -90,14 +94,14 @@ public class PendingItemDragHelper extends DragPreviewProvider {
     /**
      * Starts the drag for the pending item associated with the view.
      *
-     * @param previewBounds The bounds where the image was displayed,
-     *                      {@link WidgetImageView#getBitmapBounds()}
+     * @param previewBounds      The bounds where the image was displayed,
+     *                           {@link WidgetImageView#getBitmapBounds()}
      * @param previewBitmapWidth The actual width of the bitmap displayed in the view.
-     * @param previewViewWidth The width of {@link WidgetImageView} displaying the preview
-     * @param screenPos Position of {@link WidgetImageView} on the screen
+     * @param previewViewWidth   The width of {@link WidgetImageView} displaying the preview
+     * @param screenPos          Position of {@link WidgetImageView} on the screen
      */
     public void startDrag(Rect previewBounds, int previewBitmapWidth, int previewViewWidth,
-            Point screenPos, DragSource source, DragOptions options) {
+                          Point screenPos, DragSource source, DragOptions options) {
         if (TestProtocol.sDebugTracing) {
             Log.d(TestProtocol.NO_DROP_TARGET, "3");
         }
@@ -184,7 +188,7 @@ public class PendingItemDragHelper extends DragPreviewProvider {
             Drawable icon = createShortcutInfo.getActivityInfo(launcher)
                     .getFullResIcon(app.getIconCache());
             LauncherIcons li = LauncherIcons.obtain(launcher);
-            preview = new FastBitmapDrawable(li.createScaledBitmapWithoutShadow(icon));
+            preview = new FastBitmapDrawable(li.createScaledBitmap(icon, MODE_HARDWARE));
             previewWidth = preview.getIntrinsicWidth();
             previewHeight = preview.getIntrinsicHeight();
             li.recycle();

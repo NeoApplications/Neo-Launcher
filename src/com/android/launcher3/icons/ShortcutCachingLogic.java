@@ -16,6 +16,8 @@
 
 package com.android.launcher3.icons;
 
+import static com.android.launcher3.icons.BaseIconFactory.MODE_HARDWARE;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.LauncherApps;
@@ -75,7 +77,7 @@ public class ShortcutCachingLogic implements CachingLogic<ShortcutInfo> {
             Drawable unbadgedDrawable = ShortcutCachingLogic.getIcon(
                     context, info, LauncherAppState.getIDP(context).fillResIconDpi);
             if (unbadgedDrawable == null) return BitmapInfo.LOW_RES_INFO;
-            return new BitmapInfo(li.createScaledBitmapWithoutShadow(unbadgedDrawable),
+            return new BitmapInfo(li.createScaledBitmap(unbadgedDrawable, MODE_HARDWARE),
                     Themes.getColorAccent(context));
         }
     }
