@@ -16,6 +16,10 @@
 */
 -->
 <resources>
+    <color name="themed_icon_color">#0842A0</color>
+    <color name="themed_icon_background_color">#D3E3FD</color>
+    <color name="themed_badge_icon_color">#0842A0</color>
+    <color name="themed_badge_icon_background_color">#D3E3FD</color>
     <color name="legacy_icon_background">#FFFFFF</color>
 
     <!-- Yellow 600, used for highlighting "important" conversations in settings & notifications -->

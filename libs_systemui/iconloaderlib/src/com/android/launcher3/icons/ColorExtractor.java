@@ -56,7 +56,7 @@ public class ColorExtractor {
      *
      * @param bitmap The bitmap to scan
      */
-    public int findDominantColorByHue(@NonNull final Bitmap bitmap, final int samples) {
+    protected int findDominantColorByHue(@NonNull final Bitmap bitmap, final int samples) {
         final int height = bitmap.getHeight();
         final int width = bitmap.getWidth();
         int sampleStride = (int) Math.sqrt((height * width) / samples);

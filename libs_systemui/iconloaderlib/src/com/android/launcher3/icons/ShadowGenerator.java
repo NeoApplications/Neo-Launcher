@@ -58,7 +58,7 @@ public class ShadowGenerator {
         mDefaultBlurMaskFilter = new BlurMaskFilter(mIconSize * BLUR_FACTOR, Blur.NORMAL);
     }
 
-    public synchronized void recreateIcon(Bitmap icon, Canvas out) {
+    public synchronized void drawShadow(Bitmap icon, Canvas out) {
         if (ENABLE_SHADOWS) {
             int[] offset = new int[2];
             mBlurPaint.setMaskFilter(mDefaultBlurMaskFilter);
@@ -73,10 +73,6 @@ public class ShadowGenerator {
             out.drawBitmap(shadow, offset[0], offset[1] + KEY_SHADOW_DISTANCE * mIconSize,
                     mDrawPaint);
         }
-
-        // Draw the icon
-        mDrawPaint.setAlpha(255);
-        out.drawBitmap(icon, 0, 0, mDrawPaint);
     }
 
     /**

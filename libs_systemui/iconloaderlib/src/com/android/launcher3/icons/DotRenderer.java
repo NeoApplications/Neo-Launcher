@@ -42,7 +42,7 @@ public class DotRenderer {
     private final float mCircleRadius;
     private final Paint mCirclePaint = new Paint(ANTI_ALIAS_FLAG | FILTER_BITMAP_FLAG);
 
-    private Bitmap mBackgroundWithShadow;
+    private final Bitmap mBackgroundWithShadow;
     private final float mBitmapOffset;
 
     // Stores the center x and y position as a percentage (0 to 1) of the icon size
@@ -51,20 +51,8 @@ public class DotRenderer {
 
     private static final int MIN_DOT_SIZE = 1;
 
-    private final Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private static final float TEXT_SIZE_PERCENTAGE = 0.26f;
-    private static final float STACK_OFFSET_PERCENTAGE_X = 0.05f;
-    private static final float STACK_OFFSET_PERCENTAGE_Y = 0.06f;
-    private static final float OFFSET_PERCENTAGE = 0.02f;
-    private final int mTextHeight;
-    private int size;
-    private final int mStackOffsetX;
-    private final int mStackOffsetY;
-    private final int mOffset;
-    private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-
-    public DotRenderer(int iconSizePx, Path iconShapePath, float pathSize, float dotSize) {
-        size = Math.round(dotSize * iconSizePx);
+    public DotRenderer(int iconSizePx, Path iconShapePath, int pathSize) {
+        int size = Math.round(SIZE_PERCENTAGE * iconSizePx);
         if (size <= 0) {
             size = MIN_DOT_SIZE;
         }
@@ -75,20 +63,9 @@ public class DotRenderer {
 
         mBitmapOffset = -mBackgroundWithShadow.getHeight() * 0.5f; // Same as width.
 
-        mStackOffsetX = (int) (STACK_OFFSET_PERCENTAGE_X * iconSizePx);
-        mStackOffsetY = (int) (STACK_OFFSET_PERCENTAGE_Y * iconSizePx);
-        mOffset = (int) (OFFSET_PERCENTAGE * iconSizePx);
-
         // Find the points on the path that are closest to the top left and right corners.
         mLeftDotPosition = getPathPoint(iconShapePath, pathSize, -1);
         mRightDotPosition = getPathPoint(iconShapePath, pathSize, 1);
-
-        // Measure the text height.
-        Rect tempTextHeight = new Rect();
-        mTextPaint.setTextSize(iconSizePx * TEXT_SIZE_PERCENTAGE);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.getTextBounds("0", 0, 1, tempTextHeight);
-        mTextHeight = tempTextHeight.height();
     }
 
     private static float[] getPathPoint(Path path, float size, float direction) {
@@ -146,35 +123,10 @@ public class DotRenderer {
         canvas.translate(dotCenterX + offsetX, dotCenterY + offsetY);
         canvas.scale(params.scale, params.scale);
 
-
-        // Prepare the background and shadow and possible stacking effect.
-        int backgroundWithShadowSize = mBackgroundWithShadow.getHeight(); // Same as width.
-        mTextPaint.setColor(Color.WHITE);
-        boolean isText = params.showCount && params.count != 0;
-        String count = String.valueOf(params.count);
-        boolean shouldStack = isText && params.notificationKeys > 1;
-
-        ShadowGenerator.Builder builder = new ShadowGenerator.Builder(params.dotColor);
-        mBackgroundWithShadow = builder.setupBlurForSize(size).createPill(size, size);
         mCirclePaint.setColor(Color.BLACK);
         canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
-        if (shouldStack) {
-
-            int offsetDiffX = mStackOffsetX - mOffset;
-            int offsetDiffY = mStackOffsetY - mOffset;
-            canvas.translate(offsetDiffX, offsetDiffY);
-            canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f,
-                    -backgroundWithShadowSize / 2f, mBackgroundPaint);
-            canvas.translate(-offsetDiffX, -offsetDiffY);
-        }
-        if (isText) {
-            mBackgroundPaint.setColor(params.dotColor);
-            canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f, -backgroundWithShadowSize / 2f, mBackgroundPaint);
-            canvas.drawText(count, 0, mTextHeight / 2f, mTextPaint);
-        } else {
-            mCirclePaint.setColor(params.dotColor);
-            canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
-        }
+        mCirclePaint.setColor(params.dotColor);
+        canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
         canvas.restore();
     }
 

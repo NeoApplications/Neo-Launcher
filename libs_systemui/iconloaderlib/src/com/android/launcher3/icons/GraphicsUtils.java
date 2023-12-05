@@ -15,8 +15,6 @@
  */
 package com.android.launcher3.icons;
 
-import static com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable.MASK_SIZE;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -35,14 +33,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.graphics.PathParser;
 
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class GraphicsUtils {
 
     private static final String TAG = "GraphicsUtils";
+    private static final float MASK_SIZE = 100f;
 
     public static Runnable sOnNewBitmapRunnable = () -> {
     };
@@ -121,7 +118,7 @@ public class GraphicsUtils {
                 return path;
             }
         }
-        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);
         return new Path(drawable.getIconMask());

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="themed_icon_color">#A8C7FA</color>
+    <color name="themed_icon_background_color">#003355</color>
+    <color name="themed_badge_icon_color">#003355</color>
+    <color name="themed_badge_icon_background_color">#A8C7FA</color>
+</resources>
