@@ -248,7 +248,7 @@ public class LauncherAppState implements SafeCloseable {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if (Themes.KEY_THEMED_ICONS.equals(key)) {
-                mIconProvider.setIconThemeSupported(Themes.isThemedIconEnabled(mContext));
+                //mIconProvider.setIconThemeSupported(Themes.isThemedIconEnabled(mContext));
                 verifyIconChanged();
             }
         }
