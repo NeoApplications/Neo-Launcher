@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -93,7 +92,7 @@ fun FolderListDialogUI(
     var selected by remember { mutableStateOf(currentGesture.javaClass.name.toString()) }
     var selectedGesture by remember { mutableStateOf(currentGesture) }
     Card(
-        shape = RoundedCornerShape(cornerRadius),
+        shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)

@@ -194,7 +194,7 @@ fun EditGroupBottomSheet(
                 if (openDialog.value) {
                     BaseDialog(openDialogCustom = openDialog) {
                         Card(
-                            shape = MaterialTheme.shapes.large,
+                            shape = MaterialTheme.shapes.extraLarge,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -268,7 +268,7 @@ fun EditGroupBottomSheet(
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
                             Card(
-                                shape = MaterialTheme.shapes.large,
+                                shape = MaterialTheme.shapes.extraLarge,
                                 modifier = Modifier.padding(8.dp),
                                 elevation = CardDefaults.elevatedCardElevation(8.dp),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -343,7 +343,7 @@ fun EditGroupBottomSheet(
             if (colorPicker.value) {
                 BaseDialog(openDialogCustom = colorPicker) {
                     Card(
-                        shape = MaterialTheme.shapes.large,
+                        shape = MaterialTheme.shapes.extraLarge,
                         modifier = Modifier.padding(8.dp),
                         elevation = CardDefaults.elevatedCardElevation(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -402,11 +402,11 @@ fun EditGroupBottomSheet(
 
                         AppGroupsManager.Category.TAB,
                         AppGroupsManager.Category.FLOWERPOT,
-                        -> {
+                                                         -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
                         }
 
-                        else -> {}
+                        else                             -> {}
                     }
                     onClose(Config.BS_SELECT_TAB_TYPE)
                 },

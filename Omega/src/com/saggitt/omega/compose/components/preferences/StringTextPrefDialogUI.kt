@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +48,7 @@ import com.saggitt.omega.preferences.StringTextPref
 @Composable
 fun StringTextPrefDialogUI(
     pref: StringTextPref,
-    openDialogCustom: MutableState<Boolean>
+    openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
     val prefs = Utilities.getOmegaPrefs(context)
@@ -62,10 +61,10 @@ fun StringTextPrefDialogUI(
     val cornerRadius by remember { mutableStateOf(radius) }
 
     Card(
-        shape = RoundedCornerShape(cornerRadius),
+        shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

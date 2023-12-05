@@ -228,7 +228,7 @@ fun CreateGroupBottomSheet(
             if (openDialog.value) {
                 BaseDialog(openDialogCustom = openDialog) {
                     Card(
-                        shape = MaterialTheme.shapes.large,
+                        shape = MaterialTheme.shapes.extraLarge,
                         modifier = Modifier.padding(8.dp),
                         elevation = CardDefaults.elevatedCardElevation(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
@@ -294,7 +294,7 @@ fun CreateGroupBottomSheet(
             if (colorPicker.value) {
                 BaseDialog(openDialogCustom = colorPicker) {
                     Card(
-                        shape = MaterialTheme.shapes.large,
+                        shape = MaterialTheme.shapes.extraLarge,
                         modifier = Modifier.padding(8.dp),
                         elevation = CardDefaults.elevatedCardElevation(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
