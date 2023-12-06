@@ -47,7 +47,7 @@ public class AccessibilityManagerCompat {
      * @param text   Optional text to add to the event, which will be announced to the user.
      */
     public static void sendCustomAccessibilityEvent(@Nullable View target, int type,
-                                                    @Nullable String text) {
+            @Nullable String text) {
         if (target != null && isObservedEventType(target.getContext(), type)) {
             AccessibilityEvent event = AccessibilityEvent.obtain(type);
             target.onInitializeAccessibilityEvent(event);
@@ -127,7 +127,7 @@ public class AccessibilityManagerCompat {
      */
     private static AccessibilityManager getAccessibilityManagerForTest(Context context) {
         // If not running in a test harness, don't participate in test exchanges.
-        if (!Utilities.IS_RUNNING_IN_TEST_HARNESS) return null;
+        if (!Utilities.isRunningInTestHarness()) return null;
 
         final AccessibilityManager accessibilityManager = getManager(context);
         if (!accessibilityManager.isEnabled()) return null;
