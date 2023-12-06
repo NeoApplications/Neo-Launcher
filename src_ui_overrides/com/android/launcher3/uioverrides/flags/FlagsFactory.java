@@ -15,39 +15,46 @@
  */
 package com.android.launcher3.uioverrides.flags;
 
-import com.android.launcher3.Utilities;
+import static com.android.launcher3.config.FeatureFlags.FlagState.ENABLED;
+
 import com.android.launcher3.config.FeatureFlags.BooleanFlag;
+import com.android.launcher3.config.FeatureFlags.FlagState;
+import com.android.launcher3.config.FeatureFlags.IntFlag;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.PrintWriter;
 
+/**
+ * Helper class to create various flags for launcher build. The base implementation does
+ * not provide any flagging system, and simply replies with the default value.
+ */
 public class FlagsFactory {
-
-    private static final List<DebugFlag> sDebugFlags = new ArrayList<>();
 
     /**
      * Creates a new debug flag
      */
     public static BooleanFlag getDebugFlag(
-            int bugId, String key, boolean defaultValue, String description) {
-        return new BooleanFlag(defaultValue);
+            int bugId, String key, FlagState flagState, String description) {
+        return new BooleanFlag(flagState == ENABLED);
     }
 
     /**
      * Creates a new debug flag
      */
     public static BooleanFlag getReleaseFlag(
-            int bugId, String key, boolean defaultValueInCode, String description) {
-        return new BooleanFlag(defaultValueInCode);
+            int bugId, String key, FlagState flagState, String description) {
+        return new BooleanFlag(flagState == ENABLED);
     }
 
-    public static List<DebugFlag> getDebugFlags() {
-        if (!Utilities.IS_DEBUG_DEVICE) {
-            return Collections.emptyList();
-        }
-        synchronized (sDebugFlags) {
-            return new ArrayList<>(sDebugFlags);
-        }
+    /**
+     * Creates a new integer flag. Integer flags are always release flags
+     */
+    public static IntFlag getIntFlag(
+            int bugId, String key, int defaultValueInCode, String description) {
+        return new IntFlag(defaultValueInCode);
     }
+
+    /**
+     * Dumps the current flags state to the print writer
+     */
+    public static void dump(PrintWriter pw) { }
 }

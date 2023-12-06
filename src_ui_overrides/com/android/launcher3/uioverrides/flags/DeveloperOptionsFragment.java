@@ -15,24 +15,8 @@
  */
 package com.android.launcher3.uioverrides.flags;
 
-import com.android.launcher3.config.FeatureFlags.BooleanFlag;
-
-public class DebugFlag extends BooleanFlag {
-
-    public final String key;
-    public final String description;
-
-    public final boolean defaultValue;
-
-    public DebugFlag(String key, String description, boolean defaultValue, boolean currentValue) {
-        super(currentValue);
-        this.key = key;
-        this.defaultValue = defaultValue;
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return key + ": defaultValue=" + defaultValue + ", mCurrentValue=" + get();
-    }
+/**
+ * Place holder class for developer options.
+ */
+public class DeveloperOptionsFragment {
 }

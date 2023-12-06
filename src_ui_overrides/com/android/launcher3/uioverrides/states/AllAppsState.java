@@ -32,7 +32,7 @@ import com.saggitt.omega.util.OmegaUtilsKt;
 public class AllAppsState extends LauncherState {
 
     private static final float PARALLAX_COEFFICIENT = .125f;
-    private static final float WORKSPACE_SCALE_FACTOR = 0.97f;
+    private static final float WORKSPACE_SCALE_FACTOR = 0.97f; // TODO add scale as pref
 
     private static final int STATE_FLAGS = FLAG_WORKSPACE_INACCESSIBLE;
 
@@ -60,7 +60,8 @@ public class AllAppsState extends LauncherState {
 
     @Override
     public ScaleAndTranslation getWorkspaceScaleAndTranslation(Launcher launcher) {
-        return new ScaleAndTranslation(WORKSPACE_SCALE_FACTOR, NO_OFFSET, NO_OFFSET);
+        return new ScaleAndTranslation(WORKSPACE_SCALE_FACTOR, NO_OFFSET,
+                NO_OFFSET);
     }
 
     @Override
@@ -95,17 +96,11 @@ public class AllAppsState extends LauncherState {
         return 0f;
     }
 
-    /*@Override
-    public int getWorkspaceScrimColor(Launcher launcher) {
-        return launcher.getDeviceProfile().isTablet
-                ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
-                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
-    }*/
-
     @Override
     public int getWorkspaceScrimColor(Launcher launcher) {
         return launcher.getDeviceProfile().isTablet
                 ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
+                //: Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
                 : OmegaUtilsKt.getAllAppsScrimColor(launcher);
     }
 }
