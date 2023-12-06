@@ -28,8 +28,7 @@ public class CellPosMapper {
 
     public static final CellPosMapper DEFAULT = new CellPosMapper();
 
-    private CellPosMapper() {
-    }
+    private CellPosMapper() { }
 
     /**
      * Maps the position in model to the position in view
@@ -42,14 +41,14 @@ public class CellPosMapper {
      * Maps the position in view to the position in model
      */
     public CellPos mapPresenterToModel(int presenterX, int presenterY, int presenterScreen,
-                                       int container) {
+            int container) {
         return new CellPos(presenterX, presenterY, presenterScreen);
     }
 
     /**
      * Cell mapper which maps two panels into a single layout
      */
-    public static class TwoPanelCellPosMapper extends CellPosMapper {
+    public static class TwoPanelCellPosMapper extends CellPosMapper  {
 
         private final int mColumnCount;
 
@@ -69,7 +68,7 @@ public class CellPosMapper {
 
         @Override
         public CellPos mapPresenterToModel(int presenterX, int presenterY, int presenterScreen,
-                                           int container) {
+                int container) {
             if (container == CONTAINER_DESKTOP && (presenterScreen % 2) == 0
                     && presenterX >= mColumnCount) {
                 return new CellPos(presenterX - mColumnCount, presenterY, presenterScreen + 1);

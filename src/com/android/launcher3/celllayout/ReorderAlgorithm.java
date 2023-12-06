@@ -21,7 +21,7 @@ import com.android.launcher3.CellLayout;
 
 /**
  * Contains the logic of a reorder.
- * <p>
+ *
  * The content of this class was extracted from {@link CellLayout} and should mimic the exact
  * same behaviour.
  */
@@ -37,7 +37,7 @@ public class ReorderAlgorithm {
      * This method differs from closestEmptySpaceReorder and dropInPlaceSolution because this method
      * will move items around and will change the shape of the item if possible to try to find a
      * solution.
-     * <p>
+     *
      * When changing the size of the widget this method will try first subtracting -1 in the x
      * dimension and then subtracting -1 in the y dimension until finding a possible solution or
      * until it no longer can reduce the span.
@@ -57,8 +57,8 @@ public class ReorderAlgorithm {
      * @return the same solution variable
      */
     public CellLayout.ItemConfiguration findReorderSolution(int pixelX, int pixelY, int minSpanX,
-                                                            int minSpanY, int spanX, int spanY, int[] direction, View dragView, boolean decX,
-                                                            CellLayout.ItemConfiguration solution) {
+            int minSpanY, int spanX, int spanY, int[] direction, View dragView, boolean decX,
+            CellLayout.ItemConfiguration solution) {
         // Copy the current state into the solution. This solution will be manipulated as necessary.
         mCellLayout.copyCurrentStateToSolution(solution, false);
         // Copy the current occupied array into the temporary occupied array. This array will be
@@ -108,7 +108,7 @@ public class ReorderAlgorithm {
      * @return the configuration that represents the found reorder
      */
     public CellLayout.ItemConfiguration dropInPlaceSolution(int pixelX, int pixelY, int spanX,
-                                                            int spanY, View dragView) {
+            int spanY, View dragView) {
         int[] result = new int[2];
         if (mCellLayout.isNearestDropLocationOccupied(pixelX, pixelY, spanX, spanY, dragView,
                 result)) {
@@ -138,7 +138,7 @@ public class ReorderAlgorithm {
      * @return the configuration that represents the found reorder
      */
     public CellLayout.ItemConfiguration closestEmptySpaceReorder(int pixelX, int pixelY,
-                                                                 int minSpanX, int minSpanY, int spanX, int spanY) {
+            int minSpanX, int minSpanY, int spanX, int spanY) {
         CellLayout.ItemConfiguration solution = new CellLayout.ItemConfiguration();
         int[] result = new int[2];
         int[] resultSpan = new int[2];
@@ -173,7 +173,7 @@ public class ReorderAlgorithm {
      * the locations they should be in the given solution.
      */
     public CellLayout.ItemConfiguration calculateReorder(int pixelX, int pixelY, int minSpanX,
-                                                         int minSpanY, int spanX, int spanY, View dragView) {
+            int minSpanY, int spanX, int spanY, View dragView) {
         mCellLayout.getDirectionVectorForDrop(pixelX, pixelY, spanX, spanY, dragView,
                 mCellLayout.mDirectionVector);
 
