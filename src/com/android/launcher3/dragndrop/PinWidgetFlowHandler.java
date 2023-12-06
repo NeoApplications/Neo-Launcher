@@ -16,9 +16,11 @@
 
 package com.android.launcher3.dragndrop;
 
+import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.pm.LauncherApps.PinItemRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -29,7 +31,7 @@ import com.android.launcher3.widget.WidgetAddFlowHandler;
 
 /**
  * Extension of WidgetAddFlowHandler to handle pin item request behavior.
- * <p>
+ *
  * No config activity is shown even if it is defined in widget config. And a callback is sent when
  * the widget is bound.
  */
@@ -55,7 +57,7 @@ public class PinWidgetFlowHandler extends WidgetAddFlowHandler implements Parcel
 
     @Override
     public boolean startConfigActivity(Launcher launcher, int appWidgetId, ItemInfo info,
-                                       int requestCode) {
+            int requestCode) {
         Bundle extras = new Bundle();
         extras.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         mRequest.accept(extras);

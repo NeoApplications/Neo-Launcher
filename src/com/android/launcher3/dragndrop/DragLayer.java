@@ -18,6 +18,7 @@
 package com.android.launcher3.dragndrop;
 
 import static android.animation.ObjectAnimator.ofFloat;
+
 import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_X;
 import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_Y;
 import static com.android.launcher3.Utilities.mapRange;
@@ -55,7 +56,6 @@ import com.android.launcher3.celllayout.CellLayoutLayoutParams;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.graphics.Scrim;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
-import com.android.launcher3.util.TouchController;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
 
@@ -71,6 +71,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
 
     public static final int ANIMATION_END_DISAPPEAR = 0;
     public static final int ANIMATION_END_REMAIN_VISIBLE = 2;
+
     private final boolean mIsRtl;
 
     private DragController mDragController;
@@ -93,7 +94,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
      * Used to create a new DragLayer from XML.
      *
      * @param context The application's context.
-     * @param attrs   The attributes set containing the Workspace's customization values.
+     * @param attrs The attributes set containing the Workspace's customization values.
      */
     public DragLayer(Context context, AttributeSet attrs) {
         super(context, attrs, ALPHA_CHANNEL_COUNT);
@@ -242,7 +243,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
             View anchorView) {
 
         ShortcutAndWidgetContainer parentChildren = (ShortcutAndWidgetContainer) child.getParent();
-        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) child.getLayoutParams();
+        CellLayoutLayoutParams lp =  (CellLayoutLayoutParams) child.getLayoutParams();
         parentChildren.measureChild(child);
         parentChildren.layoutChild(child);
 
@@ -296,9 +297,9 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
      * This method animates a view at the end of a drag and drop animation.
      */
     public void animateViewIntoPosition(final DragView view,
-                                        final int toX, final int toY, float finalAlpha,
-                                        float finalScaleX, float finalScaleY, Runnable onCompleteRunnable,
-                                        int animationEndStyle, int duration, View anchorView) {
+            final int toX, final int toY, float finalAlpha,
+            float finalScaleX, float finalScaleY, Runnable onCompleteRunnable,
+            int animationEndStyle, int duration, View anchorView) {
         Rect to = new Rect(toX, toY, toX + view.getMeasuredWidth(), toY + view.getMeasuredHeight());
         animateView(view, to, finalAlpha, finalScaleX, finalScaleY, duration,
                 null, onCompleteRunnable, animationEndStyle, anchorView);
@@ -306,26 +307,25 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
 
     /**
      * This method animates a view at the end of a drag and drop animation.
-     *
-     * @param view               The view to be animated. This view is drawn directly into DragLayer, and so
-     *                           doesn't need to be a child of DragLayer.
-     * @param to                 The final location of the view. Only the left and top parameters are used. This
-     *                           location doesn't account for scaling, and so should be centered about the desired
-     *                           final location (including scaling).
-     * @param finalAlpha         The final alpha of the view, in case we want it to fade as it animates.
-     * @param finalScaleX        The final scale of the view. The view is scaled about its center.
-     * @param finalScaleY        The final scale of the view. The view is scaled about its center.
-     * @param duration           The duration of the animation.
+     * @param view The view to be animated. This view is drawn directly into DragLayer, and so
+     *        doesn't need to be a child of DragLayer.
+     * @param to The final location of the view. Only the left and top parameters are used. This
+*        location doesn't account for scaling, and so should be centered about the desired
+*        final location (including scaling).
+     * @param finalAlpha The final alpha of the view, in case we want it to fade as it animates.
+     * @param finalScaleX The final scale of the view. The view is scaled about its center.
+     * @param finalScaleY The final scale of the view. The view is scaled about its center.
+     * @param duration The duration of the animation.
      * @param motionInterpolator The interpolator to use for the location of the view.
      * @param onCompleteRunnable Optional runnable to run on animation completion.
-     * @param animationEndStyle  Whether or not to fade out the view once the animation completes.
-     *                           {@link #ANIMATION_END_DISAPPEAR} or {@link #ANIMATION_END_REMAIN_VISIBLE}.
-     * @param anchorView         If not null, this represents the view which the animated view stays
+     * @param animationEndStyle Whether or not to fade out the view once the animation completes.
+*        {@link #ANIMATION_END_DISAPPEAR} or {@link #ANIMATION_END_REMAIN_VISIBLE}.
+     * @param anchorView If not null, this represents the view which the animated view stays
      */
     public void animateView(final DragView view, final Rect to,
-                            final float finalAlpha, final float finalScaleX, final float finalScaleY, int duration,
-                            final Interpolator motionInterpolator, final Runnable onCompleteRunnable,
-                            final int animationEndStyle, View anchorView) {
+            final float finalAlpha, final float finalScaleX, final float finalScaleY, int duration,
+            final Interpolator motionInterpolator, final Runnable onCompleteRunnable,
+            final int animationEndStyle, View anchorView) {
         view.cancelAnimation();
         view.requestLayout();
 

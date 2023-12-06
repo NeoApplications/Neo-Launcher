@@ -25,14 +25,10 @@ import com.android.launcher3.DropTarget;
  */
 public class DragOptions {
 
-    /**
-     * Whether or not an accessible drag operation is in progress.
-     */
+    /** Whether or not an accessible drag operation is in progress. */
     public boolean isAccessibleDrag = false;
 
-    /**
-     * Whether or not the drag operation is controlled by keyboard.
-     */
+    /** Whether or not the drag operation is controlled by keyboard. */
     public boolean isKeyboardDrag = false;
 
     /**
@@ -41,9 +37,7 @@ public class DragOptions {
      */
     public Point simulatedDndStartPoint = null;
 
-    /**
-     * Determines when a pre-drag should transition to a drag. By default, this is immediate.
-     */
+    /** Determines when a pre-drag should transition to a drag. By default, this is immediate. */
     public PreDragCondition preDragCondition = null;
 
     /**
@@ -52,9 +46,7 @@ public class DragOptions {
      */
     public float preDragEndScale;
 
-    /**
-     * Scale of the icons over the workspace icon size.
-     */
+    /** Scale of the icons over the workspace icon size. */
     public float intrinsicIconScaleFactor = 1f;
 
     public boolean isFlingToDelete;
@@ -86,5 +78,12 @@ public class DragOptions {
          *                    This will be true if the condition was met, otherwise false.
          */
         void onPreDragEnd(DropTarget.DragObject dragObject, boolean dragStarted);
+
+        /**
+         * The offset points that should be overridden to update the dragLayer.
+         */
+        default Point getDragOffset() {
+            return new Point(0,0);
+        }
     }
 }

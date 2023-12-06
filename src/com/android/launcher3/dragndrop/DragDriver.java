@@ -67,9 +67,9 @@ public abstract class DragDriver {
      * Created a driver for handing the actual events
      */
     public static DragDriver create(DragController dragController, DragOptions options,
-                                    Consumer<MotionEvent> sec) {
+            Consumer<MotionEvent> sec) {
         if (options.simulatedDndStartPoint != null) {
-            if (options.isAccessibleDrag) {
+            if  (options.isAccessibleDrag) {
                 return null;
             }
             return new SystemDragDriver(dragController, sec);

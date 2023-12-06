@@ -30,14 +30,14 @@ public class LauncherDragView extends DragView<Launcher>
 
 
     public LauncherDragView(Launcher launcher, Drawable drawable, int registrationX,
-                            int registrationY, float initialScale, float scaleOnDrop, float finalScaleDps) {
+            int registrationY, float initialScale, float scaleOnDrop, float finalScaleDps) {
         super(launcher, drawable, registrationX, registrationY, initialScale, scaleOnDrop,
                 finalScaleDps);
     }
 
     public LauncherDragView(Launcher launcher, View content, int width, int height,
-                            int registrationX, int registrationY, float initialScale, float scaleOnDrop,
-                            float finalScaleDps) {
+            int registrationX, int registrationY, float initialScale, float scaleOnDrop,
+            float finalScaleDps) {
         super(launcher, content, width, height, registrationX, registrationY, initialScale,
                 scaleOnDrop, finalScaleDps);
     }
@@ -57,7 +57,8 @@ public class LauncherDragView extends DragView<Launcher>
     @Override
     public void onStateTransitionComplete(LauncherState finalState) {
         setVisibility((finalState == LauncherState.NORMAL
-                || finalState == LauncherState.SPRING_LOADED) ? VISIBLE : INVISIBLE);
+                || finalState == LauncherState.SPRING_LOADED
+                || finalState == LauncherState.EDIT_MODE) ? VISIBLE : INVISIBLE);
     }
 
     @Override

@@ -37,6 +37,6 @@ public class AddItemDragLayer extends BaseDragLayer<AddItemActivity> {
 
     @Override
     public void recreateControllers() {
-        mControllers = new TouchController[]{};
+        mControllers = new TouchController[] {};
     }
 }

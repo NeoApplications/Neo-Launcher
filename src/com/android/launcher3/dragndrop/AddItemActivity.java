@@ -245,8 +245,7 @@ public class AddItemActivity extends BaseActivity
         view.startDragAndDrop(data, new DragShadowBuilder(view) {
 
             @Override
-            public void onDrawShadow(Canvas canvas) {
-            }
+            public void onDrawShadow(Canvas canvas) { }
 
             @Override
             public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
@@ -256,9 +255,9 @@ public class AddItemActivity extends BaseActivity
         }, null, View.DRAG_FLAG_GLOBAL);
 
         Intent homeIntent = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME)
-                .setPackage(getPackageName())
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        .addCategory(Intent.CATEGORY_HOME)
+                        .setPackage(getPackageName())
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Launcher.ACTIVITY_TRACKER.registerCallback(listener);
         startActivity(homeIntent,
                 ActivityOptions.makeCustomAnimation(this, 0, android.R.anim.fade_out)
@@ -305,7 +304,8 @@ public class AddItemActivity extends BaseActivity
         mWidgetOptions = pendingInfo.getDefaultSizeOptions(this);
         mWidgetCell.getWidgetView().setTag(pendingInfo);
 
-        applyWidgetItemAsync(() -> new WidgetItem(widgetInfo, mIdp, mApp.getIconCache()));
+        applyWidgetItemAsync(() -> new WidgetItem(
+                widgetInfo, mIdp, mApp.getIconCache(), mApp.getContext()));
         return WidgetsModel.newPendingItemInfo(this, widgetInfo.getComponent(),
                 widgetInfo.getUser());
     }

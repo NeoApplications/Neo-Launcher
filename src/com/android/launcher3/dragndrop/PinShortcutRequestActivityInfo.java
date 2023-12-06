@@ -16,6 +16,12 @@
 
 package com.android.launcher3.dragndrop;
 
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
+import static com.android.launcher3.LauncherState.EDIT_MODE;
+import static com.android.launcher3.LauncherState.SPRING_LOADED;
+import static com.android.launcher3.config.FeatureFlags.MULTI_SELECT_EDIT_MODE;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,13 +30,12 @@ import android.content.pm.LauncherApps.PinItemRequest;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 
 import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherAnimUtils;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -43,7 +48,8 @@ import java.util.function.Supplier;
  * Extension of ShortcutConfigActivityInfo to be used in the confirmation prompt for pin item
  * request.
  */
-class PinShortcutRequestActivityInfo extends ShortcutConfigActivityInfo {
+@TargetApi(Build.VERSION_CODES.O)
+public class PinShortcutRequestActivityInfo extends ShortcutConfigActivityInfo {
 
     // Class name used in the target component, such that it will never represent an
     // actual existing class.
@@ -87,11 +93,11 @@ class PinShortcutRequestActivityInfo extends ShortcutConfigActivityInfo {
 
     @Override
     public WorkspaceItemInfo createWorkspaceItemInfo() {
+        long transitionDuration = (MULTI_SELECT_EDIT_MODE.get() ? EDIT_MODE : SPRING_LOADED)
+                .getTransitionDuration(Launcher.getLauncher(mContext), true /* isToState */);
         // Total duration for the drop animation to complete.
         long duration = mContext.getResources().getInteger(R.integer.config_dropAnimMaxDuration) +
-                LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY +
-                LauncherState.SPRING_LOADED.getTransitionDuration(Launcher.getLauncher(mContext),
-                        true /* isToState */);
+                SPRING_LOADED_EXIT_DELAY + transitionDuration;
         // Delay the actual accept() call until the drop animation is complete.
         return PinRequestHelper.createWorkspaceItemFromPinItemRequest(
                 mContext, mRequestSupplier.get(), duration);

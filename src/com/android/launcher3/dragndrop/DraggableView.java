@@ -49,10 +49,8 @@ public interface DraggableView {
      * Before rendering as a DragView bitmap, some views need a preparation step. Returns a
      * callback to clear any preparation work
      */
-    @NonNull
-    default SafeCloseable prepareDrawDragView() {
-        return () -> {
-        };
+    @NonNull default SafeCloseable prepareDrawDragView() {
+        return () -> { };
     }
 
     /**
@@ -62,8 +60,7 @@ public interface DraggableView {
      *
      * @param bounds Visual bounds in the views coordinates will be written here.
      */
-    default void getWorkspaceVisualDragBounds(Rect bounds) {
-    }
+    default void getWorkspaceVisualDragBounds(Rect bounds) { }
 
     /**
      * Same as above, but accounts for differing icon sizes between source and destination

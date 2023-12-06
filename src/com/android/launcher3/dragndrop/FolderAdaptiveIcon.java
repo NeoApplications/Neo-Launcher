@@ -48,6 +48,7 @@ import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class FolderAdaptiveIcon extends CustomAdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 
@@ -144,7 +145,7 @@ public class FolderAdaptiveIcon extends CustomAdaptiveIconDrawable {
 
     @UiThread
     private static void initLayersOnUiThread(FolderIcon icon, int size,
-                                             Canvas backgroundCanvas, Canvas foregroundCanvas, Canvas badgeCanvas) {
+            Canvas backgroundCanvas, Canvas foregroundCanvas, Canvas badgeCanvas) {
         icon.getPreviewBounds(sTmpRect);
         final int previewSize = sTmpRect.width();
 
@@ -219,12 +220,10 @@ public class FolderAdaptiveIcon extends CustomAdaptiveIconDrawable {
         }
 
         @Override
-        public void setAlpha(int i) {
-        }
+        public void setAlpha(int i) { }
 
         @Override
-        public void setColorFilter(ColorFilter colorFilter) {
-        }
+        public void setColorFilter(ColorFilter colorFilter) {  }
 
         @Override
         public int getOpacity() {
