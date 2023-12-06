@@ -47,7 +47,7 @@ import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.CacheDataUpdatedTask;
 import com.android.launcher3.model.ItemInstallQueue;
-import com.android.launcher3.model.LoaderResults;
+import com.android.launcher3.model.LauncherBinder;
 import com.android.launcher3.model.LoaderTask;
 import com.android.launcher3.model.ModelDelegate;
 import com.android.launcher3.model.ModelWriter;
@@ -406,17 +406,17 @@ public class LauncherModel extends LauncherApps.Callback implements InstallSessi
                     MAIN_EXECUTOR.execute(cb::clearPendingBinds);
                 }
 
-                LoaderResults loaderResults = new LoaderResults(
+                LauncherBinder launcherBinder = new LauncherBinder(
                         mApp, mBgDataModel, mBgAllAppsList, callbacksList);
                 if (bindDirectly) {
                     // Divide the set of loaded items into those that we are binding synchronously,
                     // and everything else that is to be bound normally (asynchronously).
-                    loaderResults.bindWorkspace(bindAllCallbacks);
+                    launcherBinder.bindWorkspace(bindAllCallbacks, /* isBindSync= */ true);
                     // For now, continue posting the binding of AllApps as there are other
                     // issues that arise from that.
-                    loaderResults.bindAllApps();
-                    loaderResults.bindDeepShortcuts();
-                    loaderResults.bindWidgets();
+                    launcherBinder.bindAllApps();
+                    launcherBinder.bindDeepShortcuts();
+                    launcherBinder.bindWidgets();
                     return true;
                 } else {
                     stopLoader();

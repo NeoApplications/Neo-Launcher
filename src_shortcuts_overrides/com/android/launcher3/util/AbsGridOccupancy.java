@@ -26,12 +26,13 @@ public abstract class AbsGridOccupancy {
      * Find the first vacant cell, if there is one.
      *
      * @param vacantOut Holds the x and y coordinate of the vacant cell
-     * @param spanX     Horizontal cell span.
-     * @param spanY     Vertical cell span.
+     * @param spanX Horizontal cell span.
+     * @param spanY Vertical cell span.
+     *
      * @return true if a vacant cell was found
      */
     protected boolean findVacantCell(int[] vacantOut, boolean[][] cells, int countX, int countY,
-                                     int spanX, int spanY) {
+            int spanX, int spanY) {
         for (int y = 0; (y + spanY) <= countY; y++) {
             for (int x = 0; (x + spanX) <= countX; x++) {
                 boolean available = !cells[x][y];

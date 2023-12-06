@@ -2,8 +2,10 @@
 package com.android.launcher3.model;
 
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
+
 import static com.android.launcher3.pm.ShortcutConfigActivityInfo.queryList;
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
+
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
@@ -89,15 +91,13 @@ public class WidgetsModel {
         return result;
     }
 
-    /**
-     * Returns a mapping of packages to their widgets without static shortcuts.
-     */
+    /** Returns a mapping of packages to their widgets without static shortcuts. */
     public synchronized Map<PackageUserKey, List<WidgetItem>> getAllWidgetsWithoutShortcuts() {
         Map<PackageUserKey, List<WidgetItem>> packagesToWidgets = new HashMap<>();
         mWidgetsList.forEach((packageItemInfo, widgetsAndShortcuts) -> {
             List<WidgetItem> widgets = widgetsAndShortcuts.stream()
-                    .filter(item -> item.widgetInfo != null)
-                    .collect(toList());
+                        .filter(item -> item.widgetInfo != null)
+                        .collect(toList());
             if (widgets.size() > 0) {
                 packagesToWidgets.put(
                         new PackageUserKey(packageItemInfo.packageName, packageItemInfo.user),
@@ -129,7 +129,7 @@ public class WidgetsModel {
                         LauncherAppWidgetProviderInfo.fromProviderInfo(context, widgetInfo);
 
                 widgetsAndShortcuts.add(new WidgetItem(
-                        launcherWidgetInfo, idp, app.getIconCache()));
+                        launcherWidgetInfo, idp, app.getIconCache(), app.getContext()));
                 updatedItems.add(launcherWidgetInfo);
             }
 
@@ -155,7 +155,7 @@ public class WidgetsModel {
     }
 
     private synchronized void setWidgetsAndShortcuts(ArrayList<WidgetItem> rawWidgetsShortcuts,
-                                                     LauncherAppState app, @Nullable PackageUserKey packageUser) {
+            LauncherAppState app, @Nullable PackageUserKey packageUser) {
         if (DEBUG) {
             Log.d(TAG, "addWidgetsAndShortcuts, widgetsShortcuts#=" + rawWidgetsShortcuts.size());
         }
@@ -187,7 +187,7 @@ public class WidgetsModel {
     }
 
     public void onPackageIconsUpdated(Set<String> packageNames, UserHandle user,
-                                      LauncherAppState app) {
+            LauncherAppState app) {
         for (Entry<PackageItemInfo, List<WidgetItem>> entry : mWidgetsList.entrySet()) {
             if (packageNames.contains(entry.getKey().packageName)) {
                 List<WidgetItem> items = entry.getValue();
@@ -200,7 +200,8 @@ public class WidgetsModel {
                                     app.getContext().getPackageManager()));
                         } else {
                             items.set(i, new WidgetItem(item.widgetInfo,
-                                    app.getInvariantDeviceProfile(), app.getIconCache()));
+                                    app.getInvariantDeviceProfile(), app.getIconCache(),
+                                    app.getContext()));
                         }
                     }
                 }
@@ -226,7 +227,7 @@ public class WidgetsModel {
 
     /** Returns {@link PackageItemInfo} of a pending widget. */
     public static PackageItemInfo newPendingItemInfo(Context context, ComponentName provider,
-                                                     UserHandle user) {
+            UserHandle user) {
         Map<ComponentName, IntSet> widgetsToCategories =
                 WidgetSections.getWidgetsToCategory(context);
         if (widgetsToCategories.containsKey(provider)) {
@@ -268,7 +269,7 @@ public class WidgetsModel {
 
         WidgetValidityCheck(LauncherAppState app) {
             mIdp = app.getInvariantDeviceProfile();
-            mAppFilter = new AppFilter();
+            mAppFilter = new AppFilter(app.getContext());
         }
 
         @Override
@@ -289,7 +290,7 @@ public class WidgetsModel {
                     return false;
                 }
             }
-            if (!mAppFilter.shouldShowApp(item.componentName, item.user)) {
+            if (!mAppFilter.shouldShowApp(item.componentName,item.user)) {
                 if (DEBUG) {
                     Log.d(TAG, String.format("%s is filtered and not added to the widget tray.",
                             item.componentName));

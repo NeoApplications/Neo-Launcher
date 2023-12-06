@@ -24,7 +24,7 @@ import android.os.UserHandle
 import com.android.launcher3.AppFilter
 import com.saggitt.omega.NeoLauncher
 
-open class OmegaAppFilter(context: Context) : AppFilter() {
+open class OmegaAppFilter(context: Context) : AppFilter(context) {
 
     private val mHideList = HashSet<ComponentName>()
 

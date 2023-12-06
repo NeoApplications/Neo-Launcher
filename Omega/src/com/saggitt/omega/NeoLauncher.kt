@@ -236,7 +236,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
-        val appFilter = AppFilter()
+        val appFilter = AppFilter(mContext)
         CoroutineScope(Dispatchers.IO).launch {
             for (user in UserCache.INSTANCE[mContext].userProfiles) {
                 val duplicatePreventionCache: MutableList<ComponentName> = ArrayList()
