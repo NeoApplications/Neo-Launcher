@@ -75,7 +75,7 @@ public class AnimatedPropertySetter extends PropertySetter {
 
     @Override
     public <T> Animator setFloat(T target, FloatProperty<T> property, float value,
-                                 TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }
@@ -87,7 +87,7 @@ public class AnimatedPropertySetter extends PropertySetter {
 
     @Override
     public <T> Animator setInt(T target, IntProperty<T> property, int value,
-                               TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }
@@ -100,7 +100,7 @@ public class AnimatedPropertySetter extends PropertySetter {
     @NonNull
     @Override
     public <T> Animator setColor(T target, IntProperty<T> property, int value,
-                                 TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }

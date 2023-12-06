@@ -52,10 +52,12 @@ public class Interpolators {
     public static final Interpolator FAST_OUT_SLOW_IN = new PathInterpolator(0.4f, 0f, 0.2f, 1f);
 
     public static final Interpolator AGGRESSIVE_EASE = new PathInterpolator(0.2f, 0f, 0f, 1f);
-    public static final Interpolator AGGRESSIVE_EASE_IN_OUT = new PathInterpolator(0.6f, 0, 0.4f, 1);
-    public static final Interpolator PREDICTIVE_BACK_DECELERATED_EASE = new PathInterpolator(0, 0, 0, 1f);
+    public static final Interpolator AGGRESSIVE_EASE_IN_OUT = new PathInterpolator(0.6f,0, 0.4f, 1);
+
     public static final Interpolator DECELERATED_EASE = new PathInterpolator(0, 0, .2f, 1f);
     public static final Interpolator ACCELERATED_EASE = new PathInterpolator(0.4f, 0, 1f, 1f);
+    public static final Interpolator PREDICTIVE_BACK_DECELERATED_EASE =
+            new PathInterpolator(0, 0, 0, 1f);
 
     /**
      * The default emphasized interpolator. Used for hero / emphasized movement of content.
@@ -159,7 +161,7 @@ public class Interpolators {
      * 1 by upperBound.
      */
     public static Interpolator clampToProgress(Interpolator interpolator, float lowerBound,
-                                               float upperBound) {
+            float upperBound) {
         if (upperBound < lowerBound) {
             throw new IllegalArgumentException(
                     String.format("upperBound (%f) must be greater than lowerBound (%f)",
@@ -171,7 +173,7 @@ public class Interpolators {
     /**
      * Returns the progress value's progress between the lower and upper bounds. That is, the
      * progress will be 0f from 0f to lowerBound, and reach 1f by upperBound.
-     * <p>
+     *
      * Between lowerBound and upperBound, the progress value will be interpolated using the provided
      * interpolator.
      */
@@ -209,7 +211,7 @@ public class Interpolators {
      * such as to take over a user-controlled animation when they let go.
      */
     public static Interpolator mapToProgress(Interpolator interpolator, float lowerBound,
-                                             float upperBound) {
+            float upperBound) {
         return t -> Utilities.mapRange(interpolator.getInterpolation(t), lowerBound, upperBound);
     }
 

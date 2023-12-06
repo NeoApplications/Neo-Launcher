@@ -141,7 +141,7 @@ public class SpringAnimationBuilder {
         // All the calculations assume the stable position to be 0, shift the values accordingly.
         beta = 2 * mDampingRatio * naturalFreq;
         gamma = dampedFreq;
-        a = mStartValue - mEndValue;
+        a =  mStartValue - mEndValue;
         b = beta * a / (2 * gamma) + mVelocity / gamma;
 
         va = a * beta / 2 - b * gamma;

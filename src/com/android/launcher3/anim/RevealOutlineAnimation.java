@@ -21,14 +21,9 @@ public abstract class RevealOutlineAnimation extends ViewOutlineProvider {
         mOutline = new Rect();
     }
 
-    /**
-     * Returns whether elevation should be removed for the duration of the reveal animation.
-     */
+    /** Returns whether elevation should be removed for the duration of the reveal animation. */
     abstract boolean shouldRemoveElevationDuringAnimation();
-
-    /**
-     * Sets the progress, from 0 to 1, of the reveal animation.
-     */
+    /** Sets the progress, from 0 to 1, of the reveal animation. */
     abstract void setProgress(float progress);
 
     /**
@@ -40,16 +35,15 @@ public abstract class RevealOutlineAnimation extends ViewOutlineProvider {
 
     /**
      * Animates the given View's ViewOutline according to {@link #setProgress(float)}.
-     *
-     * @param revealView    The View whose outline we are animating.
-     * @param isReversed    Whether we are hiding rather than revealing the View.
+     * @param revealView The View whose outline we are animating.
+     * @param isReversed Whether we are hiding rather than revealing the View.
      * @param startProgress The progress at which to start the newly created animation. Useful if
-     *                      the previous reveal animation was cancelled and we want to create a new animation where it
-     *                      left off. Note that if isReversed=true, we start at 1 - startProgress (and go to 0).
+     * the previous reveal animation was cancelled and we want to create a new animation where it
+     * left off. Note that if isReversed=true, we start at 1 - startProgress (and go to 0).
      * @return The Animator, which the caller must start.
      */
     public ValueAnimator createRevealAnimator(final View revealView, boolean isReversed,
-                                              float startProgress) {
+            float startProgress) {
         ValueAnimator va = isReversed
                 ? ValueAnimator.ofFloat(1f - startProgress, 0f)
                 : ValueAnimator.ofFloat(startProgress, 1f);

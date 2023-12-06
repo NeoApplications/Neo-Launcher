@@ -73,9 +73,7 @@ public class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateL
 
     protected boolean mTargetCancelled = false;
 
-    /**
-     * package private
-     */
+    /** package private */
     AnimatorPlaybackController(AnimatorSet anim, long duration, ArrayList<Holder> childAnims) {
         mAnim = anim;
         mDuration = duration;
@@ -138,14 +136,13 @@ public class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateL
     /**
      * Starts playing the animation with the provided velocity optionally playing any
      * physics based animations.
-     *
-     * @param goingToEnd        Whether we are going to the end (progress = 1) or not (progress = 0).
-     * @param velocityPxPerMs   The velocity at which to start the animation, in pixels / millisecond.
-     * @param endDistance       The distance (pixels) that the animation will travel from progress 0 to 1.
+     * @param goingToEnd Whether we are going to the end (progress = 1) or not (progress = 0).
+     * @param velocityPxPerMs The velocity at which to start the animation, in pixels / millisecond.
+     * @param endDistance The distance (pixels) that the animation will travel from progress 0 to 1.
      * @param animationDuration The duration of the non-physics based animation.
      */
     public void startWithVelocity(Context context, boolean goingToEnd,
-                                  float velocityPxPerMs, float endDistance, long animationDuration) {
+            float velocityPxPerMs, float endDistance, long animationDuration) {
         float distanceInverse = 1 / Math.abs(endDistance);
         float velocityProgressPerMs = velocityPxPerMs * distanceInverse;
 
@@ -305,7 +302,7 @@ public class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateL
      */
     public static void callListenerCommandRecursively(
             Animator anim, BiConsumer<AnimatorListener, Animator> command) {
-        callAnimatorCommandRecursively(anim, a -> {
+        callAnimatorCommandRecursively(anim, a-> {
             for (AnimatorListener l : nonNullList(a.getListeners())) {
                 command.accept(l, a);
             }
@@ -396,7 +393,7 @@ public class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateL
     }
 
     static void addAnimationHoldersRecur(Animator anim, long globalDuration,
-                                         SpringProperty springProperty, ArrayList<Holder> out) {
+            SpringProperty springProperty, ArrayList<Holder> out) {
         long forceDuration = anim.getDuration();
         TimeInterpolator forceInterpolator = anim.getInterpolator();
         if (anim instanceof ValueAnimator) {

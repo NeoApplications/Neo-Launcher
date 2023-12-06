@@ -38,8 +38,7 @@ public class AnimatedFloat {
                 }
             };
 
-    private static final Runnable NO_OP = () -> {
-    };
+    private static final Runnable NO_OP = () -> { };
 
     private final Runnable mUpdateCallback;
     private ObjectAnimator mValueAnimator;

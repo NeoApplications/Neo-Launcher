@@ -30,11 +30,11 @@ import java.util.ArrayList;
 
 /**
  * Utility class to keep track of a running animation.
- * <p>
+ *
  * This class allows attaching end callbacks to an animation is intended to be used with
  * {@link com.android.launcher3.anim.AnimatorPlaybackController}, since in that case
  * AnimationListeners are not properly dispatched.
- * <p>
+ *
  * TODO: Find a better name
  */
 public class PendingAnimation extends AnimatedPropertySetter {
@@ -42,7 +42,7 @@ public class PendingAnimation extends AnimatedPropertySetter {
     private final ArrayList<Holder> mAnimHolders = new ArrayList<>();
     private final long mDuration;
 
-    public PendingAnimation(long duration) {
+    public PendingAnimation(long  duration) {
         mDuration = duration;
     }
 
@@ -76,7 +76,7 @@ public class PendingAnimation extends AnimatedPropertySetter {
     }
 
     public <T> void addFloat(T target, FloatProperty<T> property, float from, float to,
-                             TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         Animator anim = ObjectAnimator.ofFloat(target, property, from, to);
         anim.setInterpolator(interpolator);
         add(anim);

@@ -38,6 +38,7 @@ public abstract class PropertySetter {
         public void add(Animator animatorSet) {
             animatorSet.setDuration(0);
             animatorSet.start();
+            animatorSet.end();
         }
     };
 
@@ -73,7 +74,7 @@ public abstract class PropertySetter {
      */
     @NonNull
     public <T> Animator setFloat(T target, FloatProperty<T> property, float value,
-                                 TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         property.setValue(target, value);
         return NO_OP;
     }
@@ -83,7 +84,7 @@ public abstract class PropertySetter {
      */
     @NonNull
     public <T> Animator setInt(T target, IntProperty<T> property, int value,
-                               TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         property.setValue(target, value);
         return NO_OP;
     }
@@ -93,7 +94,7 @@ public abstract class PropertySetter {
      */
     @NonNull
     public <T> Animator setColor(T target, IntProperty<T> property, int value,
-                                 TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         property.setValue(target, value);
         return NO_OP;
     }
