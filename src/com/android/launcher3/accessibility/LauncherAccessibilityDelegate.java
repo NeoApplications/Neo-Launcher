@@ -3,6 +3,7 @@ package com.android.launcher3.accessibility;
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_LONG_CLICK;
+
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.anim.AnimatorListeners.forSuccessCallback;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.IGNORE;
@@ -133,7 +134,7 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
      * Returns all the accessibility actions that can be handled by the host.
      */
     public static List<LauncherAction> getSupportedActions(Launcher launcher, View host) {
-        if (host == null || !(host.getTag() instanceof ItemInfo)) {
+        if (host == null || !(host.getTag() instanceof  ItemInfo)) {
             return Collections.emptyList();
         }
         PopupContainerWithArrow container = PopupContainerWithArrow.getOpen(launcher);
@@ -146,7 +147,7 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
 
     @Override
     protected boolean performAction(final View host, final ItemInfo item, int action,
-                                    boolean fromKeyboard) {
+            boolean fromKeyboard) {
         if (action == ACTION_LONG_CLICK) {
             PreDragCondition dragCondition = null;
             // Long press should be consumed for workspace items, and it should invoke the
@@ -182,7 +183,7 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
         } else if (action == DEEP_SHORTCUTS || action == SHORTCUTS_AND_NOTIFICATIONS) {
             BubbleTextView btv = host instanceof BubbleTextView ? (BubbleTextView) host
                     : (host instanceof BubbleTextHolder
-                    ? ((BubbleTextHolder) host).getBubbleText() : null);
+                            ? ((BubbleTextHolder) host).getBubbleText() : null);
             return btv != null && PopupContainerWithArrow.showForIcon(btv) != null;
         } else {
             for (ButtonDropTarget dropTarget : mContext.getDropTargetBar().getDropTargets()) {
@@ -259,7 +260,7 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
                     && layout.isRegionVacant(info.cellX - 1, info.cellY, 1, info.spanY))
                     || !layout.isRegionVacant(info.cellX + info.spanX, info.cellY, 1, info.spanY)) {
                 lp.setCellX(lp.getCellX() - 1);
-                info.cellX--;
+                info.cellX --;
             }
             lp.cellHSpan ++;
             info.spanX ++;
@@ -269,13 +270,13 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
         } else if (action == R.string.action_increase_height) {
             if (!layout.isRegionVacant(info.cellX, info.cellY + info.spanY, info.spanX, 1)) {
                 lp.setCellY(lp.getCellY() - 1);
-                info.cellY--;
+                info.cellY --;
             }
-            lp.cellVSpan++;
-            info.spanY++;
+            lp.cellVSpan ++;
+            info.spanY ++;
         } else if (action == R.string.action_decrease_height) {
-            lp.cellVSpan--;
-            info.spanY--;
+            lp.cellVSpan --;
+            info.spanY --;
         }
 
         layout.markCellsAsOccupiedForView(host);
@@ -287,8 +288,7 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
         return true;
     }
 
-    @Thunk
-    void announceConfirmation(int resId) {
+    @Thunk void announceConfirmation(int resId) {
         announceConfirmation(mContext.getResources().getString(resId));
     }
 
@@ -372,10 +372,10 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
 
     /**
      * Functionality to add the item {@link ItemInfo} to the workspace
-     *
-     * @param item          item to be added
+     * @param item item to be added
      * @param accessibility true if the first item to be added to the workspace
-     *                      should be focused for accessibility.
+     *     should be focused for accessibility.
+     *
      * @return true if the item could be successfully added
      */
     public boolean addToWorkspace(ItemInfo item, boolean accessibility) {
@@ -408,6 +408,14 @@ public class LauncherAccessibilityDelegate extends BaseAccessibilityDelegate<Lau
                         LauncherSettings.Favorites.CONTAINER_DESKTOP,
                         screenId, coordinates[0], coordinates[1]);
                 mContext.bindItems(Collections.singletonList(info), true, accessibility);
+            } else if (item instanceof FolderInfo fi) {
+                mContext.getModelWriter().addItemToDatabase(fi,
+                        LauncherSettings.Favorites.CONTAINER_DESKTOP, screenId, coordinates[0],
+                        coordinates[1]);
+                fi.contents.forEach(member -> {
+                    mContext.getModelWriter().addItemToDatabase(member, fi.id, -1, -1, -1);
+                });
+                mContext.bindItems(Collections.singletonList(fi), true, accessibility);
             }
         }));
         return true;

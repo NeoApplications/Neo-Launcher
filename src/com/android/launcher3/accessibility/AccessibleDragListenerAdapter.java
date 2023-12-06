@@ -38,11 +38,11 @@ public class AccessibleDragListenerAdapter implements DragListener, OnHierarchyC
     private final Function<CellLayout, DragAndDropAccessibilityDelegate> mDelegateFactory;
 
     /**
-     * @param parent          the viewgroup containing all the children
+     * @param parent the viewgroup containing all the children
      * @param delegateFactory function to create no delegates
      */
     public AccessibleDragListenerAdapter(ViewGroup parent,
-                                         Function<CellLayout, DragAndDropAccessibilityDelegate> delegateFactory) {
+            Function<CellLayout, DragAndDropAccessibilityDelegate> delegateFactory) {
         mViewGroup = parent;
         mDelegateFactory = delegateFactory;
     }

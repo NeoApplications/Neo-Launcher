@@ -133,11 +133,11 @@ public abstract class BaseAccessibilityDelegate<T extends Context & ActivityCont
 
     /**
      * @param clickedTarget the actual view that was clicked
-     * @param dropLocation  relative to {@param clickedTarget}. If provided, its center is used
-     *                      as the actual drop location otherwise the views center is used.
+     * @param dropLocation relative to {@param clickedTarget}. If provided, its center is used
+     * as the actual drop location otherwise the views center is used.
      */
     public void handleAccessibleDrop(View clickedTarget, Rect dropLocation,
-                                     String confirmation) {
+            String confirmation) {
         if (!isInAccessibleDrag()) return;
 
         int[] loc = new int[2];
