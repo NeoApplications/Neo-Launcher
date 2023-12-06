@@ -40,5 +40,4 @@ public interface LauncherExterns {
      * Sets the overlay on the target activity
      */
     void setLauncherOverlay(LauncherOverlay overlay);
-
 }

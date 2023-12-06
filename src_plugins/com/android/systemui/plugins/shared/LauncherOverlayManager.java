@@ -26,59 +26,45 @@ import java.io.PrintWriter;
  */
 public interface LauncherOverlayManager extends Application.ActivityLifecycleCallbacks {
 
-    default void onDeviceProvideChanged() {
-    }
+    default void onDeviceProvideChanged() { }
 
-    default void onAttachedToWindow() {
-    }
+    default void onAttachedToWindow() { }
+    default void onDetachedFromWindow() { }
 
-    default void onDetachedFromWindow() {
-    }
+    default void dump(String prefix, PrintWriter w) { }
 
-    default void dump(String prefix, PrintWriter w) {
-    }
-
-    default void openOverlay() {
-    }
+    default void openOverlay() { }
 
     default void hideOverlay(boolean animate) {
         hideOverlay(animate ? 200 : 0);
     }
 
-    default void hideOverlay(int duration) {
-    }
+    default void hideOverlay(int duration) { }
 
     default boolean startSearch(byte[] config, Bundle extras) {
         return false;
     }
 
     @Override
-    default void onActivityCreated(Activity activity, Bundle bundle) {
-    }
+    default void onActivityCreated(Activity activity, Bundle bundle) { }
 
     @Override
-    default void onActivityStarted(Activity activity) {
-    }
+    default void onActivityStarted(Activity activity) { }
 
     @Override
-    default void onActivityResumed(Activity activity) {
-    }
+    default void onActivityResumed(Activity activity) { }
 
     @Override
-    default void onActivityPaused(Activity activity) {
-    }
+    default void onActivityPaused(Activity activity) { }
 
     @Override
-    default void onActivityStopped(Activity activity) {
-    }
+    default void onActivityStopped(Activity activity) { }
 
     @Override
-    default void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-    }
+    default void onActivitySaveInstanceState(Activity activity, Bundle bundle) { }
 
     @Override
-    default void onActivityDestroyed(Activity activity) {
-    }
+    default void onActivityDestroyed(Activity activity) { }
 
     interface LauncherOverlay {
 

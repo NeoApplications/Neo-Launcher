@@ -1,7 +1,6 @@
 package com.android.systemui.plugins;
 
 import android.view.ViewGroup;
-
 import com.android.systemui.plugins.annotations.ProvidesInterface;
 
 /**

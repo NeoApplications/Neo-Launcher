@@ -42,9 +42,7 @@ public interface OneSearch extends Plugin {
      */
     ArrayList<Parcelable> getSuggests(Parcelable query);
 
-    /**
-     * Get image bitmap with the URL.
-     */
+    /** Get image bitmap with the URL. */
     Parcelable getImageBitmap(String imageUrl);
 
     void setSuggestOnChrome(boolean enable);
