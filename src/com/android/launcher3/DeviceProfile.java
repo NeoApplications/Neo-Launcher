@@ -525,7 +525,7 @@ public class DeviceProfile {
         }
 
         if (renderer == null) {
-            renderer = new DotRenderer(size, getShapePath(context,DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE, dotSize);
+            renderer = new DotRenderer(size, getShapePath(context,DEFAULT_DOT_SIZE), DEFAULT_DOT_SIZE);
             cache.put(size, renderer);
         }
         return renderer;
