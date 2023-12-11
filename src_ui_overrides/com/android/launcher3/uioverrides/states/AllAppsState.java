@@ -15,7 +15,7 @@
  */
 package com.android.launcher3.uioverrides.states;
 
-import static com.android.launcher3.anim.Interpolators.DEACCEL_2;
+import static com.android.app.animation.Interpolators.DECELERATE;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_ALLAPPS;
 
 import android.content.Context;
@@ -23,8 +23,8 @@ import android.content.Context;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
  * Definition for AllApps state
@@ -32,7 +32,6 @@ import com.saggitt.omega.util.OmegaUtilsKt;
 public class AllAppsState extends LauncherState {
 
     private static final float PARALLAX_COEFFICIENT = .125f;
-    private static final float WORKSPACE_SCALE_FACTOR = 0.97f; // TODO add scale as pref
 
     private static final int STATE_FLAGS = FLAG_WORKSPACE_INACCESSIBLE;
 
@@ -60,7 +59,7 @@ public class AllAppsState extends LauncherState {
 
     @Override
     public ScaleAndTranslation getWorkspaceScaleAndTranslation(Launcher launcher) {
-        return new ScaleAndTranslation(WORKSPACE_SCALE_FACTOR, NO_OFFSET,
+        return new ScaleAndTranslation(launcher.getDeviceProfile().workspaceContentScale, NO_OFFSET,
                 NO_OFFSET);
     }
 
@@ -72,7 +71,7 @@ public class AllAppsState extends LauncherState {
             ScaleAndTranslation overviewScaleAndTranslation = LauncherState.OVERVIEW
                     .getWorkspaceScaleAndTranslation(launcher);
             return new ScaleAndTranslation(
-                    WORKSPACE_SCALE_FACTOR,
+                    launcher.getDeviceProfile().workspaceContentScale,
                     overviewScaleAndTranslation.translationX,
                     overviewScaleAndTranslation.translationY);
         }
@@ -81,7 +80,7 @@ public class AllAppsState extends LauncherState {
     @Override
     public PageAlphaProvider getWorkspacePageAlphaProvider(Launcher launcher) {
         PageAlphaProvider superPageAlphaProvider = super.getWorkspacePageAlphaProvider(launcher);
-        return new PageAlphaProvider(DEACCEL_2) {
+        return new PageAlphaProvider(DECELERATE) {
             @Override
             public float getPageAlpha(int pageIndex) {
                 return launcher.getDeviceProfile().isTablet
@@ -100,7 +99,6 @@ public class AllAppsState extends LauncherState {
     public int getWorkspaceScrimColor(Launcher launcher) {
         return launcher.getDeviceProfile().isTablet
                 ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
-                //: Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
-                : OmegaUtilsKt.getAllAppsScrimColor(launcher);
+                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
     }
 }
