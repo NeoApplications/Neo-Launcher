@@ -54,9 +54,7 @@ public class PlaceHolderIconDrawable extends FastBitmapDrawable {
         canvas.restoreToCount(saveCount);
     }
 
-    /**
-     * Updates this placeholder to {@code newIcon} with animation.
-     */
+    /** Updates this placeholder to {@code newIcon} with animation. */
     public void animateIconUpdate(Drawable newIcon) {
         int placeholderColor = mPaint.getColor();
         int originalAlpha = Color.alpha(placeholderColor);

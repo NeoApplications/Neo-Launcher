@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.launcher3.icons;
 
 import static com.android.launcher3.icons.BaseIconFactory.getBadgeSizeForIconSize;
@@ -33,16 +34,21 @@ import android.util.FloatProperty;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.PathInterpolator;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 
 public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
 
     private static final Interpolator ACCEL = new AccelerateInterpolator();
     private static final Interpolator DEACCEL = new DecelerateInterpolator();
+    private static final Interpolator HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR =
+            new PathInterpolator(0.05f, 0.7f, 0.1f, 1.0f);
 
-    private static final float PRESSED_SCALE = 1.1f;
+    @VisibleForTesting protected static final float PRESSED_SCALE = 1.1f;
+    @VisibleForTesting protected static final float HOVERED_SCALE = 1.1f;
     public static final int WHITE_SCRIM_ALPHA = 138;
 
     private static final float DISABLED_DESATURATION = 1f;
@@ -50,20 +56,23 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
     protected static final int FULLY_OPAQUE = 255;
 
     public static final int CLICK_FEEDBACK_DURATION = 200;
+    public static final int HOVER_FEEDBACK_DURATION = 300;
+
+    private static boolean sFlagHoverEnabled = false;
 
     protected final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
     protected final Bitmap mBitmap;
     protected final int mIconColor;
 
-    @Nullable
-    private ColorFilter mColorFilter;
+    @Nullable private ColorFilter mColorFilter;
 
-    private boolean mIsPressed;
+    @VisibleForTesting protected boolean mIsPressed;
+    @VisibleForTesting protected boolean mIsHovered;
     protected boolean mIsDisabled;
     float mDisabledAlpha = 1f;
 
     // Animator and properties for the fast bitmap drawable's scale
-    private static final FloatProperty<FastBitmapDrawable> SCALE
+    @VisibleForTesting protected static final FloatProperty<FastBitmapDrawable> SCALE
             = new FloatProperty<FastBitmapDrawable>("scale") {
         @Override
         public Float get(FastBitmapDrawable fastBitmapDrawable) {
@@ -76,7 +85,7 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
             fastBitmapDrawable.invalidateSelf();
         }
     };
-    private ObjectAnimator mScaleAnimation;
+    @VisibleForTesting protected ObjectAnimator mScaleAnimation;
     private float mScale = 1;
     private int mAlpha = 255;
 
@@ -163,6 +172,9 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
             mAlpha = alpha;
             mPaint.setAlpha(alpha);
             invalidateSelf();
+            if (mBadge != null) {
+                mBadge.setAlpha(alpha);
+            }
         }
     }
 
@@ -223,37 +235,41 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
     @Override
     protected boolean onStateChange(int[] state) {
         boolean isPressed = false;
+        boolean isHovered = false;
         for (int s : state) {
             if (s == android.R.attr.state_pressed) {
                 isPressed = true;
                 break;
+            } else if (sFlagHoverEnabled && s == android.R.attr.state_hovered) {
+                isHovered = true;
+                // Do not break on hovered state, as pressed state should take precedence.
             }
         }
-        if (mIsPressed != isPressed) {
-            mIsPressed = isPressed;
-
+        if (mIsPressed != isPressed || mIsHovered != isHovered) {
             if (mScaleAnimation != null) {
                 mScaleAnimation.cancel();
-                mScaleAnimation = null;
             }
 
-            if (mIsPressed) {
-                // Animate when going to pressed state
-                mScaleAnimation = ObjectAnimator.ofFloat(this, SCALE, PRESSED_SCALE);
-                mScaleAnimation.setDuration(CLICK_FEEDBACK_DURATION);
-                mScaleAnimation.setInterpolator(ACCEL);
-                mScaleAnimation.start();
-            } else {
+            float endScale = isPressed ? PRESSED_SCALE : (isHovered ? HOVERED_SCALE : 1f);
+            if (mScale != endScale) {
                 if (isVisible()) {
-                    mScaleAnimation = ObjectAnimator.ofFloat(this, SCALE, 1f);
-                    mScaleAnimation.setDuration(CLICK_FEEDBACK_DURATION);
-                    mScaleAnimation.setInterpolator(DEACCEL);
+                    Interpolator interpolator =
+                            isPressed != mIsPressed ? (isPressed ? ACCEL : DEACCEL)
+                                    : HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR;
+                    int duration =
+                            isPressed != mIsPressed ? CLICK_FEEDBACK_DURATION
+                                    : HOVER_FEEDBACK_DURATION;
+                    mScaleAnimation = ObjectAnimator.ofFloat(this, SCALE, endScale);
+                    mScaleAnimation.setDuration(duration);
+                    mScaleAnimation.setInterpolator(interpolator);
                     mScaleAnimation.start();
                 } else {
-                    mScale = 1f;
+                    mScale = endScale;
                     invalidateSelf();
                 }
             }
+            mIsPressed = isPressed;
+            mIsHovered = isHovered;
             return true;
         }
         return false;
@@ -317,7 +333,7 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
 
         tempFilterMatrix.setSaturation(1f - DISABLED_DESATURATION);
         float scale = 1 - DISABLED_BRIGHTNESS;
-        int brightnessI = (int) (255 * DISABLED_BRIGHTNESS);
+        int brightnessI =   (int) (255 * DISABLED_BRIGHTNESS);
         float[] mat = tempBrightnessMatrix.getArray();
         mat[0] = scale;
         mat[6] = scale;
@@ -364,6 +380,13 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
     @Override
     public void unscheduleDrawable(Drawable who, Runnable what) {
         unscheduleSelf(what);
+    }
+
+    /**
+     * Sets whether hover state functionality is enabled.
+     */
+    public static void setFlagHoverEnabled(boolean isFlagHoverEnabled) {
+        sFlagHoverEnabled = isFlagHoverEnabled;
     }
 
     protected static class FastBitmapConstantState extends ConstantState {

@@ -16,6 +16,9 @@ dependencyResolutionManagement {
 include(":iconloaderlib")
 project(":iconloaderlib").projectDir = File(rootDir, "libs_systemui/iconloaderlib")
 
+include(":animationlib")
+project(":animationlib").projectDir = File(rootDir, "libs_systemui/animationlib")
+
 include(":smartspace")
 project(":smartspace").projectDir = File(rootDir, "libs_systemui/smartspace")
 rootProject.name = "Neo Launcher"

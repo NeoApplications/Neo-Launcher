@@ -36,10 +36,10 @@ public class ShadowGenerator {
 
     public static final boolean ENABLE_SHADOWS = true;
 
-    public static final float BLUR_FACTOR = 1.68f / 48;
+    public static final float BLUR_FACTOR = 1.68f/48;
 
     // Percent of actual icon size
-    public static final float KEY_SHADOW_DISTANCE = 1f / 48;
+    public static final float KEY_SHADOW_DISTANCE = 1f/48;
     private static final int KEY_SHADOW_ALPHA = 7;
     // Percent of actual icon size
     private static final float HALF_DISTANCE = 0.5f;
@@ -75,9 +75,7 @@ public class ShadowGenerator {
         }
     }
 
-    /**
-     * package private
-     **/
+    /** package private **/
     void addPathShadow(Path path, Canvas out) {
         if (ENABLE_SHADOWS) {
             mDrawPaint.setMaskFilter(mDefaultBlurMaskFilter);

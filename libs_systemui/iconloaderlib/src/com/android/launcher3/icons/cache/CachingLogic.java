@@ -39,7 +39,7 @@ public interface CachingLogic<T> {
 
     @NonNull
     default CharSequence getDescription(@NonNull final T object,
-                                        @NonNull final CharSequence fallback) {
+            @NonNull final CharSequence fallback) {
         return fallback;
     }
 

@@ -50,7 +50,7 @@ public class SimpleIconCache extends BaseIconCache {
     private final UserManager mUserManager;
 
     public SimpleIconCache(Context context, String dbFileName, Looper bgLooper, int iconDpi,
-                           int iconPixelSize, boolean inMemoryCache) {
+            int iconPixelSize, boolean inMemoryCache) {
         super(context, dbFileName, bgLooper, iconDpi, iconPixelSize, inMemoryCache);
         mUserManager = context.getSystemService(UserManager.class);
 

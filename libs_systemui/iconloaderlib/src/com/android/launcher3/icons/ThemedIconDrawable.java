@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.icons;
 
+import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,11 +24,10 @@ import android.graphics.Bitmap;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
-
-import androidx.annotation.ColorInt;
 
 /**
  * Class to handle monochrome themed app icons
@@ -64,6 +65,12 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
     }
 
     @Override
+    protected void drawInternal(Canvas canvas, Rect bounds) {
+        canvas.drawBitmap(mBgBitmap, null, bounds, mBgPaint);
+        canvas.drawBitmap(mMonoIcon, null, bounds, mMonoPaint);
+    }
+
+    @Override
     protected void updateFilter() {
         super.updateFilter();
         int alpha = mIsDisabled ? (int) (mDisabledAlpha * FULLY_OPAQUE) : FULLY_OPAQUE;
@@ -74,12 +81,6 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
         mMonoPaint.setAlpha(alpha);
         mMonoPaint.setColorFilter(mIsDisabled ? new BlendModeColorFilter(
                 getDisabledColor(colorFg), BlendMode.SRC_IN) : mMonoFilter);
-    }
-
-    @Override
-    protected void drawInternal(Canvas canvas, Rect bounds) {
-        canvas.drawBitmap(mBgBitmap, null, bounds, mBgPaint);
-        canvas.drawBitmap(mMonoIcon, null, bounds, mMonoPaint);
     }
 
     @Override
@@ -125,7 +126,6 @@ public class ThemedIconDrawable extends FastBitmapDrawable {
     /**
      * Get an int array representing background and foreground colors for themed icons
      */
-    @ColorInt
     public static int[] getColors(Context context) {
         Resources res = context.getResources();
         int[] colors = new int[2];

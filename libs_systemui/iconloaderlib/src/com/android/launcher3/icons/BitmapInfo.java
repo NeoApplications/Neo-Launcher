@@ -16,6 +16,7 @@
 package com.android.launcher3.icons;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -31,24 +32,20 @@ public class BitmapInfo {
     static final int FLAG_WORK = 1 << 0;
     static final int FLAG_INSTANT = 1 << 1;
     static final int FLAG_CLONE = 1 << 2;
-
     @IntDef(flag = true, value = {
             FLAG_WORK,
             FLAG_INSTANT,
             FLAG_CLONE
     })
-    @interface BitmapInfoFlags {
-    }
+    @interface BitmapInfoFlags {}
 
     public static final int FLAG_THEMED = 1 << 0;
     public static final int FLAG_NO_BADGE = 1 << 1;
-
     @IntDef(flag = true, value = {
             FLAG_THEMED,
             FLAG_NO_BADGE,
     })
-    public @interface DrawableCreationFlags {
-    }
+    public @interface DrawableCreationFlags {}
 
     public static final Bitmap LOW_RES_ICON = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
     public static final BitmapInfo LOW_RES_INFO = fromBitmap(LOW_RES_ICON);
@@ -142,7 +139,7 @@ public class BitmapInfo {
         FastBitmapDrawable drawable;
         if (isLowRes()) {
             drawable = new PlaceHolderIconDrawable(this, context);
-        } else if ((creationFlags & FLAG_THEMED) != 0 && mMono != null) {
+        } else  if ((creationFlags & FLAG_THEMED) != 0 && mMono != null) {
             drawable = ThemedIconDrawable.newDrawable(this, context);
         } else {
             drawable = new FastBitmapDrawable(this);
@@ -152,7 +149,7 @@ public class BitmapInfo {
     }
 
     protected void applyFlags(Context context, FastBitmapDrawable drawable,
-                              @DrawableCreationFlags int creationFlags) {
+            @DrawableCreationFlags int creationFlags) {
         drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
         if ((creationFlags & FLAG_NO_BADGE) == 0) {
             if (badgeInfo != null) {
@@ -190,7 +187,7 @@ public class BitmapInfo {
          * Called for creating a custom BitmapInfo
          */
         BitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                                   BaseIconFactory iconFactory, float normalizationScale);
+                BaseIconFactory iconFactory, float normalizationScale);
 
         /**
          * Called to draw the UI independent of any runtime configurations like time or theme

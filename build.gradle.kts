@@ -244,6 +244,7 @@ android {
 
 dependencies {
     implementation(project(":iconloaderlib"))
+    implementation(project(":animationlib"))
     implementation(project(":smartspace"))
     implementation(kotlin("stdlib", vKotlin))
 

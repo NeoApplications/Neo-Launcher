@@ -92,43 +92,6 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         super(base.getBackground(), base.getForeground());
     }
 
-    /**
-     * Loads and returns the wrapper from the provided package, or returns null
-     * if it is unable to load.
-     */
-    public static ClockDrawableWrapper forPackage(Context context, String pkg, int iconDpi,
-                                                  @Nullable ThemeData themeData) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            ApplicationInfo appInfo = pm.getApplicationInfo(pkg,
-                    PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
-            Resources res = pm.getResourcesForApplication(appInfo);
-            ClockDrawableWrapper wrapper = forExtras(appInfo.metaData,
-                    resId -> res.getDrawableForDensity(resId, iconDpi));
-            if (wrapper != null && themeData != null) {
-                wrapper.applyThemeData(themeData);
-            }
-            return wrapper;
-        } catch (Exception e) {
-            Log.d(TAG, "Unable to load clock drawable info", e);
-        }
-        return null;
-    }
-
-    @Override
-    public Drawable getMonochrome() {
-        if (mThemeInfo == null) {
-            return null;
-        }
-        Drawable d = mThemeInfo.baseDrawableState.newDrawable().mutate();
-        if (d instanceof AdaptiveIconDrawable) {
-            Drawable mono = ((AdaptiveIconDrawable) d).getForeground();
-            mThemeInfo.applyTime(Calendar.getInstance(), (LayerDrawable) mono);
-            return mono;
-        }
-        return null;
-    }
-
     private void applyThemeData(ThemeData themeData) {
         if (!ATLEAST_T || mThemeInfo != null) {
             return;
@@ -157,13 +120,49 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         }
     }
 
+    @Override
+    public Drawable getMonochrome() {
+        if (mThemeInfo == null) {
+            return null;
+        }
+        Drawable d = mThemeInfo.baseDrawableState.newDrawable().mutate();
+        if (d instanceof AdaptiveIconDrawable) {
+            Drawable mono = ((AdaptiveIconDrawable) d).getForeground();
+            mThemeInfo.applyTime(Calendar.getInstance(), (LayerDrawable) mono);
+            return mono;
+        }
+        return null;
+    }
+
+    /**
+     * Loads and returns the wrapper from the provided package, or returns null
+     * if it is unable to load.
+     */
+    public static ClockDrawableWrapper forPackage(Context context, String pkg, int iconDpi,
+            @Nullable ThemeData themeData) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            ApplicationInfo appInfo =  pm.getApplicationInfo(pkg,
+                    PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
+            Resources res = pm.getResourcesForApplication(appInfo);
+            ClockDrawableWrapper wrapper = forExtras(appInfo.metaData,
+                    resId -> res.getDrawableForDensity(resId, iconDpi));
+            if (wrapper != null && themeData != null) {
+                wrapper.applyThemeData(themeData);
+            }
+            return wrapper;
+        } catch (Exception e) {
+            Log.d(TAG, "Unable to load clock drawable info", e);
+        }
+        return null;
+    }
+
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
     private static ClockDrawableWrapper forExtras(
             Bundle metadata, IntFunction<Drawable> drawableProvider) {
         if (metadata == null) {
             return null;
         }
-
         int drawableId = metadata.getInt(ROUND_ICON_METADATA_KEY, 0);
         if (drawableId == 0) {
             return null;
@@ -173,7 +172,6 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         if (!(drawable instanceof AdaptiveIconDrawable)) {
             return null;
         }
-
         AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
 
         ClockDrawableWrapper wrapper = new ClockDrawableWrapper(aid);
@@ -213,7 +211,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
 
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                                           BaseIconFactory iconFactory, float normalizationScale) {
+            BaseIconFactory iconFactory, float normalizationScale) {
         AdaptiveIconDrawable background = new CustomAdaptiveIconDrawable(
                 getBackground().getConstantState().newDrawable(), null);
         Bitmap flattenBG = iconFactory.createScaledBitmap(background,
@@ -221,7 +219,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
 
         // Only pass theme info if mono-icon is enabled
         AnimationInfo themeInfo = iconFactory.mMonoIconEnabled ? mThemeInfo : null;
-        Bitmap themeBG = iconFactory.mMonoIconEnabled ? iconFactory.getWhiteShadowLayer() : null;
+        Bitmap themeBG = themeInfo == null ? null : iconFactory.getWhiteShadowLayer();
         return new ClockBitmapInfo(bitmap, color, normalizationScale,
                 mAnimationInfo, flattenBG, themeInfo, themeBG);
     }
@@ -310,8 +308,8 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         public final Bitmap themeBackground;
 
         ClockBitmapInfo(Bitmap icon, int color, float scale,
-                        AnimationInfo animInfo, Bitmap background,
-                        AnimationInfo themeInfo, Bitmap themeBackground) {
+                AnimationInfo animInfo, Bitmap background,
+                AnimationInfo themeInfo, Bitmap themeBackground) {
             super(icon, color);
             this.boundsOffset = Math.max(ShadowGenerator.BLUR_FACTOR, (1 - scale) / 2);
             this.animInfo = animInfo;
@@ -322,7 +320,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
 
         @Override
         public FastBitmapDrawable newIcon(Context context,
-                                          @DrawableCreationFlags int creationFlags) {
+                @DrawableCreationFlags  int creationFlags) {
             AnimationInfo info;
             Bitmap bg;
             int themedFgColor;
@@ -500,7 +498,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
             private final int mThemedFgColor;
 
             ClockConstantState(Bitmap bitmap, int color, int themedFgColor,
-                               float boundsOffset, AnimationInfo animInfo, Bitmap bg, ColorFilter bgFilter) {
+                    float boundsOffset, AnimationInfo animInfo, Bitmap bg, ColorFilter bgFilter) {
                 super(bitmap, color);
                 mBoundsOffset = boundsOffset;
                 mAnimInfo = animInfo;

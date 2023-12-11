@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 **
 ** Copyright 2018, The Android Open Source Project
 **
@@ -24,12 +25,6 @@
     <string name="cache_db_name" translatable="false">app_icons.db</string>
 
     <string name="calendar_component_name" translatable="false"></string>
-    <string-array name="dynamic_calendar_components_name">
-        <item>default</item>
-    </string-array>
-    <string name="icon_packs_intent_name" translatable="false">default</string>
-    <string-array name="themed_icon_packs" translatable="false">
-        <item>default</item>
-    </string-array>
     <string name="clock_component_name" translatable="false"></string>
+
 </resources>

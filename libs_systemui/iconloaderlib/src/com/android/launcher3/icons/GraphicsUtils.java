@@ -41,8 +41,7 @@ public class GraphicsUtils {
     private static final String TAG = "GraphicsUtils";
     private static final float MASK_SIZE = 100f;
 
-    public static Runnable sOnNewBitmapRunnable = () -> {
-    };
+    public static Runnable sOnNewBitmapRunnable = () -> { };
 
     /**
      * Set the alpha component of {@code color} to be {@code alpha}. Unlike the support lib version,

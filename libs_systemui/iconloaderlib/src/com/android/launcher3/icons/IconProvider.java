@@ -22,6 +22,7 @@ import static android.content.Intent.ACTION_TIME_CHANGED;
 import static android.content.res.Resources.ID_NULL;
 import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,6 +37,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PatternMatcher;
@@ -59,7 +61,7 @@ import java.util.function.Supplier;
 public class IconProvider {
 
     private final String ACTION_OVERLAY_CHANGED = "android.intent.action.OVERLAY_CHANGED";
-    public static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
+    static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
             "config_icon_mask", "string", "android");
 
     private static final String TAG = "IconProvider";
@@ -121,8 +123,8 @@ public class IconProvider {
                                             String component, UserHandle user,
                                             Supplier<Drawable> fallback) {
         ThemeData td = getThemeDataForPackage(packageName);
-        Drawable icon = null;
 
+        Drawable icon = null;
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
             icon = loadCalendarDrawable(iconDpi, td);
         } else if (mClock != null && mClock.getPackageName().equals(packageName)) {
@@ -132,7 +134,7 @@ public class IconProvider {
             icon = fallback.get();
             if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
                 AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
-                if (aid.getMonochrome() == null) {
+                if  (aid.getMonochrome() == null) {
                     icon = new AdaptiveIconDrawable(aid.getBackground(),
                             aid.getForeground(), td.loadPaddedDrawable());
                 }
@@ -154,8 +156,7 @@ public class IconProvider {
                 final Resources resources = mContext.getPackageManager()
                         .getResourcesForApplication(ai.applicationInfo);
                 icon = resources.getDrawableForDensity(iconRes, density);
-            } catch (NameNotFoundException | Resources.NotFoundException exc) {
-            }
+            } catch (NameNotFoundException | Resources.NotFoundException exc) { }
         }
         // Get the default density icon
         if (icon == null) {
@@ -178,7 +179,7 @@ public class IconProvider {
                 Drawable drawable = resources.getDrawableForDensity(id, iconDpi, null /* theme */);
                 if (ATLEAST_T && drawable instanceof AdaptiveIconDrawable && td != null) {
                     AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
-                    if (aid.getMonochrome() != null) {
+                    if  (aid.getMonochrome() != null) {
                         return drawable;
                     }
                     if ("array".equals(td.mResources.getResourceTypeName(td.mResID))) {
@@ -187,7 +188,7 @@ public class IconProvider {
                         ta.recycle();
                         return monoId == ID_NULL ? drawable
                                 : new AdaptiveIconDrawable(aid.getBackground(), aid.getForeground(),
-                                new ThemeData(td.mResources, monoId).loadPaddedDrawable());
+                                        new ThemeData(td.mResources, monoId).loadPaddedDrawable());
                     }
                 }
                 return drawable;
@@ -202,7 +203,7 @@ public class IconProvider {
     }
 
     /**
-     * @param metadata  metadata of the default activity of Calendar
+     * @param metadata metadata of the default activity of Calendar
      * @param resources from the Calendar package
      * @return the resource id for today's Calendar icon; 0 if resources cannot be found.
      */

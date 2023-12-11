@@ -4,10 +4,12 @@ import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.graphics.Paint.DITHER_FLAG;
 import static android.graphics.Paint.FILTER_BITMAP_FLAG;
 import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
+
 import static com.android.launcher3.icons.BitmapInfo.FLAG_CLONE;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_INSTANT;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_WORK;
 import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
+
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.annotation.TargetApi;
@@ -44,6 +46,7 @@ import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable;
 import com.saulhdev.neolauncher.icons.IconPreferences;
 
 import java.lang.annotation.Retention;
+import java.util.Objects;
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside
@@ -61,8 +64,7 @@ public class BaseIconFactory implements AutoCloseable {
 
     @Retention(SOURCE)
     @IntDef({MODE_DEFAULT, MODE_ALPHA, MODE_WITH_SHADOW, MODE_HARDWARE_WITH_SHADOW, MODE_HARDWARE})
-    @interface BitmapGenerationMode {
-    }
+    @interface BitmapGenerationMode {}
 
     private static final float ICON_BADGE_SCALE = 0.444f;
 
@@ -106,7 +108,7 @@ public class BaseIconFactory implements AutoCloseable {
     private static int PLACEHOLDER_BACKGROUND_COLOR = Color.rgb(245, 245, 245);
 
     protected BaseIconFactory(Context context, int fillResIconDpi, int iconBitmapSize,
-                              boolean shapeDetection) {
+            boolean shapeDetection) {
         mContext = context.getApplicationContext();
         mShapeDetection = shapeDetection;
         mFillResIconDpi = fillResIconDpi;
@@ -163,7 +165,7 @@ public class BaseIconFactory implements AutoCloseable {
      * Create a placeholder icon using the passed in text.
      *
      * @param placeholder used for foreground element in the icon bitmap
-     * @param color       used for the foreground text color
+     * @param color used for the foreground text color
      * @return
      */
     public BitmapInfo createIconBitmap(String placeholder, int color) {
@@ -204,13 +206,13 @@ public class BaseIconFactory implements AutoCloseable {
      * Creates bitmap using the source drawable and various parameters.
      * The bitmap is visually normalized with other icons and has enough spacing to add shadow.
      *
-     * @param icon source of the icon
+     * @param icon                      source of the icon
      * @return a bitmap suitable for disaplaying as an icon at various system UIs.
      */
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
     @NonNull
     public BitmapInfo createBadgedIconBitmap(@NonNull Drawable icon,
-                                             @Nullable IconOptions options) {
+            @Nullable IconOptions options) {
         boolean shrinkNonAdaptiveIcons = options == null || options.mShrinkNonAdaptiveIcons;
         float[] scale = new float[1];
         icon = normalizeAndWrapToAdaptiveIcon(icon, shrinkNonAdaptiveIcons, null, scale);
@@ -226,8 +228,7 @@ public class BaseIconFactory implements AutoCloseable {
         } else if (IconProvider.ATLEAST_T && mMonoIconEnabled) {
             Drawable mono = getMonochromeDrawable(icon);
             if (mono != null) {
-                Drawable paddedMono = new ClippedMonoDrawable(mono);
-                info.setMonoIcon(createIconBitmap(paddedMono, scale[0], MODE_ALPHA), this);
+                info.setMonoIcon(createIconBitmap(mono, scale[0], MODE_ALPHA), this);
             }
         }
         info = info.withFlags(getBitmapFlagOp(options));
@@ -236,7 +237,6 @@ public class BaseIconFactory implements AutoCloseable {
 
     /**
      * Returns a monochromatic version of the given drawable or null, if it is not supported
-     *
      * @param base the original icon
      */
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
@@ -355,7 +355,7 @@ public class BaseIconFactory implements AutoCloseable {
 
     @NonNull
     protected Bitmap createIconBitmap(@Nullable final Drawable icon, final float scale,
-                                      @BitmapGenerationMode int bitmapGenerationMode) {
+            @BitmapGenerationMode int bitmapGenerationMode) {
         final int size = mIconBitmapSize;
         final Bitmap bitmap;
         switch (bitmapGenerationMode) {
@@ -382,8 +382,8 @@ public class BaseIconFactory implements AutoCloseable {
     }
 
     private void drawIconBitmap(@NonNull Canvas canvas, @Nullable final Drawable icon,
-                                final float scale, @BitmapGenerationMode int bitmapGenerationMode,
-                                @Nullable Bitmap targetBitmap) {
+            final float scale, @BitmapGenerationMode int bitmapGenerationMode,
+            @Nullable Bitmap targetBitmap) {
         final int size = mIconBitmapSize;
         mOldBounds.set(icon.getBounds());
 
@@ -485,12 +485,10 @@ public class BaseIconFactory implements AutoCloseable {
         @BitmapGenerationMode
         int mGenerationMode = MODE_WITH_SHADOW;
 
-        @Nullable
-        UserHandle mUserHandle;
+        @Nullable UserHandle mUserHandle;
 
         @ColorInt
-        @Nullable
-        Integer mExtractedColor;
+        @Nullable Integer mExtractedColor;
 
         /**
          * Set to false if non-adaptive icons should not be treated

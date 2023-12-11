@@ -16,7 +16,9 @@
 
 package com.android.launcher3.icons;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,12 +32,13 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Log;
+
+import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.nio.ByteBuffer;
 
 public class IconNormalizer {
 
@@ -81,9 +84,7 @@ public class IconNormalizer {
     private final Path mShapePath;
     private final Matrix mMatrix;
 
-    /**
-     * package private
-     **/
+    /** package private **/
     IconNormalizer(Context context, int iconBitmapSize, boolean shapeDetection) {
         // Use twice the icon size as maximum size to avoid scaling down twice.
         mMaxSize = iconBitmapSize * 2;
@@ -128,7 +129,7 @@ public class IconNormalizer {
     }
 
     /**
-     * @param d    Should be AdaptiveIconDrawable
+     * @param d Should be AdaptiveIconDrawable
      * @param size Canvas size to use
      */
     public static float normalizeAdaptiveIcon(Drawable d, int size, @Nullable RectF outBounds) {
@@ -223,19 +224,19 @@ public class IconNormalizer {
     /**
      * Returns the amount by which the {@param d} should be scaled (in both dimensions) so that it
      * matches the design guidelines for a launcher icon.
-     * <p>
+     *
      * We first calculate the convex hull of the visible portion of the icon.
      * This hull then compared with the bounding rectangle of the hull to find how closely it
      * resembles a circle and a square, by comparing the ratio of the areas. Note that this is not an
      * ideal solution but it gives satisfactory result without affecting the performance.
-     * <p>
+     *
      * This closeness is used to determine the ratio of hull area to the full icon size.
      * Refer {@link #MAX_CIRCLE_AREA_FACTOR} and {@link #MAX_SQUARE_AREA_FACTOR}
      *
      * @param outBounds optional rect to receive the fraction distance from each edge.
      */
     public synchronized float getScale(@NonNull Drawable d, @Nullable RectF outBounds,
-                                       @Nullable Path path, @Nullable boolean[] outMaskShape) {
+            @Nullable Path path, @Nullable boolean[] outMaskShape) {
         if (d instanceof AdaptiveIconDrawable) {
             if (mAdaptiveIconScale == SCALE_NOT_INITIALIZED) {
                 mAdaptiveIconScale = normalizeAdaptiveIcon(d, mMaxSize, mAdaptiveIconBounds);
@@ -348,11 +349,10 @@ public class IconNormalizer {
     /**
      * Modifies {@param xCoordinates} to represent a convex border. Fills in all missing values
      * (except on either ends) with appropriate values.
-     *
      * @param xCoordinates map of x coordinate per y.
-     * @param direction    1 for left border and -1 for right border.
-     * @param topY         the first Y position (inclusive) with a valid value.
-     * @param bottomY      the last Y position (inclusive) with a valid value.
+     * @param direction 1 for left border and -1 for right border.
+     * @param topY the first Y position (inclusive) with a valid value.
+     * @param bottomY the last Y position (inclusive) with a valid value.
      */
     private static void convertToConvexArray(
             float[] xCoordinates, int direction, int topY, int bottomY) {
@@ -380,7 +380,7 @@ public class IconNormalizer {
                 // position which creates a convex angle.
                 if ((currentAngle - lastAngle) * direction < 0) {
                     while (start > first) {
-                        start--;
+                        start --;
                         currentAngle = (xCoordinates[i] - xCoordinates[start]) / (i - start);
                         if ((currentAngle - angles[start]) * direction >= 0) {
                             break;

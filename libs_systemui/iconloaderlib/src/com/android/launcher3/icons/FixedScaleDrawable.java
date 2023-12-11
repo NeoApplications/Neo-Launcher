@@ -34,12 +34,10 @@ public class FixedScaleDrawable extends DrawableWrapper {
     }
 
     @Override
-    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs) {
-    }
+    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs) { }
 
     @Override
-    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs, Theme theme) {
-    }
+    public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs, Theme theme) { }
 
     public void setScale(float scale) {
         float h = getIntrinsicHeight();

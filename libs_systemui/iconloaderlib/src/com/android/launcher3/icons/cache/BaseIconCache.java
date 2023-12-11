@@ -16,10 +16,12 @@
 package com.android.launcher3.icons.cache;
 
 import static android.graphics.BitmapFactory.decodeByteArray;
+
 import static com.android.launcher3.icons.BaseIconFactory.getFullResDefaultActivityIcon;
 import static com.android.launcher3.icons.BitmapInfo.LOW_RES_ICON;
 import static com.android.launcher3.icons.GraphicsUtils.flattenBitmap;
 import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
+
 import static java.util.Objects.requireNonNull;
 
 import android.content.ComponentName;
@@ -43,6 +45,7 @@ import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Looper;
 import android.os.Process;
+import android.os.SystemClock;
 import android.os.Trace;
 import android.os.UserHandle;
 import android.text.TextUtils;
@@ -131,8 +134,8 @@ public abstract class BaseIconCache {
     private final Looper mBgLooper;
 
     public BaseIconCache(@NonNull final Context context, @Nullable final String dbFileName,
-                         @NonNull final Looper bgLooper, final int iconDpi, final int iconPixelSize,
-                         final boolean inMemoryCache) {
+            @NonNull final Looper bgLooper, final int iconDpi, final int iconPixelSize,
+            final boolean inMemoryCache) {
         mContext = context;
         mDbFileName = dbFileName;
         mPackageManager = context.getPackageManager();
@@ -197,8 +200,7 @@ public abstract class BaseIconCache {
         if (resources != null && iconId != 0) {
             try {
                 return resources.getDrawableForDensity(iconId, mIconDpi);
-            } catch (Resources.NotFoundException e) {
-            }
+            } catch (Resources.NotFoundException e) { }
         }
         return getFullResDefaultActivityIcon(mIconDpi);
     }
@@ -207,8 +209,7 @@ public abstract class BaseIconCache {
     public Drawable getFullResIcon(@NonNull final String packageName, final int iconId) {
         try {
             return getFullResIcon(mPackageManager.getResourcesForApplication(packageName), iconId);
-        } catch (PackageManager.NameNotFoundException e) {
-        }
+        } catch (PackageManager.NameNotFoundException e) { }
         return getFullResDefaultActivityIcon(mIconDpi);
     }
 
@@ -217,8 +218,7 @@ public abstract class BaseIconCache {
         try {
             return getFullResIcon(mPackageManager.getResourcesForApplication(info.applicationInfo),
                     info.getIconResource());
-        } catch (PackageManager.NameNotFoundException e) {
-        }
+        } catch (PackageManager.NameNotFoundException e) { }
         return getFullResDefaultActivityIcon(mIconDpi);
     }
 
@@ -226,7 +226,7 @@ public abstract class BaseIconCache {
      * Remove any records for the supplied ComponentName.
      */
     public synchronized void remove(@NonNull final ComponentName componentName,
-                                    @NonNull final UserHandle user) {
+            @NonNull final UserHandle user) {
         mCache.remove(new ComponentKey(componentName, user));
     }
 
@@ -234,15 +234,15 @@ public abstract class BaseIconCache {
      * Remove any records for the supplied package name from memory.
      */
     private void removeFromMemCacheLocked(@Nullable final String packageName,
-                                          @Nullable final UserHandle user) {
+            @Nullable final UserHandle user) {
         HashSet<ComponentKey> forDeletion = new HashSet<>();
-        for (ComponentKey key : mCache.keySet()) {
+        for (ComponentKey key: mCache.keySet()) {
             if (key.componentName.getPackageName().equals(packageName)
                     && key.user.equals(user)) {
                 forDeletion.add(key);
             }
         }
-        for (ComponentKey condemned : forDeletion) {
+        for (ComponentKey condemned: forDeletion) {
             mCache.remove(condemned);
         }
     }
@@ -251,7 +251,7 @@ public abstract class BaseIconCache {
      * Removes the entries related to the given package in memory and persistent DB.
      */
     public synchronized void removeIconsForPkg(@NonNull final String packageName,
-                                               @NonNull final UserHandle user) {
+            @NonNull final UserHandle user) {
         removeFromMemCacheLocked(packageName, user);
         long userSerial = getSerialNumberForUser(user);
         mIconDb.delete(
@@ -299,15 +299,14 @@ public abstract class BaseIconCache {
 
     /**
      * Adds an entry into the DB and the in-memory cache.
-     *
      * @param replaceExisting if true, it will recreate the bitmap even if it already exists in
      *                        the memory. This is useful then the previous bitmap was created using
      *                        old data.
      */
     @VisibleForTesting
     public synchronized <T> void addIconToDBAndMemCache(@NonNull final T object,
-                                                        @NonNull final CachingLogic<T> cachingLogic, @NonNull final PackageInfo info,
-                                                        final long userSerial, final boolean replaceExisting) {
+            @NonNull final CachingLogic<T> cachingLogic, @NonNull final PackageInfo info,
+            final long userSerial, final boolean replaceExisting) {
         UserHandle user = cachingLogic.getUser(object);
         ComponentName componentName = cachingLogic.getComponent(object);
 
@@ -347,11 +346,10 @@ public abstract class BaseIconCache {
 
     /**
      * Updates {@param values} to contain versioning information and adds it to the DB.
-     *
      * @param values {@link ContentValues} containing icon & title
      */
     private void addIconToDB(@NonNull final ContentValues values, @NonNull final ComponentName key,
-                             @NonNull final PackageInfo info, final long userSerial, final long lastUpdateTime) {
+            @NonNull final PackageInfo info, final long userSerial, final long lastUpdateTime) {
         values.put(IconDB.COLUMN_COMPONENT, key.flattenToString());
         values.put(IconDB.COLUMN_USER, userSerial);
         values.put(IconDB.COLUMN_LAST_UPDATED, lastUpdateTime);
@@ -459,9 +457,9 @@ public abstract class BaseIconCache {
      * Fallback method for loading an icon bitmap.
      */
     protected <T> void loadFallbackIcon(@Nullable final T object, @NonNull final CacheEntry entry,
-                                        @NonNull final CachingLogic<T> cachingLogic, final boolean usePackageIcon,
-                                        final boolean usePackageTitle, @NonNull final ComponentName componentName,
-                                        @NonNull final UserHandle user) {
+            @NonNull final CachingLogic<T> cachingLogic, final boolean usePackageIcon,
+            final boolean usePackageTitle, @NonNull final ComponentName componentName,
+            @NonNull final UserHandle user) {
         if (object != null) {
             entry.bitmap = cachingLogic.loadIcon(mContext, object);
         } else {
@@ -506,8 +504,8 @@ public abstract class BaseIconCache {
      * when the cache is flushed.
      */
     protected synchronized void cachePackageInstallInfo(@NonNull final String packageName,
-                                                        @NonNull final UserHandle user, @Nullable final Bitmap icon,
-                                                        @Nullable final CharSequence title) {
+            @NonNull final UserHandle user, @Nullable final Bitmap icon,
+            @Nullable final CharSequence title) {
         removeFromMemCacheLocked(packageName, user);
 
         ComponentKey cacheKey = getPackageKey(packageName, user);
@@ -532,7 +530,7 @@ public abstract class BaseIconCache {
 
     @NonNull
     private static ComponentKey getPackageKey(@NonNull final String packageName,
-                                              @NonNull final UserHandle user) {
+            @NonNull final UserHandle user) {
         ComponentName cn = new ComponentName(packageName, packageName + EMPTY_CLASS_NAME);
         return new ComponentKey(cn, user);
     }
@@ -544,7 +542,7 @@ public abstract class BaseIconCache {
     @WorkerThread
     @NonNull
     protected CacheEntry getEntryForPackageLocked(@NonNull final String packageName,
-                                                  @NonNull final UserHandle user, final boolean useLowResIcon) {
+            @NonNull final UserHandle user, final boolean useLowResIcon) {
         assertWorkerThread();
         ComponentKey cacheKey = getPackageKey(packageName, user);
         CacheEntry entry = mCache.get(cacheKey);
@@ -599,7 +597,7 @@ public abstract class BaseIconCache {
     }
 
     protected boolean getEntryFromDBLocked(@NonNull final ComponentKey cacheKey,
-                                           @NonNull final CacheEntry entry, final boolean lowRes) {
+            @NonNull final CacheEntry entry, final boolean lowRes) {
         Cursor c = null;
         Trace.beginSection("loadIconIndividually");
         try {
@@ -678,7 +676,7 @@ public abstract class BaseIconCache {
      * Returns a cursor for an arbitrary query to the cache db
      */
     public synchronized Cursor queryCacheDb(String[] columns, String selection,
-                                            String[] selectionArgs) {
+            String[] selectionArgs) {
         return mIconDb.query(columns, selection, selectionArgs);
     }
 
@@ -702,19 +700,17 @@ public abstract class BaseIconCache {
         public static final String COLUMN_SYSTEM_STATE = "system_state";
         public static final String COLUMN_KEYWORDS = "keywords";
 
-        public static final String[] COLUMNS_LOW_RES = new String[]{
+        public static final String[] COLUMNS_LOW_RES = new String[] {
                 COLUMN_COMPONENT,
                 COLUMN_LABEL,
                 COLUMN_ICON_COLOR,
                 COLUMN_FLAGS};
         public static final String[] COLUMNS_HIGH_RES = Arrays.copyOf(COLUMNS_LOW_RES,
                 COLUMNS_LOW_RES.length + 2, String[].class);
-
         static {
             COLUMNS_HIGH_RES[COLUMNS_LOW_RES.length] = COLUMN_ICON;
             COLUMNS_HIGH_RES[COLUMNS_LOW_RES.length + 1] = COLUMN_MONO_ICON;
         }
-
         private static final int INDEX_TITLE = Arrays.asList(COLUMNS_LOW_RES).indexOf(COLUMN_LABEL);
         private static final int INDEX_COLOR = Arrays.asList(COLUMNS_LOW_RES)
                 .indexOf(COLUMN_ICON_COLOR);
@@ -747,8 +743,8 @@ public abstract class BaseIconCache {
 
     @NonNull
     private ContentValues newContentValues(@NonNull final BitmapInfo bitmapInfo,
-                                           @NonNull final String label, @NonNull final String packageName,
-                                           @Nullable final String keywords) {
+            @NonNull final String label, @NonNull final String packageName,
+            @Nullable final String keywords) {
         ContentValues values = new ContentValues();
         if (bitmapInfo.canPersist()) {
             values.put(IconDB.COLUMN_ICON, flattenBitmap(bitmapInfo.icon));

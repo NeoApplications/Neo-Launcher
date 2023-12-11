@@ -1,0 +1,62 @@
+// Copyright (C) 2018 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+
+android_library {
+    name: "animationlib",
+    manifest: "AndroidManifest.xml",
+    sdk_version: "system_current",
+    min_sdk_version: "26",
+    static_libs: [
+        "androidx.core_core-animation",
+        "androidx.core_core-ktx",
+        "androidx.annotation_annotation",
+    ],
+    srcs: [
+        "src/**/*.java",
+        "src/**/*.kt"
+    ],
+    resource_dirs: [
+        "res"
+    ],
+    kotlincflags: ["-Xjvm-default=all"],
+    // This library is meant to access only public APIs
+    // do not flip this flag to true
+    platform_apis: false
+}
+
+android_test {
+    name: "animationlib_tests",
+    manifest: "tests/AndroidManifest.xml",
+
+    static_libs: [
+        "animationlib",
+        "androidx.test.ext.junit",
+        "androidx.test.rules",
+        "testables",
+    ],
+    libs: [
+        "android.test.base",
+    ],
+    srcs: [
+        "**/*.java",
+        "**/*.kt"
+    ],
+    kotlincflags: ["-Xjvm-default=all"],
+    test_suites: ["general-tests"],
+}

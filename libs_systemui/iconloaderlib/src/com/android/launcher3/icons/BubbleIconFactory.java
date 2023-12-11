@@ -29,14 +29,14 @@ public class BubbleIconFactory extends BaseIconFactory {
     /**
      * Creates a bubble icon factory.
      *
-     * @param context   the context for the factory.
-     * @param iconSize  the size of the bubble icon (i.e. the large icon for the bubble).
+     * @param context the context for the factory.
+     * @param iconSize the size of the bubble icon (i.e. the large icon for the bubble).
      * @param badgeSize the size of the badge (i.e. smaller icon shown on top of the large icon).
      * @param ringColor the color of the ring optionally shown around the badge.
      * @param ringWidth the width of the ring optionally shown around the badge.
      */
     public BubbleIconFactory(Context context, int iconSize, int badgeSize, int ringColor,
-                             int ringWidth) {
+            int ringWidth) {
         super(context, context.getResources().getConfiguration().densityDpi, iconSize);
         mRingColor = ringColor;
         mRingWidth = ringWidth;
@@ -50,7 +50,7 @@ public class BubbleIconFactory extends BaseIconFactory {
      * Returns the drawable that the developer has provided to display in the bubble.
      */
     public Drawable getBubbleDrawable(@NonNull final Context context,
-                                      @Nullable final ShortcutInfo shortcutInfo, @Nullable final Icon ic) {
+            @Nullable final ShortcutInfo shortcutInfo, @Nullable final Icon ic) {
         if (shortcutInfo != null) {
             LauncherApps launcherApps = context.getSystemService(LauncherApps.class);
             int density = context.getResources().getConfiguration().densityDpi;

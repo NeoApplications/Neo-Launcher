@@ -101,11 +101,10 @@ public class IconCacheUpdateHandler {
     /**
      * Updates the persistent DB, such that only entries corresponding to {@param apps} remain in
      * the DB and are updated.
-     *
      * @return The set of packages for which icons have updated.
      */
     public <T> void updateIcons(List<T> apps, CachingLogic<T> cachingLogic,
-                                OnUpdateCallback onUpdateCallback) {
+            OnUpdateCallback onUpdateCallback) {
         // Filter the list per user
         HashMap<UserHandle, HashMap<ComponentName, T>> userComponentMap = new HashMap<>();
         int count = apps.size();
@@ -131,12 +130,11 @@ public class IconCacheUpdateHandler {
     /**
      * Updates the persistent DB, such that only entries corresponding to {@param apps} remain in
      * the DB and are updated.
-     *
      * @return The set of packages for which icons have updated.
      */
     @SuppressWarnings("unchecked")
     private <T> void updateIconsPerUser(UserHandle user, HashMap<ComponentName, T> componentMap,
-                                        CachingLogic<T> cachingLogic, OnUpdateCallback onUpdateCallback) {
+            CachingLogic<T> cachingLogic, OnUpdateCallback onUpdateCallback) {
         Set<String> ignorePackages = mPackagesToIgnore.get(user);
         if (ignorePackages == null) {
             ignorePackages = Collections.emptySet();
@@ -185,7 +183,7 @@ public class IconCacheUpdateHandler {
                 if (version == info.versionCode
                         && updateTime == cachingLogic.getLastUpdatedTime(app, info)
                         && TextUtils.equals(c.getString(systemStateIndex),
-                        mIconCache.getIconSystemState(info.packageName))) {
+                                mIconCache.getIconSystemState(info.packageName))) {
 
                     if (mFilterMode == MODE_CLEAR_VALID_ITEMS) {
                         mItemsToDelete.put(rowId, false);
@@ -228,7 +226,7 @@ public class IconCacheUpdateHandler {
                 .append(" IN (");
 
         int count = mItemsToDelete.size();
-        for (int i = 0; i < count; i++) {
+        for (int i = 0;  i < count; i++) {
             if (mItemsToDelete.valueAt(i)) {
                 if (deleteCount > 0) {
                     queryBuilder.append(", ");
@@ -259,8 +257,8 @@ public class IconCacheUpdateHandler {
         private final OnUpdateCallback mOnUpdateCallback;
 
         SerializedIconUpdateTask(long userSerial, UserHandle userHandle,
-                                 Stack<T> appsToAdd, Stack<T> appsToUpdate, CachingLogic<T> cachingLogic,
-                                 OnUpdateCallback onUpdateCallback) {
+                Stack<T> appsToAdd, Stack<T> appsToUpdate, CachingLogic<T> cachingLogic,
+                OnUpdateCallback onUpdateCallback) {
             mUserHandle = userHandle;
             mUserSerial = userSerial;
             mAppsToAdd = appsToAdd;
