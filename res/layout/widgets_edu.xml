@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,7 +14,8 @@
      limitations under the License.
 -->
 
-<com.android.launcher3.views.WidgetsEduView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.launcher3.views.WidgetsEduView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
@@ -39,7 +41,7 @@
             android:text="@string/widget_education_header"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="24sp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"/>
 
         <TextView
             android:id="@+id/edu_content"
@@ -49,7 +51,7 @@
             android:text="@string/widget_education_content"
             android:textSize="14sp"
             android:textColor="?android:attr/textColorSecondary"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"/>
 
         <Button
             android:id="@+id/edu_close_button"
@@ -59,6 +61,6 @@
             android:text="@string/widget_education_close_button"
             android:textSize="16sp"
             android:textColor="@color/button_text"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"/>
     </LinearLayout>
 </com.android.launcher3.views.WidgetsEduView>

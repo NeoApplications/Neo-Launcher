@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
      Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,5 +21,11 @@
         launcher:sectionDrawable="@drawable/ic_conversations_widget_category"
         launcher:sectionTitle="@string/widget_category_conversations">
         <widget launcher:provider="com.android.systemui/.people.widget.PeopleSpaceWidgetProvider" />
+    </section>
+    <section
+        launcher:category="1"
+        launcher:sectionDrawable="@drawable/ic_note_taking_widget_category"
+        launcher:sectionTitle="@string/widget_category_note_taking">
+        <widget launcher:provider="com.android.systemui/.notetask.shortcut.CreateNoteTaskShortcutActivity" />
     </section>
 </widget-sections>

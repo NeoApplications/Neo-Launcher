@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2017 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2017 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -12,25 +13,16 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<gradient xmlns:android="http://schemas.android.com/apk/res/android"
+<gradient
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:startX="158.5"
     android:startY="141.5"
     android:endX="196.0"
     android:endY="206.5"
-    android:type="linear">
-    <item
-        android:offset="0"
-        android:color="#9AA0A6" />
-    <item
-        android:offset="0.1013"
-        android:color="#E5A5ABB0" />
-    <item
-        android:offset="0.4946"
-        android:color="#81CDCFD1" />
-    <item
-        android:offset="0.8079"
-        android:color="#31E5E6E6" />
-    <item
-        android:offset="1"
-        android:color="#00EEEEEE" />
+    android:type="linear" >
+    <item android:offset="0" android:color="#9AA0A6" />
+    <item android:offset="0.1013" android:color="#E5A5ABB0" />
+    <item android:offset="0.4946" android:color="#81CDCFD1" />
+    <item android:offset="0.8079" android:color="#31E5E6E6" />
+    <item android:offset="1" android:color="#00EEEEEE" />
 </gradient>

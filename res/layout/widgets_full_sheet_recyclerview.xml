@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,8 +14,7 @@
      limitations under the License.
 -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto">
-
+    xmlns:launcher="http://schemas.android.com/apk/res-auto" >
     <com.android.launcher3.widget.picker.WidgetsRecyclerView
         android:id="@+id/primary_widgets_list_view"
         android:layout_below="@id/collapse_handle"
@@ -41,19 +41,18 @@
             android:gravity="center_horizontal"
             android:textSize="24sp"
             android:layout_marginTop="24dp"
-            android:textColor="?android:attr/textColorSecondary"
-            android:text="@string/widget_button_text" />
+            android:textColor="?attr/widgetPickerTitleColor"
+            android:text="@string/widget_button_text"/>
 
         <FrameLayout
             android:id="@+id/search_bar_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0.1dp"
-            android:background="?backgroundColor"
+            android:background="?attr/widgetPickerPrimarySurfaceColor"
             android:paddingBottom="8dp"
             android:clipToPadding="false"
-            launcher:layout_sticky="true">
-
+            launcher:layout_sticky="true" >
             <include layout="@layout/widgets_search_bar" />
         </FrameLayout>
 

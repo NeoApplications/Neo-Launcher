@@ -27,7 +27,7 @@
         android:layout_gravity="top|left"
         android:theme="@style/HomeScreenElementTheme"
         launcher:containerType="workspace"
-        launcher:pageIndicator="@+id/page_indicator" />
+        launcher:pageIndicator="@+id/page_indicator"/>
 
     <include
         android:id="@+id/hotseat"

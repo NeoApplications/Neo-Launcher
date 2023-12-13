@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto">
 
     <com.android.launcher3.settings.NotificationDotsPreference
@@ -48,11 +49,5 @@
         android:persistent="true"
         launcher:logIdOn="615"
         launcher:logIdOff="616" />
-
-    <androidx.preference.PreferenceScreen
-        android:key="pref_developer_options"
-        android:persistent="false"
-        android:title="@string/developer_options_title"
-        android:fragment="com.android.launcher3.settings.DeveloperOptionsFragment"/>
 
 </androidx.preference.PreferenceScreen>

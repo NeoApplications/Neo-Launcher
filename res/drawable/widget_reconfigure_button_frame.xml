@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
      Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +18,8 @@
     <item
         android:width="@dimen/widget_reconfigure_button_size"
         android:height="@dimen/widget_reconfigure_button_size">
-        <shape android:shape="rectangle">
+        <shape
+            android:shape="rectangle">
             <solid android:color="?android:attr/colorAccent" />
             <corners android:radius="@dimen/widget_reconfigure_button_corner_radius" />
         </shape>

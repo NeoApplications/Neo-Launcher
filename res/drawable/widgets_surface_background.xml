@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
 **
 ** Copyright 2021, The Android Open Source Project
@@ -18,6 +19,6 @@
 -->
 <shape android:shape="rectangle"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/surface" />
-    <corners android:radius="@dimen/widget_list_top_bottom_corner_radius" />
+    <solid android:color="?attr/widgetPickerSecondarySurfaceColor" />
+    <corners android:radius="@dimen/widget_list_top_bottom_corner_radius"/>
 </shape>

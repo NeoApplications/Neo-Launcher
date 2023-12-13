@@ -19,7 +19,7 @@ Copyright (C) 2021 The Android Open Source Project
     android:viewportWidth="24"
     android:viewportHeight="24"
     android:tint="?android:attr/textColorPrimary">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M4,20h16v2L4,22zM4,2h16v2L4,4zM13,9h3l-4,-4 -4,4h3v6L8,15l4,4 4,-4h-3z" />
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M4,20h16v2L4,22zM4,2h16v2L4,4zM13,9h3l-4,-4 -4,4h3v6L8,15l4,4 4,-4h-3z"/>
 </vector>

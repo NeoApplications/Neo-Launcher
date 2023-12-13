@@ -17,7 +17,8 @@
 */
  -->
 
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="649227358658669779">"Launcher3"</string>
     <string name="work_folder_name" msgid="3753320833950115786">"কাজ"</string>
     <string name="activity_not_found" msgid="8071924732094499514">"অ্যাপ্লিকেশান ইনস্টল করা নেই৷"</string>
@@ -27,10 +28,8 @@
     <string name="shortcut_not_available" msgid="2536503539825726397">"শর্টকাটগুলি অনুপলব্ধ"</string>
     <string name="home_screen" msgid="5629429142036709174">"হোম"</string>
     <string name="recent_task_option_split_screen" msgid="6690461455618725183">"স্প্লিট স্ক্রিন"</string>
-    <string name="split_screen_position_top" msgid="1504965011158689649">"স্ক্রিনের উপরের দিকে স্প্লিট করুন"</string>
-    <string name="split_screen_position_left" msgid="7537793098851830883">"স্ক্রিনের বাঁদিকে স্প্লিট করুন"</string>
-    <string name="split_screen_position_right" msgid="1569377524925193369">"স্ক্রিনের ডানদিকে স্প্লিট করুন"</string>
     <string name="split_app_info_accessibility" msgid="5475288491241414932">"%1$s-এর জন্য অ্যাপ সম্পর্কিত তথ্য"</string>
+    <string name="save_app_pair" msgid="5647523853662686243">"অ্যাপ পেয়ার সেভ করুন"</string>
     <string name="long_press_widget_to_add" msgid="3587712543577675817">"কোনও উইজেট সরাতে সেটি টাচ করে ধরে রাখুন।"</string>
     <string name="long_accessible_way_to_add" msgid="2733588281439571974">"একটি উইজেট সরাতে বা কাস্টম অ্যাকশন ব্যবহার করতে ডবল ট্যাপ করে ধরে রাখুন।"</string>
     <string name="widget_dims_format" msgid="2370757736025621599">"%1$d × %2$d"</string>
@@ -39,6 +38,7 @@
     <string name="add_item_request_drag_hint" msgid="8730547755622776606">"হোম স্ক্রিনের যেকোনও জায়গায় নিয়ে যেতে, উইজেট টাচ করে ধরে থাকুন"</string>
     <string name="add_to_home_screen" msgid="9168649446635919791">"হোম স্ক্রিনে যোগ করুন"</string>
     <string name="added_to_home_screen_accessibility_text" msgid="4451545765448884415">"<xliff:g id="WIDGET_NAME">%1$s</xliff:g> উইজেট হোম স্ক্রিনে যোগ করা হয়েছে"</string>
+    <string name="suggested_widgets_header_title" msgid="1844314680798145222">"সাজেশন"</string>
     <string name="widgets_count" msgid="6467746476364652096">"{count,plural, =1{#টি উইজেট}one{#টি উইজেট}other{#টি উইজেট}}"</string>
     <string name="shortcuts_count" msgid="8471715556199592381">"{count,plural, =1{#টি শর্টকাট}one{#টি শর্টকাট}other{#টি শর্টকাট}}"</string>
     <string name="widgets_and_shortcuts_count" msgid="7209136747878365116">"<xliff:g id="WIDGETS_COUNT">%1$s</xliff:g>, <xliff:g id="SHORTCUTS_COUNT">%2$s</xliff:g>"</string>
@@ -58,7 +58,6 @@
     <string name="all_apps_search_bar_hint" msgid="1390553134053255246">"অ্যাপ খুঁজুন"</string>
     <string name="all_apps_loading_message" msgid="5813968043155271636">"অ্যাপ লোড হচ্ছে…"</string>
     <string name="all_apps_no_search_results" msgid="3200346862396363786">"\"<xliff:g id="QUERY">%1$s</xliff:g>\" এর সাথে মেলে এমন কোনো অ্যাপ পাওয়া যায়নি"</string>
-    <string name="all_apps_search_market_message" msgid="1366263386197059176">"আরও অ্যাপ্লিকেশানের জন্য খুঁজুন"</string>
     <string name="label_application" msgid="8531721983832654978">"অ্যাপ"</string>
     <string name="all_apps_label" msgid="5015784846527570951">"সব অ্যাপ"</string>
     <string name="notifications_header" msgid="1404149926117359025">"বিজ্ঞপ্তি"</string>
@@ -82,7 +81,6 @@
     <string name="permdesc_read_settings" msgid="4208061150510996676">"অ্যাপকে হোম স্ক্রিনে সেটিংস ও শর্টকাট পড়ার অনুমতি দেয়।"</string>
     <string name="permlab_write_settings" msgid="4820028712156303762">"হোম স্ক্রিনে সেটিংস ও শর্টকাট লিখুন"</string>
     <string name="permdesc_write_settings" msgid="726859348127868466">"অ্যাপকে হোম স্ক্রিনে সেটিংস ও শর্টকাট পরিবর্তন করার অনুমতি দেয়।"</string>
-    <string name="msg_no_phone_permission" msgid="9208659281529857371">"ফোন কলগুলি করার জন্য <xliff:g id="APP_NAME">%1$s</xliff:g> এর অনুমতি নেই"</string>
     <string name="gadget_error_text" msgid="740356548025791839">"উইজেট লোড করা যাচ্ছে না"</string>
     <string name="gadget_setup_text" msgid="8348374825537681407">"উইজেট সেটিংস"</string>
     <string name="gadget_complete_setup_text" msgid="309040266978007925">"সেটআপ সম্পূর্ণ করতে ট্যাপ করুন"</string>
@@ -102,6 +100,8 @@
     <string name="folder_name_format_overflow" msgid="4270108890534995199">"ফোল্ডার: <xliff:g id="NAME">%1$s</xliff:g>, <xliff:g id="SIZE">%2$d</xliff:g>টি বা তার বেশি আইটেম"</string>
     <string name="wallpaper_button_text" msgid="8404103075899945851">"ওয়ালপেপারগুলি"</string>
     <string name="styles_wallpaper_button_text" msgid="8216961355289236794">"ওয়ালপেপার এবং স্টাইল"</string>
+    <!-- no translation found for edit_home_screen (8947858375782098427) -->
+    <skip />
     <string name="settings_button_text" msgid="8873672322605444408">"হোম সেটিংস"</string>
     <string name="msg_disabled_by_admin" msgid="6898038085516271325">"আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে"</string>
     <string name="allow_rotation_title" msgid="7222049633713050106">"হোম স্ক্রিন রোটেট করার অনুমতি দিন"</string>
@@ -136,7 +136,7 @@
     <string name="item_removed" msgid="851119963877842327">"আইটেম সরানো হয়েছে"</string>
     <string name="undo" msgid="4151576204245173321">"ফিরিয়ে আনুন"</string>
     <string name="action_move" msgid="4339390619886385032">"আইটেম সরান"</string>
-    <string name="move_to_empty_cell" msgid="2833711483015685619">"সারি <xliff:g id="NUMBER_0">%1$s</xliff:g> কলাম <xliff:g id="NUMBER_1">%2$s</xliff:g> এ সরান"</string>
+    <string name="move_to_empty_cell_description" msgid="5254852678218206889">"<xliff:g id="STRING">%3$s</xliff:g>-এ সারি <xliff:g id="NUMBER_0">%1$s</xliff:g> কলাম <xliff:g id="NUMBER_1">%2$s</xliff:g> সরান"</string>
     <string name="move_to_position" msgid="6750008980455459790">"অবস্থানে সরান <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
     <string name="move_to_hotseat_position" msgid="6295412897075147808">"পছন্দসই অবস্থানে সরান <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
     <string name="item_moved" msgid="4606538322571412879">"আইটেম সরানো হয়েছে"</string>
@@ -160,15 +160,16 @@
     <string name="all_apps_personal_tab" msgid="4190252696685155002">"ব্যক্তিগত"</string>
     <string name="all_apps_work_tab" msgid="4884822796154055118">"অফিস"</string>
     <string name="work_profile_toggle_label" msgid="3081029915775481146">"অফিসের প্রোফাইল"</string>
-    <string name="work_profile_edu_work_apps" msgid="7895468576497746520">"অফিসের অ্যাপে ব্যাজ যোগ করা হয়েছে এবং আপনার আইটি অ্যাডমিন সেটি দেখতে পাবেন"</string>
+    <string name="work_profile_edu_work_apps" msgid="7895468576497746520">"অফিসের অ্যাপে ব্যাজ যোগ করা হয়েছে এবং আপনার আইটি অ্যাডমিন সেগুলি দেখতে পাবেন"</string>
     <string name="work_profile_edu_accept" msgid="6069788082535149071">"বুঝেছি"</string>
     <string name="work_apps_paused_title" msgid="3040901117349444598">"অফিস অ্যাপ বন্ধ করা আছে"</string>
+    <string name="work_apps_paused_info_body" msgid="1687828929959237477">"আপনার অফিসের অ্যাপ থেকে আপনি কোনও বিজ্ঞপ্তি পাবেন না"</string>
     <string name="work_apps_paused_body" msgid="261634750995824906">"অফিসের অ্যাপ আপনাকে নোটিফিকেশন পাঠাতে পারবে না। এছাড়া, ব্যাটারি ব্যবহার করতে বা লোকেশন অ্যাক্সেস করতে পারবে না"</string>
-    <string name="work_apps_paused_content_description" msgid="5149623040804051095">"অফিসের অ্যাপ বন্ধ আছে। আপনার অফিসের অ্যাপ আপনাকে বিজ্ঞপ্তি পাঠাতে, ব্যাটারি ব্যবহার করতে বা লোকেশন অ্যাক্সেস করতে পারবে না"</string>
-    <string name="work_apps_paused_edu_banner" msgid="8872412121608402058">"অফিসের অ্যাপে ব্যাজ যোগ করা হয়েছে এবং আপনার আইটি অ্যাডমিন সেটি দেখতে পাবেন"</string>
+    <string name="work_apps_paused_telephony_unavailable_body" msgid="8358872357502756790">"আপনি কোনও ফোন কল, টেক্সট মেসেজ বা অফিসের অ্যাপ থেকে বিজ্ঞপ্তি পাবেন না"</string>
+    <string name="work_apps_paused_edu_banner" msgid="8872412121608402058">"অফিসের অ্যাপে ব্যাজ যোগ করা হয়েছে এবং আপনার আইটি অ্যাডমিন সেগুলি দেখতে পাবেন"</string>
     <string name="work_apps_paused_edu_accept" msgid="6377476824357318532">"বুঝেছি"</string>
     <string name="work_apps_pause_btn_text" msgid="4669288269140620646">"অফিসের অ্যাপ পজ করুন"</string>
-    <string name="work_apps_enable_btn_text" msgid="1156432622148413741">"অফিস অ্যাপ চালু করুন"</string>
+    <string name="work_apps_enable_btn_text" msgid="1736198302467317371">"আনপজ করুন"</string>
     <string name="developer_options_filter_hint" msgid="5896817443635989056">"ফিল্টার"</string>
     <string name="search_pref_screen_title" msgid="3258959643336315962">"ফোনে সার্চ করে দেখুন"</string>
     <string name="search_pref_screen_title_tablet" msgid="5220319680451343959">"আপনার ট্যাবলেটে সার্চ করুন"</string>

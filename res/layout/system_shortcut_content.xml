@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -12,35 +13,33 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto" >
 
     <com.android.launcher3.BubbleTextView
         style="@style/BaseIconUnBounded"
         android:id="@+id/bubble_text"
         android:background="?android:attr/selectableItemBackground"
         android:gravity="start|center_vertical"
-        android:paddingTop="@dimen/bg_popup_item_vertical_padding"
-        android:paddingBottom="@dimen/bg_popup_item_vertical_padding"
         android:minHeight="@dimen/bg_popup_item_height"
         android:textAlignment="viewStart"
         android:paddingStart="@dimen/deep_shortcuts_text_padding_start"
         android:paddingEnd="@dimen/popup_padding_end"
         android:textSize="14sp"
-        android:minLines="1"
-        android:maxLines="2"
+        android:lines="1"
         android:ellipsize="end"
         android:hyphenationFrequency="full"
-        android:textColor="@color/system_shortcut_text"
+        android:textColor="?attr/popupTextColor"
         launcher:iconDisplay="shortcut_popup"
         launcher:layoutHorizontal="true"
         android:focusable="false" />
 
     <View
         android:id="@+id/icon"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_gravity="start|center_vertical"
+        android:layout_width="@dimen/system_shortcut_icon_size"
+        android:layout_height="@dimen/system_shortcut_icon_size"
         android:layout_marginStart="@dimen/system_shortcut_margin_start"
-        android:backgroundTint="@color/system_shortcut_text" />
+        android:layout_gravity="start|center_vertical"
+        android:backgroundTint="?attr/popupTextColor"/>
 </merge>

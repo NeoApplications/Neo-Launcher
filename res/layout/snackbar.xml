@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2018 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2018 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@
         android:ellipsize="end"
         android:textSize="@dimen/snackbar_max_text_size"
         android:textColor="?android:attr/textColorPrimary"
-        style="@style/TextTitle" />
+        style="@style/TextTitle"/>
     <TextView
         android:id="@+id/action"
         android:layout_height="@dimen/snackbar_content_height"
@@ -42,5 +43,5 @@
         android:textSize="@dimen/snackbar_max_text_size"
         android:textColor="?android:attr/colorAccent"
         style="@style/TextTitle"
-        android:capitalize="sentences" />
+        android:capitalize="sentences"/>
 </merge>

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2022 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2022 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,26 +15,24 @@
 -->
 
 <resources>
-    <!-- PagedView  -->
+<!-- PagedView  -->
     <dimen name="min_page_snap_velocity">5300dp</dimen>
 
-    <!-- Dynamic grid -->
+<!-- Dynamic grid -->
     <dimen name="dynamic_grid_edge_margin">21.93dp</dimen>
     <dimen name="cell_layout_padding">29.33dp</dimen>
 
-    <!-- AllApps -->
-    <dimen name="all_apps_bottom_sheet_horizontal_padding">32dp</dimen>
-
-    <!-- Dragging-->
+<!-- Dragging-->
     <dimen name="drop_target_top_margin">0dp</dimen>
     <dimen name="drop_target_bottom_margin">32dp</dimen>
 
-    <!-- Hotseat -->
+<!-- Hotseat -->
     <dimen name="spring_loaded_hotseat_top_margin">64dp</dimen>
 
-    <!-- Widget picker-->
+<!-- Widget picker-->
     <dimen name="widget_list_horizontal_margin">49dp</dimen>
+    <dimen name="widget_list_horizontal_margin_two_pane">24dp</dimen>
 
-    <!-- Bottom sheet-->
+<!-- Bottom sheet-->
     <dimen name="bottom_sheet_extra_top_padding">0dp</dimen>
 </resources>

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C) 2022 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +15,31 @@
   ~ limitations under the License.
   -->
 
-<device-paddings xmlns:launcher="http://schemas.android.com/apk/res-auto">
+<device-paddings xmlns:launcher="http://schemas.android.com/apk/res-auto" >
 
-    <device-padding launcher:maxEmptySpace="100dp">
+    <device-padding
+        launcher:maxEmptySpace="100dp">
         <workspaceTopPadding
             launcher:a="0.31"
-            launcher:b="0" />
+            launcher:b="0"/>
         <workspaceBottomPadding
             launcher:a="0.69"
-            launcher:b="0" />
+            launcher:b="0"/>
         <hotseatBottomPadding
             launcher:a="0"
-            launcher:b="0" />
+            launcher:b="0"/>
     </device-padding>
 
-    <device-padding launcher:maxEmptySpace="9999dp">
+    <device-padding
+        launcher:maxEmptySpace="9999dp">
         <workspaceTopPadding
             launcher:a="0.48"
-            launcher:b="0" />
+            launcher:b="0"/>
         <workspaceBottomPadding
             launcher:a="0.52"
-            launcher:b="0" />
+            launcher:b="0"/>
         <hotseatBottomPadding
             launcher:a="0"
-            launcher:b="0" />
+            launcher:b="0"/>
     </device-padding>
 </device-paddings>

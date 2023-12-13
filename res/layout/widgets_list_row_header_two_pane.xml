@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@
     android:focusable="true"
     launcher:appIconSize="48dp"
     android:descendantFocusability="afterDescendants"
-    android:background="@drawable/bg_widgets_header_large_screen">
+    android:background="@drawable/bg_widgets_header_two_pane" >
 
     <ImageView
         android:id="@+id/app_icon"
@@ -31,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:importantForAccessibility="no"
-        tools:src="@drawable/ic_corp" />
+        tools:src="@drawable/ic_corp"/>
 
     <LinearLayout
         android:layout_width="0dp"

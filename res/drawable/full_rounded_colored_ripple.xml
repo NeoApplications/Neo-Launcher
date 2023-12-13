@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,12 +14,14 @@
      limitations under the License.
 -->
 
-<inset xmlns:android="http://schemas.android.com/apk/res/android">
-    <ripple android:color="?android:attr/colorControlHighlight">
+<inset
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ripple
+        android:color="?android:attr/colorControlHighlight">
         <item>
             <shape android:shape="rectangle">
-                <solid android:color="@color/button_bg" />
-                <corners android:radius="28dp" />
+                <solid android:color="@color/button_bg"/>
+                <corners android:radius="28dp"/>
             </shape>
         </item>
     </ripple>

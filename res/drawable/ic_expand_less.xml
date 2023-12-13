@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -20,5 +21,5 @@
     android:tint="?android:attr/textColorSecondary">
     <path
         android:fillColor="#FF000000"
-        android:pathData="M18.59,16.41L20,15l-8,-8 -8,8 1.41,1.41L12,9.83" />
+        android:pathData="M18.59,16.41L20,15l-8,-8 -8,8 1.41,1.41L12,9.83"/>
 </vector>

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2020 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2020 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -12,20 +13,22 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.android.launcher3.secondarydisplay.SecondaryDragLayer xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drag_layer"
+<com.android.launcher3.secondarydisplay.SecondaryDragLayer
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/drag_layer"
+    android:clipChildren="false"
     android:padding="@dimen/dynamic_grid_edge_margin">
 
     <GridView
-        android:id="@+id/workspace_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="100dp"
+        android:theme="@style/HomeScreenElementTheme"
         android:layout_gravity="center_horizontal|top"
         android:layout_margin="@dimen/dynamic_grid_edge_margin"
-        android:layout_marginBottom="100dp"
-        android:theme="@style/HomeScreenElementTheme" />
+        android:id="@+id/workspace_grid" />
 
     <ImageButton
         android:id="@+id/all_apps_button"
@@ -33,75 +36,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="40dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_apps"
         android:background="@drawable/bg_all_apps_button"
         android:contentDescription="@string/all_apps_button_label"
-        android:onClick="onAppsButtonClicked"
-        android:padding="16dp"
-        android:src="@drawable/ic_apps" />
+        android:onClick="onAppsButtonClicked" />
 
-    <view
+    <com.android.launcher3.allapps.SecondaryLauncherAllAppsContainerView
         android:id="@+id/apps_view"
-        class="com.android.launcher3.allapps.SecondaryLauncherAllAppsContainerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom|end"
-        android:background="@drawable/round_rect_primary"
         android:clipChildren="true"
         android:clipToPadding="false"
-        android:elevation="2dp"
         android:focusable="false"
         android:saveEnabled="false"
-        android:visibility="invisible">
-
-        <include
-            layout="@layout/all_apps_bottom_sheet_background"
-            android:visibility="gone" />
-
-        <include
-            layout="@layout/search_results_rv_layout"
-            android:visibility="gone" />
-
-        <include
-            layout="@layout/all_apps_rv_layout"
-            android:visibility="gone" />
-
-        <com.android.launcher3.allapps.FloatingHeaderView
-            android:id="@+id/all_apps_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/search_container_all_apps"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/all_apps_header_top_padding">
-
-            <include layout="@layout/floating_header_content" />
-
-            <include layout="@layout/all_apps_personal_work_tabs" />
-
-        </com.android.launcher3.allapps.FloatingHeaderView>
-
-        <com.android.launcher3.allapps.search.AppsSearchContainerLayout
-            android:id="@id/search_container_all_apps"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/all_apps_search_bar_field_height"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="top|center_horizontal"
-            android:background="@drawable/bg_all_apps_searchbox"
-            android:elevation="1dp"
-            android:focusableInTouchMode="true"
-            android:gravity="center"
-            android:hint="@string/all_apps_search_bar_hint"
-            android:imeOptions="actionSearch|flagNoExtractUi"
-            android:inputType="text|textNoSuggestions|textCapWords"
-            android:maxLines="1"
-            android:padding="8dp"
-            android:saveEnabled="false"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textColorHint="@drawable/all_apps_search_hint"
-            android:textSize="16sp" />
-
-        <include layout="@layout/all_apps_fast_scroller" />
-    </view>
+        android:layout_gravity="bottom|end"
+        android:background="@drawable/round_rect_primary"
+        android:visibility="invisible" />
 </com.android.launcher3.secondarydisplay.SecondaryDragLayer>

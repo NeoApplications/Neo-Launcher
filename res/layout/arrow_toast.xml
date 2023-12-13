@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2018 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2018 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,7 +14,8 @@
      limitations under the License.
 -->
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content">
 
@@ -26,12 +28,12 @@
         android:padding="16dp"
         android:background="@drawable/arrow_toast_rounded_background"
         android:elevation="@dimen/arrow_toast_elevation"
-        android:textColor="@color/arrow_tip_view_content"
-        android:textSize="14sp" />
+        android:textColor="?attr/arrowTipTextColor"
+        android:textSize="14sp"/>
 
     <View
         android:id="@+id/arrow"
         android:elevation="@dimen/arrow_toast_elevation"
         android:layout_width="@dimen/arrow_toast_arrow_width"
-        android:layout_height="10dp" />
+        android:layout_height="10dp"/>
 </merge>

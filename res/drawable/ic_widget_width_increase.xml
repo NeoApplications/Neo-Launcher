@@ -13,7 +13,8 @@ Copyright (C) 2021 The Android Open Source Project
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+<rotate
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/ic_widget_height_increase"
     android:pivotX="50%"
     android:pivotY="50%"

@@ -14,11 +14,11 @@ Copyright (C) 2016 The Android Open Source Project
     limitations under the License.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="@dimen/options_menu_icon_size"
-    android:height="@dimen/options_menu_icon_size"
-    android:viewportWidth="24.0"
-    android:viewportHeight="24.0"
-    android:tint="?android:attr/textColorPrimary">
+        android:width="@dimen/options_menu_icon_size"
+        android:height="@dimen/options_menu_icon_size"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0"
+        android:tint="?android:attr/textColorPrimary" >
     <path
         android:fillColor="@android:color/white"
         android:pathData="M13.85,22.25h-3.7c-0.74,0-1.36-0.54-1.45-1.27l-0.27-1.89c-0.27-0.14-0.53-0.29-0.79-0.46l-1.8,0.72
@@ -36,8 +36,8 @@ Copyright (C) 2016 The Android Open Source Project
             l1.38,2.4l2.39-0.96l0.45,0.35c0.43,0.33,0.86,0.58,1.33,0.77l0.53,0.22L10.62,20.25z M18.22,17.72c0,0.01-0.01,0.02-0.01,0.03
             L18.22,17.72z M5.77,17.71l0.01,0.02C5.78,17.72,5.77,17.71,5.77,17.71z M3.93,9.47L3.93,9.47C3.93,9.47,3.93,9.47,3.93,9.47z
              M18.22,6.27c0,0.01,0.01,0.02,0.01,0.02L18.22,6.27z M5.79,6.25L5.78,6.27C5.78,6.27,5.79,6.26,5.79,6.25z M13.31,3.28
-            c0,0.01,0,0.01,0,0.02L13.31,3.28z M10.69,3.26l0,0.02C10.69,3.27,10.69,3.27,10.69,3.26z" />
+            c0,0.01,0,0.01,0,0.02L13.31,3.28z M10.69,3.26l0,0.02C10.69,3.27,10.69,3.27,10.69,3.26z"/>
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M8.5,12a3.5,3.5 0 1,0 7,0a3.5,3.5 0 1,0 -7,0" />
+        android:pathData="M8.5,12a3.5,3.5 0 1,0 7,0a3.5,3.5 0 1,0 -7,0"/>
 </vector>

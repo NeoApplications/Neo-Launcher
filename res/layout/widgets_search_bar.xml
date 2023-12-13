@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.android.launcher3.widget.picker.search.LauncherWidgetsSearchBar xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.launcher3.widget.picker.search.LauncherWidgetsSearchBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widgets_search_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
         android:imeOptions="actionSearch"
         android:importantForAutofill="no"
         android:textColor="?android:attr/textColorPrimary"
-        android:textColorHint="?android:attr/textColorSecondary" />
+        android:textColorHint="?attr/widgetPickerSearchTextColor"/>
 
     <ImageButton
         android:id="@+id/widgets_search_cancel_button"
@@ -35,5 +36,5 @@
         android:background="@drawable/full_rounded_transparent_ripple"
         android:layout_gravity="center"
         android:contentDescription="@string/widgets_full_sheet_cancel_button_description"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 </com.android.launcher3.widget.picker.search.LauncherWidgetsSearchBar>

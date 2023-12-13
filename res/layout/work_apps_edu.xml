@@ -19,7 +19,6 @@
     android:paddingTop="@dimen/work_edu_card_margin"
     android:paddingBottom="@dimen/work_edu_card_bottom_margin"
     android:gravity="center">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +29,6 @@
         android:paddingStart="@dimen/work_card_margin"
         android:paddingTop="@dimen/work_card_margin"
         android:id="@+id/wrapper">
-
         <TextView
             style="@style/PrimaryHeadline"
             android:textColor="?android:attr/textColorPrimary"
@@ -42,19 +40,16 @@
             android:text="@string/work_profile_edu_work_apps"
             android:textDirection="locale"
             android:textSize="18sp" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/padded_rounded_button_height"
             android:orientation="horizontal">
-
             <FrameLayout
                 android:layout_width="@dimen/rounded_button_width"
                 android:layout_height="@dimen/rounded_button_width"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/rounded_action_button"
                 android:padding="@dimen/rounded_button_padding">
-
                 <ImageButton
                     android:id="@+id/action_btn"
                     android:layout_width="@dimen/x_icon_size"
@@ -66,6 +61,7 @@
             </FrameLayout>
         </RelativeLayout>
     </RelativeLayout>
+
 
 
 </com.android.launcher3.allapps.WorkEduCard>

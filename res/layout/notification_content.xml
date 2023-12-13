@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 
-<com.android.launcher3.notification.NotificationMainView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.launcher3.notification.NotificationMainView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/notification_container_height"
     android:orientation="vertical">
@@ -27,7 +28,6 @@
         android:paddingEnd="@dimen/notification_padding_end"
         android:paddingTop="@dimen/notification_padding_header_top"
         android:paddingStart="@dimen/notification_header_padding_start">
-
         <TextView
             android:id="@+id/notification_text"
             android:layout_width="wrap_content"
@@ -36,8 +36,7 @@
             android:text="@string/notifications_header"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/notification_header_text_size"
-            style="@style/TextHeadline" />
-
+            style="@style/TextHeadline"/>
         <TextView
             android:id="@+id/notification_count"
             android:layout_width="@dimen/notification_circle_icon_size"
@@ -47,7 +46,7 @@
             android:gravity="center"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/notification_header_count_text_size"
-            style="@style/TextHeadline" />
+            style="@style/TextHeadline"/>
     </FrameLayout>
 
     <!-- Main view -->
@@ -57,7 +56,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/notification_padding_top"
         android:paddingBottom="@dimen/notification_padding_bottom"
-        android:focusable="true">
+        android:focusable="true" >
 
         <LinearLayout
             android:id="@+id/text_and_background"
@@ -93,7 +92,7 @@
             android:layout_width="@dimen/notification_icon_size"
             android:layout_height="@dimen/notification_icon_size"
             android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="@dimen/notification_icon_padding_start" />
+            android:layout_marginStart="@dimen/notification_icon_padding_start"/>
 
     </FrameLayout>
 </com.android.launcher3.notification.NotificationMainView>

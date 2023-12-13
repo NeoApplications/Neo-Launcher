@@ -16,7 +16,8 @@
 ** limitations under the License.
 */
 -->
-<com.android.launcher3.dragndrop.AddItemDragLayer xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.launcher3.dragndrop.AddItemDragLayer
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_item_drag_layer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,7 +39,7 @@
             android:layout_height="wrap_content"
             android:paddingVertical="24dp"
             android:background="@drawable/add_item_dialog_background"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <TextView
                 style="@style/TextHeadline"
@@ -64,7 +65,7 @@
                 android:text="@string/add_item_request_drag_hint"
                 android:textSize="14sp"
                 android:textColor="?android:attr/textColorSecondary"
-                android:alpha="0.7" />
+                android:alpha="0.7"/>
 
             <ScrollView
                 android:id="@+id/widget_preview_scroll_view"
@@ -89,7 +90,6 @@
                 android:gravity="center_vertical|end"
                 android:paddingVertical="8dp"
                 android:orientation="horizontal">
-
                 <Button
                     style="@style/Button.FullRounded.Colored"
                     android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
                     android:ellipsize="end"
                     android:textColor="@color/button_text"
                     android:text="@android:string/cancel"
-                    android:onClick="onCancelClick" />
+                    android:onClick="onCancelClick"/>
 
                 <Space
                     android:layout_width="8dp"
@@ -116,7 +116,7 @@
                     android:ellipsize="end"
                     android:textColor="@color/button_text"
                     android:text="@string/add_to_home_screen"
-                    android:onClick="onPlaceAutomaticallyClick" />
+                    android:onClick="onPlaceAutomaticallyClick"/>
             </LinearLayout>
         </LinearLayout>
     </com.android.launcher3.widget.AddItemWidgetsBottomSheet>

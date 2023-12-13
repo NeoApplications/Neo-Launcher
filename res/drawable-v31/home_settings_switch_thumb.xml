@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   Copyright (C) 2021 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +21,8 @@
         android:left="4dp"
         android:right="4dp"
         android:bottom="4dp">
-        <shape android:shape="oval">
-            <size
-                android:height="20dp"
-                android:width="20dp" />
+        <shape android:shape="oval" >
+            <size android:height="20dp" android:width="20dp" />
             <solid android:color="@color/home_settings_switch_thumb_color" />
         </shape>
     </item>
