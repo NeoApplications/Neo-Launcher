@@ -16,7 +16,9 @@
 package com.android.launcher3.widget;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
@@ -30,6 +32,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.LauncherAppState;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +87,7 @@ public final class LauncherAppWidgetProviderInfoTest {
 
     @Test
     public void
-    initSpans_minWidthLargerThanGridColumns_shouldInitializeSpansToAtMostTheGridColumns() {
+            initSpans_minWidthLargerThanGridColumns_shouldInitializeSpansToAtMostTheGridColumns() {
         LauncherAppWidgetProviderInfo info = new LauncherAppWidgetProviderInfo();
         info.minWidth = CELL_SIZE * (NUM_OF_COLS + 1);
         info.minHeight = 20;
@@ -159,7 +162,6 @@ public final class LauncherAppWidgetProviderInfoTest {
         int maxPadding = Math.max(Math.max(padding.left, padding.right),
                 Math.max(padding.top, padding.bottom));
         dp.cellLayoutBorderSpacePx.x = dp.cellLayoutBorderSpacePx.y = maxPadding + 1;
-        Mockito.when(dp.shouldInsetWidgets()).thenReturn(true);
 
         LauncherAppWidgetProviderInfo info = new LauncherAppWidgetProviderInfo();
         info.minWidth = CELL_SIZE * 3;
@@ -182,7 +184,6 @@ public final class LauncherAppWidgetProviderInfoTest {
         int maxPadding = Math.max(Math.max(padding.left, padding.right),
                 Math.max(padding.top, padding.bottom));
         dp.cellLayoutBorderSpacePx.x = dp.cellLayoutBorderSpacePx.y = maxPadding - 1;
-        Mockito.when(dp.shouldInsetWidgets()).thenReturn(false);
         LauncherAppWidgetProviderInfo info = new LauncherAppWidgetProviderInfo();
         info.minWidth = CELL_SIZE * 3;
         info.minHeight = CELL_SIZE * 3;
@@ -197,7 +198,7 @@ public final class LauncherAppWidgetProviderInfoTest {
 
     @Test
     public void
-    initSpans_minResizeWidthHeightLargerThanMinWidth_shouldUseMinWidthHeightAsMinSpans() {
+            initSpans_minResizeWidthHeightLargerThanMinWidth_shouldUseMinWidthHeightAsMinSpans() {
         LauncherAppWidgetProviderInfo info = new LauncherAppWidgetProviderInfo();
         info.minWidth = 20;
         info.minHeight = 20;
@@ -227,7 +228,7 @@ public final class LauncherAppWidgetProviderInfoTest {
 
     @Test
     public void
-    isMinSizeFulfilled_minWidthAndMinResizeWidthExceededGridColumns_shouldReturnFalse() {
+            isMinSizeFulfilled_minWidthAndMinResizeWidthExceededGridColumns_shouldReturnFalse() {
         LauncherAppWidgetProviderInfo info = new LauncherAppWidgetProviderInfo();
         info.minWidth = CELL_SIZE * (NUM_OF_COLS + 2);
         info.minHeight = 80;
@@ -255,14 +256,16 @@ public final class LauncherAppWidgetProviderInfoTest {
     }
 
     private InvariantDeviceProfile createIDP() {
-        DeviceProfile profile = Mockito.mock(DeviceProfile.class);
+        DeviceProfile dp = LauncherAppState.getIDP(mContext)
+                .getDeviceProfile(mContext).copy(mContext);
+        DeviceProfile profile = Mockito.spy(dp);
         doAnswer(i -> {
             ((Point) i.getArgument(0)).set(CELL_SIZE, CELL_SIZE);
             return null;
         }).when(profile).getCellSize(any(Point.class));
         Mockito.when(profile.getCellSize()).thenReturn(new Point(CELL_SIZE, CELL_SIZE));
         profile.cellLayoutBorderSpacePx = new Point(SPACE_SIZE, SPACE_SIZE);
-        Mockito.when(profile.shouldInsetWidgets()).thenReturn(true);
+        profile.widgetPadding.setEmpty();
 
         InvariantDeviceProfile idp = new InvariantDeviceProfile();
         List<DeviceProfile> supportedProfiles = new ArrayList<>(idp.supportedProfiles);

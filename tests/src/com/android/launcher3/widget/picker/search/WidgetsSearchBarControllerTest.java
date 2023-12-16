@@ -17,6 +17,7 @@
 package com.android.launcher3.widget.picker.search;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

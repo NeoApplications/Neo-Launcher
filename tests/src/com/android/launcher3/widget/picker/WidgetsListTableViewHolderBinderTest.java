@@ -16,9 +16,12 @@
 package com.android.launcher3.widget.picker;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+
 import static java.util.Collections.EMPTY_LIST;
 
 import android.appwidget.AppWidgetProviderInfo;
@@ -91,10 +94,10 @@ public final class WidgetsListTableViewHolderBinderTest {
         }).when(mIconCache).getTitleNoCache(any());
 
         mViewHolderBinder = new WidgetsListTableViewHolderBinder(
+                mContext,
                 LayoutInflater.from(mContext),
                 mOnIconClickListener,
-                mOnLongClickListener,
-                new WidgetsListDrawableFactory(mContext));
+                mOnLongClickListener);
     }
 
     @Test
@@ -106,8 +109,7 @@ public final class WidgetsListTableViewHolderBinderTest {
                 TEST_PACKAGE,
                 /* numOfWidgets= */ 3);
         mViewHolderBinder.bindViewHolder(viewHolder, entry, /* position= */ 0, EMPTY_LIST);
-        Executors.MAIN_EXECUTOR.submit(() -> {
-        }).get();
+        Executors.MAIN_EXECUTOR.submit(() -> { }).get();
 
         // THEN the table container has one row, which contains 3 widgets.
         // View:  .SampleWidget0 | .SampleWidget1 | .SampleWidget2
@@ -123,7 +125,7 @@ public final class WidgetsListTableViewHolderBinderTest {
     }
 
     private WidgetsListContentEntry generateSampleAppWithWidgets(String appName, String packageName,
-                                                                 int numOfWidgets) {
+            int numOfWidgets) {
         PackageItemInfo appInfo = new PackageItemInfo(packageName, UserHandle.CURRENT);
         appInfo.title = appName;
         appInfo.bitmap = BitmapInfo.of(Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8), 0);
@@ -142,7 +144,7 @@ public final class WidgetsListTableViewHolderBinderTest {
 
             widgetItems.add(new WidgetItem(
                     LauncherAppWidgetProviderInfo.fromProviderInfo(mContext, widgetInfo),
-                    mTestProfile, mIconCache));
+                    mTestProfile, mIconCache, mContext));
         }
         return widgetItems;
     }

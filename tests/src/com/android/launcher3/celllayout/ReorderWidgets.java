@@ -18,37 +18,36 @@ package com.android.launcher3.celllayout;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.graphics.Point;
+import android.net.Uri;
 import android.util.Log;
-import android.view.View;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.launcher3.CellLayout;
-import com.android.launcher3.celllayout.testcases.FullReorderCase;
-import com.android.launcher3.celllayout.testcases.MoveOutReorderCase;
-import com.android.launcher3.celllayout.testcases.PushReorderCase;
-import com.android.launcher3.celllayout.testcases.ReorderTestCase;
-import com.android.launcher3.celllayout.testcases.SimpleReorderCase;
+import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.MultipageCellLayout;
 import com.android.launcher3.tapl.Widget;
 import com.android.launcher3.tapl.WidgetResizeFrame;
 import com.android.launcher3.ui.AbstractLauncherUiTest;
 import com.android.launcher3.ui.TaplTestsLauncher3;
-import com.android.launcher3.util.rule.ScreenRecordRule.ScreenRecord;
 import com.android.launcher3.util.rule.ShellCommandRule;
-import com.android.launcher3.views.DoubleShadowBubbleTextView;
-import com.android.launcher3.widget.LauncherAppWidgetHostView;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
 
 @SmallTest
 @RunWith(AndroidJUnit4.class)
@@ -59,75 +58,124 @@ public class ReorderWidgets extends AbstractLauncherUiTest {
 
     private static final String TAG = ReorderWidgets.class.getSimpleName();
 
+    private static final List<String> FOLDABLE_GRIDS = List.of("normal", "practical", "reasonable");
+
     TestWorkspaceBuilder mWorkspaceBuilder;
-
-    private View getViewAt(int cellX, int cellY) {
-        return getFromLauncher(l -> l.getWorkspace().getScreenWithId(
-                l.getWorkspace().getScreenIdForPageIndex(0)).getChildAt(cellX, cellY));
-    }
-
-    private Point getCellDimensions() {
-        return getFromLauncher(l -> {
-            CellLayout cellLayout = l.getWorkspace().getScreenWithId(
-                    l.getWorkspace().getScreenIdForPageIndex(0));
-            return new Point(cellLayout.getWidth() / cellLayout.getCountX(),
-                    cellLayout.getHeight() / cellLayout.getCountY());
-        });
-    }
 
     @Before
     public void setup() throws Throwable {
-        mWorkspaceBuilder = new TestWorkspaceBuilder(this, mTargetContext);
+        mWorkspaceBuilder = new TestWorkspaceBuilder(mTargetContext);
         TaplTestsLauncher3.initialize(this);
-        clearHomescreen();
     }
 
     /**
      * Validate if the given board represent the current CellLayout
      **/
-    private boolean validateBoard(CellLayoutBoard board) {
-        boolean match = true;
-        Point cellDimensions = getCellDimensions();
-        for (CellLayoutBoard.WidgetRect widgetRect : board.getWidgets()) {
-            if (widgetRect.shouldIgnore()) {
-                continue;
+    private boolean validateBoard(List<CellLayoutBoard> testBoards) {
+        ArrayList<CellLayoutBoard> workspaceBoards = workspaceToBoards();
+        if (workspaceBoards.size() < testBoards.size()) {
+            return false;
+        }
+        for (int i = 0; i < testBoards.size(); i++) {
+            if (testBoards.get(i).compareTo(workspaceBoards.get(i)) != 0) {
+                return false;
             }
-            View widget = getViewAt(widgetRect.getCellX(), widgetRect.getCellY());
-            assertTrue("The view selected at " + board + " is not a widget",
-                    widget instanceof LauncherAppWidgetHostView);
-            match &= widgetRect.getSpanX()
-                    == Math.round(widget.getWidth() / (float) cellDimensions.x);
-            match &= widgetRect.getSpanY()
-                    == Math.round(widget.getHeight() / (float) cellDimensions.y);
-            if (!match) return match;
         }
-        for (CellLayoutBoard.IconPoint iconPoint : board.getIcons()) {
-            View icon = getViewAt(iconPoint.getCoord().x, iconPoint.getCoord().y);
-            assertTrue("The view selected at " + iconPoint.coord + " is not an Icon",
-                    icon instanceof DoubleShadowBubbleTextView);
-        }
-        return match;
+        return true;
     }
 
-    private void runTestCase(ReorderTestCase testCase)
-            throws ExecutionException, InterruptedException {
-        Point mainWidgetCellPos = testCase.mStart.getMain();
+    private FavoriteItemsTransaction buildWorkspaceFromBoards(List<CellLayoutBoard> boards,
+            FavoriteItemsTransaction transaction) {
+        for (int i = 0; i < boards.size(); i++) {
+            CellLayoutBoard board = boards.get(i);
+            mWorkspaceBuilder.buildFromBoard(board, transaction, i);
+        }
+        return transaction;
+    }
+
+    private void printCurrentWorkspace() {
+        InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(mTargetContext);
+        ArrayList<CellLayoutBoard> boards = workspaceToBoards();
+        for (int i = 0; i < boards.size(); i++) {
+            Log.d(TAG, "Screen number " + i);
+            Log.d(TAG, ".\n" + boards.get(i).toString(idp.numColumns, idp.numRows));
+        }
+    }
+
+    private ArrayList<CellLayoutBoard> workspaceToBoards() {
+        return getFromLauncher(CellLayoutTestUtils::workspaceToBoards);
+    }
+
+    private CellLayoutBoard.WidgetRect getWidgetClosestTo(Point point) {
+        ArrayList<CellLayoutBoard> workspaceBoards = workspaceToBoards();
+        int maxDistance = 9999;
+        CellLayoutBoard.WidgetRect bestRect = null;
+        for (int i = 0; i < workspaceBoards.get(0).getWidgets().size(); i++) {
+            CellLayoutBoard.WidgetRect widget = workspaceBoards.get(0).getWidgets().get(i);
+            if (widget.getCellX() == 0 && widget.getCellY() == 0) {
+                continue;
+            }
+            int distance = Math.abs(point.x - widget.getCellX())
+                    + Math.abs(point.y - widget.getCellY());
+            if (distance == 0) {
+                break;
+            }
+            if (distance < maxDistance) {
+                maxDistance = distance;
+                bestRect = widget;
+            }
+        }
+        return bestRect;
+    }
+
+    /**
+     * This function might be odd, its function is to select a widget and leave it in its place.
+     * The idea is to make the test broader and also test after a widgets resized because the
+     * underlying code does different things in that case
+     */
+    private void triggerWidgetResize(ReorderTestCase testCase) {
+        CellLayoutBoard.WidgetRect widgetRect = getWidgetClosestTo(testCase.moveMainTo);
+        if (widgetRect == null) {
+            // Some test doesn't have a widget in the final position, in those cases we will ignore
+            // them
+            return;
+        }
+        Widget widget = mLauncher.getWorkspace().getWidgetAtCell(widgetRect.getCellX(),
+                widgetRect.getCellY());
+        WidgetResizeFrame resizeFrame = widget.dragWidgetToWorkspace(widgetRect.getCellX(),
+                widgetRect.getCellY(), widgetRect.getSpanX(), widgetRect.getSpanY());
+        resizeFrame.dismiss();
+    }
+
+    private void runTestCase(ReorderTestCase testCase) {
+        CellLayoutBoard.WidgetRect mainWidgetCellPos = CellLayoutBoard.getMainFromList(
+                testCase.mStart);
 
         FavoriteItemsTransaction transaction =
-                new FavoriteItemsTransaction(mTargetContext, this);
-        mWorkspaceBuilder.buildFromBoard(testCase.mStart, transaction).commit();
+                new FavoriteItemsTransaction(mTargetContext);
+        transaction = buildWorkspaceFromBoards(testCase.mStart, transaction);
+        transaction.commit();
+        mLauncher.waitForLauncherInitialized();
+        // resetLoaderState triggers the launcher to start loading the workspace which allows
+        // waitForLauncherCondition to wait for that condition, otherwise the condition would
+        // always be true and it wouldn't wait for the changes to be applied.
+        waitForLauncherCondition("Workspace didn't finish loading", l -> !l.isWorkspaceLoading());
 
-        Widget widget = mLauncher.getWorkspace().getWidgetAtCell(mainWidgetCellPos.x,
-                mainWidgetCellPos.y);
+        triggerWidgetResize(testCase);
+
+        Widget widget = mLauncher.getWorkspace().getWidgetAtCell(mainWidgetCellPos.getCellX(),
+                mainWidgetCellPos.getCellY());
         assertNotNull(widget);
         WidgetResizeFrame resizeFrame = widget.dragWidgetToWorkspace(testCase.moveMainTo.x,
-                testCase.moveMainTo.y);
+                testCase.moveMainTo.y, mainWidgetCellPos.getSpanX(), mainWidgetCellPos.getSpanY());
         resizeFrame.dismiss();
 
         boolean isValid = false;
-        for (CellLayoutBoard board : testCase.mEnd) {
-            isValid |= validateBoard(board);
+        for (List<CellLayoutBoard> boards : testCase.mEnd) {
+            isValid |= validateBoard(boards);
+            if (isValid) break;
         }
+        printCurrentWorkspace();
         assertTrue("Non of the valid boards match with the current state", isValid);
     }
 
@@ -136,39 +184,114 @@ public class ReorderWidgets extends AbstractLauncherUiTest {
      *
      * @param testCaseMap map containing all the tests per grid size (Point)
      */
-    private void runTestCaseMap(Map<Point, ReorderTestCase> testCaseMap, String testName)
-            throws ExecutionException, InterruptedException {
+    private boolean runTestCaseMap(Map<Point, ReorderTestCase> testCaseMap, String testName) {
         Point iconGridDimensions = mLauncher.getWorkspace().getIconGridDimensions();
         Log.d(TAG, "Running test " + testName + " for grid " + iconGridDimensions);
-        Assume.assumeTrue(
-                "The test " + testName + " doesn't support " + iconGridDimensions + " grid layout",
-                testCaseMap.containsKey(iconGridDimensions));
+        if (!testCaseMap.containsKey(iconGridDimensions)) {
+            Log.d(TAG, "The test " + testName + " doesn't support " + iconGridDimensions
+                    + " grid layout");
+            return false;
+        }
         runTestCase(testCaseMap.get(iconGridDimensions));
+
+        return true;
     }
 
-    @ScreenRecord // b/242323136
-    @Test
-    public void simpleReorder() throws ExecutionException, InterruptedException {
-        runTestCaseMap(SimpleReorderCase.TEST_BY_GRID_SIZE,
-                SimpleReorderCase.class.getSimpleName());
+    private void runTestCaseMapForAllGrids(Map<Point, ReorderTestCase> testCaseMap,
+            String testName) {
+        boolean runAtLeastOnce = false;
+        for (String grid : FOLDABLE_GRIDS) {
+            applyGridOption(grid);
+            mLauncher.waitForLauncherInitialized();
+            runAtLeastOnce |= runTestCaseMap(testCaseMap, testName);
+        }
+        Assume.assumeTrue("None of the grids are supported", runAtLeastOnce);
     }
 
-    @ScreenRecord // b/242323136
-    @Test
-    public void pushTest() throws ExecutionException, InterruptedException {
-        runTestCaseMap(PushReorderCase.TEST_BY_GRID_SIZE, PushReorderCase.class.getSimpleName());
+    private void applyGridOption(Object argValue) {
+        String testProviderAuthority = mTargetContext.getPackageName() + ".grid_control";
+        Uri gridUri = new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(testProviderAuthority)
+                .appendPath("default_grid")
+                .build();
+        ContentValues values = new ContentValues();
+        values.putObject("name", argValue);
+        Assert.assertEquals(1,
+                mTargetContext.getContentResolver().update(gridUri, values, null, null));
     }
 
-    @ScreenRecord // b/242323136
     @Test
-    public void fullReorder() throws ExecutionException, InterruptedException {
-        runTestCaseMap(FullReorderCase.TEST_BY_GRID_SIZE, FullReorderCase.class.getSimpleName());
+    public void simpleReorder() throws Exception {
+        runTestCaseMap(getTestMap("ReorderWidgets/simple_reorder_case"),
+                "push_reorder_case");
     }
 
-    @ScreenRecord // b/242323136
     @Test
-    public void moveOutReorder() throws ExecutionException, InterruptedException {
-        runTestCaseMap(MoveOutReorderCase.TEST_BY_GRID_SIZE,
-                MoveOutReorderCase.class.getSimpleName());
+    public void pushTest() throws Exception {
+        runTestCaseMap(getTestMap("ReorderWidgets/push_reorder_case"),
+                "push_reorder_case");
+    }
+
+    @Test
+    public void fullReorder() throws Exception {
+        runTestCaseMap(getTestMap("ReorderWidgets/full_reorder_case"),
+                "full_reorder_case");
+    }
+
+    @Test
+    public void moveOutReorder() throws Exception {
+        runTestCaseMap(getTestMap("ReorderWidgets/move_out_reorder_case"),
+                "move_out_reorder_case");
+    }
+
+    @Test
+    public void multipleCellLayoutsSimpleReorder() throws Exception {
+        Assume.assumeTrue("Test doesn't support foldables", getFromLauncher(
+                l -> l.getWorkspace().getScreenWithId(0) instanceof MultipageCellLayout));
+        runTestCaseMapForAllGrids(getTestMap("ReorderWidgets/multiple_cell_layouts_simple_reorder"),
+                "multiple_cell_layouts_simple_reorder");
+    }
+
+    @Test
+    public void multipleCellLayoutsNoSpaceReorder() throws Exception {
+        Assume.assumeTrue("Test doesn't support foldables", getFromLauncher(
+                l -> l.getWorkspace().getScreenWithId(0) instanceof MultipageCellLayout));
+        runTestCaseMapForAllGrids(
+                getTestMap("ReorderWidgets/multiple_cell_layouts_no_space_reorder"),
+                "multiple_cell_layouts_no_space_reorder");
+    }
+
+    @Test
+    public void multipleCellLayoutsReorderToOtherSide() throws Exception {
+        Assume.assumeTrue("Test doesn't support foldables", getFromLauncher(
+                l -> l.getWorkspace().getScreenWithId(0) instanceof MultipageCellLayout));
+        runTestCaseMapForAllGrids(
+                getTestMap("ReorderWidgets/multiple_cell_layouts_reorder_other_side"),
+                "multiple_cell_layouts_reorder_other_side");
+    }
+
+    private void addTestCase(Iterator<CellLayoutTestCaseReader.TestSection> sections,
+            Map<Point, ReorderTestCase> testCaseMap) {
+        CellLayoutTestCaseReader.Board startBoard =
+                ((CellLayoutTestCaseReader.Board) sections.next());
+        CellLayoutTestCaseReader.Arguments point =
+                ((CellLayoutTestCaseReader.Arguments) sections.next());
+        CellLayoutTestCaseReader.Board endBoard =
+                ((CellLayoutTestCaseReader.Board) sections.next());
+        Point moveTo = new Point(Integer.parseInt(point.arguments[0]),
+                Integer.parseInt(point.arguments[1]));
+        testCaseMap.put(endBoard.gridSize,
+                new ReorderTestCase(startBoard.board, moveTo, endBoard.board));
+    }
+
+    private Map<Point, ReorderTestCase> getTestMap(String testPath) throws IOException {
+        Map<Point, ReorderTestCase> testCaseMap = new HashMap<>();
+        Iterator<CellLayoutTestCaseReader.TestSection> iterableSection =
+                CellLayoutTestCaseReader.readFromFile(testPath).parse().iterator();
+        while (iterableSection.hasNext()) {
+            addTestCase(iterableSection, testCaseMap);
+        }
+        return testCaseMap;
     }
 }

@@ -23,13 +23,11 @@ import androidx.test.uiautomator.UiObject2;
 public final class HomeAppIconMenuItem extends AppIconMenuItem implements WorkspaceDragSource {
 
     HomeAppIconMenuItem(LauncherInstrumentation launcher,
-                        UiObject2 shortcut) {
+            UiObject2 shortcut) {
         super(launcher, shortcut);
     }
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     @Override
     public Launchable getLaunchable() {
         return this;

@@ -30,9 +30,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static com.android.launcher3.settings.SettingsActivity.EXTRA_FRAGMENT;
 import static com.android.launcher3.settings.SettingsActivity.EXTRA_FRAGMENT_ARGS;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -47,6 +50,7 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.launcher3.R;
+import com.android.launcher3.uioverrides.flags.DeveloperOptionsFragment;
 import com.android.systemui.shared.plugins.PluginPrefs;
 
 import org.junit.After;

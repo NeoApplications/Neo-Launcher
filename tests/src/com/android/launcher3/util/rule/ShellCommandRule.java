@@ -16,6 +16,7 @@
 package com.android.launcher3.util.rule;
 
 import static androidx.test.InstrumentationRegistry.getInstrumentation;
+
 import static com.android.launcher3.tapl.TestHelpers.getLauncherInMyProcess;
 
 import android.content.ComponentName;
@@ -45,7 +46,7 @@ public class ShellCommandRule implements TestRule {
     private final Runnable mAdditionalChecks;
 
     public ShellCommandRule(String cmd, @Nullable String revertCommand, boolean checkSuccess,
-                            Runnable additionalChecks) {
+            Runnable additionalChecks) {
         mCmd = cmd;
         mRevertCommand = revertCommand;
         mCheckSuccess = checkSuccess;

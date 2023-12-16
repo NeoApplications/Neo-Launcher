@@ -16,13 +16,17 @@
 package com.android.launcher3.widget.picker.model;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static com.android.launcher3.util.WidgetUtils.createAppWidgetProviderInfo;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.UserHandle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -60,8 +64,7 @@ public final class WidgetsListContentEntryTest {
     private final ComponentName mWidget3 = ComponentName.createRelative(PACKAGE_NAME, ".mWidget3");
     private final Map<ComponentName, String> mWidgetsToLabels = new HashMap();
 
-    @Mock
-    private IconCache mIconCache;
+    @Mock private IconCache mIconCache;
 
     private InvariantDeviceProfile mTestProfile;
 
@@ -247,12 +250,13 @@ public final class WidgetsListContentEntryTest {
         String label = mWidgetsToLabels.get(componentName);
         AppWidgetProviderInfo widgetInfo = createAppWidgetProviderInfo(componentName);
 
+        Context context = getApplicationContext();
         LauncherAppWidgetProviderInfo launcherAppWidgetProviderInfo =
-                LauncherAppWidgetProviderInfo.fromProviderInfo(getApplicationContext(), widgetInfo);
+                LauncherAppWidgetProviderInfo.fromProviderInfo(context, widgetInfo);
         launcherAppWidgetProviderInfo.spanX = spanX;
         launcherAppWidgetProviderInfo.spanY = spanY;
         launcherAppWidgetProviderInfo.label = label;
 
-        return new WidgetItem(launcherAppWidgetProviderInfo, mTestProfile, mIconCache);
+        return new WidgetItem(launcherAppWidgetProviderInfo, mTestProfile, mIconCache, context);
     }
 }

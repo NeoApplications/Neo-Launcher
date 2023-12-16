@@ -27,7 +27,7 @@ public class SelectModeButtons {
     private final LauncherInstrumentation mLauncher;
 
     SelectModeButtons(UiObject2 selectModeButtons,
-                      LauncherInstrumentation launcherInstrumentation) {
+            LauncherInstrumentation launcherInstrumentation) {
         mSelectModeButtons = selectModeButtons;
         mLauncher = launcherInstrumentation;
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2019 The Android Open Source Project
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -39,6 +39,7 @@ public class LauncherLayoutBuilder {
     private static final String TAG_AUTO_INSTALL = "autoinstall";
     private static final String TAG_FOLDER = "folder";
     private static final String TAG_APPWIDGET = "appwidget";
+    private static final String TAG_SHORTCUT = "shortcut";
     private static final String TAG_EXTRA = "extra";
 
     private static final String ATTR_CONTAINER = "container";
@@ -49,6 +50,7 @@ public class LauncherLayoutBuilder {
     private static final String ATTR_TITLE = "title";
     private static final String ATTR_TITLE_TEXT = "titleText";
     private static final String ATTR_SCREEN = "screen";
+    private static final String ATTR_SHORTCUT_ID = "shortcutId";
 
     // x and y can be specified as negative integers, in which case -1 represents the
     // last row / column, -2 represents the second last, and so on.
@@ -104,7 +106,7 @@ public class LauncherLayoutBuilder {
     }
 
     private static void writeNodes(XmlSerializer serializer,
-                                   ArrayList<Pair<String, HashMap<String, Object>>> nodes) throws IOException {
+            ArrayList<Pair<String, HashMap<String, Object>>> nodes) throws IOException {
         for (Pair<String, HashMap<String, Object>> node : nodes) {
             ArrayList<Pair<String, HashMap<String, Object>>> children = null;
 
@@ -135,8 +137,15 @@ public class LauncherLayoutBuilder {
             return LauncherLayoutBuilder.this;
         }
 
+        public LauncherLayoutBuilder putShortcut(String packageName, String shortcutId) {
+            items.put(ATTR_PACKAGE_NAME, packageName);
+            items.put(ATTR_SHORTCUT_ID, shortcutId);
+            mNodes.add(Pair.create(TAG_SHORTCUT, items));
+            return LauncherLayoutBuilder.this;
+        }
+
         public LauncherLayoutBuilder putWidget(String packageName, String className,
-                                               int spanX, int spanY) {
+                int spanX, int spanY) {
             items.put(ATTR_PACKAGE_NAME, packageName);
             items.put(ATTR_CLASS_NAME, className);
             items.put(ATTR_SPAN_X, Integer.toString(spanX));
@@ -172,6 +181,14 @@ public class LauncherLayoutBuilder {
             items.put(ATTR_PACKAGE_NAME, packageName);
             items.put(ATTR_CLASS_NAME, TextUtils.isEmpty(className) ? packageName : className);
             mChildren.add(Pair.create(TAG_AUTO_INSTALL, items));
+            return this;
+        }
+
+        public FolderBuilder addShortcut(String packageName, String shortcutId) {
+            HashMap<String, Object> items = new HashMap<>();
+            items.put(ATTR_PACKAGE_NAME, packageName);
+            items.put(ATTR_SHORTCUT_ID, shortcutId);
+            mChildren.add(Pair.create(TAG_SHORTCUT, items));
             return this;
         }
 

@@ -15,9 +15,7 @@
  */
 package com.android.launcher3.tapl;
 
-/**
- * The resize frame that is shown for a widget on the workspace.
- */
+/** The resize frame that is shown for a widget on the workspace. */
 public class WidgetResizeFrame {
 
     private final LauncherInstrumentation mLauncher;
@@ -27,9 +25,7 @@ public class WidgetResizeFrame {
         launcher.waitForLauncherObject("widget_resize_frame");
     }
 
-    /**
-     * Dismisses the resize frame.
-     */
+    /** Dismisses the resize frame. */
     public void dismiss() {
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
              LauncherInstrumentation.Closable c = mLauncher.addContextLayer(

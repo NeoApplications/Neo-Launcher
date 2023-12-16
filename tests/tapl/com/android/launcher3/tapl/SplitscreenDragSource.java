@@ -15,16 +15,14 @@
  */
 package com.android.launcher3.tapl;
 
-/**
- * Launchable that can serve as a source for dragging and dropping to splitscreen.
- */
+/** Launchable that can serve as a source for dragging and dropping to splitscreen. */
 interface SplitscreenDragSource {
 
     /**
      * Drags this app icon to the left (landscape) or bottom (portrait) of the screen, launching it
      * in splitscreen.
      *
-     * @param expectedNewPackageName      package name of the app being dragged
+     * @param expectedNewPackageName package name of the app being dragged
      * @param expectedExistingPackageName package name of the already-launched app
      */
     default void dragToSplitscreen(

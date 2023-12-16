@@ -76,6 +76,27 @@ public abstract class Launchable {
         }
     }
 
+    /**
+     * Clicks a launcher object to initiate splitscreen, where the selected app will be one of two
+     * apps running on the screen. Should be called when Launcher is in a "split staging" state
+     * and is waiting for the user's selection of a second app. Expects a SPLIT_START_EVENT to be
+     * fired when the click is executed.
+     */
+    public LaunchedAppState launchIntoSplitScreen() {
+        try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
+                "want to launch split tasks from " + launchableType())) {
+            LauncherInstrumentation.log("Launchable.launch before click "
+                    + mObject.getVisibleCenter() + " in " + mLauncher.getVisibleBounds(mObject));
+
+            mLauncher.clickLauncherObject(mObject);
+
+            try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer("clicked")) {
+                mLauncher.expectEvent(TestProtocol.SEQUENCE_MAIN, OverviewTask.SPLIT_START_EVENT);
+                return new LaunchedAppState(mLauncher);
+            }
+        }
+    }
+
     protected LaunchedAppState assertAppLaunched(BySelector selector) {
         mLauncher.assertTrue(
                 "App didn't start: (" + selector + ")",
@@ -91,10 +112,10 @@ public abstract class Launchable {
 
         if (runToSpringLoadedState) {
             mLauncher.runToState(() -> movePointerForStartDrag(
-                            downTime,
-                            iconCenter,
-                            dragStartCenter,
-                            expectLongClickEvents),
+                    downTime,
+                    iconCenter,
+                    dragStartCenter,
+                    expectLongClickEvents),
                     SPRING_LOADED_STATE_ORDINAL, "long-pressing and triggering drag start");
         } else {
             movePointerForStartDrag(
@@ -109,7 +130,7 @@ public abstract class Launchable {
 
     /**
      * Waits for a confirmation that a long press has successfully been triggered.
-     * <p>
+     *
      * This method waits for a view to either appear or disappear to confirm that the long press
      * has been triggered and fails if no confirmation is received before the default timeout.
      */
@@ -117,7 +138,7 @@ public abstract class Launchable {
 
     /**
      * Drags this Launchable a short distance before starting a full drag.
-     * <p>
+     *
      * This is necessary for shortcuts, which require being dragged beyond a threshold to close
      * their container and start drag callbacks.
      */
@@ -131,7 +152,7 @@ public abstract class Launchable {
                 downTime,
                 MotionEvent.ACTION_DOWN,
                 iconCenter,
-                LauncherInstrumentation.GestureScope.INSIDE);
+                LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
         LauncherInstrumentation.log("movePointerForStartDrag: sent down");
         expectLongClickEvents.run();
         waitForLongPressConfirmation();
@@ -144,7 +165,7 @@ public abstract class Launchable {
                 downTime,
                 downTime,
                 /* slowDown= */ true,
-                LauncherInstrumentation.GestureScope.INSIDE);
+                LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
     }
 
     private int getStartDragThreshold() {

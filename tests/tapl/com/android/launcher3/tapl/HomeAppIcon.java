@@ -58,17 +58,13 @@ public abstract class HomeAppIcon extends AppIcon implements FolderDragTarget, W
         }
     }
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     @Override
     public Rect getDropLocationBounds() {
         return mLauncher.getVisibleBounds(mObject);
     }
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     @Override
     public FolderIcon getTargetFolder(Rect bounds) {
         for (FolderIcon folderIcon : mLauncher.getWorkspace().getFolderIcons()) {
@@ -138,9 +134,7 @@ public abstract class HomeAppIcon extends AppIcon implements FolderDragTarget, W
         }
     }
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     @Override
     public Launchable getLaunchable() {
         return this;

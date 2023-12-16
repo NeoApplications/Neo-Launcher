@@ -39,16 +39,13 @@ public class ListViewService extends RemoteViewsService {
         public int viewCount = 0;
 
         @Override
-        public void onCreate() {
-        }
+        public void onCreate() { }
 
         @Override
-        public void onDataSetChanged() {
-        }
+        public void onDataSetChanged() { }
 
         @Override
-        public void onDestroy() {
-        }
+        public void onDestroy() { }
 
         @Override
         public int getCount() {

@@ -17,8 +17,10 @@
 package com.android.launcher3.popup;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static com.android.launcher3.popup.PopupPopulator.MAX_SHORTCUTS;
 import static com.android.launcher3.popup.PopupPopulator.NUM_DYNAMIC;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -86,7 +88,7 @@ public class PopupPopulatorTest {
     }
 
     private void filterShortcutsAndAssertNumStaticAndDynamic(List<ShortcutInfo> shortcuts,
-                                                             int expectedStatic, int expectedDynamic, String shortcutIdToRemove) {
+            int expectedStatic, int expectedDynamic, String shortcutIdToRemove) {
         Collections.shuffle(shortcuts);
         List<ShortcutInfo> filteredShortcuts = PopupPopulator.sortAndFilterShortcuts(
                 shortcuts, shortcutIdToRemove);

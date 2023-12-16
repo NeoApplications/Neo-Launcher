@@ -37,10 +37,9 @@ import java.util.stream.Collectors;
 public final class OverviewTask {
     private static final String SYSTEMUI_PACKAGE = "com.android.systemui";
 
-    static final Pattern TASK_START_EVENT =
-            Pattern.compile("startActivityFromRecentsAsync");
-    static final Pattern SPLIT_START_EVENT =
-            Pattern.compile("launchSplitTasks");
+    static final Pattern TASK_START_EVENT = Pattern.compile("startActivityFromRecentsAsync");
+    static final Pattern SPLIT_SELECT_EVENT = Pattern.compile("enterSplitSelect");
+    static final Pattern SPLIT_START_EVENT = Pattern.compile("launchSplitTasks");
     private final LauncherInstrumentation mLauncher;
     private final UiObject2 mTask;
     private final BaseOverview mOverview;
@@ -70,6 +69,10 @@ public final class OverviewTask {
 
     float getExactCenterX() {
         return mTask.getVisibleBounds().exactCenterX();
+    }
+
+    UiObject2 getUiObject() {
+        return mTask;
     }
 
     /**
@@ -121,7 +124,7 @@ public final class OverviewTask {
         final int centerY = taskBounds.centerY();
         mLauncher.executeAndWaitForLauncherEvent(
                 () -> mLauncher.linearGesture(centerX, centerY, centerX, 0, 10, false,
-                        LauncherInstrumentation.GestureScope.INSIDE),
+                        LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER),
                 event -> TestProtocol.DISMISS_ANIMATION_ENDS_MESSAGE.equals(event.getClassName()),
                 () -> "Didn't receive a dismiss animation ends message: " + centerX + ", "
                         + centerY, "swiping to dismiss");
@@ -130,8 +133,8 @@ public final class OverviewTask {
     private List<Integer> getCurrentTasksCenterXList() {
         return mLauncher.isTablet()
                 ? mOverview.getCurrentTasksForTablet().stream()
-                .map(OverviewTask::getTaskCenterX)
-                .collect(Collectors.toList())
+                    .map(OverviewTask::getTaskCenterX)
+                    .collect(Collectors.toList())
                 : List.of(mOverview.getCurrentTask().getTaskCenterX());
     }
 
@@ -165,9 +168,7 @@ public final class OverviewTask {
         }
     }
 
-    /**
-     * Taps the task menu.
-     */
+    /** Taps the task menu. */
     @NonNull
     public OverviewTaskMenu tapMenu() {
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();

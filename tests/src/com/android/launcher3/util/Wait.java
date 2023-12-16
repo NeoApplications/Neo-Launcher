@@ -17,18 +17,18 @@ public class Wait {
     private static final long DEFAULT_SLEEP_MS = 200;
 
     public static void atMost(String message, Condition condition, long timeout,
-                              LauncherInstrumentation launcher) {
+            LauncherInstrumentation launcher) {
         atMost(() -> message, condition, timeout, DEFAULT_SLEEP_MS, launcher);
     }
 
     public static void atMost(Supplier<String> message, Condition condition, long timeout,
-                              LauncherInstrumentation launcher) {
+            LauncherInstrumentation launcher) {
         atMost(message, condition, timeout, DEFAULT_SLEEP_MS, launcher);
     }
 
     public static void atMost(Supplier<String> message, Condition condition, long timeout,
-                              long sleepMillis,
-                              LauncherInstrumentation launcher) {
+            long sleepMillis,
+            LauncherInstrumentation launcher) {
         final long startTime = SystemClock.uptimeMillis();
         long endTime = startTime + timeout;
         Log.d("Wait", "atMost: " + startTime + " - " + endTime);

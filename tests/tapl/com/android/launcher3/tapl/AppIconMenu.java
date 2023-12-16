@@ -30,7 +30,7 @@ public abstract class AppIconMenu {
     protected final UiObject2 mDeepShortcutsContainer;
 
     AppIconMenu(LauncherInstrumentation launcher,
-                UiObject2 deepShortcutsContainer) {
+            UiObject2 deepShortcutsContainer) {
         mLauncher = launcher;
         mDeepShortcutsContainer = deepShortcutsContainer;
     }
@@ -50,8 +50,17 @@ public abstract class AppIconMenu {
      */
     public AppIconMenuItem getMenuItem(String shortcutText) {
         final UiObject2 menuItem = mLauncher.waitForObjectInContainer(mDeepShortcutsContainer,
-                AppIcon.getAppIconSelector(shortcutText, mLauncher));
+                AppIcon.getMenuItemSelector(shortcutText, mLauncher));
         return createMenuItem(menuItem);
+    }
+
+    /**
+     * Returns a menu item that matches the text "Split screen". Fails if it doesn't exist.
+     */
+    public SplitScreenMenuItem getSplitScreenMenuItem() {
+        final UiObject2 menuItem = mLauncher.waitForObjectInContainer(mDeepShortcutsContainer,
+                AppIcon.getMenuItemSelector("Split screen", mLauncher));
+        return new SplitScreenMenuItem(mLauncher, menuItem);
     }
 
     protected abstract AppIconMenuItem createMenuItem(UiObject2 menuItem);

@@ -20,23 +20,26 @@ import android.widget.TextView;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiObject2;
 
+import java.util.ArrayList;
+
 /**
- * Operations on search result page opened from home screen qsb.
+ * Operations on search result page opened from qsb.
  */
 public class SearchResultFromQsb {
     // The input resource id in the search box.
     private static final String INPUT_RES = "input";
     private static final String BOTTOM_SHEET_RES_ID = "bottom_sheet_background";
-    private final LauncherInstrumentation mLauncher;
+
+    // This particular ID change should happen with caution
+    private static final String SEARCH_CONTAINER_RES_ID = "search_results_list_view";
+    protected final LauncherInstrumentation mLauncher;
 
     SearchResultFromQsb(LauncherInstrumentation launcher) {
         mLauncher = launcher;
         mLauncher.waitForLauncherObject("search_container_all_apps");
     }
 
-    /**
-     * Set the input to the search input edit text and update search results.
-     */
+    /** Set the input to the search input edit text and update search results. */
     public void searchForInput(String input) {
         try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                 "want to search for result with an input");
@@ -45,17 +48,47 @@ public class SearchResultFromQsb {
         }
     }
 
-    /**
-     * Find the app from search results with app name.
-     */
-    public Launchable findAppIcon(String appName) {
+    /** Find the app from search results with app name. */
+    public AppIcon findAppIcon(String appName) {
         UiObject2 icon = mLauncher.waitForLauncherObject(By.clazz(TextView.class).text(appName));
+        return createAppIcon(icon);
+    }
+
+    protected AppIcon createAppIcon(UiObject2 icon) {
         return new AllAppsAppIcon(mLauncher, icon);
+    }
+
+    /** Find the web suggestion from search suggestion's title text */
+    public SearchWebSuggestion findWebSuggestion(String text) {
+        ArrayList<UiObject2> webSuggestions =
+                new ArrayList<>(mLauncher.waitForObjectsInContainer(
+                        mLauncher.waitForSystemLauncherObject(SEARCH_CONTAINER_RES_ID),
+                        By.clazz(TextView.class)));
+        for (UiObject2 uiObject: webSuggestions) {
+            String currentString = uiObject.getText();
+            if (currentString.equals(text)) {
+                return createWebSuggestion(uiObject);
+            }
+        }
+        mLauncher.fail("Web suggestion title: " + text + " not found");
+        return null;
+    }
+
+    protected SearchWebSuggestion createWebSuggestion(UiObject2 webSuggestion) {
+        return new SearchWebSuggestion(mLauncher, webSuggestion);
+    }
+
+    /** Find the total amount of views being displayed and return the size */
+    public int getSearchResultItemSize() {
+        ArrayList<UiObject2> searchResultItems =
+                new ArrayList<>(mLauncher.waitForObjectsInContainer(
+                        mLauncher.waitForSystemLauncherObject(SEARCH_CONTAINER_RES_ID),
+                        By.clazz(TextView.class)));
+        return searchResultItems.size();
     }
 
     /**
      * Taps outside bottom sheet to dismiss and return to workspace. Available on tablets only.
-     *
      * @param tapRight Tap on the right of bottom sheet if true, or left otherwise.
      */
     public Workspace dismissByTappingOutsideForTablet(boolean tapRight) {

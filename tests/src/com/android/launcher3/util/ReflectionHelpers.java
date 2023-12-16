@@ -23,9 +23,9 @@ public class ReflectionHelpers {
     /**
      * Reflectively get the value of a field.
      *
-     * @param object    Target object.
+     * @param object Target object.
      * @param fieldName The field name.
-     * @param <R>       The return type.
+     * @param <R> The return type.
      * @return Value of the field on the object.
      */
     public static <R> R getField(Object object, String fieldName) {
@@ -41,8 +41,8 @@ public class ReflectionHelpers {
     /**
      * Reflectively set the value of a field.
      *
-     * @param object        Target object.
-     * @param fieldName     The field name.
+     * @param object Target object.
+     * @param fieldName The field name.
      * @param fieldNewValue New value.
      */
     public static void setField(Object object, String fieldName, Object fieldNewValue) {

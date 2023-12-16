@@ -20,13 +20,9 @@ import android.graphics.Rect;
 
 public interface FolderDragTarget {
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     Rect getDropLocationBounds();
 
-    /**
-     * This method requires public access, however should not be called in tests.
-     */
+    /** This method requires public access, however should not be called in tests. */
     FolderIcon getTargetFolder(Rect bounds);
 }

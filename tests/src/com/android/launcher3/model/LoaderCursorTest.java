@@ -17,24 +17,31 @@
 package com.android.launcher3.model;
 
 import static androidx.test.InstrumentationRegistry.getContext;
+
+import static com.android.launcher3.LauncherSettings.Favorites.APPWIDGET_ID;
+import static com.android.launcher3.LauncherSettings.Favorites.APPWIDGET_PROVIDER;
+import static com.android.launcher3.LauncherSettings.Favorites.APPWIDGET_SOURCE;
 import static com.android.launcher3.LauncherSettings.Favorites.CELLX;
 import static com.android.launcher3.LauncherSettings.Favorites.CELLY;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
 import static com.android.launcher3.LauncherSettings.Favorites.ICON;
-import static com.android.launcher3.LauncherSettings.Favorites.ICON_PACKAGE;
-import static com.android.launcher3.LauncherSettings.Favorites.ICON_RESOURCE;
 import static com.android.launcher3.LauncherSettings.Favorites.INTENT;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
-import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
+import static com.android.launcher3.LauncherSettings.Favorites.OPTIONS;
 import static com.android.launcher3.LauncherSettings.Favorites.PROFILE_ID;
+import static com.android.launcher3.LauncherSettings.Favorites.RANK;
 import static com.android.launcher3.LauncherSettings.Favorites.RESTORED;
 import static com.android.launcher3.LauncherSettings.Favorites.SCREEN;
+import static com.android.launcher3.LauncherSettings.Favorites.SPANX;
+import static com.android.launcher3.LauncherSettings.Favorites.SPANY;
 import static com.android.launcher3.LauncherSettings.Favorites.TITLE;
 import static com.android.launcher3.LauncherSettings.Favorites._ID;
 import static com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -52,7 +59,6 @@ import androidx.test.filters.SmallTest;
 
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
-import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.Executors;
@@ -87,14 +93,15 @@ public class LoaderCursorTest {
         mIDP = InvariantDeviceProfile.INSTANCE.get(mContext);
         mApp = LauncherAppState.getInstance(mContext);
 
-        mCursor = new MatrixCursor(new String[]{
-                ICON, ICON_PACKAGE, ICON_RESOURCE, TITLE,
-                _ID, CONTAINER, ITEM_TYPE, PROFILE_ID,
-                SCREEN, CELLX, CELLY, RESTORED, INTENT
+        mCursor = new MatrixCursor(new String[] {
+                ICON, TITLE, _ID, CONTAINER, ITEM_TYPE,
+                PROFILE_ID, SCREEN, CELLX, CELLY, RESTORED,
+                INTENT, APPWIDGET_ID, APPWIDGET_PROVIDER,
+                SPANX, SPANY, RANK, OPTIONS, APPWIDGET_SOURCE
         });
 
         UserManagerState ums = new UserManagerState();
-        mLoaderCursor = new LoaderCursor(mCursor, Favorites.CONTENT_URI, mApp, ums);
+        mLoaderCursor = new LoaderCursor(mCursor, mApp, ums);
         ums.allUsers.put(0, Process.myUserHandle());
     }
 
@@ -128,8 +135,8 @@ public class LoaderCursorTest {
         assertTrue(mLoaderCursor.moveToNext());
 
         WorkspaceItemInfo info = Executors.MODEL_EXECUTOR.submit(() ->
-                        mLoaderCursor.getAppShortcutInfo(
-                                new Intent().setComponent(cn), false  /* allowMissingTarget */, true))
+                mLoaderCursor.getAppShortcutInfo(
+                        new Intent().setComponent(cn), false  /* allowMissingTarget */, true))
                 .get();
         assertNotNull(info);
         assertTrue(PackageManagerHelper.isLauncherAppTarget(info.getIntent()));
@@ -142,8 +149,8 @@ public class LoaderCursorTest {
 
         ComponentName cn = new ComponentName(mContext.getPackageName(), "placeholder-do");
         WorkspaceItemInfo info = Executors.MODEL_EXECUTOR.submit(() ->
-                        mLoaderCursor.getAppShortcutInfo(
-                                new Intent().setComponent(cn), true  /* allowMissingTarget */, true))
+                mLoaderCursor.getAppShortcutInfo(
+                        new Intent().setComponent(cn), true  /* allowMissingTarget */, true))
                 .get();
         assertNotNull(info);
         assertTrue(PackageManagerHelper.isLauncherAppTarget(info.getIntent()));
@@ -151,13 +158,13 @@ public class LoaderCursorTest {
 
     @Test
     public void loadSimpleShortcut() {
-        initCursor(ITEM_TYPE_SHORTCUT, "my-shortcut");
+        initCursor(ITEM_TYPE_DEEP_SHORTCUT, "my-shortcut");
         assertTrue(mLoaderCursor.moveToNext());
 
         WorkspaceItemInfo info = mLoaderCursor.loadSimpleWorkspaceItem();
         assertTrue(mApp.getIconCache().isDefaultIcon(info.bitmap, info.user));
         assertEquals("my-shortcut", info.title);
-        assertEquals(ITEM_TYPE_SHORTCUT, info.itemType);
+        assertEquals(ITEM_TYPE_DEEP_SHORTCUT, info.itemType);
     }
 
     @Test
@@ -214,7 +221,7 @@ public class LoaderCursorTest {
     }
 
     private ItemInfo newItemInfo(int cellX, int cellY, int spanX, int spanY,
-                                 int container, int screenId) {
+            int container, int screenId) {
         ItemInfo info = new ItemInfo();
         info.cellX = cellX;
         info.cellY = cellY;

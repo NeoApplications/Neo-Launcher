@@ -18,7 +18,7 @@ package com.android.launcher3.nonquickstep
 import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.android.launcher3.DeviceProfileBaseTest
+import com.android.launcher3.FakeInvariantDeviceProfileTest
 import com.android.launcher3.util.WindowBounds
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -26,11 +26,11 @@ import org.junit.runner.RunWith
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
+class HotseatWidthCalculationTest : FakeInvariantDeviceProfileTest() {
 
     /**
-     * This is a case when after setting the hotseat, the space needs to be recalculated
-     * but it doesn't need to change QSB width or remove icons
+     * This is a case when after setting the hotseat, the space needs to be recalculated but it
+     * doesn't need to change QSB width or remove icons
      */
     @Test
     fun distribute_border_space_when_space_is_enough_portrait() {
@@ -51,8 +51,8 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
     }
 
     /**
-     * This is a case when after setting the hotseat, and recalculating spaces
-     * it still needs to remove icons for everything to fit
+     * This is a case when after setting the hotseat, and recalculating spaces it still needs to
+     * remove icons for everything to fit
      */
     @Test
     fun decrease_num_of_icons_when_not_enough_space_portrait() {
@@ -63,18 +63,18 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
 
         assertThat(dp.hotseatBarEndOffset).isEqualTo(0)
         assertThat(dp.numShownHotseatIcons).isEqualTo(6)
-        assertThat(dp.hotseatBorderSpace).isEqualTo(94)
+        assertThat(dp.hotseatBorderSpace).isEqualTo(72)
 
-        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(121)
-        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(121)
+        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(110)
+        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(110)
 
         assertThat(dp.isQsbInline).isFalse()
-        assertThat(dp.hotseatQsbWidth).isEqualTo(1058)
+        assertThat(dp.hotseatQsbWidth).isEqualTo(1080)
     }
 
     /**
-     * This is a case when after setting the hotseat, the space needs to be recalculated
-     * but it doesn't need to change QSB width or remove icons
+     * This is a case when after setting the hotseat, the space needs to be recalculated but it
+     * doesn't need to change QSB width or remove icons
      */
     @Test
     fun distribute_border_space_when_space_is_enough_landscape() {
@@ -84,18 +84,18 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
 
         assertThat(dp.hotseatBarEndOffset).isEqualTo(0)
         assertThat(dp.numShownHotseatIcons).isEqualTo(6)
-        assertThat(dp.hotseatBorderSpace).isEqualTo(105)
+        assertThat(dp.hotseatBorderSpace).isEqualTo(104)
 
         assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(370)
         assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(370)
 
         assertThat(dp.isQsbInline).isFalse()
-        assertThat(dp.hotseatQsbWidth).isEqualTo(1467)
+        assertThat(dp.hotseatQsbWidth).isEqualTo(1468)
     }
 
     /**
-     * This is a case when the hotseat spans a certain amount of columns
-     * and the nav buttons push the hotseat to the side, but not enough to change the border space.
+     * This is a case when the hotseat spans a certain amount of columns and the nav buttons push
+     * the hotseat to the side, but not enough to change the border space.
      */
     @Test
     fun nav_buttons_dont_interfere_with_required_hotseat_width() {
@@ -118,9 +118,7 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
         assertThat(dp.hotseatQsbWidth).isEqualTo(1224)
     }
 
-    /**
-     * This is a case when after setting the hotseat, the QSB width needs to be changed to fit
-     */
+    /** This is a case when after setting the hotseat, the QSB width needs to be changed to fit */
     @Test
     fun decrease_qsb_when_not_enough_space_landscape() {
         initializeVarsForTablet(isGestureMode = false, isLandscape = true)
@@ -130,13 +128,13 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
 
         assertThat(dp.hotseatBarEndOffset).isEqualTo(0)
         assertThat(dp.numShownHotseatIcons).isEqualTo(6)
-        assertThat(dp.hotseatBorderSpace).isEqualTo(96)
+        assertThat(dp.hotseatBorderSpace).isEqualTo(91)
 
-        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(643)
-        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(643)
+        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(640)
+        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(640)
 
         assertThat(dp.isQsbInline).isFalse()
-        assertThat(dp.hotseatQsbWidth).isEqualTo(1174)
+        assertThat(dp.hotseatQsbWidth).isEqualTo(1179)
     }
 
     /**
@@ -152,12 +150,33 @@ class HotseatWidthCalculationTest : DeviceProfileBaseTest() {
 
         assertThat(dp.hotseatBarEndOffset).isEqualTo(0)
         assertThat(dp.numShownHotseatIcons).isEqualTo(6)
-        assertThat(dp.hotseatBorderSpace).isEqualTo(89)
+        assertThat(dp.hotseatBorderSpace).isEqualTo(75)
 
-        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(589)
-        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(589)
+        assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(582)
+        assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(582)
 
         assertThat(dp.isQsbInline).isFalse()
-        assertThat(dp.hotseatQsbWidth).isEqualTo(1081)
+        assertThat(dp.hotseatQsbWidth).isEqualTo(1095)
+    }
+
+    @Test
+    fun border_space_should_be_zero_when_numHotseatIcons_is_smallerOrEqual_1() {
+        initializeVarsForTablet(isGestureMode = false)
+        windowBounds = WindowBounds(Rect(0, 0, 1800, 2560), Rect(0, 104, 0, 0))
+
+        val numShownHotseatIcons = listOf(-1, 0, 1)
+        for (numHotseatIcons in numShownHotseatIcons) {
+            inv?.numShownHotseatIcons = numHotseatIcons
+
+            val dp = newDP()
+            dp.isTaskbarPresentInApps = true
+
+            assertThat(dp.numShownHotseatIcons).isEqualTo(numHotseatIcons)
+            assertThat(dp.hotseatBorderSpace).isEqualTo(0)
+
+            assertThat(dp.getHotseatLayoutPadding(context).left).isEqualTo(177)
+            assertThat(dp.getHotseatLayoutPadding(context).right).isEqualTo(177)
+            assertThat(dp.hotseatQsbWidth).isEqualTo(1445)
+        }
     }
 }

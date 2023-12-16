@@ -1,6 +1,7 @@
 package com.android.launcher3.logging;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +26,6 @@ import java.util.Calendar;
 public class FileLogTest {
 
     private File mTempDir;
-
     @Before
     public void setUp() {
         int count = 0;

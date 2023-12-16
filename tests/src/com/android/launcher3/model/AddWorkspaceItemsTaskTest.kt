@@ -23,6 +23,7 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.IntArray
+import com.android.launcher3.util.TestUtil.runOnExecutorSync
 import com.android.launcher3.util.any
 import com.android.launcher3.util.eq
 import com.android.launcher3.util.same
@@ -31,39 +32,27 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoInteractions
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.verifyZeroInteractions
 import org.mockito.Mockito.`when` as whenever
+import org.mockito.MockitoAnnotations
 
-/**
- * Tests for [AddWorkspaceItemsTask]
- */
+/** Tests for [AddWorkspaceItemsTask] */
 @SmallTest
 @RunWith(AndroidJUnit4::class)
 class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
 
-    @Captor
-    private lateinit var mAnimatedItemArgumentCaptor: ArgumentCaptor<ArrayList<ItemInfo>>
+    private lateinit var mDataModelCallbacks: MyCallbacks
 
-    @Captor
-    private lateinit var mNotAnimatedItemArgumentCaptor: ArgumentCaptor<ArrayList<ItemInfo>>
-
-    @Mock
-    private lateinit var mDataModelCallbacks: BgDataModel.Callbacks
-
-    @Mock
-    private lateinit var mWorkspaceItemSpaceFinder: WorkspaceItemSpaceFinder
-
+    @Mock private lateinit var mWorkspaceItemSpaceFinder: WorkspaceItemSpaceFinder
 
     @Before
     override fun setup() {
         super.setup()
         MockitoAnnotations.initMocks(this)
+        mDataModelCallbacks = MyCallbacks()
         Executors.MAIN_EXECUTOR.submit { mModelHelper.model.addCallbacks(mDataModelCallbacks) }
             .get()
     }
@@ -89,10 +78,7 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
 
     @Test
     fun givenNewAndExistingItems_whenExecuteTask_thenOnlyAddNewItem() {
-        val itemsToAdd = arrayOf(
-            getNewItem(),
-            getExistingItem()
-        )
+        val itemsToAdd = arrayOf(getNewItem(), getExistingItem())
         givenNewItemSpaces(NewItemSpace(1, 0, 0))
         val nonEmptyScreenIds = listOf(0)
 
@@ -113,7 +99,7 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
         val addedItems = testAddItems(nonEmptyScreenIds, itemToAdd)
 
         assertThat(addedItems.size).isEqualTo(0)
-        verifyNoInteractions(mWorkspaceItemSpaceFinder, mDataModelCallbacks)
+        verifyZeroInteractions(mWorkspaceItemSpaceFinder)
     }
 
     @Test
@@ -132,13 +118,14 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
 
     @Test
     fun givenMultipleItems_whenExecuteTask_thenAddThem() {
-        val itemsToAdd = arrayOf(
-            getNewItem(),
-            getExistingItem(),
-            getNewItem(),
-            getNewItem(),
-            getExistingItem(),
-        )
+        val itemsToAdd =
+            arrayOf(
+                getNewItem(),
+                getExistingItem(),
+                getNewItem(),
+                getNewItem(),
+                getExistingItem(),
+            )
         givenNewItemSpaces(
             NewItemSpace(1, 3, 3),
             NewItemSpace(2, 0, 0),
@@ -159,27 +146,16 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
         // Items that are added to the second screen should be animated
         val itemsAddedToSecondScreen = addedItems.filter { it.itemInfo.screenId == 2 }
         assertThat(itemsAddedToSecondScreen.size).isEqualTo(2)
-        itemsAddedToSecondScreen.forEach {
-            assertThat(it.isAnimated).isTrue()
-        }
+        itemsAddedToSecondScreen.forEach { assertThat(it.isAnimated).isTrue() }
         verifyItemSpaceFinderCall(nonEmptyScreenIds, numberOfExpectedCall = 3)
     }
 
-    /**
-     * Sets up the item space data that will be returned from WorkspaceItemSpaceFinder.
-     */
+    /** Sets up the item space data that will be returned from WorkspaceItemSpaceFinder. */
     private fun givenNewItemSpaces(vararg newItemSpaces: NewItemSpace) {
         val spaceStack = newItemSpaces.toMutableList()
         whenever(
-            mWorkspaceItemSpaceFinder.findSpaceForItem(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
+                mWorkspaceItemSpaceFinder.findSpaceForItem(any(), any(), any(), any(), any(), any())
             )
-        )
             .then { spaceStack.removeFirst().toIntArray() }
     }
 
@@ -187,20 +163,21 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
      * Verifies if WorkspaceItemSpaceFinder was called with proper arguments and how many times was
      * it called.
      */
-    private fun verifyItemSpaceFinderCall(
-        nonEmptyScreenIds: List<Int>,
-        numberOfExpectedCall: Int
-    ) {
+    private fun verifyItemSpaceFinderCall(nonEmptyScreenIds: List<Int>, numberOfExpectedCall: Int) {
         verify(mWorkspaceItemSpaceFinder, times(numberOfExpectedCall))
             .findSpaceForItem(
-                same(mAppState), same(mModelHelper.bgDataModel),
-                eq(IntArray.wrap(*nonEmptyScreenIds.toIntArray())), eq(IntArray()), eq(1), eq(1)
+                same(mAppState),
+                same(mModelHelper.bgDataModel),
+                eq(IntArray.wrap(*nonEmptyScreenIds.toIntArray())),
+                eq(IntArray()),
+                eq(1),
+                eq(1)
             )
     }
 
     /**
-     * Sets up the workspaces with items, executes the task, collects the added items from the
-     * model callback then returns it.
+     * Sets up the workspaces with items, executes the task, collects the added items from the model
+     * callback then returns it.
      */
     private fun testAddItems(
         nonEmptyScreenIds: List<Int>,
@@ -208,22 +185,14 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
     ): List<AddedItem> {
         setupWorkspaces(nonEmptyScreenIds)
         val task = newTask(*itemsToAdd)
-        var updateCount = 0
-        mModelHelper.executeTaskForTest(task)
-            .forEach {
-                updateCount++
-                it.run()
-            }
 
         val addedItems = mutableListOf<AddedItem>()
-        if (updateCount > 0) {
-            verify(mDataModelCallbacks).bindAppsAdded(
-                any(),
-                mNotAnimatedItemArgumentCaptor.capture(), mAnimatedItemArgumentCaptor.capture()
-            )
-            addedItems.addAll(mAnimatedItemArgumentCaptor.value.map { AddedItem(it, true) })
-            addedItems.addAll(mNotAnimatedItemArgumentCaptor.value.map { AddedItem(it, false) })
 
+        runOnExecutorSync(Executors.MODEL_EXECUTOR) {
+            mDataModelCallbacks.addedItems.clear()
+            mModelHelper.model.enqueueModelUpdateTask(task)
+            runOnExecutorSync(Executors.MAIN_EXECUTOR) {}
+            addedItems.addAll(mDataModelCallbacks.addedItems)
         }
 
         return addedItems
@@ -234,12 +203,24 @@ class AddWorkspaceItemsTaskTest : AbstractWorkspaceModelTest() {
      * with a mock.
      */
     private fun newTask(vararg items: ItemInfo): AddWorkspaceItemsTask =
-        items.map { Pair.create(it, Any()) }
+        items
+            .map { Pair.create(it, Any()) }
             .toMutableList()
             .let { AddWorkspaceItemsTask(it, mWorkspaceItemSpaceFinder) }
 }
 
-private data class AddedItem(
-    val itemInfo: ItemInfo,
-    val isAnimated: Boolean
-)
+private data class AddedItem(val itemInfo: ItemInfo, val isAnimated: Boolean)
+
+private class MyCallbacks : BgDataModel.Callbacks {
+
+    val addedItems = mutableListOf<AddedItem>()
+
+    override fun bindAppsAdded(
+        newScreens: IntArray?,
+        addNotAnimated: ArrayList<ItemInfo>,
+        addAnimated: ArrayList<ItemInfo>
+    ) {
+        addedItems.addAll(addAnimated.map { AddedItem(it, true) })
+        addedItems.addAll(addNotAnimated.map { AddedItem(it, false) })
+    }
+}

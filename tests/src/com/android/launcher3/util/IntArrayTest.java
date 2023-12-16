@@ -32,7 +32,7 @@ public class IntArrayTest {
 
     @Test
     public void concatAndParseString() {
-        int[] array = new int[]{0, 2, 3, 9};
+        int[] array = new int[] {0, 2, 3, 9};
         String concat = IntArray.wrap(array).toConcatString();
 
         int[] parsed = IntArray.fromConcatString(concat).toArray();

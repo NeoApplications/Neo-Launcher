@@ -23,7 +23,7 @@ import androidx.test.uiautomator.UiObject2;
 public final class HomeAppIconMenu extends AppIconMenu {
 
     HomeAppIconMenu(LauncherInstrumentation launcher,
-                    UiObject2 deepShortcutsContainer) {
+            UiObject2 deepShortcutsContainer) {
         super(launcher, deepShortcutsContainer);
     }
 

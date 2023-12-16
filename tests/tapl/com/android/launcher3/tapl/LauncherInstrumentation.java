@@ -20,6 +20,8 @@ import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 import static android.content.pm.PackageManager.DONT_KILL_APP;
 import static android.content.pm.PackageManager.MATCH_ALL;
 import static android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS;
+import static android.view.MotionEvent.AXIS_GESTURE_SWIPE_FINGER_COUNT;
+
 import static com.android.launcher3.tapl.Folder.FOLDER_CONTENT_RES_ID;
 import static com.android.launcher3.tapl.TestHelpers.getOverviewPackageName;
 import static com.android.launcher3.testing.shared.TestProtocol.NORMAL_STATE_ORDINAL;
@@ -47,7 +49,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -76,13 +77,12 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -99,15 +99,8 @@ public final class LauncherInstrumentation {
     private static final int ZERO_BUTTON_STEPS_FROM_BACKGROUND_TO_HOME = 15;
     private static final int GESTURE_STEP_MS = 16;
 
-    static final Pattern EVENT_TOUCH_DOWN = getTouchEventPattern("ACTION_DOWN");
-    static final Pattern EVENT_TOUCH_UP = getTouchEventPattern("ACTION_UP");
-    private static final Pattern EVENT_TOUCH_CANCEL = getTouchEventPattern("ACTION_CANCEL");
     static final Pattern EVENT_PILFER_POINTERS = Pattern.compile("pilferPointers");
     static final Pattern EVENT_START = Pattern.compile("start:");
-
-    static final Pattern EVENT_TOUCH_DOWN_TIS = getTouchEventPatternTIS("ACTION_DOWN");
-    static final Pattern EVENT_TOUCH_UP_TIS = getTouchEventPatternTIS("ACTION_UP");
-    static final Pattern EVENT_TOUCH_CANCEL_TIS = getTouchEventPatternTIS("ACTION_CANCEL");
 
     private static final Pattern EVENT_KEY_BACK_DOWN =
             getKeyEventPattern("ACTION_DOWN", "KEYCODE_BACK");
@@ -128,13 +121,17 @@ public final class LauncherInstrumentation {
 
     public enum NavigationModel {ZERO_BUTTON, THREE_BUTTON}
 
-    // Where the gesture happens: outside of Launcher, inside or from inside to outside and
-    // whether the gesture recognition triggers pilfer.
+    // Defines whether the gesture recognition triggers pilfer.
     public enum GestureScope {
-        OUTSIDE_WITHOUT_PILFER, OUTSIDE_WITH_PILFER, INSIDE, INSIDE_TO_OUTSIDE,
-        INSIDE_TO_OUTSIDE_WITHOUT_PILFER,
-        INSIDE_TO_OUTSIDE_WITH_KEYCODE, // For gestures that will trigger a keycode from TIS.
-        OUTSIDE_WITH_KEYCODE,
+        DONT_EXPECT_PILFER,
+        EXPECT_PILFER,
+    }
+
+    public enum TrackpadGestureType {
+        NONE,
+        TWO_FINGER,
+        THREE_FINGER,
+        FOUR_FINGER
     }
 
     // Base class for launcher containers.
@@ -164,14 +161,16 @@ public final class LauncherInstrumentation {
         void close();
     }
 
-    private static final String WORKSPACE_RES_ID = "workspace";
+    static final String WORKSPACE_RES_ID = "workspace";
     private static final String APPS_RES_ID = "apps_view";
     private static final String OVERVIEW_RES_ID = "overview_panel";
     private static final String WIDGETS_RES_ID = "primary_widgets_list_view";
     private static final String CONTEXT_MENU_RES_ID = "popup_container";
+    private static final String OPEN_FOLDER_RES_ID = "folder_content";
     static final String TASKBAR_RES_ID = "taskbar_view";
     private static final String SPLIT_PLACEHOLDER_RES_ID = "split_placeholder";
     public static final int WAIT_TIME_MS = 30000;
+    static final long DEFAULT_POLL_INTERVAL = 1000;
     private static final String SYSTEMUI_PACKAGE = "com.android.systemui";
     private static final String ANDROID_PACKAGE = "android";
 
@@ -179,10 +178,13 @@ public final class LauncherInstrumentation {
 
     private final UiDevice mDevice;
     private final Instrumentation mInstrumentation;
-    private int mExpectedRotation = Surface.ROTATION_0;
+    private Integer mExpectedRotation = null;
+    private boolean mExpectedRotationCheckEnabled = true;
     private final Uri mTestProviderUri;
     private final Deque<String> mDiagnosticContext = new LinkedList<>();
     private Function<Long, String> mSystemHealthSupplier;
+
+    private boolean mIgnoreTaskbarVisibility = false;
 
     private Consumer<ContainerType> mOnSettledStateAction;
 
@@ -191,20 +193,8 @@ public final class LauncherInstrumentation {
     private boolean mCheckEventsForSuccessfulGestures = false;
     private Runnable mOnLauncherCrashed;
 
-    private static Pattern getTouchEventPattern(String prefix, String action) {
-        // The pattern includes checks that we don't get a multi-touch events or other surprises.
-        return Pattern.compile(
-                prefix + ": MotionEvent.*?action=" + action + ".*?id\\[0\\]=0"
-                        + ".*?toolType\\[0\\]=TOOL_TYPE_FINGER.*?buttonState=0.*?pointerCount=1");
-    }
-
-    private static Pattern getTouchEventPattern(String action) {
-        return getTouchEventPattern("Touch event", action);
-    }
-
-    private static Pattern getTouchEventPatternTIS(String action) {
-        return getTouchEventPattern("TouchInteractionService.onInputEvent", action);
-    }
+    private TrackpadGestureType mTrackpadGestureType = TrackpadGestureType.NONE;
+    private int mPointerCount = 0;
 
     private static Pattern getKeyEventPattern(String action, String keyCode) {
         return Pattern.compile("Key event: KeyEvent.*action=" + action + ".*keyCode=" + keyCode);
@@ -229,7 +219,8 @@ public final class LauncherInstrumentation {
         // Launcher should run in test harness so that custom accessibility protocol between
         // Launcher and TAPL is enabled. In-process tests enable this protocol with a direct call
         // into Launcher.
-        assertTrue("Device must run in a test harness",
+        assertTrue("Device must run in a test harness. "
+                        + "Run `adb shell setprop ro.test_harness 1` to enable it.",
                 TestHelpers.isInLauncherProcess() || ActivityManager.isRunningInTestHarness());
 
         final String testPackage = getContext().getPackageName();
@@ -378,6 +369,10 @@ public final class LauncherInstrumentation {
 
     public void setEnableRotation(boolean on) {
         getTestInfo(TestProtocol.REQUEST_ENABLE_ROTATION, Boolean.toString(on));
+    }
+
+    public void setEnableSuggestion(boolean enableSuggestion) {
+        getTestInfo(TestProtocol.REQUEST_ENABLE_SUGGESTION, Boolean.toString(enableSuggestion));
     }
 
     public boolean hadNontestEvents() {
@@ -543,8 +538,9 @@ public final class LauncherInstrumentation {
 
     private String getVisibleStateMessage() {
         if (hasLauncherObject(CONTEXT_MENU_RES_ID)) return "Context Menu";
+        if (hasLauncherObject(OPEN_FOLDER_RES_ID)) return "Open Folder";
         if (hasLauncherObject(WIDGETS_RES_ID)) return "Widgets";
-        if (hasLauncherObject(OVERVIEW_RES_ID)) return "Overview";
+        if (hasSystemLauncherObject(OVERVIEW_RES_ID)) return "Overview";
         if (hasLauncherObject(WORKSPACE_RES_ID)) return "Workspace";
         if (hasLauncherObject(APPS_RES_ID)) return "AllApps";
         return "LaunchedApp (" + getVisiblePackages() + ")";
@@ -679,8 +675,42 @@ public final class LauncherInstrumentation {
         }
     }
 
-    public void setExpectedRotation(int expectedRotation) {
+    /**
+     * Whether to ignore verifying the task bar visibility during instrumenting.
+     *
+     * @param ignoreTaskbarVisibility {@code true} will ignore the instrumentation implicitly
+     *                                verifying the task bar visibility with
+     *                                {@link VisibleContainer#verifyActiveContainer}.
+     *                                {@code false} otherwise.
+     */
+    public void setIgnoreTaskbarVisibility(boolean ignoreTaskbarVisibility) {
+        mIgnoreTaskbarVisibility = ignoreTaskbarVisibility;
+    }
+
+    /**
+     * Set the trackpad gesture type of the interaction.
+     * @param trackpadGestureType whether it's not from trackpad, two-finger, three-finger, or
+     *                            four-finger gesture.
+     */
+    public void setTrackpadGestureType(TrackpadGestureType trackpadGestureType) {
+        mTrackpadGestureType = trackpadGestureType;
+    }
+
+    TrackpadGestureType getTrackpadGestureType() {
+        return mTrackpadGestureType;
+    }
+
+    /**
+     * Sets expected rotation.
+     * TAPL periodically checks that Launcher didn't suddenly change the rotation to unexpected one.
+     * Null parameter disables checks. The initial state is "no checks".
+     */
+    public void setExpectedRotation(Integer expectedRotation) {
         mExpectedRotation = expectedRotation;
+    }
+
+    public void setExpectedRotationCheckEnabled(boolean expectedRotationCheckEnabled) {
+        mExpectedRotationCheckEnabled = expectedRotationCheckEnabled;
     }
 
     public String getNavigationModeMismatchError(boolean waitForCorrectState) {
@@ -716,8 +746,10 @@ public final class LauncherInstrumentation {
     private UiObject2 verifyContainerType(ContainerType containerType) {
         waitForLauncherInitialized();
 
-        assertEquals("Unexpected display rotation",
-                mExpectedRotation, mDevice.getDisplayRotation());
+        if (mExpectedRotationCheckEnabled && mExpectedRotation != null) {
+            assertEquals("Unexpected display rotation",
+                    mExpectedRotation, mDevice.getDisplayRotation());
+        }
 
         final String error = getNavigationModeMismatchError(true);
         assertTrue(error, error == null);
@@ -737,70 +769,97 @@ public final class LauncherInstrumentation {
             switch (containerType) {
                 case WORKSPACE: {
                     waitUntilLauncherObjectGone(APPS_RES_ID);
-                    waitUntilLauncherObjectGone(OVERVIEW_RES_ID);
                     waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+                    waitUntilSystemLauncherObjectGone(OVERVIEW_RES_ID);
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+
+                    if (is3PLauncher() && isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
+                    } else {
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    }
 
                     return waitForLauncherObject(WORKSPACE_RES_ID);
                 }
                 case WIDGETS: {
                     waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
                     waitUntilLauncherObjectGone(APPS_RES_ID);
-                    waitUntilLauncherObjectGone(OVERVIEW_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+                    waitUntilSystemLauncherObjectGone(OVERVIEW_RES_ID);
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+
+                    if (is3PLauncher() && isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
+                    } else {
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    }
 
                     return waitForLauncherObject(WIDGETS_RES_ID);
                 }
-                case TASKBAR_ALL_APPS:
-                case HOME_ALL_APPS: {
+                case TASKBAR_ALL_APPS: {
                     waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
-                    waitUntilLauncherObjectGone(OVERVIEW_RES_ID);
                     waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+                    waitUntilSystemLauncherObjectGone(OVERVIEW_RES_ID);
+                    waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
 
                     return waitForLauncherObject(APPS_RES_ID);
                 }
-                case OVERVIEW: {
+                case HOME_ALL_APPS: {
+                    waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
+                    waitUntilLauncherObjectGone(WIDGETS_RES_ID);
+                    waitUntilSystemLauncherObjectGone(OVERVIEW_RES_ID);
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+
+                    if (is3PLauncher() && isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
+                    } else {
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    }
+
+                    return waitForLauncherObject(APPS_RES_ID);
+                }
+                case OVERVIEW:
+                case FALLBACK_OVERVIEW: {
                     waitUntilLauncherObjectGone(APPS_RES_ID);
                     waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
                     waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+                    if (isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
+                    } else {
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    }
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
 
-                    return waitForLauncherObject(OVERVIEW_RES_ID);
+                    return waitForSystemLauncherObject(OVERVIEW_RES_ID);
                 }
                 case SPLIT_SCREEN_SELECT: {
                     waitUntilLauncherObjectGone(APPS_RES_ID);
                     waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
                     waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
+                    if (isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
+                    } else {
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
+                    }
 
-                    waitForLauncherObject(SPLIT_PLACEHOLDER_RES_ID);
-                    return waitForLauncherObject(OVERVIEW_RES_ID);
-                }
-                case FALLBACK_OVERVIEW: {
-                    waitUntilLauncherObjectGone(APPS_RES_ID);
-                    waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
-                    waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(TASKBAR_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
-
-                    return waitForFallbackLauncherObject(OVERVIEW_RES_ID);
+                    waitForSystemLauncherObject(SPLIT_PLACEHOLDER_RES_ID);
+                    return waitForSystemLauncherObject(OVERVIEW_RES_ID);
                 }
                 case LAUNCHED_APP: {
                     waitUntilLauncherObjectGone(WORKSPACE_RES_ID);
                     waitUntilLauncherObjectGone(APPS_RES_ID);
-                    waitUntilLauncherObjectGone(OVERVIEW_RES_ID);
                     waitUntilLauncherObjectGone(WIDGETS_RES_ID);
-                    waitUntilLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
+                    waitUntilSystemLauncherObjectGone(OVERVIEW_RES_ID);
+                    waitUntilSystemLauncherObjectGone(SPLIT_PLACEHOLDER_RES_ID);
 
-                    if (isTablet() && !isFallbackOverview()) {
-                        waitForLauncherObject(TASKBAR_RES_ID);
+                    if (mIgnoreTaskbarVisibility) {
+                        return null;
+                    }
+
+                    if (isTablet()) {
+                        waitForSystemLauncherObject(TASKBAR_RES_ID);
                     } else {
-                        waitUntilLauncherObjectGone(TASKBAR_RES_ID);
+                        waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
                     }
                     return null;
                 }
@@ -809,6 +868,10 @@ public final class LauncherInstrumentation {
                     return null;
             }
         }
+    }
+
+    public void waitForModelQueueCleared() {
+        getTestInfo(TestProtocol.REQUEST_MODEL_QUEUE_CLEARED);
     }
 
     public void waitForLauncherInitialized() {
@@ -825,8 +888,8 @@ public final class LauncherInstrumentation {
     }
 
     Parcelable executeAndWaitForLauncherEvent(Runnable command,
-                                              UiAutomation.AccessibilityEventFilter eventFilter, Supplier<String> message,
-                                              String actionName) {
+            UiAutomation.AccessibilityEventFilter eventFilter, Supplier<String> message,
+            String actionName) {
         return executeAndWaitForEvent(
                 command,
                 e -> mLauncherPackage.equals(e.getPackageName()) && eventFilter.accept(e),
@@ -834,8 +897,8 @@ public final class LauncherInstrumentation {
     }
 
     Parcelable executeAndWaitForEvent(Runnable command,
-                                      UiAutomation.AccessibilityEventFilter eventFilter, Supplier<String> message,
-                                      String actionName) {
+            UiAutomation.AccessibilityEventFilter eventFilter, Supplier<String> message,
+            String actionName) {
         try (LauncherInstrumentation.Closable c = addContextLayer(actionName)) {
             try {
                 final AccessibilityEvent event =
@@ -880,8 +943,8 @@ public final class LauncherInstrumentation {
         GestureScope gestureScope = gestureStartFromLauncher
                 // Without the navigation bar layer, the gesture scope on tablets remains inside the
                 // launcher process.
-                ? (isTablet() ? GestureScope.INSIDE : GestureScope.INSIDE_TO_OUTSIDE)
-                : GestureScope.OUTSIDE_WITH_PILFER;
+                ? (isTablet() ? GestureScope.DONT_EXPECT_PILFER : GestureScope.EXPECT_PILFER)
+                : GestureScope.EXPECT_PILFER;
         linearGesture(
                 displaySize.x / 2, displaySize.y - 1,
                 displaySize.x / 2, 0,
@@ -926,19 +989,17 @@ public final class LauncherInstrumentation {
             // We need waiting for any accessibility event generated after pressing Home because
             // otherwise waitForIdle may return immediately in case when there was a big enough
             // pause in accessibility events prior to pressing Home.
+            boolean isThreeFingerTrackpadGesture =
+                    mTrackpadGestureType == TrackpadGestureType.THREE_FINGER;
             final String action;
-            if (getNavigationModel() == NavigationModel.ZERO_BUTTON) {
+            if (getNavigationModel() == NavigationModel.ZERO_BUTTON
+                    || isThreeFingerTrackpadGesture) {
                 checkForAnomaly(false, true);
 
                 final Point displaySize = getRealDisplaySize();
-                // The swipe up to home gesture starts from inside the launcher when the user is
-                // already home. Otherwise, the gesture can start inside the launcher process if the
-                // taskbar is visible.
-                boolean gestureStartFromLauncher = isTablet()
-                        ? !isLauncher3()
-                        || hasLauncherObject(WORKSPACE_RES_ID)
-                        || hasLauncherObject(TASKBAR_RES_ID)
-                        : isLauncherVisible();
+
+                boolean gestureStartFromLauncher =
+                        isTablet() ? !isLauncher3() : isLauncherVisible();
 
                 // CLose floating views before going back to home.
                 swipeUpToCloseFloatingView(gestureStartFromLauncher);
@@ -946,32 +1007,28 @@ public final class LauncherInstrumentation {
                 if (hasLauncherObject(WORKSPACE_RES_ID)) {
                     log(action = "already at home");
                 } else {
-                    log("Hierarchy before swiping up to home:");
-                    dumpViewHierarchy();
                     action = "swiping up to home";
 
+                    int startY = isThreeFingerTrackpadGesture ? displaySize.y * 3 / 4
+                            : displaySize.y - 1;
+                    int endY = isThreeFingerTrackpadGesture ? displaySize.y / 4 : displaySize.y / 2;
                     swipeToState(
-                            displaySize.x / 2, displaySize.y - 1,
-                            displaySize.x / 2, displaySize.y / 2,
+                            displaySize.x / 2, startY,
+                            displaySize.x / 2, endY,
                             ZERO_BUTTON_STEPS_FROM_BACKGROUND_TO_HOME, NORMAL_STATE_ORDINAL,
-                            gestureStartFromLauncher ? GestureScope.INSIDE_TO_OUTSIDE
-                                    : GestureScope.OUTSIDE_WITH_PILFER);
+                            GestureScope.EXPECT_PILFER);
                 }
             } else {
                 log("Hierarchy before clicking home:");
                 dumpViewHierarchy();
                 action = "clicking home button";
-                if (isTablet()) {
-                    expectEvent(TestProtocol.SEQUENCE_MAIN, EVENT_TOUCH_DOWN);
-                    expectEvent(TestProtocol.SEQUENCE_MAIN, EVENT_TOUCH_UP);
-                }
 
                 runToState(
                         waitForNavigationUiObject("home")::click,
                         NORMAL_STATE_ORDINAL,
                         !hasLauncherObject(WORKSPACE_RES_ID)
                                 && (hasLauncherObject(APPS_RES_ID)
-                                || hasLauncherObject(OVERVIEW_RES_ID)),
+                                || hasSystemLauncherObject(OVERVIEW_RES_ID)),
                         action);
             }
             try (LauncherInstrumentation.Closable c1 = addContextLayer(
@@ -989,21 +1046,19 @@ public final class LauncherInstrumentation {
             waitForLauncherInitialized();
             final boolean launcherVisible =
                     isTablet() ? isLauncherContainerVisible() : isLauncherVisible();
-            if (getNavigationModel() == NavigationModel.ZERO_BUTTON) {
+            boolean isThreeFingerTrackpadGesture =
+                    mTrackpadGestureType == TrackpadGestureType.THREE_FINGER;
+            if (getNavigationModel() == NavigationModel.ZERO_BUTTON
+                    || isThreeFingerTrackpadGesture) {
                 final Point displaySize = getRealDisplaySize();
-                final GestureScope gestureScope =
-                        launcherVisible ? GestureScope.INSIDE_TO_OUTSIDE_WITH_KEYCODE
-                                : GestureScope.OUTSIDE_WITH_KEYCODE;
                 // TODO(b/225505986): change startY and endY back to displaySize.y / 2 once the
                 //  issue is solved.
-                linearGesture(0, displaySize.y / 4, displaySize.x / 2, displaySize.y / 4,
-                        10, false, gestureScope);
+                int startX = isThreeFingerTrackpadGesture ? displaySize.x / 4 : 0;
+                int endX = isThreeFingerTrackpadGesture ? displaySize.x * 3 / 4 : displaySize.x / 2;
+                linearGesture(startX, displaySize.y / 4, endX, displaySize.y / 4,
+                        10, false, GestureScope.DONT_EXPECT_PILFER);
             } else {
                 waitForNavigationUiObject("back").click();
-                if (isTablet()) {
-                    expectEvent(TestProtocol.SEQUENCE_MAIN, EVENT_TOUCH_DOWN);
-                    expectEvent(TestProtocol.SEQUENCE_MAIN, EVENT_TOUCH_UP);
-                }
             }
             if (launcherVisible) {
                 if (getContext().getApplicationInfo().isOnBackInvokedCallbackEnabled()) {
@@ -1027,7 +1082,8 @@ public final class LauncherInstrumentation {
 
     boolean isLauncherContainerVisible() {
         final String[] containerResources = {WORKSPACE_RES_ID, OVERVIEW_RES_ID, APPS_RES_ID};
-        return Arrays.stream(containerResources).anyMatch(r -> hasLauncherObject(r));
+        return Arrays.stream(containerResources).anyMatch(
+                r -> r.equals(OVERVIEW_RES_ID) ? hasSystemLauncherObject(r) : hasLauncherObject(r));
     }
 
     /**
@@ -1108,6 +1164,14 @@ public final class LauncherInstrumentation {
 
     void waitUntilOverviewObjectGone(String resId) {
         waitUntilGoneBySelector(getOverviewObjectSelector(resId));
+    }
+
+    void waitUntilSystemLauncherObjectGone(String resId) {
+        if (is3PLauncher()) {
+            waitUntilOverviewObjectGone(resId);
+        } else {
+            waitUntilLauncherObjectGone(resId);
+        }
     }
 
     void waitUntilLauncherObjectGone(BySelector selector) {
@@ -1240,6 +1304,11 @@ public final class LauncherInstrumentation {
         return mDevice.hasObject(getLauncherObjectSelector(resId));
     }
 
+    private boolean hasSystemLauncherObject(String resId) {
+        return mDevice.hasObject(is3PLauncher() ? getOverviewObjectSelector(resId)
+                : getLauncherObjectSelector(resId));
+    }
+
     boolean hasLauncherObject(BySelector selector) {
         return mDevice.hasObject(makeLauncherSelector(selector));
     }
@@ -1259,6 +1328,12 @@ public final class LauncherInstrumentation {
     }
 
     @NonNull
+    UiObject2 waitForSystemLauncherObject(String resName) {
+        return is3PLauncher() ? waitForOverviewObject(resName)
+                : waitForLauncherObject(resName);
+    }
+
+    @NonNull
     UiObject2 waitForLauncherObject(BySelector selector) {
         return waitForObjectBySelector(makeLauncherSelector(selector));
     }
@@ -1266,11 +1341,6 @@ public final class LauncherInstrumentation {
     @NonNull
     UiObject2 tryWaitForLauncherObject(BySelector selector, long timeout) {
         return tryWaitForObjectBySelector(makeLauncherSelector(selector), timeout);
-    }
-
-    @NonNull
-    UiObject2 waitForFallbackLauncherObject(String resName) {
-        return waitForObjectBySelector(getOverviewObjectSelector(resName));
     }
 
     @NonNull
@@ -1310,7 +1380,7 @@ public final class LauncherInstrumentation {
         return mDevice.getLauncherPackageName();
     }
 
-    boolean isFallbackOverview() {
+    boolean is3PLauncher() {
         return !getOverviewPackageName().equals(getLauncherPackageName());
     }
 
@@ -1359,7 +1429,7 @@ public final class LauncherInstrumentation {
     }
 
     void swipeToState(int startX, int startY, int endX, int endY, int steps, int expectedState,
-                      GestureScope gestureScope) {
+            GestureScope gestureScope) {
         runToState(
                 () -> linearGesture(startX, startY, endX, endY, steps, false, gestureScope),
                 expectedState,
@@ -1389,35 +1459,42 @@ public final class LauncherInstrumentation {
         return getRealDisplaySize().x - getWindowInsets().right - 1;
     }
 
-    void clickObject(UiObject2 object) {
-        waitForObjectEnabled(object, "clickObject");
-        if (!isLauncher3() && getNavigationModel() != NavigationModel.THREE_BUTTON) {
-            expectEvent(TestProtocol.SEQUENCE_TIS, LauncherInstrumentation.EVENT_TOUCH_DOWN_TIS);
-            expectEvent(TestProtocol.SEQUENCE_TIS, LauncherInstrumentation.EVENT_TOUCH_UP_TIS);
-        }
-        object.click();
+    /**
+     * Click on the ui object right away without waiting for animation.
+     *
+     * [UiObject2.click] would wait for all animations finished before clicking. Not waiting for
+     * animations because in some scenarios there is a playing animations when the click is
+     * attempted.
+     */
+    void clickObject(UiObject2 uiObject) {
+        final long clickTime = SystemClock.uptimeMillis();
+        final Point center = uiObject.getVisibleCenter();
+        sendPointer(clickTime, clickTime, MotionEvent.ACTION_DOWN, center,
+                GestureScope.DONT_EXPECT_PILFER);
+        sendPointer(clickTime, clickTime, MotionEvent.ACTION_UP, center,
+                GestureScope.DONT_EXPECT_PILFER);
     }
 
     void clickLauncherObject(UiObject2 object) {
-        expectEvent(TestProtocol.SEQUENCE_MAIN, LauncherInstrumentation.EVENT_TOUCH_DOWN);
-        expectEvent(TestProtocol.SEQUENCE_MAIN, LauncherInstrumentation.EVENT_TOUCH_UP);
         clickObject(object);
     }
 
     void scrollToLastVisibleRow(
-            UiObject2 container, Collection<UiObject2> items, int topPaddingInContainer) {
-        final UiObject2 lowestItem = Collections.max(items, (i1, i2) ->
-                Integer.compare(getVisibleBounds(i1).top, getVisibleBounds(i2).top));
-
-        final int itemRowCurrentTopOnScreen = getVisibleBounds(lowestItem).top;
+            UiObject2 container, Rect bottomVisibleIconBounds, int topPaddingInContainer,
+            int appsListBottomPadding) {
+        final int itemRowCurrentTopOnScreen = bottomVisibleIconBounds.top;
         final Rect containerRect = getVisibleBounds(container);
         final int itemRowNewTopOnScreen = containerRect.top + topPaddingInContainer;
         final int distance = itemRowCurrentTopOnScreen - itemRowNewTopOnScreen + getTouchSlop();
 
-        scrollDownByDistance(container, distance);
+        scrollDownByDistance(container, distance, appsListBottomPadding);
     }
 
     void scrollDownByDistance(UiObject2 container, int distance) {
+        scrollDownByDistance(container, distance, 0);
+    }
+
+    void scrollDownByDistance(UiObject2 container, int distance, int bottomPadding) {
         final Rect containerRect = getVisibleBounds(container);
         final int bottomGestureMarginInContainer = getBottomGestureMarginInContainer(container);
         scroll(
@@ -1427,7 +1504,7 @@ public final class LauncherInstrumentation {
                         0,
                         containerRect.height() - distance - bottomGestureMarginInContainer,
                         0,
-                        bottomGestureMarginInContainer),
+                        bottomGestureMarginInContainer + bottomPadding),
                 /* steps= */ 10,
                 /* slowDown= */ true);
     }
@@ -1492,7 +1569,8 @@ public final class LauncherInstrumentation {
 
         executeAndWaitForLauncherEvent(
                 () -> linearGesture(
-                        startX, startY, endX, endY, steps, slowDown, GestureScope.INSIDE),
+                        startX, startY, endX, endY, steps, slowDown,
+                        GestureScope.DONT_EXPECT_PILFER),
                 event -> TestProtocol.SCROLL_FINISHED_MESSAGE.equals(event.getClassName()),
                 () -> "Didn't receive a scroll end message: " + startX + ", " + startY
                         + ", " + endX + ", " + endY,
@@ -1502,20 +1580,45 @@ public final class LauncherInstrumentation {
     // Inject a swipe gesture. Inject exactly 'steps' motion points, incrementing event time by a
     // fixed interval each time.
     public void linearGesture(int startX, int startY, int endX, int endY, int steps,
-                              boolean slowDown,
-                              GestureScope gestureScope) {
+            boolean slowDown, GestureScope gestureScope) {
         log("linearGesture: " + startX + ", " + startY + " -> " + endX + ", " + endY);
         final long downTime = SystemClock.uptimeMillis();
         final Point start = new Point(startX, startY);
         final Point end = new Point(endX, endY);
         sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, start, gestureScope);
+        if (mTrackpadGestureType != TrackpadGestureType.NONE) {
+            sendPointer(downTime, downTime, getPointerAction(MotionEvent.ACTION_POINTER_DOWN, 1),
+                    start, gestureScope);
+            if (mTrackpadGestureType == TrackpadGestureType.THREE_FINGER
+                    || mTrackpadGestureType == TrackpadGestureType.FOUR_FINGER) {
+                sendPointer(downTime, downTime,
+                        getPointerAction(MotionEvent.ACTION_POINTER_DOWN, 2),
+                        start, gestureScope);
+                if (mTrackpadGestureType == TrackpadGestureType.FOUR_FINGER) {
+                    sendPointer(downTime, downTime,
+                            getPointerAction(MotionEvent.ACTION_POINTER_DOWN, 3),
+                            start, gestureScope);
+                }
+            }
+        }
         final long endTime = movePointer(
                 start, end, steps, false, downTime, downTime, slowDown, gestureScope);
+        if (mTrackpadGestureType != TrackpadGestureType.NONE) {
+            for (int i = mPointerCount; i >= 2; i--) {
+                sendPointer(downTime, downTime,
+                        getPointerAction(MotionEvent.ACTION_POINTER_UP, i - 1),
+                        start, gestureScope);
+            }
+        }
         sendPointer(downTime, endTime, MotionEvent.ACTION_UP, end, gestureScope);
     }
 
+    private static int getPointerAction(int action, int index) {
+        return action + (index << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
+    }
+
     long movePointer(Point start, Point end, int steps, boolean isDecelerating, long downTime,
-                     long startTime, boolean slowDown, GestureScope gestureScope) {
+            long startTime, boolean slowDown, GestureScope gestureScope) {
         long endTime = movePointer(downTime, startTime, steps * GESTURE_STEP_MS,
                 isDecelerating, start, end, gestureScope);
         if (slowDown) {
@@ -1537,81 +1640,116 @@ public final class LauncherInstrumentation {
         return getContext().getResources();
     }
 
-    private static MotionEvent getMotionEvent(long downTime, long eventTime, int action,
-                                              float x, float y) {
-        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
-        properties.id = 0;
-        properties.toolType = Configurator.getInstance().getToolType();
+    private static MotionEvent getTrackpadMotionEvent(long downTime, long eventTime,
+            int action, float x, float y, int pointerCount, TrackpadGestureType gestureType) {
+        MotionEvent.PointerProperties[] pointerProperties =
+                new MotionEvent.PointerProperties[pointerCount];
+        MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[pointerCount];
+        boolean isMultiFingerGesture = gestureType != TrackpadGestureType.TWO_FINGER;
+        for (int i = 0; i < pointerCount; i++) {
+            pointerProperties[i] = getPointerProperties(i);
+            pointerCoords[i] = getPointerCoords(x, y);
+            if (isMultiFingerGesture) {
+                pointerCoords[i].setAxisValue(AXIS_GESTURE_SWIPE_FINGER_COUNT,
+                        gestureType == TrackpadGestureType.THREE_FINGER ? 3 : 4);
+            }
+        }
+        return MotionEvent.obtain(downTime, eventTime, action, pointerCount, pointerProperties,
+                pointerCoords, 0, 0, 1.0f, 1.0f, 0, 0,
+                InputDevice.SOURCE_MOUSE | InputDevice.SOURCE_CLASS_POINTER, 0, 0,
+                isMultiFingerGesture ? MotionEvent.CLASSIFICATION_MULTI_FINGER_SWIPE
+                        : MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE);
+    }
 
+    private static MotionEvent getMotionEvent(long downTime, long eventTime, int action,
+            float x, float y, int source) {
+        return MotionEvent.obtain(downTime, eventTime, action, 1,
+                new MotionEvent.PointerProperties[]{getPointerProperties(0)},
+                new MotionEvent.PointerCoords[]{getPointerCoords(x, y)},
+                0, 0, 1.0f, 1.0f, 0, 0, source, 0);
+    }
+
+    private static MotionEvent.PointerProperties getPointerProperties(int pointerId) {
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.id = pointerId;
+        properties.toolType = Configurator.getInstance().getToolType();
+        return properties;
+    }
+
+    private static MotionEvent.PointerCoords getPointerCoords(float x, float y) {
         MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
         coords.pressure = 1;
         coords.size = 1;
         coords.x = x;
         coords.y = y;
-
-        return MotionEvent.obtain(downTime, eventTime, action, 1,
-                new MotionEvent.PointerProperties[]{properties},
-                new MotionEvent.PointerCoords[]{coords},
-                0, 0, 1.0f, 1.0f, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        return coords;
     }
 
     private boolean hasTIS() {
-        return getTestInfo(TestProtocol.REQUEST_HAS_TIS).getBoolean(TestProtocol.REQUEST_HAS_TIS);
+        return getTestInfo(TestProtocol.REQUEST_HAS_TIS).getBoolean(
+                TestProtocol.TEST_INFO_RESPONSE_FIELD);
     }
 
+    boolean isGridOnlyOverviewEnabled() {
+        return getTestInfo(TestProtocol.REQUEST_FLAG_ENABLE_GRID_ONLY_OVERVIEW).getBoolean(
+                TestProtocol.TEST_INFO_RESPONSE_FIELD);
+    }
 
     public void sendPointer(long downTime, long currentTime, int action, Point point,
-                            GestureScope gestureScope) {
+            GestureScope gestureScope) {
+        sendPointer(downTime, currentTime, action, point, gestureScope,
+                InputDevice.SOURCE_TOUCHSCREEN);
+    }
+
+    public void sendPointer(long downTime, long currentTime, int action, Point point,
+            GestureScope gestureScope, int source) {
         final boolean hasTIS = hasTIS();
-        switch (action) {
+        int pointerCount = mPointerCount;
+
+        boolean isTrackpadGesture = mTrackpadGestureType != TrackpadGestureType.NONE;
+        switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                if (gestureScope != GestureScope.OUTSIDE_WITH_PILFER
-                        && gestureScope != GestureScope.OUTSIDE_WITHOUT_PILFER
-                        && gestureScope != GestureScope.OUTSIDE_WITH_KEYCODE) {
-                    expectEvent(TestProtocol.SEQUENCE_MAIN, EVENT_TOUCH_DOWN);
-                }
-                if (hasTIS && getNavigationModel() != NavigationModel.THREE_BUTTON) {
-                    expectEvent(TestProtocol.SEQUENCE_TIS, EVENT_TOUCH_DOWN_TIS);
+                if (isTrackpadGesture) {
+                    mPointerCount = 1;
+                    pointerCount = mPointerCount;
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (hasTIS && gestureScope != GestureScope.INSIDE
-                        && gestureScope != GestureScope.INSIDE_TO_OUTSIDE_WITHOUT_PILFER
-                        && (gestureScope == GestureScope.OUTSIDE_WITH_PILFER
-                        || gestureScope == GestureScope.INSIDE_TO_OUTSIDE)) {
+                if (hasTIS && gestureScope == GestureScope.EXPECT_PILFER) {
                     expectEvent(TestProtocol.SEQUENCE_PILFER, EVENT_PILFER_POINTERS);
                 }
-                if (gestureScope != GestureScope.OUTSIDE_WITH_PILFER
-                        && gestureScope != GestureScope.OUTSIDE_WITHOUT_PILFER
-                        && gestureScope != GestureScope.OUTSIDE_WITH_KEYCODE) {
-                    expectEvent(TestProtocol.SEQUENCE_MAIN,
-                            gestureScope == GestureScope.INSIDE
-                                    || gestureScope == GestureScope.OUTSIDE_WITHOUT_PILFER
-                                    ? EVENT_TOUCH_UP : EVENT_TOUCH_CANCEL);
-                }
-                if (hasTIS && getNavigationModel() != NavigationModel.THREE_BUTTON) {
-                    expectEvent(TestProtocol.SEQUENCE_TIS,
-                            gestureScope == GestureScope.INSIDE_TO_OUTSIDE_WITH_KEYCODE
-                                    || gestureScope == GestureScope.OUTSIDE_WITH_KEYCODE
-                                    ? EVENT_TOUCH_CANCEL_TIS : EVENT_TOUCH_UP_TIS);
-                }
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                mPointerCount++;
+                pointerCount = mPointerCount;
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                // When the gesture is handled outside, it's cancelled within launcher.
+                mPointerCount--;
                 break;
         }
 
-        final MotionEvent event = getMotionEvent(downTime, currentTime, action, point.x, point.y);
+        final MotionEvent event = isTrackpadGesture
+                ? getTrackpadMotionEvent(
+                        downTime, currentTime, action, point.x, point.y, pointerCount,
+                        mTrackpadGestureType)
+                : getMotionEvent(downTime, currentTime, action, point.x, point.y, source);
+        if (action == MotionEvent.ACTION_BUTTON_PRESS
+                || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+            event.setActionButton(MotionEvent.BUTTON_PRIMARY);
+        }
         assertTrue("injectInputEvent failed",
                 mInstrumentation.getUiAutomation().injectInputEvent(event, true, false));
         event.recycle();
     }
 
     public long movePointer(long downTime, long startTime, long duration, Point from, Point to,
-                            GestureScope gestureScope) {
-        return movePointer(
-                downTime, startTime, duration, false, from, to, gestureScope);
+            GestureScope gestureScope) {
+        return movePointer(downTime, startTime, duration, false, from, to, gestureScope);
     }
 
     public long movePointer(long downTime, long startTime, long duration, boolean isDecelerating,
-                            Point from, Point to, GestureScope gestureScope) {
+            Point from, Point to, GestureScope gestureScope) {
         log("movePointer: " + from + " to " + to);
         final Point point = new Point();
         long steps = duration / GESTURE_STEP_MS;
@@ -1667,11 +1805,12 @@ public final class LauncherInstrumentation {
             @NonNull final UiObject2 target, @NonNull String resName, Pattern longClickEvent) {
         final Point targetCenter = target.getVisibleCenter();
         final long downTime = SystemClock.uptimeMillis();
-        sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, targetCenter, GestureScope.INSIDE);
+        sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, targetCenter,
+                GestureScope.DONT_EXPECT_PILFER);
         expectEvent(TestProtocol.SEQUENCE_MAIN, longClickEvent);
         final UiObject2 result = waitForLauncherObject(resName);
         sendPointer(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, targetCenter,
-                GestureScope.INSIDE);
+                GestureScope.DONT_EXPECT_PILFER);
         return result;
     }
 
@@ -1745,10 +1884,6 @@ public final class LauncherInstrumentation {
         return testInfo != null ? testInfo.getInt(TestProtocol.TEST_INFO_RESPONSE_FIELD) : null;
     }
 
-    public void produceViewLeak() {
-        getTestInfo(TestProtocol.REQUEST_VIEW_LEAK);
-    }
-
     public ArrayList<ComponentName> getRecentTasks() {
         ArrayList<ComponentName> tasks = new ArrayList<>();
         ArrayList<String> components = getTestInfo(TestProtocol.REQUEST_RECENT_TASKS_LIST)
@@ -1759,30 +1894,33 @@ public final class LauncherInstrumentation {
         return tasks;
     }
 
+    /** Reinitializes the workspace to its default layout. */
+    public void reinitializeLauncherData() {
+        getTestInfo(TestProtocol.REQUEST_REINITIALIZE_DATA);
+    }
+
+    /** Clears the workspace, leaving it empty. */
     public void clearLauncherData() {
         getTestInfo(TestProtocol.REQUEST_CLEAR_DATA);
     }
 
-    /**
-     * Reloads the workspace with a test layout that includes the Test Activity app icon on the
-     * hotseat.
-     */
-    public void useTestWorkspaceLayoutOnReload() {
-        getTestInfo(TestProtocol.REQUEST_USE_TEST_WORKSPACE_LAYOUT);
-    }
-
-    /**
-     * Reloads the workspace with the default layout defined by the user's grid size selection.
-     */
-    public void useDefaultWorkspaceLayoutOnReload() {
-        getTestInfo(TestProtocol.REQUEST_USE_DEFAULT_WORKSPACE_LAYOUT);
-    }
-
-    /**
-     * Shows the taskbar if it is hidden, otherwise does nothing.
-     */
+    /** Shows the taskbar if it is hidden, otherwise does nothing. */
     public void showTaskbarIfHidden() {
         getTestInfo(TestProtocol.REQUEST_UNSTASH_TASKBAR_IF_STASHED);
+    }
+
+    /** Blocks the taskbar from automatically stashing based on time. */
+    public void enableBlockTimeout(boolean enable) {
+        getTestInfo(enable
+                ? TestProtocol.REQUEST_ENABLE_BLOCK_TIMEOUT
+                : TestProtocol.REQUEST_DISABLE_BLOCK_TIMEOUT);
+    }
+
+    /** Enables transient taskbar for testing purposes only. */
+    public void enableTransientTaskbar(boolean enable) {
+        getTestInfo(enable
+                ? TestProtocol.REQUEST_ENABLE_TRANSIENT_TASKBAR
+                : TestProtocol.REQUEST_DISABLE_TRANSIENT_TASKBAR);
     }
 
     /**
@@ -1917,25 +2055,62 @@ public final class LauncherInstrumentation {
     }
 
     /**
-     * Taps outside container to dismiss.
+     * Taps outside container to dismiss, centered vertically and halfway to the edge of the screen.
      *
      * @param container container to be dismissed
      * @param tapRight  tap on the right of the container if true, or left otherwise
      */
     void touchOutsideContainer(UiObject2 container, boolean tapRight) {
+        touchOutsideContainer(container, tapRight, true);
+    }
+
+    /**
+     * Taps outside the container, to the right or left, and centered vertically.
+     *
+     * @param tapRight      if true touches to the right of the container, otherwise touches on left
+     * @param halfwayToEdge if true touches halfway to the screen edge, if false touches 1 px from
+     *                      container
+     */
+    void touchOutsideContainer(UiObject2 container, boolean tapRight, boolean halfwayToEdge) {
         try (LauncherInstrumentation.Closable c = addContextLayer(
                 "want to tap outside container on the " + (tapRight ? "right" : "left"))) {
             Rect containerBounds = getVisibleBounds(container);
+
+            int x;
+            if (halfwayToEdge) {
+                x = tapRight
+                        ? (containerBounds.right + getRealDisplaySize().x) / 2
+                        : containerBounds.left / 2;
+            } else {
+                x = tapRight
+                        ? containerBounds.right + 1
+                        : containerBounds.left - 1;
+            }
+            int y = containerBounds.top + containerBounds.height() / 2;
+
             final long downTime = SystemClock.uptimeMillis();
-            final Point tapTarget = new Point(
-                    tapRight
-                            ? (containerBounds.right + getRealDisplaySize().x) / 2
-                            : containerBounds.left / 2,
-                    containerBounds.top + 1);
+            final Point tapTarget = new Point(x, y);
             sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, tapTarget,
-                    LauncherInstrumentation.GestureScope.INSIDE);
+                    LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
             sendPointer(downTime, downTime, MotionEvent.ACTION_UP, tapTarget,
-                    LauncherInstrumentation.GestureScope.INSIDE);
+                    LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
         }
+    }
+
+    /**
+     * Waits until a particular condition is true. Based on WaitMixin.
+     */
+    boolean waitAndGet(BooleanSupplier condition, long timeout, long interval) {
+        long startTime = SystemClock.uptimeMillis();
+
+        boolean result = condition.getAsBoolean();
+        for (long elapsedTime = 0; !result; elapsedTime = SystemClock.uptimeMillis() - startTime) {
+            if (elapsedTime >= timeout) {
+                break;
+            }
+            SystemClock.sleep(interval);
+            result = condition.getAsBoolean();
+        }
+        return result;
     }
 }

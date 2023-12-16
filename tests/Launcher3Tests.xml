@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -21,10 +22,8 @@
         <option name="set-test-harness" value="true" />
         <option name="run-command" value="am force-stop com.android.launcher3" />
         <option name="run-command" value="pm uninstall com.google.android.apps.nexuslauncher" />
-        <option name="run-command"
-            value="pm uninstall com.google.android.apps.nexuslauncher.out_of_proc_tests" />
-        <option name="run-command"
-            value="pm uninstall com.google.android.apps.nexuslauncher.tests" />
+        <option name="run-command" value="pm uninstall com.google.android.apps.nexuslauncher.out_of_proc_tests" />
+        <option name="run-command" value="pm uninstall com.google.android.apps.nexuslauncher.tests" />
         <option name="run-command" value="pm disable com.google.android.googlequicksearchbox" />
 
         <option name="run-command" value="input keyevent 82" />
@@ -44,7 +43,7 @@
         <option name="collect-on-run-ended-only" value="true" />
     </metrics_collector>
 
-    <test class="com.android.tradefed.testtype.AndroidJUnitTest">
+    <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
         <option name="package" value="com.android.launcher3.tests" />
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
     </test>

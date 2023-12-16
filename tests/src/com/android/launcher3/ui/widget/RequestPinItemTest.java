@@ -17,7 +17,9 @@ package com.android.launcher3.ui.widget;
 
 import static android.app.PendingIntent.FLAG_MUTABLE;
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
+
 import static com.android.launcher3.ui.TaplTestsLauncher3.getAppPackageName;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
@@ -30,7 +32,9 @@ import android.view.View;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.AndroidJUnit4;
 
+import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.celllayout.FavoriteItemsTransaction;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -40,6 +44,7 @@ import com.android.launcher3.testcomponent.AppWidgetNoConfig;
 import com.android.launcher3.testcomponent.AppWidgetWithConfig;
 import com.android.launcher3.testcomponent.RequestPinItemActivity;
 import com.android.launcher3.ui.AbstractLauncherUiTest;
+import com.android.launcher3.ui.TaplTestsLauncher3;
 import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
 import com.android.launcher3.util.Wait;
 import com.android.launcher3.util.Wait.Condition;
@@ -73,6 +78,7 @@ public class RequestPinItemTest extends AbstractLauncherUiTest {
         super.setUp();
         mCallbackAction = UUID.randomUUID().toString();
         mShortcutId = UUID.randomUUID().toString();
+        TaplTestsLauncher3.initialize(this);
     }
 
     @Test
@@ -130,8 +136,7 @@ public class RequestPinItemTest extends AbstractLauncherUiTest {
 
     private void runTest(String activityMethod, boolean isWidget, ItemOperator itemMatcher,
             Intent... commandIntents) throws Throwable {
-        clearHomescreen();
-        mDevice.pressHome();
+        new FavoriteItemsTransaction(mTargetContext).commitAndLoadHome(mLauncher);
 
         // Open Pin item activity
         BlockingBroadcastReceiver openMonitor = new BlockingBroadcastReceiver(
@@ -145,7 +150,8 @@ public class RequestPinItemTest extends AbstractLauncherUiTest {
 
         // Set callback
         PendingIntent callback = PendingIntent.getBroadcast(mTargetContext, 0,
-                new Intent(mCallbackAction), FLAG_ONE_SHOT | FLAG_MUTABLE);
+                new Intent(mCallbackAction).setPackage(mTargetContext.getPackageName()),
+                FLAG_ONE_SHOT | FLAG_MUTABLE);
         mTargetContext.sendBroadcast(RequestPinItemActivity.getCommandIntent(
                 RequestPinItemActivity.class, "setCallback").putExtra(
                 RequestPinItemActivity.EXTRA_PARAM + "0", callback));
@@ -188,7 +194,10 @@ public class RequestPinItemTest extends AbstractLauncherUiTest {
 
         @Override
         public boolean isTrue() throws Throwable {
-            return mMainThreadExecutor.submit(mActivityMonitor.itemExists(mOp)).get();
+            return mMainThreadExecutor.submit(() -> {
+                Launcher l = Launcher.ACTIVITY_TRACKER.getCreatedActivity();
+                return l != null && l.getWorkspace().getFirstMatch(mOp) != null;
+            }).get();
         }
     }
 }

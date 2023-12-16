@@ -19,6 +19,7 @@ import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED
 import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 import static android.content.pm.PackageManager.DONT_KILL_APP;
 import static android.os.ParcelFileDescriptor.MODE_READ_WRITE;
+
 import static com.android.launcher3.testcomponent.TestCommandReceiver.DISABLE_TEST_LAUNCHER;
 import static com.android.launcher3.testcomponent.TestCommandReceiver.ENABLE_TEST_LAUNCHER;
 import static com.android.launcher3.testcomponent.TestCommandReceiver.EXTRA_VALUE;
@@ -67,7 +68,7 @@ public class TestCommandProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                        String sortOrder) {
+            String sortOrder) {
         throw new UnsupportedOperationException("unimplemented mock method");
     }
 

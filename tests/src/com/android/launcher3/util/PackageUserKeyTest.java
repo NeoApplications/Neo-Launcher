@@ -16,6 +16,7 @@
 package com.android.launcher3.util;
 
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import android.os.UserHandle;

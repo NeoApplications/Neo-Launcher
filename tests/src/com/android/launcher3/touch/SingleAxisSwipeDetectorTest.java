@@ -20,6 +20,7 @@ import static com.android.launcher3.touch.SingleAxisSwipeDetector.DIRECTION_NEGA
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.DIRECTION_POSITIVE;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.HORIZONTAL;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.VERTICAL;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;

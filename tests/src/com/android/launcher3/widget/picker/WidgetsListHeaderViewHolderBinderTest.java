@@ -16,11 +16,14 @@
 package com.android.launcher3.widget.picker;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+
 import static java.util.Collections.EMPTY_LIST;
 
 import android.appwidget.AppWidgetProviderInfo;
@@ -88,7 +91,7 @@ public final class WidgetsListHeaderViewHolderBinderTest {
         mViewHolderBinder = new WidgetsListHeaderViewHolderBinder(
                 LayoutInflater.from(mContext),
                 mOnHeaderClickListener,
-                new WidgetsListDrawableFactory(mContext));
+                false);
     }
 
     @Test
@@ -126,12 +129,12 @@ public final class WidgetsListHeaderViewHolderBinderTest {
     }
 
     private WidgetsListHeaderEntry generateSampleAppHeader(String appName, String packageName,
-                                                           int numOfWidgets) {
+            int numOfWidgets) {
         PackageItemInfo appInfo = new PackageItemInfo(packageName, UserHandle.CURRENT);
         appInfo.title = appName;
         appInfo.bitmap = BitmapInfo.of(Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8), 0);
 
-        return new WidgetsListHeaderEntry(appInfo,
+        return WidgetsListHeaderEntry.create(appInfo,
                 /* titleSectionName= */ "",
                 generateWidgetItems(packageName, numOfWidgets));
     }
@@ -144,7 +147,7 @@ public final class WidgetsListHeaderViewHolderBinderTest {
 
             widgetItems.add(new WidgetItem(
                     LauncherAppWidgetProviderInfo.fromProviderInfo(mContext, widgetInfo),
-                    mTestProfile, mIconCache));
+                    mTestProfile, mIconCache, mContext));
         }
         return widgetItems;
     }
