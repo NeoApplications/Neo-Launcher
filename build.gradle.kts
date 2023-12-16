@@ -37,6 +37,7 @@ val vRoom = "2.6.1"
 val vRV = "1.3.2"
 val vResBypass = "2.2"
 val vSerialization = "1.6.1"
+val vSlice = "1.1.0-alpha02"
 
 plugins {
     id("com.android.application").version("8.1.2")
@@ -265,6 +266,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:$vLifecycle")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$vLifecycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$vLifecycle")
+    implementation("androidx.slice:slice-core:$vSlice")
 
     //Libs
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
