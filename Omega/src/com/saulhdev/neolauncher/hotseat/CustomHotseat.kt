@@ -90,7 +90,7 @@ open class CustomHotseat @JvmOverloads constructor(
         if (hotseatDisabled) {
             super.setVisibility(View.GONE)
         }
-        setWillNotDraw(!backgroundEnable || launcher.useVerticalBarLayout())
+        setWillNotDraw(!backgroundEnable || launcher.deviceProfile.isVerticalBarLayout)
         createBlurDrawable()
         combine(
                 prefs.dockCustomBackground.get(),
@@ -113,7 +113,7 @@ open class CustomHotseat @JvmOverloads constructor(
 
     private fun reload() {
         shadowBitmap = generateShadowBitmap()
-        setWillNotDraw(!backgroundEnable || launcher.useVerticalBarLayout())
+        setWillNotDraw(!backgroundEnable || launcher.deviceProfile.isVerticalBarLayout)
         createBlurDrawable()
         paint.color = backgroundColor
         invalidate()
