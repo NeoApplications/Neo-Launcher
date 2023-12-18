@@ -49,18 +49,16 @@ public class NotificationDotsPreference extends Preference
 
     private boolean mWidgetFrameVisible = false;
 
-    /**
-     * Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS
-     */
+    /** Hidden field Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String NOTIFICATION_ENABLED_LISTENERS = "enabled_notification_listeners";
 
     private final ContentObserver mListenerListObserver =
             new ContentObserver(MAIN_EXECUTOR.getHandler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    updateUI();
-                }
-            };
+        @Override
+        public void onChange(boolean selfChange) {
+            updateUI();
+        }
+    };
 
     public NotificationDotsPreference(
             Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {

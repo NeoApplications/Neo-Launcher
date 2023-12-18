@@ -45,7 +45,7 @@ public class CacheDataUpdatedTask extends BaseModelUpdateTask {
     private final HashSet<String> mPackages;
 
     public CacheDataUpdatedTask(final int op, @NonNull final UserHandle user,
-                                @NonNull final HashSet<String> packages) {
+            @NonNull final HashSet<String> packages) {
         mOp = op;
         mUser = user;
         mPackages = packages;
@@ -53,7 +53,7 @@ public class CacheDataUpdatedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList apps) {
+            @NonNull final AllAppsList apps) {
         IconCache iconCache = app.getIconCache();
         ArrayList<WorkspaceItemInfo> updatedShortcuts = new ArrayList<>();
 

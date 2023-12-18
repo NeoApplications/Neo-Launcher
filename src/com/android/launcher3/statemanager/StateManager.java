@@ -17,6 +17,7 @@
 package com.android.launcher3.statemanager;
 
 import static android.animation.ValueAnimator.areAnimatorsEnabled;
+
 import static com.android.launcher3.anim.AnimatorPlaybackController.callListenerCommandRecursively;
 import static com.android.launcher3.states.StateAnimationConfig.SKIP_ALL_ANIMATIONS;
 
@@ -26,6 +27,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.FloatRange;
 
@@ -34,6 +36,7 @@ import com.android.launcher3.anim.AnimatorPlaybackController;
 import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.states.StateAnimationConfig;
 import com.android.launcher3.states.StateAnimationConfig.AnimationFlags;
+import com.android.launcher3.testing.shared.TestProtocol;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -73,6 +76,10 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
 
     public STATE_TYPE getState() {
         return mState;
+    }
+
+    public STATE_TYPE getTargetState() {
+        return (STATE_TYPE) mConfig.targetState;
     }
 
     public STATE_TYPE getCurrentStableState() {
@@ -123,7 +130,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
 
     /**
      * @return {@code true} if the state matches the current state and there is no active
-     * transition to different state.
+     *         transition to different state.
      */
     public boolean isInStableState(STATE_TYPE state) {
         return mState == state && mCurrentStableState == state
@@ -155,7 +162,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
      * Changes the Launcher state to the provided state.
      *
      * @param animated false if the state should change immediately without any animation,
-     *                 true otherwise
+     *                true otherwise
      * @paras onCompleteRunnable any action to perform at the end of the transition, of null.
      */
     public void goToState(STATE_TYPE state, boolean animated, AnimatorListener listener) {
@@ -203,9 +210,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         }
     }
 
-    /**
-     * Handles backProgress in predictive back gesture by passing it to state handlers.
-     */
+    /** Handles backProgress in predictive back gesture by passing it to state handlers. */
     public void onBackProgressed(
             STATE_TYPE toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
         for (StateHandler handler : getStateHandlers()) {
@@ -213,9 +218,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         }
     }
 
-    /**
-     * Handles back cancelled event in predictive back gesture by passing it to state handlers.
-     */
+    /** Handles back cancelled event in predictive back gesture by passing it to state handlers. */
     public void onBackCancelled(STATE_TYPE toState) {
         for (StateHandler handler : getStateHandlers()) {
             handler.onBackCancelled(toState);
@@ -224,6 +227,8 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
 
     private void goToState(
             STATE_TYPE state, boolean animated, long delay, AnimatorListener listener) {
+        Log.d(TestProtocol.OVERVIEW_OVER_HOME, "go to state " + state);
+
         animated &= areAnimatorsEnabled();
         if (mActivity.isInState(state)) {
             if (mConfig.currentAnimation == null) {
@@ -232,8 +237,10 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
                     listener.onAnimationEnd(null);
                 }
                 return;
-            } else if (!mConfig.userControlled && animated && mConfig.targetState == state) {
-                // We are running the same animation as requested
+            } else if ((!mConfig.userControlled && animated && mConfig.targetState == state)
+                    || mState.shouldPreserveDataStateOnReapply()) {
+                // We are running the same animation as requested, and/or target state should not be
+                // reset -- allow the current animation to complete instead of canceling it.
                 if (listener != null) {
                     mConfig.currentAnimation.addListener(listener);
                 }
@@ -276,7 +283,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     private void goToStateAnimated(STATE_TYPE state, STATE_TYPE fromState,
-                                   AnimatorListener listener) {
+            AnimatorListener listener) {
         // Since state mBaseState can be reached from multiple states, just assume that the
         // transition plays in reverse and use the same duration as previous state.
         mConfig.duration = state == mBaseState
@@ -296,7 +303,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
      * - Setting some start values (e.g. scale) for views that are hidden but about to be shown.
      */
     public void prepareForAtomicAnimation(STATE_TYPE fromState, STATE_TYPE toState,
-                                          StateAnimationConfig config) {
+            StateAnimationConfig config) {
         mAtomicAnimationFactory.prepareForAtomicAnimation(fromState, toState, config);
     }
 
@@ -317,10 +324,9 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     /**
      * Creates a {@link AnimatorPlaybackController} that can be used for a controlled
      * state transition.
-     *
-     * @param state    the final state for the transition.
+     * @param state the final state for the transition.
      * @param duration intended duration for state playback. Use higher duration for better
-     *                 accuracy.
+     *                accuracy.
      */
     public AnimatorPlaybackController createAnimationToNewWorkspace(
             STATE_TYPE state, long duration) {
@@ -336,7 +342,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     public AnimatorPlaybackController createAnimationToNewWorkspace(STATE_TYPE state,
-                                                                    StateAnimationConfig config) {
+            StateAnimationConfig config) {
         config.userControlled = true;
         cancelAnimation();
         config.copyTo(mConfig);
@@ -377,6 +383,8 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         mState = state;
         mActivity.onStateSetStart(mState);
 
+        Log.d(TestProtocol.OVERVIEW_OVER_HOME, "Notifying listeners for state transition start"
+                + " to state: " + state.toString());
         for (int i = mListeners.size() - 1; i >= 0; i--) {
             mListeners.get(i).onStateTransitionStart(state);
         }
@@ -394,6 +402,8 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
             setRestState(null);
         }
 
+        Log.d(TestProtocol.OVERVIEW_OVER_HOME, "Notifying " + mListeners.size() + " listeners "
+                + "for end transition for state: " + state.toString());
         for (int i = mListeners.size() - 1; i >= 0; i--) {
             mListeners.get(i).onStateTransitionComplete(state);
         }
@@ -431,6 +441,7 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
      * Cancels the current animation.
      */
     public void cancelAnimation() {
+        Log.d(TestProtocol.OVERVIEW_OVER_HOME, "current animation cancelled");
         mConfig.reset();
         // It could happen that a new animation is set as a result of an endListener on the
         // existing animation.
@@ -447,13 +458,14 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
     }
 
     /**
-     * @param anim    The custom animation to the given state.
-     * @param toState The state we are animating towards.
      * @see #setCurrentAnimation(AnimatorSet, Animator...). Using this method tells the StateManager
      * that this is a custom animation to the given state, and thus the StateManager will add an
      * animation listener to call {@link #onStateTransitionStart} and {@link #onStateTransitionEnd}.
+     * @param anim The custom animation to the given state.
+     * @param toState The state we are animating towards.
      */
     public void setCurrentAnimation(AnimatorSet anim, STATE_TYPE toState) {
+        Log.d(TestProtocol.OVERVIEW_OVER_HOME, "setting animation to " + toState.toString());
         cancelAnimation();
         setCurrentAnimation(anim);
         anim.addListener(createStateAnimationListener(toState));
@@ -593,12 +605,10 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         }
 
         @Override
-        public void onAnimationStart(Animator animator) {
-        }
+        public void onAnimationStart(Animator animator) { }
 
         @Override
-        public void onAnimationCancel(Animator animator) {
-        }
+        public void onAnimationCancel(Animator animator) { }
 
         @Override
         public void onAnimationRepeat(Animator animator) { }
@@ -617,25 +627,17 @@ public class StateManager<STATE_TYPE extends BaseState<STATE_TYPE>> {
         void setStateWithAnimation(
                 STATE_TYPE toState, StateAnimationConfig config, PendingAnimation animation);
 
-        /**
-         * Handles backProgress in predictive back gesture for target state.
-         */
+        /** Handles backProgress in predictive back gesture for target state. */
         default void onBackProgressed(
-                STATE_TYPE toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {
-        }
+                STATE_TYPE toState, @FloatRange(from = 0.0, to = 1.0) float backProgress) {};
 
-        ;
-
-        /**
-         * Handles back cancelled event in predictive back gesture for target state.
-         */
+        /** Handles back cancelled event in predictive back gesture for target state.  */
         default void onBackCancelled(STATE_TYPE toState) {};
     }
 
     public interface StateListener<STATE_TYPE> {
 
-        default void onStateTransitionStart(STATE_TYPE toState) {
-        }
+        default void onStateTransitionStart(STATE_TYPE toState) { }
 
         default void onStateTransitionComplete(STATE_TYPE finalState) { }
     }

@@ -16,10 +16,12 @@
 
 package com.android.launcher3.widget;
 
+import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 
@@ -66,6 +68,7 @@ public class WidgetManagerHelper {
     /**
      * @see AppWidgetManager#getInstalledProvidersForPackage(String, UserHandle)
      */
+    @TargetApi(Build.VERSION_CODES.O)
     public List<AppWidgetProviderInfo> getAllProviders(@Nullable PackageUserKey packageUser) {
         if (WidgetsModel.GO_DISABLE_WIDGETS) {
             return Collections.emptyList();
@@ -75,15 +78,23 @@ public class WidgetManagerHelper {
             return allWidgetsSteam(mContext).collect(Collectors.toList());
         }
 
-        return mAppWidgetManager.getInstalledProvidersForPackage(
-                packageUser.mPackageName, packageUser.mUser);
+        try {
+            return mAppWidgetManager.getInstalledProvidersForPackage(
+                    packageUser.mPackageName, packageUser.mUser);
+        } catch (IllegalStateException e) {
+            // b/277189566: Launcher will load the widget when it gets the user-unlock event.
+            // If exception is thrown because of device is locked, it means a race condition occurs
+            // that the user got locked again while launcher is processing the event. In this case
+            // we should return empty list.
+            return Collections.emptyList();
+        }
     }
 
     /**
      * @see AppWidgetManager#bindAppWidgetIdIfAllowed(int, UserHandle, ComponentName, Bundle)
      */
     public boolean bindAppWidgetIdIfAllowed(int appWidgetId, AppWidgetProviderInfo info,
-                                            Bundle options) {
+            Bundle options) {
         if (WidgetsModel.GO_DISABLE_WIDGETS) {
             return false;
         }

@@ -1,8 +1,7 @@
 package com.android.launcher3.graphics;
 
-import static com.android.launcher3.Utilities.getPrefs;
+import static com.android.launcher3.LauncherPrefs.THEMED_ICONS;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
-import static com.android.launcher3.util.Themes.KEY_THEMED_ICONS;
 import static com.android.launcher3.util.Themes.isThemedIconEnabled;
 
 import android.annotation.TargetApi;
@@ -25,6 +24,7 @@ import android.util.Log;
 
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.InvariantDeviceProfile.GridOption;
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.Executors;
 
@@ -79,13 +79,13 @@ public class GridCustomizationsProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
+            String[] selectionArgs, String sortOrder) {
         switch (uri.getPath()) {
             case KEY_LIST_OPTIONS: {
                 MatrixCursor cursor = new MatrixCursor(new String[]{
                         KEY_NAME, KEY_ROWS, KEY_COLS, KEY_PREVIEW_COUNT, KEY_IS_DEFAULT});
                 InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(getContext());
-                for (GridOption gridOption : InvariantDeviceProfile.parseAllGridOptions(getContext())) {
+                for (GridOption gridOption : idp.parseAllGridOptions(getContext())) {
                     cursor.newRow()
                             .add(KEY_NAME, gridOption.name)
                             .add(KEY_ROWS, gridOption.numRows)
@@ -130,7 +130,7 @@ public class GridCustomizationsProvider extends ContentProvider {
                 InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(getContext());
                 // Verify that this is a valid grid option
                 GridOption match = null;
-                for (GridOption option : InvariantDeviceProfile.parseAllGridOptions(getContext())) {
+                for (GridOption option : idp.parseAllGridOptions(getContext())) {
                     if (option.name.equals(gridName)) {
                         match = option;
                         break;
@@ -141,13 +141,14 @@ public class GridCustomizationsProvider extends ContentProvider {
                 }
 
                 idp.setCurrentGrid(getContext(), gridName);
+                getContext().getContentResolver().notifyChange(uri, null);
                 return 1;
             }
             case ICON_THEMED:
             case SET_ICON_THEMED: {
-                getPrefs(getContext()).edit()
-                        .putBoolean(KEY_THEMED_ICONS, values.getAsBoolean(BOOLEAN_VALUE))
-                        .apply();
+                LauncherPrefs.get(getContext())
+                        .put(THEMED_ICONS, values.getAsBoolean(BOOLEAN_VALUE));
+                getContext().getContentResolver().notifyChange(uri, null);
                 return 1;
             }
             default:

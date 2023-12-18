@@ -163,7 +163,7 @@ public class PreviewItemManager {
     }
 
     private PreviewItemDrawingParams getFinalIconParams(PreviewItemDrawingParams params) {
-        float iconSize = mIcon.isInAppDrawer() ? mIcon.mActivity.getDeviceProfile().allAppsIconSizePx : mIcon.mActivity.getDeviceProfile().iconSizePx;
+        float iconSize = mIcon.mActivity.getDeviceProfile().iconSizePx;
 
         final float scale = iconSize / mReferenceDrawable.getIntrinsicWidth();
         final float trans = (mIcon.mBackground.previewSize - iconSize) / 2;
@@ -173,7 +173,7 @@ public class PreviewItemManager {
     }
 
     public void drawParams(Canvas canvas, ArrayList<PreviewItemDrawingParams> params,
-                           PointF offset, boolean shouldClipPath, Path clipPath) {
+            PointF offset, boolean shouldClipPath, Path clipPath) {
         // The first item should be drawn last (ie. on top of later items)
         for (int i = params.size() - 1; i >= 0; i--) {
             PreviewItemDrawingParams p = params.get(i);
@@ -216,12 +216,12 @@ public class PreviewItemManager {
     /**
      * Draws each preview item.
      *
-     * @param offset         The offset needed to draw the preview items.
+     * @param offset The offset needed to draw the preview items.
      * @param shouldClipPath Iff true, clip path using {@param clipPath}.
-     * @param clipPath       The clip path of the folder icon.
+     * @param clipPath The clip path of the folder icon.
      */
     private void drawPreviewItem(Canvas canvas, PreviewItemDrawingParams params, PointF offset,
-                                 boolean shouldClipPath, Path clipPath) {
+            boolean shouldClipPath, Path clipPath) {
         canvas.save();
         if (shouldClipPath) {
             canvas.clipPath(clipPath);
@@ -429,7 +429,7 @@ public class PreviewItemManager {
 
     private void setDrawable(PreviewItemDrawingParams p, WorkspaceItemInfo item) {
         if (item.hasPromiseIconUi() || (item.runtimeStatusFlags
-                & ItemInfoWithIcon.FLAG_SHOW_DOWNLOAD_PROGRESS_MASK) != 0) {
+                    & ItemInfoWithIcon.FLAG_SHOW_DOWNLOAD_PROGRESS_MASK) != 0) {
             PreloadIconDrawable drawable = newPendingIcon(mContext, item);
             drawable.setLevel(item.getProgressLevel());
             p.drawable = drawable;

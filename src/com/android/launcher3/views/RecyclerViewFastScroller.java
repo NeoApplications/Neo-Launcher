@@ -17,6 +17,7 @@
 package com.android.launcher3.views;
 
 import static android.view.HapticFeedbackConstants.CLOCK_TICK;
+
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 
 import android.animation.ObjectAnimator;
@@ -89,9 +90,7 @@ public class RecyclerViewFastScroller extends View {
     private final int mMaxWidth;
     private final int mThumbPadding;
 
-    /**
-     * Keeps the last known scrolling delta/velocity along y-axis.
-     */
+    /** Keeps the last known scrolling delta/velocity along y-axis. */
     private int mDy = 0;
     private final float mDeltaThreshold;
     private final float mScrollbarLeftOffsetTouchDelegate;
@@ -172,9 +171,7 @@ public class RecyclerViewFastScroller extends View {
         ta.recycle();
     }
 
-    /**
-     * Sets the popup view to show while the scroller is being dragged
-     */
+    /** Sets the popup view to show while the scroller is being dragged */
     public void setPopupView(TextView popupView) {
         mPopupView = popupView;
         mPopupView.setBackground(
@@ -274,7 +271,7 @@ public class RecyclerViewFastScroller extends View {
 
                 if (!mIsDragging && !mIgnoreDragGesture && mRv.supportsFastScrolling()) {
                     if ((isNearThumb(mDownX, mLastY) && ev.getEventTime() - mDownTimeStampMillis
-                            > FASTSCROLL_THRESHOLD_MILLIS)) {
+                                    > FASTSCROLL_THRESHOLD_MILLIS)) {
                         calcTouchOffsetAndPrepToFastScroll(mDownY, mLastY);
                     }
                 }
@@ -323,9 +320,7 @@ public class RecyclerViewFastScroller extends View {
         setThumbOffsetY((int) mLastTouchY);
     }
 
-    /**
-     * End any active fast scrolling touch handling, if applicable.
-     */
+    /** End any active fast scrolling touch handling, if applicable. */
     public void endFastScrolling() {
         mRv.onFastScrollCompleted();
         mTouchOffsetY = 0;

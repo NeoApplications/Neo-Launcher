@@ -17,6 +17,7 @@ package com.android.launcher3.views;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+
 import static com.android.launcher3.anim.AnimatorListeners.forEndCallback;
 
 import android.animation.Animator;
@@ -83,7 +84,7 @@ public class StickyHeaderLayout extends LinearLayout implements
     }
 
     public StickyHeaderLayout(Context context, AttributeSet attrs, int defStyleAttr,
-                              int defStyleRes) {
+            int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -129,9 +130,7 @@ public class StickyHeaderLayout extends LinearLayout implements
         }
     }
 
-    /**
-     * Resets any previous view translation.
-     */
+    /** Resets any previous view translation. */
     public void reset(boolean animate) {
         if (mOffsetAnimator != null) {
             mOffsetAnimator.cancel();
@@ -281,7 +280,6 @@ public class StickyHeaderLayout extends LinearLayout implements
 
         /**
          * Sets the height for the empty view
-         *
          * @return true if the height changed, false otherwise
          */
         public boolean setFixedHeight(int height) {

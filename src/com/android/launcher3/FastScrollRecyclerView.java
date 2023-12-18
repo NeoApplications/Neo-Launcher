@@ -36,7 +36,7 @@ import com.android.launcher3.views.RecyclerViewFastScroller;
  *   <li> Enable fast scroller.
  * </ul>
  */
-public abstract class FastScrollRecyclerView extends RecyclerView {
+public abstract class FastScrollRecyclerView extends RecyclerView  {
 
     protected RecyclerViewFastScroller mScrollbar;
 
@@ -80,7 +80,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
 
     /**
      * Returns the available scroll height:
-     * AvailableScrollHeight = Total height of the all items - last page height
+     *   AvailableScrollHeight = Total height of the all items - last page height
      */
     protected int getAvailableScrollHeight() {
         // AvailableScrollHeight = Total height of the all items - first page height
@@ -105,7 +105,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
      * @param scrollY the current scroll y
      */
     protected void synchronizeScrollBarThumbOffsetToViewScroll(int scrollY,
-                                                               int availableScrollHeight) {
+            int availableScrollHeight) {
         // Only show the scrollbar if there is height to be scrolled
         if (availableScrollHeight <= 0) {
             mScrollbar.setThumbOffsetY(-1);
@@ -163,8 +163,7 @@ public abstract class FastScrollRecyclerView extends RecyclerView {
     /**
      * <p>Override in each subclass of this base class.
      */
-    public void onFastScrollCompleted() {
-    }
+    public void onFastScrollCompleted() {}
 
     @Override
     public void onScrollStateChanged(int state) {

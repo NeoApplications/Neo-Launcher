@@ -27,10 +27,6 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
-
-import java.util.function.Consumer;
-
 /**
  * View class that represents the bottom row of the home screen.
  */
@@ -43,11 +39,8 @@ public class Hotseat extends CellLayout implements Insettable {
     private boolean mHasVerticalHotseat;
     private Workspace<?> mWorkspace;
     private boolean mSendTouchToWorkspace;
-    @Nullable
-    private Consumer<Boolean> mOnVisibilityAggregatedCallback;
 
     private final View mQsb;
-    private final int mQsbHeight;
 
     public Hotseat(Context context) {
         this(context, null);
@@ -62,8 +55,6 @@ public class Hotseat extends CellLayout implements Insettable {
 
         mQsb = LayoutInflater.from(context).inflate(R.layout.search_container_hotseat, this, false);
         addView(mQsb);
-
-        mQsbHeight = getResources().getDimensionPixelSize(R.dimen.qsb_widget_height);
     }
 
     /**
@@ -111,9 +102,7 @@ public class Hotseat extends CellLayout implements Insettable {
             mQsb.setVisibility(View.VISIBLE);
             lp.gravity = Gravity.BOTTOM;
             lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            lp.height = grid.isTaskbarPresent
-                    ? grid.workspacePadding.bottom
-                    : grid.hotseatBarSizePx + insets.bottom;
+            lp.height = grid.hotseatBarSizePx;
         }
 
         Rect padding = grid.getHotseatLayoutPadding(getContext());
@@ -156,48 +145,32 @@ public class Hotseat extends CellLayout implements Insettable {
     }
 
     @Override
-    public void onVisibilityAggregated(boolean isVisible) {
-        super.onVisibilityAggregated(isVisible);
-
-        if (mOnVisibilityAggregatedCallback != null) {
-            mOnVisibilityAggregatedCallback.accept(isVisible);
-        }
-    }
-
-    /**
-     * Sets a callback to be called onVisibilityAggregated
-     */
-    public void setOnVisibilityAggregatedCallback(@Nullable Consumer<Boolean> callback) {
-        mOnVisibilityAggregatedCallback = callback;
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int qsbWidth = mActivity.getDeviceProfile().qsbWidth;
-
-        mQsb.measure(MeasureSpec.makeMeasureSpec(qsbWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(mQsbHeight, MeasureSpec.EXACTLY));
+        DeviceProfile dp = mActivity.getDeviceProfile();
+        mQsb.measure(MeasureSpec.makeMeasureSpec(dp.hotseatQsbWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dp.hotseatQsbHeight, MeasureSpec.EXACTLY));
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
 
-        int qsbWidth = mQsb.getMeasuredWidth();
+        int qsbMeasuredWidth = mQsb.getMeasuredWidth();
         int left;
-        if (mActivity.getDeviceProfile().isQsbInline) {
-            int qsbSpace = mActivity.getDeviceProfile().hotseatBorderSpace;
+        DeviceProfile dp = mActivity.getDeviceProfile();
+        if (dp.isQsbInline) {
+            int qsbSpace = dp.hotseatBorderSpace;
             left = Utilities.isRtl(getResources()) ? r - getPaddingRight() + qsbSpace
-                    : l + getPaddingLeft() - qsbWidth - qsbSpace;
+                    : l + getPaddingLeft() - qsbMeasuredWidth - qsbSpace;
         } else {
-            left = (r - l - qsbWidth) / 2;
+            left = (r - l - qsbMeasuredWidth) / 2;
         }
-        int right = left + qsbWidth;
+        int right = left + qsbMeasuredWidth;
 
-        int bottom = b - t - mActivity.getDeviceProfile().getQsbOffsetY();
-        int top = bottom - mQsbHeight;
+        int bottom = b - t - dp.getQsbOffsetY();
+        int top = bottom - dp.hotseatQsbHeight;
         mQsb.layout(left, top, right, bottom);
     }
 

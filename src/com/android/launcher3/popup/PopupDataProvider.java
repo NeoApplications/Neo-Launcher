@@ -55,13 +55,9 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     private final Consumer<Predicate<PackageUserKey>> mNotificationDotsChangeListener;
 
-    /**
-     * Maps launcher activity components to a count of how many shortcuts they have.
-     */
+    /** Maps launcher activity components to a count of how many shortcuts they have. */
     private HashMap<ComponentKey, Integer> mDeepShortcutMap = new HashMap<>();
-    /**
-     * Maps packages to their DotInfo's .
-     */
+    /** Maps packages to their DotInfo's . */
     private Map<PackageUserKey, DotInfo> mPackageUserToDotInfos = new HashMap<>();
 
     /** All installed widgets. */
@@ -82,7 +78,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     @Override
     public void onNotificationPosted(PackageUserKey postedPackageUserKey,
-                                     NotificationKeyData notificationKey) {
+            NotificationKeyData notificationKey) {
         DotInfo dotInfo = mPackageUserToDotInfos.get(postedPackageUserKey);
         if (dotInfo == null) {
             dotInfo = new DotInfo();
@@ -95,7 +91,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     @Override
     public void onNotificationRemoved(PackageUserKey removedPackageUserKey,
-                                      NotificationKeyData notificationKey) {
+            NotificationKeyData notificationKey) {
         DotInfo oldDotInfo = mPackageUserToDotInfos.get(removedPackageUserKey);
         if (oldDotInfo != null && oldDotInfo.removeNotificationKey(notificationKey)) {
             if (oldDotInfo.getNotificationKeys().size() == 0) {
@@ -242,9 +238,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Gets the WidgetsListContentEntry for the currently selected header.
-     */
+    /** Gets the WidgetsListContentEntry for the currently selected header. */
     public WidgetsListContentEntry getSelectedAppWidgets(PackageUserKey packageUserKey) {
         return (WidgetsListContentEntry) mAllWidgets.stream()
                 .filter(row -> row instanceof WidgetsListContentEntry
@@ -264,14 +258,14 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         }
         String[] personKeys = ShortcutUtil.getPersonKeysIfPinnedShortcut(info);
         return notifications.stream().filter((NotificationKeyData notification) -> {
-            if (notification.shortcutId != null) {
-                return notification.shortcutId.equals(shortcutId);
-            }
-            if (notification.personKeysFromNotification.length != 0) {
-                return Arrays.equals(notification.personKeysFromNotification, personKeys);
-            }
-            return false;
-        }).collect(Collectors.toList());
+                    if (notification.shortcutId != null) {
+                        return notification.shortcutId.equals(shortcutId);
+                    }
+                    if (notification.personKeysFromNotification.length != 0) {
+                        return Arrays.equals(notification.personKeysFromNotification, personKeys);
+                    }
+                    return false;
+                }).collect(Collectors.toList());
     }
 
     public void dump(String prefix, PrintWriter writer) {
@@ -288,27 +282,18 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     public interface PopupDataChangeListener {
 
-        PopupDataChangeListener INSTANCE = new PopupDataChangeListener() {
-        };
+        PopupDataChangeListener INSTANCE = new PopupDataChangeListener() { };
 
-        default void onNotificationDotsUpdated(Predicate<PackageUserKey> updatedDots) {
-        }
+        default void onNotificationDotsUpdated(Predicate<PackageUserKey> updatedDots) { }
 
-        default void trimNotifications(Map<PackageUserKey, DotInfo> updatedDots) {
-        }
+        default void trimNotifications(Map<PackageUserKey, DotInfo> updatedDots) { }
 
-        default void onWidgetsBound() {
-        }
+        default void onWidgetsBound() { }
 
-        /**
-         * A callback to get notified when recommended widgets are bound.
-         */
-        default void onRecommendedWidgetsBound() {
-        }
+        /** A callback to get notified when recommended widgets are bound. */
+        default void onRecommendedWidgetsBound() { }
 
-        /**
-         * A callback to get notified when system shortcuts have been updated.
-         */
+        /** A callback to get notified when system shortcuts have been updated. */
         default void onSystemShortcutsUpdated() { }
     }
 }

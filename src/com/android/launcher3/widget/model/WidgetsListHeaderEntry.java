@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-/**
- * An information holder for an app which has widgets or/and shortcuts.
- */
+/** An information holder for an app which has widgets or/and shortcuts. */
 public final class WidgetsListHeaderEntry extends WidgetsListBaseEntry {
 
     private static final BiFunction<Context, WidgetsListHeaderEntry, String> SUBTITLE_SEARCH =
@@ -71,15 +69,13 @@ public final class WidgetsListHeaderEntry extends WidgetsListBaseEntry {
     private final boolean mIsSearchEntry;
 
     private WidgetsListHeaderEntry(PackageItemInfo pkgItem, String titleSectionName,
-                                   List<WidgetItem> items, boolean isSearchEntry, boolean isWidgetListShown) {
+            List<WidgetItem> items, boolean isSearchEntry, boolean isWidgetListShown) {
         super(pkgItem, titleSectionName, items);
         mIsSearchEntry = isSearchEntry;
         mIsWidgetListShown = isWidgetListShown;
     }
 
-    /**
-     * Returns {@code true} if the widgets list associated with this header is shown.
-     */
+    /** Returns {@code true} if the widgets list associated with this header is shown. */
     public boolean isWidgetListShown() {
         return mIsWidgetListShown;
     }
@@ -109,9 +105,7 @@ public final class WidgetsListHeaderEntry extends WidgetsListBaseEntry {
                 && mIsSearchEntry == otherEntry.mIsSearchEntry;
     }
 
-    /**
-     * Returns a copy of this {@link WidgetsListHeaderEntry} with the widget list shown.
-     */
+    /** Returns a copy of this {@link WidgetsListHeaderEntry} with the widget list shown. */
     public WidgetsListHeaderEntry withWidgetListShown() {
         if (mIsWidgetListShown) return this;
         return new WidgetsListHeaderEntry(
@@ -123,7 +117,7 @@ public final class WidgetsListHeaderEntry extends WidgetsListBaseEntry {
     }
 
     public static WidgetsListHeaderEntry create(PackageItemInfo pkgItem, String titleSectionName,
-                                                List<WidgetItem> items) {
+            List<WidgetItem> items) {
         return new WidgetsListHeaderEntry(
                 pkgItem,
                 titleSectionName,
@@ -133,7 +127,7 @@ public final class WidgetsListHeaderEntry extends WidgetsListBaseEntry {
     }
 
     public static WidgetsListHeaderEntry createForSearch(PackageItemInfo pkgItem,
-                                                         String titleSectionName, List<WidgetItem> items) {
+            String titleSectionName, List<WidgetItem> items) {
         return new WidgetsListHeaderEntry(
                 pkgItem,
                 titleSectionName,

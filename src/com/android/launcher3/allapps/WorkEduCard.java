@@ -76,11 +76,7 @@ public class WorkEduCard extends FrameLayout implements
         super.onFinishInflate();
         findViewById(R.id.action_btn).setOnClickListener(this);
 
-        StringCache cache = mActivityContext.getStringCache();
-        if (cache != null) {
-            TextView title = findViewById(R.id.work_apps_paused_title);
-            title.setText(cache.workProfileEdu);
-        }
+        updateStringFromCache();
     }
 
     @Override
@@ -95,12 +91,10 @@ public class WorkEduCard extends FrameLayout implements
     }
 
     @Override
-    public void onAnimationRepeat(Animation animation) {
-    }
+    public void onAnimationRepeat(Animation animation) { }
 
     @Override
-    public void onAnimationStart(Animation animation) {
-    }
+    public void onAnimationStart(Animation animation) { }
 
     private void removeCard() {
         if (mPosition == -1) {
@@ -122,5 +116,13 @@ public class WorkEduCard extends FrameLayout implements
 
     public void setPosition(int position) {
         mPosition = position;
+    }
+
+    public void updateStringFromCache() {
+        StringCache cache = mActivityContext.getStringCache();
+        if (cache != null) {
+            TextView title = findViewById(R.id.work_apps_paused_title);
+            title.setText(cache.workProfileEdu);
+        }
     }
 }

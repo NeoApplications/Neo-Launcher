@@ -55,6 +55,7 @@ import java.util.stream.Stream;
  */
 public class AlphabeticalAppsList<T extends Context & ActivityContext> implements
         AllAppsStore.OnUpdateListener {
+
     public static final String TAG = "AlphabeticalAppsList";
 
     private final WorkProfileManager mWorkProviderManager;
@@ -75,41 +76,49 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
     }
 
+
     private final T mActivityContext;
+
     // The set of apps from the system
     private final List<AppInfo> mApps = new ArrayList<>();
     @Nullable
-    private final AllAppsStore mAllAppsStore;
+    private final AllAppsStore<T> mAllAppsStore;
+
     // The number of results in current adapter
     private int mAccessibilityResultsCount = 0;
     // The current set of adapter items
     private final ArrayList<AdapterItem> mAdapterItems = new ArrayList<>();
     // The set of sections that we allow fast-scrolling to (includes non-merged sections)
     private final List<FastScrollSectionInfo> mFastScrollerSections = new ArrayList<>();
+
     // The of ordered component names as a result of a search query
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
     private BaseAllAppsAdapter<T> mAdapter;
     private Comparator<AppInfo> mAppNameComparator;
-    private final int mNumAppsPerRowAllApps;
+    private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
     private final NeoPrefs prefs;
     private final BaseDraggingActivity mLauncher;
 
-    public AlphabeticalAppsList(Context context, AllAppsStore appsStore,
-                                WorkProfileManager workProfileManager) {
+    public AlphabeticalAppsList(Context context, @Nullable AllAppsStore<T> appsStore,
+            WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
+        prefs = Utilities.getNeoPrefs(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
+        mLauncher = BaseDraggingActivity.fromContext(context);
         mWorkProviderManager = workProfileManager;
-        mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().inv.numAllAppsColumns;
+        mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
+    }
 
-        prefs = Utilities.getOmegaPrefs(context);
-        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
-        mLauncher = BaseDraggingActivity.fromContext(context);
+    /** Set the number of apps per row when device profile changes. */
+    public void setNumAppsPerRowAllApps(int numAppsPerRow) {
+        mNumAppsPerRowAllApps = numAppsPerRow;
     }
 
     public void updateItemFilter(Predicate<ItemInfo> itemFilter) {
@@ -222,13 +231,14 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             // Compute the section headers. We use a TreeMap with the section name comparator to
             // ensure that the sections are ordered when we iterate over it later
             appSteam = appSteam.collect(Collectors.groupingBy(
-                            info -> info.sectionName,
-                            () -> new TreeMap<>(new LabelComparator()),
-                            Collectors.toCollection(ArrayList::new)))
+                    info -> info.sectionName,
+                    () -> new TreeMap<>(new LabelComparator()),
+                    Collectors.toCollection(ArrayList::new)))
                     .values()
                     .stream()
                     .flatMap(ArrayList::stream);
         }
+
         appSteam.forEachOrdered(mApps::add);
         // Recompose the set of adapter items from the current set of apps
         if (mSearchResults.isEmpty()) {
@@ -246,6 +256,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         mFastScrollerSections.clear();
         mAdapterItems.clear();
         mAccessibilityResultsCount = 0;
+
         // Recreate the filtered and sectioned apps (for convenience for the grid layout) from the
         // ordered set of sections
         if (hasSearchResults()) {
@@ -261,6 +272,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                 String lastSectionName = null;
                 for (AppInfo info : mApps) {
                     mAdapterItems.add(AdapterItem.asApp(info));
+
                     String sectionName = info.sectionName;
                     // Create a new section if the section names do not match
                     if (!sectionName.equals(lastSectionName)) {
@@ -273,6 +285,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         mAccessibilityResultsCount = (int) mAdapterItems.stream()
                 .filter(AdapterItem::isCountedForAccessibility).count();
+
         if (mNumAppsPerRowAllApps != 0) {
             // Update the number of rows in the adapter after we do all the merging (otherwise, we
             // would have to shift the values again)
@@ -296,6 +309,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             }
             mNumAppRowsInAdapter = rowIndex + 1;
         }
+
         if (mAdapter != null) {
             DiffUtil.calculateDiff(new MyDiffCallback(oldItems, mAdapterItems), false)
                     .dispatchUpdatesTo(mAdapter);
@@ -313,21 +327,21 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         LauncherAppState app = LauncherAppState.getInstance(mLauncher);
         LauncherModel model = app.getModel();
         ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
-        return Utilities.getOmegaPrefs(mLauncher)
+        return Utilities.getNeoPrefs(mLauncher)
                 .getDrawerAppGroupsManager()
                 .getDrawerFolders()
                 .getFolderInfos(this, modelWriter);
     }
 
     private Set<ComponentKey> getFolderFilteredApps() {
-
-        return Utilities.getOmegaPrefs(mLauncher)
+        return Utilities.getNeoPrefs(mLauncher)
                 .getDrawerAppGroupsManager()
                 .getDrawerFolders()
                 .getHiddenComponents();
     }
 
     private static class MyDiffCallback extends DiffUtil.Callback {
+
         private final List<AdapterItem> mOldList;
         private final List<AdapterItem> mNewList;
 
@@ -356,4 +370,5 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             return mOldList.get(oldItemPosition).isContentSame(mNewList.get(newItemPosition));
         }
     }
+
 }

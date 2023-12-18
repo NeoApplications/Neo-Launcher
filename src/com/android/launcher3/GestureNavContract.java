@@ -17,6 +17,7 @@ package com.android.launcher3;
 
 import static android.content.Intent.EXTRA_COMPONENT_NAME;
 import static android.content.Intent.EXTRA_USER;
+
 import static com.android.launcher3.AbstractFloatingView.TYPE_ICON_SURFACE;
 
 import android.annotation.TargetApi;
@@ -70,7 +71,7 @@ public class GestureNavContract {
      */
     @TargetApi(Build.VERSION_CODES.R)
     public void sendEndPosition(RectF position, ActivityContext context,
-                                @Nullable SurfaceControl surfaceControl) {
+            @Nullable SurfaceControl surfaceControl) {
         Bundle result = new Bundle();
         result.putParcelable(EXTRA_ICON_POSITION, position);
         result.putParcelable(EXTRA_ICON_SURFACE, surfaceControl);

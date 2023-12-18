@@ -31,8 +31,7 @@ public class FragmentWithPreview extends Fragment {
         onInit(savedInstanceState);
     }
 
-    public void onInit(Bundle savedInstanceState) {
-    }
+    public void onInit(Bundle savedInstanceState) { }
 
 
     public Context getContext() {

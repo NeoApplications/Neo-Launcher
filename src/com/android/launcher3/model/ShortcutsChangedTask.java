@@ -52,8 +52,8 @@ public class ShortcutsChangedTask extends BaseModelUpdateTask {
     private final boolean mUpdateIdMap;
 
     public ShortcutsChangedTask(@NonNull final String packageName,
-                                @NonNull final List<ShortcutInfo> shortcuts, @NonNull final UserHandle user,
-                                final boolean updateIdMap) {
+            @NonNull final List<ShortcutInfo> shortcuts, @NonNull final UserHandle user,
+            final boolean updateIdMap) {
         mPackageName = packageName;
         mShortcuts = shortcuts;
         mUser = user;
@@ -62,7 +62,7 @@ public class ShortcutsChangedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList apps) {
+            @NonNull final AllAppsList apps) {
         final Context context = app.getContext();
         // Find WorkspaceItemInfo's that have changed on the workspace.
         ArrayList<WorkspaceItemInfo> matchingWorkspaceItems = new ArrayList<>();
@@ -116,9 +116,9 @@ public class ShortcutsChangedTask extends BaseModelUpdateTask {
             bindUpdatedWorkspaceItems(updatedWorkspaceItemInfos);
             if (!nonPinnedIds.isEmpty()) {
                 deleteAndBindComponentsRemoved(ItemInfoMatcher.ofShortcutKeys(
-                                nonPinnedIds.stream()
-                                        .map(id -> new ShortcutKey(mPackageName, mUser, id))
-                                        .collect(Collectors.toSet())),
+                        nonPinnedIds.stream()
+                                .map(id -> new ShortcutKey(mPackageName, mUser, id))
+                                .collect(Collectors.toSet())),
                         "removed because the shortcut is no longer available in shortcut service");
             }
         }

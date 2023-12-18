@@ -20,11 +20,12 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.BaseActivity;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Helper class to statically track activity creation
- *
  * @param <T> The activity type to track
  */
 public final class ActivityTracker<T extends BaseActivity> {

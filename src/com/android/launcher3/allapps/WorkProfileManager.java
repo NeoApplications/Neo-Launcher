@@ -16,14 +16,15 @@
 package com.android.launcher3.allapps;
 
 import static com.android.launcher3.LauncherPrefs.WORK_EDU_STEP;
-import static com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
+import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.MAIN;
+import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.SEARCH;
+import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_WORK_DISABLED_CARD;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_WORK_EDU_CARD;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_TURN_OFF_WORK_APPS_TAP;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_HAS_SHORTCUT_PERMISSION;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_QUIET_MODE_CHANGE_PERMISSION;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_QUIET_MODE_ENABLED;
-import static com.android.launcher3.testing.shared.TestProtocol.WORK_TAB_MISSING;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 import android.os.Build;
@@ -42,9 +43,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip;
 
 import java.lang.annotation.Retention;
@@ -75,8 +76,7 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
             STATE_TRANSITION
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface WorkProfileState {
-    }
+    public @interface WorkProfileState { }
 
     private final UserManager mUserManager;
     private final ActivityAllAppsContainerView<?> mAllApps;
@@ -120,8 +120,11 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
 
     private void updateWorkFAB(int page) {
         if (mWorkModeSwitch != null) {
-            ActivityAllAppsContainerView<?>.AdapterHolder tab = mAllApps.mAH.get(page);
-            mWorkModeSwitch.animateVisibility(tab.isWork() && mCurrentState == STATE_ENABLED);
+            if (page == MAIN || page == SEARCH) {
+                mWorkModeSwitch.animateVisibility(false);
+            } else if (page == WORK && mCurrentState == STATE_ENABLED) {
+                mWorkModeSwitch.animateVisibility(true);
+            }
         }
     }
 
@@ -131,13 +134,14 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
     public void reset() {
         boolean isEnabled = !mAllApps.getAppsStore().hasModelFlag(FLAG_QUIET_MODE_ENABLED);
         updateCurrentState(isEnabled ? STATE_ENABLED : STATE_DISABLED);
+        if (mWorkModeSwitch != null) {
+            // reset the position of the button and clear IME insets.
+            mWorkModeSwitch.getImeInsets().setEmpty();
+            mWorkModeSwitch.updateTranslationY();
+        }
     }
 
     public void updateCurrentState(@WorkProfileState int currentState) {
-        if (TestProtocol.sDebugTracing) {
-            Log.d(WORK_TAB_MISSING, "WorkProfileManager#updateCurrentState: " +
-                    currentState, new Throwable());
-        }
         mCurrentState = currentState;
         if (getAH() != null) {
             getAH().mAppsList.updateAdapterItems();
@@ -156,10 +160,6 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
      * Creates and attaches for profile toggle button to {@link ActivityAllAppsContainerView}
      */
     public boolean attachWorkModeSwitch() {
-        if (TestProtocol.sDebugTracing) {
-            Log.d(WORK_TAB_MISSING, "ActivityAllAppsContainerView#attachWorkModeSwitch "
-                    + "mWorkModeSwitch: " + mWorkModeSwitch);
-        }
         if (!mAllApps.getAppsStore().hasModelFlag(
                 FLAG_HAS_SHORTCUT_PERMISSION | FLAG_QUIET_MODE_CHANGE_PERMISSION)) {
             Log.e(TAG, "unable to attach work mode switch; Missing required permissions");
@@ -173,8 +173,6 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
             mAllApps.addView(mWorkModeSwitch);
         }
         if (mAllApps.mAH.get(mAllApps.getCurrentPage()).isWork()) {
-            mWorkModeSwitch.animateVisibility(mCurrentState == STATE_ENABLED);
-        } else {
             mWorkModeSwitch.animateVisibility(false);
         }
         if (getAH() != null) {
@@ -183,7 +181,6 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         mWorkModeSwitch.setOnClickListener(this::onWorkFabClicked);
         return true;
     }
-
     /**
      * Removes work profile toggle button from {@link ActivityAllAppsContainerView}
      */
@@ -203,13 +200,8 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         return mWorkModeSwitch;
     }
 
-    private ActivityAllAppsContainerView<?>.AdapterHolder getAH() {
-        for (ActivityAllAppsContainerView<?>.AdapterHolder ah : mAllApps.mAH) {
-            if (ah.isWork()) {
-                return ah;
-            }
-        }
-        return null;
+    private ActivityAllAppsContainerView.AdapterHolder getAH() {
+        return mAllApps.mAH.get(WORK);
     }
 
     public int getCurrentState() {
@@ -250,18 +242,16 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
     public RecyclerView.OnScrollListener newScrollListener() {
         return new RecyclerView.OnScrollListener() {
             int totalDelta = 0;
-
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState){
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     totalDelta = 0;
                 }
             }
-
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 WorkModeSwitch fab = getWorkModeSwitch();
-                if (fab == null) {
+                if (fab == null){
                     return;
                 }
                 totalDelta = Utilities.boundToRange(totalDelta,

@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.allapps.search;
 
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_FOCUSED_ITEM_SELECTED_WITH_IME;
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_QUICK_SEARCH_WITH_IME;
-
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -29,6 +26,8 @@ import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Utilities;
@@ -47,7 +46,7 @@ public class AllAppsSearchBarController
 
     protected ActivityContext mLauncher;
     protected SearchCallback<AdapterItem> mCallback;
-    protected ExtendedEditText mInput;
+    @Nullable protected ExtendedEditText mInput;
     protected String mQuery;
     private String[] mTextConversions;
 
@@ -71,7 +70,7 @@ public class AllAppsSearchBarController
             mInput.addTextChangedListener(this);
             mInput.setOnEditorActionListener(this);
             mInput.setOnBackKeyListener(this);
-            mInput.setOnFocusChangeListener(this);
+            mInput.addOnFocusChangeListener(this);
         }
         mSearchAlgorithm = searchAlgorithm;
     }
@@ -86,11 +85,14 @@ public class AllAppsSearchBarController
         mTextConversions = extractTextConversions(s);
     }
 
-    private static String[] extractTextConversions(CharSequence text) {
+    /**
+     * Extract text conversions from composing text and send them for search.
+     */
+    public static String[] extractTextConversions(CharSequence text) {
         if (text instanceof SpannableStringBuilder) {
             SpannableStringBuilder spanned = (SpannableStringBuilder) text;
             SuggestionSpan[] suggestionSpans =
-                    spanned.getSpans(0, text.length(), SuggestionSpan.class);
+                spanned.getSpans(0, text.length(), SuggestionSpan.class);
             if (suggestionSpans != null && suggestionSpans.length > 0) {
                 spanned.removeSpan(suggestionSpans[0]);
                 return suggestionSpans[0].getSuggestions();
@@ -124,10 +126,6 @@ public class AllAppsSearchBarController
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
         if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_GO) {
-            mLauncher.getStatsLogManager().logger()
-                    .log(actionId == EditorInfo.IME_ACTION_SEARCH
-                            ? LAUNCHER_ALLAPPS_QUICK_SEARCH_WITH_IME
-                            : LAUNCHER_ALLAPPS_FOCUSED_ITEM_SELECTED_WITH_IME);
             // selectFocusedView should return SearchTargetEvent that is passed onto onClick
             return mLauncher.getAppsView().getMainAdapterProvider().launchHighlightedItem();
         }
@@ -147,8 +145,8 @@ public class AllAppsSearchBarController
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
-            if (mInput != null) mInput.hideKeyboard();
+        if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get() && mInput != null) {
+            mInput.hideKeyboard();
         }
     }
 
@@ -166,7 +164,7 @@ public class AllAppsSearchBarController
      * Focuses the search field to handle key events.
      */
     public void focusSearchField() {
-        if (mInput != null) mInput.showKeyboard();
+        if (mInput != null) mInput.showKeyboard(true /* shouldFocus */);
     }
 
     /**

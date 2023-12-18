@@ -60,14 +60,16 @@ public class PinnedAppsAdapter extends BaseAdapter implements OnSharedPreference
     private final OnClickListener mOnClickListener;
     private final OnLongClickListener mOnLongClickListener;
     private final SharedPreferences mPrefs;
-    private final AllAppsStore mAllAppsList;
+    private final AllAppsStore<SecondaryDisplayLauncher> mAllAppsList;
     private final AppInfoComparator mAppNameComparator;
 
     private final Set<ComponentKey> mPinnedApps = new HashSet<>();
     private final ArrayList<AppInfo> mItems = new ArrayList<>();
 
-    public PinnedAppsAdapter(SecondaryDisplayLauncher launcher, AllAppsStore allAppsStore,
-                             OnLongClickListener onLongClickListener) {
+    public PinnedAppsAdapter(
+            SecondaryDisplayLauncher launcher,
+            AllAppsStore<SecondaryDisplayLauncher> allAppsStore,
+            OnLongClickListener onLongClickListener) {
         mLauncher = launcher;
         mOnClickListener = launcher.getItemOnClickListener();
         mOnLongClickListener = onLongClickListener;
@@ -225,7 +227,7 @@ public class PinnedAppsAdapter extends BaseAdapter implements OnSharedPreference
         private final boolean mIsPinned;
 
         PinUnPinShortcut(SecondaryDisplayLauncher target, ItemInfo info, View originalView,
-                         boolean isPinned) {
+                boolean isPinned) {
             super(isPinned ? R.drawable.ic_remove_no_shadow : R.drawable.ic_pin,
                     isPinned ? R.string.remove_drop_target_label : R.string.action_add_to_workspace,
                     target, info, originalView);

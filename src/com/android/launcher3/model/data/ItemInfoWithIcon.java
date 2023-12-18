@@ -119,6 +119,11 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
             | FLAG_DISABLED_VERSION_LOWER;
 
     /**
+     * Flag indicating this item can't be pinned to home screen.
+     */
+    public static final int FLAG_NOT_PINNABLE = 1 << 13;
+
+    /**
      * Status associated with the system state of the underlying item. This is calculated every
      * time a new info is created and not persisted on the disk.
      */
@@ -137,8 +142,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      */
     public int iconColor;
 
-    protected ItemInfoWithIcon() {
-    }
+    protected ItemInfoWithIcon() {}
 
     protected ItemInfoWithIcon(ItemInfoWithIcon info) {
         super(info);
@@ -169,7 +173,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
     public boolean isAppStartable() {
         return ((runtimeStatusFlags & FLAG_INSTALL_SESSION_ACTIVE) == 0)
                 && (((runtimeStatusFlags & FLAG_INCREMENTAL_DOWNLOAD_ACTIVE) != 0)
-                || mProgressLevel == 100);
+                    || mProgressLevel == 100);
     }
 
     /**
@@ -222,9 +226,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
         }
     }
 
-    /**
-     * Creates an intent to that launches the app store at this app's page.
-     */
+    /** Creates an intent to that launches the app store at this app's page. */
     @Nullable
     public Intent getMarketIntent(Context context) {
         String targetPackage = getTargetPackage();

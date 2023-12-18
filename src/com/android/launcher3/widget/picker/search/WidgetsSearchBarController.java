@@ -38,7 +38,7 @@ import java.util.List;
  * Controller for a search bar with an edit text and a cancel button.
  */
 public class WidgetsSearchBarController implements TextWatcher,
-        SearchCallback<WidgetsListBaseEntry>, ExtendedEditText.OnBackKeyListener,
+        SearchCallback<WidgetsListBaseEntry>,  ExtendedEditText.OnBackKeyListener,
         View.OnKeyListener {
     private static final String TAG = "WidgetsSearchBarController";
     private static final boolean DEBUG = false;
@@ -93,6 +93,7 @@ public class WidgetsSearchBarController implements TextWatcher,
             Log.d(TAG, "onSearchResult query: " + query + " items: " + items);
         }
         mSearchModeListener.onSearchResults(items);
+
     }
 
     @Override

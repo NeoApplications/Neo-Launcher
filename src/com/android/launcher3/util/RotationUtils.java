@@ -66,9 +66,7 @@ public class RotationUtils {
         }
     }
 
-    /**
-     * @return the rotation needed to rotate from oldRotation to newRotation.
-     */
+    /** @return the rotation needed to rotate from oldRotation to newRotation. */
     public static int deltaRotation(int oldRotation, int newRotation) {
         int delta = newRotation - oldRotation;
         if (delta < 0) delta += 4;

@@ -171,7 +171,7 @@ public class LauncherAppWidgetInfo extends ItemInfo {
     }
 
     public LauncherAppWidgetInfo(int appWidgetId, ComponentName providerName,
-                                 LauncherAppWidgetProviderInfo providerInfo, AppWidgetHostView hostView) {
+            LauncherAppWidgetProviderInfo providerInfo, AppWidgetHostView hostView) {
         this(appWidgetId, providerName);
         widgetFeatures = computeWidgetFeatures(providerInfo, hostView);
     }

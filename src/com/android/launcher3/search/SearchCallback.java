@@ -16,6 +16,7 @@
 package com.android.launcher3.search;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,12 +26,29 @@ import java.util.List;
  */
 public interface SearchCallback<T> {
 
+    // Search Result Codes
+    int UNKNOWN = 0;
+    int INTERMEDIATE = 1;
+    int FINAL = 2;
+
     /**
      * Called when the search from primary source is complete.
      *
      * @param items list of search results
      */
+    //void onSearchResult(String query, ArrayList<T> items);
     void onSearchResult(String query, ArrayList<T> items, List<String> suggestions);
+
+    /**
+     * Called when the search from primary source is complete.
+     *
+     * @param items            list of search results
+     * @param searchResultCode indicates if the result is final or intermediate for a given query
+     *                         since we can get search results from multiple sources.
+     */
+    default void onSearchResult(String query, ArrayList<T> items, int searchResultCode) {
+        onSearchResult(query, items, Collections.emptyList());
+    }
 
     /**
      * Called when the search results should be cleared.

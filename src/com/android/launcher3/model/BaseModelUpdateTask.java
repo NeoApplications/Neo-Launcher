@@ -31,11 +31,14 @@ import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.function.Predicate;
@@ -58,8 +61,8 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
     private Executor mUiExecutor;
 
     public void init(@NonNull final LauncherAppState app, @NonNull final LauncherModel model,
-                     @NonNull final BgDataModel dataModel, @NonNull final AllAppsList allAppsList,
-                     @NonNull final Executor uiExecutor) {
+            @NonNull final BgDataModel dataModel, @NonNull final AllAppsList allAppsList,
+            @NonNull final Executor uiExecutor) {
         mApp = app;
         mModel = model;
         mDataModel = dataModel;
@@ -69,7 +72,8 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
 
     @Override
     public final void run() {
-        if (!Objects.requireNonNull(mModel).isModelLoaded()) {
+        boolean isModelLoaded = Objects.requireNonNull(mModel).isModelLoaded();
+        if (!isModelLoaded) {
             if (DEBUG_TASKS) {
                 Log.d(TAG, "Ignoring model task since loader is pending=" + this);
             }
@@ -83,7 +87,7 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
      * Execute the actual task. Called on the worker thread.
      */
     public abstract void execute(@NonNull LauncherAppState app,
-                                 @NonNull BgDataModel dataModel, @NonNull AllAppsList apps);
+            @NonNull BgDataModel dataModel, @NonNull AllAppsList apps);
 
     /**
      * Schedules a {@param task} to be executed on the current callbacks.
@@ -97,8 +101,8 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
     public ModelWriter getModelWriter() {
         // Updates from model task, do not deal with icon position in hotseat. Also no need to
         // verify changes as the ModelTasks always push the changes to callbacks
-        return mModel.getWriter(false /* hasVerticalHotseat */, false /* verifyChanges */, CellPosMapper.DEFAULT,
-                null);
+        return mModel.getWriter(false /* hasVerticalHotseat */, false /* verifyChanges */,
+                CellPosMapper.DEFAULT, null);
     }
 
     public void bindUpdatedWorkspaceItems(@NonNull final List<WorkspaceItemInfo> allUpdates) {
@@ -136,7 +140,7 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
     }
 
     public void deleteAndBindComponentsRemoved(final Predicate<ItemInfo> matcher,
-                                               @Nullable final String reason) {
+            @Nullable final String reason) {
         getModelWriter().deleteItemsFromDatabase(matcher, reason);
 
         // Call the components-removed callback
@@ -147,7 +151,11 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
         if (mAllAppsList.getAndResetChangeFlag()) {
             AppInfo[] apps = mAllAppsList.copyData();
             int flags = mAllAppsList.getFlags();
-            scheduleCallbackTask(c -> c.bindAllApplications(apps, flags));
+            Map<PackageUserKey, Integer> packageUserKeytoUidMap = Arrays.stream(apps).collect(
+                    Collectors.toMap(
+                            appInfo -> new PackageUserKey(appInfo.componentName.getPackageName(),
+                                    appInfo.user), appInfo -> appInfo.uid, (a, b) -> a));
+            scheduleCallbackTask(c -> c.bindAllApplications(apps, flags, packageUserKeytoUidMap));
         }
     }
 }

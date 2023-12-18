@@ -42,8 +42,5 @@ public interface SearchAlgorithm<T> {
     /**
      * Cleans up after search is no longer needed.
      */
-    default void destroy() {
-    }
-
-    ;
+    default void destroy() {};
 }

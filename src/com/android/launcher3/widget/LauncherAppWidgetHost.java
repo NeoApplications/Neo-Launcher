@@ -50,7 +50,7 @@ class LauncherAppWidgetHost extends AppWidgetHost {
     private final LauncherWidgetHolder mHolder;
 
     public LauncherAppWidgetHost(@NonNull Context context,
-                                 @Nullable IntConsumer appWidgetRemovedCallback, @NonNull LauncherWidgetHolder holder) {
+            @Nullable IntConsumer appWidgetRemovedCallback, @NonNull LauncherWidgetHolder holder) {
         super(context, APPWIDGET_HOST_ID);
         mContext = context;
         mAppWidgetRemovedCallback = appWidgetRemovedCallback;
@@ -59,7 +59,6 @@ class LauncherAppWidgetHost extends AppWidgetHost {
 
     /**
      * Add a listener that is triggered when the providers of the widgets are changed
-     *
      * @param listener The listener that notifies when the providers changed
      */
     public void addProviderChangeListener(
@@ -69,7 +68,6 @@ class LauncherAppWidgetHost extends AppWidgetHost {
 
     /**
      * Remove the specified listener from the host
-     *
      * @param listener The listener that is to be removed from the host
      */
     public void removeProviderChangeListener(
@@ -90,7 +88,7 @@ class LauncherAppWidgetHost extends AppWidgetHost {
     @Override
     @NonNull
     public LauncherAppWidgetHostView onCreateView(Context context, int appWidgetId,
-                                                  AppWidgetProviderInfo appWidget) {
+            AppWidgetProviderInfo appWidget) {
         return mHolder.onCreateView(context, appWidgetId, appWidget);
     }
 

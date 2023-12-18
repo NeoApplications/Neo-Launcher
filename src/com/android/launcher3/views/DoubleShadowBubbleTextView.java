@@ -33,7 +33,7 @@ import com.android.launcher3.R;
  */
 public class DoubleShadowBubbleTextView extends BubbleTextView {
 
-    ShadowInfo mShadowInfo;
+    private final ShadowInfo mShadowInfo;
 
     public DoubleShadowBubbleTextView(Context context) {
         this(context, null);

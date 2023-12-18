@@ -16,8 +16,8 @@
 
 package com.android.launcher3.notification;
 
+import static com.android.app.animation.Interpolators.LINEAR;
 import static com.android.launcher3.Utilities.mapToRange;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_NOTIFICATION_DISMISSED;
 
 import android.animation.AnimatorSet;
@@ -193,7 +193,7 @@ public class NotificationMainView extends LinearLayout {
         }
         NotificationListener listener = NotificationListener.getInstanceIfConnected();
         if (listener != null) {
-            listener.setNotificationsShown(new String[]{mNotificationInfo.notificationKey});
+            listener.setNotificationsShown(new String[] {mNotificationInfo.notificationKey});
         }
         CharSequence title = mNotificationInfo.title;
         CharSequence text = mNotificationInfo.text;
@@ -266,8 +266,8 @@ public class NotificationMainView extends LinearLayout {
     /**
      * Updates the alpha, content alpha, elevation, and clipping of this view.
      * @param progress Range from [0, 1] or [-1, 0]
-     *                 When 0: Smallest clipping, zero alpha
-     *                 When 1/-1: Full clip, full alpha
+      *                 When 0: Smallest clipping, zero alpha
+      *                 When 1/-1: Full clip, full alpha
      */
     public void onSecondaryDrag(float progress) {
         final float absProgress = Math.abs(progress);

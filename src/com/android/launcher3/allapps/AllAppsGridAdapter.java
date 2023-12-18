@@ -71,8 +71,9 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
         mOnLayoutCompletedListeners.remove(listener);
     }
 
+
     public AllAppsGridAdapter(T activityContext, LayoutInflater inflater,
-                              AlphabeticalAppsList apps, SearchAdapterProvider<?> adapterProvider) {
+            AlphabeticalAppsList apps, SearchAdapterProvider<?> adapterProvider) {
         super(activityContext, inflater, apps, adapterProvider);
         mGridLayoutMgr = new AppsGridLayoutManager(mActivityContext);
         mGridLayoutMgr.setSpanSizeLookup(new GridSpanSizer());
@@ -86,9 +87,7 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
         return mGridLayoutMgr;
     }
 
-    /**
-     * @return the column index that the given adapter index falls.
-     */
+    /** @return the column index that the given adapter index falls. */
     public int getSpanIndex(int adapterIndex) {
         AppsGridLayoutManager lm = getLayoutManager();
         return lm.getSpanSizeLookup().getSpanIndex(adapterIndex, lm.getSpanCount());
@@ -120,14 +119,14 @@ public class AllAppsGridAdapter<T extends Context & ActivityContext> extends
 
         @Override
         public int getRowCountForAccessibility(RecyclerView.Recycler recycler,
-                                               RecyclerView.State state) {
+                RecyclerView.State state) {
             return super.getRowCountForAccessibility(recycler, state) -
                     getRowsNotForAccessibility(mApps.getAdapterItems().size() - 1);
         }
 
         @Override
         public void onInitializeAccessibilityNodeInfoForItem(RecyclerView.Recycler recycler,
-                                                             RecyclerView.State state, View host, AccessibilityNodeInfoCompat info) {
+                RecyclerView.State state, View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfoForItem(recycler, state, host, info);
 
             ViewGroup.LayoutParams lp = host.getLayoutParams();

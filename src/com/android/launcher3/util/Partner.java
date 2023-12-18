@@ -35,9 +35,7 @@ public class Partner {
 
     static final String TAG = "Launcher.Partner";
 
-    /**
-     * Marker action used to discover partner
-     */
+    /** Marker action used to discover partner */
     private static final String
             ACTION_PARTNER_CUSTOMIZATION = "com.android.launcher3.action.PARTNER_CUSTOMIZATION";
 
@@ -99,7 +97,6 @@ public class Partner {
 
     /**
      * Finds a system apk which had a broadcast receiver listening to a particular action.
-     *
      * @param action intent action used to find the apk
      * @return a pair of apk package name and the resources.
      */

@@ -73,7 +73,7 @@ public abstract class SearchAdapterProvider<T extends ActivityContext> {
      * Called from RecyclerView.Adapter#onCreateViewHolder
      */
     public abstract AllAppsGridAdapter.ViewHolder onCreateViewHolder(LayoutInflater layoutInflater,
-                                                                     ViewGroup parent, int viewType);
+            ViewGroup parent, int viewType);
 
     /**
      * Returns supported item per row combinations supported

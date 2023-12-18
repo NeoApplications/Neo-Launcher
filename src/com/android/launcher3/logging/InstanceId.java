@@ -39,7 +39,6 @@ public final class InstanceId implements Parcelable {
     public static final int INSTANCE_ID_MAX = 1 << 20;
 
     private final int mId;
-
     public InstanceId(int id) {
         mId = min(max(0, id), INSTANCE_ID_MAX);
     }
@@ -48,7 +47,6 @@ public final class InstanceId implements Parcelable {
         this(in.readInt());
     }
 
-    @VisibleForTesting
     public int getId() {
         return mId;
     }

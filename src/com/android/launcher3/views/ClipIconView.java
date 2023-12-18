@@ -15,9 +15,9 @@
  */
 package com.android.launcher3.views;
 
+import static com.android.app.animation.Interpolators.LINEAR;
 import static com.android.launcher3.Utilities.boundToRange;
 import static com.android.launcher3.Utilities.mapToRange;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.views.FloatingIconView.SHAPE_PROGRESS_DURATION;
 
 import static java.lang.Math.max;
@@ -97,7 +97,7 @@ public class ClipIconView extends View implements ClipPathView {
      * Update the icon UI to match the provided parameters during an animation frame
      */
     public void update(RectF rect, float progress, float shapeProgressStart, float cornerRadius,
-                       boolean isOpening, View container, DeviceProfile dp) {
+            boolean isOpening, View container, DeviceProfile dp) {
         MarginLayoutParams lp = (MarginLayoutParams) container.getLayoutParams();
 
         float dX = mIsRtl
@@ -128,7 +128,7 @@ public class ClipIconView extends View implements ClipPathView {
     }
 
     private void update(RectF rect, float progress, float shapeProgressStart, float cornerRadius,
-                        boolean isOpening, float scale, float minSize, DeviceProfile dp) {
+            boolean isOpening, float scale, float minSize, DeviceProfile dp) {
         // shapeRevealProgress = 1 when progress = shapeProgressStart + SHAPE_PROGRESS_DURATION
         float toMax = isOpening ? 1 / SHAPE_PROGRESS_DURATION : 1f;
 
@@ -201,7 +201,7 @@ public class ClipIconView extends View implements ClipPathView {
      * Sets the icon for this view as part of initial setup
      */
     public void setIcon(@Nullable Drawable drawable, int iconOffset, MarginLayoutParams lp,
-                        boolean isOpening, DeviceProfile dp) {
+            boolean isOpening, DeviceProfile dp) {
         mIsAdaptiveIcon = drawable instanceof AdaptiveIconDrawable;
         if (mIsAdaptiveIcon) {
             boolean isFolderIcon = drawable instanceof FolderAdaptiveIcon;

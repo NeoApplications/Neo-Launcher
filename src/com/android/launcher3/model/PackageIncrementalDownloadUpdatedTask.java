@@ -42,7 +42,7 @@ public class PackageIncrementalDownloadUpdatedTask extends BaseModelUpdateTask {
     private final String mPackageName;
 
     public PackageIncrementalDownloadUpdatedTask(@NonNull final String packageName,
-                                                 @NonNull final UserHandle user, final float progress) {
+            @NonNull final UserHandle user, final float progress) {
         mUser = user;
         mProgress = 1 - progress > 0.001 ? (int) (100 * progress) : 100;
         mPackageName = packageName;
@@ -50,7 +50,7 @@ public class PackageIncrementalDownloadUpdatedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList appsList) {
+            @NonNull final AllAppsList appsList) {
         PackageInstallInfo downloadInfo = new PackageInstallInfo(
                 mPackageName,
                 PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING,

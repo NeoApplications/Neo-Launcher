@@ -31,8 +31,7 @@ public class LoaderMemoryLogger {
 
     private final ArrayList<LogEntry> mLogEntries = new ArrayList<>();
 
-    protected LoaderMemoryLogger() {
-    }
+    protected LoaderMemoryLogger() {}
 
     protected void addLog(int logLevel, String tag, String log) {
         addLog(logLevel, tag, log, null);
@@ -65,9 +64,9 @@ public class LoaderMemoryLogger {
             String logString = logEntry.mStackStrace == null
                     ? logEntry.mLogString
                     : String.format(
-                    "%s\n%s",
-                    logEntry.mLogString,
-                    Log.getStackTraceString(logEntry.mStackStrace));
+                            "%s\n%s",
+                            logEntry.mLogString,
+                            Log.getStackTraceString(logEntry.mStackStrace));
 
             Log.println(logEntry.mLogLevel, tag, logString);
         }
@@ -79,8 +78,7 @@ public class LoaderMemoryLogger {
         protected final int mLogLevel;
         protected final String mLogTag;
         protected final String mLogString;
-        @Nullable
-        protected final Exception mStackStrace;
+        @Nullable protected final Exception mStackStrace;
 
         protected LogEntry(
                 int logLevel, String logTag, String logString, @Nullable Exception stackStrace) {

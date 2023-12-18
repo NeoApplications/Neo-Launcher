@@ -55,16 +55,15 @@ import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
+import com.android.app.animation.Interpolators;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 /** A custom view for rendering an icon, folder, shortcut or widget during drag-n-drop. */
 public abstract class DragView<T extends Context & ActivityContext> extends FrameLayout {
@@ -100,7 +99,9 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
 
     // Whether mAnim has started. Unlike mAnim.isStarted(), this is true even after mAnim ends.
     private boolean mScaleAnimStarted;
-    private Runnable mOnAnimEndCallback = null;
+    private boolean mShiftAnimStarted;
+    private Runnable mOnScaleAnimEndCallback;
+    private Runnable mOnShiftAnimEndCallback;
 
     private int mLastTouchX;
     private int mLastTouchY;
@@ -187,13 +188,26 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                if (mOnAnimEndCallback != null) {
-                    mOnAnimEndCallback.run();
+                if (mOnScaleAnimEndCallback != null) {
+                    mOnScaleAnimEndCallback.run();
                 }
             }
         });
         // Set up the shift animator.
         mShiftAnim = ValueAnimator.ofFloat(0f, 1f);
+        mShiftAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mShiftAnimStarted = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (mOnShiftAnimEndCallback != null) {
+                    mOnShiftAnimEndCallback.run();
+                }
+            }
+        });
 
         setDragRegion(new Rect(0, 0, width, height));
 
@@ -212,8 +226,14 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         setWillNotDraw(false);
     }
 
-    public void setOnAnimationEndCallback(Runnable callback) {
-        mOnAnimEndCallback = callback;
+    /** Callback invoked when the scale animation ends. */
+    public void setOnScaleAnimEndCallback(Runnable callback) {
+        mOnScaleAnimEndCallback = callback;
+    }
+
+    /** Callback invoked when the shift animation ends. */
+    public void setOnShiftAnimEndCallback(Runnable callback) {
+        mOnShiftAnimEndCallback = callback;
     }
 
     /**
@@ -225,11 +245,11 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         // Load the adaptive icon on a background thread and add the view in ui thread.
         MODEL_EXECUTOR.getHandler().postAtFrontOfQueue(() -> {
             Object[] outObj = new Object[1];
+            boolean[] outIsIconThemed = new boolean[1];
             int w = mWidth;
             int h = mHeight;
             Drawable dr = Utilities.getFullDrawable(mActivity, info, w, h,
-                    true /* shouldThemeIcon */, outObj);
-
+                    true /* shouldThemeIcon */, outObj, outIsIconThemed);
             if (dr instanceof AdaptiveIconDrawable) {
                 int blurMargin = (int) mActivity.getResources()
                         .getDimension(R.dimen.blur_size_medium_outline) / 2;
@@ -238,7 +258,7 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
                 bounds.inset(blurMargin, blurMargin);
                 // Badge is applied after icon normalization so the bounds for badge should not
                 // be scaled down due to icon normalization.
-                mBadge = getBadge(mActivity, info, outObj[0]);
+                mBadge = getBadge(mActivity, info, outObj[0], outIsIconThemed[0]);
                 FastBitmapDrawable.setBadgeBounds(mBadge, bounds);
 
                 // Do not draw the background in case of folder as its translucent
@@ -250,7 +270,7 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
                         nDr = dr;
                     } else {
                         // Since we just want the scale, avoid heavy drawing operations
-                        nDr = new CustomAdaptiveIconDrawable(new ColorDrawable(Color.BLACK), null);
+                        nDr = new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK), null);
                     }
                     Utilities.scaleRectAboutCenter(bounds,
                             li.getNormalizer().getScale(nDr, null, null, null));
@@ -372,7 +392,7 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         AnimatorSet anim = new AnimatorSet();
         anim.play(ObjectAnimator.ofFloat(newContent, VIEW_ALPHA, 0, 1));
         anim.play(ObjectAnimator.ofFloat(mContent, VIEW_ALPHA, 0));
-        anim.setDuration(duration).setInterpolator(Interpolators.DEACCEL_1_5);
+        anim.setDuration(duration).setInterpolator(Interpolators.DECELERATE_1_5);
         anim.start();
     }
 
@@ -417,8 +437,14 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         }
     }
 
+    /** {@code true} if the scale animation has finished. */
     public boolean isScaleAnimationFinished() {
         return mScaleAnimStarted && !mScaleAnim.isRunning();
+    }
+
+    /** {@code true} if the shift animation has finished. */
+    public boolean isShiftAnimationFinished() {
+        return mShiftAnimStarted && !mShiftAnim.isRunning();
     }
 
     /**

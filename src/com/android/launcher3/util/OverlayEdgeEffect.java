@@ -27,17 +27,15 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverla
  */
 public class OverlayEdgeEffect extends EdgeEffectCompat {
 
-    private final LauncherOverlay mOverlay;
-    private final boolean mIsRtl;
-
-    private float mDistance;
-    private boolean mIsScrolling;
+    protected float mDistance;
+    protected final LauncherOverlay mOverlay;
+    protected boolean mIsScrolling;
+    protected final boolean mIsRtl;
 
     public OverlayEdgeEffect(Context context, LauncherOverlay overlay) {
         super(context);
         mOverlay = overlay;
         mIsRtl = Utilities.isRtl(context.getResources());
-
     }
 
     @Override
@@ -56,8 +54,7 @@ public class OverlayEdgeEffect extends EdgeEffectCompat {
     }
 
     @Override
-    public void onAbsorb(int velocity) {
-    }
+    public void onAbsorb(int velocity) { }
 
     @Override
     public boolean isFinished() {

@@ -38,8 +38,7 @@ public interface ViewHolderBinder<T, V extends ViewHolder> {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(value = {POSITION_DEFAULT, POSITION_FIRST, POSITION_LAST}, flag = true)
-    @interface ListPosition {
-    }
+    @interface ListPosition {}
 
     /**
      * Creates a new view, and attach it to the parent {@link ViewGroup}. Then, populates UI
@@ -47,9 +46,7 @@ public interface ViewHolderBinder<T, V extends ViewHolder> {
      */
     V newViewHolder(ViewGroup parent);
 
-    /**
-     * Populate UI references in {@link ViewHolder} with data.
-     */
+    /** Populate UI references in {@link ViewHolder} with data. */
     void bindViewHolder(V viewHolder, T data, @ListPosition int position, List<Object> payloads);
 
     /**
@@ -57,6 +54,5 @@ public interface ViewHolderBinder<T, V extends ViewHolder> {
      * far off screen that it is unlikely the user will scroll back to them soon. Optionally
      * override this to free expensive resources.
      */
-    default void unbindViewHolder(V viewHolder) {
-    }
+    default void unbindViewHolder(V viewHolder) {}
 }

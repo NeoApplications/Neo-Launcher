@@ -16,15 +16,19 @@
 
 package com.android.launcher3.graphics;
 
+import static com.android.launcher3.BubbleTextView.DISPLAY_SEARCH_RESULT_APP_ROW;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.R;
 import com.android.launcher3.dragndrop.DraggableView;
 import com.android.launcher3.icons.BitmapRenderer;
@@ -37,7 +41,6 @@ import com.android.launcher3.widget.LauncherAppWidgetHostView;
  * A utility class to generate preview bitmap for dragging.
  */
 public class DragPreviewProvider {
-
     private final Rect mTempRect = new Rect();
 
     protected final View mView;
@@ -99,6 +102,15 @@ public class DragPreviewProvider {
             height = mView.getHeight();
         }
 
+        if (mView instanceof BubbleTextView btv
+                && btv.getIconDisplay() == DISPLAY_SEARCH_RESULT_APP_ROW) {
+            FastBitmapDrawable icon = ((BubbleTextView) mView).getIcon();
+            Drawable drawable = icon.getConstantState().newDrawable();
+            float xInset = (float) blurSizeOutline / (float) (width + blurSizeOutline);
+            float yInset = (float) blurSizeOutline / (float) (height + blurSizeOutline);
+            return new InsetDrawable(drawable, xInset / 2, yInset / 2, xInset / 2, yInset / 2);
+        }
+
         return new FastBitmapDrawable(
                 BitmapRenderer.createHardwareBitmap(width + blurSizeOutline,
                         height + blurSizeOutline, (c) -> drawDragView(c, scale)));
@@ -143,9 +155,7 @@ public class DragPreviewProvider {
         return scale;
     }
 
-    /**
-     * Returns the scale and position of a given view for drag-n-drop.
-     */
+    /** Returns the scale and position of a given view for drag-n-drop. */
     public float getScaleAndPosition(View view, int[] outPos) {
         float scale = ActivityContext.lookupContext(mView.getContext())
                 .getDragLayer().getLocationInDragLayer(mView, outPos);

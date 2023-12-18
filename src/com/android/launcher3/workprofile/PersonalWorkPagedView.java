@@ -22,7 +22,7 @@ import android.view.MotionEvent;
 import com.android.launcher3.PagedView;
 
 /**
- * A {@link PagedView} for showing different views for the personal and work profile respectively.
+ *  A {@link PagedView} for showing different views for the personal and work profile respectively.
  */
 public class PersonalWorkPagedView extends PagedView<PersonalWorkSlidingTabStrip> {
 

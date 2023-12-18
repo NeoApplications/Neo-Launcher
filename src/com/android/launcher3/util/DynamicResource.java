@@ -28,10 +28,10 @@ import com.android.systemui.plugins.ResourceProvider;
 
 /**
  * Utility class to support customizing resource values using plugins
- * <p>
+ *
  * To load resources, call
- * DynamicResource.provider(context).getInt(resId) or any other supported methods
- * <p>
+ *    DynamicResource.provider(context).getInt(resId) or any other supported methods
+ *
  * To allow customization for a particular resource, add them to dynamic_resources.xml
  */
 public class DynamicResource implements ResourceProvider, PluginListener<ResourceProvider> {

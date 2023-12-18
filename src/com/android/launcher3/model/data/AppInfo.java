@@ -64,6 +64,13 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
     // Section name used for indexing.
     public String sectionName = "";
 
+    /**
+     * The uid of the application.
+     * The kernel user-ID that has been assigned to this application. Currently this is not a unique
+     * ID (multiple applications can have the same uid).
+     */
+    public int uid = -1;
+
     public AppInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
     }
@@ -90,8 +97,9 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         if (quietModeEnabled) {
             runtimeStatusFlags |= FLAG_DISABLED_QUIET_USER;
         }
+        uid = info.getApplicationInfo().uid;
         updateRuntimeFlagsForActivityTarget(this, info);
-        this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
+        iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
                 .generate()
                 .getDominantColor(0);
     }
@@ -101,12 +109,13 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         componentName = info.componentName;
         title = Utilities.trim(info.title);
         intent = new Intent(info.intent);
-        this.iconColor = info.iconColor;
+        uid = info.uid;
+        iconColor = info.iconColor;
     }
 
     @VisibleForTesting
     public AppInfo(ComponentName componentName, CharSequence title,
-                   UserHandle user, Intent intent) {
+            UserHandle user, Intent intent) {
         this.componentName = componentName;
         this.title = title;
         this.user = user;
@@ -116,10 +125,10 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
     public AppInfo(@NonNull PackageInstallInfo installInfo) {
         componentName = installInfo.componentName;
         intent = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER)
-                .setComponent(componentName)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .setComponent(componentName)
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         setProgressLevel(installInfo);
         user = installInfo.user;
     }
@@ -189,10 +198,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         info.setProgressLevel(
                 PackageManagerHelper.getLoadingProgress(lai),
                 PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
-    }
-
-    public WorkspaceItemInfo makeWorkspaceItem() {
-        return new WorkspaceItemInfo(this);
     }
 
     @Override

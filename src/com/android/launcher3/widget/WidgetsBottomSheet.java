@@ -17,9 +17,7 @@
 package com.android.launcher3.widget;
 
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_BOTTOM_WIDGETS_TRAY;
-import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
 
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -71,14 +69,13 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
     private static final long EDUCATION_TIP_DELAY_MS = 300;
 
     private ItemInfo mOriginalItemInfo;
-    @Px
-    private int mMaxHorizontalSpan;
+    @Px private int mMaxHorizontalSpan;
 
     private final OnLayoutChangeListener mLayoutChangeListenerToShowTips =
             new OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     if (hasSeenEducationTip()) {
                         removeOnLayoutChangeListener(this);
                         return;
@@ -97,7 +94,7 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
             return;
         }
         View viewForTip = ((ViewGroup) ((TableLayout) findViewById(R.id.widgets_table))
-                .getChildAt(0)).getChildAt(0);
+                                    .getChildAt(0)).getChildAt(0);
         if (showEducationTipOnViewIfPossible(viewForTip) != null) {
             removeOnLayoutChangeListener(mLayoutChangeListenerToShowTips);
         }
@@ -113,13 +110,14 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         if (!hasSeenEducationTip()) {
             addOnLayoutChangeListener(mLayoutChangeListenerToShowTips);
         }
-        setContentBackground(getContext().getDrawable(R.drawable.bg_rounded_corner_bottom_sheet));
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mContent = findViewById(R.id.widgets_bottom_sheet);
+        setContentBackgroundWithParent(
+                getContext().getDrawable(R.drawable.bg_rounded_corner_bottom_sheet), mContent);
     }
 
     @Override
@@ -130,9 +128,7 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         }
     }
 
-    /**
-     * Returns {@code true} if the max spans have been updated.
-     */
+    /** Returns {@code true} if the max spans have been updated. */
     private boolean updateMaxSpansPerRow() {
         if (getMeasuredWidth() == 0) return false;
 
@@ -145,7 +141,6 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         }
         return false;
     }
-
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -188,8 +183,8 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         widgetsTable.removeAllViews();
 
         WidgetsTableUtils.groupWidgetItemsUsingRowPxWithReordering(widgets, mActivityContext,
-                        mActivityContext.getDeviceProfile(), mMaxHorizontalSpan,
-                        mWidgetCellHorizontalPadding)
+                mActivityContext.getDeviceProfile(), mMaxHorizontalSpan,
+                mWidgetCellHorizontalPadding)
                 .forEach(row -> {
                     TableRow tableRow = new TableRow(getContext());
                     tableRow.setGravity(Gravity.TOP);
@@ -229,15 +224,12 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
     }
 
     private void animateOpen() {
-        if (mIsOpen || mOpenCloseAnimator.isRunning()) {
+        if (mIsOpen || mOpenCloseAnimation.getAnimationPlayer().isRunning()) {
             return;
         }
         mIsOpen = true;
         setupNavBarColor();
-        mOpenCloseAnimator.setValues(
-                PropertyValuesHolder.ofFloat(TRANSLATION_SHIFT, TRANSLATION_SHIFT_OPENED));
-        mOpenCloseAnimator.setInterpolator(FAST_OUT_SLOW_IN);
-        mOpenCloseAnimator.start();
+        setUpDefaultOpenAnimation().start();
     }
 
     @Override
@@ -255,8 +247,11 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         super.setInsets(insets);
         int bottomPadding = Math.max(insets.bottom, mNavBarScrimHeight);
 
-        mContent.setPadding(mContent.getPaddingStart(),
-                mContent.getPaddingTop(), mContent.getPaddingEnd(),
+        View widgetsTable = findViewById(R.id.widgets_table);
+        widgetsTable.setPadding(
+                widgetsTable.getPaddingLeft(),
+                widgetsTable.getPaddingTop(),
+                widgetsTable.getPaddingRight(),
                 bottomPadding);
         if (bottomPadding > 0) {
             setupNavBarColor();
@@ -275,7 +270,7 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
 
     @Override
     protected Pair<View, String> getAccessibilityTarget() {
-        return Pair.create(findViewById(R.id.title), getContext().getString(
+        return Pair.create(findViewById(R.id.title),  getContext().getString(
                 mIsOpen ? R.string.widgets_list : R.string.widgets_list_closed));
     }
 

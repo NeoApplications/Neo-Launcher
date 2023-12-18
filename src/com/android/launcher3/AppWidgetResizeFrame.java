@@ -1,6 +1,5 @@
 package com.android.launcher3;
 
-import static android.appwidget.AppWidgetHostView.getDefaultPaddingForWidget;
 import static com.android.launcher3.CellLayout.SPRING_LOADED_PROGRESS;
 import static com.android.launcher3.LauncherAnimUtils.LAYOUT_HEIGHT;
 import static com.android.launcher3.LauncherAnimUtils.LAYOUT_WIDTH;
@@ -16,7 +15,6 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -39,7 +37,6 @@ import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.PendingRequestArgs;
 import com.android.launcher3.views.ArrowTipView;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
@@ -77,8 +74,6 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     private CellLayout mCellLayout;
     private DragLayer mDragLayer;
     private ImageButton mReconfigureButton;
-
-    private Rect mWidgetPadding;
 
     private final int mBackgroundPadding;
     private final int mTouchTargetWidth;
@@ -130,14 +125,6 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     private int mBottomTouchRegionAdjustment = 0;
 
     private int mXDown, mYDown;
-
-    // Represents the cell size on the grid in the two orientations.
-    private static final MainThreadInitializedObject<Point[]> CELL_SIZE =
-            new MainThreadInitializedObject<>(c -> {
-                InvariantDeviceProfile inv = LauncherAppState.getIDP(c);
-                return new Point[]{inv.getDeviceProfile(c).getCellSize(),
-                        inv.getDeviceProfile(c).getCellSize()};
-            });
 
     public AppWidgetResizeFrame(Context context) {
         this(context, null);
@@ -215,7 +202,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     }
 
     private void setupForWidget(LauncherAppWidgetHostView widgetView, CellLayout cellLayout,
-                                DragLayer dragLayer) {
+            DragLayer dragLayer) {
         mCellLayout = cellLayout;
         mWidgetView = widgetView;
         LauncherAppWidgetProviderInfo info = (LauncherAppWidgetProviderInfo)
@@ -226,9 +213,6 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
         mMinVSpan = info.minSpanY;
         mMaxHSpan = info.maxSpanX;
         mMaxVSpan = info.maxSpanY;
-
-        mWidgetPadding = getDefaultPaddingForWidget(getContext(),
-                widgetView.getAppWidgetInfo().provider, null);
 
         // Only show resize handles for the directions in which resizing is possible.
         InvariantDeviceProfile idp = LauncherAppState.getIDP(cellLayout.getContext());
@@ -314,7 +298,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
 
         if (anyBordersActive) {
             mDragHandles[INDEX_LEFT].setAlpha(mLeftBorderActive ? 1.0f : DIMMED_HANDLE_ALPHA);
-            mDragHandles[INDEX_RIGHT].setAlpha(mRightBorderActive ? 1.0f : DIMMED_HANDLE_ALPHA);
+            mDragHandles[INDEX_RIGHT].setAlpha(mRightBorderActive ? 1.0f :DIMMED_HANDLE_ALPHA);
             mDragHandles[INDEX_TOP].setAlpha(mTopBorderActive ? 1.0f : DIMMED_HANDLE_ALPHA);
             mDragHandles[INDEX_BOTTOM].setAlpha(mBottomBorderActive ? 1.0f : DIMMED_HANDLE_ALPHA);
         }
@@ -393,7 +377,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
                     progress = (mDragAcrossTwoPanelOpacityMargin + mDeltaX)
                             / mDragAcrossTwoPanelOpacityMargin;
                 } else if (workspace.indexOfChild(pairedCellLayout)
-                        > workspace.indexOfChild(mCellLayout)
+                                > workspace.indexOfChild(mCellLayout)
                         && mDeltaX > 0
                         && resizeFrameBound.right > focusedCellLayoutBound.right) {
                     // Resize from left to right.
@@ -419,7 +403,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
      */
     private void resizeWidgetIfNeeded(boolean onDismiss) {
         ViewGroup.LayoutParams wlp = mWidgetView.getLayoutParams();
-        if (!(wlp instanceof CellLayout.LayoutParams)) {
+        if (!(wlp instanceof CellLayoutLayoutParams)) {
             return;
         }
         DeviceProfile dp = mLauncher.getDeviceProfile();
@@ -475,7 +459,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
 
         if (mCellLayout.createAreaForResize(cellX, cellY, spanX, spanY, mWidgetView,
                 mDirectionVector, onDismiss)) {
-            if (mStateAnnouncer != null && (lp.cellHSpan != spanX || lp.cellVSpan != spanY)) {
+            if (mStateAnnouncer != null && (lp.cellHSpan != spanX || lp.cellVSpan != spanY) ) {
                 mStateAnnouncer.announce(
                         mLauncher.getString(R.string.widget_resized, spanX, spanY));
             }
@@ -492,24 +476,6 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
             }
         }
         mWidgetView.requestLayout();
-    }
-
-    public static Rect getWidgetSizeRanges(Context context, int spanX, int spanY, Rect rect) {
-        if (rect == null) {
-            rect = new Rect();
-        }
-        final float density = context.getResources().getDisplayMetrics().density;
-        final Point[] cellSize = CELL_SIZE.get(context);
-
-        // Compute landscape size
-        int landWidth = (int) ((spanX * cellSize[0].x) / density);
-        int landHeight = (int) ((spanY * cellSize[0].y) / density);
-
-        // Compute portrait size
-        int portWidth = (int) ((spanX * cellSize[1].x) / density);
-        int portHeight = (int) ((spanY * cellSize[1].y) / density);
-        rect.set(portWidth, landHeight, landWidth, portHeight);
-        return rect;
     }
 
     @Override
@@ -544,16 +510,12 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
      */
     private void getSnappedRectRelativeToDragLayer(Rect out) {
         float scale = mWidgetView.getScaleToFit();
-
         mDragLayer.getViewRectRelativeToSelf(mWidgetView, out);
 
-        int width = 2 * mBackgroundPadding
-                + (int) (scale * (out.width() - mWidgetPadding.left - mWidgetPadding.right));
-        int height = 2 * mBackgroundPadding
-                + (int) (scale * (out.height() - mWidgetPadding.top - mWidgetPadding.bottom));
-
-        int x = (int) (out.left - mBackgroundPadding + scale * mWidgetPadding.left);
-        int y = (int) (out.top - mBackgroundPadding + scale * mWidgetPadding.top);
+        int width = 2 * mBackgroundPadding + Math.round(scale * out.width());
+        int height = 2 * mBackgroundPadding + Math.round(scale * out.height());
+        int x = out.left - mBackgroundPadding;
+        int y = out.top - mBackgroundPadding;
 
         out.left = x;
         out.top = y;
@@ -707,13 +669,13 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     }
 
     private void updateInvalidResizeEffect(CellLayout cellLayout, CellLayout pairedCellLayout,
-                                           float alpha, float springLoadedProgress) {
+            float alpha, float springLoadedProgress) {
         updateInvalidResizeEffect(cellLayout, pairedCellLayout, alpha,
                 springLoadedProgress, /* animatorSet= */ null);
     }
 
     private void updateInvalidResizeEffect(CellLayout cellLayout, CellLayout pairedCellLayout,
-                                           float alpha, float springLoadedProgress, @Nullable AnimatorSet animatorSet) {
+            float alpha, float springLoadedProgress, @Nullable AnimatorSet animatorSet) {
         int childCount = pairedCellLayout.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = pairedCellLayout.getChildAt(i);
@@ -789,19 +751,18 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
         /**
          * Applies delta similar to {@link #applyDelta(boolean, boolean, int, IntRange)},
          * with extra conditions.
-         *
          * @param minSize minimum size after with the moving edge should not be shifted any further.
          *                For eg, if delta = -3 when moving the endEdge brings the size to less than
          *                minSize, only delta = -2 will applied
          * @param maxSize maximum size after with the moving edge should not be shifted any further.
          *                For eg, if delta = -3 when moving the endEdge brings the size to greater
          *                than maxSize, only delta = -2 will applied
-         * @param maxEnd  The maximum value to the end edge (start edge is always restricted to 0)
+         * @param maxEnd The maximum value to the end edge (start edge is always restricted to 0)
          * @return the amount of increase when endEdge was moves and the amount of decrease when
          * the start edge was moved.
          */
         public int applyDeltaAndBound(boolean moveStart, boolean moveEnd, int delta,
-                                      int minSize, int maxSize, int maxEnd, IntRange out) {
+                int minSize, int maxSize, int maxEnd, IntRange out) {
             applyDelta(moveStart, moveEnd, delta, out);
             if (out.start < 0) {
                 out.start = 0;
@@ -837,8 +798,7 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
                 || keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN);
     }
 
-    @Nullable
-    private ArrowTipView showReconfigurableWidgetEducationTip() {
+    @Nullable private ArrowTipView showReconfigurableWidgetEducationTip() {
         Rect rect = new Rect();
         if (!mReconfigureButton.getGlobalVisibleRect(rect)) {
             return null;
@@ -856,6 +816,6 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     private boolean hasSeenReconfigurableWidgetEducationTip() {
         return mLauncher.getSharedPrefs()
                 .getBoolean(KEY_RECONFIGURABLE_WIDGET_EDUCATION_TIP_SEEN, false)
-                || Utilities.IS_RUNNING_IN_TEST_HARNESS;
+                || Utilities.isRunningInTestHarness();
     }
 }

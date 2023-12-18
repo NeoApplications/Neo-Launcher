@@ -93,8 +93,8 @@ public class LauncherDelegate {
                         // Move the item from the folder to the workspace, in the position of the
                         // folder
                         CellLayout cellLayout = mLauncher.getCellLayout(info.container,
-                                info.screenId);
-                        finalItem = info.contents.remove(0);
+                                mLauncher.getCellPosMapper().mapModelToPresenter(info).screenId);
+                        finalItem =  info.contents.remove(0);
                         newIcon = mLauncher.createShortcut(cellLayout, finalItem);
                         mLauncher.getModelWriter().addOrMoveItemInDatabase(finalItem,
                                 info.container, info.screenId, info.cellX, info.cellY);
@@ -172,8 +172,7 @@ public class LauncherDelegate {
         }
 
         @Override
-        void beginDragShared(View child, DragSource source, DragOptions options) {
-        }
+        void beginDragShared(View child, DragSource source, DragOptions options) { }
 
         @Override
         ModelWriter getModelWriter() {
@@ -185,8 +184,7 @@ public class LauncherDelegate {
         }
 
         @Override
-        void forEachVisibleWorkspacePage(Consumer<View> callback) {
-        }
+        void forEachVisibleWorkspacePage(Consumer<View> callback) { }
 
         @Override
         Launcher getLauncher() {

@@ -40,6 +40,7 @@ public final class TestProtocol {
     public static final int OVERVIEW_SPLIT_SELECT_ORDINAL = 9;
     public static final int EDIT_MODE_STATE_ORDINAL = 10;
     public static final int OPTIONS_STATE_ORDINAL = 11;
+    public static final int EXPANDABLE_HOTSEAT_STATE_ORDINAL = 12;
     public static final String SEQUENCE_MAIN = "Main";
     public static final String SEQUENCE_TIS = "TIS";
     public static final String SEQUENCE_PILFER = "Pilfer";

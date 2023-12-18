@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2022 The Android Open Source Project
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 package com.android.launcher3.widget;
 
 import static android.app.Activity.RESULT_CANCELED;
+
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.appwidget.AppWidgetHost;
@@ -83,7 +84,7 @@ public class LauncherWidgetHolder {
     private static final int SPLASH_SCREEN_STYLE_EMPTY = 0;
 
     protected LauncherWidgetHolder(@NonNull Context context,
-                                   @Nullable IntConsumer appWidgetRemovedCallback) {
+            @Nullable IntConsumer appWidgetRemovedCallback) {
         mContext = context;
         mWidgetHost = createHost(context, appWidgetRemovedCallback);
     }
@@ -245,7 +246,7 @@ public class LauncherWidgetHolder {
      * @param requestCode The request code
      */
     public void startConfigActivity(@NonNull BaseDraggingActivity activity, int widgetId,
-                                    int requestCode) {
+            int requestCode) {
         if (WidgetsModel.GO_DISABLE_WIDGETS) {
             sendActionCancelled(activity, requestCode);
             return;
@@ -272,11 +273,17 @@ public class LauncherWidgetHolder {
      */
     @Nullable
     protected Bundle getConfigurationActivityOptions(@NonNull BaseDraggingActivity activity,
-                                                     int widgetId) {
+            int widgetId) {
         LauncherAppWidgetHostView view = mViews.get(widgetId);
-        if (view == null) return null;
+        if (view == null) {
+            return activity.makeDefaultActivityOptions(
+                    -1 /* SPLASH_SCREEN_STYLE_UNDEFINED */).toBundle();
+        }
         Object tag = view.getTag();
-        if (!(tag instanceof ItemInfo)) return null;
+        if (!(tag instanceof ItemInfo)) {
+            return activity.makeDefaultActivityOptions(
+                    -1 /* SPLASH_SCREEN_STYLE_UNDEFINED */).toBundle();
+        }
         Bundle bundle = activity.getActivityLaunchOptions(view, (ItemInfo) tag).toBundle();
         bundle.putInt(KEY_SPLASH_SCREEN_STYLE, SPLASH_SCREEN_STYLE_EMPTY);
         return bundle;
@@ -290,7 +297,7 @@ public class LauncherWidgetHolder {
      * @param requestCode The request code
      */
     public void startBindFlow(@NonNull BaseActivity activity,
-                              int appWidgetId, @NonNull AppWidgetProviderInfo info, int requestCode) {
+            int appWidgetId, @NonNull AppWidgetProviderInfo info, int requestCode) {
         if (WidgetsModel.GO_DISABLE_WIDGETS) {
             sendActionCancelled(activity, requestCode);
             return;
@@ -352,7 +359,7 @@ public class LauncherWidgetHolder {
      */
     @NonNull
     public AppWidgetHostView createView(@NonNull Context context, int appWidgetId,
-                                        @NonNull LauncherAppWidgetProviderInfo appWidget) {
+            @NonNull LauncherAppWidgetProviderInfo appWidget) {
         if (appWidget.isCustomWidget()) {
             LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(context);
             lahv.setAppWidget(0, appWidget);
@@ -423,7 +430,7 @@ public class LauncherWidgetHolder {
      */
     @NonNull
     public LauncherAppWidgetHostView onCreateView(Context context, int appWidgetId,
-                                                  AppWidgetProviderInfo appWidget) {
+            AppWidgetProviderInfo appWidget) {
         final LauncherAppWidgetHostView view;
         if (getPendingView(appWidgetId) != null) {
             view = getPendingView(appWidgetId);
@@ -515,7 +522,7 @@ public class LauncherWidgetHolder {
          * @return A new instance of {@code LauncherWidgetHolder}
          */
         public LauncherWidgetHolder newInstance(@NonNull Context context,
-                                                @Nullable IntConsumer appWidgetRemovedCallback) {
+                @Nullable IntConsumer appWidgetRemovedCallback) {
             return new LauncherWidgetHolder(context, appWidgetRemovedCallback);
         }
 

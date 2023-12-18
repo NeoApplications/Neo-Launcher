@@ -35,7 +35,7 @@ public class LocalColorExtractor implements ResourceBasedOverride {
     public interface Listener {
         /**
          * Method called when the colors on a registered location has changed.
-         * <p>
+         *
          * {@code extractedColors} maps the color resources {@code android.R.colors.system_*} to
          * their value, in a format that can be passed directly to
          * {@link AppWidgetHostView#setColorResources(SparseIntArray)}.
@@ -51,28 +51,23 @@ public class LocalColorExtractor implements ResourceBasedOverride {
                 R.string.local_colors_extraction_class);
     }
 
-    /**
-     * Sets the object that will receive the color changes.
-     */
+    /** Sets the object that will receive the color changes. */
     public void setListener(@Nullable Listener listener) {
         // no-op
     }
 
     /**
      * Sets the location used for color extraction
-     *
-     * @param pos      position to use for color extraction
-     * @param child    view whose coordinate space is used for {@code pos}
+     * @param pos position to use for color extraction
+     * @param child view whose coordinate space is used for {@code pos}
      * @param screenId the workspace screenId
      */
-    public void setWorkspaceLocation(Rect pos, View child, int screenId) {
-    }
+    public void setWorkspaceLocation(Rect pos, View child, int screenId) { }
 
     /**
      * Updates the base context to contain the colors override
      */
-    public void applyColorsOverride(Context base, WallpaperColors colors) {
-    }
+    public void applyColorsOverride(Context base, WallpaperColors colors) { }
 
     /**
      * Generates color resource overrides from {@link WallpaperColors}.

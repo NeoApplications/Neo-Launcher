@@ -17,6 +17,7 @@
 package com.android.launcher3.settings;
 
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS;
+import static com.android.launcher3.config.FeatureFlags.IS_STUDIO_BUILD;
 import static com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY;
 
 import android.content.Intent;
@@ -49,7 +50,9 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.model.WidgetsModel;
 import com.android.launcher3.states.RotationHelper;
+import com.android.launcher3.uioverrides.flags.DeveloperOptionsFragment;
 import com.android.launcher3.uioverrides.plugins.PluginManagerWrapper;
+import com.android.launcher3.util.DisplayController;
 
 import java.util.Collections;
 import java.util.List;
@@ -59,11 +62,9 @@ import java.util.List;
  */
 public class SettingsActivity extends FragmentActivity
         implements OnPreferenceStartFragmentCallback, OnPreferenceStartScreenCallback,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener{
 
-    /**
-     * List of fragments that can be hosted by this activity.
-     */
+    /** List of fragments that can be hosted by this activity. */
     private static final List<String> VALID_PREFERENCE_FRAGMENTS =
             !Utilities.IS_DEBUG_DEVICE ? Collections.emptyList()
                     : Collections.singletonList(DeveloperOptionsFragment.class.getName());
@@ -91,7 +92,8 @@ public class SettingsActivity extends FragmentActivity
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_FRAGMENT) || intent.hasExtra(EXTRA_FRAGMENT_ARGS)) {
+        if (intent.hasExtra(EXTRA_FRAGMENT) || intent.hasExtra(EXTRA_FRAGMENT_ARGS)
+                || intent.hasExtra(EXTRA_FRAGMENT_ARG_KEY)) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -113,7 +115,8 @@ public class SettingsActivity extends FragmentActivity
             // Display the fragment as the main content.
             fm.beginTransaction().replace(R.id.content_frame, f).commit();
         }
-        Utilities.getPrefs(getApplicationContext()).registerOnSharedPreferenceChangeListener(this);
+        Utilities.getPrefs(getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -138,8 +141,7 @@ public class SettingsActivity extends FragmentActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    }
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) { }
 
     private boolean startPreference(String fragment, Bundle args, String key) {
         if (Utilities.ATLEAST_P && getSupportFragmentManager().isStateSaved()) {
@@ -209,19 +211,24 @@ public class SettingsActivity extends FragmentActivity
             PreferenceScreen screen = getPreferenceScreen();
             for (int i = screen.getPreferenceCount() - 1; i >= 0; i--) {
                 Preference preference = screen.getPreference(i);
-                if (!initPreference(preference)) {
+                if (initPreference(preference)) {
+                    if (IS_STUDIO_BUILD && preference == mDeveloperOptionPref) {
+                        preference.setOrder(0);
+                    }
+                } else {
                     screen.removePreference(preference);
                 }
             }
 
             if (getActivity() != null && !TextUtils.isEmpty(getPreferenceScreen().getTitle())) {
                 if (getPreferenceScreen().getTitle().equals(
-                        getResources().getString(R.string.search_pref_screen_title))) {
+                        getResources().getString(R.string.search_pref_screen_title))){
                     DeviceProfile mDeviceProfile = InvariantDeviceProfile.INSTANCE.get(
                             getContext()).getDeviceProfile(getContext());
-                    getPreferenceScreen().setTitle(mDeviceProfile.isTablet ?
-                            R.string.search_pref_screen_title_tablet
-                            : R.string.search_pref_screen_title);
+                    getPreferenceScreen().setTitle(mDeviceProfile.isMultiDisplay
+                            || mDeviceProfile.isPhone ?
+                            R.string.search_pref_screen_title :
+                            R.string.search_pref_screen_title_tablet);
                 }
                 getActivity().setTitle(getPreferenceScreen().getTitle());
             }
@@ -240,6 +247,8 @@ public class SettingsActivity extends FragmentActivity
                         bottomPadding + insets.getSystemWindowInsetBottom());
                 return insets.consumeSystemWindowInsets();
             });
+            // Overriding Text Direction in the Androidx preference library to support RTL
+            view.setTextDirection(View.TEXT_DIRECTION_LOCALE);
         }
 
         @Override
@@ -262,15 +271,14 @@ public class SettingsActivity extends FragmentActivity
                     return !WidgetsModel.GO_DISABLE_NOTIFICATION_DOTS;
 
                 case ALLOW_ROTATION_PREFERENCE_KEY:
-                    DeviceProfile deviceProfile = InvariantDeviceProfile.INSTANCE.get(
-                            getContext()).getDeviceProfile(getContext());
-                    if (deviceProfile.isTablet) {
+                    DisplayController.Info info =
+                            DisplayController.INSTANCE.get(getContext()).getInfo();
+                    if (info.isTablet(info.realBounds)) {
                         // Launcher supports rotation by default. No need to show this setting.
                         return false;
                     }
                     // Initialize the UI once
-                    preference.setDefaultValue(
-                            RotationHelper.getAllowRotationDefaultValue(deviceProfile));
+                    preference.setDefaultValue(RotationHelper.getAllowRotationDefaultValue(info));
                     return true;
 
                 case FLAGS_PREFERENCE_KEY:

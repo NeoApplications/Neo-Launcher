@@ -63,29 +63,21 @@ public interface DropTarget {
         /** Where the drag originated */
         public DragSource dragSource = null;
 
-        /**
-         * Indicates that the drag operation was cancelled
-         */
+        /** Indicates that the drag operation was cancelled */
         public boolean cancelled = false;
 
-        /**
-         * Defers removing the DragView from the DragLayer until after the drop animation.
-         */
+        /** Defers removing the DragView from the DragLayer until after the drop animation. */
         public boolean deferDragViewCleanupPostAnimation = true;
 
         public DragViewStateAnnouncer stateAnnouncer;
 
         public FolderNameProvider folderNameProvider;
 
-        /**
-         * The source view (ie. icon, widget etc.) that is being dragged and which the
-         * DragView represents. May be an actual View class or a virtual stand-in
-         */
+        /** The source view (ie. icon, widget etc.) that is being dragged and which the
+         * DragView represents. May be an actual View class or a virtual stand-in */
         public DraggableView originalView = null;
 
-        /**
-         * Used for matching DROP event with its corresponding DRAG event on the server side.
-         */
+        /** Used for matching DROP event with its corresponding DRAG event on the server side. */
         public final InstanceId logInstanceId = new InstanceIdSequence().newInstanceId();
 
         public DragObject(Context context) {

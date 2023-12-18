@@ -24,9 +24,7 @@ import androidx.core.util.Consumer;
 
 import com.android.launcher3.views.RecyclerViewFastScroller;
 
-/**
- * A RecyclerView for AllApps Search results.
- */
+/** A RecyclerView for AllApps Search results. */
 public class SearchRecyclerView extends AllAppsRecyclerView {
 
     private Consumer<View> mChildAttachedConsumer;
@@ -44,13 +42,11 @@ public class SearchRecyclerView extends AllAppsRecyclerView {
     }
 
     public SearchRecyclerView(Context context, AttributeSet attrs, int defStyleAttr,
-                              int defStyleRes) {
+            int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    /**
-     * This will be called just before a new child is attached to the window.
-     */
+    /** This will be called just before a new child is attached to the window. */
     public void setChildAttachedConsumer(Consumer<View> childAttachedConsumer) {
         mChildAttachedConsumer = childAttachedConsumer;
     }

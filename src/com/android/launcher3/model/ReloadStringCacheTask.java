@@ -34,7 +34,7 @@ public class ReloadStringCacheTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList appsList) {
+            @NonNull final AllAppsList appsList) {
         synchronized (dataModel) {
             mModelDelegate.loadStringCache(dataModel.stringCache);
             StringCache cloneSC = dataModel.stringCache.clone();

@@ -156,8 +156,7 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
     }
 
     @Override
-    public void setInsets(Rect insets) {
-    }
+    public void setInsets(Rect insets) { }
 
     private void updateIconLocation() {
         if (mContract == null) {
@@ -214,13 +213,12 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder,
-                               int format, int width, int height) {
+            int format, int width, int height) {
         drawOnSurface();
     }
 
     @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-    }
+    public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {}
 
     @Override
     public void surfaceRedrawNeeded(@NonNull SurfaceHolder surfaceHolder) {

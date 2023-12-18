@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
  * This class takes care of shrinking the workspace (by maximum of one row and one column), as a
  * result of restoring from a larger device or device density change.
  */
-public class GridSizeMigrationTaskV2 {
+/*public class GridSizeMigrationTaskV2 {
 
     private static final String TAG = "GridSizeMigrationTaskV2";
     private static final boolean DEBUG = false;
@@ -102,9 +102,9 @@ public class GridSizeMigrationTaskV2 {
         mTrgY = targetSize.y;
     }
 
-    /**
+    *//**
      * Check given a new IDP, if migration is necessary.
-     */
+     *//*
     public static boolean needsToMigrate(Context context, InvariantDeviceProfile idp) {
         return needsToMigrate(new DeviceGridState(context), new DeviceGridState(idp));
     }
@@ -119,9 +119,9 @@ public class GridSizeMigrationTaskV2 {
         return needsToMigrate;
     }
 
-    /**
+    *//**
      * See {@link #migrateGridIfNeeded(Context, InvariantDeviceProfile)}
-     */
+     *//*
     public static boolean migrateGridIfNeeded(Context context) {
         if (context instanceof LauncherPreviewRenderer.PreviewContext) {
             return true;
@@ -129,7 +129,7 @@ public class GridSizeMigrationTaskV2 {
         return migrateGridIfNeeded(context, null);
     }
 
-    /**
+    *//**
      * When migrating the grid for preview, we copy the table
      * {@link LauncherSettings.Favorites#TABLE_NAME} into
      * {@link LauncherSettings.Favorites#PREVIEW_TABLE_NAME}, run grid size migration from the
@@ -142,7 +142,7 @@ public class GridSizeMigrationTaskV2 {
      * {@link LauncherSettings.Favorites#TABLE_NAME}.
      *
      * @return false if the migration failed.
-     */
+     *//*
     public static boolean migrateGridIfNeeded(Context context, InvariantDeviceProfile idp) {
         boolean migrateForPreview = idp != null;
         if (!migrateForPreview) {
@@ -269,7 +269,7 @@ public class GridSizeMigrationTaskV2 {
         return true;
     }
 
-    /** Return what's in the src but not in the dest */
+    *//** Return what's in the src but not in the dest *//*
     private static List<DbEntry> calcDiff(List<DbEntry> src, List<DbEntry> dest) {
         Map<String, Integer> destIdSet = new HashMap<>();
         for (DbEntry entry : dest) {
@@ -395,8 +395,8 @@ public class GridSizeMigrationTaskV2 {
             mTrgX = trgX;
             mTrgY = trgY;
             mNextStartX = 0;
-            mNextStartY = mScreenId == 0 && FeatureFlags.QSbOnFirstScreen(mContext)
-                    ? 1 /* smartspace */ : 0;
+            mNextStartY = mScreenId == 0 && FeatureFlags.QSBOnFirstScreen(mContext)
+                    ? 1 *//* smartspace *//* : 0;
             List<DbEntry> existedEntries = mDestReader.mWorkspaceEntriesByScreenId.get(screenId);
             if (existedEntries != null) {
                 for (DbEntry entry : existedEntries) {
@@ -425,11 +425,11 @@ public class GridSizeMigrationTaskV2 {
             }
         }
 
-        /**
+        *//**
          * Search for the next possible placement of an icon. (mNextStartX, mNextStartY) serves as
          * a memoization of last placement, we can start our search for next placement from there
          * to speed up the search.
-         */
+         *//*
         private boolean findPlacement(DbEntry entry) {
             for (int y = mNextStartY; y < mTrgY; y++) {
                 for (int x = mNextStartX; x < mTrgX; x++) {
@@ -719,7 +719,7 @@ public class GridSizeMigrationTaskV2 {
             return mDb.query(mTableName, columns, where, null, null, null, null);
         }
 
-        /** Verifies if the mIntent should be restored. */
+        *//** Verifies if the mIntent should be restored. *//*
         private void verifyIntent(String intentStr)
                 throws Exception {
             Intent intent = Intent.parseUri(intentStr, 0);
@@ -731,7 +731,7 @@ public class GridSizeMigrationTaskV2 {
             }
         }
 
-        /** Verifies if the package should be restored */
+        *//** Verifies if the package should be restored *//*
         private void verifyPackage(String packageName)
                 throws Exception {
             if (!mValidPackages.contains(packageName)) {
@@ -747,7 +747,7 @@ public class GridSizeMigrationTaskV2 {
         private String mProvider;
         private Map<String, Set<Integer>> mFolderItems = new HashMap<>();
 
-        /** Comparator according to the reading order */
+        *//** Comparator according to the reading order *//*
         @Override
         public int compareTo(DbEntry another) {
             if (screenId != another.screenId) {
@@ -780,11 +780,11 @@ public class GridSizeMigrationTaskV2 {
             values.put(LauncherSettings.Favorites.SPANY, spanY);
         }
 
-        /**
+        *//**
          * This id is not used in the DB is only used while doing the migration and it identifies
          * an entry on each workspace. For example two calculator icons would have the same
          * migration id even thought they have different database ids.
-         */
+         *//*
         public String getEntryMigrationId() {
             switch (itemType) {
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
@@ -804,10 +804,10 @@ public class GridSizeMigrationTaskV2 {
             }
         }
 
-        /**
+        *//**
          * This method should return an id that should be the same for two folders containing the
          * same elements.
-         */
+         *//*
         @NonNull
         private String getFolderMigrationId() {
             return mFolderItems.keySet().stream()
@@ -817,10 +817,10 @@ public class GridSizeMigrationTaskV2 {
                     .collect(Collectors.joining(","));
         }
 
-        /**
+        *//**
          * This is needed because sourceBounds can change and make the id of two equal items
          * different.
-         */
+         *//*
         @NonNull
         private String cleanIntentString(@NonNull String intentStr) {
             try {
@@ -834,4 +834,4 @@ public class GridSizeMigrationTaskV2 {
 
         }
     }
-}
+}*/

@@ -105,15 +105,15 @@ public class SingleAxisSwipeDetector extends BaseSwipeDetector {
     private float mTouchSlopMultiplier = 1f;
 
     public SingleAxisSwipeDetector(@NonNull Context context, @NonNull Listener l,
-                                   @NonNull Direction dir) {
-        super(context, ViewConfiguration.get(context), Utilities.isRtl(context.getResources()));
+            @NonNull Direction dir) {
+        super(context, ViewConfiguration.get(context),  Utilities.isRtl(context.getResources()));
         mListener = l;
         mDir = dir;
     }
 
     @VisibleForTesting
     protected SingleAxisSwipeDetector(@NonNull Context context, @NonNull ViewConfiguration config,
-                                      @NonNull Listener l, @NonNull Direction dir, boolean isRtl) {
+            @NonNull Listener l, @NonNull Direction dir, boolean isRtl) {
         super(context, config, isRtl);
         mListener = l;
         mDir = dir;
@@ -124,8 +124,9 @@ public class SingleAxisSwipeDetector extends BaseSwipeDetector {
      * bounds translate become smaller, multiply a larger multiplier could ensure the UX
      * more consistent.
      *
-     * @param touchSlopMultiplier the value to multiply original touch slop.
      * @see #shouldScrollStart(PointF)
+     *
+     * @param touchSlopMultiplier the value to multiply original touch slop.
      */
     public void setTouchSlopMultiplier(float touchSlopMultiplier) {
         mTouchSlopMultiplier = touchSlopMultiplier;
@@ -186,9 +187,7 @@ public class SingleAxisSwipeDetector extends BaseSwipeDetector {
         mListener.onDragEnd(velocityComponent);
     }
 
-    /**
-     * Listener to receive updates on the swipe.
-     */
+    /** Listener to receive updates on the swipe. */
     public interface Listener {
         /**
          * TODO(b/150256055) consolidate all the different onDrag() methods into one

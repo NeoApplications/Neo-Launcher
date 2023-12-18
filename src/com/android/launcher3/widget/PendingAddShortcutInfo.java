@@ -30,7 +30,7 @@ import com.android.launcher3.pm.ShortcutConfigActivityInfo;
 public class PendingAddShortcutInfo extends PendingAddItemInfo {
 
     // TODO: Make it @NonNull
-    public ShortcutConfigActivityInfo mActivityInfo;
+    protected ShortcutConfigActivityInfo mActivityInfo;
 
     public PendingAddShortcutInfo(ShortcutConfigActivityInfo activityInfo) {
         this.mActivityInfo = activityInfo;
@@ -45,8 +45,7 @@ public class PendingAddShortcutInfo extends PendingAddItemInfo {
         mActivityInfo = info.mActivityInfo;
     }
 
-    public PendingAddShortcutInfo() {
-    }
+    public PendingAddShortcutInfo() { }
 
     /**
      * Returns the info used for creating the shortcut

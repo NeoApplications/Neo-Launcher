@@ -14,9 +14,7 @@ import com.android.launcher3.model.data.PackageItemInfo;
 
 import java.util.Objects;
 
-/**
- * Creates a hash key based on package name, widget category, and user.
- */
+/** Creates a hash key based on package name, widget category, and user. */
 public class PackageUserKey {
 
     public String mPackageName;
@@ -34,9 +32,7 @@ public class PackageUserKey {
         return new PackageUserKey(notification.getPackageName(), notification.getUser());
     }
 
-    /**
-     * Creates a {@link PackageUserKey} from {@link PackageItemInfo}.
-     */
+    /** Creates a {@link PackageUserKey} from {@link PackageItemInfo}. */
     public static PackageUserKey fromPackageItemInfo(PackageItemInfo info) {
         if (TextUtils.isEmpty(info.packageName) && info.widgetCategory != NO_CATEGORY) {
             return new PackageUserKey(info.widgetCategory, info.user);
@@ -74,11 +70,6 @@ public class PackageUserKey {
             return true;
         }
         return false;
-    }
-
-    public boolean updateFromNotification(StatusBarNotification sbn) {
-        update(sbn.getPackageName(), sbn.getUser());
-        return true;
     }
 
     @Override

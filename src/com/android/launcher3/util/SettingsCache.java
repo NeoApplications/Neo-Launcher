@@ -49,18 +49,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class SettingsCache extends ContentObserver implements SafeCloseable {
 
-    /**
-     * Hidden field Settings.Secure.NOTIFICATION_BADGING
-     */
+    /** Hidden field Settings.Secure.NOTIFICATION_BADGING */
     public static final Uri NOTIFICATION_BADGING_URI =
             Settings.Secure.getUriFor("notification_badging");
-    /**
-     * Hidden field Settings.Secure.ONE_HANDED_MODE_ENABLED
-     */
+    /** Hidden field Settings.Secure.ONE_HANDED_MODE_ENABLED */
     public static final String ONE_HANDED_ENABLED = "one_handed_mode_enabled";
-    /**
-     * Hidden field Settings.Secure.SWIPE_BOTTOM_TO_NOTIFICATION_ENABLED
-     */
+    /** Hidden field Settings.Secure.SWIPE_BOTTOM_TO_NOTIFICATION_ENABLED */
     public static final String ONE_HANDED_SWIPE_BOTTOM_TO_NOTIFICATION_ENABLED =
             "swipe_bottom_to_notification_enabled";
     public static final Uri ROTATION_SETTING_URI =
@@ -160,7 +154,7 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
      */
     public void unregister(Uri uri, OnChangeListener listener) {
         List<OnChangeListener> listenersToRemoveFrom = mListenerMap.get(uri);
-        if (!listenersToRemoveFrom.contains(listener)) {
+        if (listenersToRemoveFrom == null) {
             return;
         }
 

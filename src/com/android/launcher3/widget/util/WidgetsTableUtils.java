@@ -72,9 +72,9 @@ public final class WidgetsTableUtils {
      * <p>Grouping:
      * 1. Widgets and shortcuts never group together in the same row.
      * 2. The ordered widgets are grouped together in the same row until their individual occupying
-     * pixels exceed the total allowed pixels for the cell.
+     *    pixels exceed the total allowed pixels for the cell.
      * 3. The ordered shortcuts are grouped together in the same row until their individual
-     * occupying pixels exceed the total allowed pixels for the cell.
+     *    occupying pixels exceed the total allowed pixels for the cell.
      * 4. If there is only one widget in a row, its width may exceed the {@code rowPx}.
      *
      * <p>Let's say the {@code rowPx} is set to 600 and we have 5 widgets. Widgets can be grouped
@@ -102,14 +102,14 @@ public final class WidgetsTableUtils {
             if (numOfWidgetItems == 0) {
                 widgetItemsAtRow.add(widgetItem);
             } else if (
-                // Since the size of the widget cell is determined by dividing the maximum span
-                // pixels evenly, making sure that each widget would have enough span pixels to
-                // show their contents.
+                    // Since the size of the widget cell is determined by dividing the maximum span
+                    // pixels evenly, making sure that each widget would have enough span pixels to
+                    // show their contents.
                     widgetItem.hasSameType(widgetItemsAtRow.get(numOfWidgetItems - 1))
-                            && widgetItemsAtRow.stream().allMatch(
+                    && widgetItemsAtRow.stream().allMatch(
                             item -> WidgetSizes.getWidgetItemSizePx(context, dp, item)
                                     .getWidth() <= individualSpan)
-                            && WidgetSizes.getWidgetItemSizePx(context, dp, widgetItem)
+                    && WidgetSizes.getWidgetItemSizePx(context, dp, widgetItem)
                             .getWidth() <= individualSpan) {
                 // Group items in the same row if
                 // 1. they are with the same type, i.e. a row can only have widgets or shortcuts but

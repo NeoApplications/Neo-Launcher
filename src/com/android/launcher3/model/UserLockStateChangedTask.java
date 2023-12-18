@@ -53,7 +53,7 @@ public class UserLockStateChangedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList apps) {
+            @NonNull final AllAppsList apps) {
         Context context = app.getContext();
 
         HashMap<ShortcutKey, ShortcutInfo> pinnedShortcuts = new HashMap<>();

@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.IconCache;
+import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.ContentWriter;
@@ -99,14 +101,15 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
      * A set of person's Id associated with the WorkspaceItemInfo, this is only used if the item
      * represents a deep shortcut.
      */
-    @NonNull
-    private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
+    @NonNull private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
 
     public int options;
+    public CharSequence customTitle;
+    public Bitmap customIcon;
     public String swipeUpAction;
 
     public WorkspaceItemInfo() {
-        itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
+        itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
     }
 
     public WorkspaceItemInfo(WorkspaceItemInfo info) {
@@ -118,9 +121,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         personKeys = info.personKeys.clone();
     }
 
-    /**
-     * TODO: Remove this.  It's only called by ApplicationInfo.makeWorkspaceItem.
-     */
+    /** TODO: Remove this.  It's only called by ApplicationInfo.makeWorkspaceItem. */
     public WorkspaceItemInfo(AppInfo info) {
         super(info);
         title = Utilities.trim(info.title);
@@ -173,7 +174,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     public void updateFromDeepShortcutInfo(@NonNull final ShortcutInfo shortcutInfo,
-                                           @NonNull final Context context) {
+            @NonNull final Context context) {
         // {@link ShortcutInfo#getActivity} can change during an update. Recreate the intent
         intent = ShortcutKey.makeIntent(shortcutInfo);
         title = shortcutInfo.getShortLabel();
@@ -198,7 +199,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
         Person[] persons = ApiWrapper.getPersons(shortcutInfo);
         personKeys = persons.length == 0 ? Utilities.EMPTY_STRING_ARRAY
-                : Arrays.stream(persons).map(Person::getKey).sorted().toArray(String[]::new);
+            : Arrays.stream(persons).map(Person::getKey).sorted().toArray(String[]::new);
     }
 
     /**
@@ -208,9 +209,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         return (runtimeStatusFlags & FLAG_DISABLED_VERSION_LOWER) != 0;
     }
 
-    /**
-     * Returns the WorkspaceItemInfo id associated with the deep shortcut.
-     */
+    /** Returns the WorkspaceItemInfo id associated with the deep shortcut. */
     public String getDeepShortcutId() {
         return itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT
                 ? getIntent().getStringExtra(ShortcutKey.EXTRA_SHORTCUT_ID) : null;
@@ -224,8 +223,8 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @Override
     public ComponentName getTargetComponent() {
         ComponentName cn = super.getTargetComponent();
-        if (cn == null && (itemType == Favorites.ITEM_TYPE_SHORTCUT || hasStatusFlag(
-                FLAG_SUPPORTS_WEB_UI | FLAG_AUTOINSTALL_ICON | FLAG_RESTORED_ICON))) {
+        if (cn == null && hasStatusFlag(
+                FLAG_SUPPORTS_WEB_UI | FLAG_AUTOINSTALL_ICON | FLAG_RESTORED_ICON)) {
             // Legacy shortcuts and promise icons with web UI may not have a componentName but just
             // a packageName. In that case create a empty componentName instead of adding additional
             // check everywhere.
@@ -241,7 +240,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     }
 
     private void updateDatabase(Context context, boolean reload) {
-        //ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
+        ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
         //TODO: save to overrideIcons.db
     }
 

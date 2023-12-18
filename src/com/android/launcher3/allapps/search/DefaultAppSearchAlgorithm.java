@@ -42,10 +42,10 @@ import java.util.List;
  */
 public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
 
-    public static final int MAX_RESULTS_COUNT = 5;
+    protected static final int MAX_RESULTS_COUNT = 5;
 
-    public final LauncherAppState mAppState;
-    public final Handler mResultHandler;
+    protected final LauncherAppState mAppState;
+    protected final Handler mResultHandler;
     private final boolean mAddNoResultsMessage;
 
     public DefaultAppSearchAlgorithm(Context context) {
@@ -70,7 +70,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
         mAppState.getModel().enqueueModelUpdateTask(new BaseModelUpdateTask() {
             @Override
             public void execute(@NonNull final LauncherAppState app,
-                                @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
+                    @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
                 ArrayList<AdapterItem> result = getTitleMatchResult(apps.data, query);
                 if (mAddNoResultsMessage && result.isEmpty()) {
                     result.add(getEmptyMessageAdapterItem(query));
@@ -93,7 +93,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
      * Filters {@link AppInfo}s matching specified query
      */
     @AnyThread
-    public ArrayList<AdapterItem> getTitleMatchResult(List<AppInfo> apps, String query) {
+    public static ArrayList<AdapterItem> getTitleMatchResult(List<AppInfo> apps, String query) {
         // Do an intersection of the words in the query and each title, and filter out all the
         // apps that don't match all of the words in the query.
         final String queryTextLower = query.toLowerCase();

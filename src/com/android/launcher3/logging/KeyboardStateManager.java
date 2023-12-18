@@ -24,6 +24,10 @@ import android.os.SystemClock;
  */
 public class KeyboardStateManager {
     private long mUpdatedTime;
+    private int mImeHeightPx;
+    // Height of the keyboard when it's shown.
+    // mImeShownHeightPx>=mImeHeightPx always.
+    private int mImeShownHeightPx;
 
     public enum KeyboardState {
         NO_IME_ACTION,
@@ -33,8 +37,9 @@ public class KeyboardStateManager {
 
     private KeyboardState mKeyboardState;
 
-    public KeyboardStateManager() {
+    public KeyboardStateManager(int defaultImeShownHeightPx) {
         mKeyboardState = NO_IME_ACTION;
+        mImeShownHeightPx = defaultImeShownHeightPx;
     }
 
     /**
@@ -57,5 +62,31 @@ public class KeyboardStateManager {
     public void setKeyboardState(KeyboardState keyboardState) {
         mUpdatedTime = SystemClock.elapsedRealtime();
         mKeyboardState = keyboardState;
+    }
+
+    /**
+     * Returns keyboard's current height.
+     */
+    public int getImeHeight() {
+        return mImeHeightPx;
+    }
+
+    /**
+     * Returns keyboard's height in pixels when shown.
+     */
+    public int getImeShownHeight() {
+        return mImeShownHeightPx;
+    }
+
+    /**
+     * Setter method to set keyboard height in pixels.
+     */
+    public void setImeHeight(int imeHeightPx) {
+        mImeHeightPx = imeHeightPx;
+        if (mImeHeightPx > 0) {
+            // Update the mImeShownHeightPx with the actual ime height when shown and store it
+            // for future sessions.
+            mImeShownHeightPx = mImeHeightPx;
+        }
     }
 }

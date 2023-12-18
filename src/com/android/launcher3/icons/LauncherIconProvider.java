@@ -80,7 +80,7 @@ public class LauncherIconProvider extends IconProvider {
             final int depth = parser.getDepth();
             int type;
             while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) ;
+                    && type != XmlPullParser.END_DOCUMENT);
 
             while (((type = parser.next()) != XmlPullParser.END_TAG
                     || parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {

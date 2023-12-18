@@ -51,9 +51,7 @@ import com.android.launcher3.widget.util.WidgetSizes;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-/**
- * Utility class to load widget previews
- */
+/** Utility class to load widget previews */
 public class DatabaseWidgetPreviewLoader {
 
     private static final String TAG = "WidgetPreviewLoader";
@@ -105,12 +103,12 @@ public class DatabaseWidgetPreviewLoader {
      * Generates the widget preview from either the {@link WidgetManagerHelper} or cache
      * and add badge at the bottom right corner.
      *
-     * @param info              information about the widget
-     * @param maxPreviewWidth   width of the preview on either workspace or tray
-     * @param preScaledWidthOut return the width of the returned bitmap
+     * @param info                        information about the widget
+     * @param maxPreviewWidth             width of the preview on either workspace or tray
+     * @param preScaledWidthOut           return the width of the returned bitmap
      */
     public Bitmap generateWidgetPreview(LauncherAppWidgetProviderInfo info,
-                                        int maxPreviewWidth, int[] preScaledWidthOut) {
+            int maxPreviewWidth, int[] preScaledWidthOut) {
         // Load the preview image if possible
         if (maxPreviewWidth < 0) maxPreviewWidth = Integer.MAX_VALUE;
 
@@ -148,8 +146,7 @@ public class DatabaseWidgetPreviewLoader {
             previewWidth = drawable.getIntrinsicWidth();
             previewHeight = drawable.getIntrinsicHeight();
         } else {
-            Size widgetSize = WidgetSizes.getWidgetPaddedSizePx(mContext, info.provider, dp, spanX,
-                    spanY);
+            Size widgetSize = WidgetSizes.getWidgetSizePx(dp, spanX, spanY);
             previewWidth = widgetSize.getWidth();
             previewHeight = widgetSize.getHeight();
         }
@@ -264,8 +261,8 @@ public class DatabaseWidgetPreviewLoader {
 
             LauncherIcons li = LauncherIcons.obtain(mContext);
             Drawable icon = li.createBadgedIconBitmap(
-                            mutateOnMainThread(info.getFullResIcon(
-                                    LauncherAppState.getInstance(mContext).getIconCache())))
+                    mutateOnMainThread(info.getFullResIcon(
+                            LauncherAppState.getInstance(mContext).getIconCache())))
                     .newIcon(mContext);
             li.recycle();
 

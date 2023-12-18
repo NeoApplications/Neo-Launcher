@@ -25,11 +25,11 @@ import com.android.launcher3.Utilities;
 
 /**
  * Allows to combine multiple values set by several sources.
- * <p>
+ *
  * The various sources are meant to use [set], providing different `setterIndex` params. When it is
  * not set, 0 is used. This is meant to cover the case multiple animations are going on at the same
  * time.
- * <p>
+ *
  * This class behaves similarly to [MultiValueAlpha], but is meant to be more abstract and reusable.
  * It sets the multiplication of all values, bounded to the max and the min values.
  *
@@ -40,8 +40,7 @@ public class MultiScalePropertyFactory<T extends View> {
     private static final boolean DEBUG = false;
     private static final String TAG = "MultiScaleProperty";
     private final String mName;
-    private final ArrayMap<Integer, MultiScaleProperty> mProperties =
-            new ArrayMap<Integer, MultiScaleProperty>();
+    private final ArrayMap<Integer, MultiScaleProperty> mProperties = new ArrayMap<>();
 
     // This is an optimization for cases when set is called repeatedly with the same setterIndex.
     private float mMinOfOthers = 0;
@@ -54,10 +53,8 @@ public class MultiScalePropertyFactory<T extends View> {
         mName = name;
     }
 
-    /**
-     * Returns the [MultiFloatProperty] associated with [inx], creating it if not present.
-     */
-    public MultiScaleProperty get(Integer index) {
+    /** Returns the [MultiFloatProperty] associated with [inx], creating it if not present. */
+    public FloatProperty<T> get(Integer index) {
         return mProperties.computeIfAbsent(index,
                 (k) -> new MultiScaleProperty(index, mName + "_" + index));
     }

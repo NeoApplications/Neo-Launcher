@@ -33,9 +33,7 @@ public class PackageItemInfo extends ItemInfoWithIcon {
      */
     public final String packageName;
 
-    /**
-     * Represents a widget category shown in the widget tray section.
-     */
+    /** Represents a widget category shown in the widget tray section. */
     public final int widgetCategory;
 
     public PackageItemInfo(String packageName, UserHandle user) {

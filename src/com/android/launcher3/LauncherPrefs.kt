@@ -84,23 +84,19 @@ class LauncherPrefs(private val encryptedContext: Context) {
             String::class.java -> sp.getString(item.sharedPrefKey, default as? String)
             Boolean::class.java,
             java.lang.Boolean::class.java -> sp.getBoolean(item.sharedPrefKey, default as Boolean)
-
             Int::class.java,
             java.lang.Integer::class.java -> sp.getInt(item.sharedPrefKey, default as Int)
-
             Float::class.java,
             java.lang.Float::class.java -> sp.getFloat(item.sharedPrefKey, default as Float)
-
             Long::class.java,
             java.lang.Long::class.java -> sp.getLong(item.sharedPrefKey, default as Long)
-
             Set::class.java -> sp.getStringSet(item.sharedPrefKey, default as? Set<String>)
             else ->
                 throw IllegalArgumentException(
                     "item type: ${item.type}" + " is not compatible with sharedPref methods"
                 )
         }
-                as T
+            as T
     }
 
     /**
@@ -170,16 +166,12 @@ class LauncherPrefs(private val encryptedContext: Context) {
             String::class.java -> putString(item.sharedPrefKey, value as? String)
             Boolean::class.java,
             java.lang.Boolean::class.java -> putBoolean(item.sharedPrefKey, value as Boolean)
-
             Int::class.java,
             java.lang.Integer::class.java -> putInt(item.sharedPrefKey, value as Int)
-
             Float::class.java,
             java.lang.Float::class.java -> putFloat(item.sharedPrefKey, value as Float)
-
             Long::class.java,
             java.lang.Long::class.java -> putLong(item.sharedPrefKey, value as Long)
-
             Set::class.java -> putStringSet(item.sharedPrefKey, value as? Set<String>)
             else ->
                 throw IllegalArgumentException(
@@ -263,7 +255,7 @@ class LauncherPrefs(private val encryptedContext: Context) {
         Log.d(
             TAG,
             "Migrating data to unencrypted shared preferences to enable preloading " +
-                    "while the user is locked the next time the device reboots."
+                "while the user is locked the next time the device reboots."
         )
 
         with(bootAwarePrefs.edit()) {
@@ -275,34 +267,28 @@ class LauncherPrefs(private val encryptedContext: Context) {
 
     companion object {
         private const val TAG = "LauncherPrefs"
-        @VisibleForTesting
-        const val BOOT_AWARE_PREFS_KEY = "boot_aware_prefs"
+        @VisibleForTesting const val BOOT_AWARE_PREFS_KEY = "boot_aware_prefs"
 
-        @JvmField
-        var INSTANCE = MainThreadInitializedObject { LauncherPrefs(it) }
+        @JvmField var INSTANCE = MainThreadInitializedObject { LauncherPrefs(it) }
 
-        @JvmStatic
-        fun get(context: Context): LauncherPrefs = INSTANCE.get(context)
+        @JvmStatic fun get(context: Context): LauncherPrefs = INSTANCE.get(context)
 
+        const val TASKBAR_PINNING_KEY = "TASKBAR_PINNING_KEY"
+        @JvmField val ICON_STATE = nonRestorableItem(LauncherAppState.KEY_ICON_STATE, "", true)
         @JvmField
-        val ICON_STATE = nonRestorableItem(LauncherAppState.KEY_ICON_STATE, "", true)
-        @JvmField
-        val THEMED_ICONS = backedUpItem(Themes.KEY_THEMED_ICONS, false, true)
-        @JvmField
-        val PROMISE_ICON_IDS = backedUpItem(InstallSessionHelper.PROMISE_ICON_IDS, "")
-        @JvmField
-        val WORK_EDU_STEP = backedUpItem(WorkProfileManager.KEY_WORK_EDU_STEP, 0)
-        @JvmField
-        val WORKSPACE_SIZE = backedUpItem(DeviceGridState.KEY_WORKSPACE_SIZE, "", true)
-        @JvmField
-        val HOTSEAT_COUNT = backedUpItem(DeviceGridState.KEY_HOTSEAT_COUNT, -1, true)
+        val ALL_APPS_OVERVIEW_THRESHOLD =
+            nonRestorableItem(LauncherAppState.KEY_ALL_APPS_OVERVIEW_THRESHOLD, 180, true)
+        @JvmField val THEMED_ICONS = backedUpItem(Themes.KEY_THEMED_ICONS, false, true)
+        @JvmField val PROMISE_ICON_IDS = backedUpItem(InstallSessionHelper.PROMISE_ICON_IDS, "")
+        @JvmField val WORK_EDU_STEP = backedUpItem(WorkProfileManager.KEY_WORK_EDU_STEP, 0)
+        @JvmField val WORKSPACE_SIZE = backedUpItem(DeviceGridState.KEY_WORKSPACE_SIZE, "", true)
+        @JvmField val HOTSEAT_COUNT = backedUpItem(DeviceGridState.KEY_HOTSEAT_COUNT, -1, true)
+        @JvmField val TASKBAR_PINNING = backedUpItem(TASKBAR_PINNING_KEY, false)
 
         @JvmField
         val DEVICE_TYPE =
             backedUpItem(DeviceGridState.KEY_DEVICE_TYPE, InvariantDeviceProfile.TYPE_PHONE, true)
-        @JvmField
-        val DB_FILE = backedUpItem(DeviceGridState.KEY_DB_FILE, "", true)
-
+        @JvmField val DB_FILE = backedUpItem(DeviceGridState.KEY_DB_FILE, "", true)
         @JvmField
         val RESTORE_DEVICE =
             backedUpItem(
@@ -310,11 +296,8 @@ class LauncherPrefs(private val encryptedContext: Context) {
                 InvariantDeviceProfile.TYPE_PHONE,
                 true
             )
-        @JvmField
-        val APP_WIDGET_IDS = backedUpItem(RestoreDbTask.APPWIDGET_IDS, "")
-        @JvmField
-        val OLD_APP_WIDGET_IDS = backedUpItem(RestoreDbTask.APPWIDGET_OLD_IDS, "")
-
+        @JvmField val APP_WIDGET_IDS = backedUpItem(RestoreDbTask.APPWIDGET_IDS, "")
+        @JvmField val OLD_APP_WIDGET_IDS = backedUpItem(RestoreDbTask.APPWIDGET_OLD_IDS, "")
         @JvmField
         val GRID_NAME =
             ConstantItem(
@@ -324,13 +307,11 @@ class LauncherPrefs(private val encryptedContext: Context) {
                 isBootAware = true,
                 type = String::class.java
             )
-
         @JvmField
         val ALLOW_ROTATION =
             backedUpItem(RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY, Boolean::class.java) {
                 RotationHelper.getAllowRotationDefaultValue(DisplayController.INSTANCE.get(it).info)
             }
-
         @JvmField
         val IS_STARTUP_DATA_MIGRATED =
             ConstantItem(
@@ -397,8 +378,7 @@ class LauncherPrefs(private val encryptedContext: Context) {
 
 // This is hard-coded to false for now until it is time to release this optimization. It is only
 // a var because the unit tests are setting this to true so they can run.
-@VisibleForTesting
-var isBootAwareStartupDataEnabled: Boolean = false
+@VisibleForTesting var isBootAwareStartupDataEnabled: Boolean = false
 
 private val BOOT_AWARE_ITEMS: MutableSet<ConstantItem<*>> = mutableSetOf()
 

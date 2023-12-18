@@ -41,12 +41,12 @@ public class LauncherWidgetsSearchBar extends LinearLayout implements WidgetsSea
     }
 
     public LauncherWidgetsSearchBar(@NonNull Context context,
-                                    @Nullable AttributeSet attrs) {
+            @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     public LauncherWidgetsSearchBar(@NonNull Context context, @Nullable AttributeSet attrs,
-                                    int defStyleAttr) {
+            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

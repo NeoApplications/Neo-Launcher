@@ -24,6 +24,7 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.slice.SliceItem;
 
 import com.android.launcher3.R;
 import com.android.launcher3.logger.LauncherAtom;
@@ -31,11 +32,8 @@ import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.ResourceBasedOverride;
 import com.android.launcher3.views.ActivityContext;
-
-import java.util.List;
 
 /**
  * Handles the user event logging in R+.
@@ -59,6 +57,7 @@ public class StatsLogManager implements ResourceBasedOverride {
     private InstanceId mInstanceId;
 
     protected @Nullable ActivityContext mActivityContext = null;
+    protected @Nullable Context mContext = null;
     private KeyboardStateManager mKeyboardStateManager;
 
     /**
@@ -66,7 +65,7 @@ public class StatsLogManager implements ResourceBasedOverride {
      * gesture happens(to be removed during UserEventDispatcher cleanup).
      */
     public static EventEnum getLauncherAtomEvent(int startState,
-                                                 int targetState, EventEnum fallbackEvent) {
+            int targetState, EventEnum fallbackEvent) {
         if (startState == LAUNCHER_STATE_HOME
                 && targetState == LAUNCHER_STATE_HOME) {
             return LAUNCHER_HOME_GESTURE;
@@ -623,6 +622,12 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User has invoked split to left half with a keyboard shortcut.")
         LAUNCHER_KEYBOARD_SHORTCUT_SPLIT_LEFT_TOP(1233),
 
+        @UiEvent(doc = "User has invoked split to right half from desktop mode.")
+        LAUNCHER_DESKTOP_MODE_SPLIT_RIGHT_BOTTOM(1412),
+
+        @UiEvent(doc = "User has invoked split to left half from desktop mode.")
+        LAUNCHER_DESKTOP_MODE_SPLIT_LEFT_TOP(1464),
+
         @UiEvent(doc = "User has collapsed the work FAB button by scrolling down in the all apps"
                 + " work A-Z list.")
         LAUNCHER_WORK_FAB_BUTTON_COLLAPSE(1276),
@@ -642,9 +647,18 @@ public class StatsLogManager implements ResourceBasedOverride {
 
         @UiEvent(doc = "User has swiped upwards from the gesture handle to show transient taskbar.")
         LAUNCHER_TRANSIENT_TASKBAR_SHOW(1331),
-        ;
+
+        @UiEvent(doc = "User has clicked an app pair and launched directly into split screen.")
+        LAUNCHER_APP_PAIR_LAUNCH(1374),
+
+        @UiEvent(doc = "User saved an app pair.")
+        LAUNCHER_APP_PAIR_SAVE(1456),
+
+        @UiEvent(doc = "App launched through pending intent")
+        LAUNCHER_APP_LAUNCH_PENDING_INTENT(1394)
 
         // ADD MORE
+        ;
 
         private final int mId;
 
@@ -652,6 +666,39 @@ public class StatsLogManager implements ResourceBasedOverride {
             mId = id;
         }
 
+        public int getId() {
+            return mId;
+        }
+    }
+
+    /** Launcher's latency events. */
+    public enum LauncherLatencyEvent implements EventEnum {
+        // Details of below 6 events with prefix of "LAUNCHER_LATENCY_STARTUP_" are discussed in
+        // go/launcher-startup-latency
+        @UiEvent(doc = "The total duration of launcher startup latency.")
+        LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION(1362),
+
+        @UiEvent(doc = "The duration of launcher activity's onCreate().")
+        LAUNCHER_LATENCY_STARTUP_ACTIVITY_ON_CREATE(1363),
+
+        @UiEvent(doc =
+                "The duration to inflate launcher root view in launcher activity's onCreate().")
+        LAUNCHER_LATENCY_STARTUP_VIEW_INFLATION(1364),
+
+        @UiEvent(doc = "The duration of synchronous loading workspace")
+        LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC(1366),
+
+        @UiEvent(doc = "The duration of asynchronous loading workspace")
+        LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC(1367),
+        ;
+
+        private final int mId;
+
+        LauncherLatencyEvent(int id) {
+            mId = id;
+        }
+
+        @Override
         public int getId() {
             return mId;
         }
@@ -751,9 +798,9 @@ public class StatsLogManager implements ResourceBasedOverride {
         /**
          * Sets logging fields from provided {@link SliceItem}.
          */
-        /*default StatsLogger withSliceItem(SliceItem sliceItem) {
+        default StatsLogger withSliceItem(SliceItem sliceItem) {
             return this;
-        }*/
+        }
 
         /**
          * Sets logging fields from provided {@link LauncherAtom.Slice}.
@@ -766,6 +813,13 @@ public class StatsLogManager implements ResourceBasedOverride {
          * Sets cardinality of log message.
          */
         default StatsLogger withCardinality(int cardinality) {
+            return this;
+        }
+
+        /**
+         * Sets the input type of the log message.
+         */
+        default StatsLogger withInputType(int inputType) {
             return this;
         }
 
@@ -788,8 +842,13 @@ public class StatsLogManager implements ResourceBasedOverride {
      */
     public interface StatsLatencyLogger {
 
+        /**
+         * Should be in sync with:
+         * google3/wireless/android/sysui/aster/asterstats/launcher_event_processed.proto
+         */
         enum LatencyType {
             UNKNOWN(0),
+            // example: launcher restart that happens via daily backup and restore
             COLD(1),
             HOT(2),
             TIMEOUT(3),
@@ -797,7 +856,12 @@ public class StatsLogManager implements ResourceBasedOverride {
             COLD_USERWAITING(5),
             ATOMIC(6),
             CONTROLLED(7),
-            CACHED(8);
+            CACHED(8),
+            // example: device is rebooting via power key or shell command `adb reboot`
+            COLD_DEVICE_REBOOTING(9),
+            // Tracking warm startup latency:
+            // https://developer.android.com/topic/performance/vitals/launch-time#warm
+            WARM(10);
             private final int mId;
 
             LatencyType(int id) {
@@ -842,6 +906,12 @@ public class StatsLogManager implements ResourceBasedOverride {
          * Sets sub event type.
          */
         default StatsLatencyLogger withSubEventType(int type) {
+            return this;
+        }
+
+
+        /** Sets cardinality of the event. */
+        default StatsLatencyLogger withCardinality(int cardinality) {
             return this;
         }
 
@@ -901,25 +971,32 @@ public class StatsLogManager implements ResourceBasedOverride {
         }
 
         /**
-         * Sets list of {@link } for the impression event.
+         * Sets {@link com.android.app.search.ResultType} for the impression event.
          */
-        default StatsImpressionLogger withResultType(IntArray resultType) {
+        default StatsImpressionLogger withResultType(int resultType) {
             return this;
         }
 
         /**
-         * Sets list of count for each of {@link } for the
-         * impression event.
-         */
-        default StatsImpressionLogger withResultCount(IntArray resultCount) {
-            return this;
-        }
-
-        /**
-         * Sets list of boolean for each of {@link } that indicates
+         * Sets boolean for each of {@link com.android.app.search.ResultType} that indicates
          * if this result is above keyboard or not for the impression event.
          */
-        default StatsImpressionLogger withAboveKeyboard(List<Boolean> aboveKeyboard) {
+        default StatsImpressionLogger withAboveKeyboard(boolean aboveKeyboard) {
+            return this;
+        }
+
+        /**
+         * Sets uid for each of {@link com.android.app.search.ResultType} that indicates
+         * package name for the impression event.
+         */
+        default StatsImpressionLogger withUid(int uid) {
+            return this;
+        }
+
+        /**
+         * Sets result source that indicates the origin of the result for the impression event.
+         */
+        default StatsImpressionLogger withResultSource(int resultSource) {
             return this;
         }
 
@@ -968,7 +1045,9 @@ public class StatsLogManager implements ResourceBasedOverride {
      */
     public KeyboardStateManager keyboardStateManager() {
         if (mKeyboardStateManager == null) {
-            mKeyboardStateManager = new KeyboardStateManager();
+            mKeyboardStateManager = new KeyboardStateManager(
+                    mContext != null ? mContext.getResources().getDimensionPixelSize(
+                            R.dimen.default_ime_height) : 0);
         }
         return mKeyboardStateManager;
     }
@@ -1004,6 +1083,7 @@ public class StatsLogManager implements ResourceBasedOverride {
         StatsLogManager manager = Overrides.getObject(StatsLogManager.class,
                 context.getApplicationContext(), R.string.stats_log_manager_class);
         manager.mActivityContext = ActivityContext.lookupContextNoThrow(context);
+        manager.mContext = context;
         return manager;
     }
 }

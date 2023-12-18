@@ -145,7 +145,6 @@ public class WidgetsRecyclerView extends FastScrollRecyclerView implements OnIte
 
     /**
      * Detects whether a {@code MotionEvent} is on the scroll bar
-     *
      * @param e The {@code MotionEvent} on the screen
      * @return {@code true} if the motion is on the scroll bar
      */

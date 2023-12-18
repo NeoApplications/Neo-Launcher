@@ -15,6 +15,9 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.android.launcher3.config.FeatureFlags.ALL_APPS_GONE_VISIBILITY;
+import static com.android.launcher3.logger.LauncherAtom.ContainerInfo;
+import static com.android.launcher3.logger.LauncherAtom.SearchResultContainer;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_DOWN;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_UP;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_SCROLLED_UNKNOWN_DIRECTION;
@@ -24,6 +27,8 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_VERTICAL_SWIPE_END;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WORK_FAB_BUTTON_COLLAPSE;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WORK_FAB_BUTTON_EXTEND;
+import static com.android.launcher3.recyclerview.AllAppsRecyclerViewPoolKt.EXTRA_ICONS_COUNT;
+import static com.android.launcher3.recyclerview.AllAppsRecyclerViewPoolKt.PREINFLATE_ICONS_ROW_COUNT;
 import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 
 import android.content.Context;
@@ -39,8 +44,6 @@ import com.android.launcher3.FastScrollRecyclerView;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
-import com.android.launcher3.logger.LauncherAtom.SearchResultContainer;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.views.ActivityContext;
 
@@ -96,10 +99,19 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         int approxRows = (int) Math.ceil(grid.availableHeightPx / grid.allAppsIconSizePx);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_EMPTY_SEARCH, 1);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ALL_APPS_DIVIDER, 1);
-        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ICON, approxRows * (mNumAppsPerRow + 1));
-        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, approxRows * (mNumAppsPerRow + 1));
-    }
 
+        // If all apps' hidden visibility is INVISIBLE, we will need to preinflate one page of
+        // all apps icons for smooth scrolling.
+        int maxPoolSizeForAppIcons = (approxRows + 1) * grid.numShownAllAppsColumns;
+        if (ALL_APPS_GONE_VISIBILITY.get()) {
+            // If all apps' hidden visibility is GONE, we need to increase prefinated icons number
+            // by [PREINFLATE_ICONS_ROW_COUNT] rows + [EXTRA_ICONS_COUNT] for fast opening all apps.
+            maxPoolSizeForAppIcons +=
+                    PREINFLATE_ICONS_ROW_COUNT * grid.numShownAllAppsColumns + EXTRA_ICONS_COUNT;
+        }
+        pool.setMaxRecycledViews(
+                AllAppsGridAdapter.VIEW_TYPE_ICON, maxPoolSizeForAppIcons);
+    }
 
     @Override
     public void onDraw(Canvas c) {
@@ -107,7 +119,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
             Log.d(TAG, "onDraw at = " + System.currentTimeMillis());
         }
         if (DEBUG_LATENCY) {
-            Log.d(SEARCH_LOGGING, getClass().getSimpleName() + " onDraw; time stamp = "
+            Log.d(SEARCH_LOGGING,  getClass().getSimpleName() + " onDraw; time stamp = "
                     + System.currentTimeMillis());
         }
         super.onDraw(c);
@@ -277,10 +289,6 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     @Override
     public boolean hasOverlappingRendering() {
         return false;
-    }
-
-    public void setScrollbarColor(int color) {
-        //mScrollbar.setColor(color, Color.WHITE); //TODO : Fix this
     }
 
     private void logCumulativeVerticalScroll() {

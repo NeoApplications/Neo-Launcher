@@ -36,8 +36,7 @@ public class PendingAddItemInfo extends ItemInfoWithIcon {
      */
     public ComponentName componentName;
 
-    public PendingAddItemInfo() {
-    }
+    public PendingAddItemInfo() { }
 
     public PendingAddItemInfo(PendingAddItemInfo info) {
         super(info);

@@ -43,13 +43,12 @@ import com.android.launcher3.folder.PreviewBackground;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.views.ActivityContext;
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
 @TargetApi(Build.VERSION_CODES.O)
-public class FolderAdaptiveIcon extends CustomAdaptiveIconDrawable {
+public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 
     private final Drawable mBadge;

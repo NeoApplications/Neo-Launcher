@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.touch;
 
+import static com.android.app.animation.Interpolators.scrollInterpolatorForVelocity;
 import static com.android.launcher3.LauncherAnimUtils.SUCCESS_TRANSITION_PROGRESS;
 import static com.android.launcher3.LauncherAnimUtils.TABLET_BOTTOM_SHEET_SUCCESS_TRANSITION_PROGRESS;
 import static com.android.launcher3.LauncherAnimUtils.newCancelListener;
@@ -22,7 +23,6 @@ import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.OVERVIEW;
 import static com.android.launcher3.anim.AnimatorListeners.forEndCallback;
-import static com.android.launcher3.anim.Interpolators.scrollInterpolatorForVelocity;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_ALLAPPS;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_HOME;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_OVERVIEW;
@@ -213,7 +213,7 @@ public abstract class AbstractStateChangeTouchController
             }
             if (mFromState == LauncherState.ALL_APPS) {
                 mAllAppsOvershootStarted = true;
-                mLauncher.getAppsView().onPull(-progress, -progress);
+                mLauncher.getAppsView().onPull(-progress , -progress);
             }
         } else if (progress >= 1) {
             if (reinitCurrentAnimation(true, isDragTowardPositive)) {
@@ -291,11 +291,18 @@ public abstract class AbstractStateChangeTouchController
                             ? mToState : mFromState;
             // snap to top or bottom using the release velocity
         } else {
-            float successTransitionProgress =
-                    mLauncher.getDeviceProfile().isTablet
-                            && (mToState == ALL_APPS || mFromState == ALL_APPS)
-                            ? TABLET_BOTTOM_SHEET_SUCCESS_TRANSITION_PROGRESS
-                            : SUCCESS_TRANSITION_PROGRESS;
+            float successTransitionProgress = SUCCESS_TRANSITION_PROGRESS;
+            if (mLauncher.getDeviceProfile().isTablet
+                    && (mToState == ALL_APPS || mFromState == ALL_APPS)) {
+                successTransitionProgress = TABLET_BOTTOM_SHEET_SUCCESS_TRANSITION_PROGRESS;
+            } else if (!mLauncher.getDeviceProfile().isTablet
+                    && mToState == ALL_APPS && mFromState == NORMAL) {
+                successTransitionProgress = AllAppsSwipeController.ALL_APPS_STATE_TRANSITION_MANUAL;
+            } else if (!mLauncher.getDeviceProfile().isTablet
+                    && mToState == NORMAL && mFromState == ALL_APPS) {
+                successTransitionProgress =
+                        1 - AllAppsSwipeController.ALL_APPS_STATE_TRANSITION_MANUAL;
+            }
             targetState =
                     (interpolatedProgress > successTransitionProgress) ? mToState : mFromState;
         }
@@ -352,7 +359,7 @@ public abstract class AbstractStateChangeTouchController
     }
 
     protected void updateSwipeCompleteAnimation(ValueAnimator animator, long expectedDuration,
-                                                LauncherState targetState, float velocity, boolean isFling) {
+            LauncherState targetState, float velocity, boolean isFling) {
         animator.setDuration(expectedDuration)
                 .setInterpolator(scrollInterpolatorForVelocity(velocity));
     }
@@ -377,8 +384,8 @@ public abstract class AbstractStateChangeTouchController
         } else {
             logReachedState(targetState);
         }
-        mLauncher.getRootView().getSysUiScrim().createSysuiMultiplierAnim(
-                1f).setDuration(0).start();
+        mLauncher.getRootView().getSysUiScrim().getSysUIMultiplier().animateToValue(1f)
+                .setDuration(0).start();
     }
 
     private void logReachedState(LauncherState targetState) {
@@ -395,9 +402,9 @@ public abstract class AbstractStateChangeTouchController
                                         .setPageIndex(mLauncher.getWorkspace().getCurrentPage()))
                         .build())
                 .log(StatsLogManager.getLauncherAtomEvent(mStartState.statsLogOrdinal,
-                        targetState.statsLogOrdinal, mToState.ordinal > mFromState.ordinal
-                                ? LAUNCHER_UNKNOWN_SWIPEUP
-                                : LAUNCHER_UNKNOWN_SWIPEDOWN));
+                            targetState.statsLogOrdinal, mToState.ordinal > mFromState.ordinal
+                                    ? LAUNCHER_UNKNOWN_SWIPEUP
+                                    : LAUNCHER_UNKNOWN_SWIPEDOWN));
     }
 
     protected void clearState() {

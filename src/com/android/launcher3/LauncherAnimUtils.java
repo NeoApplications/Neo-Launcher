@@ -26,6 +26,7 @@ import android.util.FloatProperty;
 import android.util.IntProperty;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.launcher3.util.MultiScalePropertyFactory;
@@ -76,9 +77,7 @@ public class LauncherAnimUtils {
     public static final MultiScalePropertyFactory<Workspace<?>> WORKSPACE_SCALE_PROPERTY_FACTORY =
             new MultiScalePropertyFactory<Workspace<?>>("workspace_scale_property");
 
-    /**
-     * Property to set the scale of hotseat.
-     */
+    /** Property to set the scale of hotseat. */
     public static final MultiScalePropertyFactory<Hotseat> HOTSEAT_SCALE_PROPERTY_FACTORY =
             new MultiScalePropertyFactory<Hotseat>("hotseat_scale_property");
 
@@ -87,9 +86,7 @@ public class LauncherAnimUtils {
     public static final int SCALE_INDEX_REVEAL_ANIM = 3;
     public static final int SCALE_INDEX_WIDGET_TRANSITION = 4;
 
-    /**
-     * Increase the duration if we prevented the fling, as we are going against a high velocity.
-     */
+    /** Increase the duration if we prevented the fling, as we are going against a high velocity. */
     public static int blockedFlingDurationFactor(float velocity) {
         return (int) Utilities.boundToRange(Math.abs(velocity) / 2, 2f, 6f);
     }
@@ -149,44 +146,44 @@ public class LauncherAnimUtils {
     public static final FloatProperty<View> VIEW_TRANSLATE_X =
             View.TRANSLATION_X instanceof FloatProperty ? (FloatProperty) View.TRANSLATION_X
                     : new FloatProperty<View>("translateX") {
-                @Override
-                public void setValue(View view, float v) {
-                    view.setTranslationX(v);
-                }
+                        @Override
+                        public void setValue(View view, float v) {
+                            view.setTranslationX(v);
+                        }
 
-                @Override
-                public Float get(View view) {
-                    return view.getTranslationX();
-                }
-            };
+                        @Override
+                        public Float get(View view) {
+                            return view.getTranslationX();
+                        }
+                    };
 
     public static final FloatProperty<View> VIEW_TRANSLATE_Y =
             View.TRANSLATION_Y instanceof FloatProperty ? (FloatProperty) View.TRANSLATION_Y
                     : new FloatProperty<View>("translateY") {
-                @Override
-                public void setValue(View view, float v) {
-                    view.setTranslationY(v);
-                }
+                        @Override
+                        public void setValue(View view, float v) {
+                            view.setTranslationY(v);
+                        }
 
-                @Override
-                public Float get(View view) {
-                    return view.getTranslationY();
-                }
-            };
+                        @Override
+                        public Float get(View view) {
+                            return view.getTranslationY();
+                        }
+                    };
 
     public static final FloatProperty<View> VIEW_ALPHA =
             View.ALPHA instanceof FloatProperty ? (FloatProperty) View.ALPHA
                     : new FloatProperty<View>("alpha") {
-                @Override
-                public void setValue(View view, float v) {
-                    view.setAlpha(v);
-                }
+                        @Override
+                        public void setValue(View view, float v) {
+                            view.setAlpha(v);
+                        }
 
-                @Override
-                public Float get(View view) {
-                    return view.getAlpha();
-                }
-            };
+                        @Override
+                        public Float get(View view) {
+                            return view.getAlpha();
+                        }
+                    };
 
     public static final IntProperty<View> VIEW_BACKGROUND_COLOR =
             new IntProperty<View>("backgroundColor") {
@@ -201,6 +198,23 @@ public class LauncherAnimUtils {
                         return Color.TRANSPARENT;
                     }
                     return ((ColorDrawable) view.getBackground()).getColor();
+                }
+            };
+
+    public static final FloatProperty<ImageView> ROTATION_DRAWABLE_PERCENT =
+            new FloatProperty<ImageView>("drawableRotationPercent") {
+                // RotateDrawable linearly interpolates the rotation degrees between fromDegrees
+                // and toDegrees using the drawable level as a percent of its MAX_LEVEL.
+                private static final int MAX_LEVEL = 10000;
+
+                @Override
+                public void setValue(ImageView view, float percent) {
+                    view.setImageLevel((int) (percent * MAX_LEVEL));
+                }
+
+                @Override
+                public Float get(ImageView view) {
+                    return view.getDrawable().getLevel() / (float) MAX_LEVEL;
                 }
             };
 
@@ -221,5 +235,33 @@ public class LauncherAnimUtils {
                 }
             }
         };
+    }
+
+    /**
+     * A property that updates the specified property within a given range of values (ie. even if
+     * the animator goes beyond 0..1, the interpolated value will still be bounded).
+     * @param <T> the specified property
+     */
+    public static class ClampedProperty<T> extends FloatProperty<T> {
+        private final FloatProperty<T> mProperty;
+        private final float mMinValue;
+        private final float mMaxValue;
+
+        public ClampedProperty(FloatProperty<T> property, float minValue, float maxValue) {
+            super(property.getName() + "Clamped");
+            mProperty = property;
+            mMinValue = minValue;
+            mMaxValue = maxValue;
+        }
+
+        @Override
+        public void setValue(T t, float v) {
+            mProperty.set(t, Utilities.boundToRange(v, mMinValue, mMaxValue));
+        }
+
+        @Override
+        public Float get(T t) {
+            return mProperty.get(t);
+        }
     }
 }

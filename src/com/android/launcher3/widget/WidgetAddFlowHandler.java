@@ -63,7 +63,7 @@ public class WidgetAddFlowHandler implements Parcelable {
      * @see #startConfigActivity(Launcher, int, ItemInfo, int)
      */
     public boolean startConfigActivity(Launcher launcher, LauncherAppWidgetInfo info,
-                                       int requestCode) {
+            int requestCode) {
         return startConfigActivity(launcher, info.appWidgetId, info, requestCode);
     }
 
@@ -72,7 +72,7 @@ public class WidgetAddFlowHandler implements Parcelable {
      * @return true if the configuration flow was started, false otherwise.
      */
     public boolean startConfigActivity(Launcher launcher, int appWidgetId, ItemInfo info,
-                                       int requestCode) {
+            int requestCode) {
         if (!needsConfigure()) {
             return false;
         }

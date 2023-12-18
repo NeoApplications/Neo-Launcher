@@ -27,6 +27,7 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.GridOccupancy;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
+import com.saggitt.omega.NeoApp;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class WorkspaceItemSpaceFinder {
      * @return screenId and the coordinates for the item in an int array of size 3.
      */
     public int[] findSpaceForItem(LauncherAppState app, BgDataModel dataModel,
-                                  IntArray workspaceScreens, IntArray addedWorkspaceScreensFinal, int spanX, int spanY) {
+            IntArray workspaceScreens, IntArray addedWorkspaceScreensFinal, int spanX, int spanY) {
         LongSparseArray<ArrayList<ItemInfo>> screenItems = new LongSparseArray<>();
 
         // Use sBgItemsIdMap as all the items are already loaded.
@@ -66,7 +67,7 @@ public class WorkspaceItemSpaceFinder {
         int screenCount = workspaceScreens.size();
         // First check the preferred screen.
         IntSet screensToExclude = new IntSet();
-        if (FeatureFlags.QSbOnFirstScreen(app.getContext())) {
+        if (FeatureFlags.QSBOnFirstScreen(app.getContext())) {
             screensToExclude.add(FIRST_SCREEN_ID);
         }
 
@@ -82,9 +83,7 @@ public class WorkspaceItemSpaceFinder {
 
         if (!found) {
             // Still no position found. Add a new screen to the end.
-            screenId = LauncherSettings.Settings.call(app.getContext().getContentResolver(),
-                            LauncherSettings.Settings.METHOD_NEW_SCREEN_ID)
-                    .getInt(LauncherSettings.Settings.EXTRA_VALUE);
+            screenId = app.getModel().getModelDbController().getNewScreenId();
 
             // Save the screen id for binding in the workspace
             workspaceScreens.add(screenId);

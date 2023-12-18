@@ -18,12 +18,16 @@ package com.android.launcher3.pm;
 
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.PinItemRequest;
 import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.os.Build;
 import android.os.Parcelable;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 
@@ -35,11 +39,11 @@ public class PinRequestHelper {
 
     /**
      * request.accept() will initiate the following flow:
-     * -> go-to-system-process for actual processing (a)
-     * -> callback-to-launcher on UI thread (b)
-     * -> post callback on the worker thread (c)
-     * -> Update model and unpin (in system) any shortcut not in out model. (d)
-     * <p>
+     *      -> go-to-system-process for actual processing (a)
+     *      -> callback-to-launcher on UI thread (b)
+     *      -> post callback on the worker thread (c)
+     *      -> Update model and unpin (in system) any shortcut not in out model. (d)
+     *
      * Note that (b) will take at-least one frame as it involves posting callback from binder
      * thread to UI thread.
      * If (d) happens before we add this shortcut to our model, we will end up unpinning
@@ -49,6 +53,7 @@ public class PinRequestHelper {
      * that (d) happens after model is updated.
      */
     @Nullable
+    @TargetApi(Build.VERSION_CODES.O)
     public static WorkspaceItemInfo createWorkspaceItemFromPinItemRequest(
             Context context, final PinItemRequest request, final long acceptDelay) {
         if (request != null && request.getRequestType() == PinItemRequest.REQUEST_TYPE_SHORTCUT
@@ -60,17 +65,10 @@ public class PinRequestHelper {
                 }
             } else {
                 // Block the worker thread until the accept() is called.
-                MODEL_EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(acceptDelay);
-                        } catch (InterruptedException e) {
-                            // Ignore
-                        }
-                        if (request.isValid()) {
-                            request.accept();
-                        }
+                MODEL_EXECUTOR.execute(() -> {
+                    SystemClock.sleep(acceptDelay);
+                    if (request.isValid()) {
+                        request.accept();
                     }
                 });
             }
@@ -87,8 +85,18 @@ public class PinRequestHelper {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     public static PinItemRequest getPinItemRequest(Intent intent) {
         Parcelable extra = intent.getParcelableExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST);
         return extra instanceof PinItemRequest ? (PinItemRequest) extra : null;
+    }
+
+    /**
+     * Returns a PinItemRequest corresponding to the provided ShortcutInfo
+     */
+    public static PinItemRequest createRequestForShortcut(Context context, ShortcutInfo info) {
+        return context.getSystemService(LauncherApps.class)
+                .getPinItemRequest(context.getSystemService(ShortcutManager.class)
+                        .createShortcutResultIntent(info));
     }
 }

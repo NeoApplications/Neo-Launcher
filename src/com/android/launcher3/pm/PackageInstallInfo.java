@@ -74,16 +74,11 @@ public final class PackageInstallInfo {
 
     private String stateToString() {
         switch (state) {
-            case STATUS_INSTALLED:
-                return "STATUS_INSTALLED";
-            case STATUS_INSTALLING:
-                return "STATUS_INSTALLING";
-            case STATUS_INSTALLED_DOWNLOADING:
-                return "STATUS_INSTALLED_DOWNLOADING";
-            case STATUS_FAILED:
-                return "STATUS_FAILED";
-            default:
-                return "INVALID STATE";
+            case STATUS_INSTALLED : return "STATUS_INSTALLED";
+            case STATUS_INSTALLING : return "STATUS_INSTALLING";
+            case STATUS_INSTALLED_DOWNLOADING : return "STATUS_INSTALLED_DOWNLOADING";
+            case STATUS_FAILED : return "STATUS_FAILED";
+            default : return "INVALID STATE";
         }
     }
 }

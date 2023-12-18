@@ -28,9 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * A {@link ViewHolder} for showing widgets of an app in the full widget picker.
- */
+/** A {@link ViewHolder} for showing widgets of an app in the full widget picker. */
 public final class WidgetsRowViewHolder extends ViewHolder {
 
     public final WidgetsListTableView tableContainer;

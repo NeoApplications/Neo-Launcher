@@ -25,7 +25,7 @@ public interface HorizontalInsettableView {
     /**
      * Sets left and right insets for the view so it looks like the width of the view is
      * reduced when inset is increased.
-     * <p>
+     *
      * The inset is calculated based on the width of the view: e.g. when the width of
      * the view is 100px then if we apply 0.15f horizontal inset percentage the rendered width
      * of the view will be 70px with 15px of padding on the left and right sides.

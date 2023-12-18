@@ -17,7 +17,9 @@
 package com.android.launcher3.model.data;
 
 import static android.text.TextUtils.isEmpty;
+
 import static androidx.core.util.Preconditions.checkNotNull;
+
 import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
@@ -28,6 +30,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Process;
+import android.text.TextUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -37,6 +40,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
@@ -47,8 +51,8 @@ import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
-import com.saggitt.omega.data.models.GestureItemInfo;
 import com.saggitt.omega.data.GestureItemInfoRepository;
+import com.saggitt.omega.data.models.GestureItemInfo;
 import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
@@ -56,6 +60,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
+
 
 /**
  * Represents a folder containing shortcuts or apps.
@@ -126,8 +131,17 @@ public class FolderInfo extends ItemInfo {
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
         user = Process.myUserHandle();
+    }
 
-        swipeUpAction = "";
+    /**
+     * Create an app pair, a type of app collection that launches multiple apps into split screen
+     */
+    public static FolderInfo createAppPair(WorkspaceItemInfo app1, WorkspaceItemInfo app2) {
+        FolderInfo newAppPair = new FolderInfo();
+        newAppPair.itemType = LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR;
+        newAppPair.add(app1, /* animate */ false);
+        newAppPair.add(app2, /* animate */ false);
+        return newAppPair;
     }
 
     /**
@@ -194,9 +208,7 @@ public class FolderInfo extends ItemInfo {
 
     public interface FolderListener {
         void onAdd(WorkspaceItemInfo item, int rank);
-
         void onRemove(List<WorkspaceItemInfo> item);
-
         void onItemsChanged(boolean animate);
 
         void onTitleChanged(CharSequence title);
@@ -211,9 +223,9 @@ public class FolderInfo extends ItemInfo {
     }
 
     /**
-     * @param option    flag to set or clear
+     * @param option flag to set or clear
      * @param isEnabled whether to set or clear the flag
-     * @param writer    if not null, save changes to the db.
+     * @param writer if not null, save changes to the db.
      */
     public void setOption(int option, boolean isEnabled, ModelWriter writer) {
         int oldOptions = options;
@@ -226,7 +238,6 @@ public class FolderInfo extends ItemInfo {
             writer.updateItemInDatabase(this);
         }
     }
-
     public boolean isCoverMode() {
         return hasOption(FLAG_COVER_MODE);
     }
@@ -307,8 +318,8 @@ public class FolderInfo extends ItemInfo {
         LabelState newLabelState =
                 title == null ? LabelState.UNLABELED
                         : title.length() == 0 ? LabelState.EMPTY :
-                        getAcceptedSuggestionIndex().isPresent() ? LabelState.SUGGESTED
-                                : LabelState.MANUAL;
+                                getAcceptedSuggestionIndex().isPresent() ? LabelState.SUGGESTED
+                                        : LabelState.MANUAL;
 
         if (newLabelState.equals(LabelState.MANUAL)) {
             options |= FLAG_MANUAL_FOLDER_NAME;
@@ -326,8 +337,8 @@ public class FolderInfo extends ItemInfo {
     public LabelState getLabelState() {
         return title == null ? LabelState.UNLABELED
                 : title.length() == 0 ? LabelState.EMPTY :
-                hasOption(FLAG_MANUAL_FOLDER_NAME) ? LabelState.MANUAL
-                        : LabelState.SUGGESTED;
+                        hasOption(FLAG_MANUAL_FOLDER_NAME) ? LabelState.MANUAL
+                                : LabelState.SUGGESTED;
     }
 
     @NonNull
@@ -370,7 +381,7 @@ public class FolderInfo extends ItemInfo {
      * Returns {@link FromState} based on current {@link #title}.
      */
     public LauncherAtom.FromState getFromLabelState() {
-        switch (getLabelState()) {
+        switch (getLabelState()){
             case EMPTY:
                 return LauncherAtom.FromState.FROM_EMPTY;
             case MANUAL:
@@ -447,5 +458,22 @@ public class FolderInfo extends ItemInfo {
         });
         icon.unbind();
         return new BitmapDrawable(launcher.getResources(), b);
+    }
+
+    public CharSequence getIconTitle(Folder folder) {
+        if(!isCoverMode()){
+            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
+                return title;
+            }else {
+                return folder.getDefaultFolderName();
+            }
+        }
+        else{
+            WorkspaceItemInfo info = getCoverInfo();
+            if (info.customTitle != null) {
+                return info.customTitle;
+            }
+            return info.title;
+        }
     }
 }

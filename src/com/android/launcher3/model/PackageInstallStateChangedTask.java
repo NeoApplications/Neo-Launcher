@@ -44,7 +44,7 @@ public class PackageInstallStateChangedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList apps) {
+            @NonNull final AllAppsList apps) {
         if (mInstallInfo.state == PackageInstallInfo.STATUS_INSTALLED) {
             try {
                 // For instant apps we do not get package-add. Use setting events to update

@@ -40,13 +40,12 @@ public class WidgetsSpaceViewHolderBinder
 
     @Override
     public ViewHolder newViewHolder(ViewGroup parent) {
-        return new ViewHolder(new EmptySpaceView(parent.getContext())) {
-        };
+        return new ViewHolder(new EmptySpaceView(parent.getContext())) { };
     }
 
     @Override
     public void bindViewHolder(ViewHolder holder, WidgetListSpaceEntry data,
-                               @ListPosition int position, List<Object> payloads) {
+            @ListPosition int position, List<Object> payloads) {
         ((EmptySpaceView) holder.itemView).setFixedHeight(mEmptySpaceHeightProvider.getAsInt());
     }
 }

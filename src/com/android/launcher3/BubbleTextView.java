@@ -16,6 +16,7 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.config.FeatureFlags.ENABLE_CURSOR_HOVER_STATES;
 import static com.android.launcher3.config.FeatureFlags.ENABLE_DOWNLOAD_APP_UX_V2;
 import static com.android.launcher3.config.FeatureFlags.ENABLE_ICON_LABEL_AUTO_SCALING;
 import static com.android.launcher3.graphics.PreloadIconDrawable.newPendingIcon;
@@ -34,7 +35,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -61,8 +61,10 @@ import com.android.launcher3.dot.DotInfo;
 import com.android.launcher3.dragndrop.DragOptions.PreDragCondition;
 import com.android.launcher3.dragndrop.DraggableView;
 import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.graphics.PreloadIconDrawable;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.icons.IconCache.ItemInfoUpdateReceiver;
@@ -78,6 +80,7 @@ import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MultiTranslateDelegate;
 import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.util.ShortcutUtil;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.saggitt.omega.gestures.BlankGestureHandler;
@@ -99,12 +102,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         IconLabelDotView, DraggableView, Reorderable {
 
     private static final int DISPLAY_WORKSPACE = 0;
-    private static final int DISPLAY_ALL_APPS = 1;
+    public static final int DISPLAY_ALL_APPS = 1;
     private static final int DISPLAY_FOLDER = 2;
     protected static final int DISPLAY_TASKBAR = 5;
-    private static final int DISPLAY_SEARCH_RESULT = 6;
-    private static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
-    private static final int DISPLAY_DRAWER_FOLDER = 8;
+    public static final int DISPLAY_SEARCH_RESULT = 6;
+    public static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
+    public static final int DISPLAY_PREDICTION_ROW = 8;
+    public static final int DISPLAY_SEARCH_RESULT_APP_ROW = 9;
+    private static final int DISPLAY_DRAWER_FOLDER = 10;
 
     private static final float MIN_LETTER_SPACING = -0.05f;
     private static final int MAX_SEARCH_LOOP_COUNT = 20;
@@ -149,7 +154,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     };
 
     private final MultiTranslateDelegate mTranslateDelegate = new MultiTranslateDelegate(this);
-
     private final ActivityContext mActivity;
     private FastBitmapDrawable mIcon;
     private boolean mCenterVertically;
@@ -158,7 +162,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private final CheckLongPressHelper mLongPressHelper;
 
-    private final boolean mLayoutHorizontal;
+    private boolean mLayoutHorizontal;
     private final boolean mIsRtl;
     private final int mIconSize;
 
@@ -205,6 +209,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     public BubbleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mActivity = ActivityContext.lookupContext(context);
+        FastBitmapDrawable.setFlagHoverEnabled(ENABLE_CURSOR_HOVER_STATES.get());
 
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.BubbleTextView, defStyle, 0);
@@ -216,15 +221,16 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         mDisplay = a.getInteger(R.styleable.BubbleTextView_iconDisplay, DISPLAY_WORKSPACE);
         final int defaultIconSize;
 
-        NeoPrefs prefs = Utilities.getOmegaPrefs(context);
+        NeoPrefs prefs = Utilities.getNeoPrefs(context);
         if (mDisplay == DISPLAY_WORKSPACE) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.iconTextSizePx);
             setCompoundDrawablePadding(grid.iconDrawablePaddingPx);
             defaultIconSize = grid.iconSizePx;
-            setCenterVertically(grid.isScalableGrid);
+            setCenterVertically(grid.iconCenterVertically);
             int lines = prefs.getDesktopLabelRows();
             setLineCount(lines);
-        } else if (mDisplay == DISPLAY_ALL_APPS) {
+        } else if (mDisplay == DISPLAY_ALL_APPS || mDisplay == DISPLAY_PREDICTION_ROW
+                || mDisplay == DISPLAY_SEARCH_RESULT_APP_ROW) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.allAppsIconTextSizePx);
             setCompoundDrawablePadding(grid.allAppsIconDrawablePaddingPx);
             defaultIconSize = grid.allAppsIconSizePx;
@@ -370,7 +376,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         applyIconAndLabel(info);
         applySwipeUpAction(info);
         setItemInfo(info);
-        applyLoadingState(icon);
+        //applyLoadingState(icon);
         applyDotState(info, false /* animate */);
         setDownloadStateContentDescription(info, info.getProgressLevel());
     }
@@ -420,8 +426,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
         FastBitmapDrawable iconDrawable = info.newIcon(getContext(), flags);
         mDotParams.appColor = iconDrawable.getIconColor();
-        mDotParams.dotColor = getContext().getResources()
-                .getColor(android.R.color.system_accent3_200, getContext().getTheme());
+        mDotParams.dotColor = Themes.getAttrColor(getContext(), R.attr.notificationDotColor);
         setIcon(iconDrawable);
         applyLabel(info);
     }
@@ -429,6 +434,15 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     protected boolean shouldUseTheme() {
         return mDisplay == DISPLAY_WORKSPACE || mDisplay == DISPLAY_FOLDER
                 || mDisplay == DISPLAY_TASKBAR;
+    }
+
+    /**
+     *  Only if actual text can be displayed in two line, the {@code true} value will be effective.
+     */
+    protected boolean shouldUseTwoLine() {
+        return  (FeatureFlags.ENABLE_TWOLINE_ALLAPPS.get() && mDisplay == DISPLAY_ALL_APPS)
+                || (FeatureFlags.ENABLE_TWOLINE_DEVICESEARCH.get()
+                && mDisplay == DISPLAY_SEARCH_RESULT);
     }
 
     @UiThread
@@ -448,10 +462,10 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
     }
 
-    /** This is used for testing to forcefully set the display to ALL_APPS */
+    /** This is used for testing to forcefully set the display. */
     @VisibleForTesting
-    public void setDisplayAllApps() {
-        mDisplay = DISPLAY_ALL_APPS;
+    public void setDisplay(int display) {
+        mDisplay = display;
     }
 
     private void applySwipeUpAction(WorkspaceItemInfo info) {
@@ -488,9 +502,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         return drawableState;
     }
 
-    /**
-     * Returns the icon for this view.
-     */
+    /** Returns the icon for this view. */
     public FastBitmapDrawable getIcon() {
         return mIcon;
     }
@@ -592,16 +604,16 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     /**
      * Find the appropriate text spacing to display the provided text
-     *
-     * @param paint          the paint used by the text view
-     * @param text           the text to display
+     * @param paint the paint used by the text view
+     * @param text the text to display
      * @param allowedWidthPx available space to render the text
-     * @param minSpacingEm   minimum spacing allowed between characters
+     * @param minSpacingEm minimum spacing allowed between characters
      * @return the final textSpacing value
+     *
      * @see #setLetterSpacing(float)
      */
     private float findBestSpacingValue(TextPaint paint, String text, float allowedWidthPx,
-                                       float minSpacingEm) {
+            float minSpacingEm) {
         paint.setLetterSpacing(minSpacingEm);
         if (paint.measureText(text) > allowedWidthPx) {
             // If there is no result at high limit, we can do anything more
@@ -650,7 +662,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             final int scrollY = getScrollY();
             canvas.translate(scrollX, scrollY);
             if (mDotInfo != null) {
-                NeoPrefs prefs = Utilities.getOmegaPrefs(getContext());
+                NeoPrefs prefs = Utilities.getNeoPrefs(getContext());
                 mDotParams.count = mDotInfo.getNotificationCount();
                 mDotParams.notificationKeys = mDotInfo.getNotificationKeys().size();
                 mDotParams.showCount = prefs.getNotificationCount().getValue();
@@ -675,6 +687,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         } else if (hasDot()) {
             animateDotScale(0, 1);
         }
+    }
+
+    @VisibleForTesting
+    public boolean getForceHideDot() {
+        return mForceHideDot;
     }
 
     private boolean hasDot() {
@@ -706,6 +723,18 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     }
 
     /**
+     * Sets whether the layout is horizontal.
+     */
+    public void setLayoutHorizontal(boolean layoutHorizontal) {
+        if (mLayoutHorizontal == layoutHorizontal) {
+            return;
+        }
+
+        mLayoutHorizontal = layoutHorizontal;
+        applyCompoundDrawables(getIconOrTransparentColor());
+    }
+
+    /**
      * Sets whether to vertically center the content.
      */
     public void setCenterVertically(boolean centerVertically) {
@@ -722,10 +751,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             setPadding(getPaddingLeft(), (height - cellHeightPx) / 2, getPaddingRight(),
                     getPaddingBottom());
         }
-        // only apply two line for all_apps
-        if (((FeatureFlags.ENABLE_TWOLINE_ALLAPPS.get() && mDisplay == DISPLAY_ALL_APPS)
-                || (FeatureFlags.ENABLE_TWOLINE_DEVICESEARCH.get()
-                && mDisplay == DISPLAY_SEARCH_RESULT)) && (mLastOriginalText != null)) {
+        // Only apply two line for all_apps and device search only if necessary.
+        if (shouldUseTwoLine() && (mLastOriginalText != null)) {
             CharSequence modifiedString = modifyTitleToSupportMultiLine(
                     MeasureSpec.getSize(widthMeasureSpec) - getCompoundPaddingLeft()
                             - getCompoundPaddingRight(),
@@ -804,7 +831,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         return ObjectAnimator.ofFloat(this, TEXT_ALPHA_PROPERTY, toAlpha);
     }
 
-
     /**
      * Generate a new string that will support two line text depending on the current string.
      * This method calculates the limited width of a text view and creates a string to fit as
@@ -821,7 +847,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
      *  "Battery\nStats"
      */
     public static CharSequence modifyTitleToSupportMultiLine(int limitedWidth, CharSequence title,
-                                                             TextPaint paint, IntArray breakPoints) {
+            TextPaint paint, IntArray breakPoints) {
         // current title is less than the width allowed so we can just skip
         if (title == null || paint.measureText(title, 0, title.length()) <= limitedWidth) {
             return title;
@@ -905,9 +931,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
     }
 
-    /**
-     * Applies the given progress level to the this icon's progress bar.
-     */
+    /** Applies the given progress level to the this icon's progress bar. */
     @Nullable
     public PreloadIconDrawable applyProgressLevel() {
         if (!(getTag() instanceof ItemInfoWithIcon)) {
@@ -1004,12 +1028,12 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             if ((info.runtimeStatusFlags & FLAG_INSTALL_SESSION_ACTIVE) != 0) {
                 setContentDescription(getContext()
                         .getString(
-                                R.string.app_installing_title, info.title, percentageString));
+                            R.string.app_installing_title, info.title, percentageString));
             } else if ((info.runtimeStatusFlags
                     & FLAG_INCREMENTAL_DOWNLOAD_ACTIVE) != 0) {
                 setContentDescription(getContext()
                         .getString(
-                                R.string.app_downloading_title, info.title, percentageString));
+                            R.string.app_downloading_title, info.title, percentageString));
             }
         }
     }
@@ -1033,8 +1057,12 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         if (!mIsIconVisible) {
             resetIconScale();
         }
-        Drawable icon = visible ? mIcon : new ColorDrawable(Color.TRANSPARENT);
+        Drawable icon = getIconOrTransparentColor();
         applyCompoundDrawables(icon);
+    }
+
+    private Drawable getIconOrTransparentColor() {
+        return mIsIconVisible ? mIcon : new ColorDrawable(Color.TRANSPARENT);
     }
 
     /** Sets the icon visual state to disabled or not. */
@@ -1128,8 +1156,13 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     }
 
     public boolean isDisplaySearchResult() {
-        return mDisplay == DISPLAY_SEARCH_RESULT ||
-                mDisplay == DISPLAY_SEARCH_RESULT_SMALL;
+        return mDisplay == DISPLAY_SEARCH_RESULT
+                || mDisplay == DISPLAY_SEARCH_RESULT_SMALL
+                || mDisplay == DISPLAY_SEARCH_RESULT_APP_ROW;
+    }
+
+    public int getIconDisplay() {
+        return mDisplay;
     }
 
     @Override
@@ -1176,12 +1209,29 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
     }
 
+    public void applyIcon(ItemInfoWithIcon info) {
+        FastBitmapDrawable iconDrawable = info.newIcon(getContext());
+        mDotParams.dotColor = IconPalette.getMutedColor(info.bitmap.color, 0.54f);
+        setIcon(iconDrawable);
+    }
+
+    public void applyIcon(BitmapInfo info) {
+        FastBitmapDrawable iconDrawable = new FastBitmapDrawable(info);
+        mDotParams.dotColor = IconPalette.getMutedColor(info.color, 0.54f);
+        setIcon(iconDrawable);
+    }
+
     private void updateIcon(Drawable newIcon) {
         if (mLayoutHorizontal) {
             setCompoundDrawablesRelative(newIcon, null, null, null);
         } else {
             setCompoundDrawables(null, newIcon, null, null);
         }
+    }
+
+    public void clearIcon() {
+        mIcon = null;
+        setCompoundDrawables(null, null, null, null);
     }
 
     private String getAppLabelPluralString(String appName, int notificationCount) {

@@ -79,7 +79,7 @@ public class FolderNameProvider implements ResourceBasedOverride {
     }
 
     public static FolderNameProvider newInstance(Context context, List<AppInfo> appInfos,
-                                                 IntSparseArrayMap<FolderInfo> folderInfos) {
+            IntSparseArrayMap<FolderInfo> folderInfos) {
         Preconditions.assertWorkerThread();
         FolderNameProvider fnp = Overrides.getObject(FolderNameProvider.class,
                 context.getApplicationContext(), R.string.folder_name_provider_class);
@@ -103,8 +103,8 @@ public class FolderNameProvider implements ResourceBasedOverride {
      */
     @WorkerThread
     public void getSuggestedFolderName(Context context,
-                                       ArrayList<WorkspaceItemInfo> workspaceItemInfos,
-                                       FolderNameInfos nameInfos) {
+            ArrayList<WorkspaceItemInfo> workspaceItemInfos,
+            FolderNameInfos nameInfos) {
         Preconditions.assertWorkerThread();
         if (DEBUG) {
             Log.d(TAG, "getSuggestedFolderName:" + nameInfos.toString());
@@ -194,7 +194,7 @@ public class FolderNameProvider implements ResourceBasedOverride {
     private class FolderNameWorker extends BaseModelUpdateTask {
         @Override
         public void execute(@NonNull final LauncherAppState app,
-                            @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
+                @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
             mFolderInfos = dataModel.folders.clone();
             mAppInfos = Arrays.asList(apps.copyData());
         }

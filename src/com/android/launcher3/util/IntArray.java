@@ -32,7 +32,7 @@ public class IntArray implements Cloneable, Iterable<Integer> {
     /* package private */ int[] mValues;
     /* package private */ int mSize;
 
-    private IntArray(int[] array, int size) {
+    private  IntArray(int[] array, int size) {
         mValues = array;
         mSize = size;
     }
@@ -248,6 +248,11 @@ public class IntArray implements Cloneable, Iterable<Integer> {
             b.append(mValues[i]);
         }
         return b.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "IntArray [" + toConcatString() + "]";
     }
 
     public static IntArray fromConcatString(String concatString) {

@@ -16,6 +16,8 @@
 package com.android.launcher3.keyboard;
 
 import static android.app.Activity.DEFAULT_KEYS_SEARCH_LOCAL;
+
+import static com.android.launcher3.LauncherState.EDIT_MODE;
 import static com.android.launcher3.LauncherState.SPRING_LOADED;
 
 import android.app.Activity;
@@ -113,7 +115,7 @@ public class KeyboardDragAndDropView extends AbstractFloatingView
 
     @Override
     public void onStateTransitionStart(LauncherState toState) {
-        if (toState != SPRING_LOADED) {
+        if (toState != SPRING_LOADED && toState != EDIT_MODE) {
             close(false);
         }
     }
@@ -141,7 +143,7 @@ public class KeyboardDragAndDropView extends AbstractFloatingView
             pv.setCurrentPage(pageIndex);
             bounds.offset(pv.getScrollX() - pv.getScrollForPage(pageIndex), 0);
         }
-        float[] pos = new float[]{bounds.left, bounds.top, bounds.right, bounds.bottom};
+        float[] pos = new float[] {bounds.left, bounds.top, bounds.right, bounds.bottom};
         Utilities.getDescendantCoordRelativeToAncestor(host, mLauncher.getDragLayer(), pos, true);
 
         new RectF(pos[0], pos[1], pos[2], pos[3]).roundOut(bounds);
@@ -272,7 +274,7 @@ public class KeyboardDragAndDropView extends AbstractFloatingView
 
         // Find current selection
         CellLayout currentParent = (CellLayout) icon.getParent().getParent();
-        float[] iconPos = new float[]{currentParent.getCellWidth() / 2,
+        float[] iconPos = new float[] {currentParent.getCellWidth() / 2,
                 currentParent.getCellHeight() / 2};
         Utilities.getDescendantCoordRelativeToAncestor(icon, currentParent, iconPos, false);
 

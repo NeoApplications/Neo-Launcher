@@ -18,10 +18,11 @@ package com.android.launcher3.views;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_OUTSIDE;
 import static android.view.MotionEvent.ACTION_UP;
+
 import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
 
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -107,7 +108,6 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     protected final T mActivity;
     private final MultiValueAlpha mMultiValueAlpha;
-    private final WallpaperManager mWallpaperManager;
 
     // All the touch controllers for the view
     protected TouchController[] mControllers;
@@ -120,9 +120,8 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     public BaseDragLayer(Context context, AttributeSet attrs, int alphaChannelCount) {
         super(context, attrs);
-        mActivity = (T) ActivityContext.lookupContext(context);
+        mActivity = ActivityContext.lookupContext(context);
         mMultiValueAlpha = new MultiValueAlpha(this, alphaChannelCount);
-        mWallpaperManager = context.getSystemService(WallpaperManager.class);
     }
 
     /**
@@ -262,7 +261,10 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
             mTouchCompleteListener = null;
         }
 
-        if (mActiveController != null) {
+        if (mActiveController != null && ev.getAction() != ACTION_OUTSIDE) {
+            // For some reason, once we intercept touches and have an mActiveController, we won't
+            // get onInterceptTouchEvent() for ACTION_OUTSIDE. Thus, we must recalculate a new
+            // TouchController (if any) to handle the ACTION_OUTSIDE here in onTouchEvent() as well.
             return mActiveController.onControllerTouchEvent(ev);
         } else {
             // In case no child view handled the touch event, we may not get onIntercept anymore
@@ -316,7 +318,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
         // dispatching at anytime, but not vice-versa.
         allowViewDispatch = allowViewDispatch && !isViewDispatching
                 && (actionMasked == ACTION_DOWN
-                || ((mTouchDispatchState & TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS) != 0));
+                    || ((mTouchDispatchState & TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS) != 0));
 
         if (allowViewDispatch) {
             mTouchDispatchState |= TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS;
@@ -405,7 +407,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
      *         assumption fails, we will need to return a pair of scale factors.
      */
     public float getDescendantCoordRelativeToSelf(View descendant, float[] coord,
-                                                  boolean includeRootScroll) {
+            boolean includeRootScroll) {
         return Utilities.getDescendantCoordRelativeToAncestor(descendant, this,
                 coord, includeRootScroll);
     }
@@ -511,7 +513,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
             writer.println(prefix + "\tactiveController: " + mActiveController);
             mActiveController.dump(prefix + "\t", writer);
         }
-        writer.println(prefix + "\tdragLayerAlpha : " + mMultiValueAlpha);
+        writer.println(prefix + "\tdragLayerAlpha : " + mMultiValueAlpha );
     }
 
     public static class LayoutParams extends InsettableFrameLayout.LayoutParams {
@@ -557,7 +559,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
             DeviceProfile dp = mActivity.getDeviceProfile();
             if (dp.isTaskbarPresent) {
                 // Ignore taskbar gesture insets to avoid interfering with TouchControllers.
-                gestureInsetBottom = Math.max(0, gestureInsetBottom - dp.taskbarSize);
+                gestureInsetBottom = Math.max(0, gestureInsetBottom - dp.taskbarHeight);
             }
             mSystemGestureRegion.set(
                     Math.max(gestureInsets.left, imeInset.left),

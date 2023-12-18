@@ -25,14 +25,12 @@ import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInstaller.SessionInfo;
 import android.os.Build;
 import android.os.UserHandle;
-import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.PackageUserKey;
 
 import java.lang.ref.WeakReference;
@@ -58,8 +56,8 @@ public class InstallSessionTracker extends PackageInstaller.SessionCallback {
 
 
     InstallSessionTracker(@Nullable final InstallSessionHelper installerCompat,
-                          @Nullable final Callback callback, @NonNull final PackageInstaller installer,
-                          @Nullable LauncherApps launcherApps) {
+            @Nullable final Callback callback, @NonNull final PackageInstaller installer,
+            @Nullable LauncherApps launcherApps) {
         mWeakHelper = new WeakReference<>(installerCompat);
         mWeakCallback = new WeakReference<>(callback);
         mInstaller = installer;
@@ -70,19 +68,10 @@ public class InstallSessionTracker extends PackageInstaller.SessionCallback {
     public void onCreated(final int sessionId) {
         InstallSessionHelper helper = mWeakHelper.get();
         Callback callback = mWeakCallback.get();
-        if (TestProtocol.sDebugTracing) {
-            Log.d(TestProtocol.MISSING_PROMISE_ICON, "Session created sessionId=" + sessionId
-                    + ", callback=" + callback
-                    + ", helper=" + helper);
-        }
         if (callback == null || helper == null) {
             return;
         }
         SessionInfo sessionInfo = pushSessionDisplayToLauncher(sessionId, helper, callback);
-        if (TestProtocol.sDebugTracing) {
-            Log.d(TestProtocol.MISSING_PROMISE_ICON, "Session created sessionId=" + sessionId
-                    + ", sessionInfo=" + sessionInfo);
-        }
         if (sessionInfo != null) {
             callback.onInstallSessionCreated(PackageInstallInfo.fromInstallingState(sessionInfo));
         }
@@ -132,8 +121,7 @@ public class InstallSessionTracker extends PackageInstaller.SessionCallback {
     }
 
     @Override
-    public void onActiveChanged(final int sessionId, final boolean active) {
-    }
+    public void onActiveChanged(final int sessionId, final boolean active) { }
 
     @Override
     public void onBadgingChanged(final int sessionId) {
@@ -150,7 +138,7 @@ public class InstallSessionTracker extends PackageInstaller.SessionCallback {
 
     @Nullable
     private SessionInfo pushSessionDisplayToLauncher(final int sessionId,
-                                                     @NonNull final InstallSessionHelper helper, @NonNull final Callback callback) {
+            @NonNull final InstallSessionHelper helper, @NonNull final Callback callback) {
         SessionInfo session = helper.getVerifiedSessionInfo(sessionId);
         if (session != null && session.getAppPackageName() != null) {
             PackageUserKey key =

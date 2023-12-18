@@ -86,7 +86,7 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
         setWillNotDraw(false);
 
         super.updateAppWidget(null);
-        setOnClickListener(ItemClickHandler.INSTANCE);
+        setOnClickListener(mLauncher.getItemOnClickListener());
 
         if (info.pendingItemInfo == null) {
             info.pendingItemInfo = new PackageItemInfo(info.providerName.getPackageName(),
@@ -108,7 +108,7 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
 
     @Override
     public void updateAppWidgetSize(Bundle newOptions, int minWidth, int minHeight, int maxWidth,
-                                    int maxHeight) {
+            int maxHeight) {
         // No-op
     }
 

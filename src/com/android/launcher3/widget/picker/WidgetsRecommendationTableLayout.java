@@ -86,7 +86,7 @@ public final class WidgetsRecommendationTableLayout extends TableLayout {
      * row still doesn't fit, we scale down the preview image.
      */
     public void setRecommendedWidgets(List<ArrayList<WidgetItem>> recommendedWidgets,
-                                      float recommendationTableMaxHeight) {
+            float recommendationTableMaxHeight) {
         mRecommendationTableMaxHeight = recommendationTableMaxHeight;
         RecommendationTableData data = fitRecommendedWidgetsToTableSpace(/* previewScale= */ 1f,
                 recommendedWidgets);
@@ -177,7 +177,7 @@ public final class WidgetsRecommendationTableLayout extends TableLayout {
         private final float mPreviewScale;
 
         RecommendationTableData(List<ArrayList<WidgetItem>> recommendationTable,
-                                float previewScale) {
+                float previewScale) {
             mRecommendationTable = recommendationTable;
             mPreviewScale = previewScale;
         }

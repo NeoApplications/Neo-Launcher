@@ -17,12 +17,8 @@
 package com.android.launcher3;
 
 import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
-import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.app.ActivityOptions;
-import android.app.WallpaperColors;
-import android.app.WallpaperManager;
-import android.app.WallpaperManager.OnColorsChangedListener;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -32,6 +28,7 @@ import android.view.ActionMode;
 import android.view.Display;
 import android.view.View;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -41,9 +38,11 @@ import com.android.launcher3.util.ActivityOptionsWrapper;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.DisplayInfoChangeListener;
 import com.android.launcher3.util.DisplayController.Info;
+import com.android.launcher3.util.OnColorHintListener;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.TraceHelper;
+import com.android.launcher3.util.WallpaperColorHints;
 import com.android.launcher3.util.WindowBounds;
 import com.saggitt.omega.theme.ThemeOverride;
 
@@ -52,7 +51,7 @@ import com.saggitt.omega.theme.ThemeOverride;
  */
 @SuppressWarnings("NewApi")
 public abstract class BaseDraggingActivity extends BaseActivity
-        implements OnColorsChangedListener, DisplayInfoChangeListener {
+        implements OnColorHintListener, DisplayInfoChangeListener {
 
     private static final String TAG = "BaseDraggingActivity";
 
@@ -64,9 +63,8 @@ public abstract class BaseDraggingActivity extends BaseActivity
     protected boolean mIsSafeModeEnabled;
 
     private Runnable mOnStartCallback;
-    private RunnableList mOnResumeCallbacks = new RunnableList();
-
-    private int mThemeRes = R.style.AppTheme_Light;
+    private final RunnableList mOnResumeCallbacks = new RunnableList();
+    private int mThemeRes = R.style.NeoTheme_Light;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +75,7 @@ public abstract class BaseDraggingActivity extends BaseActivity
         DisplayController.INSTANCE.get(this).addChangeListener(this);
 
         // Update theme
-        if (Utilities.ATLEAST_P) {
-            getSystemService(WallpaperManager.class)
-                    .addOnColorsChangedListener(this, MAIN_EXECUTOR.getHandler());
-        }
+        WallpaperColorHints.get(this).registerOnColorHintsChangedListener(this);
         int themeRes = Themes.getActivityThemeRes(this);
         if (themeRes != mThemeRes) {
             mThemeRes = themeRes;
@@ -106,8 +101,9 @@ public abstract class BaseDraggingActivity extends BaseActivity
         mOnResumeCallbacks.add(callback);
     }
 
+    @MainThread
     @Override
-    public void onColorsChanged(WallpaperColors wallpaperColors, int which) {
+    public void onColorHintsChanged(int colorHints) {
         updateTheme();
     }
 
@@ -135,9 +131,13 @@ public abstract class BaseDraggingActivity extends BaseActivity
         mCurrentActionMode = null;
     }
 
+    protected boolean isInAutoCancelActionMode() {
+        return mCurrentActionMode != null && AUTO_CANCEL_ACTION_MODE == mCurrentActionMode.getTag();
+    }
+
     @Override
     public boolean finishAutoCancelActionMode() {
-        if (mCurrentActionMode != null && AUTO_CANCEL_ACTION_MODE == mCurrentActionMode.getTag()) {
+        if (isInAutoCancelActionMode()) {
             mCurrentActionMode.finish();
             return true;
         }
@@ -174,6 +174,13 @@ public abstract class BaseDraggingActivity extends BaseActivity
     }
 
     @Override
+    public ActivityOptionsWrapper makeDefaultActivityOptions(int splashScreenStyle) {
+        ActivityOptionsWrapper wrapper = super.makeDefaultActivityOptions(splashScreenStyle);
+        addOnResumeCallback(wrapper.onEndCallback::executeAllAndDestroy);
+        return wrapper;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -186,10 +193,8 @@ public abstract class BaseDraggingActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (Utilities.ATLEAST_P) {
-            getSystemService(WallpaperManager.class).removeOnColorsChangedListener(this);
-        }
         DisplayController.INSTANCE.get(this).removeChangeListener(this);
+        WallpaperColorHints.get(this).unregisterOnColorsChangedListener(this);
     }
 
     public void runOnceOnStart(Runnable action) {

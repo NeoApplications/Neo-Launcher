@@ -44,22 +44,22 @@ public class RoundedArrowDrawable extends Drawable {
     /**
      * Default constructor.
      *
-     * @param width        of the arrow.
-     * @param height       of the arrow.
-     * @param radius       of the tip of the arrow.
-     * @param popupRadius  of the rect to clip this by.
-     * @param popupWidth   of the rect to clip this by.
-     * @param popupHeight  of the rect to clip this by.
+     * @param width of the arrow.
+     * @param height of the arrow.
+     * @param radius of the tip of the arrow.
+     * @param popupRadius of the rect to clip this by.
+     * @param popupWidth of the rect to clip this by.
+     * @param popupHeight of the rect to clip this by.
      * @param arrowOffsetX from the edge of the popup to the arrow.
      * @param arrowOffsetY how much the arrow will overlap the popup.
      * @param isPointingUp or not.
-     * @param leftAligned  or false for right aligned.
-     * @param color        to draw the triangle.
+     * @param leftAligned or false for right aligned.
+     * @param color to draw the triangle.
      */
     public RoundedArrowDrawable(float width, float height, float radius, float popupRadius,
-                                float popupWidth, float popupHeight,
-                                float arrowOffsetX, float arrowOffsetY, boolean isPointingUp, boolean leftAligned,
-                                int color) {
+            float popupWidth, float popupHeight,
+            float arrowOffsetX, float arrowOffsetY, boolean isPointingUp, boolean leftAligned,
+            int color) {
         mPath = new Path();
         mPaint = new Paint();
         mPaint.setColor(color);
@@ -81,14 +81,14 @@ public class RoundedArrowDrawable extends Drawable {
     /**
      * Constructor for an arrow that points to the left or right.
      *
-     * @param width          of the arrow.
-     * @param height         of the arrow.
-     * @param radius         of the tip of the arrow.
+     * @param width        of the arrow.
+     * @param height       of the arrow.
+     * @param radius       of the tip of the arrow.
      * @param isPointingLeft or not.
-     * @param color          to draw the triangle.
+     * @param color        to draw the triangle.
      */
     public RoundedArrowDrawable(float width, float height, float radius, boolean isPointingLeft,
-                                int color) {
+            int color) {
         mPath = new Path();
         mPaint = new Paint();
         mPaint.setColor(color);
@@ -130,7 +130,7 @@ public class RoundedArrowDrawable extends Drawable {
     }
 
     private static void addDownPointingRoundedTriangleToPath(float width, float height,
-                                                             float radius, Path path) {
+            float radius, Path path) {
         // Calculated for the arrow pointing down, will be flipped later if needed.
 
         // Theta is half of the angle inside the triangle tip
@@ -171,7 +171,7 @@ public class RoundedArrowDrawable extends Drawable {
     }
 
     private static void clipPopupBodyFromPath(float popupRadius, float popupWidth,
-                                              float popupHeight, float arrowOffsetX, float arrowOffsetY, Path path) {
+            float popupHeight, float arrowOffsetX, float arrowOffsetY, Path path) {
         // Make a path that is used to clip the triangle, this represents the body of the popup
         Path clipPiece = new Path();
         clipPiece.addRoundRect(

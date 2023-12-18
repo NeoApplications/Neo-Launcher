@@ -28,16 +28,16 @@ import com.android.launcher3.dragndrop.DragView;
 public class SecondaryDragView extends DragView<SecondaryDisplayLauncher> {
 
     public SecondaryDragView(SecondaryDisplayLauncher launcher,
-                             Drawable drawable,
-                             int registrationX, int registrationY, float initialScale, float scaleOnDrop,
-                             float finalScaleDps) {
+            Drawable drawable,
+            int registrationX, int registrationY, float initialScale, float scaleOnDrop,
+            float finalScaleDps) {
         super(launcher, drawable, registrationX, registrationY, initialScale, scaleOnDrop,
                 finalScaleDps);
     }
 
     public SecondaryDragView(SecondaryDisplayLauncher launcher, View content, int width, int height,
-                             int registrationX, int registrationY, float initialScale, float scaleOnDrop,
-                             float finalScaleDps) {
+            int registrationX, int registrationY, float initialScale, float scaleOnDrop,
+            float finalScaleDps) {
         super(launcher, content, width, height, registrationX, registrationY, initialScale,
                 scaleOnDrop, finalScaleDps);
     }

@@ -33,14 +33,14 @@ import java.util.List;
 /**
  * Represents a system shortcut for a given app. The shortcut should have a label and icon, and an
  * onClickListener that depends on the item that the shortcut services.
- * <p>
- * Example system shortcuts, defined as inner classes, include Widgets and AppInfo.
  *
+ * Example system shortcuts, defined as inner classes, include Widgets and AppInfo.
  * @param <T>
  */
 public abstract class SystemShortcut<T extends Context & ActivityContext> extends ItemInfo
         implements View.OnClickListener {
 
+    private static final String TAG = SystemShortcut.class.getSimpleName();
     private final int mIconResId;
     protected final int mLabelResId;
     protected int mAccessibilityActionId;
@@ -55,7 +55,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
     private boolean isEnabled = true;
 
     public SystemShortcut(int iconResId, int labelResId, T target, ItemInfo itemInfo,
-                          View originalView) {
+            View originalView) {
         mIconResId = iconResId;
         mLabelResId = labelResId;
         mAccessibilityActionId = labelResId;
@@ -112,8 +112,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
 
     public interface Factory<T extends Context & ActivityContext> {
 
-        @Nullable
-        SystemShortcut<T> getShortcut(T activity, ItemInfo itemInfo, View originalView);
+        @Nullable SystemShortcut<T> getShortcut(T activity, ItemInfo itemInfo, View originalView);
     }
 
     public static final Factory<Launcher> WIDGETS = (launcher, itemInfo, originalView) -> {
@@ -159,7 +158,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
 
         /**
          * Constructor used by overview for staged split to provide custom A11y information.
-         * <p>
+         *
          * Future improvements considerations:
          * Have the logic in {@link #createAccessibilityAction(Context)} be moved to super
          * call in {@link SystemShortcut#createAccessibilityAction(Context)} by having
@@ -168,7 +167,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
          * split, but then we'll need custom resIDs for each pair of shortcuts.
          */
         public AppInfo(T target, ItemInfo itemInfo, View originalView,
-                       SplitAccessibilityInfo accessibilityInfo) {
+                SplitAccessibilityInfo accessibilityInfo) {
             this(target, itemInfo, originalView);
             mSplitA11yInfo = accessibilityInfo;
             mAccessibilityActionId = accessibilityInfo.nodeId;
@@ -203,7 +202,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
             public final int nodeId;
 
             public SplitAccessibilityInfo(boolean containsMultipleTasks,
-                                          CharSequence taskTitle, int nodeId) {
+                    CharSequence taskTitle, int nodeId) {
                 this.containsMultipleTasks = containsMultipleTasks;
                 this.taskTitle = taskTitle;
                 this.nodeId = nodeId;
@@ -227,7 +226,7 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
                     return null;
                 }
                 return new Install(activity, itemInfo, originalView);
-            };
+    };
 
     public static class Install extends SystemShortcut<BaseDraggingActivity> {
 
@@ -247,6 +246,6 @@ public abstract class SystemShortcut<T extends Context & ActivityContext> extend
 
     public static <T extends Context & ActivityContext> void dismissTaskMenuView(T activity) {
         AbstractFloatingView.closeOpenViews(activity, true,
-                AbstractFloatingView.TYPE_ALL & ~AbstractFloatingView.TYPE_REBIND_SAFE);
+            AbstractFloatingView.TYPE_ALL & ~AbstractFloatingView.TYPE_REBIND_SAFE);
     }
 }

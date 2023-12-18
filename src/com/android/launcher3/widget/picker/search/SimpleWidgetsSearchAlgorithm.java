@@ -30,6 +30,7 @@ import com.android.launcher3.widget.model.WidgetsListContentEntry;
 import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public final class SimpleWidgetsSearchAlgorithm implements SearchAlgorithm<Widge
     @Override
     public void doSearch(String query, SearchCallback<WidgetsListBaseEntry> callback) {
         ArrayList<WidgetsListBaseEntry> result = getFilteredWidgets(mDataProvider, query);
-        mResultHandler.post(() -> callback.onSearchResult(query, result, new ArrayList<>()));
+        mResultHandler.post(() -> callback.onSearchResult(query, result, Collections.emptyList()));
     }
 
     @Override
@@ -81,7 +82,7 @@ public final class SimpleWidgetsSearchAlgorithm implements SearchAlgorithm<Widge
     }
 
     private static List<WidgetItem> filterWidgetItems(String query, String packageTitle,
-                                                      List<WidgetItem> items) {
+            List<WidgetItem> items) {
         StringMatcher matcher = StringMatcher.getInstance();
         if (matches(query, packageTitle, matcher)) {
             return items;

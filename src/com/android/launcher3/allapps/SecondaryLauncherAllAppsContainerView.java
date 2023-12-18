@@ -36,13 +36,12 @@ public class SecondaryLauncherAllAppsContainerView extends
     }
 
     public SecondaryLauncherAllAppsContainerView(Context context, AttributeSet attrs,
-                                                 int defStyleAttr) {
+            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
-    protected void updateBackground(DeviceProfile deviceProfile) {
-    }
+    protected void updateBackgroundVisibility(DeviceProfile deviceProfile) {}
 
     @Override
     public boolean isInAllApps() {

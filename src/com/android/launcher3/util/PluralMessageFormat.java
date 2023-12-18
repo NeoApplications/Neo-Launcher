@@ -23,9 +23,7 @@ import androidx.annotation.StringRes;
 import java.util.HashMap;
 import java.util.Locale;
 
-/**
- * A helper class to format common ICU plural strings.
- */
+/** A helper class to format common ICU plural strings. */
 public class PluralMessageFormat {
 
     /**
@@ -36,7 +34,7 @@ public class PluralMessageFormat {
      * {count, plural, =1{# widget} other{# widgets}}
      */
     public static final String getIcuPluralString(Context context, @StringRes int stringId,
-                                                  int count) {
+            int count) {
         MessageFormat icuCountFormat = new MessageFormat(
                 context.getResources().getString(stringId),
                 Locale.getDefault());

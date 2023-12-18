@@ -19,8 +19,8 @@ package com.android.launcher3.util;
 import static android.app.WallpaperColors.HINT_SUPPORTS_DARK_TEXT;
 import static android.app.WallpaperColors.HINT_SUPPORTS_DARK_THEME;
 
-import android.app.WallpaperColors;
-import android.app.WallpaperManager;
+import static com.android.launcher3.LauncherPrefs.THEMED_ICONS;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -29,11 +29,14 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
-import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
+
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
+import com.android.launcher3.views.ActivityContext;
 
 /**
  * Various utility methods associated with theming.
@@ -43,24 +46,9 @@ public class Themes {
 
     public static final String KEY_THEMED_ICONS = "themed_icons";
 
+    /** Gets the WallpaperColorHints and then uses those to get the correct activity theme res. */
     public static int getActivityThemeRes(Context context) {
-        final int colorHints;
-        if (Utilities.ATLEAST_P) {
-            WallpaperColors colors = context.getSystemService(WallpaperManager.class)
-                    .getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
-            colorHints = colors == null ? 0 : colors.getColorHints();
-        } else {
-            colorHints = 0;
-        }
-        return getActivityThemeRes(context, colorHints);
-    }
-
-    public static Context createWidgetPreviewContext(Context context) {
-        if (Utilities.isDarkTheme(context)) {
-            return new ContextThemeWrapper(context, R.style.AppTheme_Dark);
-        } else {
-            return new ContextThemeWrapper(context, R.style.AppTheme_Light_DarkText);
-        }
+        return getActivityThemeRes(context, WallpaperColorHints.get(context).getHints());
     }
 
     public static int getActivityThemeRes(Context context, int wallpaperColorHints) {
@@ -70,11 +58,11 @@ public class Themes {
                 && (wallpaperColorHints & HINT_SUPPORTS_DARK_THEME) != 0;
 
         if (Utilities.isDarkTheme(context)) {
-            return supportsDarkText ? R.style.AppTheme_Dark_DarkText
-                    : isMainColorDark ? R.style.AppTheme_Dark_DarkMainColor : R.style.AppTheme_Dark;
+            return supportsDarkText ? R.style.NeoTheme_Dark_DarkText
+                    : isMainColorDark ? R.style.NeoTheme_Dark_DarkMainColor : R.style.NeoTheme_Dark;
         } else {
-            return supportsDarkText ? R.style.AppTheme_Light_DarkText
-                    : isMainColorDark ? R.style.AppTheme_Light_DarkMainColor : R.style.AppTheme_Light;
+            return supportsDarkText ? R.style.NeoTheme_Light_DarkText
+                    : isMainColorDark ? R.style.NeoTheme_Light_DarkMainColor : R.style.NeoTheme_Light;
         }
     }
 
@@ -82,7 +70,7 @@ public class Themes {
      * Returns true if workspace icon theming is enabled
      */
     public static boolean isThemedIconEnabled(Context context) {
-        return Utilities.getPrefs(context).getBoolean(KEY_THEMED_ICONS, false);
+        return LauncherPrefs.get(context).get(THEMED_ICONS);
     }
 
     public static String getDefaultBodyFont(Context context) {
@@ -109,16 +97,12 @@ public class Themes {
         return getAttrColor(context, android.R.attr.colorAccent);
     }
 
-    /**
-     * Returns the background color attribute.
-     */
+    /** Returns the background color attribute. */
     public static int getColorBackground(Context context) {
         return getAttrColor(context, android.R.attr.colorBackground);
     }
 
-    /**
-     * Returns the floating background color attribute.
-     */
+    /** Returns the floating background color attribute. */
     public static int getColorBackgroundFloating(Context context) {
         return getAttrColor(context, android.R.attr.colorBackgroundFloating);
     }
@@ -154,10 +138,10 @@ public class Themes {
      * G' = g * G
      * B' = b * B
      * A' = a * A
-     * <p>
+     *
      * The matrix will, for instance, turn white into r g b a, and black will remain black.
      *
-     * @param color  The color r g b a
+     * @param color The color r g b a
      * @param target The ColorMatrix to scale
      */
     public static void setColorScaleOnMatrix(int color, ColorMatrix target) {
@@ -167,14 +151,14 @@ public class Themes {
 
     /**
      * Changes a color matrix such that, when applied to srcColor, it produces dstColor.
-     * <p>
+     *
      * Note that values on the last column of target ColorMatrix can be negative, and may result in
      * negative values when applied on a color. Such negative values will be automatically shifted
      * up to 0 by the framework.
      *
      * @param srcColor The color to start from
      * @param dstColor The color to create by applying target on srcColor
-     * @param target   The ColorMatrix to transform the color
+     * @param target The ColorMatrix to transform the color
      */
     public static void setColorChangeOnMatrix(int srcColor, int dstColor, ColorMatrix target) {
         target.reset();
@@ -189,7 +173,7 @@ public class Themes {
      * held in memory for later use.
      */
     public static SparseArray<TypedValue> createValueMap(Context context, AttributeSet attrSet,
-                                                         IntArray keysToIgnore) {
+            IntArray keysToIgnore) {
         int count = attrSet.getAttributeCount();
         IntArray attrNameArray = new IntArray(count);
         for (int i = 0; i < count; i++) {
@@ -207,5 +191,13 @@ public class Themes {
         }
 
         return result;
+    }
+
+    /** Returns the desired navigation bar scrim color depending on the {@code DeviceProfile}. */
+    @ColorInt
+    public static <T extends Context & ActivityContext> int getNavBarScrimColor(T context) {
+        return context.getDeviceProfile().isTaskbarPresent
+                ? context.getColor(R.color.taskbar_background)
+                : Themes.getAttrColor(context, R.attr.allAppsNavBarScrimColor);
     }
 }

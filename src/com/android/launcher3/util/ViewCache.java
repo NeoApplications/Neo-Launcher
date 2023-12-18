@@ -43,7 +43,7 @@ public class ViewCache {
 
         T result;
         if (entry.mCurrentSize > 0) {
-            entry.mCurrentSize--;
+            entry.mCurrentSize --;
             result = (T) entry.mViews[entry.mCurrentSize];
             entry.mViews[entry.mCurrentSize] = null;
         } else {

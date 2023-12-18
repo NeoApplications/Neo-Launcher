@@ -18,8 +18,10 @@ package com.android.launcher3.model;
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 import static android.os.Process.myUserHandle;
+
 import static com.android.launcher3.pm.InstallSessionHelper.getUserHandle;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 
@@ -92,17 +94,17 @@ public class FirstScreenBroadcast {
                 .collect(groupingBy(SessionInfo::getInstallerPackageName,
                         mapping(SessionInfo::getAppPackageName, Collectors.toSet())))
                 .forEach((installer, packages) ->
-                        sendBroadcastToInstaller(context, installer, packages, firstScreenItems));
+                    sendBroadcastToInstaller(context, installer, packages, firstScreenItems));
     }
 
     /**
      * @param installerPackageName Package name of the package installer.
-     * @param packages             List of packages with active sessions for this package installer.
-     * @param firstScreenItems     List of items on the first screen.
+     * @param packages List of packages with active sessions for this package installer.
+     * @param firstScreenItems List of items on the first screen.
      */
     @WorkerThread
     private void sendBroadcastToInstaller(Context context, String installerPackageName,
-                                          Set<String> packages, List<ItemInfo> firstScreenItems) {
+            Set<String> packages, List<ItemInfo> firstScreenItems) {
         Set<String> folderItems = new HashSet<>();
         Set<String> workspaceItems = new HashSet<>();
         Set<String> hotseatItems = new HashSet<>();
@@ -165,7 +167,7 @@ public class FirstScreenBroadcast {
             if (widgetInfo.providerName != null) {
                 packageName = widgetInfo.providerName.getPackageName();
             }
-        } else if (info.getTargetComponent() != null) {
+        } else if (info.getTargetComponent() != null){
             packageName = info.getTargetComponent().getPackageName();
         }
         return packageName;

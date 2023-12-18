@@ -16,8 +16,10 @@
 package com.android.launcher3.model;
 
 import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_GET_KEY_FIELDS_ONLY;
+
 import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
 import static com.android.launcher3.shortcuts.ShortcutRequest.PINNED;
+
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 
@@ -49,6 +51,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.IntSparseArrayMap;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 import com.saggitt.omega.NeoApp;
@@ -124,6 +127,11 @@ public class BgDataModel {
     public int lastBindId = 0;
 
     /**
+     * Load id for which the callbacks were successfully bound
+     */
+    public int lastLoadId = -1;
+
+    /**
      * Clears all the data
      */
     public synchronized void clear() {
@@ -145,7 +153,7 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if (FeatureFlags.QSbOnFirstScreen(NeoApp.getInstance()) || screenSet.isEmpty()) {
+        if (FeatureFlags.QSBOnFirstScreen(NeoApp.getInstance()) || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);
         }
         return screenSet.getArray();
@@ -189,14 +197,15 @@ public class BgDataModel {
         for (ItemInfo item : items) {
             switch (item.itemType) {
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
+                case LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR:
                     folders.remove(item.id);
                     if (FeatureFlags.IS_STUDIO_BUILD) {
                         for (ItemInfo info : itemsIdMap) {
                             if (info.container == item.id) {
                                 // We are deleting a folder which still contains items that
                                 // think they are contained by that folder.
-                                String msg = "deleting a folder (" + item + ") which still " +
-                                        "contains items (" + info + ")";
+                                String msg = "deleting a collection (" + item + ") which still "
+                                        + "contains items (" + info + ")";
                                 Log.e(TAG, msg);
                             }
                         }
@@ -208,7 +217,6 @@ public class BgDataModel {
                     // Fall through.
                 }
                 case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
-                case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
                     workspaceItems.remove(item);
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
@@ -237,27 +245,26 @@ public class BgDataModel {
         itemsIdMap.put(item.id, item);
         switch (item.itemType) {
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
+            case LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR:
                 folders.put(item.id, (FolderInfo) item);
                 workspaceItems.add(item);
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT:
             case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
-            case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
                 if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP ||
                         item.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
                     workspaceItems.add(item);
                 } else {
                     if (newItem) {
                         if (!folders.containsKey(item.container)) {
-                            // Adding an item to a folder that doesn't exist.
-                            String msg = "adding item: " + item + " to a folder that " +
-                                    " doesn't exist";
+                            // Adding an item to a nonexistent collection.
+                            String msg = "attempted to add item: " + item + " to a nonexistent app"
+                                    + " collection";
                             Log.e(TAG, msg);
                         }
                     } else {
                         findOrMakeFolder(item.container).add((WorkspaceItemInfo) item, false);
                     }
-
                 }
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
@@ -288,6 +295,7 @@ public class BgDataModel {
         if (GO_DISABLE_WIDGETS) {
             return;
         }
+
         // Collect all system shortcuts
         QueryResult result = new ShortcutRequest(context, user)
                 .query(PINNED | FLAG_GET_KEY_FIELDS_ONLY);
@@ -304,12 +312,12 @@ public class BgDataModel {
         forAllWorkspaceItemInfos(user, itemStream::accept);
         // Map of packageName to shortcutIds that are currently in our model
         Map<String, Set<String>> modelMap = Stream.concat(
-                        // Model shortcuts
-                        itemStream.build()
-                                .filter(wi -> wi.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT)
-                                .map(ShortcutKey::fromItemInfo),
-                        // Pending shortcuts
-                        ItemInstallQueue.INSTANCE.get(context).getPendingShortcuts(user))
+                    // Model shortcuts
+                    itemStream.build()
+                        .filter(wi -> wi.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT)
+                        .map(ShortcutKey::fromItemInfo),
+                    // Pending shortcuts
+                    ItemInstallQueue.INSTANCE.get(context).getPendingShortcuts(user))
                 .collect(groupingBy(ShortcutKey::getPackageName,
                         mapping(ShortcutKey::getId, Collectors.toSet())));
 
@@ -431,15 +439,12 @@ public class BgDataModel {
         public final int containerId;
         public final List<ItemInfo> items;
 
-        public FixedContainerItems(int containerId) {
-            this(containerId, new ArrayList<>());
-        }
-
         public FixedContainerItems(int containerId, List<ItemInfo> items) {
             this.containerId = containerId;
             this.items = Collections.unmodifiableList(items);
         }
     }
+
 
     public interface Callbacks {
         // If the launcher has permission to access deep shortcuts.
@@ -452,7 +457,6 @@ public class BgDataModel {
         /**
          * Returns an IntSet of page ids to bind first, synchronously if possible
          * or an empty IntSet
-         *
          * @param orderedScreenIds All the page ids to be bound
          */
         @NonNull
@@ -460,75 +464,51 @@ public class BgDataModel {
             return new IntSet();
         }
 
-        default void clearPendingBinds() {
-        }
+        default void clearPendingBinds() { }
+        default void startBinding() { }
 
-        default void startBinding() {
-        }
-
-        default void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons) {
-        }
-
-        default void bindScreens(IntArray orderedScreenIds) {
-        }
-
-        default void finishBindingItems(IntSet pagesBoundFirst) {
-        }
-
-        default void preAddApps() {
-        }
-
+        default void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons) { }
+        default void bindScreens(IntArray orderedScreenIds) { }
+        default void finishBindingItems(IntSet pagesBoundFirst) { }
+        default void preAddApps() { }
         default void bindAppsAdded(IntArray newScreens,
-                                   ArrayList<ItemInfo> addNotAnimated, ArrayList<ItemInfo> addAnimated) {
-        }
+                ArrayList<ItemInfo> addNotAnimated, ArrayList<ItemInfo> addAnimated) { }
 
         /**
          * Called when some persistent property of an item is modified
          */
-        default void bindItemsModified(List<ItemInfo> items) {
-        }
+        default void bindItemsModified(List<ItemInfo> items) { }
 
         /**
          * Binds updated incremental download progress
          */
-        default void bindIncrementalDownloadProgressUpdated(AppInfo app) {
-        }
+        default void bindIncrementalDownloadProgressUpdated(AppInfo app) { }
+        default void bindWorkspaceItemsChanged(List<WorkspaceItemInfo> updated) { }
+        default void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets) { }
+        default void bindRestoreItemsChange(HashSet<ItemInfo> updates) { }
+        default void bindWorkspaceComponentsRemoved(Predicate<ItemInfo> matcher) { }
+        default void bindAllWidgets(List<WidgetsListBaseEntry> widgets) { }
 
-        default void bindWorkspaceItemsChanged(List<WorkspaceItemInfo> updated) {
-        }
-
-        default void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets) {
-        }
-
-        default void bindRestoreItemsChange(HashSet<ItemInfo> updates) {
-        }
-
-        default void bindWorkspaceComponentsRemoved(Predicate<ItemInfo> matcher) {
-        }
-
-        default void bindAllWidgets(List<WidgetsListBaseEntry> widgets) {
-        }
-
-        default void onInitialBindComplete(IntSet boundPages, RunnableList pendingTasks) {
+        /** Called when workspace has been bound. */
+        default void onInitialBindComplete(IntSet boundPages, RunnableList pendingTasks,
+                int workspaceItemCount, boolean isBindSync) {
             pendingTasks.executeAllAndDestroy();
         }
 
-        default void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) {
-        }
+        default void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) { }
 
         /**
          * Binds extra item provided any external source
          */
-        default void bindExtraContainerItems(FixedContainerItems item) {
-        }
+        default void bindExtraContainerItems(FixedContainerItems item) { }
 
-        default void bindAllApplications(AppInfo[] apps, int flags) {
+        default void bindAllApplications(AppInfo[] apps, int flags,
+                Map<PackageUserKey, Integer> packageUserKeytoUidMap) {
         }
 
         /**
          * Binds the cache of string resources
          */
-        default void bindStringCache(StringCache cache) {
-        }
+        default void bindStringCache(StringCache cache) { }
     }
 }

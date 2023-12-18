@@ -48,7 +48,7 @@ public class AccessibilityActionsView extends View implements StateListener<Laun
     }
 
     public AccessibilityActionsView(Context context, @Nullable AttributeSet attrs,
-                                    int defStyleAttr) {
+            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         Launcher.getLauncher(context).getStateManager().addStateListener(this);
         setWillNotDraw(true);

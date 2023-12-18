@@ -17,6 +17,7 @@
 package com.android.launcher3.model;
 
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
+
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
@@ -48,7 +49,6 @@ import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
-import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.PersistedItemArray;
 import com.android.launcher3.util.Preconditions;
@@ -118,18 +118,10 @@ public class ItemInstallQueue {
         Launcher launcher = Launcher.ACTIVITY_TRACKER.getCreatedActivity();
         if (launcher == null) {
             // Launcher not loaded
-            if (TestProtocol.sDebugTracing) {
-                Log.d(TestProtocol.MISSING_PROMISE_ICON,
-                        LOG + " flushQueueInBackground launcher not loaded");
-            }
             return;
         }
         ensureQueueLoaded();
         if (mItems.isEmpty()) {
-            if (TestProtocol.sDebugTracing) {
-                Log.d(TestProtocol.MISSING_PROMISE_ICON,
-                        LOG + " flushQueueInBackground no items to load");
-            }
             return;
         }
 
@@ -139,10 +131,6 @@ public class ItemInstallQueue {
 
         // Add the items and clear queue
         if (!installQueue.isEmpty()) {
-            if (TestProtocol.sDebugTracing) {
-                Log.d(TestProtocol.MISSING_PROMISE_ICON,
-                        LOG + " flushQueueInBackground launcher addAndBindAddedWorkspaceItems");
-            }
             // add log
             launcher.getModel().addAndBindAddedWorkspaceItems(installQueue);
         }
@@ -203,10 +191,6 @@ public class ItemInstallQueue {
         // Queue the item up for adding if launcher has not loaded properly yet
         MODEL_EXECUTOR.post(() -> {
             Pair<ItemInfo, Object> itemInfo = info.getItemInfo(mContext);
-            if (TestProtocol.sDebugTracing) {
-                Log.d(TestProtocol.MISSING_PROMISE_ICON, LOG + " queuePendingShortcutInfo"
-                        + ", itemInfo=" + itemInfo);
-            }
             if (itemInfo == null) {
                 FileLog.d(LOG,
                         "Adding PendingInstallShortcutInfo with no attached info to queue.",
@@ -250,10 +234,8 @@ public class ItemInstallQueue {
 
         final Intent intent;
 
-        @Nullable
-        ShortcutInfo shortcutInfo;
-        @Nullable
-        AppWidgetProviderInfo providerInfo;
+        @Nullable ShortcutInfo shortcutInfo;
+        @Nullable AppWidgetProviderInfo providerInfo;
 
         /**
          * Initializes a PendingInstallShortcutInfo to represent a pending launcher target.
@@ -304,7 +286,6 @@ public class ItemInstallQueue {
 
                     final WorkspaceItemInfo si = new WorkspaceItemInfo();
                     si.user = user;
-                    si.itemType = ITEM_TYPE_APPLICATION;
 
                     LauncherActivityInfo lai;
                     boolean usePackageIcon = laiList.isEmpty();
@@ -356,12 +337,12 @@ public class ItemInstallQueue {
                 boolean shortcutInfoMatches = shortcutInfo == null
                         ? other.shortcutInfo == null
                         : other.shortcutInfo != null
-                        && shortcutInfo.getId().equals(other.shortcutInfo.getId())
-                        && shortcutInfo.getPackage().equals(other.shortcutInfo.getPackage());
+                            && shortcutInfo.getId().equals(other.shortcutInfo.getId())
+                            && shortcutInfo.getPackage().equals(other.shortcutInfo.getPackage());
                 boolean providerInfoMatches = providerInfo == null
                         ? other.providerInfo == null
                         : other.providerInfo != null
-                        && providerInfo.provider.equals(other.providerInfo.provider);
+                            && providerInfo.provider.equals(other.providerInfo.provider);
 
                 return userMatches
                         && itemTypeMatches

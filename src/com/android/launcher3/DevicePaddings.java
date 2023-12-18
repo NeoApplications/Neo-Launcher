@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 /**
  * Workspace items have a fixed height, so we need a way to distribute any unused workspace height.
- * <p>
+ *
  * The unused or "extra" height is allocated to three different variable heights:
  * - The space above the workspace
  * - The space between the workspace and hotseat
@@ -148,9 +148,9 @@ public class DevicePaddings {
         private final PaddingFormula hotseatBottomPadding;
 
         public DevicePadding(int maxEmptySpacePx,
-                             PaddingFormula workspaceTopPadding,
-                             PaddingFormula workspaceBottomPadding,
-                             PaddingFormula hotseatBottomPadding) {
+                PaddingFormula workspaceTopPadding,
+                PaddingFormula workspaceBottomPadding,
+                PaddingFormula hotseatBottomPadding) {
             this.maxEmptySpacePx = maxEmptySpacePx;
             this.workspaceTopPadding = workspaceTopPadding;
             this.workspaceBottomPadding = workspaceBottomPadding;

@@ -75,12 +75,12 @@ public class MultiPropertyFactory<T> {
     }
 
     public MultiPropertyFactory(T target, FloatProperty<T> property, int size,
-                                FloatBiFunction aggregator) {
+            FloatBiFunction aggregator) {
         this(target, property, size, aggregator, 0);
     }
 
     public MultiPropertyFactory(T target, FloatProperty<T> property, int size,
-                                FloatBiFunction aggregator, float defaultPropertyValue) {
+            FloatBiFunction aggregator, float defaultPropertyValue) {
         mTarget = target;
         mProperty = property;
         mAggregator = aggregator;
@@ -91,9 +91,7 @@ public class MultiPropertyFactory<T> {
         }
     }
 
-    /**
-     * Returns the [MultiFloatProperty] associated with [inx], creating it if not present.
-     */
+    /** Returns the [MultiFloatProperty] associated with [inx], creating it if not present. */
     public MultiProperty get(int index) {
         return (MultiProperty) mProperties[index];
     }
@@ -106,9 +104,9 @@ public class MultiPropertyFactory<T> {
     /**
      * Dumps the alpha channel values to the given PrintWriter
      *
-     * @param prefix           String to be used before every line
-     * @param pw               PrintWriter where the logs should be dumped
-     * @param label            String used to help identify this object
+     * @param prefix String to be used before every line
+     * @param pw PrintWriter where the logs should be dumped
+     * @param label String used to help identify this object
      * @param alphaIndexLabels Strings that represent each alpha channel, these should be entered
      *                         in the order of the indexes they represent, starting from 0.
      */

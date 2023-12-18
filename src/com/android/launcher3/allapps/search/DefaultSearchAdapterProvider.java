@@ -36,8 +36,7 @@ public class DefaultSearchAdapterProvider extends SearchAdapterProvider<Activity
 
     public DefaultSearchAdapterProvider(ActivityContext launcher) {
         super(launcher);
-        mDecoration = new RecyclerView.ItemDecoration() {
-        };
+        mDecoration = new RecyclerView.ItemDecoration() { };
     }
 
     @Override
@@ -54,7 +53,7 @@ public class DefaultSearchAdapterProvider extends SearchAdapterProvider<Activity
 
     @Override
     public AllAppsGridAdapter.ViewHolder onCreateViewHolder(LayoutInflater layoutInflater,
-                                                            ViewGroup parent, int viewType) {
+            ViewGroup parent, int viewType) {
         return null;
     }
 
@@ -63,7 +62,8 @@ public class DefaultSearchAdapterProvider extends SearchAdapterProvider<Activity
         if (mHighlightedView instanceof BubbleTextView
                 && mHighlightedView.getTag() instanceof ItemInfo) {
             ItemInfo itemInfo = (ItemInfo) mHighlightedView.getTag();
-            return mLauncher.startActivitySafely(mHighlightedView, itemInfo.getIntent(), itemInfo);
+            return mLauncher.startActivitySafely(
+                    mHighlightedView, itemInfo.getIntent(), itemInfo) != null;
         }
         return false;
     }

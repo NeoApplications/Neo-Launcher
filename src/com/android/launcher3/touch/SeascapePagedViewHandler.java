@@ -21,6 +21,7 @@ import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.Gravity.END;
 import static android.view.Gravity.RIGHT;
 import static android.view.Gravity.START;
+
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.HORIZONTAL;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_UNDEFINED;
@@ -85,13 +86,13 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public float getTaskMenuX(float x, View thumbnailView,
-                              DeviceProfile deviceProfile, float taskInsetMargin) {
+            DeviceProfile deviceProfile, float taskInsetMargin) {
         return x + taskInsetMargin;
     }
 
     @Override
     public float getTaskMenuY(float y, View thumbnailView, int stagePosition,
-                              View taskMenuView, float taskInsetMargin) {
+            View taskMenuView, float taskInsetMargin) {
         BaseDragLayer.LayoutParams lp = (BaseDragLayer.LayoutParams) taskMenuView.getLayoutParams();
         int taskMenuWidth = lp.width;
         if (stagePosition == STAGE_POSITION_UNDEFINED) {
@@ -104,7 +105,7 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public void setSplitTaskSwipeRect(DeviceProfile dp, Rect outRect, SplitBounds splitInfo,
-                                      int desiredStagePosition) {
+            int desiredStagePosition) {
         float topLeftTaskPercent = splitInfo.appsStackedVertically
                 ? splitInfo.topTaskPercent
                 : splitInfo.leftTaskPercent;
@@ -124,8 +125,8 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public Pair<Float, Float> getDwbLayoutTranslations(int taskViewWidth,
-                                                       int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
-                                                       View[] thumbnailViews, int desiredTaskId, View banner) {
+            int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
+            View[] thumbnailViews, int desiredTaskId, View banner) {
         boolean isRtl = banner.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         float translationX = 0;
         float translationY = 0;
@@ -183,7 +184,7 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public void setSplitInstructionsParams(View out, DeviceProfile dp, int splitInstructionsHeight,
-                                           int splitInstructionsWidth) {
+            int splitInstructionsWidth) {
         out.setPivotX(0);
         out.setPivotY(splitInstructionsHeight);
         out.setRotation(getDegreesRotated());
@@ -205,7 +206,7 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public void setTaskIconParams(FrameLayout.LayoutParams iconParams,
-                                  int taskIconMargin, int taskIconHeight, int thumbnailTopMargin, boolean isRtl) {
+            int taskIconMargin, int taskIconHeight, int thumbnailTopMargin, boolean isRtl) {
         iconParams.gravity = (isRtl ? END : START) | CENTER_VERTICAL;
         iconParams.leftMargin = -taskIconHeight - taskIconMargin / 2;
         iconParams.rightMargin = 0;
@@ -215,9 +216,9 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public void setSplitIconParams(View primaryIconView, View secondaryIconView,
-                                   int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
-                                   int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
-                                   DeviceProfile deviceProfile, SplitBounds splitConfig) {
+            int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
+            int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
+            DeviceProfile deviceProfile, SplitBounds splitConfig) {
         super.setSplitIconParams(primaryIconView, secondaryIconView, taskIconHeight,
                 primarySnapshotWidth, primarySnapshotHeight, groupedTaskViewHeight,
                 groupedTaskViewWidth, isRtl, deviceProfile, splitConfig);
@@ -263,8 +264,8 @@ public class SeascapePagedViewHandler extends LandscapePagedViewHandler {
 
     @Override
     public void measureGroupedTaskViewThumbnailBounds(View primarySnapshot, View secondarySnapshot,
-                                                      int parentWidth, int parentHeight, SplitBounds splitBoundsConfig, DeviceProfile dp,
-                                                      boolean isRtl) {
+            int parentWidth, int parentHeight, SplitBounds splitBoundsConfig, DeviceProfile dp,
+            boolean isRtl) {
         FrameLayout.LayoutParams primaryParams =
                 (FrameLayout.LayoutParams) primarySnapshot.getLayoutParams();
         FrameLayout.LayoutParams secondaryParams =

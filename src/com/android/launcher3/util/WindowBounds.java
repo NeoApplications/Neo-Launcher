@@ -48,7 +48,7 @@ public class WindowBounds {
     }
 
     public WindowBounds(int width, int height, int availableWidth, int availableHeight,
-                        int rotationHint) {
+            int rotationHint) {
         this.bounds = new Rect(0, 0, width, height);
         this.availableSize = new Point(availableWidth, availableHeight);
         // We don't care about insets in this case

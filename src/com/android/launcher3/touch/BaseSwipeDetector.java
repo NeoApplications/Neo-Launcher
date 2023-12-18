@@ -62,8 +62,7 @@ public abstract class BaseSwipeDetector {
     private PointF mLastDisplacement = new PointF();
     private PointF mDisplacement = new PointF();
     protected PointF mSubtractDisplacement = new PointF();
-    @VisibleForTesting
-    ScrollState mState = ScrollState.IDLE;
+    @VisibleForTesting ScrollState mState = ScrollState.IDLE;
     private boolean mIsSettingState;
 
     protected boolean mIgnoreSlopWhenSettling;
@@ -76,7 +75,7 @@ public abstract class BaseSwipeDetector {
     }
 
     protected BaseSwipeDetector(@NonNull Context context, @NonNull ViewConfiguration config,
-                                boolean isRtl) {
+            boolean isRtl) {
         mTouchSlop = config.getScaledTouchSlop();
         mMaxVelocity = config.getScaledMaximumFlingVelocity();
         mIsRtl = isRtl;

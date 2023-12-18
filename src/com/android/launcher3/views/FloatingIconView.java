@@ -17,10 +17,10 @@ package com.android.launcher3.views;
 
 import static android.view.Gravity.LEFT;
 
+import static com.android.app.animation.Interpolators.LINEAR;
 import static com.android.launcher3.Utilities.getBadge;
 import static com.android.launcher3.Utilities.getFullDrawable;
 import static com.android.launcher3.Utilities.mapToRange;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.views.IconLabelDotView.setIconAndDotVisible;
 
@@ -156,7 +156,7 @@ public class FloatingIconView extends FrameLayout implements
      * @param isOpening True if view is used for app open animation, false for app close animation.
      */
     public void update(float alpha, RectF rect, float progress, float shapeProgressStart,
-                       float cornerRadius, boolean isOpening) {
+            float cornerRadius, boolean isOpening) {
         setAlpha(alpha);
         mClipIconView.update(rect, progress, shapeProgressStart, cornerRadius, isOpening, this,
                 mLauncher.getDeviceProfile());
@@ -219,7 +219,7 @@ public class FloatingIconView extends FrameLayout implements
     }
 
     private static void getLocationBoundsForView(Launcher launcher, View v, boolean isOpening,
-                                                 RectF outRect) {
+            RectF outRect) {
         getLocationBoundsForView(launcher, v, isOpening, outRect, new Rect());
     }
 
@@ -229,7 +229,7 @@ public class FloatingIconView extends FrameLayout implements
      * - For BubbleTextView, we return the icon bounds.
      */
     public static void getLocationBoundsForView(Launcher launcher, View v, boolean isOpening,
-                                                RectF outRect, Rect outViewBounds) {
+            RectF outRect, Rect outViewBounds) {
         boolean ignoreTransform = !isOpening;
         if (v instanceof BubbleTextHolder) {
             v = ((BubbleTextHolder) v).getBubbleText();
@@ -269,7 +269,7 @@ public class FloatingIconView extends FrameLayout implements
     @WorkerThread
     @SuppressWarnings("WrongThread")
     private static void getIconResult(Launcher l, View originalView, ItemInfo info, RectF pos,
-                                      @Nullable Drawable btvIcon, IconLoadResult outIconLoadResult) {
+            @Nullable Drawable btvIcon, IconLoadResult outIconLoadResult) {
         Drawable drawable;
         boolean supportsAdaptiveIcons = !info.isDisabled(); // Use original icon for disabled icons.
 
@@ -289,12 +289,14 @@ public class FloatingIconView extends FrameLayout implements
             int width = (int) pos.width();
             int height = (int) pos.height();
             Object[] tmpObjArray = new Object[1];
+            boolean[] outIsIconThemed = new boolean[1];
             if (supportsAdaptiveIcons) {
                 boolean shouldThemeIcon = btvIcon instanceof FastBitmapDrawable
                         && ((FastBitmapDrawable) btvIcon).isThemed();
-                drawable = getFullDrawable(l, info, width, height, shouldThemeIcon, tmpObjArray);
+                drawable = getFullDrawable(
+                        l, info, width, height, shouldThemeIcon, tmpObjArray, outIsIconThemed);
                 if (drawable instanceof AdaptiveIconDrawable) {
-                    badge = getBadge(l, info, tmpObjArray[0]);
+                    badge = getBadge(l, info, tmpObjArray[0], outIsIconThemed[0]);
                 } else {
                     // The drawable we get back is not an adaptive icon, so we need to use the
                     // BubbleTextView icon that is already legacy treated.
@@ -306,7 +308,7 @@ public class FloatingIconView extends FrameLayout implements
                     drawable = btvIcon;
                 } else {
                     drawable = getFullDrawable(l, info, width, height, true /* shouldThemeIcon */,
-                            tmpObjArray);
+                            tmpObjArray, outIsIconThemed);
                 }
             }
         }
@@ -338,7 +340,7 @@ public class FloatingIconView extends FrameLayout implements
      */
     @UiThread
     private void setIcon(@Nullable Drawable drawable, @Nullable Drawable badge,
-                         @Nullable Supplier<Drawable> btvIcon, int iconOffset) {
+            @Nullable Supplier<Drawable> btvIcon, int iconOffset) {
         final DeviceProfile dp = mLauncher.getDeviceProfile();
         final InsettableFrameLayout.LayoutParams lp =
                 (InsettableFrameLayout.LayoutParams) getLayoutParams();
@@ -572,6 +574,13 @@ public class FloatingIconView extends FrameLayout implements
     }
 
     /**
+     * Resets the static icon load result used for preloading the icon for a launching app.
+     */
+    public static void resetIconLoadResult() {
+        sIconLoadResult = null;
+    }
+
+    /**
      * Creates a floating icon view for {@param originalView}.
      * @param originalView The view to copy
      * @param visibilitySyncView A view whose visibility should update in sync with originalView.
@@ -582,8 +591,8 @@ public class FloatingIconView extends FrameLayout implements
      * @param isOpening True if this view replaces the icon for app open animation.
      */
     public static FloatingIconView getFloatingIconView(Launcher launcher, View originalView,
-                                                       @Nullable View visibilitySyncView, @Nullable View fadeOutView, boolean hideOriginal,
-                                                       RectF positionOut, boolean isOpening) {
+            @Nullable View visibilitySyncView, @Nullable View fadeOutView, boolean hideOriginal,
+            RectF positionOut, boolean isOpening) {
         final DragLayer dragLayer = launcher.getDragLayer();
         ViewGroup parent = (ViewGroup) dragLayer.getParent();
         FloatingIconView view = launcher.getViewCache().getView(R.layout.floating_icon_view,
@@ -608,7 +617,7 @@ public class FloatingIconView extends FrameLayout implements
             }
             view.setOriginalDrawableBackground(view.mIconLoadResult.btvDrawable);
         }
-        sIconLoadResult = null;
+        resetIconLoadResult();
 
         // Match the position of the original view.
         view.matchPositionOf(launcher, originalView, isOpening, positionOut);

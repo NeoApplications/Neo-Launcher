@@ -67,6 +67,26 @@ public final class FileLog {
         print(tag, msg);
     }
 
+    public static void i(String tag, String msg, Exception e) {
+        Log.i(tag, msg, e);
+        print(tag, msg, e);
+    }
+
+    public static void i(String tag, String msg) {
+        Log.i(tag, msg);
+        print(tag, msg);
+    }
+
+    public static void w(String tag, String msg, Exception e) {
+        Log.w(tag, msg, e);
+        print(tag, msg, e);
+    }
+
+    public static void w(String tag, String msg) {
+        Log.w(tag, msg);
+        print(tag, msg);
+    }
+
     public static void e(String tag, String msg, Exception e) {
         Log.e(tag, msg, e);
         print(tag, msg, e);
@@ -236,8 +256,7 @@ public final class FileLog {
     public static File[] getLogFiles() {
         try {
             flushAll(null);
-        } catch (InterruptedException e) {
-        }
+        } catch (InterruptedException e) { }
         File[] files = new File[LOG_DAYS];
         for (int i = 0; i < LOG_DAYS; i++) {
             files[i] = new File(sLogsDirectory, FILE_NAME_PREFIX + i);

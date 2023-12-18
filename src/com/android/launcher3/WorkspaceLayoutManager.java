@@ -55,6 +55,7 @@ public interface WorkspaceLayoutManager {
         int y = presenterPos.cellY;
         if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT
                 || info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT_PREDICTION) {
+            Log.d(TAG, "add predicted icon " + child.getTag().toString() + " to home screen");
             int screenId = presenterPos.screenId;
             x = getHotseat().getCellXFromOrder(screenId);
             y = getHotseat().getCellYFromOrder(screenId);
@@ -85,7 +86,7 @@ public interface WorkspaceLayoutManager {
      * @param spanY The number of cells spanned vertically by the child.
      */
     default void addInScreen(View child, int container, int screenId, int x, int y,
-                             int spanX, int spanY) {
+            int spanX, int spanY) {
         if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
             if (getScreenWithId(screenId) == null) {
                 Log.e(TAG, "Skipping child, screenId " + screenId + " not found");
@@ -165,6 +166,5 @@ public interface WorkspaceLayoutManager {
 
     CellLayout getScreenWithId(int screenId);
 
-    default void onAddDropTarget(DropTarget target) {
-    }
+    default void onAddDropTarget(DropTarget target) { }
 }

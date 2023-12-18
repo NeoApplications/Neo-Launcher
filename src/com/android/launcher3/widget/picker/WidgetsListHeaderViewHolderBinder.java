@@ -35,7 +35,7 @@ public final class WidgetsListHeaderViewHolderBinder implements
     private final boolean mIsTwoPane;
 
     public WidgetsListHeaderViewHolderBinder(LayoutInflater layoutInflater,
-                                             OnHeaderClickListener onHeaderClickListener, boolean isTwoPane) {
+            OnHeaderClickListener onHeaderClickListener, boolean isTwoPane) {
         mLayoutInflater = layoutInflater;
         mOnHeaderClickListener = onHeaderClickListener;
         mIsTwoPane = isTwoPane;
@@ -53,7 +53,7 @@ public final class WidgetsListHeaderViewHolderBinder implements
 
     @Override
     public void bindViewHolder(WidgetsListHeaderHolder viewHolder, WidgetsListHeaderEntry data,
-                               @ListPosition int position, List<Object> payloads) {
+            @ListPosition int position, List<Object> payloads) {
         WidgetsListHeader widgetsListHeader = viewHolder.mWidgetsListHeader;
         widgetsListHeader.applyFromItemInfoWithIcon(data);
         widgetsListHeader.setExpanded(data.isWidgetListShown());

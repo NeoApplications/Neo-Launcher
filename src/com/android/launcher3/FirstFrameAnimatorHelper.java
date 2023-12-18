@@ -52,7 +52,7 @@ public class FirstFrameAnimatorHelper implements OnDrawListener, OnAttachStateCh
 
     @Override
     public void onDraw() {
-        mGlobalFrameCount++;
+        mGlobalFrameCount ++;
     }
 
     @Override

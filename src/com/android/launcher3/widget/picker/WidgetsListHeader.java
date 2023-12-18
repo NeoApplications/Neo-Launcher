@@ -43,22 +43,19 @@ import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
 
 /**
  * A UI represents a header of an app shown in the full widgets tray.
- * <p>
+ *
  * It is a {@link LinearLayout} which contains an app icon, an app name, a subtitle and a checkbox
  * which indicates if the widgets content view underneath this header should be shown.
  */
 public final class WidgetsListHeader extends LinearLayout implements ItemInfoUpdateReceiver {
 
-    private static final int[] EXPANDED_DRAWABLE_STATE = new int[]{android.R.attr.state_expanded};
+    private static final int[] EXPANDED_DRAWABLE_STATE = new int[] {android.R.attr.state_expanded};
 
     private final int mIconSize;
 
-    @Nullable
-    private HandlerRunnable mIconLoadRequest;
-    @Nullable
-    private Drawable mIconDrawable;
-    @Nullable
-    private WidgetsListDrawableState mListDrawableState;
+    @Nullable private HandlerRunnable mIconLoadRequest;
+    @Nullable private Drawable mIconDrawable;
+    @Nullable private WidgetsListDrawableState mListDrawableState;
     private ImageView mAppIcon;
     private TextView mTitle;
     private TextView mSubtitle;
@@ -118,25 +115,19 @@ public final class WidgetsListHeader extends LinearLayout implements ItemInfoUpd
         });
     }
 
-    /**
-     * Sets the expand toggle to expand / collapse.
-     */
+    /** Sets the expand toggle to expand / collapse. */
     @UiThread
     public void setExpanded(boolean isExpanded) {
         this.mIsExpanded = isExpanded;
         refreshDrawableState();
     }
 
-    /**
-     * @return true if this header is expanded.
-     */
+    /** @return true if this header is expanded. */
     public boolean isExpanded() {
         return mIsExpanded;
     }
 
-    /**
-     * Sets the {@link WidgetsListDrawableState} and refreshes the background drawable.
-     */
+    /** Sets the {@link WidgetsListDrawableState} and refreshes the background drawable. */
     @UiThread
     public void setListDrawableState(WidgetsListDrawableState state) {
         if (state == mListDrawableState) return;

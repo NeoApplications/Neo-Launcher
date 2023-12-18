@@ -16,6 +16,8 @@
 
 package com.android.launcher3.folder;
 
+import static com.android.app.animation.Interpolators.ACCELERATE_DECELERATE;
+import static com.android.app.animation.Interpolators.EMPHASIZED_DECELERATE;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ICON_OVERLAP_FACTOR;
 import static com.android.launcher3.graphics.IconShape.getShape;
 import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
@@ -39,12 +41,15 @@ import android.graphics.Region;
 import android.graphics.Shader;
 import android.util.Property;
 import android.view.View;
+import android.view.animation.Interpolator;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.OmegaUtilsKt;
@@ -55,10 +60,13 @@ import com.saggitt.omega.util.OmegaUtilsKt;
  */
 public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
-    private static final boolean DRAW_SHADOW = true;
-    private static boolean DRAW_STROKE = true;
+    private static final boolean DRAW_SHADOW = false;
+    private static boolean DRAW_STROKE = false;
 
-    private static final int CONSUMPTION_ANIMATION_DURATION = 100;
+    @VisibleForTesting protected static final int CONSUMPTION_ANIMATION_DURATION = 100;
+
+    @VisibleForTesting protected static final float HOVER_SCALE = 1.1f;
+    @VisibleForTesting protected static final int HOVER_ANIMATION_DURATION = 300;
 
     private final PorterDuffXfermode mShadowPorterDuffXfermode
             = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
@@ -89,7 +97,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public boolean isClipping = true;
 
     // Drawing / animation configurations
-    private static final float ACCEPT_SCALE_FACTOR = 1.20f;
+    @VisibleForTesting protected static final float ACCEPT_SCALE_FACTOR = 1.20f;
     private static final float ACCEPT_COLOR_MULTIPLIER = 1.5f;
 
     // Expressed on a scale from 0 to 255.
@@ -97,10 +105,14 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     private static final int MAX_BG_OPACITY = 255;
     private static final int SHADOW_OPACITY = 40;
 
-    private ValueAnimator mScaleAnimator;
+    @VisibleForTesting protected ValueAnimator mScaleAnimator;
     private ObjectAnimator mStrokeAlphaAnimator;
     private ObjectAnimator mShadowAnimator;
     private float mColorMultiplier = 1f;
+
+    @VisibleForTesting protected boolean mIsAccepting;
+    @VisibleForTesting protected boolean mIsHovered;
+    @VisibleForTesting protected boolean mIsHoveredOrAnimating;
 
     private static final Property<PreviewBackground, Integer> STROKE_ALPHA =
             new Property<PreviewBackground, Integer>(Integer.class, "strokeAlpha") {
@@ -164,8 +176,9 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
         NeoPrefs prefs = NeoPrefs.getInstance(context);
+
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
-        mDotColor = ta.getColor(R.styleable.FolderIconPreview_folderDotColor, 0);
+        mDotColor = Themes.getAttrColor(context, R.attr.notificationDotColor);
         DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
         if (DRAW_STROKE) {
             mStrokeColor = prefs.getDesktopFolderStrokeColor().getColor();
@@ -224,11 +237,11 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     }
 
     /**
-     * Returns the progress of the scale animation, where 0 means the scale is at 1f
-     * and 1 means the scale is at ACCEPT_SCALE_FACTOR.
+     * Returns the progress of the scale animation to accept state, where 0 means the scale is at
+     * 1f and 1 means the scale is at ACCEPT_SCALE_FACTOR. Returns 0 when scaled due to hover.
      */
-    float getScaleProgress() {
-        return (mScale - 1f) / (ACCEPT_SCALE_FACTOR - 1f);
+    float getAcceptScaleProgress() {
+        return mIsHoveredOrAnimating ? 0 : (mScale - 1f) / (ACCEPT_SCALE_FACTOR - 1f);
     }
 
     void invalidate() {
@@ -410,68 +423,74 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         return mDrawingDelegate != null;
     }
 
-    private void animateScale(float finalScale, float finalMultiplier, final Runnable onStart, final Runnable onEnd) {
-        final float scale0 = mScale;
-        final float scale1 = finalScale;
-
+    protected void animateScale(boolean isAccepting, boolean isHovered) {
         final float bgMultiplier0 = mColorMultiplier;
-        final float bgMultiplier1 = finalMultiplier;
+        final float bgMultiplier1 = isAccepting ? ACCEPT_COLOR_MULTIPLIER : BG_OPACITY * mColorMultiplier;
 
         if (mScaleAnimator != null) {
             mScaleAnimator.cancel();
         }
 
-        mScaleAnimator = ValueAnimator.ofFloat(0f, 1.0f);
-
-        mScaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float prog = animation.getAnimatedFraction();
-                mScale = prog * scale1 + (1 - prog) * scale0;
-                mColorMultiplier = prog * bgMultiplier1 + (1 - prog) * bgMultiplier0;
-                invalidate();
+        final float startScale = mScale;
+        final float endScale = isAccepting ? ACCEPT_SCALE_FACTOR : (isHovered ? HOVER_SCALE : 1f);
+        Interpolator interpolator =
+                isAccepting != mIsAccepting ? ACCELERATE_DECELERATE : EMPHASIZED_DECELERATE;
+        int duration = isAccepting != mIsAccepting ? CONSUMPTION_ANIMATION_DURATION
+                : HOVER_ANIMATION_DURATION;
+        mIsAccepting = isAccepting;
+        mIsHovered = isHovered;
+        if (startScale == endScale) {
+            if (!mIsAccepting) {
+                clearDrawingDelegate();
             }
+            mIsHoveredOrAnimating = mIsHovered;
+            return;
+        }
+
+
+        mScaleAnimator = ValueAnimator.ofFloat(0f, 1.0f);
+        mScaleAnimator.addUpdateListener(animation -> {
+            float prog = animation.getAnimatedFraction();
+            mScale = prog * endScale + (1 - prog) * startScale;
+            mColorMultiplier = prog * bgMultiplier1 + (1 - prog) * bgMultiplier0;
+            invalidate();
         });
         mScaleAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                if (onStart != null) {
-                    onStart.run();
+                if (mIsHovered) {
+                    mIsHoveredOrAnimating = true;
                 }
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (onEnd != null) {
-                    onEnd.run();
+                if (!mIsAccepting) {
+                    clearDrawingDelegate();
                 }
+                mIsHoveredOrAnimating = mIsHovered;
                 mScaleAnimator = null;
             }
         });
-
-        mScaleAnimator.setDuration(CONSUMPTION_ANIMATION_DURATION);
+        mScaleAnimator.setInterpolator(interpolator);
+        mScaleAnimator.setDuration(duration);
         mScaleAnimator.start();
     }
 
     public void animateToAccept(CellLayout cl, int cellX, int cellY) {
-        animateScale(ACCEPT_SCALE_FACTOR, ACCEPT_COLOR_MULTIPLIER, () -> delegateDrawing(cl, cellX, cellY), null);
+        delegateDrawing(cl, cellX, cellY);
+        animateScale(/* isAccepting= */ true, mIsHovered);
     }
 
     public void animateToRest() {
-        // This can be called multiple times -- we need to make sure the drawing delegate
-        // is saved and restored at the beginning of the animation, since cancelling the
-        // existing animation can clear the delgate.
-        CellLayout cl = mDrawingDelegate;
-        int cellX = mDelegateCellX;
-        int cellY = mDelegateCellY;
-        animateScale(1f, 1f, () -> delegateDrawing(cl, cellX, cellY), this::clearDrawingDelegate);
-    }
-
-    public int getBackgroundAlpha() {
-        return (int) Math.min(MAX_BG_OPACITY, BG_OPACITY * mColorMultiplier);
+        animateScale(/* isAccepting= */ false, mIsHovered);
     }
 
     public float getStrokeWidth() {
         return mStrokeWidth;
+    }
+
+    protected void setHovered(boolean hovered) {
+        animateScale(mIsAccepting, /* isHovered= */ hovered);
     }
 }

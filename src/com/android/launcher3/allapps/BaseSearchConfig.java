@@ -15,12 +15,9 @@
  */
 package com.android.launcher3.allapps;
 
-/**
- * Base config values for search.
- */
+/** Base config values for search. */
 public class BaseSearchConfig {
-    public BaseSearchConfig() {
-    }
+    public BaseSearchConfig() {}
 
     /**
      * Returns whether to enable the synchronized keyboard transition between Home and All Apps.

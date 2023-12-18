@@ -103,8 +103,7 @@ public class SpringRelativeLayout extends RelativeLayout {
 
     private class ProxyEdgeEffectFactory extends EdgeEffectFactory {
 
-        @NonNull
-        @Override
+        @NonNull @Override
         protected EdgeEffect createEdgeEffect(RecyclerView view, int direction) {
             if (direction == DIRECTION_TOP) {
                 return new EdgeEffectProxy(getContext(), mEdgeGlowTop);

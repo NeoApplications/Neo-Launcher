@@ -87,9 +87,7 @@ public class Alarm implements Runnable{
         return mAlarmPending;
     }
 
-    /**
-     * Returns the last value passed to {@link #setAlarm(long)}
-     */
+    /** Returns the last value passed to {@link #setAlarm(long)} */
     public long getLastSetTimeout() {
         return mLastSetTimeout;
     }

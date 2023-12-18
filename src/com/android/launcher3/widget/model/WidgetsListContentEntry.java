@@ -28,32 +28,31 @@ import java.util.List;
  */
 public final class WidgetsListContentEntry extends WidgetsListBaseEntry {
 
-    @Px
-    private final int mMaxSpanSize;
+    @Px private final int mMaxSpanSize;
 
     /**
      * Constructor for {@link WidgetsListContentEntry}.
      *
-     * @param pkgItem          package info associated with the entry
+     * @param pkgItem package info associated with the entry
      * @param titleSectionName title section name associated with the entry.
-     * @param items            list of widgets for the package.
+     * @param items list of widgets for the package.
      */
     public WidgetsListContentEntry(PackageItemInfo pkgItem, String titleSectionName,
-                                   List<WidgetItem> items) {
+            List<WidgetItem> items) {
         this(pkgItem, titleSectionName, items, /* maxSpanSize= */ 0);
     }
 
     /**
      * Constructor for {@link WidgetsListContentEntry}.
      *
-     * @param pkgItem          package info associated with the entry
+     * @param pkgItem package info associated with the entry
      * @param titleSectionName title section name associated with the entry.
-     * @param items            list of widgets for the package.
-     * @param maxSpanSize      the max horizontal span in pixels that is allowed for grouping more
-     *                         than one widgets in a table row.
+     * @param items list of widgets for the package.
+     * @param maxSpanSize the max horizontal span in pixels that is allowed for grouping more
+     *                           than one widgets in a table row.
      */
     public WidgetsListContentEntry(PackageItemInfo pkgItem, String titleSectionName,
-                                   List<WidgetItem> items, @Px int maxSpanSize) {
+            List<WidgetItem> items, @Px int maxSpanSize) {
         super(pkgItem, titleSectionName, items);
         mMaxSpanSize = maxSpanSize;
     }
@@ -68,7 +67,7 @@ public final class WidgetsListContentEntry extends WidgetsListBaseEntry {
      * Returns a copy of this {@link WidgetsListContentEntry} with updated {@code maxSpanSize}.
      *
      * @param maxSpanSize the maximum horizontal span in pixels that is allowed for grouping
-     *                    more than one widgets in a table row.
+     *                           more than one widgets in a table row.
      */
     public WidgetsListContentEntry withMaxSpanSize(@Px int maxSpanSize) {
         if (mMaxSpanSize == maxSpanSize) return this;

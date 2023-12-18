@@ -18,6 +18,7 @@ package com.android.launcher3.util;
 
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_APP_ICON_MENU_SPLIT_RIGHT_BOTTOM;
+
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.content.Intent;
@@ -55,8 +56,7 @@ public final class SplitConfigurationOptions {
 
     @Retention(SOURCE)
     @IntDef({STAGE_POSITION_UNDEFINED, STAGE_POSITION_TOP_OR_LEFT, STAGE_POSITION_BOTTOM_OR_RIGHT})
-    public @interface StagePosition {
-    }
+    public @interface StagePosition {}
 
     /**
      * Stage type isn't specified normally meaning to use what ever the default is.
@@ -74,8 +74,7 @@ public final class SplitConfigurationOptions {
     public static final int STAGE_TYPE_SIDE = 1;
 
     @IntDef({STAGE_TYPE_UNDEFINED, STAGE_TYPE_MAIN, STAGE_TYPE_SIDE})
-    public @interface StageType {
-    }
+    public @interface StageType {}
     ///////////////////////////////////
 
     /**
@@ -103,7 +102,7 @@ public final class SplitConfigurationOptions {
     /**
      * NOTE: Engineers complained about too little ambiguity in the last survey, so there is a class
      * with the same name/functionality in wm.shell.util (which launcher3 cannot be built against)
-     * <p>
+     *
      * If you make changes here, consider making the same changes there
      * TODO(b/254378592): We really need to consolidate this
      */
@@ -136,7 +135,7 @@ public final class SplitConfigurationOptions {
         public final int rightBottomTaskId;
 
         public SplitBounds(Rect leftTopBounds, Rect rightBottomBounds, int leftTopTaskId,
-                           int rightBottomTaskId) {
+                int rightBottomTaskId) {
             this.leftTopBounds = leftTopBounds;
             this.rightBottomBounds = rightBottomBounds;
             this.leftTopTaskId = leftTopTaskId;
@@ -198,9 +197,7 @@ public final class SplitConfigurationOptions {
 
     public static class SplitSelectSource {
 
-        /**
-         * Keep in sync w/ ActivityTaskManager#INVALID_TASK_ID (unreference-able)
-         */
+        /** Keep in sync w/ ActivityTaskManager#INVALID_TASK_ID (unreference-able) */
         private static final int INVALID_TASK_ID = -1;
 
         private View view;
@@ -209,9 +206,7 @@ public final class SplitConfigurationOptions {
         public final SplitPositionOption position;
         public final ItemInfo itemInfo;
         public final StatsLogManager.EventEnum splitEvent;
-        /**
-         * Represents the taskId of the first app to start in split screen
-         */
+        /** Represents the taskId of the first app to start in split screen */
         public int alreadyRunningTaskId = INVALID_TASK_ID;
         /**
          * If {@code true}, animates the view represented by {@link #alreadyRunningTaskId} into the
@@ -220,8 +215,8 @@ public final class SplitConfigurationOptions {
         public boolean animateCurrentTaskDismissal;
 
         public SplitSelectSource(View view, Drawable drawable, Intent intent,
-                                 SplitPositionOption position, ItemInfo itemInfo,
-                                 StatsLogManager.EventEnum splitEvent) {
+                SplitPositionOption position, ItemInfo itemInfo,
+                StatsLogManager.EventEnum splitEvent) {
             this.view = view;
             this.drawable = drawable;
             this.intent = intent;

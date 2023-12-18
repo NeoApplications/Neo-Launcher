@@ -52,8 +52,7 @@ public class SystemUiController {
             FLAG_LIGHT_STATUS,
             FLAG_DARK_STATUS,
     })
-    public @interface SystemUiControllerFlags {
-    }
+    public @interface SystemUiControllerFlags {}
 
     private final Window mWindow;
     private final int[] mStates = new int[5];

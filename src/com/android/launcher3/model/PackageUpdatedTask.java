@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
-import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -36,12 +35,8 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.IconCache;
-import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
@@ -49,15 +44,13 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutRequest;
+import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
-import com.saggitt.omega.iconpack.IconPack;
-import com.saggitt.omega.iconpack.IconPackProvider;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +68,7 @@ import java.util.stream.Collectors;
  */
 public class PackageUpdatedTask extends BaseModelUpdateTask {
 
-    private static final boolean DEBUG = false;
+    private static boolean DEBUG = false;
     private static final String TAG = "PackageUpdatedTask";
 
     public static final int OP_NONE = 0;
@@ -96,7 +89,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
     private final String[] mPackages;
 
     public PackageUpdatedTask(final int op, @NonNull final UserHandle user,
-                              @NonNull final String... packages) {
+            @NonNull final String... packages) {
         mOp = op;
         mUser = user;
         mPackages = packages;
@@ -104,7 +97,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
 
     @Override
     public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-                        @NonNull final AllAppsList appsList) {
+            @NonNull final AllAppsList appsList) {
         final Context context = app.getContext();
         final IconCache iconCache = app.getIconCache();
 
@@ -117,7 +110,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 : ItemInfoMatcher.ofPackages(packageSet, mUser);
         final HashSet<ComponentName> removedComponents = new HashSet<>();
         final HashMap<String, List<LauncherActivityInfo>> activitiesLists = new HashMap<>();
-        final PackageManagerHelper packageManagerHelper = new PackageManagerHelper(context);
 
         switch (mOp) {
             case OP_ADD: {
@@ -138,15 +130,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                              appsList.trackRemoves(a -> removedComponents.add(a.componentName))) {
                     for (int i = 0; i < N; i++) {
                         if (DEBUG) Log.d(TAG, "mAllAppsList.updatePackage " + packages[i]);
-
-                        //Reload appMap if the current icon pack is SystemIconPack
-                        NeoPrefs prefs = Utilities.getOmegaPrefs(context);
-                        if (prefs.getProfileIconPack().getValue().equals("")) {
-                            IconPack iconPack = IconPackProvider.INSTANCE.get(context).getIconPackOrSystem("");
-                            if (iconPack != null)
-                                iconPack.reloadAppMap();
-                        }
-
                         iconCache.updateIconsForPkg(packages[i], mUser);
                         activitiesLists.put(
                                 packages[i], appsList.updatePackage(context, packages[i], mUser));
@@ -167,20 +150,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 for (int i = 0; i < N; i++) {
                     FileLog.d(TAG, "Removing app icon" + packages[i]);
                     iconCache.removeIconsForPkg(packages[i], mUser);
-                    NeoPrefs prefs = Utilities.getOmegaPrefs(context);
-                    if (packages[i].equals(prefs.getProfileIconPack().getValue())) {
-                        prefs.getProfileIconPack().setValue("");
-                    }
-                    final boolean isThemedIconsAvailable = context.getPackageManager()
-                            .queryIntentActivityOptions(
-                                    new ComponentName(context.getApplicationInfo().packageName, context.getApplicationInfo().className),
-                                    null,
-                                    new Intent(context.getResources().getString(R.string.icon_packs_intent_name)),
-                                    PackageManager.GET_RESOLVED_FILTER).stream().map(it -> it.activityInfo.packageName)
-                            .noneMatch(it -> packageManagerHelper.isAppInstalled(it, mUser));
-                    if (isThemedIconsAvailable) {
-                        prefs.getProfileThemedIcons().setValue(false);
-                    }
                 }
                 // Fall through
             }
@@ -233,18 +202,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
 
                     boolean infoUpdated = false;
                     boolean shortcutUpdated = false;
-
-                    // Update shortcuts which use iconResource.
-                    if ((si.iconResource != null)
-                            && packageSet.contains(si.iconResource.packageName)) {
-                        LauncherIcons li = LauncherIcons.obtain(context);
-                        BitmapInfo iconInfo = li.createIconBitmap(si.iconResource);
-                        li.recycle();
-                        if (iconInfo != null) {
-                            si.bitmap = iconInfo;
-                            infoUpdated = true;
-                        }
-                    }
 
                     ComponentName cn = si.getTargetComponent();
                     if (cn != null && matcher.test(si)) {
@@ -306,7 +263,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                                     activities == null || activities.isEmpty()
                                             ? 100
                                             : PackageManagerHelper.getLoadingProgress(
-                                            activities.get(0)),
+                                                    activities.get(0)),
                                     PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
                             if (si.itemType == Favorites.ITEM_TYPE_APPLICATION) {
                                 iconCache.getTitleAndIcon(si, si.usingLowResIcon());
@@ -332,7 +289,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                 for (LauncherAppWidgetInfo widgetInfo : dataModel.appWidgets) {
                     if (mUser.equals(widgetInfo.user)
                             && widgetInfo.hasRestoreFlag(
-                            LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY)
+                                    LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY)
                             && packageSet.contains(widgetInfo.providerName.getPackageName())) {
                         widgetInfo.restoreStatus &=
                                 ~LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY
@@ -371,7 +328,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
         } else if (mOp == OP_UPDATE) {
             // Mark disabled packages in the broadcast to be removed
             final LauncherApps launcherApps = context.getSystemService(LauncherApps.class);
-            for (int i = 0; i < N; i++) {
+            for (int i=0; i<N; i++) {
                 if (!launcherApps.isPackageEnabled(packages[i], mUser)) {
                     removedPackages.add(packages[i]);
                 }
@@ -385,7 +342,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
             deleteAndBindComponentsRemoved(removeMatch,
                     "removed because the corresponding package or component is removed. "
                             + "mOp=" + mOp + " removedPackages=" + removedPackages.stream().collect(
-                            Collectors.joining(",", "[", "]"))
+                                    Collectors.joining(",", "[", "]"))
                             + " removedComponents=" + removedComponents.stream()
                             .filter(Objects::nonNull).map(ComponentName::toShortString)
                             .collect(Collectors.joining(",", "[", "]")));
@@ -407,11 +364,10 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
 
     /**
      * Updates {@param si}'s intent to point to a new ComponentName.
-     *
      * @return Whether the shortcut intent was changed.
      */
     private boolean updateWorkspaceItemIntent(Context context,
-                                              WorkspaceItemInfo si, String packageName) {
+            WorkspaceItemInfo si, String packageName) {
         if (si.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             // Do not update intent for deep shortcuts as they contain additional information
             // about the shortcut.

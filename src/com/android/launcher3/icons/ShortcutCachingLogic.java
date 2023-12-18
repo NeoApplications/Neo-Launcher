@@ -16,7 +16,7 @@
 
 package com.android.launcher3.icons;
 
-import static com.android.launcher3.icons.BaseIconFactory.MODE_HARDWARE;
+import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,10 +32,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.icons.BaseIconFactory.IconOptions;
 import com.android.launcher3.icons.cache.CachingLogic;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.Themes;
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 /**
  * Caching logic for shortcuts.
@@ -65,7 +65,7 @@ public class ShortcutCachingLogic implements CachingLogic<ShortcutInfo> {
     @Override
     @NonNull
     public CharSequence getDescription(@NonNull ShortcutInfo object,
-                                       @NonNull CharSequence fallback) {
+            @NonNull CharSequence fallback) {
         CharSequence label = object.getLongLabel();
         return TextUtils.isEmpty(label) ? fallback : label;
     }
@@ -77,14 +77,14 @@ public class ShortcutCachingLogic implements CachingLogic<ShortcutInfo> {
             Drawable unbadgedDrawable = ShortcutCachingLogic.getIcon(
                     context, info, LauncherAppState.getIDP(context).fillResIconDpi);
             if (unbadgedDrawable == null) return BitmapInfo.LOW_RES_INFO;
-            return new BitmapInfo(li.createScaledBitmap(unbadgedDrawable, MODE_HARDWARE),
-                    Themes.getColorAccent(context));
+            return li.createBadgedIconBitmap(unbadgedDrawable,
+                    new IconOptions().setExtractedColor(Themes.getColorAccent(context)));
         }
     }
 
     @Override
     public long getLastUpdatedTime(@Nullable ShortcutInfo shortcutInfo,
-                                   @NonNull PackageInfo info) {
+            @NonNull PackageInfo info) {
         if (shortcutInfo == null) {
             return info.lastUpdateTime;
         }
@@ -101,11 +101,13 @@ public class ShortcutCachingLogic implements CachingLogic<ShortcutInfo> {
      * Launcher specific checks
      */
     public static Drawable getIcon(Context context, ShortcutInfo shortcutInfo, int density) {
+        if (GO_DISABLE_WIDGETS) {
+            return null;
+        }
         try {
-            Drawable icon = context.getSystemService(LauncherApps.class)
+            return context.getSystemService(LauncherApps.class)
                     .getShortcutIconDrawable(shortcutInfo, density);
-            return CustomAdaptiveIconDrawable.wrap(icon);
-        } catch (SecurityException | IllegalStateException e) {
+        } catch (SecurityException | IllegalStateException | NullPointerException e) {
             Log.e(TAG, "Failed to get shortcut icon", e);
             return null;
         }

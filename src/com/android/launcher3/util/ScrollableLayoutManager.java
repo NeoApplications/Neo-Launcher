@@ -33,7 +33,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 public class ScrollableLayoutManager extends GridLayoutManager {
 
     public static final float PREDICTIVE_BACK_MIN_SCALE = 0.9f;
-    private static final float EXTRA_BOTTOM_SPACE_BY_HEIGHT_PERCENT =
+    public static final float EXTRA_BOTTOM_SPACE_BY_HEIGHT_PERCENT =
             (1 - PREDICTIVE_BACK_MIN_SCALE) / 2;
 
     // keyed on item type
@@ -45,9 +45,9 @@ public class ScrollableLayoutManager extends GridLayoutManager {
      * Precalculated total height keyed on the item position. This is always incremental.
      * Subclass can override {@link #incrementTotalHeight} to incorporate the layout logic.
      * For example all-apps should have same values for items in same row,
-     * sample values: 0, 10, 10, 10, 10, 20, 20, 20, 20
+     *     sample values: 0, 10, 10, 10, 10, 20, 20, 20, 20
      * whereas widgets will have strictly increasing values
-     * sample values: 0, 10, 50, 60, 110
+     *     sample values: 0, 10, 50, 60, 110
      */
     private int[] mTotalHeightCache = new int[1];
     private int mLastValidHeightIndex = 0;
@@ -70,7 +70,7 @@ public class ScrollableLayoutManager extends GridLayoutManager {
 
     @Override
     public void layoutDecoratedWithMargins(@NonNull View child, int left, int top, int right,
-                                           int bottom) {
+            int bottom) {
         super.layoutDecoratedWithMargins(child, left, top, right, bottom);
         updateCachedSize(child);
     }
@@ -193,7 +193,7 @@ public class ScrollableLayoutManager extends GridLayoutManager {
 
     @Override
     public void onItemsUpdated(RecyclerView recyclerView, int positionStart, int itemCount,
-                               Object payload) {
+            Object payload) {
         super.onItemsUpdated(recyclerView, positionStart, itemCount, payload);
         invalidateScrollCache();
     }

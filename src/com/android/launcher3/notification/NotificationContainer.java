@@ -15,7 +15,7 @@
  */
 package com.android.launcher3.notification;
 
-import static com.android.launcher3.anim.Interpolators.scrollInterpolatorForVelocity;
+import static com.android.app.animation.Interpolators.scrollInterpolatorForVelocity;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.HORIZONTAL;
 
 import android.animation.Animator;
@@ -265,8 +265,7 @@ public class NotificationContainer extends FrameLayout implements SingleAxisSwip
 
     /**
      * Animates the background color to a new color.
-     *
-     * @param color          The color to change to.
+     * @param color The color to change to.
      * @param animatorSetOut The AnimatorSet where we add the color animator to.
      */
     public void updateBackgroundColor(int color, AnimatorSet animatorSetOut) {

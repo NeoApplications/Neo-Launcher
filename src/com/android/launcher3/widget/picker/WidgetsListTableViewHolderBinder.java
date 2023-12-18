@@ -52,12 +52,9 @@ public final class WidgetsListTableViewHolderBinder
 
     private final LayoutInflater mLayoutInflater;
     private final OnClickListener mIconClickListener;
-    private @NonNull
-    final Context mContext;
-    private @NonNull
-    final ActivityContext mActivityContext;
-    @Px
-    private final int mCellPadding;
+    private @NonNull final Context mContext;
+    private @NonNull final ActivityContext mActivityContext;
+    @Px private final int mCellPadding;
     private final OnLongClickListener mIconLongClickListener;
 
     public WidgetsListTableViewHolderBinder(
@@ -81,12 +78,12 @@ public final class WidgetsListTableViewHolderBinder
         }
 
         return new WidgetsRowViewHolder(mLayoutInflater.inflate(
-                R.layout.widgets_table_container, parent, false));
+                        R.layout.widgets_table_container, parent, false));
     }
 
     @Override
     public void bindViewHolder(WidgetsRowViewHolder holder, WidgetsListContentEntry entry,
-                               @ListPosition int position, List<Object> payloads) {
+            @ListPosition int position, List<Object> payloads) {
         for (Object payload : payloads) {
             Pair<WidgetItem, Bitmap> pair = (Pair) payload;
             holder.previewCache.put(pair.first, pair.second);
@@ -137,7 +134,7 @@ public final class WidgetsListTableViewHolderBinder
      * existing UI elements. Instead of deleting excessive elements, it hides them.
      */
     private void recycleTableBeforeBinding(TableLayout table,
-                                           List<ArrayList<WidgetItem>> widgetItemsTable) {
+            List<ArrayList<WidgetItem>> widgetItemsTable) {
         // Hide extra table rows.
         for (int i = widgetItemsTable.size(); i < table.getChildCount(); i++) {
             table.getChildAt(i).setVisibility(View.GONE);

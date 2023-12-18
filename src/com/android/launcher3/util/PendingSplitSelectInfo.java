@@ -32,7 +32,7 @@ public class PendingSplitSelectInfo {
     private final StatsLogManager.EventEnum mSource;
 
     public PendingSplitSelectInfo(int stagedTaskId, int stagePosition,
-                                  StatsLogManager.EventEnum source) {
+            StatsLogManager.EventEnum source) {
         this.mStagedTaskId = stagedTaskId;
         this.mStagePosition = stagePosition;
         this.mSource = source;

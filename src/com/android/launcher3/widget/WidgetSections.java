@@ -38,13 +38,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * A helper class to parse widget sections (categories) resource overlay.
- */
+/** A helper class to parse widget sections (categories) resource overlay. */
 public final class WidgetSections {
-    /**
-     * The package is not categorized in the widget tray.
-     */
+    /** The package is not categorized in the widget tray. */
     public static final int NO_CATEGORY = -1;
 
     private static final String TAG_SECTION_NAME = "section";
@@ -86,7 +82,7 @@ public final class WidgetSections {
                     WidgetSection section = new WidgetSection(context, sectionAttributes);
                     final int sectionDepth = parser.getDepth();
                     while (((type = parser.next()) != XmlPullParser.END_TAG
-                            || parser.getDepth() > sectionDepth)
+                                    || parser.getDepth() > sectionDepth)
                             && type != XmlPullParser.END_DOCUMENT) {
                         if ((type == XmlPullParser.START_TAG)
                                 && TAG_WIDGET_NAME.equals(parser.getName())) {

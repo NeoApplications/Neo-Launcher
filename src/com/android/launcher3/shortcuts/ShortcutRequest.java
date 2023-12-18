@@ -58,9 +58,7 @@ public class ShortcutRequest {
         mUserHandle = userHandle;
     }
 
-    /**
-     * @see #forPackage(String, List)
-     */
+    /** @see #forPackage(String, List) */
     public ShortcutRequest forPackage(String packageName) {
         return forPackage(packageName, (List<String>) null);
     }
@@ -99,15 +97,13 @@ public class ShortcutRequest {
         }
         mQuery.setQueryFlags(flags);
 
-        QueryResult result;
         try {
-            result = new QueryResult(mContext.getSystemService(LauncherApps.class)
+            return new QueryResult(mContext.getSystemService(LauncherApps.class)
                     .getShortcuts(mQuery, mUserHandle));
         } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Failed to query for shortcuts", e);
-            result = QueryResult.DEFAULT;
+            return QueryResult.DEFAULT;
         }
-        return result;
     }
 
     public static class QueryResult extends ArrayList<ShortcutInfo> {

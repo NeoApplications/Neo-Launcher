@@ -14,12 +14,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Property;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.widget.FrameLayout;
 
-import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Insettable;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -121,8 +118,7 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         mLinePaint.setAlpha(0);
 
         mLauncher = Launcher.getLauncher(context);
-        boolean show = Utilities.getOmegaPrefs(getContext()).getDockShowPageIndicator().getValue();
-        mLineHeight = show ? res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height) : 0;
+        mLineHeight = res.getDimensionPixelSize(R.dimen.workspace_page_indicator_line_height);
 
         boolean darkText = Themes.getAttrBoolean(mLauncher, R.attr.isWorkspaceDarkText);
         mActiveAlpha = darkText ? BLACK_ALPHA : WHITE_ALPHA;
@@ -259,21 +255,11 @@ public class WorkspacePageIndicator extends View implements Insettable, PageIndi
         }
     }
 
+    /**
+     * We need to override setInsets to prevent InsettableFrameLayout from applying different
+     * margins on the page indicator.
+     */
     @Override
     public void setInsets(Rect insets) {
-        DeviceProfile grid = mLauncher.getDeviceProfile();
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
-
-        if (grid.isVerticalBarLayout()) {
-            Rect padding = grid.workspacePadding;
-            lp.leftMargin = padding.left + grid.workspaceCellPaddingXPx;
-            lp.rightMargin = padding.right + grid.workspaceCellPaddingXPx;
-            lp.bottomMargin = padding.bottom;
-        } else {
-            lp.leftMargin = lp.rightMargin = 0;
-            lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            lp.bottomMargin = grid.hotseatBarSizePx + insets.bottom;
-        }
-        setLayoutParams(lp);
     }
 }

@@ -37,7 +37,7 @@ public abstract class WidgetsListBaseEntry {
     public final List<WidgetItem> mWidgets;
 
     public WidgetsListBaseEntry(PackageItemInfo pkgItem, String titleSectionName,
-                                List<WidgetItem> items) {
+            List<WidgetItem> items) {
         mPkgItem = pkgItem;
         mTitleSectionName = titleSectionName;
         this.mWidgets =

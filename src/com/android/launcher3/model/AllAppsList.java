@@ -56,15 +56,12 @@ import java.util.function.Predicate;
 public class AllAppsList {
 
     private static final String TAG = "AllAppsList";
-    private static final Consumer<AppInfo> NO_OP_CONSUMER = a -> {
-    };
+    private static final Consumer<AppInfo> NO_OP_CONSUMER = a -> { };
 
 
     public static final int DEFAULT_APPLICATIONS_NUMBER = 42;
 
-    /**
-     * The list off all apps.
-     */
+    /** The list off all apps. */
     public final ArrayList<AppInfo> data = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
 
     @NonNull
@@ -133,7 +130,7 @@ public class AllAppsList {
     /**
      * Add the supplied ApplicationInfo objects to the list, and enqueue it into the
      * list to broadcast when notify() is called.
-     * <p>
+     *
      * If the app is already in the list, doesn't add it.
      */
     public void add(AppInfo info, LauncherActivityInfo activityInfo) {
@@ -191,9 +188,7 @@ public class AllAppsList {
 
     }
 
-    /**
-     * Updates the given PackageInstallInfo's associated AppInfo's installation info.
-     */
+    /** Updates the given PackageInstallInfo's associated AppInfo's installation info. */
     public List<AppInfo> updatePromiseInstallInfo(PackageInstallInfo installInfo) {
         List<AppInfo> updatedAppInfos = new ArrayList<>();
         UserHandle user = installInfo.user;
@@ -346,7 +341,7 @@ public class AllAppsList {
      * Returns whether <em>apps</em> contains <em>component</em>.
      */
     private static boolean findActivity(List<LauncherActivityInfo> apps,
-                                        ComponentName component) {
+            ComponentName component) {
         for (LauncherActivityInfo info : apps) {
             if (info.getComponentName().equals(component)) {
                 return true;
@@ -361,8 +356,8 @@ public class AllAppsList {
      * @return the corresponding AppInfo or null
      */
     public @Nullable AppInfo findAppInfo(@NonNull ComponentName componentName,
-                                         @NonNull UserHandle user) {
-        for (AppInfo info : data) {
+                                          @NonNull UserHandle user) {
+        for (AppInfo info: data) {
             if (componentName.equals(info.componentName) && user.equals(info.user)) {
                 return info;
             }

@@ -17,6 +17,7 @@ package com.android.launcher3.util;
 
 import static android.os.VibrationEffect.createPredefined;
 import static android.provider.Settings.System.HAPTIC_FEEDBACK_ENABLED;
+
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
@@ -67,6 +68,9 @@ public class VibratorWrapper {
     private final VibrationEffect mCommitEffect;
     @Nullable
     private final VibrationEffect mBumpEffect;
+
+    @Nullable
+    private final VibrationEffect mAssistEffect;
 
     private long mLastDragTime;
     private final int mThresholdUntilNextDragCallMillis;
@@ -125,6 +129,19 @@ public class VibratorWrapper {
             mBumpEffect = null;
             mThresholdUntilNextDragCallMillis = 0;
         }
+
+        if (Utilities.ATLEAST_R && mVibrator.areAllPrimitivesSupported(
+                VibrationEffect.Composition.PRIMITIVE_QUICK_RISE,
+                VibrationEffect.Composition.PRIMITIVE_TICK)) {
+            // quiet ramp, short pause, then sharp tick
+            mAssistEffect = VibrationEffect.startComposition()
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_RISE, 0.25f)
+                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 1f, 50)
+                    .compose();
+        } else {
+            // fallback for devices without composition support
+            mAssistEffect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK);
+        }
     }
 
     /**
@@ -167,6 +184,15 @@ public class VibratorWrapper {
     }
 
     /**
+     * The assist haptic is used to be called when an assistant is invoked
+     */
+    public void vibrateForAssist() {
+        if (mAssistEffect != null) {
+            vibrate(mAssistEffect);
+        }
+    }
+
+    /**
      * This should be used to cancel a haptic in case where the haptic shouldn't be vibrating. For
      * example, when no animation is happening but a vibrator happens to be vibrating still. Need
      * boolean parameter for {@link PendingAnimation#addEndListener(Consumer)}.
@@ -181,9 +207,7 @@ public class VibratorWrapper {
         return Settings.System.getInt(resolver, HAPTIC_FEEDBACK_ENABLED, 0) == 1;
     }
 
-    /**
-     * Vibrates with the given effect if haptic feedback is available and enabled.
-     */
+    /** Vibrates with the given effect if haptic feedback is available and enabled. */
     public void vibrate(VibrationEffect vibrationEffect) {
         if (mHasVibrator && mIsHapticFeedbackEnabled) {
             UI_HELPER_EXECUTOR.execute(() -> mVibrator.vibrate(vibrationEffect, VIBRATION_ATTRS));

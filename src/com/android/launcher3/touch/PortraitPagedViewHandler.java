@@ -23,6 +23,7 @@ import static android.view.Gravity.START;
 import static android.view.Gravity.TOP;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_X;
 import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_Y;
 import static com.android.launcher3.touch.SingleAxisSwipeDetector.VERTICAL;
@@ -128,7 +129,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public <T> void set(T target, Int2DAction<T> action, int primaryParam,
-                        int secondaryParam) {
+            int secondaryParam) {
         action.call(target, primaryParam, secondaryParam);
     }
 
@@ -169,7 +170,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public int getClearAllSidePadding(View view, boolean isRtl) {
-        return (isRtl ? view.getPaddingRight() : -view.getPaddingLeft()) / 2;
+        return (isRtl ? view.getPaddingRight() : - view.getPaddingLeft()) / 2;
     }
 
     @Override
@@ -235,7 +236,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
     @Override
     public int getCenterForPage(View view, Rect insets) {
         return (view.getPaddingTop() + view.getMeasuredHeight() + insets.top
-                - insets.bottom - view.getPaddingBottom()) / 2;
+            - insets.bottom - view.getPaddingBottom()) / 2;
     }
 
     @Override
@@ -263,7 +264,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public float getTaskMenuX(float x, View thumbnailView,
-                              DeviceProfile deviceProfile, float taskInsetMargin) {
+            DeviceProfile deviceProfile, float taskInsetMargin) {
         if (deviceProfile.isLandscape) {
             return x + taskInsetMargin
                     + (thumbnailView.getMeasuredWidth() - thumbnailView.getMeasuredHeight()) / 2f;
@@ -274,13 +275,13 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public float getTaskMenuY(float y, View thumbnailView, int stagePosition,
-                              View taskMenuView, float taskInsetMargin) {
+            View taskMenuView, float taskInsetMargin) {
         return y + taskInsetMargin;
     }
 
     @Override
     public int getTaskMenuWidth(View thumbnailView, DeviceProfile deviceProfile,
-                                @StagePosition int stagePosition) {
+            @StagePosition int stagePosition) {
         return deviceProfile.isLandscape && !deviceProfile.isTablet
                 ? thumbnailView.getMeasuredHeight()
                 : thumbnailView.getMeasuredWidth();
@@ -288,8 +289,8 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setTaskOptionsMenuLayoutOrientation(DeviceProfile deviceProfile,
-                                                    LinearLayout taskMenuLayout, int dividerSpacing,
-                                                    ShapeDrawable dividerDrawable) {
+            LinearLayout taskMenuLayout, int dividerSpacing,
+            ShapeDrawable dividerDrawable) {
         taskMenuLayout.setOrientation(LinearLayout.VERTICAL);
         dividerDrawable.setIntrinsicHeight(dividerSpacing);
         taskMenuLayout.setDividerDrawable(dividerDrawable);
@@ -297,7 +298,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setLayoutParamsForTaskMenuOptionItem(LinearLayout.LayoutParams lp,
-                                                     LinearLayout viewGroup, DeviceProfile deviceProfile) {
+            LinearLayout viewGroup, DeviceProfile deviceProfile) {
         viewGroup.setOrientation(LinearLayout.HORIZONTAL);
         lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
         lp.height = WRAP_CONTENT;
@@ -305,8 +306,8 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public Pair<Float, Float> getDwbLayoutTranslations(int taskViewWidth,
-                                                       int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
-                                                       View[] thumbnailViews, int desiredTaskId, View banner) {
+            int taskViewHeight, SplitBounds splitBounds, DeviceProfile deviceProfile,
+            View[] thumbnailViews, int desiredTaskId, View banner) {
         float translationX = 0;
         float translationY = 0;
         FrameLayout.LayoutParams bannerParams = (FrameLayout.LayoutParams) banner.getLayoutParams();
@@ -385,7 +386,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public ChildBounds getChildBounds(View child, int childStart, int pageCenter,
-                                      boolean layoutChild) {
+        boolean layoutChild) {
         final int childWidth = child.getMeasuredWidth();
         final int childRight = childStart + childWidth;
         final int childHeight = child.getMeasuredHeight();
@@ -427,7 +428,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void getInitialSplitPlaceholderBounds(int placeholderHeight, int placeholderInset,
-                                                 DeviceProfile dp, @StagePosition int stagePosition, Rect out) {
+            DeviceProfile dp, @StagePosition int stagePosition, Rect out) {
         int screenWidth = dp.widthPx;
         int screenHeight = dp.heightPx;
         boolean pinToRight = stagePosition == STAGE_POSITION_BOTTOM_OR_RIGHT;
@@ -474,9 +475,9 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void updateSplitIconParams(View out, float onScreenRectCenterX,
-                                      float onScreenRectCenterY, float fullscreenScaleX, float fullscreenScaleY,
-                                      int drawableWidth, int drawableHeight, DeviceProfile dp,
-                                      @StagePosition int stagePosition) {
+            float onScreenRectCenterY, float fullscreenScaleX, float fullscreenScaleY,
+            int drawableWidth, int drawableHeight, DeviceProfile dp,
+            @StagePosition int stagePosition) {
         boolean pinToRight = stagePosition == STAGE_POSITION_BOTTOM_OR_RIGHT;
         float insetAdjustment = getPlaceholderSizeAdjustment(dp, pinToRight) / 2f;
         if (!dp.isLandscape) {
@@ -513,7 +514,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setSplitInstructionsParams(View out, DeviceProfile dp, int splitInstructionsHeight,
-                                           int splitInstructionsWidth) {
+            int splitInstructionsWidth) {
         out.setPivotX(0);
         out.setPivotY(splitInstructionsHeight);
         out.setRotation(getDegreesRotated());
@@ -543,7 +544,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void getFinalSplitPlaceholderBounds(int splitDividerSize, DeviceProfile dp,
-                                               @StagePosition int stagePosition, Rect out1, Rect out2) {
+            @StagePosition int stagePosition, Rect out1, Rect out2) {
         int screenHeight = dp.heightPx;
         int screenWidth = dp.widthPx;
         out1.set(0, 0, screenWidth, screenHeight / 2 - splitDividerSize);
@@ -573,7 +574,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setSplitTaskSwipeRect(DeviceProfile dp, Rect outRect,
-                                      SplitBounds splitInfo, int desiredStagePosition) {
+            SplitBounds splitInfo, int desiredStagePosition) {
         float topLeftTaskPercent = splitInfo.appsStackedVertically
                 ? splitInfo.topTaskPercent
                 : splitInfo.leftTaskPercent;
@@ -581,37 +582,38 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
                 ? splitInfo.dividerHeightPercent
                 : splitInfo.dividerWidthPercent;
 
-        float scale = (float) outRect.height() / dp.availableHeightPx;
+        int taskbarHeight = dp.isTransientTaskbar ? 0 : dp.taskbarHeight;
+        float scale = (float) outRect.height() / (dp.availableHeightPx - taskbarHeight);
         float topTaskHeight = dp.availableHeightPx * topLeftTaskPercent;
         float scaledTopTaskHeight = topTaskHeight * scale;
         float dividerHeight = dp.availableHeightPx * dividerBarPercent;
         float scaledDividerHeight = dividerHeight * scale;
 
         if (desiredStagePosition == SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT) {
-            if (splitInfo.appsStackedVertically) {
-                outRect.bottom = Math.round(outRect.top + scaledTopTaskHeight);
-            } else {
+            if (dp.isLandscape) {
                 outRect.right = outRect.left + Math.round(outRect.width() * topLeftTaskPercent);
+            } else {
+                outRect.bottom = Math.round(outRect.top + scaledTopTaskHeight);
             }
         } else {
-            if (splitInfo.appsStackedVertically) {
-                outRect.top += Math.round(scaledTopTaskHeight + scaledDividerHeight);
-            } else {
+            if (dp.isLandscape) {
                 outRect.left += Math.round(outRect.width()
                         * (topLeftTaskPercent + dividerBarPercent));
+            } else {
+                outRect.top += Math.round(scaledTopTaskHeight + scaledDividerHeight);
             }
         }
     }
 
     @Override
     public void measureGroupedTaskViewThumbnailBounds(View primarySnapshot, View secondarySnapshot,
-                                                      int parentWidth, int parentHeight, SplitBounds splitBoundsConfig,
-                                                      DeviceProfile dp, boolean isRtl) {
+            int parentWidth, int parentHeight, SplitBounds splitBoundsConfig,
+            DeviceProfile dp, boolean isRtl) {
         int spaceAboveSnapshot = dp.overviewTaskThumbnailTopMarginPx;
         int totalThumbnailHeight = parentHeight - spaceAboveSnapshot;
-        int dividerBar = Math.round(splitBoundsConfig.appsStackedVertically
-                ? splitBoundsConfig.dividerHeightPercent * dp.availableHeightPx
-                : splitBoundsConfig.dividerWidthPercent * parentWidth);
+        float dividerScale = splitBoundsConfig.appsStackedVertically
+                ? splitBoundsConfig.dividerHeightPercent
+                : splitBoundsConfig.dividerWidthPercent;
         int primarySnapshotHeight;
         int primarySnapshotWidth;
         int secondarySnapshotHeight;
@@ -619,12 +621,13 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
         float taskPercent = splitBoundsConfig.appsStackedVertically ?
                 splitBoundsConfig.topTaskPercent : splitBoundsConfig.leftTaskPercent;
         if (dp.isLandscape) {
+            int scaledDividerBar = Math.round(parentWidth * dividerScale);
             primarySnapshotHeight = totalThumbnailHeight;
             primarySnapshotWidth = Math.round(parentWidth * taskPercent);
 
             secondarySnapshotHeight = totalThumbnailHeight;
-            secondarySnapshotWidth = parentWidth - primarySnapshotWidth - dividerBar;
-            int translationX = primarySnapshotWidth + dividerBar;
+            secondarySnapshotWidth = parentWidth - primarySnapshotWidth - scaledDividerBar;
+            int translationX = primarySnapshotWidth + scaledDividerBar;
             if (isRtl) {
                 primarySnapshot.setTranslationX(-translationX);
                 secondarySnapshot.setTranslationX(0);
@@ -637,9 +640,10 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
             // Reset unused translations
             primarySnapshot.setTranslationY(0);
         } else {
-            float scale = (float) totalThumbnailHeight / dp.availableHeightPx;
+            int taskbarHeight = dp.isTransientTaskbar ? 0 : dp.taskbarHeight;
+            float scale = (float) totalThumbnailHeight / (dp.availableHeightPx - taskbarHeight);
             float topTaskHeight = dp.availableHeightPx * taskPercent;
-            float finalDividerHeight = dividerBar * scale;
+            float finalDividerHeight = Math.round(totalThumbnailHeight * dividerScale);
             float scaledTopTaskHeight = topTaskHeight * scale;
             primarySnapshotWidth = parentWidth;
             primarySnapshotHeight = Math.round(scaledTopTaskHeight);
@@ -677,7 +681,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setTaskIconParams(FrameLayout.LayoutParams iconParams, int taskIconMargin,
-                                  int taskIconHeight, int thumbnailTopMargin, boolean isRtl) {
+            int taskIconHeight, int thumbnailTopMargin, boolean isRtl) {
         iconParams.gravity = TOP | CENTER_HORIZONTAL;
         // Reset margins, since they may have been set on rotation
         iconParams.leftMargin = iconParams.rightMargin = 0;
@@ -686,9 +690,9 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setSplitIconParams(View primaryIconView, View secondaryIconView,
-                                   int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
-                                   int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
-                                   DeviceProfile deviceProfile, SplitBounds splitConfig) {
+            int taskIconHeight, int primarySnapshotWidth, int primarySnapshotHeight,
+            int groupedTaskViewHeight, int groupedTaskViewWidth, boolean isRtl,
+            DeviceProfile deviceProfile, SplitBounds splitConfig) {
         FrameLayout.LayoutParams primaryIconParams =
                 (FrameLayout.LayoutParams) primaryIconView.getLayoutParams();
         FrameLayout.LayoutParams secondaryIconParams =
@@ -771,7 +775,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public Pair<FloatProperty, FloatProperty> getSplitSelectTaskOffset(FloatProperty primary,
-                                                                       FloatProperty secondary, DeviceProfile deviceProfile) {
+            FloatProperty secondary, DeviceProfile deviceProfile) {
         if (deviceProfile.isLandscape) { // or seascape
             return new Pair<>(primary, secondary);
         } else {
@@ -781,7 +785,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public float getFloatingTaskOffscreenTranslationTarget(View floatingTask, RectF onScreenRect,
-                                                           @StagePosition int stagePosition, DeviceProfile dp) {
+            @StagePosition int stagePosition, DeviceProfile dp) {
         if (dp.isLandscape) {
             float currentTranslationX = floatingTask.getTranslationX();
             return stagePosition == STAGE_POSITION_TOP_OR_LEFT
@@ -795,7 +799,7 @@ public class PortraitPagedViewHandler implements PagedOrientationHandler {
 
     @Override
     public void setFloatingTaskPrimaryTranslation(View floatingTask, float translation,
-                                                  DeviceProfile dp) {
+            DeviceProfile dp) {
         if (dp.isLandscape) {
             floatingTask.setTranslationX(translation);
         } else {

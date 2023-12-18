@@ -55,8 +55,7 @@ public class FloatingHeaderView extends LinearLayout implements
     private final RecyclerView.OnScrollListener mOnScrollListener =
             new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
-                }
+                public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {}
 
                 @Override
                 public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
@@ -87,9 +86,10 @@ public class FloatingHeaderView extends LinearLayout implements
     private final int mTabsAdditionalPaddingBottom;
 
     protected ViewGroup mTabLayout;
+    //private AllAppsRecyclerView mMainRV;
+    //private AllAppsRecyclerView mWorkRV;
     private SearchRecyclerView mSearchRV;
     private AllAppsRecyclerView mCurrentRV;
-    private ViewGroup mParent;
     protected int mSnappedScrolledY;
     private int mTranslationY;
 
@@ -221,15 +221,15 @@ public class FloatingHeaderView extends LinearLayout implements
         return super.getFocusedChild();
     }
 
-    public void setup(List<ActivityAllAppsContainerView<?>.AdapterHolder> mAH,
-                      SearchRecyclerView searchRV, int activeRV, boolean tabsHidden) {
+    void setup(List<ActivityAllAppsContainerView<?>.AdapterHolder> mAH, SearchRecyclerView searchRV,
+               int activeRV, boolean tabsHidden) {
         for (FloatingHeaderRow row : mAllRows) {
             row.setup(this, mAllRows, tabsHidden);
         }
         updateExpectedHeight();
-        mTabsHidden = tabsHidden;
-        mTabLayout.setVisibility(tabsHidden ? View.GONE : View.VISIBLE);
 
+        mTabsHidden = tabsHidden;
+        maybeSetTabVisibility(VISIBLE);
         for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
             if (holder.mRecyclerView != null) {
                 AllAppsRecyclerView newHolder = holder.mRecyclerView;
@@ -237,29 +237,31 @@ public class FloatingHeaderView extends LinearLayout implements
                 mRVs.add(newHolder);
             }
         }
-
         mSearchRV = searchRV;
-        mParent = (ViewGroup) mRVs.get(0).getParent();
         setActiveRV(activeRV, false);
         reset(false);
     }
 
-    /**
-     * Whether this header has been set up previously.
-     */
+    /** Whether this header has been set up previously. */
     boolean isSetUp() {
         return mRVs.size() > 0;
     }
 
-    /**
-     * Set the active AllApps RV which will adjust the alpha of the header when scrolled.
-     */
-    public void setActiveRV(int active, boolean search) {
-        if (mCurrentRV != null) mCurrentRV.removeOnScrollListener(mOnScrollListener);
+    /** Set the active AllApps RV which will adjust the alpha of the header when scrolled. */
+    void setActiveRV(int active, boolean search) {
+        if (mCurrentRV != null) {
+            mCurrentRV.removeOnScrollListener(mOnScrollListener);
+        }
 
         if (!search || mSearchRV == null) mCurrentRV = mRVs.get(Math.min(active, mRVs.size() - 1));
         else mCurrentRV = mSearchRV;
         mCurrentRV.addOnScrollListener(mOnScrollListener);
+        maybeSetTabVisibility(search ? GONE : VISIBLE);
+    }
+
+    /** Update tab visibility to the given state, only if tabs are active (work profile exists). */
+    void maybeSetTabVisibility(int visibility) {
+        mTabLayout.setVisibility(mTabsHidden ? GONE : visibility);
     }
 
     private void updateExpectedHeight() {
@@ -385,9 +387,7 @@ public class FloatingHeaderView extends LinearLayout implements
         return !mHeaderCollapsed;
     }
 
-    /**
-     * Returns true if personal/work tabs are currently in use.
-     */
+    /** Returns true if personal/work tabs are currently in use. */
     public boolean usingTabs() {
         return !mTabsHidden;
     }
@@ -396,17 +396,13 @@ public class FloatingHeaderView extends LinearLayout implements
         return mTabLayout;
     }
 
-    /**
-     * Calculates the combined height of any floating rows (e.g. predicted apps, app divider).
-     */
+    /** Calculates the combined height of any floating rows (e.g. predicted apps, app divider). */
     private void updateFloatingRowsHeight() {
         mFloatingRowsHeight =
                 Arrays.stream(mAllRows).mapToInt(FloatingHeaderRow::getExpectedHeight).sum();
     }
 
-    /**
-     * Gets the combined height of any floating rows (e.g. predicted apps, app divider).
-     */
+    /** Gets the combined height of any floating rows (e.g. predicted apps, app divider). */
     int getFloatingRowsHeight() {
         return mFloatingRowsHeight;
     }
@@ -423,7 +419,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        //calcOffset(mTempOffset); todo fix this
+        calcOffset(mTempOffset);
         ev.offsetLocation(mTempOffset.x, mTempOffset.y);
         mForwardToRecyclerView = mCurrentRV.onInterceptTouchEvent(ev);
         ev.offsetLocation(-mTempOffset.x, -mTempOffset.y);
@@ -434,7 +430,7 @@ public class FloatingHeaderView extends LinearLayout implements
     public boolean onTouchEvent(MotionEvent event) {
         if (mForwardToRecyclerView) {
             // take this view's and parent view's (view pager) location into account
-            //calcOffset(mTempOffset);
+            calcOffset(mTempOffset);
             event.offsetLocation(mTempOffset.x, mTempOffset.y);
             try {
                 return mCurrentRV.onTouchEvent(event);
@@ -447,8 +443,8 @@ public class FloatingHeaderView extends LinearLayout implements
     }
 
     private void calcOffset(Point p) {
-        p.x = getLeft() - mCurrentRV.getLeft() - mParent.getLeft();
-        p.y = getTop() - mCurrentRV.getTop() - mParent.getTop();
+        p.x = getLeft() - mCurrentRV.getLeft() - ((ViewGroup) mCurrentRV.getParent()).getLeft();
+        p.y = getTop() - mCurrentRV.getTop() - ((ViewGroup) mCurrentRV.getParent()).getTop();
     }
 
     @Override

@@ -20,8 +20,10 @@ import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.SettingsCache.NOTIFICATION_BADGING_URI;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -33,14 +35,12 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SettingsCache;
-import com.saggitt.omega.smartspace.provider.NotificationsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
  * as well and when this service first connects. An instance of NotificationListener,
  * and its methods for getting notifications, can be obtained via {@link #getInstanceIfConnected()}.
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class NotificationListener extends NotificationListenerService {
 
     public static final String TAG = "NotificationListener";
@@ -67,31 +68,25 @@ public class NotificationListener extends NotificationListenerService {
     private static final int MSG_RANKING_UPDATE = 5;
 
     private static NotificationListener sNotificationListenerInstance = null;
-    private static StatusBarNotificationsChangedListener sStatusBarNotificationsChangedListener;
-    private static final ArraySet<NotificationsChangedListener> sNotificationsChangedListeners = new ArraySet<>();
+    private static final ArraySet<NotificationsChangedListener> sNotificationsChangedListeners =
+            new ArraySet<>();
     private static boolean sIsConnected;
 
     private final Handler mWorkerHandler;
     private final Handler mUiHandler;
     private final Ranking mTempRanking = new Ranking();
 
-    /**
-     * Maps groupKey's to the corresponding group of notifications.
-     */
+    /** Maps groupKey's to the corresponding group of notifications. */
     private final Map<String, NotificationGroup> mNotificationGroupMap = new HashMap<>();
-    /**
-     * Maps keys to their corresponding current group key
-     */
+    /** Maps keys to their corresponding current group key */
     private final Map<String, String> mNotificationGroupKeyMap = new HashMap<>();
 
-    /**
-     * The last notification key that was dismissed from launcher UI
-     */
+    /** The last notification key that was dismissed from launcher UI */
     private String mLastKeyDismissedByLauncher;
 
     private SettingsCache mSettingsCache;
     private SettingsCache.OnChangeListener mNotificationSettingsChangedListener;
-    private NotificationsManager mNotificationManager;
+
     public NotificationListener() {
         mWorkerHandler = new Handler(MODEL_EXECUTOR.getLooper(), this::handleWorkerMessage);
         mUiHandler = new Handler(Looper.getMainLooper(), this::handleUiMessage);
@@ -115,25 +110,14 @@ public class NotificationListener extends NotificationListenerService {
             // User turned off dots globally, so we unbound this service;
             // tell the listener that there are no notifications to remove dots.
             MODEL_EXECUTOR.submit(() -> MAIN_EXECUTOR.submit(() ->
-                    listener.onNotificationFullRefresh(Collections.emptyList())));
+                            listener.onNotificationFullRefresh(Collections.emptyList())));
         }
-    }
-
-    @Keep
-    public static void setStatusBarNotificationsChangedListener(StatusBarNotificationsChangedListener listener) {
-        sStatusBarNotificationsChangedListener = listener;
     }
 
     public static void removeNotificationsChangedListener(NotificationsChangedListener listener) {
         if (listener != null) {
             sNotificationsChangedListeners.remove(listener);
         }
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mNotificationManager = NotificationsManager.INSTANCE.get(this);
     }
 
     private boolean handleWorkerMessage(Message message) {
@@ -236,7 +220,6 @@ public class NotificationListener extends NotificationListenerService {
         return result == null ? new StatusBarNotification[0] : result;
     }
 
-
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
@@ -260,10 +243,6 @@ public class NotificationListener extends NotificationListenerService {
 
     private void onNotificationFullRefresh() {
         mWorkerHandler.obtainMessage(MSG_NOTIFICATION_FULL_REFRESH).sendToTarget();
-        mNotificationManager.onNotificationFullRefresh();
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationFullRefresh();
-        }
     }
 
     @Override
@@ -278,10 +257,6 @@ public class NotificationListener extends NotificationListenerService {
     public void onNotificationPosted(final StatusBarNotification sbn) {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_POSTED, sbn).sendToTarget();
-            mNotificationManager.onNotificationPosted(sbn);
-        }
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationPosted(sbn);
         }
     }
 
@@ -289,10 +264,6 @@ public class NotificationListener extends NotificationListenerService {
     public void onNotificationRemoved(final StatusBarNotification sbn) {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_REMOVED, sbn).sendToTarget();
-            mNotificationManager.onNotificationRemoved(sbn);
-        }
-        if (sStatusBarNotificationsChangedListener != null) {
-            sStatusBarNotificationsChangedListener.onNotificationRemoved(sbn);
         }
     }
 
@@ -386,19 +357,9 @@ public class NotificationListener extends NotificationListenerService {
 
     public interface NotificationsChangedListener {
         void onNotificationPosted(PackageUserKey postedPackageUserKey,
-                                  NotificationKeyData notificationKey);
-
+                NotificationKeyData notificationKey);
         void onNotificationRemoved(PackageUserKey removedPackageUserKey,
-                                   NotificationKeyData notificationKey);
-
+                NotificationKeyData notificationKey);
         void onNotificationFullRefresh(List<StatusBarNotification> activeNotifications);
-    }
-
-    public interface StatusBarNotificationsChangedListener {
-        void onNotificationPosted(StatusBarNotification sbn);
-
-        void onNotificationRemoved(StatusBarNotification sbn);
-
-        void onNotificationFullRefresh();
     }
 }

@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +71,7 @@ public class RoundedCornerEnforcement {
         return background.getId() == android.R.id.background && background.getClipToOutline();
     }
 
-    /**
-     * Check if the app widget is in the deny list.
-     */
+    /** Check if the app widget is in the deny list. */
     public static boolean isRoundedCornerEnabled() {
         return Utilities.ATLEAST_S && FeatureFlags.ENABLE_ENFORCED_ROUNDED_CORNERS.get();
     }
@@ -82,14 +79,14 @@ public class RoundedCornerEnforcement {
     /**
      * Computes the rounded rectangle needed for this app widget.
      *
-     * @param appWidget  View onto which the rounded rectangle will be applied.
+     * @param appWidget View onto which the rounded rectangle will be applied.
      * @param background Background view. This must be either {@code appWidget} or a descendant
-     *                   of {@code appWidget}.
-     * @param outRect    Rectangle set to the rounded rectangle coordinates, in the reference frame
-     *                   of {@code appWidget}.
+     *                  of {@code appWidget}.
+     * @param outRect Rectangle set to the rounded rectangle coordinates, in the reference frame
+     *                of {@code appWidget}.
      */
     public static void computeRoundedRectangle(@NonNull View appWidget, @NonNull View background,
-                                               @NonNull Rect outRect) {
+            @NonNull Rect outRect) {
         outRect.left = 0;
         outRect.right = background.getWidth();
         outRect.top = 0;
@@ -105,22 +102,13 @@ public class RoundedCornerEnforcement {
      * in the given context.
      */
     public static float computeEnforcedRadius(@NonNull Context context) {
-        NeoPrefs prefs = Utilities.getOmegaPrefs(context);
-        if (prefs.getDesktopWidgetCornerRadius().getValue() >= 0) {
-            return prefs.getDesktopWidgetCornerRadius().getValue();
-        } else {
-            if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
-                return prefs.getProfileWindowCornerRadius().getValue();
-            } else {
-                if (!Utilities.ATLEAST_S) {
-                    return 0;
-                }
-                Resources res = context.getResources();
-                float systemRadius = res.getDimension(android.R.dimen.system_app_widget_background_radius);
-                float defaultRadius = res.getDimension(R.dimen.enforced_rounded_corner_max_radius);
-                return Math.min(defaultRadius, systemRadius);
-            }
+        if (!Utilities.ATLEAST_S) {
+            return 0;
         }
+        Resources res = context.getResources();
+        float systemRadius = res.getDimension(android.R.dimen.system_app_widget_background_radius);
+        float defaultRadius = res.getDimension(R.dimen.enforced_rounded_corner_max_radius);
+        return Math.min(defaultRadius, systemRadius);
     }
 
     private static List<View> findViewsWithId(View view, @IdRes int viewId) {
