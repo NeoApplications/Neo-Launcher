@@ -14,19 +14,19 @@ val vActivity = "1.8.1"
 val vAlwan = "1.0.1"
 val vCoil = "2.5.0"
 val vComposeBOM = "2023.10.01"
-val vComposeCompiler = "1.5.5"
+val vComposeCompiler = "1.5.6"
 val vConstraintLayout = "2.1.4"
 val vCoordinatorLayout = "1.2.0"
 val vCoroutines = "1.7.3"
 val vDynamicanimation = "1.1.0-alpha03"
 val vDSP = "1.0.0"
 val vHokoBlur = "1.5.2"
-val vKotlin = "1.9.20"
+val vKotlin = "1.9.21"
 val vLifecycle = "2.6.2"
 val vLifecycleExt = "2.2.0"
 val vMaterial = "1.10.0"
 val vNavigation = "2.7.5"
-val vOkhttp = "5.0.0-alpha.11"
+val vOkhttp = "5.0.0-alpha.12"
 val vOWM = "2.1.0"
 val vPersianDate = "1.7.1"
 val vPalette = "1.0.0"
@@ -36,15 +36,15 @@ val vReorderable = "0.9.6"
 val vRoom = "2.6.1"
 val vRV = "1.3.2"
 val vResBypass = "2.2"
-val vSerialization = "1.6.1"
+val vSerialization = "1.6.2"
 val vSlice = "1.1.0-alpha02"
 
 plugins {
-    id("com.android.application").version("8.1.2")
-    kotlin("android").version("1.9.20")
-    kotlin("plugin.parcelize").version("1.9.20")
-    kotlin("plugin.serialization").version("1.9.20")
-    id("com.google.devtools.ksp").version("1.9.20-1.0.14")
+    id("com.android.application").version("8.2.0")
+    kotlin("android").version("1.9.21")
+    kotlin("plugin.parcelize").version("1.9.21")
+    kotlin("plugin.serialization").version("1.9.21")
+    id("com.google.devtools.ksp").version("1.9.21-1.0.15")
     id("com.google.protobuf").version("0.9.4")
 }
 
