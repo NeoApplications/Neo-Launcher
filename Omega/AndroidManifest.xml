@@ -50,7 +50,7 @@
         android:restoreAnyVersion="true"
         android:roundIcon="${appIconRound}"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Light"
+        android:theme="@style/NeoTheme.Light"
         tools:replace="android:label, android:icon">
 
         <activity

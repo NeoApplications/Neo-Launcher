@@ -171,7 +171,7 @@
         -->
         <activity
             android:name="com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher"
-            android:theme="@style/AppTheme.Light"
+            android:theme="@style/NeoTheme.Light"
             android:launchMode="singleTop"
             android:exported="true"
             android:enabled="true">

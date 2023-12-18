@@ -93,7 +93,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     }
 
     private void applyThemeData(ThemeData themeData) {
-        if (!ATLEAST_T || mThemeInfo != null) {
+        if (!IconProvider.ATLEAST_T || mThemeInfo != null) {
             return;
         }
         try {
