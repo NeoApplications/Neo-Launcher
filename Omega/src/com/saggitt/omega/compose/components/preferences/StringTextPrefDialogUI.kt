@@ -51,7 +51,7 @@ fun StringTextPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     var itemText by remember { mutableStateOf(pref.getValue()) }
 
     var radius = 16.dp

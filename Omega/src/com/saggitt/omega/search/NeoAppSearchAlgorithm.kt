@@ -91,13 +91,13 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         return if (prefs.searchFuzzy.getValue()) {
             getFuzzySearchResult(apps, query)
         } else {
-            getTitleMatchResult(apps, query)
+            getTitleMatchResultKT(apps, query)
         }
     }
 
     private fun getFuzzySearchResult(
         apps: MutableList<AppInfo>,
-        query: String
+        query: String,
     ): ArrayList<AdapterItem> {
         val result = ArrayList<AdapterItem>()
         val mApps = apps
@@ -124,7 +124,8 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         return result
     }
 
-    override fun getTitleMatchResult(
+
+    private fun getTitleMatchResultKT(
         apps: MutableList<AppInfo>,
         query: String?,
     ): ArrayList<AdapterItem> {
@@ -160,7 +161,7 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     private fun getSuggestions(query: String): List<String?> {
-        if (!Utilities.getOmegaPrefs(context).searchGlobal.getValue()) {
+        if (!Utilities.getNeoPrefs(context).searchGlobal.getValue()) {
             return emptyList<String>()
         }
         val provider = SearchProviderController

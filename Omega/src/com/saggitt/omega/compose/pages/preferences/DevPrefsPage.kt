@@ -39,7 +39,7 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 @Composable
 fun DevPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->

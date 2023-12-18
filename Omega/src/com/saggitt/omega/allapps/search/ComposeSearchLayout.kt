@@ -21,7 +21,6 @@ package com.saggitt.omega.allapps.search
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.TypedValue
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -61,12 +60,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.android.launcher3.ExtendedEditText
 import com.android.launcher3.Insettable
 import com.android.launcher3.R
-import com.android.launcher3.ResourceUtils
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
 import com.android.launcher3.allapps.BaseAllAppsAdapter
 import com.android.launcher3.allapps.SearchUiManager
 import com.android.launcher3.allapps.search.AllAppsSearchBarController
-import com.android.launcher3.graphics.IconShape
 import com.android.launcher3.search.SearchCallback
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Nut
@@ -112,11 +109,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
             var radius by remember { mutableFloatStateOf(0f) }
             val radiusPrefs = prefs.searchBarRadius.get().collectAsState(initial = 0f)
-            radius = if (radiusPrefs.value < 0) {
-                getCornerRadius()
-            } else {
-                radiusPrefs.value
-            }
+            radius = radiusPrefs.value.coerceAtLeast(8f)
 
             var textFieldValue by query
 
@@ -229,12 +222,6 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-    private fun getCornerRadius(): Float {
-        val defaultRadius = ResourceUtils.pxFromDp(100f, resources.displayMetrics).toFloat()
-        val edgeRadius: TypedValue? = IconShape.getShape().getAttrValue(R.attr.qsbEdgeRadius)
-        return edgeRadius?.getDimension(context.resources.displayMetrics) ?: defaultRadius
-    }
-
     private fun onQueryChanged(query: String) {
         if (query.isEmpty()) {
             searchAlgorithm.cancel(true)
@@ -277,10 +264,6 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun getEditText(): ExtendedEditText? = null
-
-    override fun hideSoftwareKeyboard() {
-        keyboardController?.hide()
-    }
 
     override fun onSearchResult(
         query: String?,

@@ -35,7 +35,7 @@ class ExpandableHotseatSwipeController(val launcher: Launcher) :
         mCurrentAnimation = mLauncher.mStateManager.createAnimationToNewWorkspace(
             mToState,
             (2.0f * shiftRange).toLong(),
-            StateAnimationConfig.ANIM_HOTSEAT_SCALE
+            0 //StateAnimationConfig.ANIM_HOTSEAT_SCALE
         )
         var verticalProgress =
             mToState.getVerticalProgress(mLauncher) * shiftRange - mFromState.getVerticalProgress(

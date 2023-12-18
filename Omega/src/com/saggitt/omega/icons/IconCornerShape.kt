@@ -21,7 +21,7 @@ package com.saggitt.omega.icons
 import android.graphics.Path
 import android.graphics.PointF
 import com.android.launcher3.Utilities
-import com.android.launcher3.anim.Interpolators.LINEAR
+import com.android.app.animation.Interpolators.LINEAR
 
 abstract class IconCornerShape {
 

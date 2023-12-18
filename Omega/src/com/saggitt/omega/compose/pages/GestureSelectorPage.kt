@@ -417,6 +417,6 @@ fun ShortcutsScreen(
 @Preview
 fun GestureSelectorPreview() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     GestureSelectorPage(prefs.gestureDoubleTap)
 }

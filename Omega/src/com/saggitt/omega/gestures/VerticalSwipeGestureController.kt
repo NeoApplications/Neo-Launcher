@@ -44,13 +44,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
 
     private val controller by lazy { launcher.nLauncher.gestureController }
     private val gesture by lazy { controller.verticalSwipeGesture }
-    private val detector by lazy {
-        SwipeDetector(
-            launcher,
-            this,
-            SwipeDetector.VERTICAL
-        )
-    }
+    private val detector by lazy { SwipeDetector(launcher, this, SwipeDetector.VERTICAL) }
     private var noIntercept = false
 
     private var swipeUpOverride: GestureHandler? = null

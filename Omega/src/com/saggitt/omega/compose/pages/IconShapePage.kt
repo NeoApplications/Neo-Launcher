@@ -53,7 +53,7 @@ import com.saggitt.omega.icons.ShapeModel
 @Composable
 fun IconShapePage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
         val systemShape = IconShapeManager.getSystemIconShape(context)

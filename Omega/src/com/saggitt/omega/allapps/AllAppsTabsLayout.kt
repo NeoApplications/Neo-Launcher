@@ -37,7 +37,7 @@ import java.util.function.Consumer
 
 class AllAppsTabsLayout(context: Context, attrs: AttributeSet) :
     PersonalWorkSlidingTabStrip(context, attrs) {
-    val prefs: NeoPrefs = Utilities.getOmegaPrefs(context)
+    val prefs: NeoPrefs = Utilities.getNeoPrefs(context)
     val launcher: Launcher = Launcher.getLauncher(context)
     private val selectedPage: MutableState<Int> = mutableIntStateOf(0)
 

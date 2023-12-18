@@ -1,10 +1,6 @@
 package com.saggitt.omega.util
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 fun PackageManager.isAppEnabled(packageName: String?, flags: Int): Boolean {
@@ -29,13 +25,13 @@ fun PackageManager.getPackageVersionCode(packageName: String) =
         val info = getPackageInfo(packageName, 0)
         when {
             Utilities.ATLEAST_P -> info.longVersionCode
-            else -> info.versionCode.toLong()
+            else                -> info.versionCode.toLong()
         }
     } catch (e: PackageManager.NameNotFoundException) {
         -1L
     }
 
-fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
+/*fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
     try {
         queryIntentActivityOptions(
             ComponentName(context.applicationInfo.packageName, context.applicationInfo.className),
@@ -45,4 +41,4 @@ fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
         ).map { it.activityInfo.packageName }
     } catch (_: PackageManager.NameNotFoundException) {
         emptyList()
-    }
+    }*/

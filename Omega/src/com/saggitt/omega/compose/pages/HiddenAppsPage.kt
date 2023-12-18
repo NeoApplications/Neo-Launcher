@@ -33,7 +33,7 @@ import com.saggitt.omega.util.comparing
 @Composable
 fun HiddenAppsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val hiddenApps by remember { mutableStateOf(prefs.drawerHiddenAppSet.getValue()) }
     val title = if (hiddenApps.isEmpty()) stringResource(id = R.string.title__drawer_hide_apps)
     else stringResource(id = R.string.hide_app_selected, hiddenApps.size)

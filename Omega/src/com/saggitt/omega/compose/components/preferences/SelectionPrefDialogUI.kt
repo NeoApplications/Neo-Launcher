@@ -72,7 +72,7 @@ fun IntSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val entryPairs = pref.entries.toList()
     val coroutineScope = rememberCoroutineScope()
     var selected by remember { mutableIntStateOf(-1) }
@@ -160,7 +160,7 @@ fun LongSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val entryPairs = pref.entries().toList()
     val coroutineScope = rememberCoroutineScope()
     var selected by remember { mutableLongStateOf(-1L) }
@@ -241,7 +241,7 @@ fun StringSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
@@ -317,7 +317,7 @@ fun StringMultiSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
@@ -396,7 +396,7 @@ fun ResetCustomIconsDialog(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

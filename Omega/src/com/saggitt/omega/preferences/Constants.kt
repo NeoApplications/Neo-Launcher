@@ -82,7 +82,7 @@ val iconIds = mapOf(
     PREFS_DRAWER_POPUP_EDIT to R.drawable.ic_edit_no_shadow,
     // Dash Providers
     EditDash::class.java.name to R.drawable.ic_edit_dash,
-    ChangeWallpaper::class.java.name to R.drawable.ic_wallpaper,
+    ChangeWallpaper::class.java.name to R.drawable.ic_palette,
     OmegaSettings::class.java.name to R.drawable.ic_omega_settings,
     ManageVolume::class.java.name to R.drawable.ic_volume,
     DeviceSettings::class.java.name to R.drawable.ic_setting,

@@ -56,7 +56,7 @@ open class SmartSpaceHostView(context: Context) : QsbWidgetHostView(context), On
             R.drawable.ic_smartspace_preferences,
             NexusLauncherEnum.SMARTSPACE_TAP_OR_LONGPRESS
         ) { v: View -> openSettings(v) }
-        OptionsPopupView.show(mLauncher, centerPos, listOf(item), true)
+        OptionsPopupView.show<Launcher>(mLauncher, centerPos, listOf(item), true)
         return true
     }
 

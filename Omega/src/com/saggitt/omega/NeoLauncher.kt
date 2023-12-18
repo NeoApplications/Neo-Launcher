@@ -46,15 +46,12 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
-import com.android.launcher3.LauncherRootView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
@@ -82,18 +79,18 @@ import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
 class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
+                    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
 
     override var currentTheme = 0
     override var currentAccent = 0
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
-    val prefs: NeoPrefs by lazy { Utilities.getOmegaPrefs(this) }
+    val prefs: NeoPrefs by lazy { Utilities.getNeoPrefs(this) }
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
-    val optionsView by lazy { findViewById<OptionsPopupView>(R.id.options_view)!! }
+    val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
     private val prefCallback = PreferencesChangeCallback(this)
 
     val hiddenApps = ArrayList<AppInfo>()
@@ -338,14 +335,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
-    override fun setupViews() {
-        super.setupViews()
-        findViewById<LauncherRootView>(R.id.launcher).also {
-            it.setViewTreeLifecycleOwner(this)
-            it.setViewTreeSavedStateRegistryOwner(this)
-        }
-    }
-
     fun recreateIfNotScheduled() {
         if (sRestartFlags == 0) {
             recreate()
@@ -354,7 +343,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private fun restartIfPending() {
         when {
-            sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
+            sRestartFlags and FLAG_RESTART != 0  -> neoApp.restart(false)
             sRestartFlags and FLAG_RECREATE != 0 -> {
                 sRestartFlags = 0
                 recreate()

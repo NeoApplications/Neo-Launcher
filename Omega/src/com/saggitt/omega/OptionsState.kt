@@ -62,8 +62,7 @@ class OptionsState(id: Int) :
         val scaledHeight = scale * ws.normalChildHeight
         val shrunkTop = (insets.top + grid.dropTargetBarSizePx).toFloat()
         val shrunkBottom = (ws.measuredHeight - insets.bottom
-                - grid.workspacePadding.bottom
-                - grid.workspaceSpringLoadedBottomSpace).toFloat()
+                - grid.workspacePadding.bottom).toFloat()
         val totalShrunkSpace = shrunkBottom - shrunkTop
 
         val desiredCellTop = shrunkTop + (totalShrunkSpace - scaledHeight) / 2

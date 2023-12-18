@@ -3,7 +3,7 @@ package com.saulhdev.neolauncher.hotseat
 import android.content.Context
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
-import com.android.launcher3.anim.Interpolators
+import com.android.app.animation.Interpolators
 import com.android.launcher3.views.ActivityContext
 
 class ExpandableHotseatState(id: Int) :
@@ -11,7 +11,7 @@ class ExpandableHotseatState(id: Int) :
 
     var mIsHotseatOpened = false
     val PAGE_ALPHA_PROVIDER: PageAlphaProvider =
-        object : PageAlphaProvider(Interpolators.DEACCEL_2) {
+        object : PageAlphaProvider(Interpolators.DECELERATE_2) {
             override fun getPageAlpha(i2: Int): Float {
                 return 1f
             }

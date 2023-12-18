@@ -68,7 +68,7 @@ fun GridSizePrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     var numColumns by remember { mutableIntStateOf(pref.numColumnsPref.getValue()) }
     var numRows by remember { mutableIntStateOf(if (pref is GridSize2D) pref.numRowsPref.getValue() else 0) }
 

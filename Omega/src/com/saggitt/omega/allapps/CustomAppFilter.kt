@@ -48,11 +48,11 @@ class CustomAppFilter(private val mContext: Context) : OmegaAppFilter(mContext) 
         }
 
         private fun getHiddenApps(context: Context): MutableSet<String> {
-            return HashSet(Utilities.getOmegaPrefs(context).drawerHiddenAppSet.getValue())
+            return HashSet(Utilities.getNeoPrefs(context).drawerHiddenAppSet.getValue())
         }
 
         fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
-            Utilities.getOmegaPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
+            Utilities.getNeoPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
         }
     }
 }

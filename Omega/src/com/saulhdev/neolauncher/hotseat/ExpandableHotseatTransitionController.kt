@@ -2,13 +2,13 @@ package com.saulhdev.neolauncher.hotseat
 
 import android.view.View
 import android.view.animation.Interpolator
+import com.android.app.animation.Interpolators
 import com.android.launcher3.DeviceProfile
 import com.android.launcher3.Hotseat
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.ShortcutAndWidgetContainer
-import com.android.launcher3.anim.Interpolators
 import com.android.launcher3.anim.PropertySetter
 import com.android.launcher3.compat.AccessibilityManagerCompat
 import com.android.launcher3.statemanager.StateManager
@@ -121,7 +121,7 @@ class ExpandableHotseatTransitionController(launcher: Launcher) :
                 Interpolators.LINEAR
             )
         val shortcutsAndWidgets: ShortcutAndWidgetContainer =
-            mHotseat!!.getShortcutsAndWidgets()
+            mHotseat!!.shortcutsAndWidgets
         val childCount = shortcutsAndWidgets.childCount
         val dragInfo = mLauncher.workspace.dragInfo
         var i2 = 0
@@ -148,12 +148,12 @@ class ExpandableHotseatTransitionController(launcher: Launcher) :
             f = 1.0f
         }
         propertySetter.setViewAlpha(settingsIcon, f, interpolator)
-        propertySetter.setInt<ScrimView?>(
+        /*propertySetter.setInt<ScrimView?>(
             mScrimView,
             ScrimView.DRAG_HANDLE_ALPHA,
             if (visibleElements and 32 != 0) 255 else 0,
             Interpolators.LINEAR
-        )
+        )*/
     }
 
 

@@ -34,7 +34,7 @@ import com.saggitt.omega.util.prefs
 @Composable
 fun ProtectedAppsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val navController = LocalNavController.current
     if (prefs.drawerEnableProtectedApps.getValue() && Utilities.ATLEAST_R) {
         Config.showLockScreen(

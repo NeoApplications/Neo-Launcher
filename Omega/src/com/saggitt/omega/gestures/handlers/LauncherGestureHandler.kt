@@ -36,6 +36,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.anim.AnimatorListeners
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.widget.WidgetsBottomSheet
 import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController

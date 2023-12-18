@@ -61,6 +61,7 @@ import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.util.Config
+import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
@@ -139,6 +140,12 @@ class NeoPrefs private constructor(val context: Context) {
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
         onChange = {
+            Utilities.getPrefs(context).edit()
+                .putBoolean(
+                    Themes.KEY_THEMED_ICONS,
+                    it == THEME_ICON_THEMED
+                )
+                .apply()
             reloadGrid()
         }
     )

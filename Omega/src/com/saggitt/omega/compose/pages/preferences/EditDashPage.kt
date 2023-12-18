@@ -61,7 +61,7 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun EditDashPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val iconList = iconIds
 
     val allItems = dashProviderOptions

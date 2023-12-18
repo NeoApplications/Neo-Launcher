@@ -53,7 +53,7 @@ import com.saggitt.omega.compose.pages.iconPickerGraph
 @Composable
 fun MainPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val uiPrefs = listOf(
         PageItem.PrefsProfile,
         PageItem.PrefsDesktop,

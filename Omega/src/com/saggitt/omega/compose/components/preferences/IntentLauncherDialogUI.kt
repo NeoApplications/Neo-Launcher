@@ -31,7 +31,7 @@ fun IntentLauncherDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

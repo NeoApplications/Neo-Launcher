@@ -12,6 +12,7 @@ import com.android.launcher3.CheckLongPressHelper
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.logging.StatsLogManager
+import com.android.launcher3.views.ActivityContext
 import com.android.launcher3.views.OptionsPopupView
 import com.google.android.systemui.smartspace.BcSmartspaceView
 import com.saggitt.omega.compose.navigation.Routes
@@ -42,7 +43,7 @@ class SmartspaceViewContainer @JvmOverloads constructor(
         val launcher = Launcher.getLauncher(context)
         val pos = Rect()
         launcher.dragLayer.getDescendantRectRelativeToSelf(smartspaceView, pos)
-        OptionsPopupView.show(launcher, RectF(pos), listOf(getCustomizeOption()), true)
+        OptionsPopupView.show<Launcher>(launcher, RectF(pos), listOf(getCustomizeOption()), true)
     }
 
     private fun getCustomizeOption() = OptionsPopupView.OptionItem(

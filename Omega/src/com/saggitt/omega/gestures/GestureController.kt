@@ -44,14 +44,17 @@ import org.json.JSONObject
 
 class GestureController(val launcher: NeoLauncher) : TouchController {
 
-    private val blankGestureHandler = BlankGestureHandler(launcher, null)
+    val blankGestureHandler = BlankGestureHandler(launcher, null)
     private val doubleTapGesture by lazy { DoubleTapGesture(this) }
     private val pressHomeGesture by lazy { PressHomeGesture(this) }
     private val pressBackGesture by lazy { PressBackGesture(this) }
     private val longPressGesture by lazy { LongPressGesture(this) }
+
+    //private val assistantGesture by lazy { LaunchAssistantGesture(this) }
     val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
 
     var touchDownPoint = PointF()
+
     private var swipeUpOverride: Pair<GestureHandler, Long>? = null
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -77,6 +80,10 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
     fun onPressBack() {
         pressBackGesture.isEnabled && pressBackGesture.onEvent()
     }
+
+    /*fun onLaunchAssistant() {
+        assistantGesture.isEnabled && assistantGesture.onEvent()
+    }*/
 
     fun setSwipeUpOverride(handler: GestureHandler, downTime: Long) {
         if (swipeUpOverride?.second != downTime) {
@@ -109,7 +116,7 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
         fun createGestureHandler(
             context: Context,
             jsonString: String?,
-            fallback: GestureHandler
+            fallback: GestureHandler,
         ): GestureHandler {
             if (!jsonString.isNullOrEmpty()) {
                 val config: JSONObject? = try {
@@ -167,5 +174,4 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
                 }
             }.filter { it.isAvailableForSwipeUp(isSwipeUp) }
     }
-
 }

@@ -11,9 +11,9 @@ import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.preferences.NeoPrefs
 
 class DeviceProfileOverrides(context: Context) {
-    private val prefs by lazy { Utilities.getOmegaPrefs(context) }
+    private val prefs by lazy { Utilities.getNeoPrefs(context) }
 
-    private val predefinedGrids = InvariantDeviceProfile.parseAllGridOptions(context)
+    private val predefinedGrids = InvariantDeviceProfile.parseAllDefinedGridOptions(context)
         .map { option ->
             val gridInfo = DBGridInfo(
                 numHotseatIcons = option.numHotseatIcons,

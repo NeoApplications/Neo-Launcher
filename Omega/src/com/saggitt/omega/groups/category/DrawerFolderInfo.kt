@@ -19,6 +19,7 @@
 package com.saggitt.omega.groups.category
 
 import com.android.launcher3.AbstractFloatingView
+import com.android.launcher3.BaseDraggingActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.allapps.AllAppsStore
 import com.android.launcher3.model.ModelWriter
@@ -31,7 +32,7 @@ import com.saggitt.omega.util.prefs
 class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderInfo() {
 
     private var changed = false
-    lateinit var appsStore: AllAppsStore
+    lateinit var appsStore: AllAppsStore<BaseDraggingActivity>
 
     override fun setTitle(title: CharSequence?, modelWriter: ModelWriter?) {
         super.setTitle(title, modelWriter)

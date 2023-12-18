@@ -27,12 +27,12 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.animation.Interpolator
 import androidx.core.graphics.ColorUtils
+import com.android.app.animation.Interpolators.ACCELERATE
+import com.android.app.animation.Interpolators.ACCELERATE_2
+import com.android.app.animation.Interpolators.LINEAR
 import com.android.launcher3.LauncherState.BACKGROUND_APP
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.anim.Interpolators.ACCEL
-import com.android.launcher3.anim.Interpolators.ACCEL_2
-import com.android.launcher3.anim.Interpolators.LINEAR
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
@@ -42,7 +42,7 @@ import com.saggitt.omega.util.runOnMainThread
 import kotlin.math.roundToInt
 
 class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs),
-    BlurWallpaperProvider.Listener {
+                                                              BlurWallpaperProvider.Listener {
     private val prefs = NeoPrefs.getInstance(context)
     private var drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
     private var radius = prefs.profileBlurRadius.getValue()
@@ -76,8 +76,8 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
     private var mProgress = 1f
     private var mShelfColor = 0
     private var fullBlurProgress = 0f
-    private var mBeforeMidProgressColorInterpolator: Interpolator = ACCEL
-    private var mAfterMidProgressColorInterpolator: Interpolator = ACCEL
+    private var mBeforeMidProgressColorInterpolator: Interpolator = ACCELERATE
+    private var mAfterMidProgressColorInterpolator: Interpolator = ACCELERATE
 
     // Mid point where the alpha changes
     private var mMidAlpha = 0
@@ -85,7 +85,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
     override fun updateSysUiColors() {
         val threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD
         val forceChange = visibility == VISIBLE &&
-                alpha > threshold && Color.alpha(mBackgroundColor) / (255f * drawerOpacity) > threshold
+                alpha > threshold && Color.alpha(backgroundColor) / (255f * drawerOpacity) > threshold
         with(systemUiController) {
             if (forceChange) {
                 updateUiState(SystemUiController.UI_STATE_SCRIM_VIEW, !isScrimDark)
@@ -117,12 +117,12 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     private fun updateColors() {
         val alpha = when {
-            useFlatColor -> ((1 - mProgress) * 255).toInt()
-            mProgress >= fullBlurProgress -> (255 * ACCEL_2.getInterpolation(
+            useFlatColor                  -> ((1 - mProgress) * 255).toInt()
+            mProgress >= fullBlurProgress -> (255 * ACCELERATE_2.getInterpolation(
                 0f.coerceAtLeast(1 - mProgress) / (1 - fullBlurProgress)
             )).roundToInt()
 
-            else -> 255
+            else                          -> 255
         }
         blurDrawable?.alpha = alpha
 
@@ -139,13 +139,13 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
 
     private fun getColorForProgress(progress: Float): Int {
         val interpolatedProgress: Float = when {
-            progress >= 1 -> progress
+            progress >= 1            -> progress
             progress >= mMidProgress -> Utilities.mapToRange(
                 progress, mMidProgress, 1f, mMidProgress, 1f,
                 mBeforeMidProgressColorInterpolator
             )
 
-            else -> Utilities.mapToRange(
+            else                     -> Utilities.mapToRange(
                 progress, 0f, mMidProgress, 0f, mMidProgress, mAfterMidProgressColorInterpolator
             )
         }

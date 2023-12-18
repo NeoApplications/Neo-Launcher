@@ -50,7 +50,7 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
     private var mIsRtl = false
 
     private val mArgbEvaluator: ArgbEvaluator = ArgbEvaluator()
-    val prefs: NeoPrefs = Utilities.getOmegaPrefs(context)
+    val prefs: NeoPrefs = Utilities.getNeoPrefs(context)
     val launcher: Launcher = Launcher.getLauncher(context)
 
     init {

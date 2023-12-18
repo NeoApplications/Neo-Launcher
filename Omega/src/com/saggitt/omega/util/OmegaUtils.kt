@@ -217,7 +217,7 @@ operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
 
 fun openPopupMenu(view: View, rect: RectF?, vararg items: OptionsPopupView.OptionItem) {
     val launcher = Launcher.getLauncher(view.context)
-    OptionsPopupView.show(
+    OptionsPopupView.show<Launcher>(
         launcher,
         rect ?: RectF(launcher.getViewBounds(view)),
         items.toList(),

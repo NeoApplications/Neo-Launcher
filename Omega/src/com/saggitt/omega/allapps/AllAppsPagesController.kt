@@ -29,11 +29,11 @@ class AllAppsPagesController<T : BaseDraggingActivity>(
         return holders.toTypedArray()
     }
 
-    fun registerIconContainers(allAppsStore: AllAppsStore) {
+    fun registerIconContainers(allAppsStore: AllAppsStore<T>) {
         //holders.forEach { allAppsStore.registerIconContainer(it.mRecyclerView) }
     }
 
-    fun unregisterIconContainers(allAppsStore: AllAppsStore) {
+    fun unregisterIconContainers(allAppsStore: AllAppsStore<T>) {
         //holders.forEach { allAppsStore.unregisterIconContainer(it.mRecyclerView) }
     }
 

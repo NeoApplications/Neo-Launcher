@@ -28,7 +28,7 @@ import android.view.animation.Interpolator
 import com.android.launcher3.Insettable
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
-import com.android.launcher3.anim.Interpolators
+import com.android.app.animation.Interpolators
 import com.android.launcher3.anim.PendingAnimation
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
@@ -74,19 +74,19 @@ open class BaseBottomSheet @JvmOverloads constructor(
     }
 
     private fun animateOpen(animate: Boolean) {
-        if (mIsOpen || mOpenCloseAnimator.isRunning) {
+        if (mIsOpen || mOpenCloseAnimation.animationPlayer.isRunning) {
             return
         }
         mIsOpen = true
         setupNavBarColor()
-        mOpenCloseAnimator.setValues(
+        mOpenCloseAnimation.animationPlayer.setValues(
             PropertyValuesHolder.ofFloat(TRANSLATION_SHIFT, TRANSLATION_SHIFT_OPENED)
         )
-        mOpenCloseAnimator.interpolator = Interpolators.FAST_OUT_SLOW_IN
+        mOpenCloseAnimation.animationPlayer.interpolator = Interpolators.FAST_OUT_SLOW_IN
         if (!animate) {
-            mOpenCloseAnimator.duration = 0
+            mOpenCloseAnimation.animationPlayer.duration = 0
         }
-        mOpenCloseAnimator.start()
+        mOpenCloseAnimation.animationPlayer.start()
     }
 
     override fun handleClose(animate: Boolean) {

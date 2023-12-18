@@ -82,7 +82,7 @@ fun EditGroupBottomSheet(
     onClose: (Int) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getOmegaPrefs(context)
+    val prefs = Utilities.getNeoPrefs(context)
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
     val config = group.customizations
     val keyboardController = LocalSoftwareKeyboardController.current

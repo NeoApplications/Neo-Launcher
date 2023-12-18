@@ -11,8 +11,8 @@ import android.widget.ImageView
 import android.widget.RemoteViews
 import android.widget.TextView
 import com.android.launcher3.R
-import com.android.launcher3.ResourceUtils
 import com.android.launcher3.icons.ShadowGenerator
+import com.android.launcher3.util.ResourceHelper.Companion.pxFromDp
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.DoubleShadowBubbleTextView
 import com.saggitt.omega.util.recursiveChildren
@@ -22,7 +22,7 @@ class ThemedSmartSpaceHostView(context: Context) : SmartSpaceHostView(context) {
     private val isWorkspaceDarkText = Themes.getAttrBoolean(context, R.attr.isWorkspaceDarkText)
     private val workspaceTextColor = Themes.getAttrColor(context, R.attr.workspaceTextColor)
     private val shadowGenerator =
-        ShadowGenerator(ResourceUtils.pxFromDp(48f, context.resources.displayMetrics))
+        ShadowGenerator(pxFromDp(48f, context.resources.displayMetrics))
 
     private val templateTextView = LayoutInflater.from(context)
         .inflate(R.layout.smartspace_text_template, this, false) as DoubleShadowBubbleTextView
@@ -40,7 +40,7 @@ class ThemedSmartSpaceHostView(context: Context) : SmartSpaceHostView(context) {
         val images = mutableListOf<ImageView>()
         for (child in parent.recursiveChildren) {
             when (child) {
-                is TextView -> overrideTextView(child)
+                is TextView  -> overrideTextView(child)
                 is ImageView -> images.add(child)
             }
         }

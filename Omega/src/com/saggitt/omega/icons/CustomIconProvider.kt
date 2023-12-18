@@ -44,7 +44,7 @@ import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.icons.IconProvider
+import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
@@ -66,9 +66,9 @@ import java.util.function.Supplier
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
     supportsIconTheme: Boolean = false,
-) : IconProvider(context) {
+) : LauncherIconProvider(context) {
 
-    private val prefs = Utilities.getOmegaPrefs(context)
+    private val prefs = Utilities.getNeoPrefs(context)
     private val iconPackPref = prefs.profileIconPack
     private val iconPackProvider = IconPackProvider.INSTANCE.get(context)
     private val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
@@ -93,7 +93,7 @@ class CustomIconProvider @JvmOverloads constructor(
         setIconThemeSupported(supportsIconTheme)
     }
 
-    private fun setIconThemeSupported(isSupported: Boolean) {
+    override fun setIconThemeSupported(isSupported: Boolean) {
         _themeMap =
             if (isSupported) null else DISABLED_MAP
     }
@@ -330,7 +330,7 @@ class CustomIconProvider @JvmOverloads constructor(
         }
 
         private var iconState = systemIconState
-        private val prefs = Utilities.getOmegaPrefs(context)
+        private val prefs = Utilities.getNeoPrefs(context)
         private val iconPackPref = prefs.profileIconPack
 
         init {

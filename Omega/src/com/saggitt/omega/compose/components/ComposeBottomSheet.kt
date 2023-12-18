@@ -20,16 +20,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.android.app.animation.Interpolators
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.anim.Interpolators
 import com.android.launcher3.anim.PendingAnimation
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
@@ -44,7 +44,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     private val container = ComposeView(context)
     private val mLauncher = Launcher.getLauncher(context)
     private var imeShift = 0f
-    private var _hintCloseProgress = mutableStateOf(0f)
+    private var _hintCloseProgress = mutableFloatStateOf(0f)
     private val hintCloseProgress get() = _hintCloseProgress.value
     var hintCloseDistance = 0f
         private set
@@ -68,7 +68,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
             bottom = 50.dp,
             start = 0.dp,
             end = 0.dp
-        )
+        ),
     ) {
         container.setContent {
             OmegaAppTheme {
@@ -89,17 +89,17 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     }
 
     private fun animateOpen(animate: Boolean) {
-        if (mIsOpen || mOpenCloseAnimator.isRunning) {
+        if (mIsOpen || mOpenCloseAnimation.animationPlayer.isRunning) {
             return
         }
         mIsOpen = true
         setupNavBarColor()
-        mOpenCloseAnimator.setValues(
+        mOpenCloseAnimation.animationPlayer.setValues(
             PropertyValuesHolder.ofFloat(TRANSLATION_SHIFT, TRANSLATION_SHIFT_OPENED)
         )
-        mOpenCloseAnimator.interpolator = Interpolators.FAST_OUT_SLOW_IN
-        if (!animate) mOpenCloseAnimator.duration = 0
-        mOpenCloseAnimator.start()
+        mOpenCloseAnimation.animationPlayer.interpolator = Interpolators.FAST_OUT_SLOW_IN
+        if (!animate) mOpenCloseAnimation.animationPlayer.duration = 0
+        mOpenCloseAnimation.animationPlayer.start()
     }
 
     private fun setupNavBarColor() {
@@ -126,7 +126,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     override fun addHintCloseAnim(
         distanceToMove: Float,
         interpolator: Interpolator,
-        target: PendingAnimation
+        target: PendingAnimation,
     ) {
         super.addHintCloseAnim(distanceToMove, interpolator, target)
         hintCloseDistance = distanceToMove
@@ -134,7 +134,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     }
 
     private fun updateContentShift() {
-        if (!Utilities.getOmegaPrefs(context).showDebugInfo.getValue()) {
+        if (!Utilities.getNeoPrefs(context).showDebugInfo.getValue()) {
             mContent.translationY = mTranslationShift * mContent.height + imeShift
         }
     }
@@ -147,7 +147,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     @Composable
     private fun ContentWrapper(
         contentPaddings: PaddingValues = PaddingValues(all = 0.dp),
-        content: @Composable ComposeBottomSheet.() -> Unit
+        content: @Composable ComposeBottomSheet.() -> Unit,
     ) {
         val imePaddings = WindowInsets.ime
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
@@ -189,7 +189,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
         fun show(
             context: Context,
             animate: Boolean = true,
-            content: @Composable ComposeBottomSheet.() -> Unit
+            content: @Composable ComposeBottomSheet.() -> Unit,
         ) {
             val bottomSheet = ComposeBottomSheet(context)
             bottomSheet.setContent(content)

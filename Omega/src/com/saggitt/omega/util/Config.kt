@@ -187,7 +187,7 @@ class Config(val context: Context) {
         }
 
         fun gesturePrefs(context: Context): List<NavigationPref> {
-            val prefs = Utilities.getOmegaPrefs(context)
+            val prefs = Utilities.getNeoPrefs(context)
             return listOf(
                 prefs.gestureDoubleTap,
                 prefs.gestureLongPress,
@@ -261,7 +261,7 @@ class Config(val context: Context) {
         fun isAppProtected(context: Context, componentKey: ComponentKey): Boolean {
             var result = false
             val protectedApps = ArrayList(
-                Utilities.getOmegaPrefs(context).drawerProtectedAppsSet.getValue()
+                Utilities.getNeoPrefs(context).drawerProtectedAppsSet.getValue()
                     .map { Utilities.makeComponentKey(context, it) })
 
             if (protectedApps.contains(componentKey)) {
