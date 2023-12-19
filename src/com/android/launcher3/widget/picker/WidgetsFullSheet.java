@@ -16,7 +16,6 @@
 package com.android.launcher3.widget.picker;
 
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-
 import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_Y;
 import static com.android.launcher3.config.FeatureFlags.LARGE_SCREEN_WIDGET_PICKER;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WIDGETSTRAY_SEARCHED;
@@ -288,6 +287,14 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     public void onBackProgressed(@NonNull BackEvent backEvent) {
         super.onBackProgressed(backEvent);
         mFastScroller.setVisibility(backEvent.getProgress() > 0 ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    @Override
+    public void onBackProgressed(@NonNull Float event) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            super.onBackProgressed(event);
+            mFastScroller.setVisibility(event > 0 ? View.INVISIBLE : View.VISIBLE);
+        }
     }
 
     private void attachScrollbarToRecyclerView(WidgetsRecyclerView recyclerView) {
@@ -819,7 +826,9 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     @Override
     public void onDragStart(boolean start, float startDisplacement) {
         super.onDragStart(start, startDisplacement);
-        getWindowInsetsController().hide(WindowInsets.Type.ime());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindowInsetsController().hide(WindowInsets.Type.ime());
+        }
     }
 
     @Nullable private View getViewToShowEducationTip() {

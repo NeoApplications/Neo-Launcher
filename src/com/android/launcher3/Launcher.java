@@ -20,7 +20,6 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-
 import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
@@ -243,6 +242,7 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
+import com.saulhdev.neolauncher.CustomOnBackAnimationCallback;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseatTransitionController;
 import com.saulhdev.neolauncher.hotseat.HotseatTransitionController;
@@ -624,7 +624,7 @@ public class Launcher extends StatefulActivity<LauncherState>
      */
     @NonNull
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    protected OnBackAnimationCallback getOnBackAnimationCallback() {
+    protected CustomOnBackAnimationCallback getOnBackAnimationCallback() {
         // #1 auto cancel action mode handler
         if (isInAutoCancelActionMode()) {
             return this::finishAutoCancelActionMode;
@@ -643,7 +643,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         }
 
         // #4 state handler
-        return new OnBackAnimationCallback() {
+        return new CustomOnBackAnimationCallback() {
             @Override
             public void onBackInvoked() {
                 onStateBack();
@@ -653,6 +653,13 @@ public class Launcher extends StatefulActivity<LauncherState>
             public void onBackProgressed(@NonNull BackEvent backEvent) {
                 mStateManager.getState().onBackProgressed(
                         Launcher.this, backEvent.getProgress());
+            }
+
+            @Override
+            public void onBackProgressed(@NonNull Float event) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    mStateManager.getState().onBackProgressed(Launcher.this, event);
+                }
             }
 
             @Override
@@ -3451,7 +3458,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Returns {@code true} if there are visible tasks with windowing mode set to
-     * {@link android.app.WindowConfiguration#WINDOWING_MODE_FREEFORM}
+     * {@link }
      */
     public boolean areFreeformTasksVisible() {
         return false; // Base launcher does not track freeform tasks
@@ -3464,7 +3471,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Handles an app pair launch; overridden in
-     * {@link com.android.launcher3.uioverrides.QuickstepLauncher}
+     * {@link }
      */
     public void launchAppPair(WorkspaceItemInfo app1, WorkspaceItemInfo app2) {
         // Overridden
