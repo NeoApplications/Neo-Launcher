@@ -240,6 +240,7 @@ import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
+import com.saggitt.omega.OverlayCallbackImpl;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
@@ -668,7 +669,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     protected LauncherOverlayManager getDefaultOverlay() {
-        return new LauncherOverlayManager() { };
+        return new OverlayCallbackImpl(this);
     }
 
     protected OnboardingPrefs<? extends Launcher> createOnboardingPrefs(
