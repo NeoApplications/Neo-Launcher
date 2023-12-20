@@ -291,7 +291,6 @@ public abstract class AbstractSlideInView<T extends Context & ActivityContext>
                 + (1 - PREDICTIVE_BACK_MIN_SCALE) * (1 - deceleratedProgress));
     }
 
-    @Override
     public void onBackProgressed(Float event) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             final float progress = event;

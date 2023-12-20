@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
+import android.window.OnBackAnimationCallback;
 
 import androidx.annotation.IntDef;
 
@@ -38,7 +39,6 @@ import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.util.TouchController;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
-import com.saulhdev.neolauncher.CustomOnBackAnimationCallback;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,7 +47,7 @@ import java.lang.annotation.RetentionPolicy;
  * Base class for a View which shows a floating UI on top of the launcher UI.
  */
 public abstract class AbstractFloatingView extends LinearLayout implements TouchController,
-        CustomOnBackAnimationCallback {
+        OnBackAnimationCallback {
 
     @IntDef(flag = true, value = {
             TYPE_FOLDER,

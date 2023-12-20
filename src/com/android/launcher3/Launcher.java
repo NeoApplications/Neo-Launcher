@@ -242,7 +242,6 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
-import com.saulhdev.neolauncher.CustomOnBackAnimationCallback;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
 import com.saulhdev.neolauncher.hotseat.ExpandableHotseatTransitionController;
 import com.saulhdev.neolauncher.hotseat.HotseatTransitionController;
@@ -624,7 +623,7 @@ public class Launcher extends StatefulActivity<LauncherState>
      */
     @NonNull
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    protected CustomOnBackAnimationCallback getOnBackAnimationCallback() {
+    protected OnBackAnimationCallback getOnBackAnimationCallback() {
         // #1 auto cancel action mode handler
         if (isInAutoCancelActionMode()) {
             return this::finishAutoCancelActionMode;
@@ -643,7 +642,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         }
 
         // #4 state handler
-        return new CustomOnBackAnimationCallback() {
+        return new OnBackAnimationCallback() {
             @Override
             public void onBackInvoked() {
                 onStateBack();
@@ -655,7 +654,6 @@ public class Launcher extends StatefulActivity<LauncherState>
                         Launcher.this, backEvent.getProgress());
             }
 
-            @Override
             public void onBackProgressed(@NonNull Float event) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     mStateManager.getState().onBackProgressed(Launcher.this, event);
