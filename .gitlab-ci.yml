@@ -34,7 +34,7 @@ build:
             - .gradle/wrapper
     artifacts:
         paths:
-            - build/outputs/apk/aospOmega/debug/*.apk
+            - app/build/outputs/apk/aospOmega/debug/*.apk
         expire_in: 
             1 week
 
