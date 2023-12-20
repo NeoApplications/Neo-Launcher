@@ -45,7 +45,8 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - ARTIFACT_PATHNAME_APK=$(ls $pwd/build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
+        - echo "current dir $pwd"
+        - ARTIFACT_PATHNAME_APK=$(ls /build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=$(basename ARTIFACT_PATHNAME_APK)
         - echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
         - echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $CI_JOB_ENV
