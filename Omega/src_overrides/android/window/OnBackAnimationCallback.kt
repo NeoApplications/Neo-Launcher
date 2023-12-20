@@ -19,6 +19,7 @@
 package android.window
 
 import android.os.Build
+import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
 
 interface OnBackAnimationCallback {
@@ -31,7 +32,7 @@ interface OnBackAnimationCallback {
     fun onBackProgressed(backEvent: BackEvent) {
     }
 
-    fun onBackProgressed(event: Float) {}
+    fun onBackProgressed(@FloatRange(from = 0.0, to = 1.0) backProgress: Float) {}
 
     fun onBackCancelled() {}
 
