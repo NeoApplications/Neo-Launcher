@@ -1,6 +1,5 @@
 stages:
     - build
-    - test
     - deploy
 
 variables:
@@ -17,24 +16,20 @@ before_script:
     - apt-get install -y openjdk-17-jdk
     - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
     - chmod +x gradlew
-    - ./gradlew assembleAospOmega
 
 build:
     stage: build
     interruptible: true
     script:
-        - apt-get update -qy
-        - apt-get install -y openjdk-17-jdk
-        - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
-        - chmod +x gradlew
         - ./gradlew assembleAospOmega
     cache:    
         paths:
             - .gradle/caches
             - .gradle/wrapper
     artifacts:
+        name: "NeoLauncher.apk"
         paths:
-            - build/outputs/apk/aospOmega/debug/*.apk
+            - ./app/build/outputs/
         expire_in: 
             1 week
 
@@ -45,7 +40,7 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - ARTIFACT_PATHNAME_APK=$(ls $pwd/build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
+        - ARTIFACT_PATHNAME_APK=$(ls ./app/build/outputs/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=$(basename ARTIFACT_PATHNAME_APK)
         - echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
         - echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $CI_JOB_ENV
