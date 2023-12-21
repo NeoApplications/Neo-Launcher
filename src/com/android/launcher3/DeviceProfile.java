@@ -65,6 +65,7 @@ import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.IconSizeSteps;
 import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.DeviceProfileOverrides;
 
 import java.io.PrintWriter;
 import java.util.Locale;
@@ -296,6 +297,7 @@ public class DeviceProfile {
 
     // DragController
     public int flingToDeleteThresholdVelocity;
+    private final DeviceProfileOverrides.TextFactors textFactors;
 
     /** TODO: Once we fully migrate to staged split, remove "isMultiWindowMode" */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
@@ -304,6 +306,7 @@ public class DeviceProfile {
             @NonNull final ViewScaleProvider viewScaleProvider,
             @NonNull final Consumer<DeviceProfile> dimensionOverrideProvider) {
 
+        textFactors = DeviceProfileOverrides.INSTANCE.get(context).getTextFactors();
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -1102,7 +1105,7 @@ public class DeviceProfile {
                 iconDrawablePaddingPx = cellPaddingY;
             }
         }
-
+        iconTextSizePx *= textFactors.getIconTextSizeFactor();
         // All apps
         if (mIsResponsiveGrid) {
             updateAllAppsWithResponsiveMeasures();
@@ -1161,6 +1164,7 @@ public class DeviceProfile {
         if (mIsScalableGrid) {
             allAppsIconSizePx = ResourceHelper.Companion.pxFromDp(inv.allAppsIconSize[mTypeIndex], mMetrics);
             allAppsIconTextSizePx = pxFromSp(inv.allAppsIconTextSize[mTypeIndex], mMetrics);
+            allAppsIconTextSizePx *= textFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx = getNormalizedIconDrawablePadding();
             allAppsCellWidthPx = ResourceHelper.Companion.pxFromDp(inv.allAppsCellSize[mTypeIndex].x, mMetrics, scale);
 
@@ -1194,6 +1198,7 @@ public class DeviceProfile {
             float invIconTextSizeSp = inv.allAppsIconTextSize[mTypeIndex];
             allAppsIconSizePx = Math.max(1, ResourceHelper.Companion.pxFromDp(invIconSizeDp, mMetrics, scale));
             allAppsIconTextSizePx = (int) (pxFromSp(invIconTextSizeSp, mMetrics) * scale);
+            allAppsIconTextSizePx *= textFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx =
                     res.getDimensionPixelSize(R.dimen.all_apps_icon_drawable_padding);
             allAppsCellWidthPx = allAppsIconSizePx + (2 * allAppsIconDrawablePaddingPx);
