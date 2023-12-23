@@ -62,7 +62,7 @@ android {
     compileSdk = 34
 
     val name = "1.0"
-    val code = 950
+    val code = 952
 
     defaultConfig {
         minSdk = 26
@@ -88,8 +88,9 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all {
+    applicationVariants.all {
+        val variant = this
+        outputs.all {
             (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
                 "NeoLauncher_v${variant.versionName}_build_${variant.versionCode}.apk"
         }
@@ -98,7 +99,6 @@ android {
             "launcher_component",
             "${variant.applicationId}/com.saggitt.omega.OmegaLauncher"
         )
-        true
     }
 
     buildTypes {
