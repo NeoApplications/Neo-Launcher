@@ -177,6 +177,7 @@ open class CustomHotseat @JvmOverloads constructor(
     }
 
     override fun getAlpha(): Float {
+        if (shortcutsAndWidgets == null) return 1f
         return shortcutsAndWidgets.alpha
     }
 
