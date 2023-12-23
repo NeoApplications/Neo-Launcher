@@ -121,7 +121,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         val config = Config(this)
         config.setAppLanguage(prefs.profileLanguage.getValue())
         mOverlayManager = defaultOverlay
-        //Set Initial value for idp columns and rows
         val camManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager?
         camManager?.registerTorchCallback(object : CameraManager.TorchCallback() {
             override fun onTorchModeUnavailable(cameraId: String) {
@@ -278,6 +277,13 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
         return mOverlayManager
     }
+
+    override fun onUiChangedWhileSleeping() {
+        if (Utilities.ATLEAST_S) {
+            super.onUiChangedWhileSleeping()
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
