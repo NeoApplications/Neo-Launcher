@@ -7,4 +7,5 @@
     android:configure="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
     android:initialLayout="@layout/smartspace_widget_placeholder"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="reconfigurable|hide_from_picker|configuration_optional" />
