@@ -7,7 +7,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Icon
-import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -58,8 +57,9 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
 
     private fun extractWidgetLayout(appWidgetHostView: ViewGroup): List<SmartspaceTarget> {
         val children = appWidgetHostView.getAllChildren().filter { it.isVisible }
-        val texts = children.filterIsInstance<TextView>().filter { !TextUtils.isEmpty(it.text) }
-        val images = children.filterIsInstance<ImageView>()
+        val texts =
+            children.filterIsInstance<TextView>().filter { !it.text.isNullOrEmpty() }.toList()
+        val images = children.filterIsInstance<ImageView>().toList()
         var weatherIconView: ImageView? = null
         var cardIconView: ImageView? = null
         var title: TextView? = null
