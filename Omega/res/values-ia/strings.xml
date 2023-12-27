@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="title__general_drawer">Tiratorio</string>
+    <string name="folder_name">Nomine de dossier</string>
+    <string name="title__general_profile">Profilo</string>
+    <string name="title__general_about">A proposito de</string>
+    <string name="title__general_advanced">Parametros avantiate</string>
+    <string name="default_folder_name">Nove dossier</string>
+    <string name="title__general_theme">Thema</string>
+</resources>
