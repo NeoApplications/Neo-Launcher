@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.android.launcher3.icons"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 26
