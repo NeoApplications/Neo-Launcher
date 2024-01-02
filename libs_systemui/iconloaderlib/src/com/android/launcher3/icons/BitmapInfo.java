@@ -16,7 +16,6 @@
 package com.android.launcher3.icons;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -123,6 +122,13 @@ public class BitmapInfo {
 
     public Bitmap getMono() {
         return mMono;
+    }
+
+    /**
+     * Returns a new icon based on the theme of the context
+     */
+    public FastBitmapDrawable newThemedIcon(Context context) {
+        return newIcon(context);
     }
 
     /**
