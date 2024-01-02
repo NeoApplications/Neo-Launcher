@@ -29,7 +29,7 @@ build:
     artifacts:
         name: "NeoLauncher.apk"
         paths:
-            - ./app/build/outputs/
+            - build/outputs/apk/aospOmega/debug/
         expire_in: 
             1 week
 
@@ -40,7 +40,7 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - ARTIFACT_PATHNAME_APK=$(ls ./app/build/outputs/*.apk | head -n 1)
+        - ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=$(basename ARTIFACT_PATHNAME_APK)
         - echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
         - echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $CI_JOB_ENV
