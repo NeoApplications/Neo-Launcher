@@ -104,7 +104,7 @@ android {
     buildTypes {
         named("debug") {
             isMinifyEnabled = false
-            applicationIdSuffix = ".alpha"
+            applicationIdSuffix = ".alpha1"
             manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
             manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
             signingConfig = signingConfigs.getByName("debug")
@@ -306,8 +306,8 @@ dependencies {
     ksp("androidx.room:room-compiler:$vRoom")
 
     // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-14.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-14.jar"))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
