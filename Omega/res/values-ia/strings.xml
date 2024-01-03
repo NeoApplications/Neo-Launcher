@@ -42,4 +42,28 @@
     <string name="title_all_apps_search">Barra de recerca in le tiratorio</string>
     <string name="title_all_apps_google_search">Resultatos web</string>
     <string name="title_app_categorization_enable">Activar categorias de applicationes</string>
+    <string name="title__sort_most_used">Le plus usate</string>
+    <string name="title_disable_suggestions_prompt">Disactivar le suggestiones de application</string>
+    <string name="theme_light">Clar</string>
+    <string name="title__sort_alphabetical_az">A→Z</string>
+    <string name="theme_black">Nigre</string>
+    <string name="theme_dark">Obscur</string>
+    <string name="theme_auto_night_mode_black">Systema (Nigre)</string>
+    <plurals name="tab_apps_count">
+        <item quantity="one">%1$d Application</item>
+        <item quantity="other">%1$d Applicationes</item>
+    </plurals>
+    <string name="summary_all_apps_google_search">Cercar resultatos web e applicationes</string>
+    <string name="theme_use_black">Usar nigre pur</string>
+    <string name="hide_app_reset">Reinitialisar applicationes celate</string>
+    <string name="theme_auto_night_mode">Systema</string>
+    <string name="theme_dark_theme_mode">Thema obscur</string>
+    <string name="title__sort_alphabetical_za">Z→A</string>
+    <string name="selected_count">%1$d seligite</string>
+    <string name="title_theme_customize_icons">Personalisar le icones</string>
+    <string name="title_default">Predeterminate</string>
+    <string name="summary__general_about">Plus de information super Neo Launcher</string>
+    <string name="title_drawer_vertical">Vertical</string>
+    <string name="pref_category__interfaces">Interfacie de usator</string>
+    <string name="title_dock_fill">Monstrar fundo</string>
 </resources>
