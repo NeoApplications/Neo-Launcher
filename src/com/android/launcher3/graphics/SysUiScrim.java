@@ -38,7 +38,7 @@ import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.anim.AnimatedFloat;
-import com.android.launcher3.util.ResourceHelper;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
 import com.android.launcher3.util.Themes;
@@ -99,8 +99,8 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mActivity = BaseDraggingActivity.fromContext(view.getContext());
         DisplayMetrics dm = mActivity.getResources().getDisplayMetrics();
 
-        mTopMaskHeight = ResourceHelper.Companion.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
-        mBottomMaskHeight = ResourceHelper.Companion.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
+        mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
+        mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
         mHideSysUiScrim = Themes.getAttrBoolean(view.getContext(), R.attr.isWorkspaceDarkText);
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
@@ -216,7 +216,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
     private Bitmap createDitheredAlphaMask(int height, @ColorInt int[] colors, float[] positions) {
         DisplayMetrics dm = mActivity.getResources().getDisplayMetrics();
-        int width = ResourceHelper.Companion.pxFromDp(ALPHA_MASK_BITMAP_WIDTH_DP, dm);
+        int width = ResourceUtils.pxFromDp(ALPHA_MASK_BITMAP_WIDTH_DP, dm);
         Bitmap dst = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
         Canvas c = new Canvas(dst);
         Paint paint = new Paint(DITHER_FLAG);

@@ -22,6 +22,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.FloatArrayEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
@@ -34,6 +35,7 @@ import android.graphics.Region;
 import android.graphics.Region.Op;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.View;
@@ -44,7 +46,6 @@ import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.views.ClipPathView;
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -74,12 +75,12 @@ public abstract class IconShape {
     };
 
     public abstract void drawShape(Canvas canvas, float offsetX, float offsetY, float radius,
-                                   Paint paint);
+            Paint paint);
 
     public abstract void addToPath(Path path, float offsetX, float offsetY, float radius);
 
     public abstract <T extends View & ClipPathView> Animator createRevealAnimator(T target,
-                                                                                  Rect startRect, Rect endRect, float endRadius, boolean isReversed);
+            Rect startRect, Rect endRect, float endRadius, boolean isReversed);
 
     /**
      * Abstract shape where the reveal animation is a derivative of a round rect animation
@@ -88,7 +89,7 @@ public abstract class IconShape {
 
         @Override
         public final <T extends View & ClipPathView> Animator createRevealAnimator(T target,
-                                                                                   Rect startRect, Rect endRect, float endRadius, boolean isReversed) {
+                Rect startRect, Rect endRect, float endRadius, boolean isReversed) {
             return new RoundedRectRevealOutlineProvider(
                     getStartRadius(startRect), endRadius, startRect, endRect) {
                 @Override
@@ -104,13 +105,13 @@ public abstract class IconShape {
     /**
      * Abstract shape which draws using {@link Path}
      */
-     static abstract class PathShape extends IconShape {
+    private static abstract class PathShape extends IconShape {
 
         private final Path mTmpPath = new Path();
 
         @Override
         public final void drawShape(Canvas canvas, float offsetX, float offsetY, float radius,
-                                    Paint paint) {
+                Paint paint) {
             mTmpPath.reset();
             addToPath(mTmpPath, offsetX, offsetY, radius);
             canvas.drawPath(mTmpPath, paint);
@@ -121,7 +122,7 @@ public abstract class IconShape {
 
         @Override
         public final <T extends View & ClipPathView> Animator createRevealAnimator(T target,
-                                                                                   Rect startRect, Rect endRect, float endRadius, boolean isReversed) {
+                Rect startRect, Rect endRect, float endRadius, boolean isReversed) {
             Path path = new Path();
             AnimatorUpdateListener listener =
                     newUpdateListener(startRect, endRect, endRadius, path);
@@ -160,7 +161,7 @@ public abstract class IconShape {
         private final float[] mTempRadii = new float[8];
 
         protected AnimatorUpdateListener newUpdateListener(Rect startRect, Rect endRect,
-                                                           float endRadius, Path outPath) {
+                float endRadius, Path outPath) {
             float r1 = getStartRadius(startRect);
 
             float[] startValues = new float[] {
@@ -267,7 +268,7 @@ public abstract class IconShape {
 
         @Override
         protected AnimatorUpdateListener newUpdateListener(Rect startRect, Rect endRect,
-                                                           float endRadius, Path outPath) {
+                float endRadius, Path outPath) {
             float r1 = startRect.width() / 2f;
             float r2 = r1 * mRadiusRatio;
 
@@ -329,7 +330,7 @@ public abstract class IconShape {
 
         @Override
         protected AnimatorUpdateListener newUpdateListener(Rect startRect, Rect endRect,
-                                                           float endR, Path outPath) {
+                float endR, Path outPath) {
 
             float startCX = startRect.exactCenterX();
             float startCY = startRect.exactCenterY();
@@ -378,8 +379,7 @@ public abstract class IconShape {
      * Initializes the shape which is closest to the {@link AdaptiveIconDrawable}
      */
     public static void init(Context context) {
-        // pickBestShape(context);
-        pickBestShapeNeo(context);
+        pickBestShape(context);
     }
 
     private static IconShape getShapeDefinition(String type, float radius) {
@@ -428,13 +428,14 @@ public abstract class IconShape {
         return result;
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     protected static void pickBestShape(Context context) {
         // Pick any large size
         final int size = 200;
 
         Region full = new Region(0, 0, size, size);
         Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);
         iconR.setPath(drawable.getIconMask(), full);
@@ -461,18 +462,6 @@ public abstract class IconShape {
         if (closestShape != null) {
             sInstance = closestShape;
         }
-
-        // Initialize shape properties
-        sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
-    }
-
-    protected static void pickBestShapeNeo(Context context) {
-        sInstance = new AdaptiveIconShape(context);
-        final int size = 200;
-
-        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
-                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
-        drawable.setBounds(0, 0, size, size);
 
         // Initialize shape properties
         sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);

@@ -22,6 +22,7 @@ import static android.content.Intent.ACTION_TIME_CHANGED;
 import static android.content.res.Resources.ID_NULL;
 import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -34,6 +35,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -45,14 +47,25 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.util.Log;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
 
+import com.android.launcher3.icons.ThemedIconDrawable.ThemeData;
 import com.android.launcher3.util.SafeCloseable;
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
+import org.xmlpull.v1.XmlPullParser;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -64,6 +77,11 @@ public class IconProvider {
     public static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
             "config_icon_mask", "string", "android");
 
+    protected static final String TAG_ICON = "icon";
+    protected static final String ATTR_PACKAGE = "package";
+    protected static final String ATTR_COMPONENT = "component";
+    protected static final String ATTR_DRAWABLE = "drawable";
+
     private static final String TAG = "IconProvider";
     private static final boolean DEBUG = false;
     public static final boolean ATLEAST_T = BuildCompat.isAtLeastT();
@@ -71,10 +89,20 @@ public class IconProvider {
     private static final String ICON_METADATA_KEY_PREFIX = ".dynamic_icons";
 
     private static final String SYSTEM_STATE_SEPARATOR = " ";
+    protected static final String THEMED_ICON_MAP_FILE = "grayscale_icon_map";
+
+    private static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
+
+    private Map<String, ThemeData> mThemedIconMap;
 
     protected final Context mContext;
     protected final ComponentName mCalendar;
     protected final ComponentName mClock;
+    protected final List<ComponentName> dynamicCalendars = new ArrayList<>();
+
+    protected static final int ICON_TYPE_DEFAULT = 0;
+    protected static final int ICON_TYPE_CALENDAR = 1;
+    protected static final int ICON_TYPE_CLOCK = 2;
 
     public IconProvider(Context context) {
         mContext = context;
@@ -122,7 +150,7 @@ public class IconProvider {
     protected Drawable getIconWithOverrides(String packageName, int iconDpi,
                                             String component, UserHandle user,
                                             Supplier<Drawable> fallback) {
-        ThemeData td = getThemeDataForPackage(packageName);
+        ThemeData td = getThemeData(packageName, component);
 
         Drawable icon = null;
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
@@ -145,6 +173,34 @@ public class IconProvider {
 
     protected ThemeData getThemeDataForPackage(String packageName) {
         return null;
+    }
+
+    protected Drawable getIconWithOverrides(String packageName, String component, UserHandle user, int iconDpi,
+                                            Supplier<Drawable> fallback) {
+
+        ThemeData td = getThemeData(packageName, component);
+        Drawable icon = null;
+
+        if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
+            icon = loadCalendarDrawable(iconDpi, td);
+        } else if (mClock != null
+                && mClock.getPackageName().equals(packageName)
+                && Process.myUserHandle().equals(user)) {
+            //icon = loadClockDrawable(iconDpi, td);
+            icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi, td);
+        }
+        if (icon == null) {
+            icon = fallback.get();
+            if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
+                AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
+                if (aid.getMonochrome() == null) {
+                    icon = new AdaptiveIconDrawable(aid.getBackground(),
+                            aid.getForeground(), td.loadPaddedDrawable());
+                }
+            }
+        }
+        return icon;
+        //return td != null ? td.wrapDrawable(icon, iconType) : icon;
     }
 
     private Drawable loadActivityInfoIcon(ActivityInfo ai, int density) {
@@ -188,7 +244,7 @@ public class IconProvider {
                         ta.recycle();
                         return monoId == ID_NULL ? drawable
                                 : new AdaptiveIconDrawable(aid.getBackground(), aid.getForeground(),
-                                        new ThemeData(td.mResources, monoId).loadPaddedDrawable());
+                                        new ThemeData(td.mResources, mCalendar.getPackageName(), monoId).loadPaddedDrawable());
                     }
                 }
                 return drawable;
@@ -238,6 +294,22 @@ public class IconProvider {
         return TextUtils.isEmpty(cn) ? null : ComponentName.unflattenFromString(cn);
     }
 
+    protected void updateMapWithDynamicIcons(Context context, Map<ComponentName, ThemeData> map) {
+        final int resId = getDynamicCalendarResource(context);
+        dynamicCalendars.forEach(dCal -> {
+            ComponentName pkg = new ComponentName(dCal.getPackageName(), "");
+            if (map.get(pkg) == null) {
+                map.put(pkg, new ThemeData(context.getResources(), dCal.getPackageName(), resId));
+            }
+        });
+    }
+
+    @SuppressLint("DiscouragedApi")
+    @DrawableRes
+    public int getDynamicCalendarResource(Context context) {
+        return context.getResources().getIdentifier("themed_icon_calendar_" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), "drawable", context.getPackageName());
+    }
+
     /**
      * Returns a string representation of the current system icon state
      */
@@ -253,26 +325,56 @@ public class IconProvider {
         return new IconChangeReceiver(listener, handler);
     }
 
-    public static class ThemeData {
+    protected boolean isThemeEnabled() {
+        return mThemedIconMap != DISABLED_MAP;
+    }
 
-        final Resources mResources;
-        final int mResID;
+    @Nullable
+    protected final ThemeData getThemeData(@NonNull String packageName, @NonNull String component) {
+        return getThemeData(new ComponentName(packageName, component));
+    }
 
-        public ThemeData(Resources resources, int resID) {
-            mResources = resources;
-            mResID = resID;
+    @Nullable
+    protected ThemeData getThemeData(@NonNull ComponentName componentName) {
+        return getThemedIconMap().get(componentName.getPackageName());
+    }
+
+    private Map<String, ThemeData> getThemedIconMap() {
+        if (mThemedIconMap != null) {
+            return mThemedIconMap;
         }
+        ArrayMap<String, ThemeData> map = new ArrayMap<>();
+        try {
+            Resources res = mContext.getResources();
+            int resID = res.getIdentifier(THEMED_ICON_MAP_FILE, "xml", mContext.getPackageName());
+            if (resID != 0) {
+                XmlResourceParser parser = res.getXml(resID);
+                final int depth = parser.getDepth();
 
-        Drawable loadPaddedDrawable() {
-            if (!"drawable".equals(mResources.getResourceTypeName(mResID))) {
-                return null;
+                int type;
+
+                while ((type = parser.next()) != XmlPullParser.START_TAG
+                        && type != XmlPullParser.END_DOCUMENT) ;
+
+                while (((type = parser.next()) != XmlPullParser.END_TAG ||
+                        parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
+                    if (type != XmlPullParser.START_TAG) {
+                        continue;
+                    }
+                    if (TAG_ICON.equals(parser.getName())) {
+                        String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
+                        int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
+                        if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
+                            map.put(pkg, new ThemeData(res, mContext.getPackageName(), iconId));
+                        }
+                    }
+                }
             }
-            Drawable d = mResources.getDrawable(mResID).mutate();
-            d = new InsetDrawable(d, .2f);
-            float inset = getExtraInsetFraction() / (1 + 2 * getExtraInsetFraction());
-            Drawable fg = new InsetDrawable(d, inset);
-            return fg;
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to parse icon map", e);
         }
+        mThemedIconMap = map;
+        return mThemedIconMap;
     }
 
     private class IconChangeReceiver extends BroadcastReceiver implements SafeCloseable {

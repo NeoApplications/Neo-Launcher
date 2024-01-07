@@ -36,7 +36,8 @@
         <com.android.launcher3.views.AccessibilityActionsView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/home_screen" />
+            android:contentDescription="@string/home_screen"
+            />
 
         <View
             android:id="@+id/dummy_view"
@@ -58,11 +59,6 @@
             android:id="@+id/hotseat"
             layout="@layout/hotseat" />
 
-        <ViewStub
-            android:id="@+id/hotseat_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <include
             android:id="@+id/options_view"
             layout="@layout/longpress_options_menu" />
@@ -80,7 +76,7 @@
             android:id="@+id/drop_target_bar"
             layout="@layout/drop_target_bar" />
 
-        <com.saggitt.omega.blur.BlurScrimView
+        <com.android.launcher3.views.ScrimView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/scrim_view"

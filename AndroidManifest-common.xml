@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
 **
 ** Copyright 2016, The Android Open Source Project
@@ -16,8 +17,10 @@
 ** limitations under the License.
 */
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.android.launcher3">
 
     <!--
     The manifest defines the common entries that should be present in any derivative of Launcher3.
@@ -28,12 +31,6 @@
     with some minor changed based on the derivative app.
     -->
 
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
@@ -43,8 +40,10 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.READ_DEVICE_CONFIG" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- for rotating surface by arbitrary degree -->
     <uses-permission android:name="android.permission.ROTATE_SURFACE_FLINGER" />
+    <uses-permission android:name="android.permission.WAKEUP_SURFACE_FLINGER" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
@@ -56,12 +55,12 @@
         android:name="${packageName}.permission.READ_SETTINGS"
         android:protectionLevel="signatureOrSystem"
         android:label="@string/permlab_read_settings"
-        android:description="@string/permdesc_read_settings" />
+        android:description="@string/permdesc_read_settings"/>
     <permission
         android:name="${packageName}.permission.WRITE_SETTINGS"
         android:protectionLevel="signatureOrSystem"
         android:label="@string/permlab_write_settings"
-        android:description="@string/permdesc_write_settings" />
+        android:description="@string/permdesc_write_settings"/>
 
     <uses-permission android:name="${packageName}.permission.READ_SETTINGS" />
     <uses-permission android:name="${packageName}.permission.WRITE_SETTINGS" />
@@ -72,10 +71,11 @@
         android:backupInForeground="true"
         android:fullBackupContent="@xml/backupscheme"
         android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher_home"
         android:label="@string/derived_app_name"
         android:largeHeap="@bool/config_largeHeap"
         android:restoreAnyVersion="true"
-        android:supportsRtl="true">
+        android:supportsRtl="true" >
 
         <!-- Intent received when a session is committed -->
         <receiver
@@ -87,11 +87,10 @@
         </receiver>
 
         <!-- Intent received used to initialize a restored widget -->
-        <receiver
-            android:name="com.android.launcher3.AppWidgetsRestoredReceiver"
+        <receiver android:name="com.android.launcher3.AppWidgetsRestoredReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_HOST_RESTORED" />
+                <action android:name="android.appwidget.action.APPWIDGET_HOST_RESTORED"/>
             </intent-filter>
         </receiver>
 
@@ -105,12 +104,10 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="android.nfc.disable_beam_default"
-            android:value="true" />
+        <meta-data android:name="android.nfc.disable_beam_default"
+                       android:value="true" />
 
-        <activity
-            android:name="com.android.launcher3.dragndrop.AddItemActivity"
+        <activity android:name="com.android.launcher3.dragndrop.AddItemActivity"
             android:theme="@style/AddItemActivityTheme"
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
@@ -135,13 +132,12 @@
 
         <!--
         The content provider for exposing various launcher grid options.
+        TODO: Add proper permissions
         -->
         <provider
             android:name="com.android.launcher3.graphics.GridCustomizationsProvider"
             android:authorities="${packageName}.grid_control"
-            android:exported="true"
-            android:readPermission="${packageName}.permission.READ_SETTINGS"
-            android:writePermission="${packageName}.permission.WRITE_SETTINGS" />
+            android:exported="true" />
 
         <!--
         The settings activity. To extend point settings_fragment_name to appropriate fragment class
@@ -171,13 +167,12 @@
         -->
         <activity
             android:name="com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher"
-            android:theme="@style/NeoTheme.Light"
+            android:theme="@style/AppTheme"
             android:launchMode="singleTop"
             android:exported="true"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.SECONDARY_HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

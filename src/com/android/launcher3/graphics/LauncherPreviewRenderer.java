@@ -19,6 +19,7 @@ import static android.app.WallpaperManager.FLAG_SYSTEM;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
+
 import static com.android.launcher3.DeviceProfile.DEFAULT_SCALE;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT_PREDICTION;
 import static com.android.launcher3.model.ModelUtils.filterCurrentWorkspaceItems;
@@ -91,7 +92,6 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
-import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.MainThreadInitializedObject.SandboxContext;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
@@ -103,9 +103,6 @@ import com.android.launcher3.widget.LauncherWidgetHolder;
 import com.android.launcher3.widget.LocalColorExtractor;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.android.launcher3.widget.util.WidgetSizes;
-import com.saggitt.omega.DeviceProfileOverrides;
-import com.saggitt.omega.data.IconOverrideRepository;
-import com.saggitt.omega.iconpack.IconPackProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,17 +139,9 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
-            putBaseInstance(IconPackProvider.INSTANCE);
-            putBaseInstance(IconOverrideRepository.INSTANCE);
-            putBaseInstance(DeviceProfileOverrides.INSTANCE);
             mObjectMap.put(InvariantDeviceProfile.INSTANCE, idp);
             mObjectMap.put(LauncherAppState.INSTANCE,
                     new LauncherAppState(this, null /* iconCacheFileName */));
-        }
-
-        private void putBaseInstance(MainThreadInitializedObject mainThreadInitializedObject) {
-            mAllowedObjects.add(mainThreadInitializedObject);
-            mObjectMap.put(mainThreadInitializedObject, mainThreadInitializedObject.get(getBaseContext()));
         }
 
         /**
@@ -424,9 +413,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
                 mContext, info.appWidgetId, providerInfo);
 
         if (mWallpaperColorResources != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                view.setColorResources(mWallpaperColorResources);
-            }
+            view.setColorResources(mWallpaperColorResources);
         }
 
         view.setTag(info);
@@ -539,7 +526,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
         }
 
         // Add first page QSB
-        if (FeatureFlags.QSBOnFirstScreen(mContext)) {
+        if (FeatureFlags.QSbOnFirstScreen(mContext)) {
             CellLayout firstScreen = mWorkspaceScreens.get(FIRST_SCREEN_ID);
             View qsb = mHomeElementInflater.inflate(R.layout.qsb_preview, firstScreen, false);
             CellLayoutLayoutParams lp = new CellLayoutLayoutParams(

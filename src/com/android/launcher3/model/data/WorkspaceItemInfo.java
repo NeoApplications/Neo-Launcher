@@ -21,22 +21,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.IconCache;
-import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.ContentWriter;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -84,12 +79,6 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     public Intent intent;
 
     /**
-     * If isShortcut=true and customIcon=false, this contains a reference to the
-     * shortcut icon as an application's resource.
-     */
-    public Intent.ShortcutIconResource iconResource;
-
-    /**
      * A message to display when the user tries to start a disabled shortcut.
      * This is currently only used for deep shortcuts.
      */
@@ -104,9 +93,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @NonNull private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
 
     public int options;
-    public CharSequence customTitle;
-    public Bitmap customIcon;
-    public String swipeUpAction;
+
 
     public WorkspaceItemInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
@@ -116,7 +103,6 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         super(info);
         title = info.title;
         intent = new Intent(info.intent);
-        iconResource = info.iconResource;
         status = info.status;
         personKeys = info.personKeys.clone();
     }
@@ -147,10 +133,6 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
         if (!usingLowResIcon()) {
             writer.putIcon(bitmap, user);
-        }
-        if (iconResource != null) {
-            writer.put(Favorites.ICON_PACKAGE, iconResource.packageName)
-                    .put(Favorites.ICON_RESOURCE, iconResource.resourceName);
         }
     }
 
@@ -237,19 +219,5 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @Override
     public WorkspaceItemInfo clone() {
         return new WorkspaceItemInfo(this);
-    }
-
-    private void updateDatabase(Context context, boolean reload) {
-        ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
-        //TODO: save to overrideIcons.db
-    }
-
-    public void onLoadCustomizations(String swipeUpAction) {
-        this.swipeUpAction = swipeUpAction;
-    }
-
-    public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
-        swipeUpAction = action;
-        updateDatabase(context, true);
     }
 }

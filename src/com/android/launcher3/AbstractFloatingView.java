@@ -19,11 +19,14 @@ package com.android.launcher3;
 import static android.animation.ValueAnimator.areAnimatorsEnabled;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+
 import static com.android.launcher3.compat.AccessibilityManagerCompat.isAccessibilityEnabled;
 import static com.android.launcher3.compat.AccessibilityManagerCompat.sendCustomAccessibilityEvent;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -46,6 +49,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Base class for a View which shows a floating UI on top of the launcher UI.
  */
+@TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public abstract class AbstractFloatingView extends LinearLayout implements TouchController,
         OnBackAnimationCallback {
 
@@ -72,7 +76,7 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
             TYPE_ADD_TO_HOME_CONFIRMATION,
             TYPE_TASKBAR_OVERLAY_PROXY,
             TYPE_TASKBAR_PINNING_POPUP,
-            TYPE_SETTINGS_SHEET,
+            TYPE_SETTINGS_SHEET
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FloatingViewType {}

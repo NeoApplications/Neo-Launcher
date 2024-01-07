@@ -24,7 +24,7 @@ class AllAppsPages(
     private val config = Config(context)
 
     init {
-        activityInfoList = config.getAppsList(AppFilter(context))
+        activityInfoList = config.getAppsList(CustomAppFilter(context))
 
         activityInfoList.forEach {
             appList.add(AppInfo(it, it.user, false))

@@ -39,6 +39,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
@@ -72,7 +73,7 @@ class Config(val context: Context) {
         } else Resources.getSystem().configuration.locales[0]
     }
 
-    fun getAppsList(filter: AppFilter?): MutableList<LauncherActivityInfo> {
+    fun getAppsList(filter: CustomAppFilter?): MutableList<LauncherActivityInfo> {
         val apps = ArrayList<LauncherActivityInfo>()
         val profiles = UserCache.INSTANCE[context].userProfiles
         val launcherApps = context.getSystemService(LauncherApps::class.java)

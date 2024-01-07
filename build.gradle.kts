@@ -74,6 +74,8 @@ android {
 
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
+        buildConfigField("boolean", "IS_DEBUG_DEVICE", "false")
+        buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -197,7 +199,8 @@ android {
             manifest.srcFile("AndroidManifest-common.xml")
         }
 
-        /*named("androidTest") {
+        /*
+        named("androidTest") {
             res.srcDirs(listOf("tests/res"))
             java.srcDirs(listOf("tests/src", "tests/tapl"))
             manifest.srcFile("tests/AndroidManifest-common.xml")

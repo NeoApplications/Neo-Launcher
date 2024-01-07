@@ -1,7 +1,8 @@
-package com.saggitt.omega.util
+package com.saulhdev.neolauncher.util
 
 import android.content.pm.PackageManager
 import com.android.launcher3.Utilities
+import com.android.launcher3.util.PackageManagerHelper
 
 fun PackageManager.isAppEnabled(packageName: String?, flags: Int): Boolean {
     return try {
@@ -31,14 +32,11 @@ fun PackageManager.getPackageVersionCode(packageName: String) =
         -1L
     }
 
-/*fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
+fun PackageManager.getPackageVersion(packageName: String) =
     try {
-        queryIntentActivityOptions(
-            ComponentName(context.applicationInfo.packageName, context.applicationInfo.className),
-            null,
-            Intent(context.resources.getString(R.string.icon_packs_intent_name)),
-            PackageManager.GET_RESOLVED_FILTER
-        ).map { it.activityInfo.packageName }
-    } catch (_: PackageManager.NameNotFoundException) {
-        emptyList()
-    }*/
+        val packageInfo = getPackageInfo(packageName, 0)
+        packageInfo.versionName
+    }
+    catch (e: PackageManager.NameNotFoundException) {
+        ""
+    }

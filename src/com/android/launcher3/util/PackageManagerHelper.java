@@ -122,15 +122,6 @@ public class PackageManagerHelper {
         return mPm.isSafeMode();
     }
 
-    public String getPackageVersion(final String packageName) {
-        try {
-            PackageInfo info = mPm.getPackageInfo(packageName, 0);
-            return info.versionName;
-        } catch (PackageManager.NameNotFoundException ignored) {
-        }
-        return "";
-    }
-
     @Nullable
     public Intent getAppLaunchIntent(@Nullable final String pkg, @NonNull final UserHandle user) {
         List<LauncherActivityInfo> activities = mLauncherApps.getActivityList(pkg, user);

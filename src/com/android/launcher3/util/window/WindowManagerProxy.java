@@ -18,15 +18,15 @@ package com.android.launcher3.util.window;
 import static android.view.Display.DEFAULT_DISPLAY;
 
 import static com.android.launcher3.Utilities.dpiFromPx;
+import static com.android.launcher3.testing.shared.ResourceUtils.INVALID_RESOURCE_HANDLE;
+import static com.android.launcher3.testing.shared.ResourceUtils.NAVBAR_HEIGHT;
+import static com.android.launcher3.testing.shared.ResourceUtils.NAVBAR_HEIGHT_LANDSCAPE;
+import static com.android.launcher3.testing.shared.ResourceUtils.NAVBAR_LANDSCAPE_LEFT_RIGHT_SIZE;
+import static com.android.launcher3.testing.shared.ResourceUtils.NAV_BAR_INTERACTION_MODE_RES_NAME;
+import static com.android.launcher3.testing.shared.ResourceUtils.STATUS_BAR_HEIGHT;
+import static com.android.launcher3.testing.shared.ResourceUtils.STATUS_BAR_HEIGHT_LANDSCAPE;
+import static com.android.launcher3.testing.shared.ResourceUtils.STATUS_BAR_HEIGHT_PORTRAIT;
 import static com.android.launcher3.util.MainThreadInitializedObject.forOverride;
-import static com.android.launcher3.util.ResourceHelper.INVALID_RESOURCE_HANDLE;
-import static com.android.launcher3.util.ResourceHelper.NAVBAR_HEIGHT;
-import static com.android.launcher3.util.ResourceHelper.NAVBAR_HEIGHT_LANDSCAPE;
-import static com.android.launcher3.util.ResourceHelper.NAVBAR_LANDSCAPE_LEFT_RIGHT_SIZE;
-import static com.android.launcher3.util.ResourceHelper.NAV_BAR_INTERACTION_MODE_RES_NAME;
-import static com.android.launcher3.util.ResourceHelper.STATUS_BAR_HEIGHT;
-import static com.android.launcher3.util.ResourceHelper.STATUS_BAR_HEIGHT_LANDSCAPE;
-import static com.android.launcher3.util.ResourceHelper.STATUS_BAR_HEIGHT_PORTRAIT;
 import static com.android.launcher3.util.RotationUtils.deltaRotation;
 import static com.android.launcher3.util.RotationUtils.rotateRect;
 import static com.android.launcher3.util.RotationUtils.rotateSize;
@@ -51,10 +51,10 @@ import android.view.WindowMetrics;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.NavigationMode;
 import com.android.launcher3.util.ResourceBasedOverride;
-import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
 
 import java.util.ArrayList;
@@ -287,19 +287,19 @@ public class WindowManagerProxy implements ResourceBasedOverride {
      * Wrapper around the utility method for easier emulation
      */
     protected int getDimenByName(Resources res, String resName) {
-        return ResourceHelper.Companion.getDimenByName(resName, res, 0);
+        return ResourceUtils.getDimenByName(resName, res, 0);
     }
 
     /**
      * Wrapper around the utility method for easier emulation
      */
     protected int getDimenByName(Resources res, String resName, String fallback) {
-        int dimen = ResourceHelper.Companion.getDimenByName(resName, res, -1);
+        int dimen = ResourceUtils.getDimenByName(resName, res, -1);
         return dimen > -1 ? dimen : getDimenByName(res, fallback);
     }
 
     protected boolean isGestureNav(Context context) {
-        return ResourceHelper.Companion.getIntegerByName("config_navBarInteractionMode",
+        return ResourceUtils.getIntegerByName("config_navBarInteractionMode",
                 context.getResources(), INVALID_RESOURCE_HANDLE) == 2;
     }
 
@@ -366,7 +366,7 @@ public class WindowManagerProxy implements ResourceBasedOverride {
      * Returns the current navigation mode from resource.
      */
     public NavigationMode getNavigationMode(Context context) {
-        int modeInt = ResourceHelper.Companion.getIntegerByName(NAV_BAR_INTERACTION_MODE_RES_NAME,
+        int modeInt = ResourceUtils.getIntegerByName(NAV_BAR_INTERACTION_MODE_RES_NAME,
                 context.getResources(), INVALID_RESOURCE_HANDLE);
 
         if (modeInt == INVALID_RESOURCE_HANDLE) {

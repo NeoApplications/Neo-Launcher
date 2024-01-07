@@ -19,6 +19,7 @@
 package com.saggitt.omega.icons
 
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -75,6 +76,7 @@ import com.saggitt.omega.groups.ui.AppTabDialog
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addIfNotNull
+import com.saulhdev.neolauncher.util.getPackageVersion
 import kotlinx.coroutines.launch
 
 @Composable
@@ -272,7 +274,7 @@ fun CustomizeIconView(
             )
             PreferenceItem(
                 title = stringResource(id = R.string.app_version),
-                summary = PackageManagerHelper(context).getPackageVersion(componentKey.componentName.packageName)
+                summary = context.packageManager.getPackageVersion(componentKey.componentName.packageName)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))

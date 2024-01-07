@@ -58,6 +58,7 @@ import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.OptionsPopupView
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.allapps.AppColorComparator
 import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator
@@ -216,7 +217,7 @@ fun StatusBarNotification.loadSmallIcon(context: Context): Drawable? {
 operator fun PreferenceGroup.get(index: Int): Preference = getPreference(index)
 
 fun openPopupMenu(view: View, rect: RectF?, vararg items: OptionsPopupView.OptionItem) {
-    val launcher = Launcher.getLauncher(view.context)
+    val launcher = NeoLauncher.getLauncher(view.context)
     OptionsPopupView.show<Launcher>(
         launcher,
         rect ?: RectF(launcher.getViewBounds(view)),

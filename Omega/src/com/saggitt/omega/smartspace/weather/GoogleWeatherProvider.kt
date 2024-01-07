@@ -3,7 +3,9 @@ package com.saggitt.omega.smartspace.weather
 import android.app.Activity
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Icon
@@ -17,8 +19,8 @@ import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
-import com.saggitt.omega.util.getAllChildren
 import com.saggitt.omega.util.pendingIntent
+import com.saggitt.omega.util.recursiveChildren
 import com.saggitt.omega.widget.HeadlessWidgetsManager
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.smartspace.SmartspaceAction
@@ -56,10 +58,11 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun extractWidgetLayout(appWidgetHostView: ViewGroup): List<SmartspaceTarget> {
-        val children = appWidgetHostView.getAllChildren().filter { it.isVisible }
+        val children = appWidgetHostView.recursiveChildren.filter { it.isVisible }
         val texts =
             children.filterIsInstance<TextView>().filter { !it.text.isNullOrEmpty() }.toList()
         val images = children.filterIsInstance<ImageView>().toList()
+            .filter { it.drawable != null && it.drawable is BitmapDrawable }
         var weatherIconView: ImageView? = null
         var cardIconView: ImageView? = null
         var title: TextView? = null
@@ -68,7 +71,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
         var temperatureText: TextView? = null
         if (texts.isEmpty()) return listOf(dummyTarget)
         if (images.isNotEmpty()) {
-            weatherIconView = images.last()
+            weatherIconView = images.firstOrNull()
             temperatureText = texts.last()
         }
         if (images.size > 1 && texts.size > 2) {
@@ -133,7 +136,10 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                 icon = weatherIcon?.let { Icon.createWithBitmap(it) },
                 title = "",
                 subtitle = weatherData.getTitle(),
-                pendingIntent = weatherData.pendingIntent
+                pendingIntent = weatherData.pendingIntent,
+                intent = Intent().apply {
+                    component = WEATHER_COMPONENT
+                }
             ),
             score = SmartspaceScores.SCORE_WEATHER,
             featureType = SmartspaceTarget.FEATURE_WEATHER
@@ -148,7 +154,9 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
         private const val GSA_PACKAGE = "com.google.android.googlequicksearchbox"
         private const val WIDGET_CLASS_NAME =
             "com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider"
-
+        private const val GSA_WEATHER =
+            "com.google.android.apps.search.weather.WeatherExportedActivity"
+        private val WEATHER_COMPONENT = ComponentName(GSA_PACKAGE, GSA_WEATHER)
         val dummyTarget = SmartspaceTarget(
             smartspaceTargetId = "dummyTarget",
             featureType = SmartspaceTarget.FEATURE_WEATHER

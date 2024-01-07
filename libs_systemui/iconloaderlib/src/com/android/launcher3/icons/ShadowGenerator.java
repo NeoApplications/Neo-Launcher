@@ -75,6 +75,14 @@ public class ShadowGenerator {
         }
     }
 
+    public synchronized void recreateIcon(Bitmap icon, Canvas out) {
+        drawShadow(icon, out);
+
+        // Draw the icon
+        mDrawPaint.setAlpha(255);
+        out.drawBitmap(icon, 0, 0, mDrawPaint);
+    }
+
     /** package private **/
     void addPathShadow(Path path, Canvas out) {
         if (ENABLE_SHADOWS) {

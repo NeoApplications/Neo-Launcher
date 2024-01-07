@@ -16,6 +16,7 @@
 package com.android.launcher3.icons;
 
 import static com.android.launcher3.icons.IconProvider.ATLEAST_T;
+import static com.android.launcher3.icons.ThemedIconDrawable.getColors;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -38,12 +39,16 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Supplier;
 
-import com.android.launcher3.icons.IconProvider.ThemeData;
+import com.android.launcher3.icons.ThemedIconDrawable.ThemeData;
+import com.saulhdev.neolauncher.icons.ClockMetadata;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import java.util.Calendar;
@@ -86,6 +91,8 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     public static final int INVALID_VALUE = -1;
 
     private final AnimationInfo mAnimationInfo = new AnimationInfo();
+    private int mTargetSdkVersion;
+    protected ThemeData mThemeData;
     private AnimationInfo mThemeInfo = null;
 
     private ClockDrawableWrapper(AdaptiveIconDrawable base) {
@@ -118,6 +125,34 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         } catch (Exception e) {
             Log.e(TAG, "Error loading themed clock", e);
         }
+    }
+
+    private static ClockDrawableWrapper fromThemeData(Context context, ThemeData themeData) {
+        try {
+            TypedArray ta = themeData.mResources.obtainTypedArray(themeData.mResID);
+            int count = ta.length();
+            Bundle extras = new Bundle();
+            for (int i = 0; i < count; i += 2) {
+                TypedValue v = ta.peekValue(i + 1);
+                extras.putInt(ta.getString(i), v.type >= TypedValue.TYPE_FIRST_INT
+                        && v.type <= TypedValue.TYPE_LAST_INT
+                        ? v.data : v.resourceId);
+            }
+            ta.recycle();
+            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
+                int[] colors = getColors(context);
+                Drawable bg = new ColorDrawable(colors[0]);
+                Drawable fg = themeData.mResources.getDrawable(resId).mutate();
+                fg.setTint(colors[1]);
+                return new CustomAdaptiveIconDrawable(bg, fg);
+            });
+            if (drawable != null) {
+                return drawable;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading themed clock", e);
+        }
+        return null;
     }
 
     @Override
@@ -209,9 +244,49 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         return wrapper;
     }
 
+    public static ClockDrawableWrapper forMeta(int targetSdkVersion,
+                                               @NonNull ClockMetadata metadata, Supplier<Drawable> drawableProvider) {
+        Drawable drawable = drawableProvider.get().mutate();
+        if (!(drawable instanceof AdaptiveIconDrawable)) {
+            return null;
+        }
+
+        ClockDrawableWrapper wrapper =
+                new ClockDrawableWrapper((AdaptiveIconDrawable) drawable);
+        wrapper.mTargetSdkVersion = targetSdkVersion;
+        AnimationInfo info = wrapper.mAnimationInfo;
+
+        info.baseDrawableState = drawable.getConstantState();
+
+        info.hourLayerIndex = metadata.getHourLayerIndex();
+        info.minuteLayerIndex = metadata.getMinuteLayerIndex();
+        info.secondLayerIndex = metadata.getSecondLayerIndex();
+
+        info.defaultHour = metadata.getDefaultHour();
+        info.defaultMinute = metadata.getDefaultMinute();
+        info.defaultSecond = metadata.getDefaultSecond();
+
+        LayerDrawable foreground = (LayerDrawable) wrapper.getForeground();
+        int layerCount = foreground.getNumberOfLayers();
+        if (info.hourLayerIndex < 0 || info.hourLayerIndex >= layerCount) {
+            info.hourLayerIndex = INVALID_VALUE;
+        }
+        if (info.minuteLayerIndex < 0 || info.minuteLayerIndex >= layerCount) {
+            info.minuteLayerIndex = INVALID_VALUE;
+        }
+        if (info.secondLayerIndex < 0 || info.secondLayerIndex >= layerCount) {
+            info.secondLayerIndex = INVALID_VALUE;
+        } else if (DISABLE_SECONDS) {
+            foreground.setDrawable(info.secondLayerIndex, null);
+            info.secondLayerIndex = INVALID_VALUE;
+        }
+        info.applyTime(Calendar.getInstance(), foreground);
+        return wrapper;
+    }
+
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-            BaseIconFactory iconFactory, float normalizationScale) {
+            BaseIconFactory iconFactory, float normalizationScale, UserHandle user) {
         AdaptiveIconDrawable background = new CustomAdaptiveIconDrawable(
                 getBackground().getConstantState().newDrawable(), null);
         Bitmap flattenBG = iconFactory.createScaledBitmap(background,
@@ -232,6 +307,15 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         resetLevel(foreground, mAnimationInfo.secondLayerIndex);
         draw(canvas);
         mAnimationInfo.applyTime(Calendar.getInstance(), (LayerDrawable) getForeground());
+    }
+
+    @Override
+    public Drawable getThemedDrawable(Context context) {
+        if (mThemeData != null) {
+            ClockDrawableWrapper drawable = fromThemeData(context, mThemeData);
+            return drawable == null ? this : drawable;
+        }
+        return this;
     }
 
     private void resetLevel(LayerDrawable drawable, int index) {
@@ -326,7 +410,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
             int themedFgColor;
             ColorFilter bgFilter;
             if ((creationFlags & FLAG_THEMED) != 0 && themeData != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                int[] colors = ThemedIconDrawable.getColors(context);
+                int[] colors = getColors(context);
                 Drawable tintedDrawable = themeData.baseDrawableState.newDrawable().mutate();
                 themedFgColor = colors[1];
                 tintedDrawable.setTint(colors[1]);

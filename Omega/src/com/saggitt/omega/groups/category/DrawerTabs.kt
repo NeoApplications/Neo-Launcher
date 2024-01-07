@@ -105,7 +105,7 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
     }
 
     override fun onGroupsChanged(changeCallback: PreferencesChangeCallback) {
-        changeCallback.launcher.appsView.reloadTabs()
+        //changeCallback.launcher.appsView.reloadTabs()
     }
 
     abstract class Tab(context: Context, type: String, title: String) :

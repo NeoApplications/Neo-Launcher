@@ -20,6 +20,7 @@ import static android.text.TextUtils.isEmpty;
 
 import static androidx.core.util.Preconditions.checkNotNull;
 
+import static com.android.launcher3.folder.FolderIcon.inflateIcon;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
@@ -30,7 +31,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Process;
-import android.text.TextUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -40,7 +40,6 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
@@ -60,7 +59,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
-
 
 /**
  * Represents a folder containing shortcuts or apps.
@@ -87,7 +85,6 @@ public class FolderInfo extends ItemInfo {
     public static final int FLAG_MANUAL_FOLDER_NAME = 0x00000008;
 
     public static final int FLAG_COVER_MODE = 0x00000010;
-
 
     /**
      * Different states of folder label.
@@ -131,6 +128,8 @@ public class FolderInfo extends ItemInfo {
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
         user = Process.myUserHandle();
+
+        swipeUpAction = "";
     }
 
     /**
@@ -210,7 +209,6 @@ public class FolderInfo extends ItemInfo {
         void onAdd(WorkspaceItemInfo item, int rank);
         void onRemove(List<WorkspaceItemInfo> item);
         void onItemsChanged(boolean animate);
-
         void onTitleChanged(CharSequence title);
 
         default void onIconChanged() {
@@ -238,6 +236,7 @@ public class FolderInfo extends ItemInfo {
             writer.updateItemInDatabase(this);
         }
     }
+
     public boolean isCoverMode() {
         return hasOption(FLAG_COVER_MODE);
     }
@@ -264,7 +263,7 @@ public class FolderInfo extends ItemInfo {
     }
 
     public ComponentKey toComponentKey() {
-        return new ComponentKey(new ComponentName("com.saggitt.omega.folder", String.valueOf(id)), Process.myUserHandle());
+        return new ComponentKey(new ComponentName("com.saulhdev.neolauncher.folder", String.valueOf(id)), Process.myUserHandle());
     }
 
     public void onIconChanged() {
@@ -449,7 +448,7 @@ public class FolderInfo extends ItemInfo {
     public Drawable getFolderIcon(Launcher launcher) {
         int iconSize = launcher.getDeviceProfile().iconSizePx;
         LinearLayout dummy = new LinearLayout(launcher, null);
-        com.android.launcher3.folder.FolderIcon icon = com.android.launcher3.folder.FolderIcon.inflateIcon(R.layout.folder_icon, launcher, dummy, this);
+        com.android.launcher3.folder.FolderIcon icon =  inflateIcon(R.layout.folder_icon, launcher, dummy, this);
         icon.isCustomIcon = false;
         icon.getFolderBackground().setStartOpacity(1f);
         Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
@@ -458,22 +457,5 @@ public class FolderInfo extends ItemInfo {
         });
         icon.unbind();
         return new BitmapDrawable(launcher.getResources(), b);
-    }
-
-    public CharSequence getIconTitle(Folder folder) {
-        if(!isCoverMode()){
-            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
-                return title;
-            }else {
-                return folder.getDefaultFolderName();
-            }
-        }
-        else{
-            WorkspaceItemInfo info = getCoverInfo();
-            if (info.customTitle != null) {
-                return info.customTitle;
-            }
-            return info.title;
-        }
     }
 }

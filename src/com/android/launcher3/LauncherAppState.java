@@ -58,8 +58,6 @@ import com.android.launcher3.util.SettingsCache;
 import com.android.launcher3.util.SimpleBroadcastReceiver;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
-import com.saggitt.omega.NeoAppKt;
-import com.saggitt.omega.icons.CustomIconProvider;
 
 public class LauncherAppState implements SafeCloseable {
 
@@ -69,13 +67,7 @@ public class LauncherAppState implements SafeCloseable {
 
     // We do not need any synchronization for this variable as its only written on UI thread.
     public static final MainThreadInitializedObject<LauncherAppState> INSTANCE =
-            new MainThreadInitializedObject(LauncherAppState::new) {
-                @Override
-                protected void onPostInit(Context context) {
-                    super.onPostInit(context);
-                    NeoAppKt.getNeoApp(context).onLauncherAppStateCreated();
-                }
-            };
+            new MainThreadInitializedObject<>(LauncherAppState::new);
 
     private final Context mContext;
     private final LauncherModel mModel;
@@ -130,7 +122,7 @@ public class LauncherAppState implements SafeCloseable {
                 new SimpleBroadcastReceiver(mModel::onBroadcastIntent);
         modelChangeReceiver.register(mContext, Intent.ACTION_LOCALE_CHANGED,
                 ACTION_DEVICE_POLICY_RESOURCE_UPDATED);
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.IS_STUDIO_BUILD) {
             mContext.registerReceiver(modelChangeReceiver, new IntentFilter(ACTION_FORCE_ROLOAD),
                     RECEIVER_EXPORTED);
         }
@@ -172,7 +164,7 @@ public class LauncherAppState implements SafeCloseable {
         mContext = context;
 
         mInvariantDeviceProfile = InvariantDeviceProfile.INSTANCE.get(context);
-        mIconProvider = new CustomIconProvider(context, Themes.isThemedIconEnabled(context));
+        mIconProvider = new LauncherIconProvider(context);
         mIconCache = new IconCache(mContext, mInvariantDeviceProfile,
                 iconCacheFileName, mIconProvider);
         mModel = new LauncherModel(context, this, mIconCache, new AppFilter(mContext),

@@ -58,11 +58,11 @@ public class Themes {
                 && (wallpaperColorHints & HINT_SUPPORTS_DARK_THEME) != 0;
 
         if (Utilities.isDarkTheme(context)) {
-            return supportsDarkText ? R.style.NeoTheme_Dark_DarkText
-                    : isMainColorDark ? R.style.NeoTheme_Dark_DarkMainColor : R.style.NeoTheme_Dark;
+            return supportsDarkText ? R.style.AppTheme_Dark_DarkText
+                    : isMainColorDark ? R.style.AppTheme_Dark_DarkMainColor : R.style.AppTheme_Dark;
         } else {
-            return supportsDarkText ? R.style.NeoTheme_Light_DarkText
-                    : isMainColorDark ? R.style.NeoTheme_Light_DarkMainColor : R.style.NeoTheme_Light;
+            return supportsDarkText ? R.style.AppTheme_DarkText
+                    : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme;
         }
     }
 

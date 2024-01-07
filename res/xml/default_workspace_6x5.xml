@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2021 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2021 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
         launcher:container="-101"
         launcher:screen="0"
         launcher:x="0"
-        launcher:y="0">
+        launcher:y="0" >
         <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end" />
         <favorite launcher:uri="mailto:" />
     </resolve>
@@ -30,7 +31,7 @@
         launcher:container="-101"
         launcher:screen="1"
         launcher:x="1"
-        launcher:y="0">
+        launcher:y="0" >
         <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_CALENDAR;end" />
     </resolve>
 
@@ -38,7 +39,7 @@
         launcher:container="-101"
         launcher:screen="2"
         launcher:x="2"
-        launcher:y="0">
+        launcher:y="0" >
         <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_GALLERY;end" />
         <favorite launcher:uri="#Intent;type=images/*;end" />
     </resolve>
@@ -47,7 +48,7 @@
         launcher:container="-101"
         launcher:screen="3"
         launcher:x="3"
-        launcher:y="0">
+        launcher:y="0" >
         <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_MARKET;end" />
         <favorite launcher:uri="market://details?id=com.android.launcher" />
     </resolve>
@@ -56,8 +57,9 @@
         launcher:container="-101"
         launcher:screen="4"
         launcher:x="4"
-        launcher:y="0">
-        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_BROWSER;end" />
+        launcher:y="0" >
+        <favorite
+            launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_BROWSER;end" />
         <favorite launcher:uri="http://www.example.com/" />
     </resolve>
 
@@ -66,7 +68,7 @@
         launcher:container="-101"
         launcher:screen="5"
         launcher:x="5"
-        launcher:y="0">
+        launcher:y="0" >
         <favorite launcher:uri="#Intent;action=android.media.action.STILL_IMAGE_CAMERA;end" />
         <favorite launcher:uri="#Intent;action=android.intent.action.CAMERA_BUTTON;end" />
     </resolve>

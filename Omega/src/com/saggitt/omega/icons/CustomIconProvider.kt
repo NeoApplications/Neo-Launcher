@@ -42,10 +42,12 @@ import android.util.ArrayMap
 import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
+import com.android.launcher3.icons.ThemedIconDrawable.ThemeData
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
 import com.saggitt.omega.data.IconOverrideRepository
@@ -54,7 +56,10 @@ import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.iconpack.IconType
 import com.saggitt.omega.util.ApkAssets
+import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
+import com.saulhdev.neolauncher.util.getPackageVersionCode
+import com.saulhdev.neolauncher.util.isPackageInstalled
 import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.overrideSdk
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
@@ -70,6 +75,8 @@ class CustomIconProvider @JvmOverloads constructor(
 
     private val prefs = Utilities.getNeoPrefs(context)
     private val iconPackPref = prefs.profileIconPack
+    private var isOlderLawnIconsInstalled =
+        context.packageManager.getPackageVersionCode(LAWNICONS_PACKAGE_NAME) in 1..3
     private val iconPackProvider = IconPackProvider.INSTANCE.get(context)
     private val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
     private val iconPack get() = iconPackProvider.getIconPackOrSystem(iconPackPref.getValue())
@@ -115,26 +122,25 @@ class CustomIconProvider @JvmOverloads constructor(
         // finally, look for normal icon
         return iconPack.getIcon(componentName)
     }
-
     override fun getIconWithOverrides(
         packageName: String,
-        iconDpi: Int,
         component: String,
         user: UserHandle,
+        iconDpi: Int,
         fallback: Supplier<Drawable>,
     ): Drawable {
         val componentName = ComponentName(packageName, component)
         val iconEntry = resolveIconEntry(componentName, user)
         var resolvedEntry = iconEntry
-        //var iconType = ICON_TYPE_DEFAULT
-        var themeData: ThemeData? = null
+        var iconType = ICON_TYPE_DEFAULT
+        var themeData: ThemedIconDrawable.ThemeData? = null
         if (iconEntry != null) {
             val clock = iconPackProvider.getClockMetadata(iconEntry)
             when {
                 iconEntry.type == IconType.Calendar -> {
                     resolvedEntry = iconEntry.resolveDynamicCalendar(getDay())
-                    themeData = getThemeDataForPackage(mCalendar.packageName)
-                    //iconType = ICON_TYPE_CALENDAR
+                    themeData = getThemeData(mCalendar.packageName, "")
+                    iconType = ICON_TYPE_CALENDAR
                 }
 
                 !supportsIconTheme -> {
@@ -143,48 +149,49 @@ class CustomIconProvider @JvmOverloads constructor(
 
                 clock != null -> {
                     // the icon supports dynamic clock, use dynamic themed clock
-                    themeData = getThemeDataForPackage(mClock.packageName)
-                    //iconType = ICON_TYPE_CLOCK
+                    themeData = getThemeData(mClock.packageName, "")
+                    iconType = ICON_TYPE_CLOCK
                 }
 
                 packageName == mClock.packageName -> {
                     // is clock app but icon might not be adaptive, fallback to static themed clock
-                    themeData = ThemeData(
+                    themeData = ThemedIconDrawable.ThemeData(
                         context.resources,
+                        BuildConfig.APPLICATION_ID,
                         R.drawable.themed_icon_static_clock
                     )
                 }
 
                 packageName == mCalendar.packageName -> {
                     // calendar app, apply the dynamic calendar icon
-                    themeData = getThemeDataForPackage(mCalendar.packageName)
-                    //iconType = ICON_TYPE_CALENDAR
+                    themeData = getThemeData(mCalendar.packageName, "")
+                    iconType = ICON_TYPE_CALENDAR
                 }
 
                 else -> {
                     // regular icon
-                    themeData = getThemeDataForPackage(componentName.packageName)
+                    themeData = getThemeData(componentName)
                 }
             }
         }
         val icon = resolvedEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
         val td = themeData
-        if (icon != null) return icon //if (td != null) td.wrapDrawable(icon/*, iconType*/) else icon
+        if (icon != null) return if (td != null) td.wrapDrawable(icon, iconType) else icon
         var defaultIcon =
-            super.getIconWithOverrides(packageName, iconDpi, component, user, fallback)
+            super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
         if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
             minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
         ) {
             defaultIcon = defaultIcon.monochrome
-            /*return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {*/
-            val themedColors = ThemedIconDrawable.getColors(context)
-            if (prefs.profileTransparentBgIcons.getValue()) {
-                return defaultIcon.apply { setTint(themedColors[1]) }
+            return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {
+                val themedColors = ThemedIconDrawable.getThemedColors(context)
+                if (prefs.profileTransparentBgIcons.getValue()) {
+                    return defaultIcon.apply { setTint(themedColors[1]) }
+                }
+                CustomAdaptiveIconDrawable(
+                    ColorDrawable(themedColors[0]),
+                    defaultIcon.apply { setTint(themedColors[1]) })
             }
-            return CustomAdaptiveIconDrawable(
-                ColorDrawable(themedColors[0]),
-                defaultIcon.apply { setTint(themedColors[1]) })
-            //}
         }
         return defaultIcon
     }
@@ -395,19 +402,20 @@ class CustomIconProvider @JvmOverloads constructor(
         }
     }
 
-    private fun createThemedIconMap(): MutableMap<ComponentName, ThemeData> {
-        val map = ArrayMap<ComponentName, ThemeData>()
+    private fun createThemedIconMap(): MutableMap<ComponentName, ThemedIconDrawable.ThemeData> {
+        val map = ArrayMap<ComponentName, ThemedIconDrawable.ThemeData>()
 
-        fun updateMapFromResources(resources: Resources) {
+        fun updateMapFromResources(resources: Resources, packageName: String) {
             try {
-                resources.getXml(R.xml.grayscale_icon_map).use { parser ->
-                    val depth: Int = parser.depth
+                val xmlId = resources.getIdentifier(THEMED_ICON_MAP_FILE, "xml", packageName)
+                if (xmlId != 0) {
+                    val parser = resources.getXml(xmlId)
+                    val depth = parser.depth
                     var type: Int
-                    while (parser.next().also { type = it } != XmlPullParser.START_TAG
-                        && type != XmlPullParser.END_DOCUMENT
-                    );
-                    while ((parser.next().also { type = it } != XmlPullParser.END_TAG
-                                || parser.depth > depth) && type != XmlPullParser.END_DOCUMENT
+                    while (
+                        (parser.next()
+                            .also { type = it } != XmlPullParser.END_TAG || parser.depth > depth) &&
+                        type != XmlPullParser.END_DOCUMENT
                     ) {
                         if (type != XmlPullParser.START_TAG) continue
                         if (TAG_ICON == parser.name) {
@@ -415,19 +423,31 @@ class CustomIconProvider @JvmOverloads constructor(
                             val cmp = parser.getAttributeValue(null, ATTR_COMPONENT).orEmpty()
                             val iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0)
                             if (iconId != 0 && pkg.isNotEmpty()) {
-                                map[ComponentName(pkg, cmp)] = ThemeData(resources, iconId)
+                                map[ComponentName(pkg, cmp)] =
+                                    ThemedIconDrawable.ThemeData(resources, packageName, iconId)
                             }
                         }
                     }
                 }
-            } catch (e: java.lang.Exception) {
-                Log.e(TAG, "Unable to parse icon map", e)
+            } catch (e: Exception) {
+                Log.e(TAG, "Unable to parse icon map.", e)
             }
         }
 
         updateMapFromResources(
-            resources = context.resources
+            resources = context.resources,
+            packageName = context.packageName
         )
+        if (context.packageManager.isPackageInstalled(packageName = _themeMapName)) {
+            iconPackVersion = context.packageManager.getPackageVersionCode(_themeMapName)
+            updateMapFromResources(
+                resources = context.packageManager.getResourcesForApplication(_themeMapName),
+                packageName = _themeMapName
+            )
+            if (isOlderLawnIconsInstalled) {
+                updateMapWithDynamicIcons(context, map)
+            }
+        }
 
         return map
     }

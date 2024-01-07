@@ -21,14 +21,26 @@ package com.saggitt.omega.allapps
 import android.content.ComponentName
 import android.content.Context
 import android.os.UserHandle
+import com.android.launcher3.AppFilter
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.NeoLauncher
 
-class CustomAppFilter(private val mContext: Context) : OmegaAppFilter(mContext) {
+class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
+    private val mHideList = HashSet<ComponentName>()
 
-    override fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
-        return super.shouldShowApp(componentName, user)
-                && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
+    init {
+        mHideList.add(ComponentName(mContext, NeoLauncher::class.java.name))
+        //Voice Search
+        mHideList.add(ComponentName.unflattenFromString("com.google.android.googlequicksearchbox/.VoiceSearchActivity")!!)
+        //Google Now Launcher
+        mHideList.add(ComponentName.unflattenFromString("com.google.android.launcher/.StubApp")!!)
+        //Actions Services
+        mHideList.add(ComponentName.unflattenFromString("com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity")!!)
+    }
+
+    fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
+        return !mHideList.contains(componentName) && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
     }
 
     companion object {
@@ -51,7 +63,7 @@ class CustomAppFilter(private val mContext: Context) : OmegaAppFilter(mContext) 
             return HashSet(Utilities.getNeoPrefs(context).drawerHiddenAppSet.getValue())
         }
 
-        fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
+        private fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
             Utilities.getNeoPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
         }
     }

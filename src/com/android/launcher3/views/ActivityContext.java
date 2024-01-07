@@ -384,6 +384,22 @@ public interface ActivityContext {
         return null;
     }
 
+    /**
+     * A wrapper around the platform method with Launcher specific checks.
+     */
+    default void startShortcut(String packageName, String id, Rect sourceBounds,
+                               Bundle startActivityOptions, UserHandle user) {
+        if (GO_DISABLE_WIDGETS) {
+            return;
+        }
+        try {
+            ((Context) this).getSystemService(LauncherApps.class).startShortcut(packageName, id,
+                    sourceBounds, startActivityOptions, user);
+        } catch (SecurityException | IllegalStateException e) {
+            Log.e(TAG, "Failed to start shortcut", e);
+        }
+    }
+
     /** Returns {@code true} if an app launch is blocked due to safe mode. */
     default boolean isAppBlockedForSafeMode() {
         return false;

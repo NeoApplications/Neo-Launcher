@@ -172,7 +172,7 @@ public class WorkProfileManager implements PersonalWorkSlidingTabStrip.OnActiveP
         if (mWorkModeSwitch.getParent() == null) {
             mAllApps.addView(mWorkModeSwitch);
         }
-        if (mAllApps.mAH.get(mAllApps.getCurrentPage()).isWork()) {
+        if (mAllApps.getCurrentPage() != WORK) {
             mWorkModeSwitch.animateVisibility(false);
         }
         if (getAH() != null) {

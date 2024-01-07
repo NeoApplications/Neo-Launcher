@@ -79,7 +79,6 @@ public final class ComposeInitializer {
      */
     private static void onAttachedToWindow(View root) {
         if (ViewTreeLifecycleOwner.get(root) != null) {
-            //return;
             throw new IllegalStateException(
                     "View " + root + " already has a LifecycleOwner");
         }

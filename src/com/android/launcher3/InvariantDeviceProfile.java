@@ -18,11 +18,11 @@ package com.android.launcher3;
 
 import static com.android.launcher3.LauncherPrefs.GRID_NAME;
 import static com.android.launcher3.Utilities.dpiFromPx;
+import static com.android.launcher3.testing.shared.ResourceUtils.INVALID_RESOURCE_HANDLE;
 import static com.android.launcher3.util.DisplayController.CHANGE_DENSITY;
 import static com.android.launcher3.util.DisplayController.CHANGE_NAVIGATION_MODE;
 import static com.android.launcher3.util.DisplayController.CHANGE_SUPPORTED_BOUNDS;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
-import static com.android.launcher3.util.ResourceHelper.INVALID_RESOURCE_HANDLE;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -52,12 +52,12 @@ import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.DeviceGridState;
 import com.android.launcher3.provider.RestoreDbTask;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.LockedUserState;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Partner;
-import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
 
@@ -116,13 +116,8 @@ public class InvariantDeviceProfile {
      */
     public int numRows;
     public int numColumns;
-    public int numSearchContainerColumns;
-    // Custom fields
-    public int numRowsOriginal;
     public int numColumnsOriginal;
-    public int numHotseatRows;
-    public int numHotseatIcons;
-    public int numHotseatIconsOriginal;
+    public int numSearchContainerColumns;
 
     /**
      * Number of icons per row and column in the folder.
@@ -159,8 +154,7 @@ public class InvariantDeviceProfile {
      * Number of icons inside the hotseat area.
      */
     public int numShownHotseatIcons;
-    // Custom values
-    public int numShrunkenHotseatIcons;
+
     /**
      * Number of icons inside the hotseat area that is stored in the database. This is greater than
      * or equal to numnShownHotseatIcons, allowing for a seamless transition between two hotseat
@@ -176,10 +170,9 @@ public class InvariantDeviceProfile {
      * Number of columns in the all apps list.
      */
     public int numAllAppsColumns;
+    public int numAllAppsColumnsOriginal;
     public int numDatabaseAllAppsColumns;
     public @StyleRes int allAppsStyle;
-    // Custom fields;
-    public int numAllAppsColumnsOriginal;
 
     /**
      * Do not query directly. see {@link DeviceProfile#isScalableGrid}.
@@ -361,12 +354,9 @@ public class InvariantDeviceProfile {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
         numRows = closestProfile.numRows;
-        numRowsOriginal = numRows;
         numColumns = closestProfile.numColumns;
         numColumnsOriginal = numColumns;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
-        numHotseatIcons = closestProfile.numHotseatIcons;
-        numHotseatIconsOriginal = closestProfile.numHotseatIcons;
         dbFile = closestProfile.dbFile;
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
@@ -396,7 +386,7 @@ public class InvariantDeviceProfile {
         for (int i = 1; i < iconSize.length; i++) {
             maxIconSize = Math.max(maxIconSize, iconSize[i]);
         }
-        iconBitmapSize = ResourceHelper.Companion.pxFromDp(maxIconSize, metrics);
+        iconBitmapSize = ResourceUtils.pxFromDp(maxIconSize, metrics);
         fillResIconDpi = getLauncherIconDensity(iconBitmapSize);
 
         iconTextSize = displayOption.textSizes;
@@ -408,8 +398,6 @@ public class InvariantDeviceProfile {
         horizontalMargin = displayOption.horizontalMargin;
 
         numShownHotseatIcons = closestProfile.numHotseatIcons;
-        numHotseatRows = closestProfile.numHotseatRows;
-        numShrunkenHotseatIcons = closestProfile.numShrunkenHotseatIcons;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
         hotseatColumnSpan = closestProfile.hotseatColumnSpan;
@@ -493,11 +481,6 @@ public class InvariantDeviceProfile {
     public void setCurrentGrid(Context context, String gridName) {
         LauncherPrefs.get(context).put(GRID_NAME, gridName);
         MAIN_EXECUTOR.execute(() -> onConfigChanged(context.getApplicationContext()));
-    }
-
-    public void onPreferencesChanged(Context context) {
-        Context appContext = context.getApplicationContext();
-        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
     }
 
     private Object[] toModelState() {
@@ -827,8 +810,6 @@ public class InvariantDeviceProfile {
         private final int numDatabaseAllAppsColumns;
         public final int numHotseatIcons;
         public final int numHotseatRows;
-        public int numHotseatIconsOriginal;
-        private final int numShrunkenHotseatIcons;
         private final int numDatabaseHotseatIcons;
 
         private final int[] hotseatColumnSpan = new int[COUNT_SIZES];
@@ -878,9 +859,6 @@ public class InvariantDeviceProfile {
                     R.styleable.GridDisplayOption_numHotseatIcons, numColumns);
             numHotseatRows = a.getInt(
                     R.styleable.GridDisplayOption_numHotseatRows, 1);
-            numHotseatIconsOriginal = numHotseatIcons;
-            numShrunkenHotseatIcons = a.getInt(
-                    R.styleable.GridDisplayOption_numShrunkenHotseatIcons, numHotseatIcons / 2);
             numDatabaseHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numExtendedHotseatIcons, 2 * numHotseatIcons);
 

@@ -17,7 +17,7 @@
   -->
 <resources>
     <!-- String representing the fragment class for settings activity.-->
-    <string name="launcher_activity_logic_class" translatable="false">com.saggitt.omega.util.CustomActivityCachingLogic</string>
+    <string name="launcher_activity_logic_class" translatable="false">com.android.launcher3.icons.LauncherActivityCachingLogic</string>
     <string name="app_filter_class" translatable="false">com.saggitt.omega.allapps.CustomAppFilter</string>
     <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.webproviders.DDGWebSearchProvider</string>
     <string name="calendar_component_name" translatable="false">com.google.android.calendar/com.android.calendar.AllInOneActivity</string>

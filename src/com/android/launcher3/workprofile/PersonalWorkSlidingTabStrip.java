@@ -34,8 +34,8 @@ import com.android.launcher3.views.ActivityContext;
  */
 public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageIndicator {
     private final boolean mIsAlignOnIcon;
-    protected OnActivePageChangedListener mOnActivePageChangedListener;
-    protected int mLastActivePage = 0;
+    public OnActivePageChangedListener mOnActivePageChangedListener;
+    public int mLastActivePage = 0;
 
     public PersonalWorkSlidingTabStrip(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

@@ -50,7 +50,6 @@ import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.OptionsState;
-import com.saulhdev.neolauncher.hotseat.ExpandableHotseatState;
 
 import java.util.Arrays;
 
@@ -152,7 +151,6 @@ public abstract class LauncherState implements BaseState<LauncherState> {
     public static final LauncherState OVERVIEW_SPLIT_SELECT =
             OverviewState.newSplitSelectState(OVERVIEW_SPLIT_SELECT_ORDINAL);
     public static final LauncherState OPTIONS = new OptionsState(OPTIONS_STATE_ORDINAL);
-    public static final LauncherState EXPANDABLE_HOTSEAT = new ExpandableHotseatState(EXPANDABLE_HOTSEAT_STATE_ORDINAL);
     public final int ordinal;
 
     /**

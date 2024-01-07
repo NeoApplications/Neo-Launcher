@@ -19,6 +19,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.UserHandle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -50,6 +52,10 @@ public class BitmapInfo {
     public static final BitmapInfo LOW_RES_INFO = fromBitmap(LOW_RES_ICON);
 
     public static final String TAG = "BitmapInfo";
+
+    protected static final byte TYPE_DEFAULT = 1;
+    protected static final byte TYPE_THEMED = 2;
+    protected static final byte TYPE_THEMED_V2 = 3;
 
     public final Bitmap icon;
     public final int color;
@@ -193,11 +199,16 @@ public class BitmapInfo {
          * Called for creating a custom BitmapInfo
          */
         BitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                BaseIconFactory iconFactory, float normalizationScale);
+                BaseIconFactory iconFactory, float normalizationScale, UserHandle user);
 
         /**
          * Called to draw the UI independent of any runtime configurations like time or theme
          */
         void drawForPersistence(Canvas canvas);
+
+        /**
+         * Returns a new icon with theme applied
+         */
+        Drawable getThemedDrawable(Context context);
     }
 }

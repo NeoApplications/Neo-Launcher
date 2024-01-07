@@ -135,14 +135,12 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * will only match be the installation progress until the app is installed, then this will the
      * total download progress.
      */
-    private int mProgressLevel = 100;
-
-    /**
+    private int mProgressLevel = 100;/**
      * Dominant color in the icon.
      */
     public int iconColor;
 
-    protected ItemInfoWithIcon() {}
+    protected ItemInfoWithIcon() { }
 
     protected ItemInfoWithIcon(ItemInfoWithIcon info) {
         super(info);

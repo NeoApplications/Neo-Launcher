@@ -16,7 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
 import static com.android.launcher3.util.FlagDebugUtils.appendFlag;
 import static com.android.launcher3.util.FlagDebugUtils.formatFlagChange;
 import static com.android.launcher3.util.SystemUiController.UI_STATE_FULLSCREEN_TASK;
@@ -27,11 +26,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.LauncherApps;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.UserHandle;
 import android.util.Log;
 import android.view.View;
 import android.window.OnBackInvokedDispatcher;
@@ -384,22 +380,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
         writer.println(prefix + "mSystemUiController: " + mSystemUiController);
         writer.println(prefix + "mActivityFlags: " + getActivityStateString(mActivityFlags));
         writer.println(prefix + "mForceInvisible: " + mForceInvisible);
-    }
-
-    /**
-     * A wrapper around the platform method with Launcher specific checks
-     */
-    public void startShortcut(String packageName, String id, Rect sourceBounds,
-                              Bundle startActivityOptions, UserHandle user) {
-        if (GO_DISABLE_WIDGETS) {
-            return;
-        }
-        try {
-            getSystemService(LauncherApps.class).startShortcut(packageName, id, sourceBounds,
-                    startActivityOptions, user);
-        } catch (SecurityException | IllegalStateException e) {
-            Log.e(TAG, "Failed to start shortcut", e);
-        }
     }
 
     public static <T extends BaseActivity> T fromContext(Context context) {

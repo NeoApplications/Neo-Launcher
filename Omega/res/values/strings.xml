@@ -149,6 +149,7 @@
     <string name="tab_type_smart">Automatic</string>
     <string name="pref_appcategorization_flowerpot_summary">Pick shortcuts automatically.</string>
     <string name="add_new_tab">Add</string>
+    <string name="icon_packs_intent_name" translatable="false">default</string>
     <string name="selected_count">%1$d selected</string>
     <plurals name="tab_apps_count">
         <item quantity="zero">%0$d Apps</item>

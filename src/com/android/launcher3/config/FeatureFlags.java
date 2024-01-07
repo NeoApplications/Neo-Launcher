@@ -54,7 +54,7 @@ public final class FeatureFlags {
     private FeatureFlags() { }
 
     public static boolean showFlagTogglerUi(Context context) {
-        return BuildConfig.DEBUG && Utilities.isDevelopersOptionsEnabled(context);
+        return BuildConfig.IS_DEBUG_DEVICE && Utilities.isDevelopersOptionsEnabled(context);
     }
 
     /**
@@ -62,15 +62,16 @@ public final class FeatureFlags {
      * @deprecated Use {@link BuildConfig#IS_STUDIO_BUILD} directly
      */
     @Deprecated
-    public static final boolean IS_STUDIO_BUILD = BuildConfig.DEBUG;
+    public static final boolean IS_STUDIO_BUILD = BuildConfig.IS_STUDIO_BUILD;
 
     /**
      * Enable moving the QSB on the 0th screen of the workspace. This is not a configuration feature
      * and should be modified at a project level.
-     * @deprecated Use {@link BuildConfig#QSB_ON_FIRST_SCREEN} directly
+     * Use {@link BuildConfig#} directly
      */
-    //public static final boolean QSB_ON_FIRST_SCREEN = true;
-    public static boolean QSBOnFirstScreen(Context context) {
+    //
+    //public static final boolean QSB_ON_FIRST_SCREEN = false;
+    public static boolean QSbOnFirstScreen(Context context) {
         return NeoPrefs.getInstance(context).getSmartspaceEnable().getValue();
     }
 

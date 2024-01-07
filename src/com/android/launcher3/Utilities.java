@@ -89,16 +89,15 @@ import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.icons.ShortcutCachingLogic;
 import com.android.launcher3.icons.ThemedIconDrawable;
-import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.pm.ShortcutConfigActivityInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntArray;
-import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
@@ -162,7 +161,7 @@ public final class Utilities {
      * @deprecated Use {@link BuildConfig#IS_DEBUG_DEVICE} directly
      */
     @Deprecated
-    public static final boolean IS_DEBUG_DEVICE = BuildConfig.DEBUG;
+    public static final boolean IS_DEBUG_DEVICE = BuildConfig.IS_DEBUG_DEVICE;
 
     public static final int TRANSLATE_UP = 0;
     public static final int TRANSLATE_DOWN = 1;
@@ -485,7 +484,7 @@ public final class Utilities {
 
     public static int pxFromSp(float size, DisplayMetrics metrics, float scale) {
         float value = scale * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, metrics);
-        return ResourceHelper.Companion.roundPxValueFromFloat(value);
+        return ResourceUtils.roundPxValueFromFloat(value);
     }
 
     public static String createDbSelectionQuery(String columnName, IntArray values) {
@@ -600,6 +599,7 @@ public final class Utilities {
      * @param outObj this is set to the internal data associated with {@code info},
      *               eg {@link LauncherActivityInfo} or {@link ShortcutInfo}.
      */
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
     public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
             boolean shouldThemeIcon, Object[] outObj, boolean[] outIsIconThemed) {
         Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
@@ -646,11 +646,6 @@ public final class Utilities {
                         appState.getInvariantDeviceProfile().fillResIconDpi);
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            FolderInfo folderInfo = (FolderInfo) info;
-            boolean[] outIsIconThemed = new boolean[1];
-            if (folderInfo.isCoverMode()) {
-                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, true, outObj, outIsIconThemed);
-            }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     activity, info.id, new Point(width, height));
             if (icon == null) {
@@ -688,8 +683,6 @@ public final class Utilities {
             return LauncherAppState.getInstance(appState.getContext())
                     .getIconCache().getShortcutInfoBadge(si).newIcon(context, FLAG_THEMED);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            FolderInfo folderInfo = (FolderInfo) info;
-            if (folderInfo.isCoverMode()) return getBadge(context, folderInfo.getCoverInfo(), obj, true);
             return ((FolderAdaptiveIcon) obj).getBadge();
         } else {
             return Process.myUserHandle().equals(info.user)
@@ -960,7 +953,8 @@ public final class Utilities {
     }
 
     public static void requestLocationPermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, Config.REQUEST_PERMISSION_LOCATION_ACCESS);
+        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                Config.REQUEST_PERMISSION_LOCATION_ACCESS);
     }
 
     public static SharedPreferences getPrefs(Context context) {

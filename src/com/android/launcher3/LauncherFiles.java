@@ -17,7 +17,6 @@ public class LauncherFiles {
 
     public static final String LAUNCHER_DB = "launcher.db";
     public static final String LAUNCHER_6_BY_5_DB = "launcher_6_by_5.db";
-    public static final String LAUNCHER_5_BY_5_DB = "launcher_5_by_5.db";
     public static final String LAUNCHER_4_BY_5_DB = "launcher_4_by_5.db";
     public static final String LAUNCHER_4_BY_4_DB = "launcher_4_by_4.db";
     public static final String LAUNCHER_3_BY_3_DB = "launcher_3_by_3.db";
@@ -35,7 +34,6 @@ public class LauncherFiles {
     public static final List<String> GRID_DB_FILES = Collections.unmodifiableList(Arrays.asList(
             LAUNCHER_DB,
             LAUNCHER_6_BY_5_DB,
-            LAUNCHER_5_BY_5_DB,
             LAUNCHER_4_BY_5_DB,
             LAUNCHER_4_BY_4_DB,
             LAUNCHER_3_BY_3_DB,

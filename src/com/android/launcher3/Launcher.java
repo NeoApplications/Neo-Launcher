@@ -20,6 +20,7 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+
 import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
@@ -119,7 +120,6 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager.LayoutParams;
@@ -240,12 +240,7 @@ import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
-import com.saggitt.omega.OverlayCallbackImpl;
-import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.Config;
-import com.saulhdev.neolauncher.hotseat.ExpandableHotseat;
-import com.saulhdev.neolauncher.hotseat.ExpandableHotseatTransitionController;
-import com.saulhdev.neolauncher.hotseat.HotseatTransitionController;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -355,7 +350,6 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     @Thunk
     Hotseat mHotseat;
-    public HotseatTransitionController mHotseatController;
 
     private DropTargetBar mDropTargetBar;
 
@@ -516,7 +510,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         InvariantDeviceProfile idp = app.getInvariantDeviceProfile();
         initDeviceProfile(idp);
         idp.addOnChangeListener(this);
-        mSharedPrefs = Utilities.getPrefs(this);
+        mSharedPrefs = LauncherPrefs.getPrefs(this);
         mIconCache = app.getIconCache();
         mAccessibilityDelegate = createAccessibilityDelegate();
 
@@ -655,12 +649,6 @@ public class Launcher extends StatefulActivity<LauncherState>
                         Launcher.this, backEvent.getProgress());
             }
 
-            public void onBackProgressed(@NonNull Float event) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    mStateManager.getState().onBackProgressed(Launcher.this, event);
-                }
-            }
-
             @Override
             public void onBackCancelled() {
                 mStateManager.getState().onBackCancelled(Launcher.this);
@@ -669,7 +657,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     protected LauncherOverlayManager getDefaultOverlay() {
-        return new OverlayCallbackImpl(this);
+        return new LauncherOverlayManager() { };
     }
 
     protected OnboardingPrefs<? extends Launcher> createOnboardingPrefs(
@@ -1352,20 +1340,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         mWorkspace = mDragLayer.findViewById(R.id.workspace);
         mWorkspace.initParentViews(mDragLayer);
         mOverviewPanel = findViewById(R.id.overview_panel);
-
-        ViewStub viewStub = (ViewStub) findViewById(R.id.hotseat_stub);
-        NeoPrefs prefs = NeoPrefs.getInstance(this);
-        if (prefs.getDockExpandable().getValue()) {
-            viewStub.setLayoutResource(R.layout.hotseat_expandable);
-            mHotseat = (ExpandableHotseat) viewStub.inflate();
-            ExpandableHotseatTransitionController expandableHotseatTransitionController = new ExpandableHotseatTransitionController(this);
-            mHotseatController = expandableHotseatTransitionController;
-            expandableHotseatTransitionController.setupViews(this.mHotseat);
-            mHotseat.bringToFront();
-        } else {
-            viewStub.setLayoutResource(R.layout.hotseat);
-            mHotseat = (Hotseat) viewStub.inflate();
-        }
+        mHotseat = findViewById(R.id.hotseat);
         mHotseat.setWorkspace(mWorkspace);
 
         // Setup the drag layer
@@ -1668,7 +1643,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     @Override
     public SharedPreferences getDevicePrefs() {
-        return Utilities.getDevicePrefs(this);
+        return LauncherPrefs.getDevicePrefs(this);
     }
 
     public int getOrientation() {
@@ -2183,7 +2158,6 @@ public class Launcher extends StatefulActivity<LauncherState>
     public ActivityOptions getActivityLaunchOptions(View v) {
         return null;
     }
-
     protected void onScreenOnChanged(boolean isOn) {
         // Reset AllApps to its initial state only if we are not in the middle of
         // processing a multi-step drop
@@ -2380,11 +2354,11 @@ public class Launcher extends StatefulActivity<LauncherState>
     public void bindScreens(IntArray orderedScreenIds) {
         mWorkspace.mPageIndicator.setAreScreensBinding(true);
         int firstScreenPosition = 0;
-        if (FeatureFlags.QSBOnFirstScreen(this) &&
+        if (FeatureFlags.QSbOnFirstScreen(this) &&
                 orderedScreenIds.indexOf(Workspace.FIRST_SCREEN_ID) != firstScreenPosition) {
             orderedScreenIds.removeValue(Workspace.FIRST_SCREEN_ID);
             orderedScreenIds.add(firstScreenPosition, Workspace.FIRST_SCREEN_ID);
-        } else if (!FeatureFlags.QSBOnFirstScreen(this) && orderedScreenIds.isEmpty()) {
+        } else if (!FeatureFlags.QSbOnFirstScreen(this) && orderedScreenIds.isEmpty()) {
             // If there are no screens, we need to have an empty screen
             mWorkspace.addExtraEmptyScreens();
         }
@@ -2432,7 +2406,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         int count = orderedScreenIds.size();
         for (int i = 0; i < count; i++) {
             int screenId = orderedScreenIds.get(i);
-            if (FeatureFlags.QSBOnFirstScreen(this) && screenId == Workspace.FIRST_SCREEN_ID) {
+            if (FeatureFlags.QSbOnFirstScreen(this) && screenId == Workspace.FIRST_SCREEN_ID) {
                 // No need to bind the first screen, as its always bound.
                 continue;
             }
@@ -3134,7 +3108,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     @Override
     public void bindStringCache(StringCache cache) {
         mStringCache = cache;
-        //mAppsView.updateWorkUI();
+        mAppsView.updateWorkUI();
     }
 
     @Override
@@ -3457,7 +3431,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Returns {@code true} if there are visible tasks with windowing mode set to
-     * {@link }
+     * {@link android.app.WindowConfiguration#WINDOWING_MODE_FREEFORM}
      */
     public boolean areFreeformTasksVisible() {
         return false; // Base launcher does not track freeform tasks
@@ -3470,7 +3444,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Handles an app pair launch; overridden in
-     * {@link }
+     * {@link com.android.launcher3.uioverrides.QuickstepLauncher}
      */
     public void launchAppPair(WorkspaceItemInfo app1, WorkspaceItemInfo app2) {
         // Overridden

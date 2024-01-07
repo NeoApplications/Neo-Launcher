@@ -60,6 +60,7 @@ import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
+import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -93,7 +94,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
     private val prefCallback = PreferencesChangeCallback(this)
 
-    val hiddenApps = ArrayList<AppInfo>()
+    private val hiddenApps = ArrayList<AppInfo>()
     val allApps = ArrayList<AppInfo>()
     private var paused = false
 
@@ -245,7 +246,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                         hiddenApps.add(appInfo)
                     }
                     if (prefs.searchHiddenApps.getValue()) {
-                        if (!appFilter.shouldShowApp(info.componentName, user)) {
+                        if (!appFilter.shouldShowApp(info.componentName)) {
                             continue
                         }
                         if (!duplicatePreventionCache.contains(info.componentName)) {
@@ -390,6 +391,12 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         list.add(VerticalSwipeGestureController(this))
 
         return list.toTypedArray()
+    }
+
+    fun getViewBounds(v: View): Rect {
+        val pos = IntArray(2)
+        v.getLocationOnScreen(pos)
+        return Rect(pos[0], pos[1], pos[0] + v.width, pos[1] + v.height)
     }
 
     companion object {

@@ -32,6 +32,7 @@ import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.ItemInfoWithIcon
@@ -65,9 +66,9 @@ class OmegaShortcuts {
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
             var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
-            /*if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
+            if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
                 icon = icon.getThemedDrawable(launcher)
-            }*/
+            }
 
             val launcherActivityInfo = outObj[0] as LauncherActivityInfo
             val defaultTitle = launcherActivityInfo.label.toString()

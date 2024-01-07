@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.icons.ThemedIconDrawable.ThemeData;
 import com.android.launcher3.util.Themes;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -91,7 +92,7 @@ public class LauncherIconProvider extends IconProvider {
                     String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
                     int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
                     if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                        map.put(pkg, new ThemeData(res, iconId));
+                        map.put(pkg, new ThemeData(res, pkg, iconId));
                     }
                 }
             }

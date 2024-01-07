@@ -49,7 +49,6 @@ import androidx.annotation.Nullable;
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
-import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -342,8 +341,7 @@ public class AllAppsTransitionController
         if (mLauncher.isInState(ALL_APPS) && !ALL_APPS.equals(toState)) {
             // For atomic animations, we close the keyboard immediately.
             if (!config.userControlled && mShouldControlKeyboard) {
-                ExtendedEditText editText = mLauncher.getAppsView().getSearchUiManager().getEditText();
-                if (editText != null) editText.hideKeyboard();
+                mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
             }
 
             builder.addEndListener(success -> {
@@ -357,8 +355,7 @@ public class AllAppsTransitionController
                 // keyboard to remain open. However an onCancel signal is sent to the listeners
                 // (success = false), so we need to check for that.
                 if (config.userControlled && success && mShouldControlKeyboard) {
-                    ExtendedEditText editText = mLauncher.getAppsView().getSearchUiManager().getEditText();
-                    if (editText != null) editText.hideKeyboard();
+                    mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
                 }
 
                 mAllAppScale.updateValue(1f);
@@ -537,8 +534,7 @@ public class AllAppsTransitionController
     private void onProgressAnimationEnd() {
         if (Float.compare(mProgress, 1f) == 0) {
             if (mShouldControlKeyboard) {
-                ExtendedEditText editText = mLauncher.getAppsView().getSearchUiManager().getEditText();
-                if (editText != null) editText.hideKeyboard();
+                mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
             }
         }
     }

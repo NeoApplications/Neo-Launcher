@@ -67,7 +67,7 @@ public class WorkspaceItemSpaceFinder {
         int screenCount = workspaceScreens.size();
         // First check the preferred screen.
         IntSet screensToExclude = new IntSet();
-        if (FeatureFlags.QSBOnFirstScreen(app.getContext())) {
+        if (FeatureFlags.QSbOnFirstScreen(app.getContext())) {
             screensToExclude.add(FIRST_SCREEN_ID);
         }
 

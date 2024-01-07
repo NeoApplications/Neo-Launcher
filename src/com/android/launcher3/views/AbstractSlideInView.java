@@ -16,6 +16,7 @@
 package com.android.launcher3.views;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static com.android.app.animation.Interpolators.LINEAR;
 import static com.android.app.animation.Interpolators.scrollInterpolatorForVelocity;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
@@ -289,17 +290,6 @@ public abstract class AbstractSlideInView<T extends Context & ActivityContext>
         mIsBackProgressing = progress > 0f;
         mSlideInViewScale.updateValue(PREDICTIVE_BACK_MIN_SCALE
                 + (1 - PREDICTIVE_BACK_MIN_SCALE) * (1 - deceleratedProgress));
-    }
-
-    public void onBackProgressed(Float event) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            final float progress = event;
-            float deceleratedProgress =
-                    Interpolators.PREDICTIVE_BACK_DECELERATED_EASE.getInterpolation(progress);
-            mIsBackProgressing = progress > 0f;
-            mSlideInViewScale.updateValue(PREDICTIVE_BACK_MIN_SCALE
-                    + (1 - PREDICTIVE_BACK_MIN_SCALE) * (1 - deceleratedProgress));
-        }
     }
 
     protected void onScaleProgressChanged() {

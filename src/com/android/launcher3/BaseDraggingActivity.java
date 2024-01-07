@@ -44,7 +44,6 @@ import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.util.WallpaperColorHints;
 import com.android.launcher3.util.WindowBounds;
-import com.saggitt.omega.theme.ThemeOverride;
 
 /**
  * Extension of BaseActivity allowing support for drag-n-drop
@@ -64,7 +63,7 @@ public abstract class BaseDraggingActivity extends BaseActivity
 
     private Runnable mOnStartCallback;
     private final RunnableList mOnResumeCallbacks = new RunnableList();
-    private int mThemeRes = R.style.NeoTheme_Light;
+    private int mThemeRes = R.style.AppTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +80,6 @@ public abstract class BaseDraggingActivity extends BaseActivity
             mThemeRes = themeRes;
             setTheme(themeRes);
         }
-        // Register theme override
-        ThemeOverride themeOverride = new ThemeOverride(getLauncherThemeSet(), this);
-        themeOverride.applyTheme(this);
-    }
-
-    @NonNull
-    protected ThemeOverride.ThemeSet getLauncherThemeSet() {
-        return new ThemeOverride.Launcher();
     }
 
     @Override
@@ -150,12 +141,6 @@ public abstract class BaseDraggingActivity extends BaseActivity
 
     public void returnToHomescreen() {
         // no-op
-    }
-
-    public Rect getViewBounds(View v) {
-        int[] pos = new int[2];
-        v.getLocationOnScreen(pos);
-        return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
     }
 
     public final Bundle getActivityLaunchOptionsAsBundle(View v) {

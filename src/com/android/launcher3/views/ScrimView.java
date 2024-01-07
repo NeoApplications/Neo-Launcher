@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * Simple scrim which draws a flat color
  */
 public class ScrimView extends View implements Insettable {
-    protected static final float STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.9f;
+    public static final float STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD = 0.9f;
 
     private final ArrayList<Runnable> mOpaquenessListeners = new ArrayList<>(1);
     private SystemUiController mSystemUiController;
@@ -116,7 +116,7 @@ public class ScrimView extends View implements Insettable {
         updateSysUiColors();
     }
 
-    protected void updateSysUiColors() {
+    public void updateSysUiColors() {
         // Use a light system UI (dark icons) if all apps is behind at least half of the
         // status bar.
         final float threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD;
@@ -141,14 +141,14 @@ public class ScrimView extends View implements Insettable {
         }
     }
 
-    protected SystemUiController getSystemUiController() {
+    public SystemUiController getSystemUiController() {
         if (mSystemUiController == null) {
             mSystemUiController = BaseActivity.fromContext(getContext()).getSystemUiController();
         }
         return mSystemUiController;
     }
 
-    protected boolean isScrimDark() {
+    public boolean isScrimDark() {
         if (!(getBackground() instanceof ColorDrawable)) {
             throw new IllegalStateException(
                     "ScrimView must have a ColorDrawable background, this one has: "

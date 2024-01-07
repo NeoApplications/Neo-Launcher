@@ -67,7 +67,7 @@ class DrawerFolders(val manager: AppGroupsManager) :
     fun getFolderInfos(apps: AlphabeticalAppsList<*>, modelWriter: ModelWriter) =
         getFolderInfos(buildAppsMap(apps)::get, modelWriter)
 
-    fun buildAppsMap(apps: AlphabeticalAppsList<*>): Map<ComponentKey, AppInfo> {
+    private fun buildAppsMap(apps: AlphabeticalAppsList<*>): Map<ComponentKey, AppInfo> {
         // Copy the list before accessing it to prevent concurrent list access
         return apps.apps.toList().associateBy { it.toComponentKey() }
     }

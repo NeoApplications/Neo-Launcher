@@ -22,7 +22,7 @@ public class AppFilter {
                 .collect(Collectors.toSet());
     }
 
-    public boolean shouldShowApp(ComponentName app, UserHandle user) {
+    public boolean shouldShowApp(ComponentName app) {
         return !mFilteredComponents.contains(app);
     }
 }

@@ -27,8 +27,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import androidx.annotation.Nullable;
-
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
@@ -46,14 +44,14 @@ public class AllAppsSearchBarController
 
     protected ActivityContext mLauncher;
     protected SearchCallback<AdapterItem> mCallback;
-    @Nullable protected ExtendedEditText mInput;
+    protected ExtendedEditText mInput;
     protected String mQuery;
     private String[] mTextConversions;
 
     protected SearchAlgorithm<AdapterItem> mSearchAlgorithm;
 
     public void setVisibility(int visibility) {
-        if (mInput != null) mInput.setVisibility(visibility);
+        mInput.setVisibility(visibility);
     }
 
     /**
@@ -66,12 +64,10 @@ public class AllAppsSearchBarController
         mLauncher = launcher;
 
         mInput = input;
-        if (mInput != null) {
-            mInput.addTextChangedListener(this);
-            mInput.setOnEditorActionListener(this);
-            mInput.setOnBackKeyListener(this);
-            mInput.addOnFocusChangeListener(this);
-        }
+        mInput.addTextChangedListener(this);
+        mInput.setOnEditorActionListener(this);
+        mInput.setOnBackKeyListener(this);
+        mInput.addOnFocusChangeListener(this);
         mSearchAlgorithm = searchAlgorithm;
     }
 
@@ -136,7 +132,7 @@ public class AllAppsSearchBarController
     public boolean onBackKey() {
         // Only hide the search field if there is no query
         String query = Utilities.trim(mInput.getEditableText().toString());
-        if (!query.isEmpty()) {
+        if (query.isEmpty()) {
             reset();
             return true;
         }
@@ -145,7 +141,7 @@ public class AllAppsSearchBarController
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get() && mInput != null) {
+        if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
             mInput.hideKeyboard();
         }
     }
@@ -155,22 +151,22 @@ public class AllAppsSearchBarController
      */
     public void reset() {
         mCallback.clearSearchResult();
-        if (mInput != null) mInput.reset();
+        mInput.reset();
         mQuery = null;
-        if (mInput != null) mInput.removeOnFocusChangeListener(this);
+        mInput.removeOnFocusChangeListener(this);
     }
 
     /**
      * Focuses the search field to handle key events.
      */
     public void focusSearchField() {
-        if (mInput != null) mInput.showKeyboard(true /* shouldFocus */);
+        mInput.showKeyboard(true /* shouldFocus */);
     }
 
     /**
      * Returns whether the search field is focused.
      */
     public boolean isSearchFieldFocused() {
-        return mInput != null && mInput.isFocused();
+        return mInput.isFocused();
     }
 }

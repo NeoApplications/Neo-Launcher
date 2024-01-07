@@ -44,15 +44,12 @@ import android.view.View;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
  * This object represents a FolderIcon preview background. It stores drawing / measurement
@@ -61,12 +58,13 @@ import com.saggitt.omega.util.OmegaUtilsKt;
 public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
     private static final boolean DRAW_SHADOW = false;
-    private static boolean DRAW_STROKE = false;
+    private static final boolean DRAW_STROKE = false;
 
     @VisibleForTesting protected static final int CONSUMPTION_ANIMATION_DURATION = 100;
 
     @VisibleForTesting protected static final float HOVER_SCALE = 1.1f;
     @VisibleForTesting protected static final int HOVER_ANIMATION_DURATION = 300;
+    private static final float ACCEPT_COLOR_MULTIPLIER = 1.5f;
 
     private final PorterDuffXfermode mShadowPorterDuffXfermode
             = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
@@ -98,7 +96,6 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
     // Drawing / animation configurations
     @VisibleForTesting protected static final float ACCEPT_SCALE_FACTOR = 1.20f;
-    private static final float ACCEPT_COLOR_MULTIPLIER = 1.5f;
 
     // Expressed on a scale from 0 to 255.
     private static final int BG_OPACITY = 255;
@@ -141,15 +138,6 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                     previewBackground.invalidate();
                 }
             };
-    private boolean isInDrawer;
-
-    public PreviewBackground() {
-        this(false);
-    }
-
-    public PreviewBackground(boolean inDrawer) {
-        isInDrawer = inDrawer;
-    }
 
     /**
      * Draws folder background under cell layout
@@ -175,23 +163,15 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
-        NeoPrefs prefs = NeoPrefs.getInstance(context);
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
         mDotColor = Themes.getAttrColor(context, R.attr.notificationDotColor);
-        DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
-        if (DRAW_STROKE) {
-            mStrokeColor = prefs.getDesktopFolderStrokeColor().getColor();
-        } else {
-            mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
-        }
+        mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
         mBgColor = ta.getColor(R.styleable.FolderIconPreview_folderPreviewColor, 0);
-
-        mBgColor = ColorUtils.setAlphaComponent(mBgColor, OmegaUtilsKt.getFolderPreviewAlpha(context));
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
-        previewSize = isInDrawer ? grid.allAppsIconSizePx - 10 : grid.folderIconSizePx;
+        previewSize = grid.folderIconSizePx;
 
         basePreviewOffsetX = (availableSpaceX - previewSize) / 2;
         basePreviewOffsetY = topPadding + grid.folderIconOffsetYPx;
@@ -425,8 +405,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
     protected void animateScale(boolean isAccepting, boolean isHovered) {
         final float bgMultiplier0 = mColorMultiplier;
-        final float bgMultiplier1 = isAccepting ? ACCEPT_COLOR_MULTIPLIER : BG_OPACITY * mColorMultiplier;
-
+        final float bgMultiplier1 = ACCEPT_COLOR_MULTIPLIER;
         if (mScaleAnimator != null) {
             mScaleAnimator.cancel();
         }
@@ -446,7 +425,6 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
             mIsHoveredOrAnimating = mIsHovered;
             return;
         }
-
 
         mScaleAnimator = ValueAnimator.ofFloat(0f, 1.0f);
         mScaleAnimator.addUpdateListener(animation -> {

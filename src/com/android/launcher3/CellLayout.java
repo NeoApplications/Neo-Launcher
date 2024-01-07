@@ -2739,7 +2739,7 @@ public class CellLayout extends ViewGroup {
         if (x >= 0 && x < mCountX && y >= 0 && y < mCountY) {
             return mOccupied.cells[x][y];
         }
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.IS_STUDIO_BUILD) {
             throw new RuntimeException("Position exceeds the bound of this CellLayout");
         }
         return true;

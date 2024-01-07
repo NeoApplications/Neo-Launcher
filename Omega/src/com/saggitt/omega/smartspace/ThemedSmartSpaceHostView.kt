@@ -12,7 +12,7 @@ import android.widget.RemoteViews
 import android.widget.TextView
 import com.android.launcher3.R
 import com.android.launcher3.icons.ShadowGenerator
-import com.android.launcher3.util.ResourceHelper.Companion.pxFromDp
+import com.android.launcher3.testing.shared.ResourceUtils.pxFromDp
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.DoubleShadowBubbleTextView
 import com.saggitt.omega.util.recursiveChildren
@@ -89,7 +89,7 @@ class ThemedSmartSpaceHostView(context: Context) : SmartSpaceHostView(context) {
             val newBitmap =
                 Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(newBitmap)
-            shadowGenerator.drawShadow(bitmap, canvas)
+            shadowGenerator.recreateIcon(bitmap, canvas)
             newBitmap
         } else {
             bitmap

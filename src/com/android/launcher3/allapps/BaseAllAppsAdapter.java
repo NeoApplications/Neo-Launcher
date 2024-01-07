@@ -22,22 +22,17 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.groups.DrawerFolderItem;
-import com.saggitt.omega.groups.category.DrawerFolderInfo;
 
 /**
  * Adapter for all the apps.
@@ -59,14 +54,11 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
     public static final int VIEW_TYPE_WORK_EDU_CARD = 1 << 4;
     public static final int VIEW_TYPE_WORK_DISABLED_CARD = 1 << 5;
 
-    // Drawer folders
-    public static final int VIEW_TYPE_FOLDER = 1 << 6;
-
-    public static final int NEXT_ID = 7;
+    public static final int NEXT_ID = 6;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
-    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_FOLDER;
+    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON;
 
     protected final SearchAdapterProvider<?> mAdapterProvider;
 
@@ -97,8 +89,6 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public int rowAppIndex;
         // The associated ItemInfoWithIcon for the item
         public AppInfo itemInfo = null;
-        // The associated folder for the folder
-        public DrawerFolderItem folderItem = null;
 
         public AdapterItem(int viewType) {
             this.viewType = viewType;
@@ -110,12 +100,6 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public static AdapterItem asApp(AppInfo appInfo) {
             AdapterItem item = new AdapterItem(VIEW_TYPE_ICON);
             item.itemInfo = appInfo;
-            return item;
-        }
-
-        public static AdapterItem asFolder(DrawerFolderInfo folderInfo) {
-            AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
-            item.folderItem = new DrawerFolderItem(folderInfo);
             return item;
         }
 
@@ -151,7 +135,7 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
 
     protected final LayoutInflater mLayoutInflater;
     protected final OnClickListener mOnIconClickListener;
-    protected OnLongClickListener mOnIconLongClickListener;
+    protected final OnLongClickListener mOnIconLongClickListener;
     protected OnFocusChangeListener mIconFocusListener;
     private final int mExtraTextHeight;
 
@@ -213,13 +197,6 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
             case VIEW_TYPE_ALL_APPS_DIVIDER:
                 return new ViewHolder(mLayoutInflater.inflate(
                         R.layout.all_apps_divider, parent, false));
-            case VIEW_TYPE_FOLDER:
-                FrameLayout folder = new FrameLayout(mActivityContext);
-                ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        mActivityContext.getDeviceProfile().allAppsCellHeightPx);
-                folder.setLayoutParams(lp);
-                return new ViewHolder(folder);
             case VIEW_TYPE_WORK_EDU_CARD:
                 return new ViewHolder(mLayoutInflater.inflate(
                         R.layout.work_apps_edu, parent, false));
@@ -255,14 +232,6 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
             case VIEW_TYPE_ALL_APPS_DIVIDER:
             case VIEW_TYPE_WORK_DISABLED_CARD:
                 // nothing to do
-                break;
-            case VIEW_TYPE_FOLDER:
-                ViewGroup container = (ViewGroup) holder.itemView;
-                FolderIcon folderIcon = mApps.getAdapterItems().get(position)
-                        .folderItem.getFolderIcon((Launcher) mActivityContext, container);
-
-                container.removeAllViews();
-                container.addView(folderIcon);
                 break;
             case VIEW_TYPE_WORK_EDU_CARD:
                 ((WorkEduCard) holder.itemView).setPosition(position);

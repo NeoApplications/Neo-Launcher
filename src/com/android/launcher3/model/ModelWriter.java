@@ -227,21 +227,6 @@ public class ModelWriter {
                 .executeOnModelThread();
     }
 
-    public static void modifyItemInDatabase(Context context, final ItemInfo item, String swipeUpAction, boolean reload) {
-        LauncherAppState.getInstance(context).getLauncher().getModelWriter().executeUpdateItem(item, () -> {
-            final ContentWriter writer = new ContentWriter(context);
-            writer.put(Favorites.SWIPE_UP_ACTION, swipeUpAction);
-            return writer;
-        });
-        if (reload) {
-            LauncherAppState.getInstance(context).getModel().forceReload();
-        }
-    }
-
-    private void executeUpdateItem(ItemInfo item, Supplier<ContentWriter> writer) {
-        MODEL_EXECUTOR.execute(new UpdateItemRunnable(item, writer));
-    }
-
     /**
      * Update an item to the database in a specified container.
      */

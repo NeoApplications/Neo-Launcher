@@ -99,7 +99,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         }
         uid = info.getApplicationInfo().uid;
         updateRuntimeFlagsForActivityTarget(this, info);
-        iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
+        this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
                 .generate()
                 .getDominantColor(0);
     }
@@ -110,7 +110,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         title = Utilities.trim(info.title);
         intent = new Intent(info.intent);
         uid = info.uid;
-        iconColor = info.iconColor;
+        this.iconColor = info.iconColor;
     }
 
     @VisibleForTesting
