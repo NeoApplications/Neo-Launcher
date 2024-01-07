@@ -10,11 +10,11 @@ buildscript {
 }
 
 val vAccompanist = "0.32.0"
-val vActivity = "1.8.1"
+val vActivity = "1.8.2"
 val vAlwan = "1.0.1"
 val vCoil = "2.5.0"
 val vComposeBOM = "2023.10.01"
-val vComposeCompiler = "1.5.6"
+val vComposeCompiler = "1.5.7"
 val vConstraintLayout = "2.1.4"
 val vCoordinatorLayout = "1.2.0"
 val vCoroutines = "1.7.3"
@@ -24,8 +24,8 @@ val vHokoBlur = "1.5.2"
 val vKotlin = "1.9.21"
 val vLifecycle = "2.6.2"
 val vLifecycleExt = "2.2.0"
-val vMaterial = "1.10.0"
-val vNavigation = "2.7.5"
+val vMaterial = "1.11.0"
+val vNavigation = "2.7.6"
 val vOkhttp = "5.0.0-alpha.12"
 val vOWM = "2.1.0"
 val vPersianDate = "1.7.1"
@@ -329,7 +329,7 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:5.0.0")
     androidTestImplementation("com.google.dexmaker:dexmaker:1.2")
     androidTestImplementation("com.google.dexmaker:dexmaker-mockito:1.2")
-    androidTestImplementation("androidx.annotation:annotation:1.7.0")
+    androidTestImplementation("androidx.annotation:annotation:1.7.1")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
     androidTestImplementation("com.android.support.test.uiautomator:uiautomator-v18:2.1.3")
