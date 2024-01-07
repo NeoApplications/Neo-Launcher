@@ -27,6 +27,8 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ITEM_DROP_COMPLETED;
 import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
 
+import static java.lang.Math.round;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -96,8 +98,10 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
@@ -105,6 +109,7 @@ import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.folder.FolderShortcut;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
+import com.saggitt.omega.icons.IconShape;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.lang.annotation.Retention;
@@ -286,8 +291,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         final DeviceProfile dp = mActivityContext.getDeviceProfile();
         final int paddingLeftRight = dp.folderContentPaddingLeftRight;
 
-        mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
-                R.drawable.round_rect_folder, getContext().getTheme());
+        //mBackground = (GradientDrawable) ResourcesCompat.getDrawable(getResources(),
+        //        R.drawable.round_rect_folder, getContext().getTheme());
+
+        customizeFolder();
 
         mContent = findViewById(R.id.folder_content);
         mContent.setPadding(paddingLeftRight, dp.folderContentPaddingTop, paddingLeftRight, 0);
@@ -327,6 +334,33 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
                     fc.show();
                 }
             });
+        }
+    }
+
+    private void customizeFolder() {
+        int bgColor;
+        if (prefs.getDesktopCustomFolderBackground().getValue()) {
+            bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
+        } else {
+            bgColor = Themes.getAttrColor(mLauncher.getApplicationContext(), R.attr.folderBackgroundColor);
+        }
+        mBackground = new GradientDrawable();
+        mBackground.setShape(GradientDrawable.RECTANGLE);
+        mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
+        mBackground.setCornerRadius(getCornerRadius());
+    }
+
+    public float getCornerRadius() {
+        if (prefs.getDesktopFolderCornerRadius().getValue() >= 0) {
+            return round(prefs.getDesktopFolderCornerRadius().getValue());
+        } else {
+            if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
+                return round(prefs.getProfileWindowCornerRadius().getValue());
+            } else {
+                int edgeRadius = IconShape.Companion.fromString(prefs.getProfileIconShape().getValue())
+                        .getQsbEdgeRadius();
+                return edgeRadius;
+            }
         }
     }
 

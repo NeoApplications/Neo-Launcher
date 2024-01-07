@@ -379,7 +379,7 @@ open class IconShape(
             return fromString(value = value)
         }
 
-        private fun fromString(value: String): IconShape = when (value) {
+        fun fromString(value: String): IconShape = when (value) {
             "circle" -> Circle
             "square" -> Square
             "sharpSquare" -> SharpSquare
