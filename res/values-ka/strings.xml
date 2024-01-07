@@ -50,6 +50,7 @@
     <string name="widgets_full_sheet_personal_tab" msgid="2743540105607120182">"პირადი"</string>
     <string name="widgets_full_sheet_work_tab" msgid="3767150027110633765">"სამსახური"</string>
     <string name="widget_category_conversations" msgid="8894438636213590446">"მიმოწერები"</string>
+    <string name="widget_category_note_taking" msgid="3469689394504266039">"ჩანიშვნა"</string>
     <string name="widget_education_header" msgid="4874760613775913787">"ადვილად მისაწვდომი სასარგებლო ინფორმაცია"</string>
     <string name="widget_education_content" msgid="1731667670753497052">"იმისთვის, რომ ინფორმაცია აპების გაუხსნელად მიიღოთ, შეგიძლიათ, მთავარ ეკრანზე ვიჯეტები დაამატოთ"</string>
     <string name="reconfigurable_widget_education_tip" msgid="6336962690888067057">"შეეხეთ ვიჯეტის პარამეტრების შესაცვლელად"</string>
@@ -98,7 +99,6 @@
     <string name="folder_renamed" msgid="1794088362165669656">"საქაღალდეს შეეცვალა სახელი „<xliff:g id="NAME">%1$s</xliff:g>“-ად"</string>
     <string name="folder_name_format_exact" msgid="8626242716117004803">"საქაღალდე: <xliff:g id="NAME">%1$s</xliff:g>, <xliff:g id="SIZE">%2$d</xliff:g> ერთეული"</string>
     <string name="folder_name_format_overflow" msgid="4270108890534995199">"საქაღალდე: <xliff:g id="NAME">%1$s</xliff:g>, <xliff:g id="SIZE">%2$d</xliff:g> ან მეტი ერთეული"</string>
-    <string name="wallpaper_button_text" msgid="8404103075899945851">"ფონები"</string>
     <string name="styles_wallpaper_button_text" msgid="8216961355289236794">"ფონი და სტილი"</string>
     <string name="edit_home_screen" msgid="8947858375782098427">"მთავარი ეკრანის რედაქტირება"</string>
     <string name="settings_button_text" msgid="8873672322605444408">"მთავარი გვერდის პარამეტრები"</string>
@@ -159,7 +159,7 @@
     <string name="all_apps_personal_tab" msgid="4190252696685155002">"პირადი"</string>
     <string name="all_apps_work_tab" msgid="4884822796154055118">"სამსახური"</string>
     <string name="work_profile_toggle_label" msgid="3081029915775481146">"სამსახურის პროფილი"</string>
-    <string name="work_profile_edu_work_apps" msgid="7895468576497746520">"სამსახურის აპები ბეჯით არის მონიშნული და ხილულია IT ადმინისტრატორისთვის"</string>
+    <string name="work_profile_edu_work_apps" msgid="7895468576497746520">"სამსახურის აპები ბეჯით არის მონიშნული და ხილულია თქვენი IT ადმინისტრატორისთვის"</string>
     <string name="work_profile_edu_accept" msgid="6069788082535149071">"გასაგებია"</string>
     <string name="work_apps_paused_title" msgid="3040901117349444598">"სამსახურის აპები დაპაუზებულია"</string>
     <string name="work_apps_paused_info_body" msgid="1687828929959237477">"თქვენ არ მიიღებთ შეტყობინებებს თქვენი სამსახურის აპებიდან"</string>
