@@ -36,6 +36,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -56,6 +57,7 @@ import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -101,6 +103,9 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.ClipPathView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.folder.FolderShortcut;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -238,6 +243,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private KeyboardInsetAnimationCallback mKeyboardInsetAnimationCallback;
 
     private GradientDrawable mBackground;
+    private final NeoPrefs prefs;
+    private final Launcher mLauncher;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -258,6 +265,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         // reliable behavior when clicking the text field (since it will always gain focus on
         // click).
         setFocusableInTouchMode(true);
+
+        prefs = Utilities.getNeoPrefs(context);
+        mLauncher = Launcher.getLauncher(context);
 
     }
 
@@ -301,6 +311,22 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         if (Utilities.ATLEAST_R) {
             mKeyboardInsetAnimationCallback = new KeyboardInsetAnimationCallback(this);
             setWindowInsetsAnimationCallback(mKeyboardInsetAnimationCallback);
+        }
+
+        ImageView settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setColorFilter(prefs.getProfileAccentColor().getColor(), PorterDuff.Mode.SRC_IN);
+        if (prefs.getDesktopLock().getValue()) {
+            settingsButton.setVisibility(View.GONE);
+        } else {
+            settingsButton.setOnClickListener(v -> {
+                animateClosed();
+                if (mInfo instanceof DrawerFolderInfo) {
+                    ((DrawerFolderInfo) mInfo).showEdit(mLauncher);
+                } else {
+                    FolderShortcut fc = new FolderShortcut(mLauncher, mInfo);
+                    fc.show();
+                }
+            });
         }
     }
 
