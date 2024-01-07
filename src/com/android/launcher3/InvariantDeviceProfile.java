@@ -115,6 +115,7 @@ public class InvariantDeviceProfile {
      * Number of icons per row and column in the workspace.
      */
     public int numRows;
+    public int numRowsOriginal;
     public int numColumns;
     public int numColumnsOriginal;
     public int numSearchContainerColumns;
@@ -354,6 +355,7 @@ public class InvariantDeviceProfile {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
         numRows = closestProfile.numRows;
+        numRowsOriginal = closestProfile.numRows;
         numColumns = closestProfile.numColumns;
         numColumnsOriginal = numColumns;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
