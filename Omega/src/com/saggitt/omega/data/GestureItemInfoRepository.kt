@@ -43,6 +43,17 @@ class GestureItemInfoRepository(context: Context) {
         }
     }
 
+    fun insertOrUpdate(target: GestureItemInfo) {
+        scope.launch {
+            if (find(target.packageName).packageName == target.packageName) {
+                update(target)
+            } else {
+                insert(target)
+            }
+        }
+
+    }
+
     //get item by
     fun find(target: ComponentKey): GestureItemInfo {
         return dao.find(target).firstBlocking()

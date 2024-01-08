@@ -32,7 +32,10 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.ApiWrapper;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
+import com.saggitt.omega.data.GestureItemInfoRepository;
+import com.saggitt.omega.data.models.GestureItemInfo;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -224,17 +227,23 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         return new WorkspaceItemInfo(this);
     }
 
-    public void onLoadCustomizations(String swipeUpAction) {
-        this.swipeUpAction = swipeUpAction;
+    private void loadSwipeUpAction(Context context) {
+        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
+        GestureItemInfo info = repository.find(new ComponentKey(getTargetComponent(), user));
+        if (info.getSwipeUp() != null) {
+            swipeUpAction = info.getSwipeUp();
+        }
     }
 
     public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
         swipeUpAction = action;
-        updateDatabase(context, true);
+        updateDatabase(context, action);
     }
 
-    private void updateDatabase(Context context, boolean reload) {
-        //ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
-        //TODO: save to overrideIcons.db
+    private void updateDatabase(Context context, String swipeUpAction) {
+        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
+        ComponentKey key = new ComponentKey(getTargetComponent(), user);
+        GestureItemInfo info = new GestureItemInfo(key, swipeUpAction, "");
+        repository.insertOrUpdate(info);
     }
 }
