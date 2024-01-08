@@ -25,12 +25,14 @@
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
         <item name="backgroundColor">@color/grey_100</item>
+        <item name="workspaceStatusBarScrim">@drawable/workspace_bg</item>
     </style>
 
     <style name="NeoTheme.Dark" parent="AppTheme.Dark">
         <item name="allAppsScrimColor">@color/grey_800</item>
         <item name="widgetsTheme">@style/NeoWidgetContainerTheme.Dark</item>
         <item name="backgroundColor">@color/grey_800</item>
+        <item name="workspaceStatusBarScrim">@null</item>
     </style>
 
     <style name="NeoTheme.Black" parent="AppTheme.Dark">
@@ -72,6 +74,7 @@
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
         <item name="folderBackgroundColor">@color/folder_background_dark</item>
+        <item name="workspaceStatusBarScrim">@null</item>
     </style>
 
     <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar">
