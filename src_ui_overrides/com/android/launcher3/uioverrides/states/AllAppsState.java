@@ -23,8 +23,8 @@ import android.content.Context;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
-import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
  * Definition for AllApps state
@@ -99,6 +99,6 @@ public class AllAppsState extends LauncherState {
     public int getWorkspaceScrimColor(Launcher launcher) {
         return launcher.getDeviceProfile().isTablet
                 ? launcher.getResources().getColor(R.color.widgets_picker_scrim)
-                : Themes.getAttrColor(launcher, R.attr.allAppsScrimColor);
+                : OmegaUtilsKt.getAllAppsScrimColor(launcher);
     }
 }
