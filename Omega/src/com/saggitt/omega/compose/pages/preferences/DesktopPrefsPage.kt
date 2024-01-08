@@ -76,7 +76,7 @@ fun DesktopPrefsPage() {
         prefs.desktopGridSize,
         prefs.desktopIconAddInstalled,
         prefs.desktopAllowFullWidthWidgets,
-            prefs.desktopWidgetCornerRadius
+        prefs.desktopWidgetCornerRadius
     )
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
@@ -104,8 +104,8 @@ fun DesktopPrefsPage() {
     ) { paddingValues ->
         LazyColumn(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
