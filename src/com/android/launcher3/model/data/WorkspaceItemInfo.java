@@ -24,6 +24,7 @@ import android.content.pm.ShortcutInfo;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
@@ -32,6 +33,8 @@ import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.ApiWrapper;
 import com.android.launcher3.util.ContentWriter;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -93,7 +96,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @NonNull private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
 
     public int options;
-
+    public String swipeUpAction;
 
     public WorkspaceItemInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
@@ -219,5 +222,19 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @Override
     public WorkspaceItemInfo clone() {
         return new WorkspaceItemInfo(this);
+    }
+
+    public void onLoadCustomizations(String swipeUpAction) {
+        this.swipeUpAction = swipeUpAction;
+    }
+
+    public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
+        swipeUpAction = action;
+        updateDatabase(context, true);
+    }
+
+    private void updateDatabase(Context context, boolean reload) {
+        //ModelWriter.modifyItemInDatabase(context, this, swipeUpAction, reload);
+        //TODO: save to overrideIcons.db
     }
 }

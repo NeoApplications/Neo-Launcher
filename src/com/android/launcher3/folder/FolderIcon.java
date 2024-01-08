@@ -75,13 +75,20 @@ import com.android.launcher3.model.data.FolderInfo.LabelState;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.MultiTranslateDelegate;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.gestures.BlankGestureHandler;
+import com.saggitt.omega.gestures.GestureController;
 import com.saggitt.omega.gestures.GestureHandler;
+import com.saggitt.omega.gestures.RunnableGestureHandler;
+import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
+import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -718,6 +725,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onTitleChanged(CharSequence title) {
         mFolderName.setText(title);
+        applySwipeUpAction(mInfo);
         setContentDescription(getAccessiblityTitle(title));
     }
 
@@ -733,7 +741,26 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         super.onTouchEvent(event);
         mLongPressHelper.onTouchEvent(event);
         // Keep receiving the rest of the events
+        Launcher launcher = ContextExtensionsKt.getLauncherOrNull(getContext());
+        if (launcher instanceof NeoLauncher && mSwipeUpHandler != null) {
+            ((NeoLauncher) launcher).getGestureController()
+                    .setSwipeUpOverride(mSwipeUpHandler, event.getDownTime());
+        }
         return true;
+    }
+
+    private void applySwipeUpAction(FolderInfo info) {
+        if (info.isCoverMode()) {
+            mSwipeUpHandler = new RunnableGestureHandler(getContext(), () -> ItemClickHandler.INSTANCE.onClick(this));
+        } else {
+            mSwipeUpHandler = GestureController.Companion.createGestureHandler(
+                    getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        }
+        if (mSwipeUpHandler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, mSwipeUpHandler);
+        }
     }
 
     /**

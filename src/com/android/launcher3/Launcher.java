@@ -20,7 +20,6 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-
 import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
@@ -240,6 +239,7 @@ import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherExterns;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.util.Config;
 
 import java.io.FileDescriptor;
@@ -1671,6 +1671,7 @@ public class Launcher extends StatefulActivity<LauncherState>
                 && AbstractFloatingView.getTopOpenView(this) == null;
         boolean isActionMain = Intent.ACTION_MAIN.equals(intent.getAction());
         boolean internalStateHandled = ACTIVITY_TRACKER.handleNewIntent(this);
+        boolean handled = false;
 
         if (isActionMain) {
             if (!internalStateHandled) {
@@ -1682,15 +1683,20 @@ public class Launcher extends StatefulActivity<LauncherState>
                     // Only change state, if not already the same. This prevents cancelling any
                     // animations running as part of resume
                     mStateManager.goToState(NORMAL, mStateManager.shouldAnimateStateChange());
+                    handled = true;
                 }
 
                 // Reset the apps view
                 if (!alreadyOnHome) {
                     mAppsView.reset(isStarted() /* animate */);
+                    handled = true;
                 }
 
                 if (shouldMoveToDefaultScreen && !mWorkspace.isHandlingTouch()) {
                     mWorkspace.post(mWorkspace::moveToDefaultScreen);
+                }
+                if (!handled && this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressHome();
                 }
             }
 

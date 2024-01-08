@@ -81,6 +81,10 @@ import com.android.launcher3.util.ShortcutUtil;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.IconLabelDotView;
+import com.saggitt.omega.gestures.BlankGestureHandler;
+import com.saggitt.omega.gestures.GestureController;
+import com.saggitt.omega.gestures.GestureHandler;
+import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.text.NumberFormat;
@@ -119,8 +123,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     private IntArray mBreakPointsIntArray;
     private CharSequence mLastOriginalText;
     private CharSequence mLastModifiedText;
-    private int mWidthMeasureSpec;
-
     private static final Property<BubbleTextView, Float> DOT_SCALE_PROPERTY
             = new Property<BubbleTextView, Float>(Float.TYPE, "dotScale") {
         @Override
@@ -191,6 +193,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     private NeoPrefs prefs;
 
     private boolean mEnableIconUpdateAnimation = false;
+
+    private GestureHandler mSwipeUpHandler;
 
     public BubbleTextView(Context context) {
         this(context, null, 0);
@@ -362,6 +366,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @UiThread
     public void applyFromWorkspaceItem(WorkspaceItemInfo info, PreloadIconDrawable icon) {
         applyIconAndLabel(info);
+        applySwipeUpAction(info);
         setItemInfo(info);
         applyLoadingState(icon);
         applyDotState(info, false /* animate */);
@@ -453,6 +458,16 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @VisibleForTesting
     public void setDisplay(int display) {
         mDisplay = display;
+    }
+
+    private void applySwipeUpAction(WorkspaceItemInfo info) {
+        GestureHandler handler = GestureController.Companion.createGestureHandler(
+                getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        if (handler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, handler);
+        }
     }
 
     /**
@@ -710,7 +725,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mWidthMeasureSpec = widthMeasureSpec;
         if (mCenterVertically) {
             Paint.FontMetrics fm = getPaint().getFontMetrics();
             int cellHeightPx = mIconSize + getCompoundDrawablePadding() +
