@@ -67,6 +67,7 @@ import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.IconSizeSteps;
 import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.Locale;
@@ -298,6 +299,7 @@ public class DeviceProfile {
 
     // DragController
     public int flingToDeleteThresholdVelocity;
+    private final NeoPrefs prefs;
 
     /** TODO: Once we fully migrate to staged split, remove "isMultiWindowMode" */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
@@ -306,6 +308,8 @@ public class DeviceProfile {
             @NonNull final ViewScaleProvider viewScaleProvider,
             @NonNull final Consumer<DeviceProfile> dimensionOverrideProvider) {
 
+        prefs = Utilities.getNeoPrefs(context);
+        boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -623,7 +627,8 @@ public class DeviceProfile {
         int cellLayoutPadding =
                 isTwoPanels ? cellLayoutBorderSpacePx.x / 2 : res.getDimensionPixelSize(
                         R.dimen.cell_layout_padding);
-        cellLayoutPaddingPx = new Rect(cellLayoutPadding, cellLayoutPadding, cellLayoutPadding,
+        int cellLayoutPaddingX = fullWidthWidgets ? 0 : cellLayoutPadding;
+        cellLayoutPaddingPx = new Rect(cellLayoutPaddingX, cellLayoutPadding, cellLayoutPaddingX,
                 cellLayoutPadding);
         updateWorkspacePadding();
 
@@ -1524,9 +1529,11 @@ public class DeviceProfile {
                         workspacePageIndicatorHeight - mWorkspacePageIndicatorOverlapWorkspace;
             }
             int paddingTop = workspaceTopPadding + (mIsScalableGrid ? 0 : edgeMarginPx);
-            int paddingSide = desiredWorkspaceHorizontalMarginPx;
+            //int paddingSide = desiredWorkspaceHorizontalMarginPx;
+            int horizontalPadding = prefs.getDesktopAllowFullWidthWidgets().getValue() ? 0 : desiredWorkspaceHorizontalMarginPx;
 
-            padding.set(paddingSide, paddingTop, paddingSide, paddingBottom);
+            //padding.set(paddingSide, paddingTop, paddingSide, paddingBottom);
+            padding.set(horizontalPadding, paddingTop, horizontalPadding, paddingBottom);
         }
         insetPadding(workspacePadding, cellLayoutPaddingPx);
     }
