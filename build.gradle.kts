@@ -106,7 +106,7 @@ android {
     buildTypes {
         named("debug") {
             isMinifyEnabled = false
-            applicationIdSuffix = ".alpha1"
+            applicationIdSuffix = ".alpha"
             manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_debug"
             manifestPlaceholders["appIconRound"] = "@drawable/ic_launcher_round_debug"
             signingConfig = signingConfigs.getByName("debug")

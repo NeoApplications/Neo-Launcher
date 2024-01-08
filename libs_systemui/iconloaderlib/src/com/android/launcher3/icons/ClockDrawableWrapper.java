@@ -287,6 +287,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
             BaseIconFactory iconFactory, float normalizationScale, UserHandle user) {
+        iconFactory.disableColorExtraction();
         AdaptiveIconDrawable background = new CustomAdaptiveIconDrawable(
                 getBackground().getConstantState().newDrawable(), null);
         Bitmap flattenBG = iconFactory.createScaledBitmap(background,

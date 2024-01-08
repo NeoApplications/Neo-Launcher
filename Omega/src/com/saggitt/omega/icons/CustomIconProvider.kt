@@ -23,6 +23,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_DATE_CHANGED
+import android.content.Intent.ACTION_PACKAGE_ADDED
+import android.content.Intent.ACTION_PACKAGE_CHANGED
+import android.content.Intent.ACTION_PACKAGE_REMOVED
 import android.content.Intent.ACTION_TIMEZONE_CHANGED
 import android.content.Intent.ACTION_TIME_CHANGED
 import android.content.Intent.ACTION_TIME_TICK
@@ -58,11 +61,11 @@ import com.saggitt.omega.iconpack.IconType
 import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
-import com.saulhdev.neolauncher.util.getPackageVersionCode
-import com.saulhdev.neolauncher.util.isPackageInstalled
 import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.overrideSdk
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.saulhdev.neolauncher.util.getPackageVersionCode
+import com.saulhdev.neolauncher.util.isPackageInstalled
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -81,15 +84,15 @@ class CustomIconProvider @JvmOverloads constructor(
     private val overrideRepo = IconOverrideRepository.INSTANCE.get(context)
     private val iconPack get() = iconPackProvider.getIconPackOrSystem(iconPackPref.getValue())
     private var iconPackVersion = 0L
-    private var _themeMapName: String = ""
+    private var themeMapName: String = ""
     private var _themeMap: Map<ComponentName, ThemeData>? = null
     private val themeMap: Map<ComponentName, ThemeData>
         get() {
             if (_themeMap == null) {
                 _themeMap = createThemedIconMap()
             }
-            if (iconPack != null && _themeMapName != iconPack!!.packPackageName) {
-                _themeMapName = iconPack!!.packPackageName
+            if (iconPack != null && themeMapName != iconPack!!.packPackageName) {
+                themeMapName = iconPack!!.packPackageName
                 _themeMap = createThemedIconMap()
             }
             return _themeMap!!
@@ -101,8 +104,7 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun setIconThemeSupported(isSupported: Boolean) {
-        _themeMap =
-            if (isSupported) null else DISABLED_MAP
+        _themeMap = if (isSupported) null else DISABLED_MAP
     }
 
     private fun resolveIconEntry(componentName: ComponentName, user: UserHandle): IconEntry? {
@@ -133,7 +135,7 @@ class CustomIconProvider @JvmOverloads constructor(
         val iconEntry = resolveIconEntry(componentName, user)
         var resolvedEntry = iconEntry
         var iconType = ICON_TYPE_DEFAULT
-        var themeData: ThemedIconDrawable.ThemeData? = null
+        var themeData: ThemeData? = null
         if (iconEntry != null) {
             val clock = iconPackProvider.getClockMetadata(iconEntry)
             when {
@@ -194,6 +196,18 @@ class CustomIconProvider @JvmOverloads constructor(
             }
         }
         return defaultIcon
+    }
+
+    override fun isThemeEnabled(): Boolean {
+        return _themeMap != DISABLED_MAP
+    }
+
+    override fun getThemeData(componentName: ComponentName): ThemedIconDrawable.ThemeData? {
+        val td = getDynamicIconsFromMap(context, themeMap, componentName)
+        if (td != null) {
+            return td
+        }
+        return themeMap[componentName] ?: themeMap[ComponentName(componentName.packageName, "")]
     }
 
     override fun getIcon(info: ActivityInfo?): Drawable {
@@ -312,6 +326,7 @@ class CustomIconProvider @JvmOverloads constructor(
         return MultiSafeCloseable().apply {
             add(super.registerIconChangeListener(callback, handler))
             add(IconPackChangeReceiver(context, handler, callback))
+            add(CustomIconChangeReceiver(context, handler, callback))
         }
     }
 
@@ -402,8 +417,35 @@ class CustomIconProvider @JvmOverloads constructor(
         }
     }
 
-    private fun createThemedIconMap(): MutableMap<ComponentName, ThemedIconDrawable.ThemeData> {
-        val map = ArrayMap<ComponentName, ThemedIconDrawable.ThemeData>()
+    private inner class CustomIconChangeReceiver(
+        private val context: Context,
+        handler: Handler,
+        private val callback: IconChangeListener,
+    ) : BroadcastReceiver(), SafeCloseable {
+
+        init {
+            val filter = IntentFilter(ACTION_PACKAGE_ADDED)
+            filter.addAction(ACTION_PACKAGE_CHANGED)
+            filter.addAction(ACTION_PACKAGE_REMOVED)
+            filter.addDataScheme("package")
+            filter.addDataSchemeSpecificPart(themeMapName, 0)
+            context.registerReceiver(this, filter, null, handler)
+        }
+
+        override fun onReceive(context: Context, intent: Intent) {
+            if (isThemeEnabled) {
+                setIconThemeSupported(true)
+            }
+            callback.onSystemIconStateChanged(systemIconState)
+        }
+
+        override fun close() {
+            context.unregisterReceiver(this)
+        }
+    }
+
+    private fun createThemedIconMap(): MutableMap<ComponentName, ThemeData> {
+        val map = ArrayMap<ComponentName, ThemeData>()
 
         fun updateMapFromResources(resources: Resources, packageName: String) {
             try {
@@ -424,7 +466,7 @@ class CustomIconProvider @JvmOverloads constructor(
                             val iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0)
                             if (iconId != 0 && pkg.isNotEmpty()) {
                                 map[ComponentName(pkg, cmp)] =
-                                    ThemedIconDrawable.ThemeData(resources, packageName, iconId)
+                                    ThemeData(resources, packageName, iconId)
                             }
                         }
                     }
@@ -438,11 +480,11 @@ class CustomIconProvider @JvmOverloads constructor(
             resources = context.resources,
             packageName = context.packageName
         )
-        if (context.packageManager.isPackageInstalled(packageName = _themeMapName)) {
-            iconPackVersion = context.packageManager.getPackageVersionCode(_themeMapName)
+        if (context.packageManager.isPackageInstalled(packageName = themeMapName)) {
+            iconPackVersion = context.packageManager.getPackageVersionCode(themeMapName)
             updateMapFromResources(
-                resources = context.packageManager.getResourcesForApplication(_themeMapName),
-                packageName = _themeMapName
+                resources = context.packageManager.getResourcesForApplication(themeMapName),
+                packageName = themeMapName
             )
             if (isOlderLawnIconsInstalled) {
                 updateMapWithDynamicIcons(context, map)
