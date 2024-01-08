@@ -503,4 +503,7 @@
     <string name="about_community_matrix">Спільнота у Matrix</string>
     <string name="title_calendar_persian">Персидський</string>
     <string name="about_community_telegram">Спільнота у Telegram</string>
+    <string name="hotseat_accessibility_expand">Панель розгорнута</string>
+    <string name="hotseat_accessibility_collapse">Панель згорнута</string>
+    <string name="title_expandable_dock">Розширювана панель</string>
 </resources>
