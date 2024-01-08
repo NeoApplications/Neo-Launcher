@@ -677,9 +677,17 @@ public class DeviceProfile {
     private static DotRenderer createDotRenderer(
             @NonNull Context context, int size, @NonNull SparseArray<DotRenderer> cache) {
         DotRenderer renderer = cache.get(size);
+
+        // This is done last, after iconSizePx is calculated above.
+        float dotSize = 0.228f;
+        NeoPrefs prefs = Utilities.getNeoPrefs(context);
+        if (prefs.getNotificationCount().getValue()) {
+            dotSize = 0.38f;
+        }
+
         if (renderer == null) {
             renderer = new DotRenderer(size, getShapePath(context, DEFAULT_DOT_SIZE),
-                    DEFAULT_DOT_SIZE);
+                    DEFAULT_DOT_SIZE, dotSize);
             cache.put(size, renderer);
         }
         return renderer;

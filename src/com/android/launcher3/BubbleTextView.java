@@ -667,6 +667,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             final int scrollX = getScrollX();
             final int scrollY = getScrollY();
             canvas.translate(scrollX, scrollY);
+            if (mDotInfo != null) {
+                mDotParams.count = mDotInfo.getNotificationCount();
+                mDotParams.notificationKeys = mDotInfo.getNotificationKeys().size();
+                mDotParams.showCount = prefs.getNotificationCount().getValue();
+                if (prefs.getNotificationCustomColor().getValue()) {
+                    mDotParams.dotColor = prefs.getNotificationBackground().getColor();
+                }
+            }
             mDotRenderer.draw(canvas, mDotParams);
             canvas.translate(-scrollX, -scrollY);
         }
