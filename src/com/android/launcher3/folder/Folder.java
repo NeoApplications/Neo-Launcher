@@ -17,7 +17,6 @@
 package com.android.launcher3.folder;
 
 import static android.text.TextUtils.isEmpty;
-
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
 import static com.android.launcher3.LauncherState.EDIT_MODE;
 import static com.android.launcher3.LauncherState.NORMAL;
@@ -26,7 +25,6 @@ import static com.android.launcher3.config.FeatureFlags.ALWAYS_USE_HARDWARE_OPTI
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_FOLDER_LABEL_UPDATED;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ITEM_DROP_COMPLETED;
 import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
-
 import static java.lang.Math.round;
 
 import android.animation.Animator;
@@ -64,7 +62,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Alarm;
@@ -98,7 +95,6 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
-import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
 import com.android.launcher3.util.Themes;
@@ -1693,6 +1689,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     public void setClipPath(Path clipPath) {
         mClipPath = clipPath;
         invalidate();
+    }
+
+    public String getDefaultFolderName() {
+        return mFolderName.getText().toString();
     }
 
     @Override

@@ -17,9 +17,7 @@
 package com.android.launcher3.model.data;
 
 import static android.text.TextUtils.isEmpty;
-
 import static androidx.core.util.Preconditions.checkNotNull;
-
 import static com.android.launcher3.folder.FolderIcon.inflateIcon;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
@@ -31,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Process;
+import android.text.TextUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -40,6 +39,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
@@ -253,12 +253,25 @@ public class FolderInfo extends ItemInfo {
         swipeUpAction = action;
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
         GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
-        if (gestureItemInfo == null || gestureItemInfo.getSwipeUp() == null) {
+        if (gestureItemInfo.getSwipeUp() == null) {
             gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
             repository.insert(gestureItemInfo);
         } else {
             gestureItemInfo.setSwipeUp(swipeUpAction);
             repository.update(gestureItemInfo);
+        }
+    }
+
+    public CharSequence getIconTitle(Folder folder) {
+        if (!isCoverMode()) {
+            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
+                return title;
+            } else {
+                return folder.getDefaultFolderName();
+            }
+        } else {
+            WorkspaceItemInfo info = getCoverInfo();
+            return info.title;
         }
     }
 
@@ -437,6 +450,14 @@ public class FolderInfo extends ItemInfo {
                 // fall through
         }
         return LauncherAtom.ToState.TO_STATE_UNSPECIFIED;
+    }
+
+    public boolean useIconMode(Context context) {
+        return isCoverMode();
+    }
+
+    public boolean usingCustomIcon(Context context) {
+        return !isCoverMode();
     }
 
     public Drawable getIcon(Context context) {

@@ -87,8 +87,10 @@ import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.TintedDrawableSpan;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.ShortcutCachingLogic;
 import com.android.launcher3.icons.ThemedIconDrawable;
+import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.pm.ShortcutConfigActivityInfo;
@@ -592,6 +594,15 @@ public final class Utilities {
         return options;
     }
 
+    public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
+                                           Object[] outObj) {
+        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
+        if (icon instanceof BitmapInfo.Extender) {
+            icon = ((BitmapInfo.Extender) icon).getThemedDrawable(context);
+        }
+        return icon;
+    }
+
     /**
      * Returns the full drawable for info without any flattening or pre-processing.
      *
@@ -599,13 +610,15 @@ public final class Utilities {
      * @param outObj this is set to the internal data associated with {@code info},
      *               eg {@link LauncherActivityInfo} or {@link ShortcutInfo}.
      */
-    @TargetApi(Build.VERSION_CODES.TIRAMISU)
     public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
             boolean shouldThemeIcon, Object[] outObj, boolean[] outIsIconThemed) {
         Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
-        if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
+        if (icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
             AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon.mutate();
-            Drawable mono = aid.getMonochrome();
+            Drawable mono = null;
+            if (Utilities.ATLEAST_T) {
+                mono = aid.getMonochrome();
+            }
             if (mono != null && Themes.isThemedIconEnabled(context)) {
                 outIsIconThemed[0] = true;
                 int[] colors = ThemedIconDrawable.getColors(context);
@@ -646,6 +659,10 @@ public final class Utilities {
                         appState.getInvariantDeviceProfile().fillResIconDpi);
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderInfo folderInfo = (FolderInfo) info;
+            if (folderInfo.isCoverMode()) {
+                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, outObj);
+            }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     activity, info.id, new Point(width, height));
             if (icon == null) {
@@ -683,6 +700,9 @@ public final class Utilities {
             return LauncherAppState.getInstance(appState.getContext())
                     .getIconCache().getShortcutInfoBadge(si).newIcon(context, FLAG_THEMED);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderInfo folderInfo = (FolderInfo) info;
+            if (folderInfo.isCoverMode())
+                return getBadge(context, folderInfo.getCoverInfo(), obj, false);
             return ((FolderAdaptiveIcon) obj).getBadge();
         } else {
             return Process.myUserHandle().equals(info.user)

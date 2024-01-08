@@ -1630,6 +1630,10 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
                     + "View: " + child + "  tag: " + child.getTag();
             throw new IllegalStateException(msg);
         }
+        if (child instanceof FolderIcon && ((FolderIcon) child).isCoverMode()) {
+            child.setVisibility(View.VISIBLE);
+            child = ((FolderIcon) child).getFolderName();
+        }
         beginDragShared(child, null, source, (ItemInfo) dragObject,
                 new DragPreviewProvider(child), options);
     }

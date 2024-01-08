@@ -61,8 +61,10 @@ import com.android.launcher3.dot.DotInfo;
 import com.android.launcher3.dragndrop.DragOptions.PreDragCondition;
 import com.android.launcher3.dragndrop.DraggableView;
 import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.graphics.PreloadIconDrawable;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.icons.IconCache.ItemInfoUpdateReceiver;
@@ -458,6 +460,19 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @VisibleForTesting
     public void setDisplay(int display) {
         mDisplay = display;
+    }
+
+    public void applyIcon(ItemInfoWithIcon info) {
+        FastBitmapDrawable iconDrawable = info.newIcon(getContext());
+        mDotParams.dotColor = IconPalette.getMutedColor(info.bitmap.color, 0.54f);
+        setIcon(iconDrawable);
+    }
+
+    public void applyIcon(BitmapInfo info) {
+        FastBitmapDrawable iconDrawable = new FastBitmapDrawable(info);
+        mDotParams.dotColor = IconPalette.getMutedColor(info.color, 0.54f);
+
+        setIcon(iconDrawable);
     }
 
     private void applySwipeUpAction(WorkspaceItemInfo info) {
@@ -1200,6 +1215,11 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         } else {
             setCompoundDrawables(null, newIcon, null, null);
         }
+    }
+
+    public void clearIcon() {
+        mIcon = null;
+        setCompoundDrawables(null, null, null, null);
     }
 
     private String getAppLabelPluralString(String appName, int notificationCount) {
