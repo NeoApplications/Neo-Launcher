@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.isVisible
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.smartspace.model.SmartspaceScores
@@ -58,10 +57,11 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun extractWidgetLayout(appWidgetHostView: ViewGroup): List<SmartspaceTarget> {
-        val children = appWidgetHostView.recursiveChildren.filter { it.isVisible }
+        val children = appWidgetHostView.recursiveChildren
         val texts =
             children.filterIsInstance<TextView>().filter { !it.text.isNullOrEmpty() }.toList()
         val images = children.filterIsInstance<ImageView>().toList()
+            .filter { it.drawable != null && it.drawable is BitmapDrawable }
             .filter { it.drawable != null && it.drawable is BitmapDrawable }
         var weatherIconView: ImageView? = null
         var cardIconView: ImageView? = null
@@ -109,7 +109,8 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                     icon = Icon.createWithBitmap(cardIcon),
                     title = ttl,
                     subtitle = sub.text,
-                    pendingIntent = pendingIntent
+                    pendingIntent = pendingIntent,
+                    intent = weather.baseAction?.intent,
                 ),
                 score = SmartspaceScores.SCORE_CALENDAR,
                 featureType = SmartspaceTarget.FEATURE_WEATHER
