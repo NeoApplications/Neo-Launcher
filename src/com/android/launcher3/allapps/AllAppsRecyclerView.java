@@ -33,6 +33,7 @@ import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -289,6 +290,10 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     @Override
     public boolean hasOverlappingRendering() {
         return false;
+    }
+
+    public void setScrollbarColor(int color) {
+        mScrollbar.setColor(color, Color.WHITE);
     }
 
     private void logCumulativeVerticalScroll() {

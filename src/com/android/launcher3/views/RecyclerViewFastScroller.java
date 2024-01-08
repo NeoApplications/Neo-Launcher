@@ -17,7 +17,6 @@
 package com.android.launcher3.views;
 
 import static android.view.HapticFeedbackConstants.CLOCK_TICK;
-
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 
 import android.animation.ObjectAnimator;
@@ -453,5 +452,10 @@ public class RecyclerViewFastScroller extends View {
         // There is actually some overlap between the track and the thumb. But since the track
         // alpha is so low, it does not matter.
         return false;
+    }
+
+    public void setColor(int color, int foregroundColor) {
+        mThumbPaint.setColor(color);
+        mPopupView.setTextColor(foregroundColor);
     }
 }

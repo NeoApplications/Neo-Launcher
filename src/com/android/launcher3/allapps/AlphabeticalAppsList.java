@@ -23,12 +23,18 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
+import com.android.launcher3.celllayout.CellPosMapper;
+import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
@@ -36,6 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -315,6 +322,24 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
      */
     public List<AppInfo> getApps() {
         return mApps;
+    }
+
+    private List<DrawerFolderInfo> getFolderInfos() {
+        LauncherAppState app = LauncherAppState.getInstance(mLauncher);
+        LauncherModel model = app.getModel();
+        ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
+        return Utilities.getNeoPrefs(mLauncher)
+                .getDrawerAppGroupsManager()
+                .getDrawerFolders()
+                .getFolderInfos(this, modelWriter);
+    }
+
+    private Set<ComponentKey> getFolderFilteredApps() {
+
+        return Utilities.getNeoPrefs(mLauncher)
+                .getDrawerAppGroupsManager()
+                .getDrawerFolders()
+                .getHiddenComponents();
     }
 
     private static class MyDiffCallback extends DiffUtil.Callback {

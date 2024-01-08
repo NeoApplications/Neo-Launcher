@@ -37,6 +37,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -1954,6 +1955,17 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
                 }
                 canvas.restoreToCount(restoreCount);
             }
+        }
+    }
+
+    public void addTabs(int count) {
+        int childCount = getChildCount();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        for (int i = childCount; i < count; i++) {
+            inflater.inflate(R.layout.all_apps_rv_layout, this);
+        }
+        while (getChildCount() > count) {
+            removeViewAt(0);
         }
     }
 }
