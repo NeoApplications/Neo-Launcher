@@ -15,18 +15,24 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
+
 import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
+import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -81,21 +87,27 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     // The of ordered component names as a result of a search query
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
     private BaseAllAppsAdapter<T> mAdapter;
-    private AppInfoComparator mAppNameComparator;
+    private Comparator<AppInfo> mAppNameComparator;
     private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
+
+    private final NeoPrefs prefs;
+    private final BaseDraggingActivity mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore<T> appsStore,
             WorkProfileManager workProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
-        mAppNameComparator = new AppInfoComparator(context);
         mWorkProviderManager = workProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
+
+        prefs = Utilities.getNeoPrefs(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
+        mLauncher = BaseDraggingActivity.fromContext(context);
     }
 
     /** Set the number of apps per row when device profile changes. */
@@ -197,6 +209,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
         // Sort the list of apps
         mApps.clear();
+        mAppNameComparator = getAllAppsComparator(mLauncher, prefs.getDrawerSortMode().getValue());
 
         Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
         if (!hasSearchResults() && mItemFilter != null) {
