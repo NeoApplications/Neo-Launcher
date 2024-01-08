@@ -17,7 +17,6 @@
 package com.android.launcher3;
 
 import static android.animation.ValueAnimator.areAnimatorsEnabled;
-
 import static com.android.app.animation.Interpolators.DECELERATE_1_5;
 import static com.android.launcher3.LauncherState.EDIT_MODE;
 import static com.android.launcher3.dragndrop.DraggableView.DRAGGABLE_ICON;
@@ -88,6 +87,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class CellLayout extends ViewGroup {
     private static final String TAG = "CellLayout";
@@ -2352,7 +2352,7 @@ public class CellLayout extends ViewGroup {
                         ((CellLayoutLayoutParams) ((View) view).getLayoutParams()).getCellX())
                 .thenComparing(view ->
                         ((CellLayoutLayoutParams) ((View) view).getLayoutParams()).getCellY());
-        List<View> views = solution.map.keySet().stream().sorted(comparator).toList();
+        List<View> views = (List<View>) solution.map.keySet().stream().sorted(comparator).collect(Collectors.toList());
         for (View child : views) {
             if (child == ignoreView) continue;
             CellAndSpan c = solution.map.get(child);
