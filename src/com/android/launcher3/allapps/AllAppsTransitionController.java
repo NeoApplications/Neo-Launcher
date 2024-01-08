@@ -341,7 +341,7 @@ public class AllAppsTransitionController
         if (mLauncher.isInState(ALL_APPS) && !ALL_APPS.equals(toState)) {
             // For atomic animations, we close the keyboard immediately.
             if (!config.userControlled && mShouldControlKeyboard) {
-                mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
+                mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
             }
 
             builder.addEndListener(success -> {
@@ -355,7 +355,7 @@ public class AllAppsTransitionController
                 // keyboard to remain open. However an onCancel signal is sent to the listeners
                 // (success = false), so we need to check for that.
                 if (config.userControlled && success && mShouldControlKeyboard) {
-                    mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
+                    mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
                 }
 
                 mAllAppScale.updateValue(1f);
@@ -534,7 +534,7 @@ public class AllAppsTransitionController
     private void onProgressAnimationEnd() {
         if (Float.compare(mProgress, 1f) == 0) {
             if (mShouldControlKeyboard) {
-                mLauncher.getAppsView().getSearchUiManager().getEditText().hideKeyboard();
+                mLauncher.getAppsView().getSearchUiManager().hideSoftwareKeyboard();
             }
         }
     }

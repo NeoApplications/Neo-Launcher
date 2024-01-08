@@ -51,7 +51,7 @@ public class AllAppsSearchBarController
     protected SearchAlgorithm<AdapterItem> mSearchAlgorithm;
 
     public void setVisibility(int visibility) {
-        mInput.setVisibility(visibility);
+        if (mInput != null) mInput.setVisibility(visibility);
     }
 
     /**
@@ -64,10 +64,12 @@ public class AllAppsSearchBarController
         mLauncher = launcher;
 
         mInput = input;
-        mInput.addTextChangedListener(this);
-        mInput.setOnEditorActionListener(this);
-        mInput.setOnBackKeyListener(this);
-        mInput.addOnFocusChangeListener(this);
+        if (mInput != null) {
+            mInput.addTextChangedListener(this);
+            mInput.setOnEditorActionListener(this);
+            mInput.setOnBackKeyListener(this);
+            mInput.addOnFocusChangeListener(this);
+        }
         mSearchAlgorithm = searchAlgorithm;
     }
 
@@ -88,7 +90,7 @@ public class AllAppsSearchBarController
         if (text instanceof SpannableStringBuilder) {
             SpannableStringBuilder spanned = (SpannableStringBuilder) text;
             SuggestionSpan[] suggestionSpans =
-                spanned.getSpans(0, text.length(), SuggestionSpan.class);
+                    spanned.getSpans(0, text.length(), SuggestionSpan.class);
             if (suggestionSpans != null && suggestionSpans.length > 0) {
                 spanned.removeSpan(suggestionSpans[0]);
                 return suggestionSpans[0].getSuggestions();
@@ -142,7 +144,7 @@ public class AllAppsSearchBarController
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
-            mInput.hideKeyboard();
+            if (mInput != null) mInput.hideKeyboard();
         }
     }
 
@@ -151,22 +153,22 @@ public class AllAppsSearchBarController
      */
     public void reset() {
         mCallback.clearSearchResult();
-        mInput.reset();
+        if (mInput != null) mInput.reset();
         mQuery = null;
-        mInput.removeOnFocusChangeListener(this);
+        if (mInput != null) mInput.removeOnFocusChangeListener(this);
     }
 
     /**
      * Focuses the search field to handle key events.
      */
     public void focusSearchField() {
-        mInput.showKeyboard(true /* shouldFocus */);
+        if (mInput != null) mInput.showKeyboard(true /* shouldFocus */);
     }
 
     /**
      * Returns whether the search field is focused.
      */
     public boolean isSearchFieldFocused() {
-        return mInput.isFocused();
+        return mInput != null && mInput.isFocused();
     }
 }

@@ -50,6 +50,10 @@ public interface SearchUiManager {
     @Nullable
     ExtendedEditText getEditText();
 
+    default void hideSoftwareKeyboard() {
+        getEditText().hideKeyboard();
+    }
+
     /**
      * Hint to the edit text that it is about to be focused or unfocused. This can be used to start
      * animating the edit box accordingly, e.g. after a gesture completes.

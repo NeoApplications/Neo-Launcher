@@ -265,6 +265,10 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     override fun getEditText(): ExtendedEditText? = null
 
+    override fun hideSoftwareKeyboard() {
+        keyboardController?.hide()
+    }
+
     override fun onSearchResult(
         query: String?,
         items: ArrayList<BaseAllAppsAdapter.AdapterItem>?,
