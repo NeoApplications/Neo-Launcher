@@ -42,10 +42,13 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.views.ClipPathView;
+import com.saggitt.omega.preferences.NeoPrefs;
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -153,6 +156,37 @@ public abstract class IconShape {
             });
 
             return va;
+        }
+    }
+
+    public static final class AdaptiveIconShape extends PathShape {
+
+        private final com.saggitt.omega.icons.IconShape mIconShape;
+
+        public AdaptiveIconShape(Context context) {
+            String iconShape = NeoPrefs.getInstance(context).getProfileIconShape().getValue();
+            mIconShape = com.saggitt.omega.icons.IconShape.Companion
+                    .fromString(context, iconShape);
+        }
+
+        @Override
+        public void addToPath(Path path, float offsetX, float offsetY, float radius) {
+            mIconShape.addShape(path, offsetX, offsetY, radius);
+        }
+
+        @Override
+        protected AnimatorUpdateListener newUpdateListener(Rect startRect, Rect endRect, float endRadius, Path outPath) {
+            float startRadius = startRect.width() / 2f;
+            float[] start = new float[] {startRect.left, startRect.top, startRect.right, startRect.bottom};
+            float[] end = new float[] {endRect.left, endRect.top, endRect.right, endRect.bottom};
+            FloatArrayEvaluator evaluator = new FloatArrayEvaluator();
+            return animation -> {
+                float progress = (float) animation.getAnimatedValue();
+                float[] values = evaluator.evaluate(progress, start, end);
+                mIconShape.addToPath(outPath,
+                        values[0], values[1], values[2], values[3],
+                        startRadius, endRadius, progress);
+            };
         }
     }
 
@@ -379,6 +413,18 @@ public abstract class IconShape {
      * Initializes the shape which is closest to the {@link AdaptiveIconDrawable}
      */
     public static void init(Context context) {
+        if (Utilities.ATLEAST_OREO_MR1) {
+            sInstance = new AdaptiveIconShape(context);
+            final int size = 200;
+
+            AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
+                    new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
+            drawable.setBounds(0, 0, size, size);
+
+            // Initialize shape properties
+            sNormalizationScale = IconNormalizer.normalizeAdaptiveIcon(drawable, size, null);
+            return;
+        }
         pickBestShape(context);
     }
 
@@ -435,7 +481,7 @@ public abstract class IconShape {
 
         Region full = new Region(0, 0, size, size);
         Region iconR = new Region();
-        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+        AdaptiveIconDrawable drawable = new CustomAdaptiveIconDrawable(
                 new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
         drawable.setBounds(0, 0, size, size);
         iconR.setPath(drawable.getIconMask(), full);
