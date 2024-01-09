@@ -227,20 +227,21 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
         return new WorkspaceItemInfo(this);
     }
 
-    private void loadSwipeUpAction(Context context) {
+    public void setTitle(@NotNull Context context, @Nullable String title) {
+
+    }
+
+    public String getSwipeUpAction(Context context) {
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
         GestureItemInfo info = repository.find(new ComponentKey(getTargetComponent(), user));
         if (info.getSwipeUp() != null) {
             swipeUpAction = info.getSwipeUp();
         }
+        return swipeUpAction;
     }
 
     public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
         swipeUpAction = action;
-        updateDatabase(context, action);
-    }
-
-    private void updateDatabase(Context context, String swipeUpAction) {
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
         ComponentKey key = new ComponentKey(getTargetComponent(), user);
         GestureItemInfo info = new GestureItemInfo(key, swipeUpAction, "");

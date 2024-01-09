@@ -22,6 +22,7 @@ import android.content.Context
 import com.android.launcher3.model.ModelWriter
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.saggitt.omega.iconpack.IconEntry
 
 abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
 
@@ -29,9 +30,15 @@ abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
 
     abstract fun getDefaultTitle(info: T): String
 
-    abstract fun getCustomTitle(info: T): String?
+    open fun getCustomTitle(info: T): String? {
+        return null
+    }
 
     abstract fun setTitle(info: T, title: String?, modelWriter: ModelWriter)
+
+    open fun getIcon(info: T) = null
+
+    open fun setIcon(info: T, iconEntry: IconEntry) {}
 
     open fun supportsIcon() = true
     open fun supportsSwipeUp(info: T) = false
@@ -39,7 +46,7 @@ abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
     open fun setSwipeUpAction(info: T, action: String?) {}
 
     open fun getSwipeUpAction(info: T): String? {
-        TODO("not implemented")
+        return null
     }
 
     open fun showBadge(info: T) = true
