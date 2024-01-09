@@ -125,6 +125,7 @@ import com.android.launcher3.widget.dragndrop.AppWidgetHostViewDragListener;
 import com.android.launcher3.widget.util.WidgetSizes;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -288,6 +289,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     private final WorkspaceStateTransitionAnimation mStateTransitionAnimation;
 
     private final StatsLogManager mStatsLogManager;
+    private final NeoPrefs prefs;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -322,6 +324,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         setMotionEventSplittingEnabled(true);
         setOnTouchListener(new WorkspaceTouchListener(mLauncher, this));
         mStatsLogManager = StatsLogManager.newInstance(context);
+        prefs = NeoPrefs.getInstance(context);
+        setEnableFreeScroll(prefs.getDesktopFreeScrolling().getValue());
     }
 
     @Override

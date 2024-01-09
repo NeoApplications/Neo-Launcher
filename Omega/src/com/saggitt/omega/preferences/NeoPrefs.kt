@@ -489,6 +489,14 @@ class NeoPrefs private constructor(val context: Context) {
     )
     val desktopLabelRows get() = if (desktopMultilineLabel.getValue()) 2 else 1
 
+    val desktopFreeScrolling = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_FREE_SCROLLING,
+        titleId = R.string.title_desktop_free_scrolling,
+        defaultValue = false,
+    )
+
+
     // Dock
     var dockHide = BooleanPref(
         dataStore = dataStore,

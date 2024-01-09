@@ -52,6 +52,7 @@ object PrefKey {
     val DESKTOP_ICON_SCALE = floatPreferencesKey("desktop_icon_scale")
     val DESKTOP_LABELS_HIDE = booleanPreferencesKey("desktop_labels_hide")
     val DESKTOP_LABELS_MULTILINE = booleanPreferencesKey("desktop_labels_multiline")
+    val DESKTOP_FREE_SCROLLING = booleanPreferencesKey("desktop_free_scrolling")
     val DESKTOP_LABELS_SCALE = floatPreferencesKey("desktop_labels_scale")
     val DESKTOP_POPUP_OPTIONS = stringSetPreferencesKey("desktop_popup_options")
     val DESKTOP_GRID_COLUMNS = intPreferencesKey("desktop_grid_columns")
