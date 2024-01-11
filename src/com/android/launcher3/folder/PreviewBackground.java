@@ -44,12 +44,15 @@ import android.view.View;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.util.OmegaUtilsKt;
 
 /**
  * This object represents a FolderIcon preview background. It stores drawing / measurement
@@ -58,7 +61,7 @@ import com.android.launcher3.views.ActivityContext;
 public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
     private static final boolean DRAW_SHADOW = false;
-    private static final boolean DRAW_STROKE = false;
+    private static boolean DRAW_STROKE = false;
 
     @VisibleForTesting protected static final int CONSUMPTION_ANIMATION_DURATION = 100;
 
@@ -163,11 +166,20 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
+        NeoPrefs prefs = NeoPrefs.getInstance(context);
+        mInvalidateDelegate = invalidateDelegate;
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
         mDotColor = Themes.getAttrColor(context, R.attr.notificationDotColor);
-        mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
+
+        DRAW_STROKE = prefs.getDesktopFolderStroke().getValue();
+        if (DRAW_STROKE) {
+            mStrokeColor = prefs.getDesktopFolderStrokeColor().getColor();
+        } else {
+            mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
+        }
         mBgColor = ta.getColor(R.styleable.FolderIconPreview_folderPreviewColor, 0);
+        mBgColor = ColorUtils.setAlphaComponent(mBgColor, OmegaUtilsKt.getFolderPreviewAlpha(context));
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
