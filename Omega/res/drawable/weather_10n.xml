@@ -1,0 +1,57 @@
+<!--
+  ~ This file is part of Neo Launcher
+  ~ Copyright (c) 2024   Neo Launcher Team
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path
+        android:strokeWidth="1"
+        android:pathData="M12.138,12.327l-0.655,-1.309l-1.309,-0.764l1.309,-0.655l0.655,-1.309l0.764,1.309l1.309,0.655l-1.309,0.764z"
+        android:fillColor="#00a4f0"
+        android:strokeColor="#00a4f0" />
+    <path
+        android:strokeWidth="1"
+        android:pathData="M33.957,23.236l-0.655,-1.309l-1.309,-0.764l1.309,-0.655l0.655,-1.309l0.764,1.309l1.309,0.655l-1.309,0.764z"
+        android:fillColor="#00a4f0"
+        android:strokeColor="#00a4f0" />
+    <path
+        android:pathData="m24.356,21.054c0,-4.037 2.182,-7.528 5.455,-9.491 -1.636,-0.982 -3.491,-1.418 -5.455,-1.418 -6,0 -10.91,4.909 -10.91,10.91 0,6 4.909,10.91 10.91,10.91 1.964,0 3.818,-0.545 5.455,-1.418 -3.273,-1.855 -5.455,-5.455 -5.455,-9.491z"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.182"
+        android:fillColor="#00a4f0"
+        android:strokeColor="#00a4f0" />
+    <path
+        android:pathData="m54.98,34.618c0,-5.161 -4.151,-9.2 -9.2,-9.2 -1.122,0 -2.132,0.224 -3.142,0.561 -0.337,-3.815 -3.478,-6.956 -7.405,-6.956 -4.151,0 -7.517,3.366 -7.517,7.517 0,0.898 0.224,1.795 0.449,2.581 -0.337,-0.112 -0.785,-0.112 -1.122,-0.112 -4.151,0 -7.517,3.366 -7.517,7.517 0,4.039 3.254,7.405 7.293,7.517l19.298,0c4.937,-0.561 8.864,-4.488 8.864,-9.425z"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.683"
+        android:fillColor="#57a0ee"
+        android:strokeColor="#ffffff" />
+    <path
+        android:pathData="M31.711,48.944L29.878,59.344"
+        android:strokeWidth="2.64"
+        android:fillColor="#00000000"
+        android:strokeColor="#91c0f8"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M39.969,47.72L38.136,58.119"
+        android:strokeWidth="2.64"
+        android:fillColor="#00000000"
+        android:strokeColor="#91c0f8"
+        android:strokeLineCap="round" />
+</vector>

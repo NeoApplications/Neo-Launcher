@@ -39,7 +39,7 @@
     <dimen name="enhanced_smartspace_height">104dp</dimen>
     <dimen name="enhanced_smartspace_icon_inset">2dp</dimen>
     <dimen name="enhanced_smartspace_icon_margin">6dp</dimen>
-    <dimen name="enhanced_smartspace_icon_size">24dp</dimen>
+    <dimen name="enhanced_smartspace_icon_size">30dp</dimen>
     <dimen name="enhanced_smartspace_margin_start_launcher">16dp</dimen>
     <dimen name="enhanced_smartspace_padding_top">16dp</dimen>
     <dimen name="enhanced_smartspace_subtitle_margin_top">9dp</dimen>

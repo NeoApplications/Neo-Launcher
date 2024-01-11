@@ -19,8 +19,9 @@ package com.saggitt.omega.smartspace.weather.icons
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
 import com.android.launcher3.R
 
 class WeatherIconProvider(private val context: Context) {
@@ -31,8 +32,7 @@ class WeatherIconProvider(private val context: Context) {
             Log.e("WeatherIconProvider", "No weather icon exists for condition: $resID")
             resID = CONDITION_UNKNOWN
         }
-
-        return BitmapFactory.decodeResource(context.resources, ID_MAP[resID]!!)
+        return AppCompatResources.getDrawable(context, ID_MAP[resID]!!)!!.toBitmap()
     }
 
     companion object {
@@ -63,7 +63,7 @@ class WeatherIconProvider(private val context: Context) {
             "${CONDITION_STORM}d" to R.drawable.weather_11,
             "${CONDITION_STORM}n" to R.drawable.weather_11,
             "${CONDITION_SNOW}d" to R.drawable.weather_13,
-            "${CONDITION_SNOW}n" to R.drawable.weather_13,
+            "${CONDITION_SNOW}n" to R.drawable.weather_13n,
             "${CONDITION_MIST}d" to R.drawable.weather_50,
             "${CONDITION_MIST}n" to R.drawable.weather_50,
             CONDITION_UNKNOWN to R.drawable.weather_none_available
