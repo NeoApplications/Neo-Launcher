@@ -291,6 +291,13 @@ class NeoPrefs private constructor(val context: Context) {
     val desktopLock = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_LOCK_CHANGES,
+        titleId = R.string.title_desktop_taskbar_on_phone,
+        defaultValue = false,
+    )
+
+    val desktopTaskbarOnPhone = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_TASK_BAR_ON_PHONE,
         titleId = R.string.title_desktop_lock_desktop,
         defaultValue = false,
     )

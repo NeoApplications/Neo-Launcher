@@ -77,7 +77,9 @@ class DeviceProfileOverrides(context: Context) {
         val numFolderColumns: Int,
 
         val iconSizeFactor: Float,
-        val allAppsIconSizeFactor: Float
+        val allAppsIconSizeFactor: Float,
+
+        val enableTaskbarOnPhone: Boolean
     ) {
         constructor(
             prefs: NeoPrefs,
@@ -88,7 +90,9 @@ class DeviceProfileOverrides(context: Context) {
             numFolderColumns = prefs.desktopFolderColumns.getValue(),
 
             iconSizeFactor = prefs.desktopIconScale.getValue(),
-            allAppsIconSizeFactor = prefs.drawerIconScale.getValue()
+            allAppsIconSizeFactor = prefs.drawerIconScale.getValue(),
+
+            enableTaskbarOnPhone = prefs.desktopTaskbarOnPhone.getValue(),
         )
 
         fun applyUi(idp: InvariantDeviceProfile) {

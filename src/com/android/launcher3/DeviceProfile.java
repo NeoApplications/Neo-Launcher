@@ -67,6 +67,7 @@ import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.IconSizeSteps;
 import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
+import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
@@ -301,6 +302,8 @@ public class DeviceProfile {
     public int flingToDeleteThresholdVelocity;
     private final NeoPrefs prefs;
 
+    private final DeviceProfileOverrides.TextFactors mTextFactors;
+
     /** TODO: Once we fully migrate to staged split, remove "isMultiWindowMode" */
     DeviceProfile(Context context, InvariantDeviceProfile inv, Info info, WindowBounds windowBounds,
             SparseArray<DotRenderer> dotRendererCache, boolean isMultiWindowMode,
@@ -310,6 +313,7 @@ public class DeviceProfile {
 
         prefs = Utilities.getNeoPrefs(context);
         boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
+        mTextFactors = DeviceProfileOverrides.INSTANCE.get(context).getTextFactors();
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
         this.isMultiWindowMode = isMultiWindowMode;
@@ -508,6 +512,8 @@ public class DeviceProfile {
 
         int hotseatBarBottomSpace = pxFromDp(inv.hotseatBarBottomSpace[mTypeIndex], mMetrics);
         int minQsbMargin = res.getDimensionPixelSize(R.dimen.min_qsb_margin);
+
+        iconTextSizePx *= mTextFactors.getIconTextSizeFactor();
 
         if (mIsResponsiveGrid) {
             HotseatSpecs hotseatSpecs =
@@ -1176,6 +1182,7 @@ public class DeviceProfile {
         if (mIsScalableGrid) {
             allAppsIconSizePx = pxFromDp(inv.allAppsIconSize[mTypeIndex], mMetrics);
             allAppsIconTextSizePx = pxFromSp(inv.allAppsIconTextSize[mTypeIndex], mMetrics);
+            allAppsIconTextSizePx *= mTextFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx = getNormalizedIconDrawablePadding();
             allAppsCellWidthPx = pxFromDp(inv.allAppsCellSize[mTypeIndex].x, mMetrics, scale);
 
@@ -1209,6 +1216,7 @@ public class DeviceProfile {
             float invIconTextSizeSp = inv.allAppsIconTextSize[mTypeIndex];
             allAppsIconSizePx = Math.max(1, pxFromDp(invIconSizeDp, mMetrics, scale));
             allAppsIconTextSizePx = (int) (pxFromSp(invIconTextSizeSp, mMetrics) * scale);
+            allAppsIconTextSizePx *= mTextFactors.getAllAppsIconTextSizeFactor();
             allAppsIconDrawablePaddingPx =
                     res.getDimensionPixelSize(R.dimen.all_apps_icon_drawable_padding);
             allAppsCellWidthPx = allAppsIconSizePx + (2 * allAppsIconDrawablePaddingPx);
