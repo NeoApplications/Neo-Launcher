@@ -59,7 +59,6 @@
     <string name="title__desktop_hide_icon_labels">Hide icon labels on home screen</string>
     <string name="title_desktop_overlap_placement">Allow overlapping widgets</string>
     <string name="title_desktop_lock_desktop">Lock Desktop</string>
-    <string name="title_desktop_taskbar_on_phone">Enable task bar on phone</string>
     <string name="title_desktop_keep_empty">Allow Empty Pages</string>
     <string name="title__multiline_labels">Multiline app names</string>
     <string name="title_desktop_free_scrolling">Free Scrolling</string>

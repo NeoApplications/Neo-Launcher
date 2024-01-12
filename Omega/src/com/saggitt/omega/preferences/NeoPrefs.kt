@@ -291,13 +291,6 @@ class NeoPrefs private constructor(val context: Context) {
     val desktopLock = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_LOCK_CHANGES,
-        titleId = R.string.title_desktop_taskbar_on_phone,
-        defaultValue = false,
-    )
-
-    val desktopTaskbarOnPhone = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DESKTOP_TASK_BAR_ON_PHONE,
         titleId = R.string.title_desktop_lock_desktop,
         defaultValue = false,
     )
@@ -665,13 +658,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
         titleId = R.string.enable_protected_apps,
         defaultValue = false
-    )
-
-    var drawerIconScaleEnforce = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DRAWER_ICON_SCALE_ENFORCE,
-        titleId = R.string.title__dock_icon_size_enforce,
-        defaultValue = false,
     )
 
     var drawerIconScale = FloatPref(
