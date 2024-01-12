@@ -337,7 +337,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public void onClearSearchResult() {
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
-        rebindAdapters(mUsingTabs);
+        //rebindAdapters(mUsingTabs);
     }
 
     /**
