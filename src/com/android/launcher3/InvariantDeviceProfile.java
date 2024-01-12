@@ -60,6 +60,7 @@ import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Partner;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
+import com.saggitt.omega.DeviceProfileOverrides;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -243,10 +244,12 @@ public class InvariantDeviceProfile {
      * This constructor should NOT have any monitors by design.
      */
     public InvariantDeviceProfile(Context context, String gridName) {
-        String newName = initGrid(context, gridName);
-        if (newName == null || !newName.equals(gridName)) {
-            throw new IllegalArgumentException("Unknown grid name");
-        }
+        this(context, DeviceProfileOverrides.INSTANCE.get(context).getGridInfo(gridName));
+    }
+
+    public InvariantDeviceProfile(Context context, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+        String gridName = DeviceProfileOverrides.INSTANCE.get(context).getGridName(dbGridInfo);
+        initGrid(context, gridName, dbGridInfo);
     }
 
     /**
@@ -335,10 +338,10 @@ public class InvariantDeviceProfile {
     }
 
     public static String getCurrentGridName(Context context) {
-        return LauncherPrefs.get(context).get(GRID_NAME);
+        return DeviceProfileOverrides.INSTANCE.get(context).getCurrentGridName();
     }
 
-    private String initGrid(Context context, String gridName) {
+    private String initGrid(Context context, String gridName, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
         Info displayInfo = DisplayController.INSTANCE.get(context).getInfo();
         @DeviceType int deviceType = getDeviceType(displayInfo);
 
@@ -347,8 +350,21 @@ public class InvariantDeviceProfile {
                         RestoreDbTask.isPending(context));
         DisplayOption displayOption =
                 invDistWeightedInterpolate(displayInfo, allOptions, deviceType);
-        initGrid(context, displayInfo, displayOption, deviceType);
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
         return displayOption.grid.name;
+    }
+
+    private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
+                          @DeviceType int deviceType) {
+        DeviceProfileOverrides.DBGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        initGrid(context, displayInfo, displayOption, deviceType, dbGridInfo);
+    }
+
+    private String initGrid(Context context, String gridName) {
+        DeviceProfileOverrides.DBGridInfo dbGridInfo = DeviceProfileOverrides.INSTANCE.get(context)
+                .getGridInfo();
+        return initGrid(context, gridName, dbGridInfo);
     }
 
     @VisibleForTesting
@@ -357,17 +373,19 @@ public class InvariantDeviceProfile {
     }
 
     private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
-            @DeviceType int deviceType) {
+                          @DeviceType int deviceType, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+        DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
+                .getOverrides(displayOption.grid);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
-        numRows = closestProfile.numRows;
-        numRowsOriginal = closestProfile.numRows;
-        numColumns = closestProfile.numColumns;
+        numRows = dbGridInfo.getNumRows();
+        numRowsOriginal = numRows;
+        numColumns = dbGridInfo.getNumColumns();
         numColumnsOriginal = numColumns;
-        numSearchContainerColumns = closestProfile.numSearchContainerColumns;
-        numHotseatIcons = closestProfile.numHotseatIcons;
-        numHotseatIconsOriginal = closestProfile.numHotseatIcons;
-        dbFile = closestProfile.dbFile;
+        numSearchContainerColumns = dbGridInfo.getNumColumns();
+        numHotseatIcons = dbGridInfo.getNumHotseatIcons();
+        numHotseatIconsOriginal = numHotseatIcons;
+        dbFile = dbGridInfo.getDbFile();
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
 
@@ -407,9 +425,9 @@ public class InvariantDeviceProfile {
 
         horizontalMargin = displayOption.horizontalMargin;
 
-        numShownHotseatIcons = closestProfile.numHotseatIcons;
+        numShownHotseatIcons = dbGridInfo.getNumHotseatIcons();
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
-                ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
+                ? closestProfile.numDatabaseHotseatIcons : numShownHotseatIcons;
         hotseatColumnSpan = closestProfile.hotseatColumnSpan;
         hotseatBarBottomSpace = displayOption.hotseatBarBottomSpace;
         hotseatQsbSpace = displayOption.hotseatQsbSpace;
@@ -417,7 +435,7 @@ public class InvariantDeviceProfile {
         allAppsStyle = closestProfile.allAppsStyle;
 
         numAllAppsColumns = closestProfile.numAllAppsColumns;
-        numAllAppsColumnsOriginal = closestProfile.numAllAppsColumns;
+        numAllAppsColumnsOriginal = numAllAppsColumns;
         numDatabaseAllAppsColumns = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseAllAppsColumns : closestProfile.numAllAppsColumns;
 
@@ -435,6 +453,8 @@ public class InvariantDeviceProfile {
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
+
+        overrideOptions.applyUi(this);
 
         final List<DeviceProfile> localSupportedProfiles = new ArrayList<>();
         defaultWallpaperSize = new Point(displayInfo.currentSize);
@@ -489,7 +509,7 @@ public class InvariantDeviceProfile {
 
 
     public void setCurrentGrid(Context context, String gridName) {
-        LauncherPrefs.get(context).put(GRID_NAME, gridName);
+        DeviceProfileOverrides.INSTANCE.get(context).setCurrentGrid(gridName);
         MAIN_EXECUTOR.execute(() -> onConfigChanged(context.getApplicationContext()));
     }
 
