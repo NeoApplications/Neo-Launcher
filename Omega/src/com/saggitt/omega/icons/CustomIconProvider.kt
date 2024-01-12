@@ -88,11 +88,14 @@ class CustomIconProvider @JvmOverloads constructor(
     private var _themeMap: Map<ComponentName, ThemeData>? = null
     private val themeMap: Map<ComponentName, ThemeData>
         get() {
+            if (!(isOlderLawnIconsInstalled)) {
+                _themeMap = DISABLED_MAP
+            }
             if (_themeMap == null) {
                 _themeMap = createThemedIconMap()
             }
-            if (iconPack != null && themeMapName != iconPack!!.packPackageName) {
-                themeMapName = iconPack!!.packPackageName
+            if (isOlderLawnIconsInstalled && iconPackPref.getValue() == LAWNICONS_PACKAGE_NAME) {
+                themeMapName = iconPackPref.getValue()
                 _themeMap = createThemedIconMap()
             }
             return _themeMap!!

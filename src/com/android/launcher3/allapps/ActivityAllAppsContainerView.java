@@ -347,6 +347,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         if (getSearchResultList().setSearchResults(results)) {
             getSearchRecyclerView().onSearchResultsChanged();
+            if (results != null && !results.isEmpty()) {
+                mSearchRecyclerView.mApps.setSearchResults(results);
+            }
         }
         if (results != null) {
             animateToSearchState(true);
@@ -380,7 +383,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mFastScroller.setVisibility(goingToSearch ? INVISIBLE : VISIBLE);
         if (goingToSearch) {
             // Fade out the button to pause work apps.
-            mWorkManager.onActivePageChanged(SEARCH);
+            mWorkManager.onActivePageChanged(getSearchHolderIndex());
         } else if (mAllAppsTransitionController != null) {
             // If exiting search, revert predictive back scale on all apps
             mAllAppsTransitionController.animateAllAppsToNoScale();
@@ -751,6 +754,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 adapterHolder.mRecyclerView.scrollToTop();
             }
         });
+        mSearchRecyclerView.setPadding(0, padding, 0, 0);
 
         removeCustomRules(mHeader);
         if (!isSearchSupported()) {
