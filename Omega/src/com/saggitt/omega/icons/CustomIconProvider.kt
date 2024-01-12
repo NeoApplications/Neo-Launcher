@@ -202,7 +202,7 @@ class CustomIconProvider @JvmOverloads constructor(
         return _themeMap != DISABLED_MAP
     }
 
-    override fun getThemeData(componentName: ComponentName): ThemedIconDrawable.ThemeData? {
+    override fun getThemeData(componentName: ComponentName): ThemeData? {
         val td = getDynamicIconsFromMap(context, themeMap, componentName)
         if (td != null) {
             return td

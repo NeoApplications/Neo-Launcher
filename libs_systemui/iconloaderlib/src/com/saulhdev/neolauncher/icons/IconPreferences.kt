@@ -47,10 +47,6 @@ class IconPreferences(context: Context) {
         return setLightness(dominantColor, lightness)
     }
 
-    fun isThemedIconsEnabled(): Boolean {
-        return prefs.getBoolean("themed_icons", false)
-    }
-
     fun shouldTransparentBGIcons(): Boolean {
         return prefs.getBoolean("prefs_transparentIconBackground", false)
     }

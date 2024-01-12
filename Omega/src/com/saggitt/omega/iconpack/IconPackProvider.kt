@@ -3,7 +3,6 @@ package com.saggitt.omega.iconpack
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -130,7 +129,7 @@ class IconPackProvider(private val context: Context) {
         @SuppressLint("DiscouragedApi")
         val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
         val bg: Drawable = ColorDrawable(themedColors[0])
-        val td = ThemedIconDrawable.ThemeData(res, iconEntry.packPackageName, resId)
+        val td = ThemeData(res, iconEntry.packPackageName, resId)
         return if (drawable is AdaptiveIconDrawable) {
             if (minSDK(Build.VERSION_CODES.TIRAMISU) && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }
