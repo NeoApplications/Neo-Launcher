@@ -54,11 +54,13 @@ fun HorizontalPagerPage(
         }
         NavigationBar(
             containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentColor = MaterialTheme.colorScheme.onBackground
         ) {
             tabs.forEachIndexed { index, tab ->
                 NavBarItem(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 16.dp),
                     icon = painterResource(id = tab.icon),
                     labelId = tab.title,
                     selected = pagerState.currentPage == index,
@@ -66,7 +68,7 @@ fun HorizontalPagerPage(
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(index)
                         }
-                    },
+                    }
                 )
             }
         }
