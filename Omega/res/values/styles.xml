@@ -38,6 +38,7 @@
         <item name="allAppsScrimColor">@color/grey_800</item>
         <item name="widgetsTheme">@style/NeoWidgetContainerTheme.Dark</item>
         <item name="backgroundColor">@color/grey_800</item>
+        <item name="android:statusBarColor">@color/grey_800</item>
         <item name="workspaceStatusBarScrim">@null</item>
         <item name="widgetPickerSelectedTabTextColor">
             @color/widget_picker_selected_tab_text_color_dark
@@ -54,6 +55,7 @@
         <item name="folderBackgroundColor">@android:color/black</item>
         <item name="popupColorPrimary">@color/grey_800</item>
         <item name="backgroundColor">@color/grey_800</item>
+        <item name="android:statusBarColor">@color/grey_900</item>
     </style>
 
     <style name="NeoTheme.Light.DarkMainColor" parent="AppTheme.DarkMainColor">
@@ -170,13 +172,23 @@
 
     <style name="NeoWidgetContainerTheme.Light" parent="WidgetContainerTheme" />
 
-    <style name="NeoWidgetContainerTheme.Dark" parent="WidgetContainerTheme.Dark" />
+    <style name="NeoWidgetContainerTheme.Dark" parent="WidgetContainerTheme.Dark">
+        <item name="colorSurfaceVariant">@color/grey_100</item>
+    </style>
 
-    <style name="NeoWidgetContainerTheme.Black" parent="NeoTheme.Black">
+    <style name="NeoWidgetContainerTheme.Black" parent="WidgetContainerTheme.Dark">
         <item name="bottomSheetNavBarColor">#00000000</item>
         <item name="colorBackgroundFloating">?backgroundColor</item>
+        <item name="android:colorPrimaryDark">#616161</item> <!-- Gray 700 -->
+        <item name="widgetPickerHeaderAppTitleColor">
+            @color/widget_picker_header_app_title_color_dark
+        </item>
+        <item name="widgetPickerHeaderAppSubtitleColor">
+            @color/widget_picker_header_app_subtitle_color_light
+        </item>
         <item name="android:colorPrimary">@color/grey_900</item>
         <item name="backgroundColor">@color/grey_900</item>
+        <item name="colorSurfaceVariant">@color/grey_100</item>
     </style>
 
     <style name="WeatherWidget" />
