@@ -24,23 +24,11 @@ import android.os.UserHandle
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.NeoLauncher
 
 class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
-    private val mHideList = HashSet<ComponentName>()
-
-    init {
-        mHideList.add(ComponentName(mContext, NeoLauncher::class.java.name))
-        //Voice Search
-        mHideList.add(ComponentName.unflattenFromString("com.google.android.googlequicksearchbox/.VoiceSearchActivity")!!)
-        //Google Now Launcher
-        mHideList.add(ComponentName.unflattenFromString("com.google.android.launcher/.StubApp")!!)
-        //Actions Services
-        mHideList.add(ComponentName.unflattenFromString("com.google.android.as/com.google.android.apps.miphone.aiai.allapps.main.MainDummyActivity")!!)
-    }
-
     fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
-        return !mHideList.contains(componentName) && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
+        return super.shouldShowApp(componentName)
+                && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
     }
 
     companion object {

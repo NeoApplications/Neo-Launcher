@@ -2,7 +2,8 @@ package com.android.launcher3;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.UserHandle;
+
+import com.saggitt.omega.NeoLauncher;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -20,6 +21,7 @@ public class AppFilter {
                 context.getResources().getStringArray(R.array.filtered_components))
                 .map(ComponentName::unflattenFromString)
                 .collect(Collectors.toSet());
+        mFilteredComponents.add(new ComponentName(context, NeoLauncher.class.getName()));
     }
 
     public boolean shouldShowApp(ComponentName app) {
