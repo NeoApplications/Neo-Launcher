@@ -80,7 +80,7 @@ fun SearchPrefsPage() {
         ) {
             item {
                 PreferenceGroup(
-                    stringResource(id = R.string.title__general_search),
+                    stringResource(id = R.string.title_search_provider),
                     prefs = searchPrefs,
                     onPrefDialog = onPrefDialog
                 )
