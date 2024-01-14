@@ -149,9 +149,9 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
             }
         ) { paddingValues ->
             HorizontalPagerPage(
-                Modifier.padding(paddingValues),
                 pagerState,
                 tabs,
+                paddingValues
             )
         }
     }

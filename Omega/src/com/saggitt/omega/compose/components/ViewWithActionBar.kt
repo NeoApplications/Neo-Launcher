@@ -70,7 +70,7 @@ fun ViewWithActionBar(
                     }
                 },
                 actions = actions,
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             )
