@@ -92,7 +92,7 @@ class DeviceProfileOverrides(context: Context) {
             iconSizeFactor = prefs.desktopIconScale.getValue(),
             allAppsIconSizeFactor = prefs.drawerIconScale.getValue(),
 
-            enableTaskbarOnPhone = prefs.desktopTaskbarOnPhone.getValue(),
+            enableTaskbarOnPhone = false,
         )
 
         fun applyUi(idp: InvariantDeviceProfile) {

@@ -26,6 +26,12 @@
         <item name="folderBackgroundColor">@color/folder_background_light</item>
         <item name="backgroundColor">@color/grey_100</item>
         <item name="workspaceStatusBarScrim">@drawable/workspace_bg</item>
+        <item name="widgetPickerSelectedTabTextColor">
+            @color/widget_picker_selected_tab_text_color_light
+        </item>
+        <item name="widgetPickerUnselectedTabTextColor">
+            @color/widget_picker_unselected_tab_text_color_light
+        </item>
     </style>
 
     <style name="NeoTheme.Dark" parent="AppTheme.Dark">
@@ -33,6 +39,12 @@
         <item name="widgetsTheme">@style/NeoWidgetContainerTheme.Dark</item>
         <item name="backgroundColor">@color/grey_800</item>
         <item name="workspaceStatusBarScrim">@null</item>
+        <item name="widgetPickerSelectedTabTextColor">
+            @color/widget_picker_selected_tab_text_color_dark
+        </item>
+        <item name="widgetPickerUnselectedTabTextColor">
+            @color/widget_picker_unselected_tab_text_color_dark
+        </item>
     </style>
 
     <style name="NeoTheme.Black" parent="AppTheme.Dark">

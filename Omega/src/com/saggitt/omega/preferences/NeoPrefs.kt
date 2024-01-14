@@ -103,7 +103,6 @@ class NeoPrefs private constructor(val context: Context) {
     }
 
     // Profile
-
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
         key = PrefKey.PROFILE_GLOBAL_LANGUAGE,
