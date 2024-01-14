@@ -438,7 +438,6 @@
     <string name="title_dock_search">Barra di ricerca nella barra app</string>
     <string name="label_search">Cerca</string>
     <string name="theme_auto_night_mode_black">Sistema (nero)</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Segui luce del giorno (nero)</string>
     <string name="summary_white_only_treatment">Colora tutti gli sfondi delle icone adattive.</string>
     <string name="modify_system_settings">Modifica impostazioni sistema</string>
     <string name="backup_name">Nome backup</string>

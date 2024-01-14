@@ -361,7 +361,6 @@
     <string name="theme_dark">Темний</string>
     <string name="theme_black">Чорний</string>
     <string name="theme_dark_text">Світлий із темним текстом</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Відповідно до денного світла (Чорний)</string>
     <string name="theme_use_dark_text">Використовувати темний текст</string>
     <string name="icon_shape_top_right">Зверху праворуч</string>
     <string name="theme_use_black">Використовувати чистий чорний</string>

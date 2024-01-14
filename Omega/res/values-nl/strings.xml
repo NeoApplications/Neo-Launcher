@@ -154,7 +154,6 @@
     <string name="theme_auto_black">Gebruik Achtergrond (Zwart)</string>
     <string name="theme_dark">Donker</string>
     <string name="theme_dark_theme_mode">Donker thema</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Volg dag- en nachtcyclus (Zwart)</string>
     <string name="menu_icon_shape">Aangepaste pictogramvorm gebruiken</string>
     <string name="summary_colored_backgrounds">Voor Veranderbare Pictogramachtergronden.</string>
     <string name="title__general_drawer">Schuif</string>

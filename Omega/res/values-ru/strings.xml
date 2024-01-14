@@ -401,7 +401,6 @@
     <string name="title__general_search_feed">Поиск и лента</string>
     <string name="pref_category__features">Особенности</string>
     <string name="title__general_widgets_notifications">Виджеты и уведомления</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">В соответствии с дневным светом (черный)</string>
     <string name="units_reaumur">Реомюр</string>
     <string name="units_rakine">Ранкин</string>
     <string name="units_newton">Ньютон</string>

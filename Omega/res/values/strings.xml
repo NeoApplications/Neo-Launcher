@@ -202,7 +202,6 @@
     <string name="theme_dark_theme_mode_follow_wallpaper_black" translatable="false">@string/theme_auto_black</string>
     <string name="theme_dark_theme_mode_follow_system" translatable="false">@string/theme_auto_night_mode</string>
     <string name="theme_dark_theme_mode_follow_daylight">Follow daylight</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Follow daylight (Black)</string>
     <string name="theme_use_black">Use pure black</string>
     <string name="theme_use_dark_text">Use dark text</string>
     <string name="title_default">Default</string>

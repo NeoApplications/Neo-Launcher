@@ -260,7 +260,6 @@
     <string name="modify_system_settings">Modyfikacja ustawień systemowych</string>
     <string name="summary__advanced_language">Zmień język tej aplikacji</string>
     <string name="theme_auto">Podążaj za tapetą</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Podążaj za światłem dziennym (czarny)</string>
     <string name="omega_actions">Akcje</string>
     <string name="gesture_press_back">Przycisk wstecz</string>
     <string name="search_provider_appsearch">Wyszukiwanie aplikacji</string>

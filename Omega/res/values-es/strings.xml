@@ -350,7 +350,6 @@
     <string name="summary_dock_search">Mostrar en el suelo del dock</string>
     <string name="trust_apps_manager_name">Apps ocultas y protegidas</string>
     <string name="enable_protected_apps">Activar aplicaciones protegidas</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Seguir la luz del día (Oscura)</string>
     <string name="action_open_drawer">Abrir cajón de app</string>
     <string name="onboarding_swipe_up">Cambiar para abrir el cajón.</string>
     <string name="weather_provider_pe">Experiencia Pixelar</string>

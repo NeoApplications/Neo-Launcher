@@ -370,7 +370,6 @@
     <string name="launch_assistant">Lancer l\'assistant</string>
     <string name="gesture_launch_assistant">Lancer l\'assistant (via un bouton ou un geste)</string>
     <string name="theme_auto_night_mode_black">Système (Sombre)</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Suivant l\'heure du jour (Sombre)</string>
     <string name="folder_custom_background">Utiliser un arrière-plan de dossier personnalisé</string>
     <string name="fonts_global_font">Police</string>
     <string name="fonts_change_global_font">Modifier</string>

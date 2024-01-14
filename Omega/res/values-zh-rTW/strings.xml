@@ -237,7 +237,6 @@
     <string name="dash_line_size">Dash 線條大小</string>
     <string name="title__drawer_hide_icon_labels">隱藏應用程式名稱</string>
     <string name="title_drawer_enable_background">使用自訂背景顏色</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">跟隨日照（黑色）</string>
     <string name="title__general_search">搜尋與資料夾</string>
     <string name="title__general_advanced">進階設定</string>
     <string name="title__general_profile">個人資料</string>

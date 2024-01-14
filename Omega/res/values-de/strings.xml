@@ -391,7 +391,6 @@
     <string name="summary_force_shapeless">Versuche für alle Apps veraltete Symbole zu verwenden.</string>
     <string name="summary_app_suggestions">Für alle Apps und den Startbildschirm</string>
     <string name="theme_auto_night_mode_black">System (Schwarz)</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Nach Tageslicht richten (Schwarz)</string>
     <string name="summary_colored_backgrounds">Für Hintergründe von adaptiven Icons.</string>
     <string name="summary_white_only_treatment">Färben Sie die Hintergründe aller adaptiven Symbole ein.</string>
     <string name="dash_wifi_summary">WLAN-Status und Verbindung</string>

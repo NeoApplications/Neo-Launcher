@@ -406,7 +406,6 @@
     <string name="pref_desktop_mode_summary">Aktiver Android sitt skrivebordsmodus</string>
     <string name="pref_desktop_mode_settings">Innstillinger for skrivebordsmodus</string>
     <string name="theme_auto_night_mode_black">System (svart)</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Følg dagslys (svart)</string>
     <string name="summary_legacy_treatment">Opprett tilpasningsdyktige ikoner for alle snarveier.</string>
     <string name="title_theme_customize_icons">Tilpass ikoner</string>
     <string name="summary_force_shapeless">Prøv å bruke gammeldagse ikoner for alle programmer.</string>

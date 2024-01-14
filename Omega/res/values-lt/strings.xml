@@ -412,7 +412,6 @@
     <string name="selected_apps">Pasirinktos programėlės (%1$d)</string>
     <string name="app_reset">Atstatyti pasirinkimą</string>
     <string name="summary_fuzzy_search">Apytikslė programėlių paieškų atitiktis.</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Sekti dienos šviesą (juoda)</string>
     <string name="title_app_categorization_enable">Įgalinti programėlių kategorijas</string>
     <string name="title_dock_search">Greitos prieigos įrankių paieškos juosta</string>
     <string name="summary_dock_search">Rodyti apatinėje greitos prieigos įrankių juostoje</string>

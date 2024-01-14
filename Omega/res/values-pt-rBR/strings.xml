@@ -410,7 +410,6 @@
     <string name="title_theme_customize_icons">Personalizar Ícones</string>
     <string name="theme_auto_night_mode_black">Sistema (Preto)</string>
     <string name="summary_colored_backgrounds">Para os planos de fundo de ícones adaptáveis.</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Seguir a luz do dia (Preto)</string>
     <string name="summary_force_shapeless">Tentar usar ícones legados para todos os apps.</string>
     <string name="summary_legacy_treatment">Criar ícones adaptáveis para todos os atalhos.</string>
     <string name="summary_white_only_treatment">Colorir os fundos de todos os ícones adaptáveis.</string>

@@ -117,7 +117,6 @@
     <string name="theme_dark_text">Ánh sáng với văn bản tối</string>
     <string name="theme_dark_theme_mode">Chủ đề tối</string>
     <string name="theme_dark_theme_mode_follow_daylight">Theo dõi ánh sáng ban ngày</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Theo ánh sáng ban ngày (Đen)</string>
     <string name="title_default">Mặc định</string>
     <string name="icon_pack">Gói biểu tượng</string>
     <string name="get_more_icon_packs">Tải xuống gói biểu tượng mới</string>

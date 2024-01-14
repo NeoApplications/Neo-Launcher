@@ -133,7 +133,6 @@
     <string name="theme_dark_dark_text">Tumma tummalla tekstillä</string>
     <string name="theme_dark_theme_mode">Tumma teema</string>
     <string name="theme_dark_theme_mode_follow_daylight">Seuraa päivänvaloa</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Seuraa päivänvaloa (musta)</string>
     <string name="theme_use_black">Käytä mustaa</string>
     <string name="theme_use_dark_text">Käytä tummaa tekstiä</string>
     <string name="title_default">Oletus</string>

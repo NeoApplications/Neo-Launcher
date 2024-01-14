@@ -143,7 +143,6 @@
     <string name="theme_light">Svijetla</string>
     <string name="theme_use_black">Koristi potpuno crnu</string>
     <string name="theme_use_dark_text">Koristi tamni tekst</string>
-    <string name="theme_dark_theme_mode_follow_daylight_black">Prati dnevno svjetlo (crna)</string>
     <string name="summary_legacy_treatment">Stvori prilagodljive ikone za sve prečace.</string>
     <string name="resuable_text_alarm">Alarm</string>
     <string name="name_provider_alarm_events">Predstojeći alarmi</string>
