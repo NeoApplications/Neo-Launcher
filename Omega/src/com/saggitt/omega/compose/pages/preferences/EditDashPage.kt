@@ -99,12 +99,8 @@ fun EditDashPage() {
                 .fillMaxSize()
                 .reorderable(state)
                 .detectReorderAfterLongPress(state)
-                .padding(paddingValues)
-                .padding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = paddingValues.calculateBottomPadding() + 8.dp
-                ),
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
             state = state.listState
         ) {
             item {
@@ -213,6 +209,10 @@ fun EditDashPage() {
                     },
                     verticalPadding = 6.dp
                 )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
