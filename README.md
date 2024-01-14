@@ -49,13 +49,13 @@ their TODOs and plans.
 
 <table>
     <tr>
-        <td colspan="4"><img src="https://github.com/NeoApplications/Neo-Launcher/blob/A-12/snapshots/theme.png" alt="" width="512"></td>
+        <td colspan="4"><img src="https://github.com/NeoApplications/Neo-Launcher/blob/main/snapshots/theme.png" alt="" width="512"></td>
     </tr>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/otakuhqz/Omega/omega-11/snapshots/omega1.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/otakuhqz/Omega/omega-11/snapshots/omega5.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/otakuhqz/Omega/master/snapshots/omega6.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/otakuhqz/Omega/master/snapshots/omega8.jpg" alt="" width="256"></td>
+        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega1.jpg" alt="" width="256"></td>
+        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega5.jpg" alt="" width="256"></td>
+        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega6.jpg" alt="" width="256"></td>
+        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega8.jpg" alt="" width="256"></td>
     </tr>
 </table>
 
@@ -85,8 +85,10 @@ No, it's not, and there is no plans to add it.
 
 ## *Translation*
 
-Translations are handled via Weblate. If want to help, visit <a href="https://hosted.weblate.org/projects/omegalauncher">Hosted Weblate</a>.
+Translations are handled via Weblate. If want to help,
+visit <a href="https://hosted.weblate.org/projects/neolauncher">Hosted Weblate</a>.
 
-#### **Translation stats:** [<img align="right" src="https://hosted.weblate.org/widgets/omegalauncher/-/287x66-white.png" alt="Übersetzungsstatus" />](https://hosted.weblate.org/engage/omegalauncher/?utm_source=widget)
+#### **Translation stats:
+** [<img align="right" src="https://hosted.weblate.org/widgets/neolauncher/-/287x66-white.png" alt="Übersetzungsstatus" />](https://hosted.weblate.org/engage/omegalauncher/?utm_source=widget)
 
-<img src="https://hosted.weblate.org/widgets/omegalauncher/-/multi-red.svg" />
+<img src="https://hosted.weblate.org/widgets/neolauncher/-/multi-red.svg" />
