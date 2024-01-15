@@ -28,7 +28,7 @@ import com.android.launcher3.util.ComponentKey
 class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
     fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
         return super.shouldShowApp(componentName)
-                && (user == null || !isHiddenApp(mContext, ComponentKey(componentName, user)))
+                && !isHiddenApp(mContext, ComponentKey(componentName, user))
     }
 
     companion object {

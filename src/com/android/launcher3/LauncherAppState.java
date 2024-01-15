@@ -57,6 +57,7 @@ import com.android.launcher3.util.SettingsCache;
 import com.android.launcher3.util.SimpleBroadcastReceiver;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
+import com.saggitt.omega.allapps.CustomAppFilter;
 import com.saggitt.omega.icons.CustomIconProvider;
 
 public class LauncherAppState implements SafeCloseable {
@@ -167,7 +168,7 @@ public class LauncherAppState implements SafeCloseable {
         mIconProvider = new CustomIconProvider(context, Themes.isThemedIconEnabled(context));
         mIconCache = new IconCache(mContext, mInvariantDeviceProfile,
                 iconCacheFileName, mIconProvider);
-        mModel = new LauncherModel(context, this, mIconCache, new AppFilter(mContext),
+        mModel = new LauncherModel(context, this, mIconCache, new CustomAppFilter(mContext),
                 iconCacheFileName != null);
         mOnTerminateCallback.add(mIconCache::close);
         mOnTerminateCallback.add(mModel::destroy);

@@ -32,7 +32,6 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.datastore.preferences.core.Preferences
-import com.android.launcher3.AppFilter
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities

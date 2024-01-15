@@ -31,7 +31,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.AppFilter;
 import com.android.launcher3.compat.AlphabeticIndexCompat;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.BgDataModel.Callbacks;
@@ -41,6 +40,7 @@ import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.SafeCloseable;
+import com.saggitt.omega.allapps.CustomAppFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class AllAppsList {
     private IconCache mIconCache;
 
     @NonNull
-    private AppFilter mAppFilter;
+    private CustomAppFilter mAppFilter;
 
     private boolean mDataChanged = false;
     private Consumer<AppInfo> mRemoveListener = NO_OP_CONSUMER;
@@ -85,7 +85,7 @@ public class AllAppsList {
     /**
      * Boring constructor.
      */
-    public AllAppsList(IconCache iconCache, AppFilter appFilter) {
+    public AllAppsList(IconCache iconCache, CustomAppFilter appFilter) {
         mIconCache = iconCache;
         mAppFilter = appFilter;
         mIndex = new AlphabeticIndexCompat(LocaleList.getDefault());
@@ -138,7 +138,7 @@ public class AllAppsList {
     }
 
     public void add(AppInfo info, LauncherActivityInfo activityInfo, boolean loadIcon) {
-        if (!mAppFilter.shouldShowApp(info.componentName)) {
+        if (!mAppFilter.shouldShowApp(info.componentName, info.user)) {
             return;
         }
         if (findAppInfo(info.componentName, info.user) != null) {

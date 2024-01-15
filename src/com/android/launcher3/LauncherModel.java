@@ -17,7 +17,6 @@
 package com.android.launcher3;
 
 import static android.app.admin.DevicePolicyManager.ACTION_DEVICE_POLICY_RESOURCE_UPDATED;
-
 import static com.android.launcher3.LauncherAppState.ACTION_FORCE_ROLOAD;
 import static com.android.launcher3.config.FeatureFlags.IS_STUDIO_BUILD;
 import static com.android.launcher3.testing.shared.TestProtocol.sDebugTracing;
@@ -71,6 +70,7 @@ import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
+import com.saggitt.omega.allapps.CustomAppFilter;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -148,7 +148,7 @@ public class LauncherModel extends LauncherApps.Callback implements InstallSessi
     };
 
     LauncherModel(@NonNull final Context context, @NonNull final LauncherAppState app,
-            @NonNull final IconCache iconCache, @NonNull final AppFilter appFilter,
+                  @NonNull final IconCache iconCache, @NonNull final CustomAppFilter appFilter,
             final boolean isPrimaryInstance) {
         mApp = app;
         mModelDbController = new ModelDbController(context);
