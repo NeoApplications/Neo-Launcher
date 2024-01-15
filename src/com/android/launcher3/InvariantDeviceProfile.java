@@ -519,6 +519,11 @@ public class InvariantDeviceProfile {
                 iconBitmapSize, fillResIconDpi, numDatabaseAllAppsColumns, dbFile};
     }
 
+    public void onPreferencesChanged(Context context) {
+        Context appContext = context.getApplicationContext();
+        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
+    }
+
     private void onConfigChanged(Context context) {
         Object[] oldState = toModelState();
 
