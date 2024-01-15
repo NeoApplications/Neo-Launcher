@@ -320,6 +320,11 @@ fun AppCategoriesPage() {
                                 if (isDragging) 24.dp else 0.dp,
                                 label = ""
                             )
+
+                            if (!isDragging) {
+                                saveGroupPositions(manager, groups)
+                            }
+
                             GroupItem(
                                 title = item.title,
                                 summary = item.summary,
