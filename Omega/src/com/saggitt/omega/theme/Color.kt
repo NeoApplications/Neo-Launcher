@@ -43,7 +43,7 @@ val DarkOnSurfaceVariant = Color(0xFFD9D9D9) // use for secondary text
 val DarkOutline = Color(0xFFE9E9E9)
 
 // Black Theme
-val BlackBackground = Color(0xFF000000)
+val BlackBackground = Color(0xFF090909)
 val BlackOnBackground = Color(0xFFFFFFFF)
 val BlackSurface = Color(0xFF212121)
 val BlackOnSurface = Color(0xFFE9ECEF)
