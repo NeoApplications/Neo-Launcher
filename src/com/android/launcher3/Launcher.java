@@ -2151,9 +2151,22 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void onBackPressed() {
-        getOnBackAnimationCallback().onBackInvoked();
+        if (Utilities.ATLEAST_U) {
+            getOnBackAnimationCallback().onBackInvoked();
+        } else {
+            AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(this);
+            if (topView == null || !topView.onBackPressed()) {
+                // Not handled by the floating view.
+                if (!isInState(NORMAL)) {
+                    onStateBack();
+                } else {
+                    if (this instanceof NeoLauncher) {
+                        ((NeoLauncher) this).getGestureController().onPressBack();
+                    }
+                }
+            }
+        }
     }
 
     protected void onStateBack() {

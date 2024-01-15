@@ -19,7 +19,6 @@ package com.android.launcher3;
 import static android.animation.ValueAnimator.areAnimatorsEnabled;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-
 import static com.android.launcher3.compat.AccessibilityManagerCompat.isAccessibilityEnabled;
 import static com.android.launcher3.compat.AccessibilityManagerCompat.sendCustomAccessibilityEvent;
 
@@ -183,6 +182,11 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
 
     /** Return true if this view can consume back press. */
     public boolean canHandleBack() {
+        return true;
+    }
+
+    public boolean onBackPressed() {
+        close(true);
         return true;
     }
 
