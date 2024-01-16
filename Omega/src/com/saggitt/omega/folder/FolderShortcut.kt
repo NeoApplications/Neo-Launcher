@@ -24,7 +24,7 @@ import com.saggitt.omega.compose.components.ComposeBottomSheet
 
 class FolderShortcut(val launcher: Launcher, val folderInfo: FolderInfo) {
     fun show() {
-        ComposeBottomSheet.show(launcher, true) {
+        ComposeBottomSheet.show(launcher) {
             CustomizeFolderSheet(
                 launcher = launcher,
                 folder = folderInfo,

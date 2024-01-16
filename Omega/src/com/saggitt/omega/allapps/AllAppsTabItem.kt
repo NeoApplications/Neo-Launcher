@@ -204,7 +204,7 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
             button.refreshColor()
             button.text = tab.name
             button.setOnLongClickListener { v: View ->
-                ComposeBottomSheet.show(v.context, true) {
+                ComposeBottomSheet.show(v.context) {
                     EditGroupBottomSheet(
                         category = prefs.drawerAppGroupsManager.getEnabledType()!!,
                         group = tab.drawerTab,

@@ -25,8 +25,8 @@ import com.saggitt.omega.theme.OmegaAppTheme
 class DashSheet(val context: Context) {
 
     companion object {
-        fun show(launcher: NeoLauncher, animate: Boolean = true) {
-            ComposeBottomSheet.show(launcher, animate) {
+        fun show(launcher: NeoLauncher) {
+            ComposeBottomSheet.show(launcher) {
                 OmegaAppTheme { DashPage() }
             }
         }

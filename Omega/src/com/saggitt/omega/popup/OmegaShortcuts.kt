@@ -76,7 +76,7 @@ class OmegaShortcuts {
             if (launcher.isInState(LauncherState.ALL_APPS)) {
                 if (prefs.drawerPopupEdit) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
-                    ComposeBottomSheet.show(launcher, true) {
+                    ComposeBottomSheet.show(launcher) {
                         CustomizeIconPage(
                             icon = icon,
                             defaultTitle = defaultTitle,
@@ -88,7 +88,7 @@ class OmegaShortcuts {
             } else {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
-                    ComposeBottomSheet.show(launcher, true) {
+                    ComposeBottomSheet.show(launcher) {
                         CustomizeIconPage(
                             icon = icon,
                             defaultTitle = defaultTitle,

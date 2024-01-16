@@ -1,6 +1,5 @@
 package com.saggitt.omega.compose.components
 
-import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.util.AttributeSet
 import android.util.FloatProperty
@@ -26,7 +25,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.android.app.animation.Interpolators
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -79,16 +77,17 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-    fun show(animate: Boolean) {
+    fun show() {
         val parent = parent
         if (parent is ViewGroup) parent.removeView(this)
         removeAllViews()
         addView(mContent)
         attachToContainer()
-        animateOpen(animate)
+        mIsOpen = false
+        animateOpen()
     }
 
-    private fun animateOpen(animate: Boolean) {
+    private fun animateOpen() {
         if (mIsOpen || mOpenCloseAnimation.animationPlayer.isRunning) {
             return
         }
@@ -183,12 +182,11 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
 
         fun show(
             context: Context,
-            animate: Boolean = true,
-            content: @Composable ComposeBottomSheet.() -> Unit,
+            content: @Composable (ComposeBottomSheet.() -> Unit),
         ) {
             val bottomSheet = ComposeBottomSheet(context)
+            bottomSheet.show()
             bottomSheet.setContent(content)
-            bottomSheet.show(animate)
         }
     }
 }

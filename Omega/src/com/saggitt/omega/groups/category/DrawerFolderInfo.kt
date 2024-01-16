@@ -56,7 +56,7 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
 
     fun showEdit(launcher: Launcher) {
         val prefs = NeoPrefs.getInstance(launcher)
-        ComposeBottomSheet.show(launcher, true) {
+        ComposeBottomSheet.show(launcher) {
             EditGroupBottomSheet(
                 category = prefs.drawerAppGroupsManager.getEnabledType()!!,
                 group = drawerFolder,
