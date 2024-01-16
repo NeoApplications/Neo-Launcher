@@ -456,6 +456,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 mAH.get(i).mRecyclerView.scrollToTop();
             }
         }
+        mFastScroller.setVisibility(prefs.getDrawerHideScrollbar().getValue() ? INVISIBLE : VISIBLE);
         if (mTouchHandler != null) {
             mTouchHandler.endFastScrolling();
         }

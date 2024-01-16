@@ -95,6 +95,7 @@ object PrefKey {
     val DRAWER_SORT_MODE = intPreferencesKey("drawer_sort_mode")
     val DRAWER_WORK_APPS_SEPARATE = booleanPreferencesKey("drawer_separate_work_apps")
     val DRAWER_SCROLL_POSITION_SAVE = booleanPreferencesKey("drawer_save_scroll_position")
+    val DRAWER_SCROLLBAR_HIDDEN = booleanPreferencesKey("drawer_scrollbar_hidden")
     val DRAWER_HIDDEN_APPS_LIST = stringSetPreferencesKey("drawer_hidden_apps")
     val DRAWER_PROTECTED_APPS_ENABLED = booleanPreferencesKey("drawer_protected_apps_enabled")
     val DRAWER_PROTECTED_APPS_LIST = stringSetPreferencesKey("drawer_protected_apps")
