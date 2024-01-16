@@ -94,12 +94,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
         }
         mIsOpen = true
         setupNavBarColor()
-        mOpenCloseAnimation.animationPlayer.setValues(
-            PropertyValuesHolder.ofFloat(TRANSLATION_SHIFT, TRANSLATION_SHIFT_OPENED)
-        )
-        mOpenCloseAnimation.animationPlayer.interpolator = Interpolators.FAST_OUT_SLOW_IN
-        if (!animate) mOpenCloseAnimation.animationPlayer.duration = 0
-        mOpenCloseAnimation.animationPlayer.start()
+        setUpDefaultOpenAnimation().start()
     }
 
     private fun setupNavBarColor() {
