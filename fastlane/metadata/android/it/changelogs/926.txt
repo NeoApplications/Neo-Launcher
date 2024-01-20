@@ -2,6 +2,6 @@ Aggiunto: ordina le app per opzione di colore
 Aggiunto: segui il tema Sfondo (nero).
 Corretto: crash all'apertura di backup/ripristino
 Corretto: colorazione della barra superiore del cassetto all'uscita da un'app
-Corretto: le icone non vengono aggiornate quando si utilizza la forma dell'icona personalizzata
+Corretto: le icone non vengono aggiornate quando si usa la forma dell'icona personalizzata
 Rimosso: segui il tema Daylight
 Rimosso: fornitore di dati meteo OnePlus
