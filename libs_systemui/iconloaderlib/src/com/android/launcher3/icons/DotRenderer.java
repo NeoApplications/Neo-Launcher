@@ -159,12 +159,14 @@ public class DotRenderer {
         mCirclePaint.setColor(Color.BLACK);
         canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
         if (shouldStack) {
-
             int offsetDiffX = mStackOffsetX - mOffset;
             int offsetDiffY = mStackOffsetY - mOffset;
             canvas.translate(offsetDiffX, offsetDiffY);
+            Paint paint2 = mBackgroundPaint;
+            paint2.setAlpha(105);
+
             canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f,
-                    -backgroundWithShadowSize / 2f, mBackgroundPaint);
+                    -backgroundWithShadowSize / 2f, paint2);
             canvas.translate(-offsetDiffX, -offsetDiffY);
         }
         if (isText) {
