@@ -3,6 +3,7 @@ package com.saggitt.omega.iconpack
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.drawable.Drawable
 import android.os.Process
 import androidx.core.content.getSystemService
@@ -23,7 +24,7 @@ class SystemIconPack(context: Context) : IconPack(context, "") {
         val profiles = UserCache.INSTANCE.get(context).userProfiles
         val launcherApps = context.getSystemService<LauncherApps>()!!
         profiles
-            .flatMap { launcherApps.getActivityList(null, it) }
+            .flatMap { launcherApps.getActivityList(null, Process.myUserHandle()) }
             .associateBy { ComponentKey(it.componentName, it.user) }
     }
 
@@ -48,17 +49,23 @@ class SystemIconPack(context: Context) : IconPack(context, "") {
             IconType.Normal
         )
 
-    override fun getCalendar(componentName: ComponentName): IconEntry? = null
-    override fun getClock(entry: IconEntry): ClockMetadata? = null
-
-    override fun getCalendars(): MutableSet<ComponentName> = mutableSetOf()
-    override fun getClocks(): MutableSet<ComponentName> = mutableSetOf()
-
     override fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable? {
         val key = ComponentKey.fromString(iconEntry.name)
         val app = appMap[key] ?: return null
         return app.getIcon(iconDpi)
     }
+
+    override fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable? {
+        val key = ComponentKey.fromString(shortcutInfo.`package`)
+        val app = appMap[key] ?: return null
+        return app.getIcon(iconDpi)
+    }
+
+    override fun getCalendar(componentName: ComponentName): IconEntry? = null
+    override fun getClock(entry: IconEntry): ClockMetadata? = null
+
+    override fun getCalendars(): MutableSet<ComponentName> = mutableSetOf()
+    override fun getClocks(): MutableSet<ComponentName> = mutableSetOf()
 
     override fun loadInternal() {
     }
