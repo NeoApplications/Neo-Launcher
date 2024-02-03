@@ -20,7 +20,7 @@ package com.saggitt.omega.compose.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Density
@@ -31,7 +31,7 @@ class LazyGridLayout(
     private val gapWidth: Dp,
     private val density: Density
 ) {
-    private val _numColumns = mutableStateOf(0)
+    private val _numColumns = mutableIntStateOf(0)
     val numColumns: State<Int> = _numColumns
 
     @Composable
