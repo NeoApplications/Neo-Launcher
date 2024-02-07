@@ -720,6 +720,13 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
+    val drawerHideScrollbar = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_SCROLLBAR_HIDDEN,
+        titleId = R.string.title_all_apps_hide_scrollbar,
+        defaultValue = false,
+    )
+
     val drawerCustomBackground = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_BG_CUSTOM,
