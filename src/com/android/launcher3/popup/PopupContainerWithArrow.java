@@ -209,7 +209,7 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
      */
     @Deprecated
     public static boolean canShow(View icon, ItemInfo item) {
-        return icon instanceof BubbleTextView && ShortcutUtil.supportsShortcuts(item);
+        return icon instanceof BubbleTextView && item instanceof ItemInfo && ShortcutUtil.supportsShortcuts(item);
     }
 
     /**
@@ -224,7 +224,7 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
             return null;
         }
         ItemInfo item = (ItemInfo) icon.getTag();
-        if (!ShortcutUtil.supportsShortcuts(item)) {
+        if (!canShow(icon,item)) {
             return null;
         }
 
@@ -733,7 +733,7 @@ public class PopupContainerWithArrow<T extends Context & ActivityContext>
     public static void dismissInvalidPopup(BaseDraggingActivity activity) {
         PopupContainerWithArrow popup = getOpen(activity);
         if (popup != null && (!popup.mOriginalIcon.isAttachedToWindow()
-                || !ShortcutUtil.supportsShortcuts((ItemInfo) popup.mOriginalIcon.getTag()))) {
+                || !canShow(popup.mOriginalIcon, (ItemInfo) popup.mOriginalIcon.getTag()))) {
             popup.animateClose();
         }
     }
