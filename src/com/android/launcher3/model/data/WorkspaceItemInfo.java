@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -100,6 +101,8 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
     public int options;
     public String swipeUpAction;
+    public CharSequence customTitle;
+    public Bitmap customIcon;
 
     public WorkspaceItemInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;

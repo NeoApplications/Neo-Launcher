@@ -271,6 +271,9 @@ public class FolderInfo extends ItemInfo {
             }
         } else {
             WorkspaceItemInfo info = getCoverInfo();
+            if (info.customTitle != null) {
+                return info.customTitle;
+            }
             return info.title;
         }
     }
