@@ -13,16 +13,21 @@ val vAccompanist = "0.32.0"
 val vActivity = "1.8.2"
 val vAlwan = "1.0.1"
 val vCoil = "2.5.0"
-val vComposeBOM = "2023.10.01"
-val vComposeCompiler = "1.5.7"
+val vComposeBOM = "2024.01.00"
+val vComposeCompiler = "1.5.8"
 val vConstraintLayout = "2.1.4"
 val vCoordinatorLayout = "1.2.0"
+val vCore = "1.12.0"
 val vCoroutines = "1.7.3"
 val vDynamicanimation = "1.1.0-alpha03"
 val vDSP = "1.0.0"
+val vFuzzywuzzy = "1.4.0"
 val vHokoBlur = "1.5.2"
-val vKotlin = "1.9.21"
-val vLifecycle = "2.6.2"
+val vJUnit = "4.13.2"
+val vJUnit5 = "5.9.2"
+val vKotlin = "1.9.22"
+val vKSP = "1.0.17"
+val vLifecycle = "2.7.0"
 val vLifecycleExt = "2.2.0"
 val vMaterial = "1.11.0"
 val vNavigation = "2.7.6"
@@ -40,11 +45,11 @@ val vSerialization = "1.6.2"
 val vSlice = "1.1.0-alpha02"
 
 plugins {
-    id("com.android.application").version("8.2.0")
-    kotlin("android").version("1.9.21")
-    kotlin("plugin.parcelize").version("1.9.21")
-    kotlin("plugin.serialization").version("1.9.21")
-    id("com.google.devtools.ksp").version("1.9.21-1.0.15")
+    id("com.android.application").version("8.2.2")
+    kotlin("android").version("1.9.22")
+    kotlin("plugin.parcelize").version("1.9.22")
+    kotlin("plugin.serialization").version("1.9.22")
+    id("com.google.devtools.ksp").version("1.9.22-1.0.17")
     id("com.google.protobuf").version("0.9.4")
 }
 
@@ -253,7 +258,7 @@ dependencies {
     implementation(kotlin("stdlib", vKotlin))
 
     //UI
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:$vCore")
     implementation("androidx.constraintlayout:constraintlayout:$vConstraintLayout")
     implementation("androidx.coordinatorlayout:coordinatorlayout:$vCoordinatorLayout")
     implementation("androidx.dynamicanimation:dynamicanimation:$vDynamicanimation")
@@ -284,7 +289,7 @@ dependencies {
     implementation("com.raedapps:alwan:$vAlwan")
     implementation("io.github.hokofly:hoko-blur:$vHokoBlur")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$vSerialization")
-    implementation("me.xdrop:fuzzywuzzy:1.4.0")
+    implementation("me.xdrop:fuzzywuzzy:$vFuzzywuzzy")
 
     //Compose
     implementation("androidx.activity:activity-compose:$vActivity")
@@ -316,9 +321,9 @@ dependencies {
     protobuf(files("protos_overrides/"))
 
     //Test
-    testImplementation("junit:junit:4.13.2")
-    implementation("junit:junit:4.13.2")
-    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("junit:junit:$vJUnit")
+    implementation("junit:junit:$vJUnit")
+    androidTestImplementation("org.junit.jupiter:junit-jupiter:$vJUnit5")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:runner:1.5.2")
