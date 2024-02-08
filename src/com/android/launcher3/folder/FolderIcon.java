@@ -192,6 +192,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         folder.setFolderIcon(icon);
         folder.bind(folderInfo);
         icon.setFolder(folder);
+        icon.onIconChanged();
         return icon;
     }
 
