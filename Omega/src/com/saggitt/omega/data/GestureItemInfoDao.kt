@@ -35,5 +35,5 @@ interface GestureItemInfoDao {
     suspend fun update(item: GestureItemInfo)
 
     @Query("SELECT * FROM GestureItemInfo WHERE packageName = :packageName")
-    fun find(packageName: ComponentKey): Flow<GestureItemInfo>
+    fun find(packageName: ComponentKey): Flow<GestureItemInfo?>
 }
