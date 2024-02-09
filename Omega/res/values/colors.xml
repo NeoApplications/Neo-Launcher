@@ -16,11 +16,11 @@
   ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
+    <color name="ic_launcher_foreground_blue">#64F</color>
+    <color name="ic_launcher_foreground_red">#E47</color>
+    <color name="ic_launcher_background">#F3FBFF</color>
 
     <color name="ic_allapps_background">#fffafafa</color>
-    <color name="ic_launcher_background">#F3FBFF</color>
-    <color name="ic_launcher_background_debug">#FF0F111A</color>
-    <color name="ic_launcher_foreground">#0988d1</color>
 
     <color name="system_accent2_50">#ffedeeff</color>
 

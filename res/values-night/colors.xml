@@ -17,6 +17,10 @@
 */
 -->
 <resources>
+    <color name="ic_launcher_foreground_blue">#96F</color>
+    <color name="ic_launcher_foreground_red">#F79</color>
+    <color name="ic_launcher_background">#0F111F</color>
+
     <color name="material_color_on_secondary_fixed_variant">#3F4759</color>
     <color name="material_color_on_tertiary_fixed_variant">#583E5B</color>
     <color name="material_color_surface_container_lowest">#0D0E11</color>
