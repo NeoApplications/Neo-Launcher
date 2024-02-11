@@ -93,6 +93,7 @@ import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
@@ -653,6 +654,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
+            NeoPrefs prefs = Utilities.getNeoPrefs(getContext());
             Rect iconBounds = mDotParams.iconBounds;
             // FolderIcon draws the icon to be top-aligned (with padding) & horizontally-centered
             int iconSize = mActivity.getDeviceProfile().iconSizePx;
@@ -667,6 +669,9 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
             // If we are animating to the accepting state, animate the dot out.
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getAcceptScaleProgress());
             mDotParams.dotColor = mBackground.getDotColor();
+            mDotParams.count = mDotInfo.getNotificationCount();
+            if (prefs.getNotificationCount().getValue())
+                mDotParams.showCount = true;
             mDotRenderer.draw(canvas, mDotParams);
         }
     }
