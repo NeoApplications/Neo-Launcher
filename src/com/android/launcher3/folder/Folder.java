@@ -89,10 +89,10 @@ import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.logging.StatsLogManager.StatsLogger;
+import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.FolderInfo.FolderListener;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.model.data.WorkspaceItemFactory;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.util.Executors;
@@ -716,6 +716,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         updateTextViewFocus();
 
         mIsOpen = true;
+        if (mFolderIcon.isCustomIcon) {
+            mFolderIcon.mFolderName.setIconVisible(false);
+        }
 
         BaseDragLayer dragLayer = mActivityContext.getDragLayer();
         // Just verify that the folder hasn't already been added to the DragLayer.
@@ -818,6 +821,10 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     @Override
     protected void handleClose(boolean animate) {
         mIsOpen = false;
+        if (mFolderIcon.isCustomIcon) {
+            mInfo.itemsChanged(true);
+            mFolderIcon.mFolderName.setIconVisible(true);
+        }
 
         if (!animate && mCurrentAnimator != null && mCurrentAnimator.isRunning()) {
             mCurrentAnimator.cancel();
@@ -1342,9 +1349,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             final WorkspaceItemInfo si;
             if (pasiSi != null) {
                 si = pasiSi;
-            } else if (d.dragInfo instanceof WorkspaceItemFactory) {
+            } else if (d.dragInfo instanceof AppInfo) {
                 // Came from all apps -- make a copy.
-                si = ((WorkspaceItemFactory) d.dragInfo).makeWorkspaceItem(launcher);
+                si = ((AppInfo) d.dragInfo).makeWorkspaceItem(launcher);
             } else {
                 // WorkspaceItemInfo
                 si = (WorkspaceItemInfo) d.dragInfo;

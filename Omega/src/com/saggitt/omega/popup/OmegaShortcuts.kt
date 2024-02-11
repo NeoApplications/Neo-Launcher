@@ -65,7 +65,8 @@ class OmegaShortcuts {
         val prefs: NeoPrefs = NeoPrefs.getInstance(launcher)
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
-            var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
+            val outIsIconThemed = BooleanArray(1)
+            var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj, outIsIconThemed)
             if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
                 icon = icon.getThemedDrawable(launcher)
             }
