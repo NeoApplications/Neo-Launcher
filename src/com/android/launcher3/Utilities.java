@@ -23,7 +23,6 @@ import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITIO
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -87,7 +86,6 @@ import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.TintedDrawableSpan;
-import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.ShortcutCachingLogic;
 import com.android.launcher3.icons.ThemedIconDrawable;
 import com.android.launcher3.model.data.FolderInfo;
@@ -594,15 +592,6 @@ public final class Utilities {
         return options;
     }
 
-    public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
-                                           Object[] outObj) {
-        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
-        if (icon instanceof BitmapInfo.Extender) {
-            icon = ((BitmapInfo.Extender) icon).getThemedDrawable(context);
-        }
-        return icon;
-    }
-
     /**
      * Returns the full drawable for info without any flattening or pre-processing.
      *
@@ -612,7 +601,7 @@ public final class Utilities {
      */
     public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
             boolean shouldThemeIcon, Object[] outObj, boolean[] outIsIconThemed) {
-        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
+        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj, outIsIconThemed);
         if (icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
             AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon.mutate();
             Drawable mono = null;
@@ -631,7 +620,7 @@ public final class Utilities {
     }
 
     public static Drawable loadFullDrawableWithoutTheme(Context context, ItemInfo info,
-            int width, int height, Object[] outObj) {
+            int width, int height, Object[] outObj, boolean[] outIsIconThemed) {
         ActivityContext activity = ActivityContext.lookupContext(context);
         LauncherAppState appState = LauncherAppState.getInstance(context);
         if (info instanceof PendingAddShortcutInfo) {
@@ -645,8 +634,8 @@ public final class Utilities {
                     .resolveActivity(info.getIntent(), info.user);
             outObj[0] = activityInfo;
             return activityInfo == null ? null : LauncherAppState.getInstance(context)
-                    .getIconProvider().getIcon(
-                            activityInfo, activity.getDeviceProfile().inv.fillResIconDpi);
+                    .getIconProvider()
+                    .getIcon(activityInfo, activity.getDeviceProfile().inv.fillResIconDpi);
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             List<ShortcutInfo> si = ShortcutKey.fromItemInfo(info)
                     .buildRequest(context)
@@ -661,7 +650,8 @@ public final class Utilities {
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             FolderInfo folderInfo = (FolderInfo) info;
             if (folderInfo.isCoverMode()) {
-                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, outObj);
+                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, true,
+                        outObj, outIsIconThemed);
             }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     activity, info.id, new Point(width, height));
@@ -684,7 +674,6 @@ public final class Utilities {
      * can only be applied. For deep shortcuts, when dragged from the pop up container, there's no
      * badge. When dragged from workspace or folder, it may contain app AND/OR work profile badge
      **/
-    @TargetApi(Build.VERSION_CODES.O)
     public static Drawable getBadge(Context context, ItemInfo info, Object obj,
             boolean isIconThemed) {
         LauncherAppState appState = LauncherAppState.getInstance(context);
@@ -702,7 +691,7 @@ public final class Utilities {
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             FolderInfo folderInfo = (FolderInfo) info;
             if (folderInfo.isCoverMode())
-                return getBadge(context, folderInfo.getCoverInfo(), obj, false);
+                return getBadge(context, folderInfo.getCoverInfo(), obj, isIconThemed);
             return ((FolderAdaptiveIcon) obj).getBadge();
         } else {
             return Process.myUserHandle().equals(info.user)

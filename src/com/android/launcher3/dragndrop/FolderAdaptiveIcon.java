@@ -47,7 +47,6 @@ import com.android.launcher3.views.ActivityContext;
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
-@TargetApi(Build.VERSION_CODES.O)
 public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 

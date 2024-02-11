@@ -22,7 +22,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.FloatArrayEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
@@ -35,7 +34,6 @@ import android.graphics.Region;
 import android.graphics.Region.Op;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.View;
@@ -474,7 +472,6 @@ public abstract class IconShape {
         return result;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     protected static void pickBestShape(Context context) {
         // Pick any large size
         final int size = 200;

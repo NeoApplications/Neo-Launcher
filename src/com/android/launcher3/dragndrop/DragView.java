@@ -30,7 +30,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -42,7 +41,6 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -242,7 +240,6 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
      * Initialize {@code #mIconDrawable} if the item can be represented using
      * an {@link AdaptiveIconDrawable} or {@link FolderAdaptiveIcon}.
      */
-    @TargetApi(Build.VERSION_CODES.O)
     public void setItemInfo(final ItemInfo info) {
         if (info.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
                 && info.itemType != LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
