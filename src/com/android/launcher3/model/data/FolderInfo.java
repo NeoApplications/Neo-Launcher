@@ -253,12 +253,12 @@ public class FolderInfo extends ItemInfo {
         swipeUpAction = action;
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
         GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
-        if (gestureItemInfo.getSwipeUp() == null) {
-            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
-            repository.insert(gestureItemInfo);
-        } else {
+        if (gestureItemInfo != null && gestureItemInfo.getSwipeUp() != null) {
             gestureItemInfo.setSwipeUp(swipeUpAction);
             repository.update(gestureItemInfo);
+        } else {
+            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
+            repository.insert(gestureItemInfo);
         }
     }
 
