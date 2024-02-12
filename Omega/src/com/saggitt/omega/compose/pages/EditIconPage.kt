@@ -80,7 +80,7 @@ fun EditIconPage(
 ) {
     val context = LocalContext.current
     val iconPacks = IconPackProvider.INSTANCE.get(context).getIconPackList()
-    val isFolder = componentKey.componentName.packageName.contains("com.saggitt.omega.folder")
+    val isFolder = componentKey.componentName.packageName.contains("com.saulhdev.omega.folder")
     val navController = LocalNavController.current
     val launcherApps = context.getSystemService<LauncherApps>()!!
     val intent = Intent().setComponent(componentKey.componentName)
@@ -150,7 +150,13 @@ fun EditIconPage(
             val ip = IconPackProvider.INSTANCE.get(LocalContext.current)
 
             if (isFolder) {
-                //TODO: Add support for custom folder icons
+                iconPacks.forEach() {
+                    val pack: IconPack? = ip.getIconPack(it.packageName)
+                    if (pack != null) {
+                        pack.loadBlocking()
+                        val iconEntry = pack.getIcon(componentKey.componentName)
+                    }
+                }
             } else {
                 iconPacks.forEach {
                     val pack: IconPack? = ip.getIconPackOrSystem(it.packageName)

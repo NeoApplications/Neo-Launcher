@@ -2,12 +2,18 @@ package com.saggitt.omega.iconpack
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.ShortcutInfo
 import android.graphics.drawable.Drawable
 import com.android.launcher3.compat.AlphabeticIndexCompat
 import com.saggitt.omega.data.models.IconPickerItem
 import com.saulhdev.neolauncher.icons.ClockMetadata
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.plus
 import java.util.concurrent.Semaphore
 
 abstract class IconPack(
@@ -41,11 +47,12 @@ abstract class IconPack(
     }
 
     abstract fun getIcon(componentName: ComponentName): IconEntry?
+    abstract fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable?
+    abstract fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable?
     abstract fun getCalendar(componentName: ComponentName): IconEntry?
     abstract fun getClock(entry: IconEntry): ClockMetadata?
     abstract fun getCalendars(): MutableSet<ComponentName>
     abstract fun getClocks(): MutableSet<ComponentName>
-    abstract fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable?
     abstract fun getAllIcons(): Flow<List<IconPickerCategory>>
 
     abstract fun reloadAppMap()

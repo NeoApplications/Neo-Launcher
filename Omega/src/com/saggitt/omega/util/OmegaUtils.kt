@@ -42,6 +42,7 @@ import android.text.format.DateFormat
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -266,6 +267,14 @@ fun getAllAppsScrimColor(context: Context): Int {
     }
     val alpha = (opacity * 255).roundToInt()
     return ColorUtils.setAlphaComponent(scrimColor, alpha)
+}
+
+fun overrideAllAppsTextColor(textView: TextView) {
+    val context = textView.context
+    val opacity = context.prefs.drawerBackgroundOpacity.getValue()
+    if (opacity <= 0.3f) {
+        textView.setTextColor(Themes.getAttrColor(context, R.attr.allAppsAlternateTextColor))
+    }
 }
 
 fun openURLInBrowser(context: Context, url: String?) {

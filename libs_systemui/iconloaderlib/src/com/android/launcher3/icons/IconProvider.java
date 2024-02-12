@@ -20,6 +20,9 @@ import static android.content.Intent.ACTION_DATE_CHANGED;
 import static android.content.Intent.ACTION_TIMEZONE_CHANGED;
 import static android.content.Intent.ACTION_TIME_CHANGED;
 import static android.content.res.Resources.ID_NULL;
+import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
+import static com.android.launcher3.icons.GraphicsUtils.getExpectedBitmapSize;
+import static com.android.launcher3.icons.ThemedIconDrawable.getThemedColors;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -34,8 +37,14 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PatternMatcher;
@@ -52,11 +61,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
 
-import com.android.launcher3.icons.ThemedIconDrawable.ThemeData;
+import com.android.launcher3.icons.BitmapInfo.Extender;
+import com.android.launcher3.icons.FastBitmapDrawable.FastBitmapConstantState;
+import com.android.launcher3.icons.cache.BaseIconCache;
 import com.android.launcher3.util.SafeCloseable;
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
+import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -73,11 +91,12 @@ public class IconProvider {
     public static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
             "config_icon_mask", "string", "android");
 
+    private static final String TAG = "IconProvider";
+
     protected static final String TAG_ICON = "icon";
     protected static final String ATTR_PACKAGE = "package";
+    protected static final String ATTR_COMPONENT = "component";
     protected static final String ATTR_DRAWABLE = "drawable";
-
-    private static final String TAG = "IconProvider";
     private static final boolean DEBUG = false;
     public static final boolean ATLEAST_T = BuildCompat.isAtLeastT();
 
@@ -85,7 +104,6 @@ public class IconProvider {
 
     private static final String SYSTEM_STATE_SEPARATOR = " ";
     protected static final String THEMED_ICON_MAP_FILE = "grayscale_icon_map";
-
     private static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
 
     private Map<String, ThemeData> mThemedIconMap;
@@ -113,14 +131,12 @@ public class IconProvider {
             mThemedIconMap = DISABLED_MAP;
         }
     }
-
     /**
      * Enables or disables icon theme support
      */
     public void setIconThemeSupported(boolean isSupported) {
         mThemedIconMap = isSupported ? null : DISABLED_MAP;
     }
-
     /**
      * Adds any modification to the provided systemState for dynamic icons. This system state
      * is used by caches to check for icon invalidation.
@@ -134,6 +150,15 @@ public class IconProvider {
     }
 
     /**
+     * Loads the icon for the provided LauncherActivityInfo
+     */
+    public Drawable getIcon(LauncherActivityInfo info, int iconDpi) {
+        return getIconWithOverrides(info.getApplicationInfo().packageName, iconDpi,
+                info.getName(), info.getUser(),
+                () -> info.getIcon(iconDpi));
+    }
+
+    /**
      * Loads the icon for the provided activity info
      */
     public Drawable getIcon(ActivityInfo info) {
@@ -144,35 +169,26 @@ public class IconProvider {
      * Loads the icon for the provided activity info
      */
     public Drawable getIcon(ActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.applicationInfo.packageName, info.name,
-                UserHandle.getUserHandleForUid(info.applicationInfo.uid),
-                iconDpi, () -> loadActivityInfoIcon(info, iconDpi));
+        return getIconWithOverrides(info.applicationInfo.packageName, iconDpi,
+                info.name, UserHandle.getUserHandleForUid(info.applicationInfo.uid),
+                () -> loadActivityInfoIcon(info, iconDpi));
     }
 
-    /**
-     * Loads the icon for the provided LauncherActivityInfo
-     */
-    public Drawable getIcon(LauncherActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.getApplicationInfo().packageName, info.getName(), info.getUser(), iconDpi,
-                () -> info.getIcon(iconDpi));
-    }
-
-    protected Drawable getIconWithOverrides(String packageName, String component, UserHandle user, int iconDpi,
+    protected Drawable getIconWithOverrides(String packageName, int iconDpi,
+                                            String component, UserHandle user,
                                             Supplier<Drawable> fallback) {
+        ThemeData td = getThemeDataForPackage(packageName);
 
-        ThemeData td = getThemeData(packageName, component);
         Drawable icon = null;
-
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
             icon = loadCalendarDrawable(iconDpi, td);
-        } else if (mClock != null
-                && mClock.getPackageName().equals(packageName)
-                && Process.myUserHandle().equals(user)) {
+        } else if (mClock != null && mClock.getPackageName().equals(packageName)) {
             icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi, td);
         }
         if (icon == null) {
             icon = fallback.get();
-            if (ATLEAST_T && icon instanceof AdaptiveIconDrawable aid && td != null) {
+            if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
+                AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
                 if (aid.getMonochrome() == null) {
                     icon = new AdaptiveIconDrawable(aid.getBackground(),
                             aid.getForeground(), td.loadPaddedDrawable());
@@ -180,6 +196,10 @@ public class IconProvider {
             }
         }
         return icon;
+    }
+
+    protected ThemeData getThemeDataForPackage(String packageName) {
+        return null;
     }
 
     private Drawable loadActivityInfoIcon(ActivityInfo ai, int density) {
@@ -200,8 +220,8 @@ public class IconProvider {
         return icon;
     }
 
-    protected ThemeData getThemeDataForPackage(String packageName) {
-        return null;
+    protected boolean isThemeEnabled() {
+        return mThemedIconMap != DISABLED_MAP;
     }
 
     private Drawable loadCalendarDrawable(int iconDpi, @Nullable ThemeData td) {
@@ -227,7 +247,7 @@ public class IconProvider {
                         ta.recycle();
                         return monoId == ID_NULL ? drawable
                                 : new AdaptiveIconDrawable(aid.getBackground(), aid.getForeground(),
-                                        new ThemeData(td.mResources, mCalendar.getPackageName(), monoId).loadPaddedDrawable());
+                                new ThemeData(td.mResources, mContext.getPackageName(), monoId).loadPaddedDrawable());
                     }
                 }
                 return drawable;
@@ -240,6 +260,31 @@ public class IconProvider {
         }
         return null;
     }
+
+    protected void updateMapWithDynamicIcons(Context context, Map<ComponentName, ThemeData> map) {
+        final int resId = getDynamicCalendarResource(context);
+        dynamicCalendars.forEach(dCal -> {
+            ComponentName pkg = new ComponentName(dCal.getPackageName(), "");
+            if (map.get(pkg) == null) {
+                map.put(pkg, new ThemeData(context.getResources(), dCal.getPackageName(), resId));
+            }
+        });
+    }
+
+    protected ThemeData getDynamicIconsFromMap(Context context, Map<ComponentName, ThemeData> themeMap, ComponentName componentName) {
+        if (dynamicCalendars.stream().anyMatch(s -> s.getPackageName().equalsIgnoreCase(componentName.getPackageName()))) {
+            final int resId = getDynamicCalendarResource(context);
+            return new ThemeData(context.getResources(), componentName.getPackageName(), resId);
+        }
+        return null;
+    }
+
+    @SuppressLint("DiscouragedApi")
+    @DrawableRes
+    public int getDynamicCalendarResource(Context context) {
+        return context.getResources().getIdentifier("themed_icon_calendar_" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), "drawable", context.getPackageName());
+    }
+
 
     /**
      * @param metadata metadata of the default activity of Calendar
@@ -286,47 +331,12 @@ public class IconProvider {
         return compList;
     }
 
-    protected void updateMapWithDynamicIcons(Context context, Map<ComponentName, ThemeData> map) {
-        final int resId = getDynamicCalendarResource(context);
-        dynamicCalendars.forEach(dCal -> {
-            ComponentName pkg = new ComponentName(dCal.getPackageName(), "");
-            if (map.get(pkg) == null) {
-                map.put(pkg, new ThemeData(context.getResources(), dCal.getPackageName(), resId));
-            }
-        });
-    }
-
-    protected ThemedIconDrawable.ThemeData getDynamicIconsFromMap(Context context, Map<ComponentName, ThemedIconDrawable.ThemeData> themeMap, ComponentName componentName) {
-        if (dynamicCalendars.stream().anyMatch(s -> s.getPackageName().equalsIgnoreCase(componentName.getPackageName()))) {
-            final int resId = getDynamicCalendarResource(context);
-            return new ThemedIconDrawable.ThemeData(context.getResources(), componentName.getPackageName(), resId);
-        }
-        return null;
-    }
-
-    @SuppressLint("DiscouragedApi")
-    @DrawableRes
-    public int getDynamicCalendarResource(Context context) {
-        return context.getResources().getIdentifier("themed_icon_calendar_" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), "drawable", context.getPackageName());
-    }
-
     /**
      * Returns a string representation of the current system icon state
      */
     public String getSystemIconState() {
         return (CONFIG_ICON_MASK_RES_ID == ID_NULL
                 ? "" : mContext.getResources().getString(CONFIG_ICON_MASK_RES_ID));
-    }
-
-    /**
-     * Registers a callback to listen for various system dependent icon changes.
-     */
-    public SafeCloseable registerIconChangeListener(IconChangeListener listener, Handler handler) {
-        return new IconChangeReceiver(listener, handler);
-    }
-
-    protected boolean isThemeEnabled() {
-        return mThemedIconMap != DISABLED_MAP;
     }
 
     @Nullable
@@ -353,6 +363,9 @@ public class IconProvider {
 
                 int type;
 
+                while ((type = parser.next()) != XmlPullParser.START_TAG
+                        && type != XmlPullParser.END_DOCUMENT) ;
+
                 while (((type = parser.next()) != XmlPullParser.END_TAG ||
                         parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
                     if (type != XmlPullParser.START_TAG) {
@@ -373,6 +386,244 @@ public class IconProvider {
         mThemedIconMap = map;
         return mThemedIconMap;
     }
+
+    /**
+     * Registers a callback to listen for various system dependent icon changes.
+     */
+    public SafeCloseable registerIconChangeListener(IconChangeListener listener, Handler handler) {
+        return new IconChangeReceiver(listener, handler);
+    }
+
+    public static class ThemeData {
+
+        final Resources mResources;
+        final String mPackageName;
+        final int mResID;
+
+        public ThemeData(Resources resources, String packageName, int resID) {
+            mResources = resources;
+            mPackageName = packageName;
+            mResID = resID;
+        }
+
+        Drawable loadPaddedDrawable() {
+            if (!"drawable".equals(mResources.getResourceTypeName(mResID))) {
+                return null;
+            }
+            Drawable d = mResources.getDrawable(mResID).mutate();
+            d = new InsetDrawable(d, .2f);
+            float inset = getExtraInsetFraction() / (1 + 2 * getExtraInsetFraction());
+            Drawable fg = new InsetDrawable(d, inset);
+            return fg;
+        }
+
+        Drawable loadMonochromeDrawable(int accentColor) {
+            if (!"drawable".equals(mResources.getResourceTypeName(mResID))) {
+                return null;
+            }
+            Drawable d = mResources.getDrawable(mResID).mutate();
+            d.setTint(accentColor);
+            d = new InsetDrawable(d, .2f);
+            float inset = getExtraInsetFraction() / (1 + 2 * getExtraInsetFraction());
+            return new InsetDrawable(d, inset);
+        }
+
+        public Drawable wrapDrawable(Drawable original, int iconType) {
+            if (!(original instanceof AdaptiveIconDrawable) && !(original instanceof BitmapDrawable)) {
+                return original;
+            }
+            String resourceType = mResources.getResourceTypeName(mResID);
+            if (iconType == ICON_TYPE_CALENDAR && "array".equals(resourceType)) {
+                TypedArray ta = mResources.obtainTypedArray(mResID);
+                int id = ta.getResourceId(IconProvider.getDay(), ID_NULL);
+                ta.recycle();
+                return id == ID_NULL ? original
+                        : wrapWithThemeData(original, new ThemeData(mResources, mPackageName, id));
+            } else if (iconType == ICON_TYPE_CLOCK && "array".equals(resourceType)) {
+                if (original instanceof ClockDrawableWrapper) {
+                    ((ClockDrawableWrapper) original).mThemeData = this;
+                }
+                return original;
+            } else if ("drawable".equals(resourceType)) {
+                return wrapWithThemeData(original, this);
+            } else {
+                return original;
+            }
+        }
+
+        private Drawable wrapWithThemeData(Drawable original, ThemeData themeData) {
+            if (original instanceof AdaptiveIconDrawable) {
+                return new IconProvider.ThemedAdaptiveIcon((AdaptiveIconDrawable) original, themeData);
+            } else if (original instanceof BitmapDrawable) {
+                return new ThemedBitmapIcon(mResources, (BitmapDrawable) original, themeData);
+            }
+            throw new IllegalArgumentException("original must be AdaptiveIconDrawable or BitmapDrawable");
+        }
+    }
+
+    static class ThemedAdaptiveIcon extends CustomAdaptiveIconDrawable implements Extender {
+
+        protected final ThemeData mThemeData;
+
+        public ThemedAdaptiveIcon(AdaptiveIconDrawable parent, ThemeData themeData) {
+            super(parent.getBackground(), parent.getForeground());
+            mThemeData = themeData;
+        }
+
+        @Override
+        public BitmapInfo getExtendedInfo(Bitmap bitmap, int color, BaseIconFactory iconFactory,
+                                          float normalizationScale) {
+            Bitmap userBadge = Process.myUserHandle().equals(Process.myUserHandle())
+                    ? null : iconFactory.getUserBadgeBitmap(Process.myUserHandle());
+            return new ThemedBitmapInfo(bitmap, color, mThemeData, normalizationScale, userBadge);
+        }
+
+        @Override
+        public void drawForPersistence(Canvas canvas) {
+            draw(canvas);
+        }
+
+        public Drawable getThemedDrawable(Context context) {
+            int[] colors = getThemedColors(context);
+            Drawable bg = new ColorDrawable(colors[0]);
+            float inset = getExtraInsetFraction() / (1 + 2 * getExtraInsetFraction());
+            Drawable fg = new InsetDrawable(mThemeData.loadMonochromeDrawable(colors[1]), inset);
+            return new CustomAdaptiveIconDrawable(bg, fg);
+        }
+    }
+
+    static class ThemedBitmapIcon extends ExtendedBitmapDrawable implements Extender {
+
+        protected final ThemeData mThemeData;
+
+        public ThemedBitmapIcon(Resources res, BitmapDrawable parent, ThemeData themeData) {
+            super(res, parent.getBitmap(), ExtendedBitmapDrawable.isFromIconPack(parent));
+            mThemeData = themeData;
+        }
+
+        @Override
+        public BitmapInfo getExtendedInfo(Bitmap bitmap, int color, BaseIconFactory iconFactory,
+                                          float normalizationScale) {
+            Bitmap userBadge = Process.myUserHandle().equals(Process.myUserHandle())
+                    ? null : iconFactory.getUserBadgeBitmap(Process.myUserHandle());
+            return new ThemedBitmapInfo(bitmap, color, mThemeData, normalizationScale, userBadge);
+        }
+
+        @Override
+        public void drawForPersistence(Canvas canvas) {
+            draw(canvas);
+        }
+
+        public Drawable getThemedDrawable(Context context) {
+            int[] colors = getThemedColors(context);
+            Drawable bg = new ColorDrawable(colors[0]);
+            float extraInsetFraction = CustomAdaptiveIconDrawable.getExtraInsetFraction();
+            float inset = extraInsetFraction / (1 + 2 * extraInsetFraction);
+            Drawable fg = new InsetDrawable(mThemeData.loadMonochromeDrawable(colors[1]), inset);
+            return new CustomAdaptiveIconDrawable(bg, fg);
+        }
+    }
+
+    static class ThemedConstantState extends FastBitmapConstantState {
+
+        final ThemedBitmapInfo bitmapInfo;
+        final int colorFg, colorBg;
+
+        public ThemedConstantState(ThemedBitmapInfo bitmapInfo,
+                                   int colorBg, int colorFg) {
+            super(bitmapInfo.icon, bitmapInfo.color);
+            this.bitmapInfo = bitmapInfo;
+            this.colorBg = colorBg;
+            this.colorFg = colorFg;
+        }
+    }
+
+    public static class ThemedBitmapInfo extends BitmapInfo {
+
+        final ThemeData mThemeData;
+        final float mNormalizationScale;
+        final Bitmap mUserBadge;
+
+        public ThemedBitmapInfo(Bitmap icon, int color, ThemeData themeData,
+                                float normalizationScale, Bitmap userBadge) {
+            super(icon, color);
+            mThemeData = themeData;
+            mNormalizationScale = normalizationScale;
+            mUserBadge = userBadge;
+        }
+
+        @Override
+        public FastBitmapDrawable newThemedIcon(Context context) {
+            int[] colors = getThemedColors(context);
+            FastBitmapDrawable drawable = new ThemedConstantState(this, colors[0], colors[1])
+                    .newDrawable();
+            drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
+            return drawable;
+        }
+
+        @Nullable
+        public byte[] toByteArray() {
+            if (isNullOrLowRes()) {
+                return null;
+            }
+            String resName = mThemeData.mResources.getResourceName(mThemeData.mResID);
+            ByteArrayOutputStream out = new ByteArrayOutputStream(
+                    getExpectedBitmapSize(icon) + 3 + resName.length());
+            try {
+                DataOutputStream dos = new DataOutputStream(out);
+                //dos.writeByte(TYPE_THEMED_V2);
+                dos.writeFloat(mNormalizationScale);
+                dos.writeUTF(mThemeData.mPackageName);
+                dos.writeUTF(resName);
+                icon.compress(Bitmap.CompressFormat.PNG, 100, dos);
+
+                dos.flush();
+                dos.close();
+                return out.toByteArray();
+            } catch (IOException e) {
+                Log.w(TAG, "Could not write bitmap");
+                return null;
+            }
+        }
+
+        static ThemedBitmapInfo decode(byte[] data, int color,
+                                       BitmapFactory.Options decodeOptions, UserHandle user, BaseIconCache iconCache,
+                                       Context context) {
+            try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data))) {
+                dis.readByte(); // type
+                float normalizationScale = dis.readFloat();
+
+                String packageName = dis.readUTF();
+                Resources res;
+                if (packageName.equals(context.getPackageName())) {
+                    res = context.getResources();
+                } else {
+                    res = context.getPackageManager().getResourcesForApplication(packageName);
+                }
+
+                String resName = dis.readUTF();
+                int resId = res.getIdentifier(resName, "drawable", packageName);
+                if (resId == ID_NULL) {
+                    return null;
+                }
+
+                Bitmap userBadgeBitmap = null;
+                if (!Process.myUserHandle().equals(user)) {
+                    try (BaseIconFactory iconFactory = iconCache.getIconFactory()) {
+                        userBadgeBitmap = iconFactory.getUserBadgeBitmap(user);
+                    }
+                }
+
+                ThemeData themeData = new ThemeData(res, packageName, resId);
+                Bitmap icon = BitmapFactory.decodeStream(dis, null, decodeOptions);
+                return new ThemedBitmapInfo(icon, color, themeData, normalizationScale,
+                        userBadgeBitmap);
+            } catch (IOException | PackageManager.NameNotFoundException e) {
+                return null;
+            }
+        }
+    }
+
 
     private class IconChangeReceiver extends BroadcastReceiver implements SafeCloseable {
 

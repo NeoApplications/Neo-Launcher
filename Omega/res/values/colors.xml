@@ -62,5 +62,7 @@
     <color name="grey_900">#ff212121</color>
     <color name="grey_900_trans">#80212121</color>
     <!-- Grey -->
+    <color name="dark_drawer_text_color">#FFFFFFFF</color>
+    <color name="light_drawer_text_color">#DE000000</color>
 </resources>
 

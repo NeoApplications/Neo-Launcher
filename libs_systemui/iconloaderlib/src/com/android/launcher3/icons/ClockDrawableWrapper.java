@@ -39,7 +39,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.os.UserHandle;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -47,7 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Supplier;
 
-import com.android.launcher3.icons.ThemedIconDrawable.ThemeData;
+import com.android.launcher3.icons.IconProvider.ThemeData;
 import com.saulhdev.neolauncher.icons.ClockMetadata;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
@@ -91,15 +90,15 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     public static final int INVALID_VALUE = -1;
 
     private final AnimationInfo mAnimationInfo = new AnimationInfo();
+    private AnimationInfo mThemeInfo = null;
     private int mTargetSdkVersion;
     protected ThemeData mThemeData;
-    private AnimationInfo mThemeInfo = null;
 
     private ClockDrawableWrapper(AdaptiveIconDrawable base) {
         super(base.getBackground(), base.getForeground());
     }
 
-    private void applyThemeData(ThemeData themeData) {
+    private void applyThemeData(ApplicationInfo appInfo, ThemeData themeData) {
         if (!IconProvider.ATLEAST_T || mThemeInfo != null) {
             return;
         }
@@ -114,7 +113,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
                         ? v.data : v.resourceId);
             }
             ta.recycle();
-            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
+            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(appInfo, extras, resId -> {
                 Drawable bg = new ColorDrawable(Color.WHITE);
                 Drawable fg = themeData.mResources.getDrawable(resId).mutate();
                 return new AdaptiveIconDrawable(bg, fg);
@@ -125,34 +124,6 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         } catch (Exception e) {
             Log.e(TAG, "Error loading themed clock", e);
         }
-    }
-
-    private static ClockDrawableWrapper fromThemeData(Context context, ThemeData themeData) {
-        try {
-            TypedArray ta = themeData.mResources.obtainTypedArray(themeData.mResID);
-            int count = ta.length();
-            Bundle extras = new Bundle();
-            for (int i = 0; i < count; i += 2) {
-                TypedValue v = ta.peekValue(i + 1);
-                extras.putInt(ta.getString(i), v.type >= TypedValue.TYPE_FIRST_INT
-                        && v.type <= TypedValue.TYPE_LAST_INT
-                        ? v.data : v.resourceId);
-            }
-            ta.recycle();
-            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(extras, resId -> {
-                int[] colors = getColors(context);
-                Drawable bg = new ColorDrawable(colors[0]);
-                Drawable fg = themeData.mResources.getDrawable(resId).mutate();
-                fg.setTint(colors[1]);
-                return new CustomAdaptiveIconDrawable(bg, fg);
-            });
-            if (drawable != null) {
-                return drawable;
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading themed clock", e);
-        }
-        return null;
     }
 
     @Override
@@ -174,16 +145,16 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
      * if it is unable to load.
      */
     public static ClockDrawableWrapper forPackage(Context context, String pkg, int iconDpi,
-            @Nullable ThemeData themeData) {
+                                                  @Nullable ThemeData themeData) {
         try {
             PackageManager pm = context.getPackageManager();
             ApplicationInfo appInfo =  pm.getApplicationInfo(pkg,
                     PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.GET_META_DATA);
             Resources res = pm.getResourcesForApplication(appInfo);
-            ClockDrawableWrapper wrapper = forExtras(appInfo.metaData,
+            ClockDrawableWrapper wrapper = forExtras(appInfo, appInfo.metaData,
                     resId -> res.getDrawableForDensity(resId, iconDpi));
             if (wrapper != null && themeData != null) {
-                wrapper.applyThemeData(themeData);
+                wrapper.applyThemeData(appInfo, themeData);
             }
             return wrapper;
         } catch (Exception e) {
@@ -193,8 +164,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
     }
 
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    private static ClockDrawableWrapper forExtras(
-            Bundle metadata, IntFunction<Drawable> drawableProvider) {
+    private static ClockDrawableWrapper forExtras(ApplicationInfo appInfo, Bundle metadata, IntFunction<Drawable> drawableProvider) {
         if (metadata == null) {
             return null;
         }
@@ -251,8 +221,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
             return null;
         }
 
-        ClockDrawableWrapper wrapper =
-                new ClockDrawableWrapper((AdaptiveIconDrawable) drawable);
+        ClockDrawableWrapper wrapper = new ClockDrawableWrapper((AdaptiveIconDrawable) drawable);
         wrapper.mTargetSdkVersion = targetSdkVersion;
         AnimationInfo info = wrapper.mAnimationInfo;
 
@@ -284,10 +253,38 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         return wrapper;
     }
 
+    private static ClockDrawableWrapper fromThemeData(Context context, ThemeData themeData) {
+        try {
+            TypedArray ta = themeData.mResources.obtainTypedArray(themeData.mResID);
+            int count = ta.length();
+            Bundle extras = new Bundle();
+            for (int i = 0; i < count; i += 2) {
+                TypedValue v = ta.peekValue(i + 1);
+                extras.putInt(ta.getString(i), v.type >= TypedValue.TYPE_FIRST_INT
+                        && v.type <= TypedValue.TYPE_LAST_INT
+                        ? v.data : v.resourceId);
+            }
+            ta.recycle();
+            ClockDrawableWrapper drawable = ClockDrawableWrapper.forExtras(
+                    context.getApplicationInfo(), extras, resId -> {
+                        int[] colors = getColors(context);
+                        Drawable bg = new ColorDrawable(colors[0]);
+                        Drawable fg = themeData.mResources.getDrawable(resId).mutate();
+                        fg.setTint(colors[1]);
+                        return new CustomAdaptiveIconDrawable(bg, fg);
+                    });
+            if (drawable != null) {
+                return drawable;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading themed clock", e);
+        }
+        return null;
+    }
+
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-            BaseIconFactory iconFactory, float normalizationScale, UserHandle user) {
-        iconFactory.disableColorExtraction();
+                                           BaseIconFactory iconFactory, float normalizationScale) {
         AdaptiveIconDrawable background = new CustomAdaptiveIconDrawable(
                 getBackground().getConstantState().newDrawable(), null);
         Bitmap flattenBG = iconFactory.createScaledBitmap(background,
@@ -393,8 +390,8 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
         public final Bitmap themeBackground;
 
         ClockBitmapInfo(Bitmap icon, int color, float scale,
-                AnimationInfo animInfo, Bitmap background,
-                AnimationInfo themeInfo, Bitmap themeBackground) {
+                        AnimationInfo animInfo, Bitmap background,
+                        AnimationInfo themeInfo, Bitmap themeBackground) {
             super(icon, color);
             this.boundsOffset = Math.max(ShadowGenerator.BLUR_FACTOR, (1 - scale) / 2);
             this.animInfo = animInfo;
@@ -405,7 +402,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
 
         @Override
         public FastBitmapDrawable newIcon(Context context,
-                @DrawableCreationFlags  int creationFlags) {
+                                          @DrawableCreationFlags int creationFlags) {
             AnimationInfo info;
             Bitmap bg;
             int themedFgColor;
@@ -583,7 +580,7 @@ public class ClockDrawableWrapper extends CustomAdaptiveIconDrawable implements 
             private final int mThemedFgColor;
 
             ClockConstantState(Bitmap bitmap, int color, int themedFgColor,
-                    float boundsOffset, AnimationInfo animInfo, Bitmap bg, ColorFilter bgFilter) {
+                               float boundsOffset, AnimationInfo animInfo, Bitmap bg, ColorFilter bgFilter) {
                 super(bitmap, color);
                 mBoundsOffset = boundsOffset;
                 mAnimInfo = animInfo;

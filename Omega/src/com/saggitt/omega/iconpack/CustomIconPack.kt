@@ -4,12 +4,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ShortcutInfo
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.util.Xml
 import com.android.launcher3.R
 import com.saggitt.omega.data.models.IconPickerItem
+import com.saggitt.omega.util.prefs
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable
 import kotlinx.coroutines.Dispatchers
@@ -47,11 +49,6 @@ class CustomIconPack(context: Context, packPackageName: String) :
     }
 
     override fun getIcon(componentName: ComponentName) = componentMap[componentName]
-    override fun getCalendar(componentName: ComponentName) = calendarMap[componentName]
-    override fun getClock(entry: IconEntry) = clockMetas[entry]
-
-    override fun getCalendars(): MutableSet<ComponentName> = calendarMap.keys
-    override fun getClocks(): MutableSet<ComponentName> = clockMap.keys
 
     override fun getIcon(iconEntry: IconEntry, iconDpi: Int): Drawable? {
         val id = getDrawableId(iconEntry.name)
@@ -66,6 +63,31 @@ class CustomIconPack(context: Context, packPackageName: String) :
             null
         }
     }
+
+    override fun getIcon(shortcutInfo: ShortcutInfo, iconDpi: Int): Drawable? {
+        val prefs = context.prefs;
+
+        if (prefs.profileIconAdaptify.getValue()) {
+            val id = getDrawableId(shortcutInfo.shortLabel.toString())
+            if (id == 0) return null
+            return try {
+                ExtendedBitmapDrawable.wrap(
+                    packResources,
+                    packResources.getDrawableForDensity(id, iconDpi, null),
+                    true
+                )
+            } catch (_: Resources.NotFoundException) {
+                null
+            }
+        }
+        return null
+    }
+
+    override fun getCalendar(componentName: ComponentName) = calendarMap[componentName]
+    override fun getClock(entry: IconEntry) = clockMetas[entry]
+
+    override fun getCalendars(): MutableSet<ComponentName> = calendarMap.keys
+    override fun getClocks(): MutableSet<ComponentName> = clockMap.keys
 
     fun createFromExternalPicker(icon: Intent.ShortcutIconResource): IconPickerItem? {
         val id = packResources.getIdentifier(icon.resourceName, null, null)

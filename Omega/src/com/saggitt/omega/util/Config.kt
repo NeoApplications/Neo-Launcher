@@ -119,7 +119,6 @@ class Config(val context: Context) {
         )
 
         const val LAWNICONS_PACKAGE_NAME = "app.lawnchair.lawnicons"
-        const val THEME_ICON_THEMED = "themed"
 
         val ICON_INTENTS = arrayOf(
             Intent("com.novalauncher.THEME"),

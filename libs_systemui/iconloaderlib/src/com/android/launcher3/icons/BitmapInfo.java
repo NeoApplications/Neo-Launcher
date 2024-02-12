@@ -20,7 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.UserHandle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -52,10 +51,6 @@ public class BitmapInfo {
     public static final BitmapInfo LOW_RES_INFO = fromBitmap(LOW_RES_ICON);
 
     public static final String TAG = "BitmapInfo";
-
-    protected static final byte TYPE_DEFAULT = 1;
-    protected static final byte TYPE_THEMED = 2;
-    protected static final byte TYPE_THEMED_V2 = 3;
 
     public final Bitmap icon;
     public final int color;
@@ -134,7 +129,8 @@ public class BitmapInfo {
      * Returns a new icon based on the theme of the context
      */
     public FastBitmapDrawable newThemedIcon(Context context) {
-        return newIcon(context);
+
+        return newIcon(context, FLAG_THEMED);
     }
 
     /**
@@ -161,7 +157,7 @@ public class BitmapInfo {
     }
 
     protected void applyFlags(Context context, FastBitmapDrawable drawable,
-            @DrawableCreationFlags int creationFlags) {
+                              @DrawableCreationFlags int creationFlags) {
         drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
         if ((creationFlags & FLAG_NO_BADGE) == 0) {
             if (badgeInfo != null) {
@@ -199,7 +195,7 @@ public class BitmapInfo {
          * Called for creating a custom BitmapInfo
          */
         BitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                BaseIconFactory iconFactory, float normalizationScale, UserHandle user);
+                                   BaseIconFactory iconFactory, float normalizationScale);
 
         /**
          * Called to draw the UI independent of any runtime configurations like time or theme

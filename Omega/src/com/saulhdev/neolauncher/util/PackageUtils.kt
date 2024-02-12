@@ -1,8 +1,10 @@
 package com.saulhdev.neolauncher.util
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import com.android.launcher3.Utilities
-import com.android.launcher3.util.PackageManagerHelper
 
 fun PackageManager.isAppEnabled(packageName: String?, flags: Int): Boolean {
     return try {
@@ -39,4 +41,16 @@ fun PackageManager.getPackageVersion(packageName: String) =
     }
     catch (e: PackageManager.NameNotFoundException) {
         ""
+    }
+
+fun PackageManager.getThemedIconPacksInstalled(context: Context): List<String> =
+    try {
+        queryIntentActivityOptions(
+            ComponentName(context.applicationInfo.packageName, context.applicationInfo.className),
+            null,
+            Intent("system_themed"),
+            PackageManager.GET_RESOLVED_FILTER,
+        ).map { it.activityInfo.packageName }
+    } catch (_: PackageManager.NameNotFoundException) {
+        emptyList()
     }

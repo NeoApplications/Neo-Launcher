@@ -36,7 +36,6 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.IconCache;
@@ -47,7 +46,6 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutRequest;
-import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.ItemInfoMatcher;
@@ -173,7 +171,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                             .queryIntentActivityOptions(
                                     new ComponentName(context.getApplicationInfo().packageName, context.getApplicationInfo().className),
                                     null,
-                                    new Intent(context.getResources().getString(R.string.icon_packs_intent_name)),
+                                    new Intent("system_themed"),
                                     PackageManager.GET_RESOLVED_FILTER).stream().map(it -> it.activityInfo.packageName)
                             .noneMatch(it -> packageManagerHelper.isAppInstalled(it, mUser));
                     if (isThemedIconsAvailable) {

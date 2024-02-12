@@ -23,6 +23,7 @@ import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITIO
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
 import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -86,6 +87,7 @@ import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.TintedDrawableSpan;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.ShortcutCachingLogic;
 import com.android.launcher3.icons.ThemedIconDrawable;
 import com.android.launcher3.model.data.FolderInfo;
@@ -158,6 +160,7 @@ public final class Utilities {
     /**
      * Indicates if the device has a debug build. Should only be used to store additional info or
      * add extra logging and not for changing the app behavior.
+     *
      * @deprecated Use {@link BuildConfig#IS_DEBUG_DEVICE} directly
      */
     @Deprecated
@@ -169,7 +172,8 @@ public final class Utilities {
     public static final int TRANSLATE_RIGHT = 3;
 
     @IntDef({TRANSLATE_UP, TRANSLATE_DOWN, TRANSLATE_LEFT, TRANSLATE_RIGHT})
-    public @interface AdjustmentDirection{}
+    public @interface AdjustmentDirection {
+    }
 
     /**
      * Returns true if theme is dark.
@@ -182,7 +186,7 @@ public final class Utilities {
 
     public static boolean isDevelopersOptionsEnabled(Context context) {
         return Settings.Global.getInt(context.getApplicationContext().getContentResolver(),
-                        Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
     }
 
     private static boolean sIsRunningInTestHarness = ActivityManager.isRunningInTestHarness();
@@ -203,14 +207,14 @@ public final class Utilities {
      * Given a coordinate relative to the descendant, find the coordinate in a parent view's
      * coordinates.
      *
-     * @param descendant The descendant to which the passed coordinate is relative.
-     * @param ancestor The root view to make the coordinates relative to.
-     * @param coord The coordinate that we want mapped.
+     * @param descendant        The descendant to which the passed coordinate is relative.
+     * @param ancestor          The root view to make the coordinates relative to.
+     * @param coord             The coordinate that we want mapped.
      * @param includeRootScroll Whether or not to account for the scroll of the descendant:
-     *          sometimes this is relevant as in a child's coordinates within the descendant.
+     *                          sometimes this is relevant as in a child's coordinates within the descendant.
      * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
-     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
-     *         assumption fails, we will need to return a pair of scale factors.
+     * this scale factor is assumed to be equal in X and Y, and so if at any point this
+     * assumption fails, we will need to return a pair of scale factors.
      */
     public static float getDescendantCoordRelativeToAncestor(
             View descendant, View ancestor, float[] coord, boolean includeRootScroll) {
@@ -222,21 +226,21 @@ public final class Utilities {
      * Given a coordinate relative to the descendant, find the coordinate in a parent view's
      * coordinates.
      *
-     * @param descendant The descendant to which the passed coordinate is relative.
-     * @param ancestor The root view to make the coordinates relative to.
-     * @param coord The coordinate that we want mapped.
+     * @param descendant        The descendant to which the passed coordinate is relative.
+     * @param ancestor          The root view to make the coordinates relative to.
+     * @param coord             The coordinate that we want mapped.
      * @param includeRootScroll Whether or not to account for the scroll of the descendant:
-     *          sometimes this is relevant as in a child's coordinates within the descendant.
-     * @param ignoreTransform If true, view transform is ignored
+     *                          sometimes this is relevant as in a child's coordinates within the descendant.
+     * @param ignoreTransform   If true, view transform is ignored
      * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
-     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
-     *         assumption fails, we will need to return a pair of scale factors.
+     * this scale factor is assumed to be equal in X and Y, and so if at any point this
+     * assumption fails, we will need to return a pair of scale factors.
      */
     public static float getDescendantCoordRelativeToAncestor(View descendant, View ancestor,
-            float[] coord, boolean includeRootScroll, boolean ignoreTransform) {
+                                                             float[] coord, boolean includeRootScroll, boolean ignoreTransform) {
         float scale = 1.0f;
         View v = descendant;
-        while(v != ancestor && v != null) {
+        while (v != ancestor && v != null) {
             // For TextViews, scroll has a meaning which relates to the text position
             // which is very strange... ignore the scroll.
             if (v != descendant || includeRootScroll) {
@@ -256,16 +260,16 @@ public final class Utilities {
 
     /**
      * Returns bounds for a child view of DragLayer, in drag layer coordinates.
-     *
+     * <p>
      * see {@link com.android.launcher3.dragndrop.DragLayer}.
      *
-     * @param viewBounds Bounds of the view wanted in drag layer coordinates, relative to the view
-     *                   itself. eg. (0, 0, view.getWidth, view.getHeight)
+     * @param viewBounds      Bounds of the view wanted in drag layer coordinates, relative to the view
+     *                        itself. eg. (0, 0, view.getWidth, view.getHeight)
      * @param ignoreTransform If true, view transform is ignored
-     * @param outRect The out rect where we return the bounds of {@param view} in drag layer coords.
+     * @param outRect         The out rect where we return the bounds of {@param view} in drag layer coords.
      */
     public static void getBoundsForViewInDragLayer(BaseDragLayer dragLayer, View view,
-            Rect viewBounds, boolean ignoreTransform, float[] recycle, RectF outRect) {
+                                                   Rect viewBounds, boolean ignoreTransform, float[] recycle, RectF outRect) {
         float[] points = recycle == null ? new float[4] : recycle;
         points[0] = viewBounds.left;
         points[1] = viewBounds.top;
@@ -297,7 +301,7 @@ public final class Utilities {
     public static void mapCoordInSelfToDescendant(View descendant, View root, float[] coord) {
         sMatrix.reset();
         View v = descendant;
-        while(v != root) {
+        while (v != root) {
             sMatrix.postTranslate(-v.getScrollX(), -v.getScrollY());
             sMatrix.postConcat(v.getMatrix());
             sMatrix.postTranslate(v.getLeft(), v.getTop());
@@ -382,8 +386,8 @@ public final class Utilities {
     /**
      * Sets the x and y pivots for scaling from one Rect to another.
      *
-     * @param src the source rectangle to scale from.
-     * @param dst the destination rectangle to scale to.
+     * @param src      the source rectangle to scale from.
+     * @param dst      the destination rectangle to scale to.
      * @param outPivot the pivots set for scaling from src to dst.
      */
     public static void getPivotsForScalingRectToRect(Rect src, Rect dst, PointF outPivot) {
@@ -396,15 +400,16 @@ public final class Utilities {
 
     /**
      * Maps t from one range to another range.
-     * @param t The value to map.
+     *
+     * @param t       The value to map.
      * @param fromMin The lower bound of the range that t is being mapped from.
      * @param fromMax The upper bound of the range that t is being mapped from.
-     * @param toMin The lower bound of the range that t is being mapped to.
-     * @param toMax The upper bound of the range that t is being mapped to.
+     * @param toMin   The lower bound of the range that t is being mapped to.
+     * @param toMax   The upper bound of the range that t is being mapped to.
      * @return The mapped value of t.
      */
     public static float mapToRange(float t, float fromMin, float fromMax, float toMin, float toMax,
-            Interpolator interpolator) {
+                                   Interpolator interpolator) {
         if (fromMin == fromMax || toMin == toMax) {
             Log.e(TAG, "mapToRange: range has 0 length");
             return toMin;
@@ -413,9 +418,11 @@ public final class Utilities {
         return mapRange(interpolator.getInterpolation(progress), toMin, toMax);
     }
 
-    /** Bounds t between a lower and upper bound and maps the result to a range. */
+    /**
+     * Bounds t between a lower and upper bound and maps the result to a range.
+     */
     public static float mapBoundToRange(float t, float lowerBound, float upperBound,
-            float toMin, float toMax, Interpolator interpolator) {
+                                        float toMin, float toMax, Interpolator interpolator) {
         return mapToRange(boundToRange(t, lowerBound, upperBound), lowerBound, upperBound,
                 toMin, toMax, interpolator);
     }
@@ -457,7 +464,9 @@ public final class Utilities {
         return res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    /** Converts a pixel value (px) to scale pixel value (SP) for the current device. */
+    /**
+     * Converts a pixel value (px) to scale pixel value (SP) for the current device.
+     */
     public static float pxToSp(float size) {
         return size / Resources.getSystem().getDisplayMetrics().scaledDensity;
     }
@@ -467,12 +476,16 @@ public final class Utilities {
         return (size / densityRatio);
     }
 
-    /** Converts a dp value to pixels for the current device. */
+    /**
+     * Converts a dp value to pixels for the current device.
+     */
     public static int dpToPx(float dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    /** Converts a dp value to pixels for a certain density. */
+    /**
+     * Converts a dp value to pixels for a certain density.
+     */
     public static int dpToPx(float dp, int densityDpi) {
         float densityRatio = (float) densityDpi / DisplayMetrics.DENSITY_DEFAULT;
         return (int) (dp * densityRatio);
@@ -535,7 +548,8 @@ public final class Utilities {
     /**
      * Wraps a message with a TTS span, so that a different message is spoken than
      * what is getting displayed.
-     * @param msg original message
+     *
+     * @param msg    original message
      * @param ttsMsg message to be spoken
      */
     public static CharSequence wrapForTts(CharSequence msg, String ttsMsg) {
@@ -599,15 +613,13 @@ public final class Utilities {
      * @param outObj this is set to the internal data associated with {@code info},
      *               eg {@link LauncherActivityInfo} or {@link ShortcutInfo}.
      */
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
     public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
             boolean shouldThemeIcon, Object[] outObj, boolean[] outIsIconThemed) {
-        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj, outIsIconThemed);
-        if (icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
+        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
+        if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && shouldThemeIcon) {
             AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon.mutate();
-            Drawable mono = null;
-            if (Utilities.ATLEAST_T) {
-                mono = aid.getMonochrome();
-            }
+            Drawable mono = aid.getMonochrome();
             if (mono != null && Themes.isThemedIconEnabled(context)) {
                 outIsIconThemed[0] = true;
                 int[] colors = ThemedIconDrawable.getColors(context);
@@ -619,8 +631,18 @@ public final class Utilities {
         return icon;
     }
 
+    public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
+                                           Object[] outObj, boolean useTheme) {
+        boolean[] outIsIconThemed = new boolean[1];
+        Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
+        if (useTheme && icon instanceof BitmapInfo.Extender) {
+            icon = ((BitmapInfo.Extender) icon).getThemedDrawable(context);
+        }
+        return icon;
+    }
+
     public static Drawable loadFullDrawableWithoutTheme(Context context, ItemInfo info,
-            int width, int height, Object[] outObj, boolean[] outIsIconThemed) {
+                                                        int width, int height, Object[] outObj) {
         ActivityContext activity = ActivityContext.lookupContext(context);
         LauncherAppState appState = LauncherAppState.getInstance(context);
         if (info instanceof PendingAddShortcutInfo) {
@@ -650,8 +672,8 @@ public final class Utilities {
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             FolderInfo folderInfo = (FolderInfo) info;
             if (folderInfo.isCoverMode()) {
-                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height, true,
-                        outObj, outIsIconThemed);
+                return getFullDrawable(context, folderInfo.getCoverInfo(), width, height,
+                        outObj, true);
             }
             FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     activity, info.id, new Point(width, height));

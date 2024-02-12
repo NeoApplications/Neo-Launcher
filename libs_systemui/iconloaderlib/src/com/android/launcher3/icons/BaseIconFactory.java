@@ -29,7 +29,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
-import android.os.Process;
 import android.os.UserHandle;
 import android.util.SparseBooleanArray;
 
@@ -39,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.icons.BitmapInfo.Extender;
+import com.android.launcher3.icons.IconProvider.ThemeData;
 import com.android.launcher3.util.FlagOp;
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable;
@@ -248,7 +248,7 @@ public class BaseIconFactory implements AutoCloseable {
         }
         int color = extractColor(bitmap);
         return icon instanceof BitmapInfo.Extender
-                ? ((BitmapInfo.Extender) icon).getExtendedInfo(bitmap, color, this, scale[0], user)
+                ? ((BitmapInfo.Extender) icon).getExtendedInfo(bitmap, color, this, scale[0])
                 : BitmapInfo.of(bitmap, color);
     }
 
@@ -279,7 +279,7 @@ public class BaseIconFactory implements AutoCloseable {
         BitmapInfo info = BitmapInfo.of(bitmap, color);
 
         if (icon instanceof BitmapInfo.Extender) {
-            info = ((BitmapInfo.Extender) icon).getExtendedInfo(bitmap, color, this, scale[0], Process.myUserHandle());
+            info = ((BitmapInfo.Extender) icon).getExtendedInfo(bitmap, color, this, scale[0]);
         } else if (IconProvider.ATLEAST_T && mMonoIconEnabled) {
             Drawable mono = getMonochromeDrawable(icon);
             if (mono != null) {
@@ -427,9 +427,9 @@ public class BaseIconFactory implements AutoCloseable {
             boolean[] outShape = new boolean[1];
             scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
             if (!outShape[0]) {
-                ThemedIconDrawable.ThemeData themeData = null;
-                if (icon instanceof ThemedIconDrawable.ThemedBitmapIcon) {
-                    themeData = ((ThemedIconDrawable.ThemedBitmapIcon) icon).mThemeData;
+                ThemeData themeData = null;
+                if (icon instanceof IconProvider.ThemedBitmapIcon) {
+                    themeData = ((IconProvider.ThemedBitmapIcon) icon).mThemeData;
                 }
                 int wrapperBackgroundColor = prefs.getWrapperBackgroundColor(icon);
 

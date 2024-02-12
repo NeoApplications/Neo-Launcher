@@ -48,7 +48,7 @@ class IconPreferences(context: Context) {
     }
 
     fun shouldTransparentBGIcons(): Boolean {
-        return prefs.getBoolean("prefs_transparentIconBackground", false)
+        return prefs.getBoolean("prefs_transparent_icon_background", false)
     }
 
     private fun setLightness(color: Int, lightness: Float): Int {

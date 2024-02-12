@@ -37,6 +37,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
+import com.android.launcher3.util.Themes.KEY_THEMED_ICONS
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash
@@ -61,7 +62,6 @@ import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
 import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
@@ -130,6 +130,14 @@ class NeoPrefs private constructor(val context: Context) {
         navRoute = Routes.COLOR_ACCENT
     )
 
+    var profileIconShape = NavigationPref(
+        titleId = R.string.title__theme_icon_shape,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_SHAPE,
+        defaultValue = "system",
+        navRoute = Routes.ICON_SHAPE
+    )
+
     var profileIconPack = StringSelectionPref(
         titleId = R.string.title_theme_icon_packs,
         dataStore = dataStore,
@@ -139,22 +147,9 @@ class NeoPrefs private constructor(val context: Context) {
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
         onChange = {
-            Utilities.getPrefs(context).edit()
-                .putBoolean(
-                    Themes.KEY_THEMED_ICONS,
-                    it == THEME_ICON_THEMED
-                )
-                .apply()
+            legacyPrefs.savePreference(KEY_THEMED_ICONS, it == "system_themed")
             reloadGrid()
         }
-    )
-
-    var profileIconShape = NavigationPref(
-        titleId = R.string.title__theme_icon_shape,
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_SHAPE,
-        defaultValue = "system",
-        navRoute = Routes.ICON_SHAPE
     )
 
     var profileThemedIcons = BooleanPref(
@@ -165,8 +160,7 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     var profileTransparentBgIcons = BooleanPref(
-        titleId = R.string.title__theme_blur,
-        summaryId = R.string.summary__theme_blur,
+        titleId = R.string.title_themed_background,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
         defaultValue = false
@@ -1037,8 +1031,10 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.FEED_PROVIDER,
         titleId = R.string.title_feed_provider,
         defaultValue = "",
-        entries = context.getFeedProviders(),
-    )
+        entries = context.getFeedProviders()
+    ) {
+        recreate
+    }
 
     // GESTURES & Dash
     var gestureDoubleTap = GesturePref(

@@ -408,7 +408,7 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         }
 
         @Override
-        public final FastBitmapDrawable newDrawable() {
+        public FastBitmapDrawable newDrawable() {
             FastBitmapDrawable drawable = createDrawable();
             drawable.setIsDisabled(mIsDisabled);
             if (mBadgeConstantState != null) {

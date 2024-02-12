@@ -48,9 +48,8 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.icons.LauncherIconProvider
+import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
-import com.android.launcher3.icons.ThemedIconDrawable.ThemeData
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
 import com.saggitt.omega.data.IconOverrideRepository
@@ -61,7 +60,6 @@ import com.saggitt.omega.iconpack.IconType
 import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
-import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.overrideSdk
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saulhdev.neolauncher.util.getPackageVersionCode
@@ -71,13 +69,15 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.function.Supplier
 
+
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
     supportsIconTheme: Boolean = false,
-) : LauncherIconProvider(context) {
+) : IconProvider(context, supportsIconTheme) {
 
     private val prefs = Utilities.getNeoPrefs(context)
     private val iconPackPref = prefs.profileIconPack
+    private val drawerThemedIcons = prefs.profileThemedIcons.getValue()
     private var isOlderLawnIconsInstalled =
         context.packageManager.getPackageVersionCode(LAWNICONS_PACKAGE_NAME) in 1..3
     private val iconPackProvider = IconPackProvider.INSTANCE.get(context)
@@ -86,9 +86,11 @@ class CustomIconProvider @JvmOverloads constructor(
     private var iconPackVersion = 0L
     private var themeMapName: String = ""
     private var _themeMap: Map<ComponentName, ThemeData>? = null
+    private val themedIconPack
+        get() = iconPackProvider.getIconPack("system_themed")?.apply { loadBlocking() }
     private val themeMap: Map<ComponentName, ThemeData>
         get() {
-            if (!(isOlderLawnIconsInstalled)) {
+            if (drawerThemedIcons && !(isOlderLawnIconsInstalled)) {
                 _themeMap = DISABLED_MAP
             }
             if (_themeMap == null) {
@@ -96,6 +98,10 @@ class CustomIconProvider @JvmOverloads constructor(
             }
             if (isOlderLawnIconsInstalled && iconPackPref.getValue() == LAWNICONS_PACKAGE_NAME) {
                 themeMapName = iconPackPref.getValue()
+                _themeMap = createThemedIconMap()
+            }
+            if (themedIconPack != null && themeMapName != themedIconPack!!.packPackageName) {
+                themeMapName = themedIconPack!!.packPackageName
                 _themeMap = createThemedIconMap()
             }
             return _themeMap!!
@@ -107,7 +113,7 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun setIconThemeSupported(isSupported: Boolean) {
-        _themeMap = if (isSupported) null else DISABLED_MAP
+        _themeMap = if (isSupported && isOlderLawnIconsInstalled) null else DISABLED_MAP
     }
 
     private fun resolveIconEntry(componentName: ComponentName, user: UserHandle): IconEntry? {
@@ -127,11 +133,12 @@ class CustomIconProvider @JvmOverloads constructor(
         // finally, look for normal icon
         return iconPack.getIcon(componentName)
     }
+
     override fun getIconWithOverrides(
         packageName: String,
+        iconDpi: Int,
         component: String,
         user: UserHandle,
-        iconDpi: Int,
         fallback: Supplier<Drawable>,
     ): Drawable {
         val componentName = ComponentName(packageName, component)
@@ -147,55 +154,54 @@ class CustomIconProvider @JvmOverloads constructor(
                     themeData = getThemeData(mCalendar.packageName, "")
                     iconType = ICON_TYPE_CALENDAR
                 }
-
                 !supportsIconTheme -> {
                     // theming is disabled, don't populate theme data
                 }
-
                 clock != null -> {
                     // the icon supports dynamic clock, use dynamic themed clock
                     themeData = getThemeData(mClock.packageName, "")
                     iconType = ICON_TYPE_CLOCK
                 }
-
                 packageName == mClock.packageName -> {
                     // is clock app but icon might not be adaptive, fallback to static themed clock
-                    themeData = ThemedIconDrawable.ThemeData(
+                    themeData = ThemeData(
                         context.resources,
                         BuildConfig.APPLICATION_ID,
                         R.drawable.themed_icon_static_clock
                     )
                 }
-
                 packageName == mCalendar.packageName -> {
                     // calendar app, apply the dynamic calendar icon
                     themeData = getThemeData(mCalendar.packageName, "")
                     iconType = ICON_TYPE_CALENDAR
                 }
-
                 else -> {
                     // regular icon
                     themeData = getThemeData(componentName)
                 }
             }
         }
+
         val icon = resolvedEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
         val td = themeData
         if (icon != null) return if (td != null) td.wrapDrawable(icon, iconType) else icon
         var defaultIcon =
-            super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
+            super.getIconWithOverrides(packageName, iconDpi, component, user, fallback)
         if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
-            minSDK(Build.VERSION_CODES.TIRAMISU) && defaultIcon.monochrome != null
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && defaultIcon.monochrome != null
         ) {
             defaultIcon = defaultIcon.monochrome
-            return if (td != null) td.wrapDrawable(defaultIcon, iconType) else {
+            return if (td != null) {
+                td.wrapDrawable(defaultIcon, iconType)
+            } else {
                 val themedColors = ThemedIconDrawable.getThemedColors(context)
                 if (prefs.profileTransparentBgIcons.getValue()) {
                     return defaultIcon.apply { setTint(themedColors[1]) }
                 }
                 CustomAdaptiveIconDrawable(
                     ColorDrawable(themedColors[0]),
-                    defaultIcon.apply { setTint(themedColors[1]) })
+                    defaultIcon.apply { setTint(themedColors[1]) },
+                )
             }
         }
         return defaultIcon
@@ -214,38 +220,15 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun getIcon(info: ActivityInfo?): Drawable {
-        return if (prefs.profileShapeLessIcon.getValue()) {
-            getLegacyIcon(
-                ComponentName(info!!.packageName, info.name),
-                context.resources.displayMetrics.densityDpi
-            )
-                ?: CustomAdaptiveIconDrawable.wrapNonNull(
-                    super.getIcon(
-                        info,
-                        context.resources.displayMetrics.densityDpi
-                    )
-                )
-        } else {
-            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
-        }
+        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
     }
 
     override fun getIcon(info: ActivityInfo?, iconDpi: Int): Drawable {
-        return if (prefs.profileShapeLessIcon.getValue()) {
-            getLegacyIcon(ComponentName(info!!.packageName, info.name), iconDpi)
-                ?: CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
-        } else {
-            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
-        }
+        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
     }
 
     override fun getIcon(info: LauncherActivityInfo?, iconDpi: Int): Drawable {
-        return if (prefs.profileShapeLessIcon.getValue()) {
-            getLegacyIcon(info!!.componentName, iconDpi)
-                ?: CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
-        } else {
-            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
-        }
+        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info, iconDpi))
     }
 
     private fun getLegacyIcon(componentName: ComponentName, iconDpi: Int): Drawable? {
@@ -499,10 +482,6 @@ class CustomIconProvider @JvmOverloads constructor(
 
     companion object {
         const val TAG = "CustomIconProvider"
-        const val TAG_ICON = "icon"
-        const val ATTR_COMPONENT = "component"
-        const val ATTR_PACKAGE = "package"
-        const val ATTR_DRAWABLE = "drawable"
 
         val DISABLED_MAP = emptyMap<ComponentName, ThemeData>()
         const val MANIFEST_XML = "AndroidManifest.xml"

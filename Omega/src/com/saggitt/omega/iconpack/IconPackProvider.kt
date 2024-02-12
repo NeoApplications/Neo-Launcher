@@ -12,18 +12,17 @@ import android.os.Process
 import android.os.UserHandle
 import androidx.core.content.ContextCompat
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.android.launcher3.icons.ClockDrawableWrapper
+import com.android.launcher3.icons.IconProvider.ThemeData
 import com.android.launcher3.icons.ThemedIconDrawable
-import com.android.launcher3.icons.ThemedIconDrawable.ThemeData
 import com.android.launcher3.util.MainThreadInitializedObject
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
-import com.saggitt.omega.util.Config.Companion.THEME_ICON_THEMED
 import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.prefs
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.saulhdev.neolauncher.icons.IconPreferences
 
 class IconPackProvider(private val context: Context) {
 
@@ -34,7 +33,9 @@ class IconPackProvider(private val context: Context) {
     )
 
     fun getIconPackOrSystem(packageName: String): IconPack? {
-        if (packageName.isEmpty() || packageName == THEME_ICON_THEMED) return systemIconPack
+        if (packageName.isEmpty()) {
+            return systemIconPack
+        }
         return getIconPack(packageName)
     }
 
@@ -66,10 +67,11 @@ class IconPackProvider(private val context: Context) {
             }
         val defaultIconPack =
             IconPackInfo(context.getString(R.string.icon_pack_default), "", systemIcon)
-        val themedIconsInfo = if (minSDK(Build.VERSION_CODES.TIRAMISU)) IconPackInfo(
-            context.getString(R.string.title_themed_icons),
-            THEME_ICON_THEMED,
-            ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!,
+        val themedIconsInfo = if (minSDK(Build.VERSION_CODES.TIRAMISU))
+            IconPackInfo(
+                context.getString(R.string.title_themed_icons),
+                "system_themed",
+                ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!,
         ) else null
         return listOfNotNull(
             defaultIconPack,
@@ -89,14 +91,13 @@ class IconPackProvider(private val context: Context) {
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
         val clockMetadata =
             if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
-        val isThemedIconsEnabled =
-            Utilities.ATLEAST_S && (iconEntry.packPackageName in listOf(
-                LAWNICONS_PACKAGE_NAME
-            ))
+        val isThemedIconsEnabled = context.prefs.profileThemedIcons.getValue()
+        val prefs = NeoPrefs.getInstance(context)
+
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
-                    if (isThemedIconsEnabled && context.prefs.profileTransparentBgIcons.getValue())
+                    if (isThemedIconsEnabled)
                         wrapThemedData(
                             packageManager,
                             iconEntry,
@@ -105,7 +106,7 @@ class IconPackProvider(private val context: Context) {
                     else drawable
                 }
             if (clockDrawable != null) {
-                return if (isThemedIconsEnabled)
+                return if (isThemedIconsEnabled && prefs.profileTransparentBgIcons.getValue())
                     clockDrawable.foreground
                 else
                     CustomAdaptiveIconDrawable(clockDrawable.background, clockDrawable.foreground)
@@ -126,12 +127,14 @@ class IconPackProvider(private val context: Context) {
         val themedColors: IntArray = ThemedIconDrawable.getThemedColors(context)
         val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
 
+        val iconPrefs = IconPreferences(context)
+
         @SuppressLint("DiscouragedApi")
         val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
         val bg: Drawable = ColorDrawable(themedColors[0])
         val td = ThemeData(res, iconEntry.packPackageName, resId)
         return if (drawable is AdaptiveIconDrawable) {
-            if (minSDK(Build.VERSION_CODES.TIRAMISU) && drawable.monochrome != null) {
+            if (iconPrefs.shouldTransparentBGIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }
             } else {
                 val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }
@@ -152,5 +155,5 @@ class IconPackProvider(private val context: Context) {
 data class IconPackInfo(
     val name: String,
     val packageName: String,
-    val icon: Drawable,
+    val icon: Drawable
 )

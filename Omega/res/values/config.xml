@@ -35,6 +35,7 @@
         <item>org.withouthat.acalendar</item>
         <item>ws.xsoh.etar</item>
     </string-array>
+    <string name="icon_packs_intent_name" translatable="false">default</string>
     <string name="clock_component_name" translatable="false">com.google.android.deskclock/com.android.deskclock.DeskClock</string>
     <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
 
