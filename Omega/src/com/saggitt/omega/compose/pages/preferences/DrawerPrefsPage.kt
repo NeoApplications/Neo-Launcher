@@ -81,6 +81,7 @@ fun DrawerPrefsPage() {
         prefs.drawerSortMode,
         prefs.drawerAppGroups,
         prefs.drawerSeparateWorkApps,
+        prefs.drawerCellHeightMultiplier,
         prefs.drawerSaveScrollPosition,
         prefs.drawerHideScrollbar,
     )
@@ -106,8 +107,8 @@ fun DrawerPrefsPage() {
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

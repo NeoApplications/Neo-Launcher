@@ -19,7 +19,6 @@
 package com.saggitt.omega.icons
 
 import android.app.Activity
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -65,7 +64,6 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities.drawableToBitmap
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.PackageManagerHelper
 import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -219,6 +217,7 @@ fun CustomizeIconView(
                             componentKey.toString(),
                             newValue
                         )
+                        prefs.reloadGrid
                     }
                 )
 

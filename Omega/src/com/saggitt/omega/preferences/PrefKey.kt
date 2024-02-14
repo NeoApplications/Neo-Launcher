@@ -90,6 +90,7 @@ object PrefKey {
     val DRAWER_LABELS_HIDE = booleanPreferencesKey("drawer_labels_hide")
     val DRAWER_LABELS_MULTILINE = booleanPreferencesKey("drawer_labels_multiline")
     val DRAWER_LABELS_SCALE = floatPreferencesKey("drawer_labels_scale")
+    val DRAWER_HEIGHT_MULTIPLIER = floatPreferencesKey("drawer_cell_height")
     val DRAWER_POPUP_OPTIONS = stringSetPreferencesKey("drawer_popup_options")
     val DRAWER_GRID_COLUMNS = intPreferencesKey("drawer_grid_columns")
     val DRAWER_SORT_MODE = intPreferencesKey("drawer_sort_mode")

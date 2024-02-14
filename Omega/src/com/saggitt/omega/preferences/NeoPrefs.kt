@@ -56,6 +56,7 @@ import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
+import com.saggitt.omega.preferences.PrefKey.DRAWER_HEIGHT_MULTIPLIER
 import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
@@ -692,7 +693,18 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
         onChange = { reloadGrid() }
     )
-    val drawerLabelRows get() = if (drawerMultilineLabel.getValue()) 2 else 1
+
+    val drawerCellHeightMultiplier = FloatPref(
+        dataStore = dataStore,
+        key = DRAWER_HEIGHT_MULTIPLIER,
+        titleId = R.string.title_drawer_row_height,
+        defaultValue = 1f,
+        maxValue = 2f,
+        minValue = 0.5f,
+        steps = 150,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid }
+    )
 
     val drawerSeparateWorkApps = BooleanPref(
         dataStore = dataStore,

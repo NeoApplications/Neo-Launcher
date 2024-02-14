@@ -241,6 +241,7 @@ public class DeviceProfile {
     public int allAppsLeftRightMargin;
     public final int numShownAllAppsColumns;
     public float allAppsIconTextSizePx;
+    private float allAppsCellHeightMultiplier;
 
     // Overview
     public int overviewTaskMarginPx;
@@ -313,6 +314,7 @@ public class DeviceProfile {
 
         prefs = Utilities.getNeoPrefs(context);
         boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
+        allAppsCellHeightMultiplier = prefs.getDrawerCellHeightMultiplier().getValue();
         mTextFactors = DeviceProfileOverrides.INSTANCE.get(context).getTextFactors();
         this.inv = inv;
         this.isLandscape = windowBounds.isLandscape();
@@ -1175,7 +1177,7 @@ public class DeviceProfile {
                 pxFromDp(inv.allAppsBorderSpaces[mTypeIndex].y, mMetrics, scale));
         // AllApps cells don't have real space between cells,
         // so we add the border space to the cell height
-        allAppsCellHeightPx = pxFromDp(inv.allAppsCellSize[mTypeIndex].y, mMetrics)
+        allAppsCellHeightPx = pxFromDp(inv.allAppsCellSize[mTypeIndex].y, mMetrics, allAppsCellHeightMultiplier)
                 + allAppsBorderSpacePx.y;
         // but width is just the cell,
         // the border is added in #updateAllAppsContainerWidth
