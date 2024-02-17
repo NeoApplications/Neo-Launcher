@@ -36,6 +36,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.icons.IconCache;
@@ -52,8 +53,6 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
-import com.saggitt.omega.iconpack.IconPack;
-import com.saggitt.omega.iconpack.IconPackProvider;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
@@ -135,13 +134,6 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                              appsList.trackRemoves(a -> removedComponents.add(a.componentName))) {
                     for (int i = 0; i < N; i++) {
                         if (DEBUG) Log.d(TAG, "mAllAppsList.updatePackage " + packages[i]);
-                        //Reload appMap if the current icon pack is SystemIconPack
-                        NeoPrefs prefs = Utilities.getNeoPrefs(context);
-                        if (prefs.getProfileIconPack().getValue().equals("")) {
-                            IconPack iconPack = IconPackProvider.INSTANCE.get(context).getIconPackOrSystem("");
-                            if (iconPack != null)
-                                iconPack.reloadAppMap();
-                        }
 
                         iconCache.updateIconsForPkg(packages[i], mUser);
                         activitiesLists.put(
@@ -171,7 +163,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                             .queryIntentActivityOptions(
                                     new ComponentName(context.getApplicationInfo().packageName, context.getApplicationInfo().className),
                                     null,
-                                    new Intent("system_themed"),
+                                    new Intent(context.getString(R.string.icon_packs_intent_name)),
                                     PackageManager.GET_RESOLVED_FILTER).stream().map(it -> it.activityInfo.packageName)
                             .noneMatch(it -> packageManagerHelper.isAppInstalled(it, mUser));
                     if (isThemedIconsAvailable) {

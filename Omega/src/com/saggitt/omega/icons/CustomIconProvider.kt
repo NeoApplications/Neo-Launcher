@@ -48,7 +48,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.icons.IconProvider
+import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
@@ -73,7 +73,7 @@ import java.util.function.Supplier
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
     supportsIconTheme: Boolean = false,
-) : IconProvider(context, supportsIconTheme) {
+) : LauncherIconProvider(context, supportsIconTheme) {
 
     private val prefs = Utilities.getNeoPrefs(context)
     private val iconPackPref = prefs.profileIconPack
@@ -87,7 +87,8 @@ class CustomIconProvider @JvmOverloads constructor(
     private var themeMapName: String = ""
     private var _themeMap: Map<ComponentName, ThemeData>? = null
     private val themedIconPack
-        get() = iconPackProvider.getIconPack("system_themed")?.apply { loadBlocking() }
+        get() = iconPackProvider.getIconPack(context.getString(R.string.icon_packs_intent_name))
+            ?.apply { loadBlocking() }
     private val themeMap: Map<ComponentName, ThemeData>
         get() {
             if (drawerThemedIcons && !(isOlderLawnIconsInstalled)) {
@@ -301,8 +302,12 @@ class CustomIconProvider @JvmOverloads constructor(
         return null
     }
 
+    override fun getSystemStateForPackage(systemState: String, packageName: String): String {
+        return super.getSystemStateForPackage(systemState, packageName) + ",$isThemeEnabled"
+    }
+
     override fun getSystemIconState(): String {
-        return super.getSystemIconState() + ",pack:${iconPackPref.getValue()},ver:${iconPackVersion}"
+        return super.getSystemIconState() + ",pack:${iconPackPref.getValue()},ver:$iconPackVersion"
     }
 
     override fun registerIconChangeListener(

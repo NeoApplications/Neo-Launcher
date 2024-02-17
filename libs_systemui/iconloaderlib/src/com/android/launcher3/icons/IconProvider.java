@@ -177,25 +177,22 @@ public class IconProvider {
     protected Drawable getIconWithOverrides(String packageName, int iconDpi,
                                             String component, UserHandle user,
                                             Supplier<Drawable> fallback) {
-        ThemeData td = getThemeDataForPackage(packageName);
+        ThemeData td = getThemeData(packageName, component);
 
         Drawable icon = null;
+        int iconType = ICON_TYPE_DEFAULT;
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
             icon = loadCalendarDrawable(iconDpi, td);
+            iconType = ICON_TYPE_CALENDAR;
         } else if (mClock != null && mClock.getPackageName().equals(packageName)) {
             icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi, td);
+            iconType = ICON_TYPE_CLOCK;
         }
         if (icon == null) {
             icon = fallback.get();
-            if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
-                AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
-                if (aid.getMonochrome() == null) {
-                    icon = new AdaptiveIconDrawable(aid.getBackground(),
-                            aid.getForeground(), td.loadPaddedDrawable());
-                }
-            }
+            iconType = ICON_TYPE_DEFAULT;
         }
-        return icon;
+        return td != null ? td.wrapDrawable(icon, iconType) : icon;
     }
 
     protected ThemeData getThemeDataForPackage(String packageName) {

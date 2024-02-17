@@ -148,7 +148,10 @@ class NeoPrefs private constructor(val context: Context) {
             .getIconPackList()
             .associateBy(IconPackInfo::packageName, IconPackInfo::name),
         onChange = {
-            legacyPrefs.savePreference(KEY_THEMED_ICONS, it == "system_themed")
+            legacyPrefs.savePreference(
+                KEY_THEMED_ICONS,
+                it == context.getString(R.string.icon_packs_intent_name)
+            )
             reloadGrid()
         }
     )

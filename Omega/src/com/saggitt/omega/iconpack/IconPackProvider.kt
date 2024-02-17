@@ -23,6 +23,7 @@ import com.saggitt.omega.util.prefs
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saulhdev.neolauncher.icons.IconPreferences
+import com.saulhdev.neolauncher.util.getThemedIconPacksInstalled
 
 class IconPackProvider(private val context: Context) {
 
@@ -70,7 +71,7 @@ class IconPackProvider(private val context: Context) {
         val themedIconsInfo = if (minSDK(Build.VERSION_CODES.TIRAMISU))
             IconPackInfo(
                 context.getString(R.string.title_themed_icons),
-                "system_themed",
+                context.getString(R.string.icon_packs_intent_name),
                 ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!,
         ) else null
         return listOfNotNull(
@@ -91,7 +92,9 @@ class IconPackProvider(private val context: Context) {
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
         val clockMetadata =
             if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
-        val isThemedIconsEnabled = context.prefs.profileThemedIcons.getValue()
+        val themedIconPacks = packageManager.getThemedIconPacksInstalled(context)
+        val isThemedIconsEnabled =
+            context.prefs.profileThemedIcons.getValue() && (iconEntry.packPackageName in themedIconPacks)
         val prefs = NeoPrefs.getInstance(context)
 
         if (clockMetadata != null) {
