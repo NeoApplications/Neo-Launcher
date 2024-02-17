@@ -78,9 +78,9 @@ class OmegaShortcuts {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
                     ComposeBottomSheet.show(launcher) {
                         CustomizeIconPage(
-                            icon = icon,
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
+                            appInfo = appInfo,
                             onClose = { close(true) }
                         )
                     }
@@ -90,9 +90,9 @@ class OmegaShortcuts {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
                     ComposeBottomSheet.show(launcher) {
                         CustomizeIconPage(
-                            icon = icon,
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
+                            appInfo = appInfo,
                             onClose = { close(true) }
                         )
                     }

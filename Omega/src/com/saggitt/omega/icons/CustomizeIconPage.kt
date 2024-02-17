@@ -19,6 +19,7 @@
 package com.saggitt.omega.icons
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,10 +51,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -62,8 +61,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
-import com.android.launcher3.Utilities.drawableToBitmap
+import com.android.launcher3.Utilities
+import com.android.launcher3.icons.BitmapInfo
+import com.android.launcher3.model.data.AppInfo
+import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
@@ -79,9 +82,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CustomizeIconPage(
-    icon: Drawable,
     defaultTitle: String,
     componentKey: ComponentKey,
+    appInfo: AppInfo,
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -112,23 +115,31 @@ fun CustomizeIconPage(
     }
 
     CustomizeIconView(
-        icon = icon,
         title = title,
         onTitleChange = { title = it },
         defaultTitle = defaultTitle,
         componentKey = componentKey,
+        appInfo = appInfo,
         launchSelectIcon = openEditIcon,
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+fun getAppIcon(context: Context, appInfo: AppInfo): Drawable {
+    val outObj = Array<Any?>(1) { null }
+    var icon: Drawable = Utilities.loadFullDrawableWithoutTheme(context, appInfo, 0, 0, outObj)
+    if (appInfo.screenId != SystemShortcut.NO_ID && icon is BitmapInfo.Extender) {
+        icon = icon.getThemedDrawable(context)
+    }
+    return icon
+}
+
 @Composable
 fun CustomizeIconView(
-    icon: Drawable,
     title: String,
     onTitleChange: (String) -> Unit,
     defaultTitle: String,
     componentKey: ComponentKey,
+    appInfo: AppInfo,
     launchSelectIcon: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -138,6 +149,7 @@ fun CustomizeIconView(
     val repo = IconOverrideRepository.INSTANCE.get(context)
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
+    var icon = getAppIcon(context, appInfo)
 
     Column(
         modifier = Modifier
@@ -162,7 +174,7 @@ fun CustomizeIconView(
                 .clip(MaterialTheme.shapes.small)
         ) {
             Image(
-                bitmap = drawableToBitmap(icon)!!.asImageBitmap(),
+                painter = rememberDrawablePainter(icon),
                 contentDescription = title,
                 modifier = Modifier
                     .requiredSize(64.dp)
@@ -227,6 +239,7 @@ fun CustomizeIconView(
                         modifier = Modifier.clickable {
                             scope.launch {
                                 repo.deleteOverride(componentKey)
+                                icon = getAppIcon(context, appInfo)
                             }
                         }
                     )
@@ -250,7 +263,7 @@ fun CustomizeIconView(
             }
         }
         if (prefs.showDebugInfo.getValue()) {
-            val appInfo =
+            val component =
                 componentKey.componentName.packageName + "/" + componentKey.componentName.className
             Divider(
                 modifier = Modifier
@@ -269,7 +282,7 @@ fun CustomizeIconView(
             Spacer(modifier = Modifier.height(8.dp))
             PreferenceItem(
                 title = stringResource(id = R.string.debug_component_name),
-                summary = appInfo
+                summary = component
             )
             PreferenceItem(
                 title = stringResource(id = R.string.app_version),
