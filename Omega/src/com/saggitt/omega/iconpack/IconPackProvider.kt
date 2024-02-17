@@ -26,8 +26,6 @@ import com.saulhdev.neolauncher.icons.IconPreferences
 import com.saulhdev.neolauncher.util.getThemedIconPacksInstalled
 
 class IconPackProvider(private val context: Context) {
-
-    private val systemIconPack = SystemIconPack(context)
     private val iconPacks = mutableMapOf<String, IconPack?>()
     private val systemIcon = CustomAdaptiveIconDrawable.wrapNonNull(
         ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)!!
@@ -35,7 +33,7 @@ class IconPackProvider(private val context: Context) {
 
     fun getIconPackOrSystem(packageName: String): IconPack? {
         if (packageName.isEmpty()) {
-            return systemIconPack
+            return SystemIconPack(context, packageName)
         }
         return getIconPack(packageName)
     }

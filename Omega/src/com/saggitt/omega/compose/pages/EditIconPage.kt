@@ -59,6 +59,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.android.launcher3.R
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.ListItemWithIcon
@@ -208,32 +209,34 @@ fun EditIconPage(
         Column {
             LazyColumn {
                 itemsIndexed(iconPacks) { _, iconPack ->
-                    ListItemWithIcon(
-                        title = iconPack.name,
-                        modifier = Modifier
-                            .clickable {
-                                if (iconPack.packageName == "") {
-                                    navController.navigate("/${Routes.ICON_PICKER}/")
-                                } else {
-                                    navController.navigate("/${Routes.ICON_PICKER}/${iconPack.packageName}/")
+                    if (iconPack.packageName != context.getString(R.string.icon_packs_intent_name)) {
+                        ListItemWithIcon(
+                            title = iconPack.name,
+                            modifier = Modifier
+                                .clickable {
+                                    if (iconPack.packageName == "") {
+                                        navController.navigate("/${Routes.ICON_PICKER}/")
+                                    } else {
+                                        navController.navigate("/${Routes.ICON_PICKER}/${iconPack.packageName}/")
+                                    }
                                 }
-                            }
-                            .padding(start = 16.dp),
-                        startIcon = {
-                            Image(
-                                bitmap = drawableToBitmap(iconPack.icon).asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(44.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.background.copy(alpha = 0.12F)
-                                    )
-                            )
-                        },
-                        horizontalPadding = 8.dp,
-                        verticalPadding = 8.dp
-                    )
+                                .padding(start = 16.dp),
+                            startIcon = {
+                                Image(
+                                    bitmap = drawableToBitmap(iconPack.icon).asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .size(44.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.background.copy(alpha = 0.12F)
+                                        )
+                                )
+                            },
+                            horizontalPadding = 8.dp,
+                            verticalPadding = 8.dp
+                        )
+                    }
                 }
             }
         }

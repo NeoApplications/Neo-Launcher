@@ -54,6 +54,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -65,7 +66,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.android.launcher3.R
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.saggitt.omega.compose.components.LazyGridLayout
 import com.saggitt.omega.compose.components.MutablePaddingValues
@@ -81,6 +81,8 @@ import com.saggitt.omega.iconpack.CustomIconPack
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.iconpack.filter
+import com.saggitt.omega.util.getIcon
+import com.saulhdev.neolauncher.icons.drawableToBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -125,7 +127,7 @@ fun IconListPage(
                 ?: return@rememberLauncherForActivityResult
             onClickItem(entry)
         }
-    Column() {
+    Column {
         SearchBarUI(
             searchInput = {
                 SearchTextField(
@@ -276,7 +278,7 @@ fun IconPreview(
             .padding(8.dp),
     ) {
         Image(
-            painter = rememberDrawablePainter(drawable),
+            bitmap = drawableToBitmap(drawable ?: LocalContext.current.getIcon()).asImageBitmap(),
             contentDescription = iconItem.drawableName,
             modifier = Modifier.aspectRatio(1f),
         )

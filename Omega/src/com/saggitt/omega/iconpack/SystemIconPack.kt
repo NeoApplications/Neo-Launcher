@@ -17,12 +17,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class SystemIconPack(context: Context) : IconPack(context, "") {
-
+class SystemIconPack(context: Context, pkg: String) : IconPack(context, pkg) {
     override val label = context.getString(R.string.icon_pack_default)
     private var appMap = run {
         val profiles = UserCache.INSTANCE.get(context).userProfiles
-        val launcherApps = context.getSystemService<LauncherApps>()!!
+        val launcherApps: LauncherApps = context.getSystemService<LauncherApps>()!!
         profiles
             .flatMap { launcherApps.getActivityList(null, Process.myUserHandle()) }
             .associateBy { ComponentKey(it.componentName, it.user) }

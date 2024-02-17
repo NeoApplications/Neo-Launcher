@@ -633,7 +633,6 @@ public final class Utilities {
 
     public static Drawable getFullDrawable(Context context, ItemInfo info, int width, int height,
                                            Object[] outObj, boolean useTheme) {
-        boolean[] outIsIconThemed = new boolean[1];
         Drawable icon = loadFullDrawableWithoutTheme(context, info, width, height, outObj);
         if (useTheme && icon instanceof BitmapInfo.Extender) {
             icon = ((BitmapInfo.Extender) icon).getThemedDrawable(context);

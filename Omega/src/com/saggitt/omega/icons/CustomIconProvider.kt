@@ -221,7 +221,20 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     override fun getIcon(info: ActivityInfo?): Drawable {
-        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
+        return if (prefs.profileShapeLessIcon.getValue()) {
+            getLegacyIcon(
+                ComponentName(info!!.packageName, info.name),
+                context.resources.displayMetrics.densityDpi
+            )
+                ?: CustomAdaptiveIconDrawable.wrapNonNull(
+                    super.getIcon(
+                        info,
+                        context.resources.displayMetrics.densityDpi
+                    )
+                )
+        } else {
+            CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
+        }
     }
 
     override fun getIcon(info: ActivityInfo?, iconDpi: Int): Drawable {
