@@ -67,7 +67,7 @@ android {
     compileSdk = 34
 
     val name = "1.0"
-    val code = 953
+    val code = 954
 
     defaultConfig {
         minSdk = 26
@@ -274,6 +274,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-javalite:$vProtobuf")
     implementation("com.github.ChickenHook:RestrictionBypass:$vResBypass")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$vCoroutines")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$vSerialization")
     implementation("com.squareup.okhttp3:okhttp:$vOkhttp")
     implementation("com.github.samanzamani:PersianDate:$vPersianDate")
     implementation("com.github.KwabenBerko:OpenWeatherMap-Android-Library:$vOWM") {
@@ -282,7 +283,6 @@ dependencies {
     }
     implementation("com.raedapps:alwan:$vAlwan")
     implementation("io.github.hokofly:hoko-blur:$vHokoBlur")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$vSerialization")
     implementation("me.xdrop:fuzzywuzzy:$vFuzzywuzzy")
 
     //Compose

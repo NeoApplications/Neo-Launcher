@@ -67,7 +67,6 @@ import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
@@ -150,6 +149,7 @@ fun CustomizeIconView(
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
     var icon = getAppIcon(context, appInfo)
+    val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsState(initial = emptySet())
 
     Column(
         modifier = Modifier
@@ -220,16 +220,16 @@ fun CustomizeIconView(
 
         PreferenceGroup {
             if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
+                val stringKey = componentKey.toString()
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
-                    isChecked = CustomAppFilter.isHiddenApp(context, componentKey),
+                    isChecked = hiddenApps.value.contains(stringKey),
                     onCheckedChange = { newValue ->
-                        CustomAppFilter.setComponentNameState(
-                            context,
-                            componentKey.toString(),
-                            newValue
-                        )
-                        prefs.reloadGrid
+                        val newSet = hiddenApps.value.toMutableSet()
+                        if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
+                        scope.launch {
+                            prefs.drawerHiddenAppSet.set(newSet)
+                        }
                     }
                 )
 

@@ -8,12 +8,10 @@ import com.android.launcher3.Utilities
 val setConfigurationMethod by lazy {
     if (Utilities.ATLEAST_OREO_MR1)
         AssetManager::class.java.getDeclaredMethod(
-                "setConfiguration",
-                /* mcc */
+            "setConfiguration", /* mcc */
                 Int::class.java, /* mnc */
                 Int::class.java, /* locale */
-                String::class.java,
-                /* orientation*/
+            String::class.java, /* orientation*/
                 Int::class.java, /* touchscreen*/
                 Int::class.java, /* density*/
                 Int::class.java,
@@ -32,6 +30,7 @@ val setConfigurationMethod by lazy {
                 /* uiMode */
                 Int::class.java, /* colorMode */
                 Int::class.java, /* majorVersion */
+            Int::class.java,
                 Int::class.java
         )
     else
@@ -87,7 +86,9 @@ fun setResSdk(res: Resources, sdk: Int): Resources {
 
         if (Utilities.ATLEAST_OREO_MR1)
             setConfigurationMethod.invoke(
-                    assets, configuration.mcc, configuration.mnc,
+                assets,
+                configuration.mcc,
+                configuration.mnc,
                     configuration.locale.toLanguageTag(),
                     configuration.orientation,
                     configuration.touchscreen,
@@ -96,7 +97,8 @@ fun setResSdk(res: Resources, sdk: Int): Resources {
                     configuration.smallestScreenWidthDp,
                     configuration.screenWidthDp, configuration.screenHeightDp,
                     configuration.screenLayout, configuration.uiMode,
-                    configuration.colorMode, sdk
+                configuration.colorMode,
+                sdk, 0
             )
         else
             setConfigurationMethod.invoke(
