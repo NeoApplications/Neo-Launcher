@@ -42,6 +42,10 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
         }
     }
 
+    fun reloadTabs() {
+        launcher.appsView.reloadTabs()
+    }
+
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }

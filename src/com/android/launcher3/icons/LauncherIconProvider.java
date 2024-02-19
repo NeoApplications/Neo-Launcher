@@ -24,7 +24,6 @@ import android.util.Log;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -47,7 +46,7 @@ public class LauncherIconProvider extends IconProvider {
     private boolean mSupportsIconTheme;
 
     public LauncherIconProvider(Context context, boolean supportsIconTheme) {
-        super(context);
+        super(context, supportsIconTheme);
         setIconThemeSupported(supportsIconTheme);
     }
 
@@ -63,12 +62,6 @@ public class LauncherIconProvider extends IconProvider {
     @Override
     protected ThemeData getThemeDataForPackage(String packageName) {
         return getThemedIconMap().get(packageName);
-    }
-
-    @Override
-    public String getSystemIconState() {
-        return CustomAdaptiveIconDrawable.sMaskId
-                + (isThemeEnabled() ? ",with-theme" : ",no-theme");
     }
 
     private Map<String, ThemeData> getThemedIconMap() {

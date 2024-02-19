@@ -48,7 +48,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -74,7 +73,6 @@ import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditGroupBottomSheet(
     category: AppGroupsManager.Category,
@@ -404,6 +402,7 @@ fun EditGroupBottomSheet(
                         AppGroupsManager.Category.FLOWERPOT,
                                                          -> {
                             prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
+                            prefs.reloadTabs()
                         }
 
                         else                             -> {}

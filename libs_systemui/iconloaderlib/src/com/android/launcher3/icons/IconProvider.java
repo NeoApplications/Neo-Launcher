@@ -117,10 +117,6 @@ public class IconProvider {
     protected static final int ICON_TYPE_CALENDAR = 1;
     protected static final int ICON_TYPE_CLOCK = 2;
 
-    public IconProvider(Context context) {
-        this(context, false);
-    }
-
     public IconProvider(Context context, boolean supportsIconTheme) {
         mContext = context;
         mCalendar = parseComponentOrNull(context, R.string.calendar_component_name);
@@ -332,8 +328,8 @@ public class IconProvider {
      * Returns a string representation of the current system icon state
      */
     public String getSystemIconState() {
-        return (CONFIG_ICON_MASK_RES_ID == ID_NULL
-                ? "" : mContext.getResources().getString(CONFIG_ICON_MASK_RES_ID));
+        return CustomAdaptiveIconDrawable.sMaskId
+                + (isThemeEnabled() ? ",with-theme" : ",no-theme");
     }
 
     @Nullable

@@ -96,6 +96,7 @@ class NeoPrefs private constructor(val context: Context) {
     val recreate = { onChangeCallback?.recreate() }
     val reloadAll = { onChangeCallback?.reloadAll() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
+    val reloadTabs = { onChangeCallback?.reloadTabs() }
 
     inline fun withChangeCallback(
         crossinline callback: (PreferencesChangeCallback) -> Unit,
