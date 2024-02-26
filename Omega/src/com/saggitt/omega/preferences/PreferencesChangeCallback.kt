@@ -49,4 +49,8 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     fun updateBlur() {
         BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
+
+    fun restart() {
+        launcher.scheduleRestart()
+    }
 }

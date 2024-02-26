@@ -94,6 +94,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
+    val restart = { onChangeCallback?.restart() }
     val reloadAll = { onChangeCallback?.reloadAll() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }
@@ -1049,7 +1050,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = "",
         entries = context.getFeedProviders()
     ) {
-        recreate
+        restart()
     }
 
     // GESTURES & Dash

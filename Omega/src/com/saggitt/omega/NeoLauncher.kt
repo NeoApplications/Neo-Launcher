@@ -60,7 +60,6 @@ import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
-import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -355,6 +354,14 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 sRestartFlags = 0
                 recreate()
             }
+        }
+    }
+
+    fun scheduleRestart() {
+        if (paused) {
+            sRestartFlags = FLAG_RESTART
+        } else {
+            Utilities.restartLauncher(this)
         }
     }
 
