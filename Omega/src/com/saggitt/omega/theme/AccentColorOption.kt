@@ -62,6 +62,16 @@ sealed class AccentColorOption {
         override fun toString() = "wallpaper_secondary"
     }
 
+    object WallpaperTertiary : AccentColorOption() {
+        override val isSupported = Utilities.ATLEAST_OREO_MR1
+        override val displayName = R.string.color_wallpaper_tertiary
+        override val accentColor: Int
+            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
+                .wallpaperColors?.getTertiaryColor() ?: LightPrimary.toArgb()
+
+        override fun toString() = "wallpaper_tertiary"
+    }
+
     class CustomColor(override val accentColor: Int) : AccentColorOption() {
         override val isSupported = true
         override val displayName = R.string.app_name
@@ -88,6 +98,7 @@ sealed class AccentColorOption {
             "system_accent" -> SystemAccent
             "wallpaper_primary" -> WallpaperPrimary
             "wallpaper_secondary" -> WallpaperSecondary
+            "wallpaper_tertiary" -> WallpaperTertiary
             "default" -> LauncherDefault
             else -> instantiateCustomColor(stringValue)
         }

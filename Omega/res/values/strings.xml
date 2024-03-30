@@ -186,6 +186,7 @@
     <string name="summary__theme_blur">Blur page backgrounds</string>
     <string name="theme_auto">Follow wallpaper</string>
     <string name="color_wallpaper_secondary">Wallpaper Secondary</string>
+    <string name="color_wallpaper_tertiary">Wallpaper Tertiary</string>
     <string name="theme_auto_black">Follow wallpaper (Black)</string>
     <string name="theme_auto_night_mode">System</string>
     <string name="theme_auto_night_mode_black">System (Black)</string>

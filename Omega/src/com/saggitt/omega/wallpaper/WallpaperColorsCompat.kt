@@ -45,7 +45,6 @@ class WallpaperColorsCompat(
     }
 
     companion object {
-
         const val HINT_SUPPORTS_DARK_TEXT = 0x1
         const val HINT_SUPPORTS_DARK_THEME = 0x2
     }
