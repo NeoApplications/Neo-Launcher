@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -44,8 +45,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     private var imeShift = 0f
     private var _hintCloseProgress = mutableFloatStateOf(0f)
     private val hintCloseProgress get() = _hintCloseProgress.value
-    var hintCloseDistance = 0f
-        private set
+    private var hintCloseDistance = 0f
 
     init {
         layoutParams =
@@ -110,6 +110,10 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
 
     override fun isOfType(type: Int): Boolean {
         return type and TYPE_SETTINGS_SHEET != 0
+    }
+
+    override fun getScrimColor(context: Context): Int {
+        return ContextCompat.getColor(context, R.color.widgets_picker_scrim)
     }
 
     private fun setImeShift(shift: Float) {
