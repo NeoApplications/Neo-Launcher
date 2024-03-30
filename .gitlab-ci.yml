@@ -5,7 +5,7 @@ stages:
 variables:
     GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
     CHAT_ID: "omega"
-    KEYSTORE_FILE: "debug.keystore"
+    KEYSTORE_FILE: "$CI_PROJECT_DIR/debug.keystore"
     KEYSTORE_PASSWORD: "android"
     KEY_ALIAS: "androiddebugkey"
     KEY_PASSWORD: "android"
@@ -27,9 +27,8 @@ build:
             - .gradle/caches
             - .gradle/wrapper
     artifacts:
-        name: "NeoLauncher.apk"
         paths:
-            - build/outputs/apk/aospOmega/debug/
+            - $CI_PROJECT_DIR/build/outputs/apk/aospOmega/debug/*.apk
         expire_in: 
             1 week
 
