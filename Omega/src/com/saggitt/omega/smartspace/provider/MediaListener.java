@@ -12,13 +12,14 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.core.util.Consumer;
+
 import com.saggitt.omega.util.FlowCollector;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class MediaListener extends MediaController.Callback {
     private static final String TAG = "MediaListener";
