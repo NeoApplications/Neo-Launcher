@@ -133,6 +133,9 @@
     <string name="title_text_color">Text Color</string>
     <string name="title_drawer_layout">Layout Mode</string>
     <string name="title_drawer_vertical">Vertical</string>
+    <string name="title_drawer_horizontal">Horizontal</string>
+    <string name="title_drawer_categorized">Categorized</string>
+    <string name="title_drawer_custom_categories">Custom Categories</string>
     <string name="title_drawer_vertical_list">Vertical List</string>
     <string name="title_drawer_paged">Paged</string>
     <string name="dialog_message_change_sort">Change to alphabetical app sorting?</string>
