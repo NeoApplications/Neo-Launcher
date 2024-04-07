@@ -494,7 +494,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-
     // Dock
     var dockHide = BooleanPref(
         dataStore = dataStore,
@@ -772,6 +771,14 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_app_categorize,
         summaryId = R.string.summary_app_categorize,
         navRoute = Routes.CATEGORIZE_APPS
+    )
+
+    var drawerLayout = IntSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_LAYOUT,
+        titleId = R.string.title_drawer_layout,
+        defaultValue = LAYOUT_VERTICAL,
+        entries = drawerLayoutOptions
     )
 
     // Notifications & Widgets/Smartspace

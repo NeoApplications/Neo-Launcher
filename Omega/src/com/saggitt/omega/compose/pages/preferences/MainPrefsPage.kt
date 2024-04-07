@@ -120,8 +120,8 @@ fun MainPrefsPage() {
     ) { paddingValues ->
         LazyColumn(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
                 contentPadding = paddingValues,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -159,7 +159,7 @@ fun NavGraphBuilder.mainPrefsGraph(route: String) {
         preferenceGraph(route = subRoute(Routes.PREFS_SEARCH), { SearchPrefsPage() })
         preferenceGraph(route = subRoute(Routes.PREFS_BACKUPS), { BackupsPrefsPage() })
         //preferenceGraph(route = subRoute(Routes.PREFS_DM), { BlankScreen() })
-        preferenceGraph(route = subRoute(Routes.PREFS_DEV), { DevPrefsPage() })
+        devPrefsGraph(route = subRoute(Routes.PREFS_DEV))
         gesturesPrefsGraph(route = subRoute(Routes.PREFS_GESTURES))
         aboutPrefsGraph(route = subRoute(Routes.ABOUT))
         editIconGraph(route = subRoute(Routes.EDIT_ICON))

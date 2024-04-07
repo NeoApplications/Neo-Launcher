@@ -85,7 +85,6 @@ object PrefKey {
     val DOCK_ROWS = intPreferencesKey("dock_rows")
 
     // Drawer
-    val DRAWER_ICON_SCALE_ENFORCE = booleanPreferencesKey("drawer_icon_scale_enforce")
     val DRAWER_ICON_SCALE = floatPreferencesKey("drawer_icon_scale")
     val DRAWER_LABELS_HIDE = booleanPreferencesKey("drawer_labels_hide")
     val DRAWER_LABELS_MULTILINE = booleanPreferencesKey("drawer_labels_multiline")
@@ -106,6 +105,7 @@ object PrefKey {
     val DRAWER_CATEGORIZATION = stringPreferencesKey("drawer_categorization")
     val DRAWER_CATEGORIZATION_ENABLED = booleanPreferencesKey("drawer_categorization_enabled")
     val DRAWER_CATEGORIZATION_TYPE = stringPreferencesKey("drawer_categorization_type")
+    val DRAWER_LAYOUT = intPreferencesKey("drawer_layout")
 
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")

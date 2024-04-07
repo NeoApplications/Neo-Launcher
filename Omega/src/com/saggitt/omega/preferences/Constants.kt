@@ -49,6 +49,13 @@ const val PREFS_DESKTOP_POPUP_REMOVE = "desktop_popup_remove"
 const val PREFS_DRAWER_POPUP_EDIT = "drawer_popup_edit"
 const val PREFS_DRAWER_POPUP_UNINSTALL = "drawer_popup_uninstall"
 
+
+const val LAYOUT_VERTICAL = 1
+const val LAYOUT_VERTICAL_ALPHABETICAL = 2
+const val LAYOUT_HORIZONTAL = 3
+const val LAYOUT_CUSTOM_CATEGORIES = 4
+const val LAYOUT_CATEGORIZED = 5
+
 val desktopPopupOptions = mutableMapOf(
     PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,
     PREFS_DESKTOP_POPUP_EDIT to R.string.action_preferences,
@@ -57,6 +64,14 @@ val desktopPopupOptions = mutableMapOf(
 val drawerPopupOptions = mutableMapOf(
     PREFS_DRAWER_POPUP_UNINSTALL to R.string.uninstall_drop_target_label,
     PREFS_DRAWER_POPUP_EDIT to R.string.action_preferences,
+)
+
+val drawerLayoutOptions = mutableMapOf(
+    LAYOUT_VERTICAL to R.string.title_drawer_vertical,
+    LAYOUT_VERTICAL_ALPHABETICAL to R.string.title_drawer_vertical_list,
+    LAYOUT_HORIZONTAL to R.string.title_drawer_horizontal,
+    LAYOUT_CATEGORIZED to R.string.title_drawer_categorized,
+    LAYOUT_CUSTOM_CATEGORIES to R.string.title_drawer_custom_categories,
 )
 
 val temperatureUnitOptions = listOfNotNull(
