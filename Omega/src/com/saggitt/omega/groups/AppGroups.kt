@@ -137,12 +137,6 @@ abstract class AppGroups<T : AppGroups.Group>(
         } catch (_: IllegalArgumentException) {
         } catch (_: JSONException) {
         }
-
-        try {
-            return JSONArray(groupsDataJson.getValue())
-        } catch (ignored: JSONException) {
-        }
-
         return JSONArray()
     }
 

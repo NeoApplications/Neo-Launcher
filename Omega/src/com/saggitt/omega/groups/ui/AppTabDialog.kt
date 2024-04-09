@@ -134,7 +134,6 @@ fun AppTabDialogUI(
                 }
             }
 
-            //Button Rows
             Row(
                 Modifier
                     .fillMaxWidth()
