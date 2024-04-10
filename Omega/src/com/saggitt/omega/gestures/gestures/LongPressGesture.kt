@@ -19,13 +19,5 @@ package com.saggitt.omega.gestures.gestures
 import com.saggitt.omega.gestures.Gesture
 import com.saggitt.omega.gestures.GestureController
 
-class LongPressGesture(controller: GestureController) : Gesture(controller) {
-
-    private val handler by controller.launcher.prefs.gestureLongPress
-    override val isEnabled = true
-
-    override fun onEvent(): Boolean {
-        controller.createGestureHandler(handler).onGestureTrigger(controller)
-        return true
-    }
-}
+class LongPressGesture(controller: GestureController) :
+    Gesture(controller, controller.launcher.prefs.gestureLongPress)

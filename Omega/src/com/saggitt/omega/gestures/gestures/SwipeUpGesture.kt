@@ -19,5 +19,5 @@ package com.saggitt.omega.gestures.gestures
 import com.saggitt.omega.gestures.Gesture
 import com.saggitt.omega.gestures.GestureController
 
-class PressHomeGesture(controller: GestureController) :
-    Gesture(controller, controller.launcher.prefs.gestureHomePress)
+class SwipeUpGesture(controller: GestureController) :
+    Gesture(controller, controller.launcher.prefs.gestureSwipeUp)

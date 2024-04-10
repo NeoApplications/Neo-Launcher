@@ -16,52 +16,8 @@
  */
 package com.saggitt.omega.gestures.gestures
 
-import android.view.GestureDetector
-import android.view.MotionEvent
-import com.android.launcher3.Utilities
-import com.android.launcher3.Utilities.squaredHypot
 import com.saggitt.omega.gestures.Gesture
 import com.saggitt.omega.gestures.GestureController
 
-class DoubleTapGesture(controller: GestureController) : Gesture(controller) {
-
-    private val handler by controller.launcher.prefs.gestureDoubleTap
-    override val isEnabled = true
-
-    private val squaredTouchSlop = Utilities.squaredTouchSlop(controller.launcher)
-
-    fun createDoubleTapListener(): DoubleTapGestureListener {
-        return DoubleTapGestureListener()
-    }
-
-    inner class DoubleTapGestureListener : GestureDetector.OnDoubleTapListener {
-
-        private var downX = 0f
-        private var downY = 0f
-
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun onDoubleTap(e: MotionEvent): Boolean {
-            return false
-        }
-
-        override fun onDoubleTapEvent(e: MotionEvent): Boolean {
-            when (e.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    downX = e.x
-                    downY = e.y
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    if (squaredHypot(e.x - downX, e.y - downY) < squaredTouchSlop) {
-                        controller.createGestureHandler(handler).onGestureTrigger(controller)
-                        return true
-                    }
-                }
-            }
-            return false
-        }
-    }
-}
+class DoubleTapGesture(controller: GestureController) :
+    Gesture(controller, controller.launcher.prefs.gestureDoubleTap)
