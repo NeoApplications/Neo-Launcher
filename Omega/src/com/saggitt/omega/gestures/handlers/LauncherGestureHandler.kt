@@ -36,7 +36,6 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.anim.AnimatorListeners
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.widget.WidgetsBottomSheet
 import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
@@ -111,7 +110,14 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
         Log.d("OpenOverviewGestureHandler", "onGestureTrigger from $view")
-        controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
+        if (true) { // TODO add pref for showing popup menu
+            controller.launcher.showDefaultOptions(
+                controller.touchDownPoint.x,
+                controller.touchDownPoint.y
+            )
+        } else {
+            controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
+        }
     }
 }
 
@@ -144,7 +150,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
                 context.getIcon()
             }
 
-            else           -> context.getIcon()
+            else -> context.getIcon()
         }
 
     private val displayNameWithoutTarget: String = context.getString(R.string.action_open_app)
@@ -181,7 +187,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         config.put("appName", appName)
         config.put("type", type)
         when (type) {
-            "app"      -> {
+            "app" -> {
                 config.put("target", target.toString())
             }
 
@@ -203,7 +209,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             appName = data.getStringExtra("appName")
             type = data.getStringExtra("type")
             when (type) {
-                "app"      ->
+                "app" ->
                     target = Utilities
                         .makeComponentKey(context, data.getStringExtra("target") ?: "")
 
@@ -233,7 +239,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
         }
 
         when (type) {
-            "app"      -> {
+            "app" -> {
                 target?.let {
                     try {
                         context.getSystemService(LauncherApps::class.java)

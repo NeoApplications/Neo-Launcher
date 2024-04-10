@@ -21,15 +21,15 @@ import android.view.MotionEvent
 import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
+import com.android.launcher3.touch.SingleAxisSwipeDetector
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.gestures.handlers.VerticalSwipeGestureHandler
 import com.saggitt.omega.nLauncher
-import com.saggitt.omega.touch.SwipeDetector
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
 class VerticalSwipeGestureController(private val launcher: Launcher) : TouchController,
-                                                                       SwipeDetector.Listener {
+    SingleAxisSwipeDetector.Listener {
 
     enum class GestureState {
         Locked,
@@ -42,9 +42,17 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
     private val triggerVelocity = 2.25f
     private val notificationsCloseVelocity = 0.35f
 
-    private val controller by lazy { launcher.nLauncher.gestureController }
-    private val gesture by lazy { controller.verticalSwipeGesture }
-    private val detector by lazy { SwipeDetector(launcher, this, SwipeDetector.VERTICAL) }
+    private val controller get() = launcher.nLauncher.gestureController
+    private val customSwipeUpGesture get() = controller.swipeUpGesture.custom
+    private val customSwipeUpDockGesture get() = controller.swipeUpDockGesture.custom
+    private val customSwipeDownGesture get() = controller.swipeDownGesture.custom
+    private val detector by lazy {
+        SingleAxisSwipeDetector(
+            launcher,
+            this,
+            SingleAxisSwipeDetector.VERTICAL
+        )
+    }
     private var noIntercept = false
 
     private var swipeUpOverride: GestureHandler? = null
@@ -59,6 +67,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
     private var currentMillis = 0L
     private var currentVelocity = 0f
     private var currentDisplacement = 0f
+    private var currentStart = 0f
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
         downTime = ev.downTime
@@ -72,22 +81,19 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
             } else {
                 controller.getSwipeUpOverride(ev.downTime)
             }
+            state = GestureState.Triggered
             noIntercept = !canInterceptTouch() && !hasSwipeUpOverride
             if (noIntercept) {
                 return false
             }
+            currentStart = ev.y
             detector.setDetectableScrollConditions(getSwipeDirection(ev), false)
         }
         if (noIntercept) {
             return false
         }
-        val action = ev.action
-        if (!isDown && !downSent) {
-            ev.action = MotionEvent.ACTION_DOWN
-        }
         downSent = true
         onControllerTouchEvent(ev)
-        ev.action = action
         return detector.isDraggingOrSettling
     }
 
@@ -101,28 +107,32 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
                 launcher.isInState(LauncherState.NORMAL)
     }
 
-    private fun isOverHotseat(ev: MotionEvent): Boolean {
+    private fun isOverHotseat(startY: Float): Boolean {
         val dp = launcher.deviceProfile
         val hotseatHeight = dp.hotseatBarSizePx + dp.insets.bottom
-        return ev.y >= launcher.dragLayer.height - hotseatHeight
+        return startY >= launcher.dragLayer.height - hotseatHeight
     }
 
     private fun getSwipeDirection(ev: MotionEvent): Int {
         return when {
             controller.getSwipeUpOverride(ev.downTime) != null -> {
                 if (canInterceptTouch())
-                    SwipeDetector.DIRECTION_BOTH
+                    SingleAxisSwipeDetector.DIRECTION_POSITIVE or SingleAxisSwipeDetector.DIRECTION_NEGATIVE
                 else
-                    SwipeDetector.DIRECTION_POSITIVE
+                    SingleAxisSwipeDetector.DIRECTION_POSITIVE
             }
 
-            gesture.customSwipeUp && !isOverHotseat(ev)        -> SwipeDetector.DIRECTION_BOTH
-            gesture.customDockSwipeUp && isOverHotseat(ev)     -> SwipeDetector.DIRECTION_BOTH
-            else                                               -> SwipeDetector.DIRECTION_NEGATIVE
+            else -> {
+                SingleAxisSwipeDetector.DIRECTION_NEGATIVE.or(
+                    if ((customSwipeUpGesture && !isOverHotseat(currentStart)) ||
+                        (customSwipeUpDockGesture && isOverHotseat(currentStart))
+                    ) SingleAxisSwipeDetector.DIRECTION_POSITIVE else 0b0
+                )
+            }
         }
     }
 
-    override fun onDragStart(start: Boolean) {
+    override fun onDragStart(start: Boolean, startDisplacement: Float) {
         state = GestureState.Free
         (swipeUpOverride as? VerticalSwipeGestureHandler)?.onDragStart(start)
         overrideDragging = true
@@ -132,47 +142,40 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
         return true
     }
 
-    override fun onDrag(displacement: Float, ev: MotionEvent): Boolean {
-        val velocity = computeVelocity(displacement - currentDisplacement, ev.eventTime)
+    override fun onDrag(displacement: Float, event: MotionEvent): Boolean {
+        if (state == GestureState.Triggered) return true
+        val velocity = computeVelocity(displacement - currentDisplacement, event.eventTime)
         currentDisplacement = displacement
         if (state != GestureState.Locked) {
-            val wasFree = state == GestureState.Free
             if (overrideDragging) {
                 (swipeUpOverride as? VerticalSwipeGestureHandler)?.onDrag(displacement, velocity)
             }
-            if (gesture.customSwipeDown) {
-                if (velocity > triggerVelocity && state == GestureState.Free) {
+            when {
+                velocity > triggerVelocity && state == GestureState.Free -> {
                     state = GestureState.Triggered
-                    gesture.onSwipeDown()
+                    controller.onSwipeDown()
                 }
-            } else {
-                if (velocity > triggerVelocity &&
-                    (state == GestureState.Free || state == GestureState.NotificationClosed)
-                ) {
-                    state =
-                        if (openNotificationsOrQuickSettings()) GestureState.NotificationOpened else GestureState.Locked
-                } else if (velocity < -notificationsCloseVelocity && state == GestureState.NotificationOpened) {
-                    state =
-                        if (closeNotifications()) GestureState.NotificationClosed else GestureState.Locked
-                }
-            }
 
-            if (wasFree && state == GestureState.NotificationOpened) {
-                sendOnDragEnd(velocity, false)
-            } else if (velocity < -triggerVelocity && state == GestureState.Free) {
-                controller.getSwipeUpOverride(downTime)?.let {
+                velocity < -triggerVelocity && state == GestureState.Free -> {
                     state = GestureState.Triggered
-                    it.onGestureTrigger(controller)
-                } ?: if (gesture.customSwipeUp) {
-                    state = GestureState.Triggered
-                    gesture.onSwipeUp()
-                } else if (gesture.customDockSwipeUp) {
-                    state = GestureState.Triggered
-                    gesture.onDockSwipeUp()
+                    controller.getSwipeUpOverride(downTime)?.onGestureTrigger(controller)
+                        ?: if (customSwipeUpDockGesture && isOverHotseat(currentStart)) {
+                            controller.onSwipeUpDock()
+                        } else if (customSwipeUpGesture && !isOverHotseat(currentStart)) {
+                            controller.onSwipeUp()
+                        }
                 }
             }
         }
         return true
+    }
+
+    override fun onDrag(
+        displacement: Float,
+        orthogonalDisplacement: Float,
+        ev: MotionEvent
+    ): Boolean {
+        return onDrag(displacement, ev)
     }
 
     private fun computeVelocity(delta: Float, millis: Long): Float {
@@ -204,9 +207,10 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
         return (1.0f - alpha) * from + alpha * to
     }
 
-    override fun onDragEnd(velocity: Float, fling: Boolean) {
+    override fun onDragEnd(velocity: Float) {
         launcher.workspace.postDelayed(detector::finishedScrolling, 200)
-        sendOnDragEnd(velocity, fling)
+        sendOnDragEnd(velocity, velocity > 0f)
+        detector.finishedScrolling()
     }
 
     private fun sendOnDragEnd(velocity: Float, fling: Boolean) {

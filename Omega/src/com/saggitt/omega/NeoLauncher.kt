@@ -57,7 +57,6 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
-import com.android.launcher3.touch.AllAppsSwipeController
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
@@ -79,7 +78,7 @@ import kotlinx.coroutines.launch
 import java.util.stream.Stream
 
 class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-                    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
+    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
 
     override var currentTheme = 0
     override var currentAccent = 0
@@ -349,7 +348,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private fun restartIfPending() {
         when {
-            sRestartFlags and FLAG_RESTART != 0  -> neoApp.restart(false)
+            sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
             sRestartFlags and FLAG_RECREATE != 0 -> {
                 sRestartFlags = 0
                 recreate()
@@ -394,10 +393,9 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun createTouchControllers(): Array<TouchController> {
         val list = ArrayList<TouchController>()
         list.add(dragController)
-        list.add(AllAppsSwipeController(this))
         list.add(VerticalSwipeGestureController(this))
 
-        return list.toTypedArray()
+        return list.toTypedArray() + super.createTouchControllers()
     }
 
     fun getViewBounds(v: View): Rect {

@@ -49,6 +49,7 @@ import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.OptionsState;
 
 import java.util.Arrays;
@@ -123,6 +124,14 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         public int getTransitionDuration(Context context, boolean isToState) {
             // Arbitrary duration, when going to NORMAL we use the state we're coming from instead.
             return 0;
+        }
+
+        @Override
+        public void onBackPressed(Launcher launcher) {
+            if (launcher instanceof NeoLauncher) {
+                ((NeoLauncher) launcher).getGestureController().onPressBack();
+            }
+            super.onBackPressed(launcher);
         }
     };
 
