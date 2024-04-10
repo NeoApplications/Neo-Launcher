@@ -5,7 +5,7 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.android.tools.build:gradle:8.3.2")
     }
 }
 
@@ -45,11 +45,11 @@ val vSerialization = "1.6.2"
 val vSlice = "1.1.0-alpha02"
 
 plugins {
-    id("com.android.application").version("8.2.2")
     kotlin("android").version("1.9.22")
     kotlin("plugin.parcelize").version("1.9.22")
     kotlin("plugin.serialization").version("1.9.22")
     id("com.google.devtools.ksp").version("1.9.22-1.0.17")
+    id("com.android.application").version("8.3.2")
     id("com.google.protobuf").version("0.9.4")
 }
 
