@@ -106,7 +106,7 @@ public interface WorkspaceLayoutManager {
             layout = getHotseat();
 
             // Hide folder title in the hotseat
-            if (child instanceof FolderIcon) {
+            if (child instanceof FolderIcon) { // TODO respect Neo preference
                 ((FolderIcon) child).setTextVisible(false);
             }
         } else {

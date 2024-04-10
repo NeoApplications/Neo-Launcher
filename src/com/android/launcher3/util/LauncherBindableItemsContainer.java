@@ -58,6 +58,7 @@ public interface LauncherBindableItemsContainer {
                                 : null);
             } else if (info instanceof FolderInfo && v instanceof FolderIcon) {
                 ((FolderIcon) v).updatePreviewItems(updates::contains);
+                ((FolderInfo) info).itemsChanged(false);
             }
 
             // Iterate all items

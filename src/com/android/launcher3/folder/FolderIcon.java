@@ -685,11 +685,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
     }
 
     public void setTextVisible(boolean visible) {
-        if (visible) {
-            mFolderName.setVisibility(VISIBLE);
-        } else {
-            mFolderName.setVisibility(INVISIBLE);
-        }
+        mFolderName.setTextVisibility(visible);
     }
 
     public boolean getTextVisible() {
@@ -720,9 +716,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     @Override
     public void onIconChanged() {
-        applySwipeUpAction(mInfo);
-        setOnClickListener(mInfo.isCoverMode() ?
-                ItemClickHandler.FOLDER_COVER_INSTANCE : ItemClickHandler.INSTANCE);
+        applyTouchActions(mInfo);
 
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFolderName.getLayoutParams();
         DeviceProfile grid = mActivity.getDeviceProfile();
@@ -802,7 +796,7 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
 
     public void onTitleChanged(CharSequence title) {
         mFolderName.setText(mInfo.getIconTitle(getFolder()));
-        applySwipeUpAction(mInfo);
+        applyTouchActions(mInfo);
         setContentDescription(getAccessiblityTitle(title));
     }
 
@@ -826,18 +820,17 @@ public class FolderIcon extends FrameLayout implements FolderListener, IconLabel
         return true;
     }
 
-    private void applySwipeUpAction(FolderInfo info) {
-        if (info.isCoverMode()) {
-            mSwipeUpHandler = new RunnableGestureHandler(getContext(), () -> ItemClickHandler.INSTANCE.onClick(this));
-        } else {
-            mSwipeUpHandler = GestureController.Companion.createGestureHandler(
-                    getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
-        }
+    private void applyTouchActions(FolderInfo info) {
+        mSwipeUpHandler = info.isCoverMode() ?
+                new RunnableGestureHandler(getContext(), () -> ItemClickHandler.INSTANCE.onClick(this))
+                : GestureController.Companion.createGestureHandler(getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
         if (mSwipeUpHandler instanceof BlankGestureHandler) {
             mSwipeUpHandler = null;
         } else {
             mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, mSwipeUpHandler);
         }
+        setOnClickListener(mInfo.isCoverMode() ?
+                ItemClickHandler.FOLDER_COVER_INSTANCE : ItemClickHandler.INSTANCE);
     }
 
     /**

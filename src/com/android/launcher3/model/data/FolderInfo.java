@@ -243,6 +243,7 @@ public class FolderInfo extends ItemInfo {
 
     public void setCoverMode(boolean enable, ModelWriter modelWriter) {
         setOption(FLAG_COVER_MODE, enable, modelWriter);
+        onIconChanged();
     }
 
     public WorkspaceItemInfo getCoverInfo() {
