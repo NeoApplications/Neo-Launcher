@@ -21,13 +21,17 @@ package com.saggitt.omega.preferences
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -36,6 +40,11 @@ import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.theme.ThemeOverride
 import com.saggitt.omega.util.prefs
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -53,6 +62,23 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
         currentTheme = themeOverride.getTheme(this)
         currentAccent = prefs.profileAccentColor.getColor()
         setContent {
+            LaunchedEffect(Unit) {
+                (MainScope() + CoroutineName("PreferenceActivity")).launch {
+                    prefs.profileTheme.get().distinctUntilChanged().collect {
+                        enableEdgeToEdge(
+                            statusBarStyle = SystemBarStyle.auto(
+                                Color.TRANSPARENT,
+                                Color.TRANSPARENT,
+                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme() },
+                            navigationBarStyle = SystemBarStyle.auto(
+                                Color.TRANSPARENT,
+                                Color.TRANSPARENT,
+                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme() },
+                        )
+                    }
+                }
+            }
+
             OmegaAppTheme {
                 navController = rememberNavController()
                 PrefsComposeView(navController)

@@ -125,6 +125,12 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         fun onThemeChanged(forceUpdate: Boolean = false)
     }
 
+    fun isDarkTheme() = when {
+        prefs.profileTheme.getValue().hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
+        prefs.profileTheme.getValue().hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperManager.supportsDarkTheme
+        else -> prefs.profileTheme.getValue().hasFlag(THEME_DARK)
+    }
+
     companion object :
         SingletonHolder<ThemeManager, Context>(ensureOnMainThread(useApplicationContext(::ThemeManager))) {
 
