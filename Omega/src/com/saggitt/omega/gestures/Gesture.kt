@@ -17,17 +17,22 @@
 
 package com.saggitt.omega.gestures
 
-import android.view.MotionEvent
+import com.saggitt.omega.preferences.GesturePref
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-abstract class Gesture(val controller: GestureController) {
+open class Gesture(val controller: GestureController, private val handlerPref: GesturePref) {
 
-    abstract val isEnabled: Boolean
+    val isEnabled: Boolean = true
 
-    open fun onTouchEvent(ev: MotionEvent): Boolean {
-        return false
-    }
-
-    open fun onEvent(): Boolean {
-        return false
-    }
+    val handler = handlerPref.get()
+        .map { controller.createGestureHandler(it) }
+        .stateIn(
+            controller.scope,
+            SharingStarted.Eagerly,
+            controller.blankGestureHandler
+        )
+    val custom get() = handlerPref.getValue() != handlerPref.defaultValue
 }

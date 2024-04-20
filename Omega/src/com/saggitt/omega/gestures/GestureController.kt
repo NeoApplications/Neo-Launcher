@@ -20,15 +20,18 @@ package com.saggitt.omega.gestures
 import android.content.Context
 import android.graphics.PointF
 import android.util.Log
-import android.view.GestureDetector
 import android.view.MotionEvent
+import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.util.TouchController
+import com.android.launcher3.util.VibratorWrapper
 import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
-import com.saggitt.omega.gestures.gestures.VerticalSwipeGesture
+import com.saggitt.omega.gestures.gestures.SwipeDownGesture
+import com.saggitt.omega.gestures.gestures.SwipeUpDockGesture
+import com.saggitt.omega.gestures.gestures.SwipeUpGesture
 import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
@@ -39,19 +42,24 @@ import com.saggitt.omega.gestures.handlers.OpenWidgetsGestureHandler
 import com.saggitt.omega.gestures.handlers.PressBackGestureHandler
 import com.saggitt.omega.gestures.handlers.SleepGestureHandler
 import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
 class GestureController(val launcher: NeoLauncher) : TouchController {
+    val scope = MainScope()
 
     val blankGestureHandler = BlankGestureHandler(launcher, null)
-    private val doubleTapGesture by lazy { DoubleTapGesture(this) }
-    private val pressHomeGesture by lazy { PressHomeGesture(this) }
-    private val pressBackGesture by lazy { PressBackGesture(this) }
-    private val longPressGesture by lazy { LongPressGesture(this) }
+    private val doubleTapGesture = DoubleTapGesture(this)
+    private val pressHomeGesture = PressHomeGesture(this)
+    private val pressBackGesture = PressBackGesture(this)
+    private val longPressGesture = LongPressGesture(this)
+    //private val assistantGesture = LaunchAssistantGesture(this)
 
-    //private val assistantGesture by lazy { LaunchAssistantGesture(this) }
-    val verticalSwipeGesture by lazy { VerticalSwipeGesture(this) }
+    val swipeUpGesture = SwipeUpGesture(this)
+    val swipeUpDockGesture = SwipeUpDockGesture(this)
+    val swipeDownGesture = SwipeDownGesture(this)
 
     var touchDownPoint = PointF()
 
@@ -65,25 +73,48 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
         return false
     }
 
-    fun attachDoubleTapListener(gestureDetector: GestureDetector) {
-        gestureDetector.setOnDoubleTapListener(doubleTapGesture.createDoubleTapListener())
+    fun onDoubleTap() {
+        triggerGesture(doubleTapGesture)
     }
 
     fun onLongPress() {
-        longPressGesture.isEnabled && longPressGesture.onEvent()
+        triggerGesture(longPressGesture)
     }
 
     fun onPressHome() {
-        pressHomeGesture.isEnabled && pressHomeGesture.onEvent()
+        triggerGesture(pressHomeGesture)
     }
 
     fun onPressBack() {
-        pressBackGesture.isEnabled && pressBackGesture.onEvent()
+        triggerGesture(pressBackGesture)
+    }
+
+    fun onSwipeUp() {
+        triggerGesture(swipeUpGesture)
+    }
+
+    fun onSwipeUpDock() {
+        triggerGesture(swipeUpDockGesture)
+    }
+
+    fun onSwipeDown() {
+        triggerGesture(swipeDownGesture)
     }
 
     /*fun onLaunchAssistant() {
-        assistantGesture.isEnabled && assistantGesture.onEvent()
+        triggerGesture(assistantGesture)
     }*/
+
+    fun triggerGesture(gesture: Gesture, withHaptic: Boolean = false) {
+        if (!gesture.isEnabled) return
+        launcher.lifecycleScope.launch {
+            val handler = gesture.handler.value
+            if (handler is BlankGestureHandler) return@launch
+            handler.onGestureTrigger(this@GestureController)
+            if (withHaptic) VibratorWrapper.INSTANCE.get(launcher)
+                .vibrate(VibratorWrapper.OVERVIEW_HAPTIC)
+        }
+    }
 
     fun setSwipeUpOverride(handler: GestureHandler, downTime: Long) {
         if (swipeUpOverride?.second != downTime) {
@@ -101,7 +132,6 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
         }
         return null
     }
-
 
     fun createGestureHandler(jsonString: String) =
         createGestureHandler(launcher, jsonString, blankGestureHandler)

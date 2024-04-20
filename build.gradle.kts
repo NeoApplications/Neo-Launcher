@@ -5,32 +5,32 @@ import java.util.TimeZone
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.android.tools.build:gradle:8.3.2")
     }
 }
 
-val vAccompanist = "0.32.0"
+val vAccompanist = "0.34.0"
 val vActivity = "1.8.2"
 val vAlwan = "1.0.1"
-val vCoil = "2.5.0"
-val vComposeBOM = "2024.01.00"
-val vComposeCompiler = "1.5.8"
+val vCoil = "2.6.0"
+val vComposeBOM = "2024.04.00"
+val vComposeCompiler = "1.5.11"
 val vConstraintLayout = "2.1.4"
 val vCoordinatorLayout = "1.2.0"
 val vCore = "1.12.0"
-val vCoroutines = "1.7.3"
+val vCoroutines = "1.8.0"
 val vDynamicanimation = "1.1.0-alpha03"
 val vDSP = "1.0.0"
 val vFuzzywuzzy = "1.4.0"
 val vHokoBlur = "1.5.2"
 val vJUnit = "4.13.2"
 val vJUnit5 = "5.9.2"
-val vKotlin = "1.9.22"
-val vKSP = "1.0.17"
+val vKotlin = "1.9.23"
+val vKSP = "1.0.19"
 val vLifecycle = "2.7.0"
 val vLifecycleExt = "2.2.0"
 val vMaterial = "1.11.0"
-val vNavigation = "2.7.6"
+val vNavigation = "2.7.7"
 val vOkhttp = "5.0.0-alpha.12"
 val vOWM = "2.1.0"
 val vPersianDate = "1.7.1"
@@ -41,15 +41,15 @@ val vReorderable = "0.9.6"
 val vRoom = "2.6.1"
 val vRV = "1.3.2"
 val vResBypass = "2.2"
-val vSerialization = "1.6.2"
+val vSerialization = "1.6.3"
 val vSlice = "1.1.0-alpha02"
 
 plugins {
-    id("com.android.application").version("8.2.2")
-    kotlin("android").version("1.9.22")
-    kotlin("plugin.parcelize").version("1.9.22")
-    kotlin("plugin.serialization").version("1.9.22")
-    id("com.google.devtools.ksp").version("1.9.22-1.0.17")
+    id("com.android.application").version("8.3.2")
+    kotlin("android").version("1.9.23")
+    kotlin("plugin.parcelize").version("1.9.23")
+    kotlin("plugin.serialization").version("1.9.23")
+    id("com.google.devtools.ksp").version("1.9.23-1.0.19")
     id("com.google.protobuf").version("0.9.4")
 }
 
@@ -294,7 +294,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3-android:1.2.1")
+    implementation("androidx.compose.material3:material3")
     implementation("com.google.accompanist:accompanist-insets-ui:$vAccompanist")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$vAccompanist")
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
@@ -322,7 +322,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 
     androidTestImplementation("com.google.truth:truth:1.1.5")
     androidTestImplementation("org.mockito:mockito-core:5.0.0")
