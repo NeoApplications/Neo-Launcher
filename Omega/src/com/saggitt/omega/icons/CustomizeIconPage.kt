@@ -35,7 +35,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -157,7 +157,7 @@ fun CustomizeIconView(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .width(48.dp)
                 .height(2.dp)
@@ -265,7 +265,7 @@ fun CustomizeIconView(
         if (prefs.showDebugInfo.getValue()) {
             val component =
                 componentKey.componentName.packageName + "/" + componentKey.componentName.className
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp)
