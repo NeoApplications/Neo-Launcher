@@ -24,11 +24,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
-import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.OmegaAppTheme
@@ -71,19 +71,13 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
     }
 
     private fun updateApps() {
-        val launcher = Launcher.getLauncher(context)
+        val launcher = NeoLauncher.getLauncher(context)
         val flowerpotManager = Flowerpot.Manager.getInstance(context)
 
         mAppsView = launcher.appsView
-
         if (currentCategory.second == "All") {
             currentApps.clear()
-            flowerpotManager.getAllPots().forEach { pot ->
-                pot.apps.matches.forEach {
-                    currentApps.add(it)
-                }
-                mAppsView?.getActiveRecyclerView()?.apps?.updateAdapterItems()
-            }
+            mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter(null)
         } else {
             val pot = flowerpotManager.getPot(currentCategory.first, true)
             currentApps.clear()
