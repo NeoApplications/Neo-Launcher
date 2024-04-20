@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 
 inline fun Modifier.addIf(
@@ -21,10 +22,21 @@ inline fun <T> Modifier.addIfNotNull(
 
 fun Modifier.blockBorder() = composed {
     this
-            .clip(MaterialTheme.shapes.extraLarge)
-            .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.outlineVariant,
-                    MaterialTheme.shapes.extraLarge,
-            )
+        .clip(MaterialTheme.shapes.extraLarge)
+        .border(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant,
+            MaterialTheme.shapes.extraLarge,
+        )
 }
+
+fun Modifier.vertical() =
+    layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+        layout(placeable.height, placeable.width) {
+            placeable.place(
+                x = -(placeable.width / 2 - placeable.height / 2),
+                y = -(placeable.height / 2 - placeable.width / 2)
+            )
+        }
+    }

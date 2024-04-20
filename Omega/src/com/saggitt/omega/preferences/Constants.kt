@@ -50,11 +50,11 @@ const val PREFS_DRAWER_POPUP_EDIT = "drawer_popup_edit"
 const val PREFS_DRAWER_POPUP_UNINSTALL = "drawer_popup_uninstall"
 
 
-const val LAYOUT_VERTICAL = 1
-const val LAYOUT_VERTICAL_ALPHABETICAL = 2
-const val LAYOUT_HORIZONTAL = 3
-const val LAYOUT_CUSTOM_CATEGORIES = 4
-const val LAYOUT_CATEGORIZED = 5
+const val LAYOUT_VERTICAL = 0
+const val LAYOUT_VERTICAL_ALPHABETICAL = 1
+const val LAYOUT_HORIZONTAL = 2
+const val LAYOUT_CUSTOM_CATEGORIES = 3
+const val LAYOUT_CATEGORIZED = 4
 
 val desktopPopupOptions = mutableMapOf(
     PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,

@@ -23,6 +23,11 @@ import static com.android.launcher3.config.FeatureFlags.ENABLE_ALL_APPS_RV_PREIN
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_COUNT;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_CATEGORIZED;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_CUSTOM_CATEGORIES;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_VERTICAL;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_VERTICAL_ALPHABETICAL;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -337,7 +342,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public void onClearSearchResult() {
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
-        //rebindAdapters(mUsingTabs);
+        rebindAdapters(mUsingTabs);
     }
 
     /**
@@ -453,7 +458,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public void reset(boolean animate, boolean exitSearch) {
         for (int i = 0; i < mAH.size(); i++) {
             if (mAH.get(i).mRecyclerView != null) {
-                mAH.get(i).mRecyclerView.scrollToTop();
+                if (!prefs.getDrawerSaveScrollPosition().getValue()) {
+                    mAH.get(i).mRecyclerView.scrollToTop();
+                }
             }
         }
         mFastScroller.setVisibility(prefs.getDrawerHideScrollbar().getValue() ? INVISIBLE : VISIBLE);
@@ -691,10 +698,25 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         View oldView = getAppsRecyclerViewContainer();
         int index = indexOfChild(oldView);
         removeView(oldView);
-        int layout = showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
+        NeoPrefs prefs = NeoPrefs.getInstance(getContext());
+        int layout = switch (prefs.getDrawerLayout().getValue()) {
+            case LAYOUT_VERTICAL -> R.layout.all_apps_rv_layout;
+            case LAYOUT_VERTICAL_ALPHABETICAL ->
+                //TODO: Cambiar cuando tenga el layout con letras alfabeticas.
+                    R.layout.all_apps_rv_layout;
+            case LAYOUT_HORIZONTAL ->
+                //TODO: Cambiar cuando tenga el layout con letras alfabeticas.
+                    R.layout.all_apps_rv_layout;
+            case LAYOUT_CUSTOM_CATEGORIES ->
+                    showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
+            case LAYOUT_CATEGORIZED -> R.layout.all_apps_categorized;
+            default -> R.layout.all_apps_rv_layout;
+        };
+
+        //int layout = showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
         final View rvContainer = getLayoutInflater().inflate(layout, this, false);
         addView(rvContainer, index);
-        if (showTabs) {
+        if (showTabs && prefs.getDrawerLayout().getValue() == LAYOUT_CUSTOM_CATEGORIES) {
             mViewPager = (AllAppsPagedView) rvContainer;
             mViewPager.addTabs(mTabsController.getTabsCount());
             mViewPager.initParentViews(this);
@@ -906,7 +928,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     // TODO(b/216683257): Remove when Taskbar All Apps supports search.
-    protected boolean isSearchSupported() {
+    public boolean isSearchSupported() {
         return true;
     }
 
