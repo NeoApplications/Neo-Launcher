@@ -39,7 +39,9 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - pwd
+        - cd ..
+        - ls -la
+        - cd ..
         - ls -la
         - ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
