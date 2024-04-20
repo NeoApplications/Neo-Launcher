@@ -22,6 +22,7 @@ import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Asterisk
 import com.saggitt.omega.compose.icons.phosphor.CirclesFour
 import com.saggitt.omega.compose.icons.phosphor.ImageSquare
+import com.saggitt.omega.compose.icons.phosphor.MapPin
 import com.saggitt.omega.compose.icons.phosphor.SpeakerHigh
 import com.saggitt.omega.compose.icons.phosphor.Swatches
 import com.saggitt.omega.compose.icons.phosphor.Wrench
@@ -34,6 +35,7 @@ val String.appCategoryIcon: ImageVector
         "music" -> Phosphor.SpeakerHigh
         "personalization" -> Phosphor.Swatches
         "tools" -> Phosphor.Wrench
+        "travel and navigation" -> Phosphor.MapPin
         else -> Phosphor.Asterisk
 
     }
