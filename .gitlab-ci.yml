@@ -40,10 +40,10 @@ build:
 
     after_script:
         - ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
-        - ARTIFACT_NAME_APK=$(basename ARTIFACT_PATHNAME_APK)
-        - echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
-        - echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $CI_JOB_ENV
-        - echo "ARTIFACT_NAME_APK=${ARTIFACT_NAME_APK}" >> $CI_JOB_ENV
+        - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
+        - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
+        - echo "ARTIFACT_PATHNAME_APK=$ARTIFACT_PATHNAME_APK" >> $CI_JOB_ENV
+        - echo "ARTIFACT_NAME_APK=$ARTIFACT_NAME_APK" >> $CI_JOB_ENV
 
 deploy:
     stage: deploy
