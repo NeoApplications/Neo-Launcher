@@ -18,6 +18,7 @@
 package com.saulhdev.neolauncher.allapps
 
 import android.content.Context
+import android.content.res.Resources
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.compose.runtime.getValue
@@ -32,6 +33,7 @@ import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.OmegaAppTheme
+
 
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val prefs = NeoPrefs.INSTANCE.get(context)
@@ -100,6 +102,20 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
     }
 
     private fun getScrollBarMarginBottom(): Int {
-        return paddingBottom
+        if (hasNavigationBar()) {
+            val resources = Resources.getSystem()
+            val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                return resources.getDimensionPixelSize(resourceId)
+            }
+            return 0
+        }
+
+        return 0
+    }
+
+    private fun hasNavigationBar(): Boolean {
+        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
+        return id > 0 && resources.getBoolean(id)
     }
 }
