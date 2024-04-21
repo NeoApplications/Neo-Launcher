@@ -36,7 +36,7 @@ object PrefKey {
     val PROFILE_ICON_SHAPE = stringPreferencesKey("profile_icon_shape")
     val PROFILE_ICON_COLORED_BG = booleanPreferencesKey("profile_icon_colored_background")
     val PROFILE_ICON_TRANSPARENT_BG = booleanPreferencesKey("profile_transparent_icon")
-    val PROFILE_THEMED_ICONS = booleanPreferencesKey("profile_themed_icons")
+    val PROFILE_THEMED_ICONS = booleanPreferencesKey("themed_icons")
     val PROFILE_ICON_ADAPTIFY = booleanPreferencesKey("profile_icon_adaptify")
     val PROFILE_ICON_RESET_CUSTOM = stringPreferencesKey("profile_icon_reset_custom")
     val PROFILE_ICON_SHAPE_LESS = booleanPreferencesKey("profile_icon_shape_less")

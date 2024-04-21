@@ -48,7 +48,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.icons.LauncherIconProvider
+import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
@@ -73,7 +73,7 @@ import java.util.function.Supplier
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
     supportsIconTheme: Boolean = false,
-) : LauncherIconProvider(context, supportsIconTheme) {
+) : IconProvider(context, supportsIconTheme) {
 
     private val prefs = Utilities.getNeoPrefs(context)
     private val iconPackPref = prefs.profileIconPack

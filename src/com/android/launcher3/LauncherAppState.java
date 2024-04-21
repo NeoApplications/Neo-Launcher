@@ -42,7 +42,6 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.icons.IconProvider;
-import com.android.launcher3.icons.LauncherIconProvider;
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.pm.InstallSessionHelper;
@@ -72,7 +71,7 @@ public class LauncherAppState implements SafeCloseable {
 
     private final Context mContext;
     private final LauncherModel mModel;
-    private final LauncherIconProvider mIconProvider;
+    private final IconProvider mIconProvider;
     private final IconCache mIconCache;
     private final InvariantDeviceProfile mInvariantDeviceProfile;
     private final RunnableList mOnTerminateCallback = new RunnableList();

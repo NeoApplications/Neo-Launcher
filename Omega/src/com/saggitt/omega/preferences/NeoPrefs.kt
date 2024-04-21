@@ -162,7 +162,10 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_themed_icons,
         dataStore = dataStore,
         key = PrefKey.PROFILE_THEMED_ICONS,
-        defaultValue = Utilities.ATLEAST_T
+        defaultValue = Utilities.ATLEAST_T,
+        onChange = {
+            legacyPrefs.savePreference(KEY_THEMED_ICONS, it)
+        }
     )
 
     var profileTransparentBgIcons = BooleanPref(
