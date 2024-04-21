@@ -8,6 +8,8 @@ import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.
 import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK
 import com.android.launcher3.allapps.AllAppsPagedView
 import com.android.launcher3.allapps.AllAppsStore
+import com.saggitt.omega.preferences.LAYOUT_CUSTOM_CATEGORIES
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.forEachChildIndexed
 
 typealias AdapterHolders = List<ActivityAllAppsContainerView<*>.AdapterHolder>
@@ -17,7 +19,8 @@ class AllAppsTabsController<T : BaseDraggingActivity>(
     private val container: ActivityAllAppsContainerView<*>,
 ) {
     val tabsCount get() = tabs.count
-    val shouldShowTabs get() = tabsCount > 1
+    val prefs = NeoPrefs.getInstance(container.context)
+    val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_CUSTOM_CATEGORIES
 
     private var holders = mutableListOf<ActivityAllAppsContainerView<*>.AdapterHolder>()
 
