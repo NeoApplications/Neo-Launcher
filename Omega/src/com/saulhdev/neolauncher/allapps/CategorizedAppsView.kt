@@ -31,12 +31,9 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.flowerpot.Flowerpot
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.OmegaAppTheme
 
-
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val prefs = NeoPrefs.INSTANCE.get(context)
     private val categories = Flowerpot.Manager.getInstance(context).getAllPots().map {
         Pair(it.name, it.displayName)
     }.toMutableList()
