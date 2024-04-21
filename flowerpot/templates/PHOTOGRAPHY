@@ -1,2 +1,3 @@
 &category|image
-;android.intent.category.APP_GALLERY
+:android.intent.category.APP_GALLERY
+:android.intent.category.CAMERA

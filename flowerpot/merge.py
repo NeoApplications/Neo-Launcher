@@ -22,17 +22,18 @@ CATEGORY_MAP = {
     "HEALTH_AND_FITNESS": ["HEALTH_AND_FITNESS", "MEDICAL"],
     "KNOWLEDGE_AND_REFERENCE": ["EDUCATION", "BOOKS_AND_REFERENCE", "WEATHER"],
     "NEWS": ["NEWS_AND_MAGAZINES"],
-    "ENTERTAINMENT": ["ENTERTAINMENT", "MUSIC_AND_AUDIO", "VIDEO_PLAYERS", "MUSIC_AND_AUDIO"],
+    "ENTERTAINMENT": ["ENTERTAINMENT", "MUSIC_AND_AUDIO", "VIDEO_PLAYERS", "MUSIC_AND_AUDIO", "COMICS", "SPORTS"],
     "MUSIC": ["MUSIC_AND_AUDIO"],
-    "LIFESTYLE": ["LIFESTYLE", "BEAUTY", "SHOPPING"],
-    "PHOTOGRAPHY": ["PHOTOGRAPHY"],
+    "LIFESTYLE": ["LIFESTYLE", "BEAUTY", "SHOPPING", "DATING", "EVENTS", "PARENTING", "HOUSE_AND_HOME"],
+    "ART_AND_DESIGN": ["ART_AND_DESIGN", "PHOTOGRAPHY"],
     "BUSINESS_AND_PRODUCTIVITY": ["PRODUCTIVITY", "BUSINESS", "FINANCE"],
-    "TOOLS": ["TOOLS", "VIDEO_PLAYERS"],
+    "TOOLS": ["TOOLS", "ANDROID_WEAR"],
     "COMMUNICATION": ["COMMUNICATION", "SOCIAL"],
     "TRAVEL_AND_NAVIGATION": ["MAPS_AND_NAVIGATION", "TRAVEL_AND_LOCAL"],
     "GAME": ["GAME"],  # Actually identified by isGame manifest tag which not all apps have :(
     "FOOD_AND_DRINK": ["FOOD_AND_DRINK"],
-    "PERSONALIZATION": ["PERSONALIZATION"]  # Additionally identify icon packs by manifest
+    "PERSONALIZATION": ["PERSONALIZATION"],  # Additionally identify icon packs by manifest,
+    "AUTO_AND_VEHICLES":["AUTO_AND_VEHICLES"]
 }
 
 IN_PATH = "playstore"
@@ -54,7 +55,6 @@ for category in CATEGORY_MAP.keys():
     with open("%s/%s" % (OUT_PATH, category), "a+") as out:
         out.write("# generated at %s using %s\n" % (time.ctime(), sys.argv[0]))
         out.write("# format: flowerpot-%s (%s)\n" % (FORMAT_VERSION, FORMAT_VERSION_HUMAN))
-        out.write("# specs: https://del.dog/flowerpot\n")
         out.write("$%s\n" % FORMAT_VERSION)
         template = Path("%s/%s" % (TEMPLATE_PATH, category))
         if template.exists():

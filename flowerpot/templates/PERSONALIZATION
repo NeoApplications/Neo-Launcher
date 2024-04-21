@@ -5,7 +5,6 @@
 :com.gau.go.launcherex.theme
 :org.adw.launcher.THEMES
 :net.oneplus.launcher.icons.ACTION_PICK_ICON
-:org.zimmob.zimlx.ICONPACK
 # Launcher intent
 ;android.intent.category.HOME
 # Kustom intents
@@ -19,4 +18,4 @@
 :android.intent.action.SET_WALLPAPER
 # Muzei intent
 :com.google.android.apps.muzei.api.MuzeiArtProvider
-;android.intent.category.SECONDARY_HOME
+:android.intent.category.SECONDARY_HOME

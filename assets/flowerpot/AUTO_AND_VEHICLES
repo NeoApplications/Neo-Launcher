@@ -1,3 +1,7 @@
+# generated at Sun Apr 21 15:44:56 2024 using .\merge.py
+# format: flowerpot-1 (azalea)
+$1
+# AUTO_AND_VEHICLES
 com.trovit.android.apps.cars
 hands.android.webmotors
 com.autoscout24

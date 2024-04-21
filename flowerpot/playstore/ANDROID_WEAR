@@ -1,36 +1,3 @@
-# generated at Sun Apr 21 15:44:56 2024 using .\merge.py
-# format: flowerpot-1 (azalea)
-$1
-# STATIC TEMPLATE
-# Intents
-:android.intent.action.ASSIST
-:android.intent.category.APP_MARKET
-:android.intent.category.APP_CALCULATOR
-:android.intent.category.APP_FILES
-:android.intent.action.QUICK_CLOCK
-# TOOLS
-com.google.android.apps.authenticator2
-com.apple.movetoios
-cn.xender
-com.sec.android.app.voicenote
-com.google.android.apps.translate
-com.ovelin.guitartuna
-ru.zdevs.zarchiver
-com.google.android.apps.nbu.files
-com.sec.android.easyMover
-com.samsung.android.voc
-com.google.android.apps.kids.familylink
-com.rarlab.rar
-com.dubox.drive
-myfiles.filemanager.fileexplorer.cleaner
-com.microsoft.bing
-com.widgetable.theme.android
-com.zhiliao.musically.livewallpaper
-com.lenovo.anyshare.gps
-com.securex.browser
-com.samsung.android.app.watchmanager
-com.google.ar.lens
-# ANDROID_WEAR
 com.michal.blackjackwearos
 com.urbandroid.lux
 de.mdiener.rain.usa

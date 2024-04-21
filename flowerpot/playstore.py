@@ -30,27 +30,41 @@ TOP_URL = f'{BASE_URL}top/category/'
 NEW_URL = f'{BASE_URL}new/category/'
 DETAIL_URL = f'{BASE_URL}details?id='
 CATEGORIES = [
-    'PERSONALIZATION',
+    'ART_AND_DESIGN',
+    'AUTO_AND_VEHICLES',
+    'BEAUTY',
     'BOOKS_AND_REFERENCE',
-    'SOCIAL',
-    'COMMUNICATION',
-    'TOOLS',
-    'ENTERTAINMENT',
-    'EDUCATION',
-    'FINANCE',
     'BUSINESS',
+    'COMICS',
+    'COMMUNICATION',
+    'DATING',
+    'EDUCATION',
+    'ENTERTAINMENT',
+    'EVENTS',
+    'FAMILY',
+    'FINANCE',
+    'FOOD_AND_DRINK',
+    'HEALTH_AND_FITNESS',
+    'HOUSE_AND_HOME',
+    'LIBRARIES_AND_DEMO',
     'LIFESTYLE',
+    'MAPS_AND_NAVIGATION',
     'MEDICAL',
     'MUSIC_AND_AUDIO',
-    'PHOTOGRAPHY',
-    'VIDEO_PLAYERS',
-    'HEALTH_AND_FITNESS',
     'NEWS_AND_MAGAZINES',
-    'BUSINESS',
-    'FOOD_AND_DRINK',
-    'MAPS_AND_NAVIGATION',
+    'PARENTING',
+    'PERSONALIZATION',
+    'PHOTOGRAPHY',
+    'PRODUCTIVITY',
+    'SHOPPING',
+    'SOCIAL',
+    'SPORTS',
+    'TOOLS',
     'TRAVEL_AND_LOCAL',
-    'SHOPPING'
+    'VIDEO_PLAYERS',
+    'ANDROID_WEAR',
+    'WEATHER',
+    'GAME'
 ]
 CATEGORIES_ = [
     'ART_AND_DESIGN',
@@ -64,6 +78,7 @@ CATEGORIES_ = [
     'EDUCATION',
     'ENTERTAINMENT',
     'EVENTS',
+    'FAMILY',
     'FINANCE',
     'FOOD_AND_DRINK',
     'HEALTH_AND_FITNESS',
@@ -195,11 +210,6 @@ ADDITIONAL_URLS = [
     BASE_URL,
     f"{BASE_URL}editors_choice",
     f"{BASE_URL}top",
-    f"{DETAIL_URL}ch.deletescape.lawnchair.plah",
-    f"{DETAIL_URL}amirz.rootless.nexuslauncher",
-    f"{DETAIL_URL}com.edzondm.linebit",
-    f"{DETAIL_URL}com.jndapp.line.x.iconpack",
-    f"{BASE_URL}dev?id=7714575631540799503"
 ]
 ID_MATCHER = r'\?id=(.*)'
 CATEGORY_MATCHER = f'/category/(.*)'
@@ -278,7 +288,6 @@ for url in ADDITIONAL_URLS:
             category = m.group(1)
             if category.startswith('GAME_'):
                 category = 'GAME'
-            # all_apps.append(id)
             if category not in category_to_apps:
                 category_to_apps[category] = []
             if id not in category_to_apps[category]:
@@ -289,21 +298,6 @@ for url in ADDITIONAL_URLS:
 
 for app in all_apps:
     r = session.get(f'{DETAIL_URL}{app}')
-    clusters = list(filter(lambda l: "/cluster" in l, r.html.links))
-    ids_ = []
-    for cluster in clusters:
-        r = session.get(cluster)
-        ids_ += list(filter(lambda l: "/apps/details?" in l, r.html.links))
-    ids = []
-    for id in ids_:
-        m = re.search(ID_MATCHER, id)
-        if m:
-            id = m.group(1)
-            if len(id) < 45 and not any(
-                    re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
-                ids.append(m.group(1))
-            else:
-                print(f'catched {id}')
     ids = list(dict.fromkeys(ids))[:12]
     for id in ids:
         r = session.get(f'{DETAIL_URL}{id}')
@@ -323,7 +317,6 @@ for app in all_apps:
             category = m.group(1)
             if category.startswith('GAME_'):
                 category = 'GAME'
-            # all_apps.append(id)
             if category not in category_to_apps:
                 category_to_apps[category] = []
             if id not in category_to_apps[category]:
@@ -331,9 +324,3 @@ for app in all_apps:
                 with open(f'playstore/{category}', 'a+') as out:
                     out.write(f'{id}\n')
             print(category)
-
-# for category in CATEGORIES:
-#     apps = category_to_apps[category]
-#     with open(f'playstore/{category}', 'w') as out:
-#         out.write('\n'.join(apps))
-#     pprint(apps)
