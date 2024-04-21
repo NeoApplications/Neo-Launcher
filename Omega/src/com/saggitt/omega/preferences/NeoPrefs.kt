@@ -68,6 +68,7 @@ import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.saulhdev.neolauncher.util.CustomPreferencesMigration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -83,7 +84,12 @@ import kotlin.random.Random
 import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class NeoPrefs private constructor(val context: Context) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "neo_launcher")
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        name = "neo_launcher",
+        produceMigrations = {
+            listOf(CustomPreferencesMigration(context = it).preferencesMigration())
+        }
+    )
     private val dataStore: DataStore<Preferences> = context.dataStore
     val legacyPrefs = LegacyPreferences(context)
 
