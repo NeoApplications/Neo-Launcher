@@ -343,6 +343,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
         rebindAdapters(mUsingTabs);
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED) {
+            findViewById(R.id.categories_bar).setVisibility(VISIBLE);
+        }
     }
 
     /**
@@ -358,6 +361,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         if (results != null) {
             animateToSearchState(true);
+            if (prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED) {
+                findViewById(R.id.categories_bar).setVisibility(INVISIBLE);
+            }
         }
     }
 
