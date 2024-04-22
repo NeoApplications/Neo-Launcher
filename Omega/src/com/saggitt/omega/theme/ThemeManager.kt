@@ -22,6 +22,10 @@ import android.content.Context
 import android.content.res.Configuration
 import com.android.launcher3.R
 import com.saggitt.omega.neoApp
+import com.saggitt.omega.preferences.THEME_DARK
+import com.saggitt.omega.preferences.THEME_SYSTEM
+import com.saggitt.omega.preferences.THEME_USE_BLACK
+import com.saggitt.omega.preferences.THEME_WALLPAPER
 import com.saggitt.omega.util.SingletonHolder
 import com.saggitt.omega.util.ensureOnMainThread
 import com.saggitt.omega.util.hasFlag
@@ -30,10 +34,14 @@ import com.saggitt.omega.util.useApplicationContext
 import com.saggitt.omega.util.usingNightMode
 import com.saggitt.omega.wallpaper.WallpaperColorsCompat
 import com.saggitt.omega.wallpaper.WallpaperManagerCompat
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.plus
 
 class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChangedListenerCompat {
 
     private val app = context.neoApp
+    private val cScope = MainScope() + CoroutineName("ThemeManager")
     private val wallpaperManager = WallpaperManagerCompat.INSTANCE.get(context)
     private val listeners = HashSet<ThemeOverride>()
     private val prefs = context.prefs
@@ -64,10 +72,8 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
             removeDeadListeners()
             listeners.add(themeOverride)
         }
-        themeOverride.applyTheme(themeFlags)
+        themeOverride.applyTheme(context)
     }
-
-    fun getCurrentFlags() = themeFlags
 
     private fun removeDeadListeners() {
         val it = listeners.iterator()
@@ -83,19 +89,9 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
     }
 
     private fun updateTheme(accentUpdated: Boolean = false) {
-        val theme = prefs.profileTheme.getValue()
-        val isDark = when {
-            theme.hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
-            theme.hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperManager.supportsDarkTheme
-            else -> theme.hasFlag(THEME_DARK)
-        }
-        val isBlack = isBlack(theme) && isDark
-
-        var newFlags = 0
-        if (isDark) newFlags = newFlags or THEME_DARK
-        if (isBlack) newFlags = newFlags or THEME_USE_BLACK
-        if (newFlags == themeFlags && !accentUpdated) return
-        themeFlags = newFlags
+        val newTheme = prefs.profileTheme.getValue()
+        if (newTheme == themeFlags && !accentUpdated) return
+        themeFlags = newTheme
         // TODO no listeners are added for now, either we keep this logic and use it in all classes or just use reloadActivities
         reloadActivities(forceUpdate = accentUpdated)
         synchronized(listeners) {
@@ -125,24 +121,18 @@ class ThemeManager(val context: Context) : WallpaperManagerCompat.OnColorsChange
         fun onThemeChanged(forceUpdate: Boolean = false)
     }
 
-    fun isDarkTheme() = when {
-        prefs.profileTheme.getValue().hasFlag(THEME_FOLLOW_NIGHT_MODE) -> usingNightMode
-        prefs.profileTheme.getValue().hasFlag(THEME_FOLLOW_WALLPAPER) -> wallpaperManager.supportsDarkTheme
-        else -> prefs.profileTheme.getValue().hasFlag(THEME_DARK)
-    }
+    val isDarkTheme
+        get() = prefs.profileTheme.getValue().let {
+            when {
+                it.hasFlag(THEME_SYSTEM) -> usingNightMode
+                it.hasFlag(THEME_WALLPAPER) -> wallpaperManager.supportsDarkTheme
+                else -> it.hasFlag(THEME_DARK)
+            }
+        }
 
     companion object :
-        SingletonHolder<ThemeManager, Context>(ensureOnMainThread(useApplicationContext(::ThemeManager))) {
-
-        const val THEME_DARK = 0b00001                // 1
-        const val THEME_USE_BLACK = 0b00010           // 2
-        const val THEME_FOLLOW_WALLPAPER = 0b00100    // 4
-        const val THEME_FOLLOW_NIGHT_MODE = 0b01000   // 8
-
-        const val THEME_AUTO_MASK = THEME_FOLLOW_WALLPAPER or THEME_FOLLOW_NIGHT_MODE
-        const val THEME_DARK_MASK = THEME_DARK or THEME_AUTO_MASK
-
-        fun isDark(flags: Int) = flags.hasFlag(THEME_DARK_MASK)
-        fun isBlack(flags: Int) = flags.hasFlag(THEME_USE_BLACK)
-    }
+        SingletonHolder<ThemeManager, Context>(ensureOnMainThread(useApplicationContext(::ThemeManager)))
 }
+
+val Context.isBlackTheme: Boolean
+    get() = prefs.profileTheme.getValue().hasFlag(THEME_USE_BLACK)

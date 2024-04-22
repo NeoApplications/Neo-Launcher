@@ -37,15 +37,9 @@ class ThemeOverride(private val themeSet: ThemeSet, val listener: ThemeOverrideL
         listener?.applyTheme(getTheme(context))
     }
 
-    fun applyTheme(themeFlags: Int) {
-        listener?.applyTheme(getTheme(themeFlags))
-    }
-
     fun getTheme(context: Context): Int {
         return themeSet.getTheme(context)
     }
-
-    fun getTheme(themeFlags: Int) = themeSet.getTheme(themeFlags)
 
     fun onThemeChanged(themeFlags: Int) {
         listener?.reloadTheme()
@@ -69,14 +63,11 @@ class ThemeOverride(private val themeSet: ThemeSet, val listener: ThemeOverrideL
         val blackTheme: Int
 
         fun getTheme(context: Context): Int {
-            return getTheme(ThemeManager.getInstance(context).getCurrentFlags())
-        }
-
-        fun getTheme(themeFlags: Int): Int {
-            val isBlack = ThemeManager.isBlack(themeFlags)
-            val isDark = ThemeManager.isDark(themeFlags)
+            val tm = ThemeManager.getInstance(context)
+            val isBlack = context.isBlackTheme
+            val isDark = tm.isDarkTheme
             return when {
-                isBlack -> blackTheme
+                isBlack && isDark -> blackTheme
                 isDark -> darkTheme
                 else -> lightTheme
             }

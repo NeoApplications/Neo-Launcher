@@ -69,11 +69,11 @@ class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
                             statusBarStyle = SystemBarStyle.auto(
                                 Color.TRANSPARENT,
                                 Color.TRANSPARENT,
-                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme() },
+                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme },
                             navigationBarStyle = SystemBarStyle.auto(
                                 Color.TRANSPARENT,
                                 Color.TRANSPARENT,
-                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme() },
+                            ) { ThemeManager.getInstance(this@PreferenceActivity).isDarkTheme },
                         )
                     }
                 }

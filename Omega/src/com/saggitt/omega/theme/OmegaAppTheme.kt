@@ -32,52 +32,52 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.android.launcher3.Utilities
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.THEME_BLACK
 import com.saggitt.omega.preferences.THEME_DARK
 import com.saggitt.omega.preferences.THEME_LIGHT
+import com.saggitt.omega.preferences.THEME_WALLPAPER
+import com.saggitt.omega.preferences.THEME_WALLPAPER_BLACK
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.wallpaper.WallpaperColorsCompat
 import com.saggitt.omega.wallpaper.WallpaperManagerCompat
 
 @Composable
 fun OmegaAppTheme(
-        darkTheme: Boolean = isDarkTheme(),
-        blackTheme: Boolean = isBlackTheme(),
+    darkTheme: Boolean = isDarkTheme(),
+    blackTheme: Boolean = LocalContext.current.isBlackTheme,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
-        blackTheme -> BlackColors
+        blackTheme && darkTheme -> BlackColors
         darkTheme -> DarkColors
         else -> LightColors
     }.copy(
-            primary = Color(LocalContext.current.prefs.profileAccentColor.getColor()),
-            surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getColor())
+        primary = Color(LocalContext.current.prefs.profileAccentColor.getColorFromState()),
+        surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getColorFromState()),
     )
 
     MaterialTheme(
-            colorScheme = colorScheme
-    ) {
-        content()
-    }
+        colorScheme = colorScheme,
+        content = content,
+    )
 }
 
 @Composable
 fun isDarkTheme(): Boolean {
-    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.get().collectAsState(-1)
+    val theme = LocalContext.current.prefs.profileTheme.get().collectAsState(-1)
     return when (theme.value) {
-        THEME_LIGHT -> false
-        THEME_DARK -> true
-        else -> isAutoThemeDark()
-    }
-}
+        THEME_LIGHT
+        -> false
 
-@Composable
-fun isBlackTheme(): Boolean {
-    val theme = NeoPrefs.INSTANCE.get(LocalContext.current).profileTheme.getValue()
-    return when (theme) {
-        THEME_BLACK -> true
-        else -> false
+        THEME_DARK,
+        THEME_BLACK,
+        -> true
+
+        THEME_WALLPAPER,
+        THEME_WALLPAPER_BLACK,
+        -> wallpaperSupportsDarkTheme()
+
+        else -> isAutoThemeDark()
     }
 }
 
