@@ -21,6 +21,9 @@ package com.saggitt.omega.preferences
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -151,6 +154,11 @@ open class ColorIntPref(
         return runBlocking(Dispatchers.IO) {
             AccentColorOption.fromString(getValue()).accentColor
         }
+    }
+
+    @Composable
+    fun getColorFromState(): Int {
+        return AccentColorOption.fromString(getState().value).accentColor
     }
 }
 
@@ -354,6 +362,11 @@ abstract class PrefDelegate<T : Any>(
         return runBlocking(Dispatchers.IO) {
             get().firstOrNull() ?: defaultValue
         }
+    }
+
+    @Composable
+    fun getState(): State<T> {
+        return get().collectAsState(initial = defaultValue)
     }
 
     fun setValue(value: T) {
