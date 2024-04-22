@@ -273,6 +273,7 @@
     <string name="title_smartspace">Show Smartspace</string>
     <string name="title_smartspace_time">Show Time</string>
     <string name="title_smartspace_time_format">Time Format</string>
+    <string name="title_smartspace_background">Show Themed Background</string>
     <string name="title_smartspace_date">Show Date</string>
     <string name="title_smartspace_calendar">Select Calendar</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>

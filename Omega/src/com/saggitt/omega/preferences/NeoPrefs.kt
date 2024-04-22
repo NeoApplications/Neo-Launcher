@@ -882,6 +882,14 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { recreate() }
     )
 
+    val smartspaceBackground = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.WIDGETS_SMARTSPACE_BACKGROUND,
+        titleId = R.string.title_smartspace_background,
+        defaultValue = true,
+        onChange = { recreate() }
+    )
+
     val smartspaceDate = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_DATE,

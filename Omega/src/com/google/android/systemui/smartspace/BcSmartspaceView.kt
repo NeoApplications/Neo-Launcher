@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.viewpager.widget.ViewPager
 import com.android.launcher3.R
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider
 import com.saggitt.omega.util.repeatOnAttached
 import com.saulhdev.smartspace.SmartspaceTarget
@@ -24,6 +25,7 @@ class BcSmartspaceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, var previewMode: Boolean = false
 ) : FrameLayout(context, attrs) {
 
+    private val prefs = NeoPrefs.getInstance(context)
     private val provider = SmartspaceProvider.INSTANCE.get(context)
 
     private lateinit var viewPager: ViewPager
@@ -36,6 +38,9 @@ class BcSmartspaceView @JvmOverloads constructor(
     override fun onFinishInflate() {
         super.onFinishInflate()
         viewPager = findViewById(R.id.smartspace_card_pager)
+        if (!prefs.smartspaceBackground.getValue()) {
+            viewPager.background = null
+        }
         viewPager.isSaveEnabled = false
         indicator = findViewById(R.id.smartspace_page_indicator)
 
