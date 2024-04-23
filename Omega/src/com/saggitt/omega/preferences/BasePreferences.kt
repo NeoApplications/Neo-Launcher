@@ -380,6 +380,7 @@ abstract class PrefDelegate<T : Any>(
     }
 
     open suspend fun set(value: T) {
+        if (getValue() == value) return
         dataStore.edit { it[key] = value }
         onChange(value)
     }
