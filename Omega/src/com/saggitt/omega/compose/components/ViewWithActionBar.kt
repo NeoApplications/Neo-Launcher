@@ -77,6 +77,7 @@ fun ViewWithActionBar(
         },
         floatingActionButton = floatingActionButton,
         content = content,
-        bottomBar = bottomBar
+        bottomBar = bottomBar,
+        containerColor = MaterialTheme.colorScheme.background
     )
 }

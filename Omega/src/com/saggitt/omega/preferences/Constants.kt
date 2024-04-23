@@ -23,10 +23,9 @@ import com.saggitt.omega.widget.Temperature
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
 const val PREFS_LANGUAGE_DEFAULT_CODE = "en"
 
-// TODO revamp theming management
-const val THEME_USE_BLACK = 0b00010
 const val THEME_LIGHT = 0
 const val THEME_DARK = 0b00001
+const val THEME_USE_BLACK = 0b00010
 const val THEME_BLACK = THEME_DARK or THEME_USE_BLACK
 const val THEME_WALLPAPER = 0b00100
 const val THEME_WALLPAPER_BLACK = THEME_WALLPAPER or THEME_USE_BLACK

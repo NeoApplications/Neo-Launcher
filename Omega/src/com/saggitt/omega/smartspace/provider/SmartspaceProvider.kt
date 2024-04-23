@@ -75,7 +75,7 @@ class SmartspaceProvider private constructor(context: Context) {
         featureType = SmartspaceTarget.FEATURE_TIPS
     )
 
-    suspend fun startSetup(activity: Activity) {
+    suspend fun startSetup(activity: Activity) { // TODO link to smartspace setup screen
         state
             .map { it.requiresSetup }
             .dropWhileBusy()

@@ -66,7 +66,6 @@ import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape
-import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
@@ -119,41 +118,39 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     }
     val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
-    OmegaAppTheme {
-        ViewWithActionBar(
-            title = stringResource(pref.titleId),
-            bottomBar = {
-                BottomAppBar(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    containerColor = MaterialTheme.colorScheme.background
-                ) {
+    ViewWithActionBar(
+        title = stringResource(pref.titleId),
+        bottomBar = {
+            BottomAppBar(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                containerColor = MaterialTheme.colorScheme.background
+            ) {
 
-                    Button(
-                        modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp)
-                            .height(48.dp)
-                            .fillMaxWidth(),
-                        onClick = {
-                            pref.setValue(currentAccentColor.value)
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.button_apply),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                Button(
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp)
+                        .height(48.dp)
+                        .fillMaxWidth(),
+                    onClick = {
+                        pref.setValue(currentAccentColor.value)
+                        navController.popBackStack()
                     }
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.button_apply),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
-        ) { paddingValues ->
-            HorizontalPagerPage(
-                pagerState,
-                tabs,
-                paddingValues
-            )
         }
+    ) { paddingValues ->
+        HorizontalPagerPage(
+            pagerState,
+            tabs,
+            paddingValues
+        )
     }
 }
 

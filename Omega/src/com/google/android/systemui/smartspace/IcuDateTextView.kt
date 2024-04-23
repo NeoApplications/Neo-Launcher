@@ -56,7 +56,7 @@ class IcuDateTextView @JvmOverloads constructor(
 
     init {
         repeatOnAttached {
-            val calendarSelectionEnabled = prefs.smartspaceDate.get().firstBlocking()
+            val calendarSelectionEnabled = prefs.smartspaceDate.getValue()
             val calendarFlow =
                 if (calendarSelectionEnabled) prefs.smartspaceCalendar.get()
                 else flowOf(prefs.smartspaceCalendar.defaultValue)

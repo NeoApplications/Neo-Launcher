@@ -118,9 +118,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__advanced_language,
         defaultValue = "",
         entries = context.languageOptions(),
-        onChange = {
-            recreate()
-        }
+        onChange = { recreate() }
     )
 
     var profileTheme = IntSelectionPref(
@@ -128,7 +126,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_GLOBAL_THEME,
         titleId = R.string.title__general_theme,
         defaultValue = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_SYSTEM else THEME_WALLPAPER,
-        entries = themeItems
+        entries = themeItems,
     )
 
     val profileAccentColor = ColorIntPref(
@@ -242,7 +240,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -418,7 +416,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         },
     )
@@ -861,10 +859,9 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.notification_custom_color,
         dataStore = dataStore,
         key = PrefKey.NOTIFICATION_DOTS_CUSTOM,
-        defaultValue = false
-    ) {
-        pokeChange()
-    }
+        defaultValue = false,
+        onChange = { pokeChange() }
+    )
 
     val notificationBackground = ColorIntPref(
         dataStore = dataStore,
@@ -948,9 +945,8 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_smartspace_widget_provider,
         defaultValue = OWMWeatherProvider::class.java.name,
         entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
-    ) {
-        pokeChange()
-    }
+        onChange = { pokeChange() }
+    )
 
 
     var smartspaceEventProviders = StringMultiSelectionPref(
@@ -1008,7 +1004,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -1072,10 +1068,9 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.FEED_PROVIDER,
         titleId = R.string.title_feed_provider,
         defaultValue = "",
-        entries = context.getFeedProviders()
-    ) {
-        restart()
-    }
+        entries = context.getFeedProviders(),
+        onChange = { restart() }
+    )
 
     // GESTURES & Dash
     var gestureDoubleTap = GesturePref(
