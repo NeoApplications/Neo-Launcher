@@ -392,7 +392,7 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
-        steps = 15,
+        steps = 13,
     )
 
     val desktopGridRows = IdpIntPref(
@@ -404,7 +404,7 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
-        steps = 15,
+        steps = 13,
     )
 
     var desktopFolderCornerRadius = FloatPref(
@@ -584,7 +584,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = 4,
         minValue = 2f,
         maxValue = 16f,
-        steps = 15
+        steps = 13,
     )
     val dockNumRows = IntPref(
         dataStore = dataStore,
@@ -643,8 +643,8 @@ class NeoPrefs private constructor(val context: Context) {
         selectDefaultValue = { numAllAppsColumns },
         minValue = 2f,
         maxValue = 16f,
-        steps = 15,
         onChange = { reloadGrid }
+        steps = 13,
     )
 
     var drawerPopup = StringMultiSelectionPref(
