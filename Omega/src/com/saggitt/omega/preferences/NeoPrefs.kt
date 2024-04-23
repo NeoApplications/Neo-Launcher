@@ -187,7 +187,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE_LESS,
         defaultValue = false,
-        onChange = { reloadAll }
+        onChange = { reloadAll() }
     )
 
     var profileBlurEnable = BooleanPref(
@@ -196,7 +196,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_BLUR_ENABLED,
         defaultValue = false,
-        onChange = { updateBlur }
+        onChange = { updateBlur() }
     )
 
     var profileBlurRadius = FloatPref(
@@ -378,7 +378,7 @@ class NeoPrefs private constructor(val context: Context) {
             columnsKey = "numColumns",
             rowsKey = "numRows",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid() }
         )
     }
 
@@ -389,10 +389,10 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_columns,
         selectDefaultValue = { numColumns },
         defaultValue = 4,
-        onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 13,
+        onChange = { reloadGrid() },
     )
 
     val desktopGridRows = IdpIntPref(
@@ -401,10 +401,10 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__drawer_rows,
         selectDefaultValue = { numRows },
         defaultValue = 5,
-        onChange = { reloadGrid },
         minValue = 2f,
         maxValue = 16f,
         steps = 13,
+        onChange = { reloadGrid() },
     )
 
     var desktopFolderCornerRadius = FloatPref(
@@ -570,7 +570,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = dockNumIcons,
             columnsKey = "numHotseatIcons",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid() }
         )
     }
 
@@ -613,7 +613,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.HIDDEN_APPS,
-        onChange = { reloadGrid }
+        onChange = { reloadGrid() }
     )
 
     var drawerProtectedAppsSet = StringSetPref(
@@ -622,7 +622,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.PROTECTED_APPS,
-        onChange = { reloadGrid }
+        onChange = { reloadGrid() }
     )
 
     private val drawerGridSizeDelegate = ResettableLazy {
@@ -631,7 +631,7 @@ class NeoPrefs private constructor(val context: Context) {
             numColumnsPref = drawerGridColumns,
             columnsKey = "numAllAppsColumns",
             targetObject = LauncherAppState.getIDP(context),
-            onChangeListener = { reloadGrid }
+            onChangeListener = { reloadGrid() }
         )
     }
     val drawerGridSize by drawerGridSizeDelegate
@@ -643,8 +643,8 @@ class NeoPrefs private constructor(val context: Context) {
         selectDefaultValue = { numAllAppsColumns },
         minValue = 2f,
         maxValue = 16f,
-        onChange = { reloadGrid }
         steps = 13,
+        onChange = { reloadGrid() }
     )
 
     var drawerPopup = StringMultiSelectionPref(
@@ -716,7 +716,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0.5f,
         steps = 150,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
-        onChange = { reloadGrid }
+        onChange = { reloadGrid() }
     )
 
     val drawerSeparateWorkApps = BooleanPref(
@@ -1179,7 +1179,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     //Misc
     val customAppName =
-        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll }) {
+        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll() }) {
             override fun flattenKey(key: ComponentKey) = key.toString()
             override fun unflattenKey(key: String) = makeComponentKey(context, key)
             override fun flattenValue(value: String) = value
