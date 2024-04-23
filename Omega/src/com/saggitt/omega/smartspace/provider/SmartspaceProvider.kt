@@ -56,7 +56,7 @@ class SmartspaceProvider private constructor(context: Context) {
     val targets = state
         .map {
             if (it.requiresSetup.isNotEmpty()) {
-                listOf(setupTarget) + it.targets
+                it.targets + listOf(setupTarget)
             } else {
                 it.targets
             }
@@ -71,7 +71,7 @@ class SmartspaceProvider private constructor(context: Context) {
             title = context.getString(R.string.smartspace_setup_text),
             intent = PreferenceActivity.createIntent(context, "${Routes.PREFS_WIDGETS}/")
         ),
-        score = 43,
+        score = -1,
         featureType = SmartspaceTarget.FEATURE_TIPS
     )
 
