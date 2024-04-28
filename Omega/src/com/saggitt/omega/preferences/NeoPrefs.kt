@@ -725,10 +725,12 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     val drawerAppGroupsManager by lazy { AppGroupsManager(this, dataStore) }
+    val drawerGroupsType get() = drawerAppGroupsManager.getEnabledType()
     val drawerTabs get() = drawerAppGroupsManager.drawerTabs
-    val drawerTabsModelCurrent
+    val drawerFolders get() = drawerAppGroupsManager.drawerFolders
+    val drawerEnabledGroupsModel
         get() = drawerAppGroupsManager.getEnabledModel() as? DrawerTabs
-            ?: drawerAppGroupsManager.drawerTabs
+            ?: drawerTabs
 
     val drawerSaveScrollPosition = BooleanPref(
         dataStore = dataStore,
