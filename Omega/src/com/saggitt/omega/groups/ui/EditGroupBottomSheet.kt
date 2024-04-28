@@ -20,7 +20,6 @@ package com.saggitt.omega.groups.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
@@ -118,150 +118,75 @@ fun EditGroupBottomSheet(
                 ?: context.prefs.profileAccentColor.getValue()
         )
     }
-    Column(
+
+    LazyColumn(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item {
+            HorizontalDivider(
+                modifier = Modifier
+                    .width(48.dp)
+                    .height(2.dp)
+            )
+        }
+        item {
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                shape = MaterialTheme.shapes.large,
+                label = {
+                    Text(
+                        text = stringResource(id = R.string.name),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                },
+                isError = title.isEmpty()
+            )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .width(48.dp)
-                .height(2.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            modifier = Modifier
-                .fillMaxWidth(),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12F),
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-            }),
-            shape = MaterialTheme.shapes.large,
-            label = {
-                Text(
-                    text = stringResource(id = R.string.name),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            },
-            isError = title.isEmpty()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        }
         val summary = context.resources.getQuantityString(
             R.plurals.tab_apps_count,
             selectedApps.size,
             selectedApps.size
         )
-        when (group.type) {
-            allAppsTab -> {
-                BasePreference(
-                    titleId = R.string.title__drawer_hide_apps,
-                    summary = summary,
-                    startWidget = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_apps),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    },
-                    endWidget = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.chevron_right),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    },
-                    index = 0,
-                    groupSize = 2
-                ) { openDialog.value = true }
-                Spacer(modifier = Modifier.height(4.dp))
-
-                if (openDialog.value) {
-                    BaseDialog(openDialogCustom = openDialog) {
-                        Card(
-                            shape = MaterialTheme.shapes.extraLarge,
-                            modifier = Modifier.padding(8.dp),
-                            elevation = CardDefaults.elevatedCardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                        ) {
-                            GroupAppSelection(
-                                selectedApps = selectedApps.map { it.toString() }.toSet(),
-                            ) {
-                                val componentsSet =
-                                    it.mapNotNull { ck -> ComponentKey.fromString(ck) }
-                                        .toMutableSet()
-                                selectedApps.clear()
-                                selectedApps.addAll(componentsSet)
-                                prefs.drawerHiddenAppSet.setValue(selectedApps.map { key -> key.toString() }
-                                    .toSet())
-                                openDialog.value = false
-                            }
-                        }
-                    }
-                }
-            }
-
-            DrawerTabs.TYPE_CUSTOM, DrawerFolders.TYPE_CUSTOM, TYPE_FLOWERPOT -> {
-                if (category != AppGroupsManager.Category.FLOWERPOT) {
+        item {
+            when (group.type) {
+                allAppsTab -> {
                     BasePreference(
-                        titleId = R.string.tab_manage_apps,
+                        titleId = R.string.title__drawer_hide_apps,
                         summary = summary,
                         startWidget = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_apps),
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
                             )
                         },
                         endWidget = {
                             Icon(
                                 painter = painterResource(id = R.drawable.chevron_right),
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
                             )
                         },
                         index = 0,
-                        groupSize = 3
+                        groupSize = 2
                     ) { openDialog.value = true }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    BasePreference(
-                        titleId = R.string.tab_hide_from_main,
-                        startWidget = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.tab_hide_from_main),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        endWidget = {
-                            Switch(
-                                modifier = Modifier
-                                    .height(24.dp),
-                                checked = isHidden,
-                                onCheckedChange = {
-                                    isHidden = it
-                                }
-                            )
-                        },
-                        onClick = { isHidden = !isHidden },
-                        index = 1,
-                        groupSize = 3
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
 
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
@@ -279,42 +204,150 @@ fun EditGroupBottomSheet(
                                             .toMutableSet()
                                     selectedApps.clear()
                                     selectedApps.addAll(componentsSet)
-                                    (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
-                                        componentsSet
+                                    prefs.drawerHiddenAppSet.setValue(selectedApps.map { key -> key.toString() }
+                                        .toSet())
+                                    openDialog.value = false
                                 }
                             }
                         }
                     }
-                } else {
-                    BasePreference(
-                        titleId = R.string.pref_appcategorization_flowerpot_title,
-                        summary = flowerpotManager.getAllPots()
-                            .find { it.name == selectedCategory }!!.displayName,
-                        startWidget = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_category),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        endWidget = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.chevron_right),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        index = 0
-                    ) { openDialog.value = true }
-                    Spacer(modifier = Modifier.height(4.dp))
+                }
 
-                    if (openDialog.value) {
-                        BaseDialog(openDialogCustom = openDialog) {
-                            CategorySelectionDialogUI(selectedCategory = selectedCategory) {
-                                selectedCategory = it
-                                (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
-                                    it
-                                openDialog.value = false
+                DrawerTabs.TYPE_CUSTOM, DrawerFolders.TYPE_CUSTOM, TYPE_FLOWERPOT -> {
+                    when {
+                        category != AppGroupsManager.Category.FLOWERPOT -> {
+                            BasePreference(
+                                titleId = R.string.tab_manage_apps,
+                                summary = summary,
+                                startWidget = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_apps),
+                                        contentDescription = null,
+                                    )
+                                },
+                                endWidget = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chevron_right),
+                                        contentDescription = null,
+                                    )
+                                },
+                                index = 0,
+                                groupSize = 3
+                            ) { openDialog.value = true }
+                            Spacer(modifier = Modifier.height(2.dp))
+                            BasePreference(
+                                titleId = R.string.tab_hide_from_main,
+                                startWidget = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.tab_hide_from_main),
+                                        contentDescription = null,
+                                    )
+                                },
+                                endWidget = {
+                                    Switch(
+                                        modifier = Modifier
+                                            .height(24.dp),
+                                        checked = isHidden,
+                                        onCheckedChange = {
+                                            isHidden = it
+                                        }
+                                    )
+                                },
+                                onClick = { isHidden = !isHidden },
+                                index = 1,
+                                groupSize = 3
+                            )
+
+                            if (openDialog.value) {
+                                BaseDialog(openDialogCustom = openDialog) {
+                                    Card(
+                                        shape = MaterialTheme.shapes.extraLarge,
+                                        modifier = Modifier.padding(8.dp),
+                                        elevation = CardDefaults.elevatedCardElevation(8.dp),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                                    ) {
+                                        GroupAppSelection(
+                                            selectedApps = selectedApps.map { it.toString() }
+                                                .toSet(),
+                                        ) {
+                                            val componentsSet =
+                                                it.mapNotNull { ck -> ComponentKey.fromString(ck) }
+                                                    .toMutableSet()
+                                            selectedApps.clear()
+                                            selectedApps.addAll(componentsSet)
+                                            (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                                                componentsSet
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else -> { // AppGroupsManager.Category.FLOWERPOT
+                            BasePreference(
+                                titleId = R.string.pref_appcategorization_flowerpot_title,
+                                summary = flowerpotManager.getAllPots()
+                                    .find { it.name == selectedCategory }!!.displayName,
+                                startWidget = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_category),
+                                        contentDescription = null,
+                                    )
+                                },
+                                endWidget = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chevron_right),
+                                        contentDescription = null,
+                                    )
+                                },
+                                index = 0,
+                                groupSize = 2
+                            ) { openDialog.value = true }
+
+                            if (openDialog.value) {
+                                BaseDialog(openDialogCustom = openDialog) {
+                                    CategorySelectionDialogUI(selectedCategory = selectedCategory) {
+                                        selectedCategory = it
+                                        (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                                            it
+                                        openDialog.value = false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (group.type != DrawerFolders.TYPE_CUSTOM) {
+                Spacer(modifier = Modifier.height(2.dp))
+                BasePreference(
+                    titleId = R.string.tab_color,
+                    startWidget = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_color_donut),
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp),
+                            tint = Color(AccentColorOption.fromString(color).accentColor)
+                        )
+                    },
+                    index = 2,
+                    groupSize = 3
+                ) {
+                    colorPicker.value = true
+                }
+                if (colorPicker.value) {
+                    BaseDialog(openDialogCustom = colorPicker) {
+                        Card(
+                            shape = MaterialTheme.shapes.extraLarge,
+                            modifier = Modifier.padding(8.dp),
+                            elevation = CardDefaults.elevatedCardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                        ) {
+                            ColorSelectionDialog(
+                                defaultColor = color
+                            ) {
+                                color = it
+                                colorPicker.value = false
                             }
                         }
                     }
@@ -322,103 +355,69 @@ fun EditGroupBottomSheet(
             }
         }
 
-        if (group.type != DrawerFolders.TYPE_CUSTOM) {
-            BasePreference(
-                titleId = R.string.tab_color,
-                startWidget = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_color_donut),
-                        contentDescription = "",
-                        modifier = Modifier.size(30.dp),
-                        tint = Color(AccentColorOption.fromString(color).accentColor)
-                    )
-                },
-                index = 2,
-                groupSize = 3
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
             ) {
-                colorPicker.value = true
-            }
-            if (colorPicker.value) {
-                BaseDialog(openDialogCustom = colorPicker) {
-                    Card(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        modifier = Modifier.padding(8.dp),
-                        elevation = CardDefaults.elevatedCardElevation(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                    ) {
-                        ColorSelectionDialog(
-                            defaultColor = color
-                        ) {
-                            color = it
-                            colorPicker.value = false
+                OutlinedButton(
+                    onClick = {
+                        onClose(Config.BS_SELECT_TAB_TYPE)
+                    },
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                ) {
+                    Text(text = stringResource(id = android.R.string.cancel))
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
+                            title
+                        (config[AppGroups.KEY_HIDE_FROM_ALL_APPS] as? AppGroups.BooleanCustomization)?.value =
+                            isHidden
+                        (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
+                            selectedApps.toMutableSet()
+                        if (category != AppGroupsManager.Category.FOLDER) {
+                            (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
+                                color
                         }
-                    }
+                        group.customizations.applyFrom(config)
+
+                        when (category) {
+                            AppGroupsManager.Category.FOLDER -> {
+                                prefs.drawerFolders.saveToJson()
+                            }
+
+                            AppGroupsManager.Category.TAB,
+                            AppGroupsManager.Category.FLOWERPOT,
+                            -> {
+                                prefs.drawerTabs.saveToJson()
+                                prefs.reloadTabs()
+                            }
+
+                            else -> {}
+                        }
+                        onClose(Config.BS_SELECT_TAB_TYPE)
+                    },
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.65F)
+                    ),
+                ) {
+                    Text(text = stringResource(id = R.string.tab_bottom_sheet_save))
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 16.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            OutlinedButton(
-                onClick = {
-                    onClose(Config.BS_SELECT_TAB_TYPE)
-                },
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            ) {
-                Text(text = stringResource(id = android.R.string.cancel))
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-
-            OutlinedButton(
-                onClick = {
-                    (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
-                        title
-                    (config[AppGroups.KEY_HIDE_FROM_ALL_APPS] as? AppGroups.BooleanCustomization)?.value =
-                        isHidden
-                    (config[AppGroups.KEY_ITEMS] as? AppGroups.ComponentsCustomization)?.value =
-                        selectedApps.toMutableSet()
-                    if (category != AppGroupsManager.Category.FOLDER) {
-                        (config[AppGroups.KEY_COLOR] as? AppGroups.StringCustomization)?.value =
-                            color
-                    }
-                    group.customizations.applyFrom(config)
-
-                    when (category) {
-                        AppGroupsManager.Category.FOLDER -> {
-                            prefs.drawerAppGroupsManager.drawerFolders.saveToJson()
-                        }
-
-                        AppGroupsManager.Category.TAB,
-                        AppGroupsManager.Category.FLOWERPOT,
-                                                         -> {
-                            prefs.drawerAppGroupsManager.drawerTabs.saveToJson()
-                            prefs.reloadTabs()
-                        }
-
-                        else                             -> {}
-                    }
-                    onClose(Config.BS_SELECT_TAB_TYPE)
-                },
-                shape = MaterialTheme.shapes.small,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.65F)),
-            ) {
-                Text(text = stringResource(id = R.string.tab_bottom_sheet_save))
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }

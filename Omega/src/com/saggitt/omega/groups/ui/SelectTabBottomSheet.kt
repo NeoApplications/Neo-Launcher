@@ -18,13 +18,14 @@
 
 package com.saggitt.omega.groups.ui
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,52 +46,50 @@ fun SelectTabBottomSheet(
 ) {
     val context = LocalContext.current
     val prefs = NeoPrefs.getInstance(context)
-    Column(
+    LazyColumn(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Divider(
-            modifier = Modifier
-                .width(48.dp)
-                .height(2.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(id = R.string.default_tab_name),
-            modifier = Modifier.fillMaxWidth(),
-            color = Color(prefs.profileAccentColor.getColor()),
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CategoryTabItem(
-            titleId = R.string.tab_type_smart,
-            summaryId = R.string.pref_appcategorization_flowerpot_summary,
-            modifier = Modifier.height(72.dp),
-            iconId = R.drawable.ic_category,
-            onClick = {
-                onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.FLOWERPOT)
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CategoryTabItem(
-            titleId = R.string.custom,
-            summaryId = R.string.tab_type_custom_desc,
-            modifier = Modifier.height(72.dp),
-            iconId = R.drawable.ic_squares_four,
-            onClick = {
-                onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.TAB)
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        item {
+            HorizontalDivider(
+                modifier = Modifier
+                    .width(48.dp)
+                    .height(2.dp)
+            )
+        }
+        item {
+            Text(
+                text = stringResource(id = R.string.default_tab_name),
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(prefs.profileAccentColor.getColor()),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+        item {
+            CategoryTabItem(
+                titleId = R.string.tab_type_smart,
+                summaryId = R.string.pref_appcategorization_flowerpot_summary,
+                modifier = Modifier.height(72.dp),
+                iconId = R.drawable.ic_category,
+                onClick = {
+                    onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.FLOWERPOT)
+                }
+            )
+        }
+        item {
+            CategoryTabItem(
+                titleId = R.string.custom,
+                summaryId = R.string.tab_type_custom_desc,
+                modifier = Modifier.height(72.dp),
+                iconId = R.drawable.ic_squares_four,
+                onClick = {
+                    onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.TAB)
+                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
