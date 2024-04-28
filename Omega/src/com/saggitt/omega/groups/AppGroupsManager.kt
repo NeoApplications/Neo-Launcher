@@ -27,25 +27,19 @@ import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.groups.category.CustomTabs
 import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.FlowerpotTabs
-import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.util.drawerCategorizationOptions
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+
+
+typealias CategoryKey = String
 
 class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences>) {
-    var categorizationEnabled = BooleanPref(
-        key = PrefKey.DRAWER_CATEGORIZATION_ENABLED,
-        dataStore = dataStore,
-        titleId = R.string.title_app_categorization_enable,
-        summaryId = R.string.summary_app_categorization_enable,
-        defaultValue = false,
-        onChange = {
-            MAIN_EXECUTOR.execute {
-                onPrefsChanged()
-            }
-        }
-    )
-
     var categorizationType = StringSelectionPref(
         key = PrefKey.DRAWER_CATEGORIZATION_TYPE,
         dataStore = dataStore,
@@ -58,6 +52,15 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
             }
         }
     )
+
+    val categorizationEnabled : StateFlow<Boolean> = categorizationType.get()
+        .map { it != Category.NONE.key }
+        .stateIn(
+            prefs.publicScope,
+            SharingStarted.Lazily,
+            false
+        )
+
 
     val drawerTabs by lazy { CustomTabs(this) }
     private val flowerpotTabs by lazy { FlowerpotTabs(this) }
@@ -101,7 +104,7 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         @StringRes val titleId: Int,
         @StringRes val summaryId: Int = -1,
         @DrawableRes val iconId: Int = -1,
-        val key: String,
+        val key: CategoryKey,
         val type: Int = -1,
     ) {
         companion object {

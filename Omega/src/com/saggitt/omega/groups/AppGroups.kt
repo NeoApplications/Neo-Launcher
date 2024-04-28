@@ -50,18 +50,13 @@ abstract class AppGroups<T : AppGroups.Group>(
         }
     )
 
-    var isEnabled =
-        manager.categorizationEnabled.getValue() && manager.categorizationType.getValue() == category.key
-        private set
-
+    val isEnabled: Boolean
+        get() = manager.categorizationEnabled.value && manager.categorizationType.getValue() == category.key
 
     private val defaultGroups by lazy { getDefaultCreators().mapNotNull { it.createGroup(context) } }
 
     fun checkIsEnabled(changeCallback: PreferencesChangeCallback) {
-        val enabled =
-            manager.categorizationEnabled.getValue() && manager.categorizationType.getValue() == category.key
-        if (isEnabled != enabled) {
-            isEnabled = enabled
+        if (isEnabled) {
             onGroupsChanged(changeCallback)
         }
     }

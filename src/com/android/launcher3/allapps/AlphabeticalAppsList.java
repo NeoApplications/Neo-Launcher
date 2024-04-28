@@ -329,7 +329,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         LauncherModel model = app.getModel();
         ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
         return Utilities.getNeoPrefs(mLauncher)
-                .getDrawerAppGroupsManager()
                 .getDrawerFolders()
                 .getFolderInfos(this, modelWriter);
     }
@@ -337,7 +336,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private Set<ComponentKey> getFolderFilteredApps() {
 
         return Utilities.getNeoPrefs(mLauncher)
-                .getDrawerAppGroupsManager()
                 .getDrawerFolders()
                 .getHiddenComponents();
     }

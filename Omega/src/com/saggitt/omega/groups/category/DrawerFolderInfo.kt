@@ -50,7 +50,7 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
     fun onCloseComplete() {
         if (changed) {
             changed = false
-            drawerFolder.context.prefs.drawerAppGroupsManager.drawerFolders.saveToJson()
+            drawerFolder.context.prefs.drawerFolders.saveToJson()
         }
     }
 
@@ -58,7 +58,7 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
         val prefs = NeoPrefs.getInstance(launcher)
         ComposeBottomSheet.show(launcher) {
             EditGroupBottomSheet(
-                category = prefs.drawerAppGroupsManager.getEnabledType()!!,
+                category = prefs.drawerGroupsType!!,
                 group = drawerFolder,
                 onClose = { AbstractFloatingView.closeAllOpenViews(launcher) }
             )

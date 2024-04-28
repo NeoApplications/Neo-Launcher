@@ -206,7 +206,7 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
             button.setOnLongClickListener { v: View ->
                 ComposeBottomSheet.show(v.context) {
                     EditGroupBottomSheet(
-                        category = prefs.drawerAppGroupsManager.getEnabledType()!!,
+                        category = prefs.drawerGroupsType!!,
                         group = tab.drawerTab,
                         onClose = { AbstractFloatingView.closeAllOpenViews(launcher) }
                     )

@@ -69,6 +69,7 @@ import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saulhdev.neolauncher.util.CustomPreferencesMigration
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -79,11 +80,15 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class NeoPrefs private constructor(val context: Context) {
+    private val scope = MainScope()
+    val publicScope = CoroutineScope(Dispatchers.IO) + CoroutineName("NeoPrefs")
+
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
         name = "neo_launcher",
         produceMigrations = {
@@ -1204,8 +1209,6 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__dev_show_debug_info,
         defaultValue = false
     )
-
-    private val scope = MainScope()
 
     init {
         val iconShape = IconShape.fromString(context, profileIconShape.get().firstBlocking())
