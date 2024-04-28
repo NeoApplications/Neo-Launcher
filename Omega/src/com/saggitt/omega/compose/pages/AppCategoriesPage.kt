@@ -244,53 +244,14 @@ fun AppCategoriesPage() {
                         end = 8.dp
                     )
             ) {
-                ComposeSwitchView(
-                    modifier = Modifier
-                        .background(
-                            if (categoriesEnabled.value) MaterialTheme.colorScheme.primary.copy(0.6f)
-                            else MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .clip(MaterialTheme.shapes.extraLarge),
-                    title = stringResource(id = R.string.title_app_categorization_enable),
-                    summary = stringResource(id = R.string.summary_app_categorization_enable),
-                    verticalPadding = 16.dp,
-                    horizontalPadding = 16.dp,
-                    isChecked = categoriesEnabled.value,
-                    onCheckedChange = {
-                        categoriesEnabled.value = it
-                        manager.categorizationEnabled.setValue(it)
-                    }
+                PreferenceBuilder(
+                    manager.categorizationType,
+                    { pref: Any ->
+                        dialogPref = pref
+                        openDialog.value = true
+                    },
+                    0, 1
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf(
-                        AppGroupsManager.Category.FOLDER,
-                        AppGroupsManager.Category.TAB
-                    ).forEach {
-                        CategorizationOption(
-                            category = it,
-                            selected = selectedCategoryKey == it.key && categoriesEnabled.value
-                        ) {
-                            if (categoriesEnabled.value) {
-                                manager.categorizationType.setValue(it.key)
-                                selectedCategoryKey = it.key
-                                currentCategory = it
-                                sheetChanger = if (it == AppGroupsManager.Category.FOLDER) {
-                                    Config.BS_CREATE_GROUP
-                                } else {
-                                    Config.BS_SELECT_TAB_TYPE
-                                }
-                            }
-                        }
-                    }
-                }
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = categoryTitle,

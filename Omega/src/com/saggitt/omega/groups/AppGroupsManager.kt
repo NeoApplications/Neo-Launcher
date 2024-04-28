@@ -30,7 +30,7 @@ import com.saggitt.omega.groups.category.FlowerpotTabs
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
-import com.saggitt.omega.preferences.StringPref
+import com.saggitt.omega.preferences.StringSelectionPref
 
 class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences>) {
     var categorizationEnabled = BooleanPref(
@@ -46,11 +46,12 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         }
     )
 
-    var categorizationType = StringPref(
+    var categorizationType = StringSelectionPref(
         key = PrefKey.DRAWER_CATEGORIZATION_TYPE,
         dataStore = dataStore,
         titleId = R.string.pref_appcategorization_style_text,
-        defaultValue = "categorization_type_tabs",
+        defaultValue = Category.NONE.key,
+        entries = prefs.context.drawerCategorizationOptions,
         onChange = {
             MAIN_EXECUTOR.execute {
                 onPrefsChanged()

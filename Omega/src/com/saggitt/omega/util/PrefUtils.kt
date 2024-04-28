@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
+import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.preferences.PREFS_LANGUAGE_DEFAULT_CODE
 import com.saggitt.omega.preferences.PREFS_LANGUAGE_DEFAULT_NAME
 import java.util.*
@@ -92,6 +93,13 @@ fun Context.getFeedProviders(): Map<String, String> {
     val entryValues = feeds.map { it.packageName }.toTypedArray()
     return entryValues.zip(entries).toMap()
 }
+
+val Context.drawerCategorizationOptions: Map<String, String>
+    get() = listOfNotNull(
+        AppGroupsManager.Category.NONE,
+        AppGroupsManager.Category.FOLDER,
+        AppGroupsManager.Category.TAB
+    ).associate { Pair(it.key, getString(it.titleId)) }
 
 fun Context.availableFeedProviders(): List<ApplicationInfo> {
     val packageManager = packageManager
