@@ -93,7 +93,7 @@ fun AppCategoriesPage() {
     val coroutineScope = rememberCoroutineScope()
     val prefs = NeoPrefs.getInstance(context)
     val manager by lazy { prefs.drawerAppGroupsManager }
-    val categoriesEnabled by manager.categorizationEnabled.collectAsState()
+    val categoriesEnabled by manager.categorizationEnabled.collectAsState(false)
 
     var categoryTitle by remember { mutableStateOf("") }
 

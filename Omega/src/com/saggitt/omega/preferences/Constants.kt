@@ -66,11 +66,11 @@ val drawerPopupOptions = mutableMapOf(
 )
 
 val drawerLayoutOptions = mutableMapOf(
+    LAYOUT_CUSTOM_CATEGORIES to R.string.title_drawer_custom_categories,
     LAYOUT_VERTICAL to R.string.title_drawer_vertical,
     LAYOUT_VERTICAL_ALPHABETICAL to R.string.title_drawer_vertical_list,
     LAYOUT_HORIZONTAL to R.string.title_drawer_horizontal,
     LAYOUT_CATEGORIZED to R.string.title_drawer_categorized,
-    LAYOUT_CUSTOM_CATEGORIES to R.string.title_drawer_custom_categories,
 )
 
 val temperatureUnitOptions = listOfNotNull(

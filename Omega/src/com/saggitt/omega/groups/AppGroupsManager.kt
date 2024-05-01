@@ -31,10 +31,8 @@ import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.drawerCategorizationOptions
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 
 typealias CategoryKey = String
@@ -53,13 +51,8 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         }
     )
 
-    val categorizationEnabled : StateFlow<Boolean> = categorizationType.get()
+    val categorizationEnabled: Flow<Boolean> = categorizationType.get()
         .map { it != Category.NONE.key }
-        .stateIn(
-            prefs.publicScope,
-            SharingStarted.Lazily,
-            false
-        )
 
 
     val drawerTabs by lazy { CustomTabs(this) }
