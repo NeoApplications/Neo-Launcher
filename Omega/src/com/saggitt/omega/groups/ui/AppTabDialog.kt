@@ -172,6 +172,7 @@ fun AppTabDialogUI(
                         }
                         tabs.hashCode()
                         prefs.drawerTabs.saveToJson()
+                        prefs.reloadTabs()
                         openDialogCustom.value = false
                     }
                 )
