@@ -405,7 +405,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     updateSearchResultsVisibility();
                     int previousPage = getCurrentPage();
                     if (mRebindAdaptersAfterSearchAnimation) {
-                        rebindAdapters(false);
+                        rebindAdapters(mUsingTabs);
                         mRebindAdaptersAfterSearchAnimation = false;
                     }
 
