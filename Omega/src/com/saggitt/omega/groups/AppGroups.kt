@@ -51,7 +51,7 @@ abstract class AppGroups<T : AppGroups.Group>(
     )
 
     val isEnabled: Boolean
-        get() = manager.categorizationEnabled.value && manager.categorizationType.getValue() == category.key
+        get() = manager.categorizationType.getValue() == category.key
 
     private val defaultGroups by lazy { getDefaultCreators().mapNotNull { it.createGroup(context) } }
 
