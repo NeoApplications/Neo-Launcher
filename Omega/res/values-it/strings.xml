@@ -173,7 +173,7 @@
     <string name="title__search_action_assistant">Apri assistente</string>
     <string name="title__search_bubble_searchbar">Mostra due Bubble</string>
     <string name="dt2s_admin_warning">Tocca due volte per sospendere verrà disattivato.</string>
-    <string name="dt2s_admin_hint">Per utilizzare il doppio tocco per sospendere, concedi i permessi di root.</string>
+    <string name="dt2s_admin_hint">Per usare il doppio tocco per sospendere, concedi i permessi di root.</string>
     <string name="omega_actions">Azioni</string>
     <string name="gesture_press_back">Tasto indietro</string>
     <string name="gesture_press_home">Tocca il pulsante Home</string>
@@ -226,7 +226,7 @@
     <string name="deny">Nega</string>
     <string name="permission_iplocate_twilight_explanation">Consenti l\'accesso alla tua posizione approssimativa\? Ciò consente un calcolo della luce diurna più accurato.</string>
     <string name="permission_iplocate">Posizione approssimativa</string>
-    <string name="event_provider_missing_notification_dots">Attiva i punti di notifica per utilizzare <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
+    <string name="event_provider_missing_notification_dots">Attiva i punti di notifica per usare <xliff:g example="My Provider" id="providerName">“%1$s”</xliff:g>.</string>
     <string name="event_provider_missing_notification_access">Attiva le notifiche da <xliff:g example="My App" id="name">“%2$s” per usare </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="battery_low">Batteria scarica</string>
     <string name="battery_full">Ricaricato</string>
@@ -300,8 +300,8 @@
     <string name="theme_light">Chiaro</string>
     <string name="theme_based">Imposta per tema</string>
     <string name="theme_auto_night_mode">Sistema</string>
-    <string name="theme_auto">Segui lo sfondo</string>
-    <string name="summary__theme_blur">Sfoca gli sfondi delle pagine</string>
+    <string name="theme_auto">Segui sfondo</string>
+    <string name="summary__theme_blur">Sfoca sfondi delle pagine</string>
     <string name="title_theme_icon_packs">Pacchetti icone</string>
     <string name="title__theme_icon_shape">Forma icona</string>
     <string name="title__theme_blur_radius">Intensità sfocatura</string>
@@ -311,8 +311,8 @@
     <string name="disable_protected_apps">Disattiva app protette</string>
     <string name="enable_protected_apps">Abilita app protette</string>
     <string name="trust_apps_manager_name">App nascoste e protette</string>
-    <string name="msg_missing_usage_access">Attiva l\'accesso ai dati di utilizzo per <xliff:g example="My App" id="name">%1$s</xliff:g> per mostrare i suggerimenti delle app</string>
-    <string name="needs_usage_access">Accesso ai dati di utilizzo necessario</string>
+    <string name="msg_missing_usage_access">Attiva l\'accesso ai dati di uso per <xliff:g example="My App" id="name">%1$s</xliff:g> per mostrare i suggerimenti delle app</string>
+    <string name="needs_usage_access">Accesso ai dati di uso necessario</string>
     <string name="protected_app_reset">Ripristina app protette</string>
     <string name="hide_app_reset">Ripristina app nascoste</string>
     <string name="hide_app_selected">App nascoste (%1$d)</string>
@@ -342,7 +342,7 @@
     <string name="title_drawer_layout">Modalità disposizione</string>
     <string name="title_text_color">Colore testo</string>
     <string name="label_turn_off_suggestions">Disattiva</string>
-    <string name="msg_disable_suggestions_prompt">I dati di utilizzo verranno eliminati.</string>
+    <string name="msg_disable_suggestions_prompt">I dati di uso verranno eliminati.</string>
     <string name="title_disable_suggestions_prompt">Disattiva suggerimenti app</string>
     <string name="summary__drawer_hide_apps">Nascondi app dal cassetto delle app</string>
     <string name="summary_all_apps_google_search">Trova tra risultati web e app</string>
@@ -454,7 +454,7 @@
     <string name="about_community">Comunità</string>
     <string name="dash_wifi_summary">Stato e connessione Wi-Fi</string>
     <string name="summary_fuzzy_search">Corrispondenza approssimativa per ricerche app.</string>
-    <string name="summary_force_shapeless">Prova ad utilizzare icone compatibili per tutte le app.</string>
+    <string name="summary_force_shapeless">Prova ad usare icone compatibili per tutte le app.</string>
     <string name="section_web">Web</string>
     <string name="folder_name">Nome della cartella</string>
     <string name="section_apps">app</string>
@@ -465,7 +465,7 @@
     <string name="title__general_gestures_dash">Gesti &amp; Pannello</string>
     <string name="pref_category__dash">Pannello</string>
     <string name="title__feed">Feed</string>
-    <string name="theme_auto_black">Segui lo sfondo (nero)</string>
+    <string name="theme_auto_black">Segui sfondo (nero)</string>
     <string name="title_search_contacts">Cerca contatti</string>
     <string name="section_contacts">Contatti</string>
     <string name="cat_dock_search">Cassetto e barra app</string>
@@ -524,4 +524,13 @@
     <string name="hotseat_accessibility_expand">Barra app aperta</string>
     <string name="hotseat_accessibility_collapse">Barra app chiusa</string>
     <string name="title_expandable_dock">Barra app espandibile</string>
+    <string name="title_desktop_free_scrolling">Scorrimento libero</string>
+    <string name="title_all_apps_hide_scrollbar">Nascondi barra di scorrimento</string>
+    <string name="title_themed_background">Sfondo icona trasparente</string>
+    <string name="color_wallpaper_tertiary">Sfondo terziario</string>
+    <string name="title_drawer_all_apps">Tutto</string>
+    <string name="title_drawer_horizontal">Orizzontale</string>
+    <string name="title_drawer_categorized">Classificato</string>
+    <string name="title_drawer_custom_categories">Categorie personalizzate</string>
+    <string name="title_smartspace_background">Mostra sfondo a tema</string>
 </resources>
