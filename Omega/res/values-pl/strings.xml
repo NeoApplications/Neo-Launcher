@@ -508,4 +508,6 @@
     <string name="pref_category__incubating">Inkubacja</string>
     <string name="edit_dash">Edytuj szufladę aplikacji</string>
     <string name="action_open_dash">Otwórz szufladę aplikacji</string>
+    <string name="title_all_apps_hide_scrollbar">Ukryj pasek przewijania</string>
+    <string name="title_themed_background">Przezroczyste tło ikony</string>
 </resources>
