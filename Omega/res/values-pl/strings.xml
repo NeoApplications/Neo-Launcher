@@ -199,9 +199,9 @@
     <string name="title_drawer_layout">Tryb układu</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d ukryte</item>
-        <item quantity="few"/>
-        <item quantity="many"/>
-        <item quantity="other"/>
+        <item quantity="few"></item>
+        <item quantity="many"></item>
+        <item quantity="other"></item>
     </plurals>
     <string name="hide_app_selected">Ukryte aplikacje (%1$d)</string>
     <string name="icon_shape_override_label_location">na ekranie głównym</string>

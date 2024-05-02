@@ -349,8 +349,8 @@
     <string name="hide_app_selected">Paslėptos programėlės (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d paslėpta</item>
-        <item quantity="few"/>
-        <item quantity="other"/>
+        <item quantity="few"></item>
+        <item quantity="other"></item>
     </plurals>
     <string name="selected_count">%1$d pasirinkta</string>
     <plurals name="tab_apps_count">

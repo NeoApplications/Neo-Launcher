@@ -48,7 +48,7 @@
     <string name="dock_colored_google">Värikuvakkeet</string>
     <string name="title_opacity">Peittävyys</string>
     <string name="hotseat_show_page_indicator">Näytä sivun ilmaisin</string>
-    <string name="title_disabled"></string>
+    <string name="title_disabled"/>
     <string name="num_hotseat_icons_pref_title">Kuvakkeiden määrä</string>
     <string name="title_dock_search">Telakan hakupalkki</string>
     <string name="summary_dock_search">Näytä alaosan telakalla</string>
@@ -187,7 +187,7 @@
     <string name="smartspace_in_time">%1$s:ssa</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
-    <string name="smartspace_provider_bridge"></string>
+    <string name="smartspace_provider_bridge"/>
     <string name="resuable_text_alarm">Hälytys</string>
     <string name="name_provider_alarm_events">Tulevat hälytykset</string>
     <string name="smartspace_widget_provider_not_found">Hanki Google-sovellus.</string>
@@ -210,7 +210,7 @@
     <string name="onbording_settings_summary">Kosketa aloitusnäyttöä ja pidä sitä painettuna.</string>
     <string name="onboarding_swipe_up">Avaa sovellusvalikko pyyhkäisemällä ylöspäin.</string>
     <string name="weather_provider_testing">Vianmääritys</string>
-    <string name="weather_provider_pe"></string>
+    <string name="weather_provider_pe"/>
     <string name="weather_provider_oneplus_weather">OnePlus Sää</string>
     <string name="event_provider_now_playing">Nyt toistetaan</string>
     <string name="event_provider_unread_notifications">Ilmoitukset</string>

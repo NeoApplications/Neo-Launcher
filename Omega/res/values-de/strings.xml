@@ -83,7 +83,7 @@
     <string name="hide_app_selected">Ausgeblendete Apps (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Versteckt</item>
-        <item quantity="other"/>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d App</item>

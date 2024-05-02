@@ -38,7 +38,7 @@
     <string name="hide_app_selected">  kaŝita</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Kaŝita</item>
-        <item quantity="other" />
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Aplikaĵo</item>

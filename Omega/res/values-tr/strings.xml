@@ -184,7 +184,7 @@
     <string name="hide_app_selected">Gizli Uygulamalar</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Gizli</item>
-        <item quantity="other"/>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Uygulama</item>
