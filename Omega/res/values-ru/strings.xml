@@ -513,4 +513,5 @@
     <string name="title_expandable_dock">Разворачиваемая панель</string>
     <string name="title_desktop_free_scrolling">Свободная прокрутка</string>
     <string name="title_all_apps_hide_scrollbar">Скрыть полосу прокрутки</string>
+    <string name="title_themed_background">Прозрачный фон иконки</string>
 </resources>
