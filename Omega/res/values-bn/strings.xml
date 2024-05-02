@@ -34,4 +34,6 @@
     <string name="pref_category__interfaces">ইন্টারফেস</string>
     <string name="title__general_dock">ডক</string>
     <string name="title__general_about">সম্পর্কে</string>
+    <string name="title__general_advanced">উন্নত সেটিংস</string>
+    <string name="title__general_desktop">ডেস্কটপ</string>
 </resources>
