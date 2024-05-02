@@ -283,8 +283,8 @@
     </plurals>
     <plurals name="hidden_apps_count">
         <item quantity="one">Skriveno: %1$d</item>
-        <item quantity="few"/>
-        <item quantity="other"/>
+        <item quantity="few"></item>
+        <item quantity="other"></item>
     </plurals>
     <string name="trust_apps_no_lock_error">Postavi sigurno zaključavanje ekrana za ograničavanje pristupa programima</string>
     <string name="trust_apps_manager_name">Skriveni i zaštićeni programi</string>

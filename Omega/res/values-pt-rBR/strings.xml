@@ -28,6 +28,7 @@
     <string name="hide_app_selected">"Apps  ocultos (%1$d)"</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Oculto</item>
+        <item quantity="many">%1$d Ocultos</item>
         <item quantity="other">%1$d Ocultos</item>
     </plurals>
     <plurals name="tab_apps_count">
@@ -118,7 +119,7 @@
     <string name="title_smartspace_weather_units">Unidade de temperatura</string>
     <string name="title_smartspace_widget_provider">Fonte do tempo</string>
     <string name="title_smartspace_time_above">Mostrar relógio grande</string>
-    <string name="title_smartspace_time_24_h">Use o formato 24h</string>
+    <string name="title_smartspace_time_24_h">Formato de 24 horas</string>
     <string name="title_smartspace_date">Mostrar data</string>
     <string name="title_smartspace_time">Mostrar tempo</string>
     <string name="title_use_pill_qsb">Mostrar o atalho de pesquisa em formato pirula</string>
@@ -458,4 +459,50 @@
     <string name="title__drawer_rows">Número de linhas</string>
     <string name="protected_apps">Aplicativos protegidos</string>
     <string name="protected_app_selected">Aplicativos protegidos (%1$d)</string>
+    <string name="reset_custom_icon">Remover Ícone Personalizado</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="smartspace_widget_placeholder_date">Sex., 3 de Mar.</string>
+    <string name="author_role">Desenvolvedor</string>
+    <string name="selected_apps">Apps Selecionados (%1$d)</string>
+    <string name="app_reset">Redefinir Seleção</string>
+    <string name="title_smartspace_calendar">Selecionar Calendário</string>
+    <string name="folder_opacity">Opacidade do Ícone de Pasta</string>
+    <string name="title_override_corner_radius_value">Raio dos cantos global</string>
+    <string name="dash_line_size">Tamanho da linha do painel</string>
+    <string name="title_expandable_dock">Dock Expansível</string>
+    <string name="color_wallpaper_secondary">Papel de Parede Secundário</string>
+    <string name="color_dynamic">Dinâmico</string>
+    <string name="title_themed_icons">Ícones Temáticos</string>
+    <string name="full_wday_month_day_no_year">EEEE, d \'de\' MMMM</string>
+    <string name="owm_get_your_own_key">Obtenha uma chave de API em api.openweathermap.org.</string>
+    <string name="smartspace_time_follow_system">Seguir o Sistema</string>
+    <string name="hotseat_accessibility_expand">Dock expandida</string>
+    <string name="gesture_press_recents">Botões recentes</string>
+    <string name="notification_dots_disabled">Para mostrar Pontos de Notificação, habilite a visualização de pontos de notificação nas configurações</string>
+    <string name="web_search_neeva">Neeva (Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
+    <string name="default_city">Brasília, BR</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="accessibility_next_alarm">Pŕoximo alarme às %s</string>
+    <string name="contributor_role">Colaborador</string>
+    <string name="tap_to_enable">Toque o item para ativá-lo</string>
+    <string name="web_search_you">You (Web)</string>
+    <string name="title_smartspace_time_format">Formato do Tempo</string>
+    <string name="accessibility_smartspace_page">Página %1$d de %2$d</string>
+    <string name="show_top_shadow">Exibir Sombra Superior</string>
+    <string name="title_calendar_persian">Persa</string>
+    <string name="title_calendar_gregorian">Gregoriano</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — Cheia em %2$s</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="smartspace_icu_date_pattern">EEEMMMd</string>
+    <string name="smartspace_flight_qr_code">Código QR</string>
+    <string name="weather_api_key">Chave de API OWM</string>
+    <string name="weather_city">Cidade</string>
+    <string name="notification_dots_missing_notification_access">Para mostrar Pontos de Notificação, ative o acesso às notificações de apps</string>
+    <string name="about_community_telegram">Comunidade no Telegram</string>
+    <string name="about_community_matrix">Comunidade no Matrix</string>
+    <string name="web_search_perplexity">Perplexity (Web)</string>
+    <string name="smartspace_time_12_hour_format">Formato de 12 horas</string>
+    <string name="button_apply">Aplicar</string>
+    <string name="web_search_phind">Phind (Web)</string>
 </resources>

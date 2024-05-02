@@ -105,8 +105,8 @@
     <string name="title__theme_accent_color">Couleur d\'accentuation</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d masqué</item>
-        <item quantity="many"/>
-        <item quantity="other"/>
+        <item quantity="many"></item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d application</item>

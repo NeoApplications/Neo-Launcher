@@ -36,11 +36,11 @@
     <string name="hide_app_selected">التطبيقات المخفية (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="zero">%1$d مخفي</item>
-        <item quantity="one"/>
-        <item quantity="two"/>
-        <item quantity="few"/>
-        <item quantity="many"/>
-        <item quantity="other"/>
+        <item quantity="one"></item>
+        <item quantity="two"></item>
+        <item quantity="few"></item>
+        <item quantity="many"></item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="zero">%1$dصفر</item>

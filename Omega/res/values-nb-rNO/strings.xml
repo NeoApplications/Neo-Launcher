@@ -149,7 +149,7 @@
     <string name="title__theme_blur">Tilslør</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d skjulte</item>
-        <item quantity="other"/>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d program</item>

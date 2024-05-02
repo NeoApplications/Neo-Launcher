@@ -163,7 +163,7 @@
         <item quantity="other">%1$d Apps</item>
     </plurals>
     <plurals name="hidden_apps_count">
-        <item quantity="one"></item>
+        <item quantity="one">%1$d Hidden</item>
         <item quantity="other">%1$d Hidden</item>
     </plurals>
     <string name="protected_apps">Protected Apps</string>
@@ -285,12 +285,10 @@
     <string name="google_app" translatable="false">Google app</string>
     <string name="pref_shelf_summary">To the left of the main Home screen</string>
     <string name="accessibility_smartspace_page">Page %1$d of %2$d</string>
-
     <string name="smartspace_calendar_gregorian" translatable="false">gregorian</string>
     <string name="title_calendar_gregorian">Gregorian</string>
     <string name="smartspace_calendar_persian" translatable="false">persian</string>
     <string name="title_calendar_persian">Persian</string>
-
     <!-- SmartSpace -->
     <string name="smartspace_preferences">Preferences</string>
     <string name="smartspace_add_to_home">Add to Desktop</string>
@@ -640,7 +638,6 @@
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
-
     <string name="title_override_corner_radius_value">Global corner radius</string>
     <string name="dash_line_size">Dash line size</string>
 </resources>
