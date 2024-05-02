@@ -505,4 +505,7 @@
     <string name="hotseat_accessibility_expand">Панель розгорнута</string>
     <string name="hotseat_accessibility_collapse">Панель згорнута</string>
     <string name="title_expandable_dock">Розширювана панель</string>
+    <string name="title_desktop_free_scrolling">Вільна прокрутка</string>
+    <string name="title_all_apps_hide_scrollbar">Сховати смугу прокручування</string>
+    <string name="title_themed_background">Прозорий фон іконки</string>
 </resources>
