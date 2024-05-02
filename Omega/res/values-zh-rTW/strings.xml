@@ -502,4 +502,5 @@
     <string name="hotseat_accessibility_expand">Dock 展開</string>
     <string name="hotseat_accessibility_collapse">Dock 收起</string>
     <string name="title_expandable_dock">擴展 Dock</string>
+    <string name="title_desktop_free_scrolling">自由滾動</string>
 </resources>
