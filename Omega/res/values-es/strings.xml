@@ -509,4 +509,13 @@
     <string name="hotseat_accessibility_expand">Dock expandido</string>
     <string name="hotseat_accessibility_collapse">Dock colapsado</string>
     <string name="title_expandable_dock">Dock Ampliable</string>
+    <string name="title_desktop_free_scrolling">Desplazamiento libre</string>
+    <string name="title_all_apps_hide_scrollbar">Ocultar barra de desplazamiento</string>
+    <string name="title_themed_background">Fondo del icono transparente</string>
+    <string name="color_wallpaper_tertiary">Fondos de pantalla terciarios</string>
+    <string name="title_drawer_categorized">Por categorías</string>
+    <string name="title_drawer_custom_categories">Categorías personalizadas</string>
+    <string name="title_drawer_all_apps">Todo</string>
+    <string name="title_drawer_horizontal">Horizontal</string>
+    <string name="title_smartspace_background">Mostrar fondos temáticos</string>
 </resources>
