@@ -507,4 +507,5 @@
     <string name="hotseat_accessibility_expand">Dock ausgeklappt</string>
     <string name="hotseat_accessibility_collapse">Dock eingeklappt</string>
     <string name="title_expandable_dock">Ausklappbares Dock</string>
+    <string name="title_desktop_free_scrolling">Freies Scrollen</string>
 </resources>
