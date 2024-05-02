@@ -473,4 +473,5 @@
     <string name="dash_line_size">阴影线尺寸</string>
     <string name="title_override_corner_radius_value">全局圆角半径</string>
     <string name="title__dock_icon_size_enforce">强制启用自定义图标大小</string>
+    <string name="title_desktop_free_scrolling">自由滚动</string>
 </resources>
