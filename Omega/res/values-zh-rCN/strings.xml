@@ -474,4 +474,12 @@
     <string name="title_override_corner_radius_value">全局圆角半径</string>
     <string name="title__dock_icon_size_enforce">强制启用自定义图标大小</string>
     <string name="title_desktop_free_scrolling">自由滚动</string>
+    <string name="color_wallpaper_secondary">二次壁纸</string>
+    <string name="color_dynamic">动态</string>
+    <string name="title_all_apps_hide_scrollbar">隐藏滚动条</string>
+    <string name="title_smartspace_time_format">时间格式</string>
+    <string name="title_smartspace_calendar">选择日历</string>
+    <string name="title_themed_background">透明图标背景</string>
+    <string name="accessibility_smartspace_page">第 %1$d 页（一共 %2$d 页）</string>
+    <string name="title_expandable_dock">可展开的快捷启动栏</string>
 </resources>
