@@ -36,11 +36,11 @@
     <string name="hide_app_selected">التطبيقات المخفية (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="zero">%1$d مخفي</item>
-        <item quantity="one"></item>
-        <item quantity="two"></item>
-        <item quantity="few"></item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="one">%1$d مخفي</item>
+        <item quantity="two">%1$d مخفي</item>
+        <item quantity="few">%1$d مخفي</item>
+        <item quantity="many">%1$d مخفي</item>
+        <item quantity="other">%1$d مخفيه</item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="zero">%1$dصفر</item>
@@ -518,4 +518,10 @@
     <string name="title_desktop_free_scrolling">التمرير الحر</string>
     <string name="title_all_apps_hide_scrollbar">اخفاء شريط السحب</string>
     <string name="title_themed_background">خلفية أيقونة شفافة</string>
+    <string name="color_wallpaper_tertiary">خلفيات Tertiary</string>
+    <string name="title_drawer_custom_categories">فئات مخصصة</string>
+    <string name="title_drawer_all_apps">الكل</string>
+    <string name="title_drawer_horizontal">أفقي</string>
+    <string name="title_drawer_categorized">مصنف</string>
+    <string name="title_smartspace_background">عرض الخلفية ذات السمات</string>
 </resources>
