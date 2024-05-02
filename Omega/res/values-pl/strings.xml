@@ -198,10 +198,10 @@
     <string name="action_open_notifications">Otwórz powiadomienia</string>
     <string name="title_drawer_layout">Tryb układu</string>
     <plurals name="hidden_apps_count">
-        <item quantity="one">%1$d ukryte</item>
-        <item quantity="few"></item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="one">%1$d ukryty</item>
+        <item quantity="few">%1$d ukryte</item>
+        <item quantity="many">%1$d ukrytych</item>
+        <item quantity="other">%1$d ukrytych</item>
     </plurals>
     <string name="hide_app_selected">Ukryte aplikacje (%1$d)</string>
     <string name="icon_shape_override_label_location">na ekranie głównym</string>
@@ -489,7 +489,7 @@
     <string name="title_smartspace_time_format">Format czasu</string>
     <string name="color_wallpaper_secondary">Tapeta drugorzędna</string>
     <string name="web_search_neeva">Neeva (Web)</string>
-    <string name="pref_category__dash">Kreska</string>
+    <string name="pref_category__dash">Szuflada aplikacji</string>
     <string name="title_use_pill_qsb">Pokaż pigułkę — skrót do wyszukiwania</string>
     <string name="folder_stroke_color">Kolor obrysu folderu</string>
     <string name="folder_draw_stroke">Rysuj obrys folderu</string>
@@ -510,4 +510,12 @@
     <string name="action_open_dash">Otwórz szufladę aplikacji</string>
     <string name="title_all_apps_hide_scrollbar">Ukryj pasek przewijania</string>
     <string name="title_themed_background">Przezroczyste tło ikony</string>
+    <string name="title_expandable_dock">Rozszerzalny pasek szybkiego dostępu</string>
+    <string name="title_drawer_custom_categories">Własny podział na kategorie</string>
+    <string name="title_desktop_free_scrolling">Przewijanie bez końca</string>
+    <string name="title_drawer_all_apps">Wszystkie</string>
+    <string name="title_drawer_horizontal">Poziomo</string>
+    <string name="title_drawer_categorized">Podział na kategorie</string>
+    <string name="hotseat_accessibility_collapse">Pasek szybkiego dostępu schowany</string>
+    <string name="hotseat_accessibility_expand">Pasek szybkiego dostępu rozwinięty</string>
 </resources>
