@@ -66,4 +66,16 @@
     <string name="title_drawer_vertical">Vertical</string>
     <string name="pref_category__interfaces">Interfacie de usator</string>
     <string name="title_dock_fill">Monstrar fundo</string>
+    <string name="summary__general_smartspace">Data, hora, widget de initio</string>
+    <string name="summary__general_advanced">Lingua, copia de securitate, parametros de recerca</string>
+    <string name="title_desktop_keep_empty">Permitter paginas vacue</string>
+    <string name="title_desktop_icon_popup_menu">Elementos de menu emergente</string>
+    <string name="num_hotseat_icons_pref_title">Quantitate de icones</string>
+    <string name="title__drawer_hide_apps">Accessos directe de applicationes celate</string>
+    <string name="title_search_hidden_apps">Trovar applicationes celate</string>
+    <string name="summary_search_hidden_apps">Monstrar accessos directe celate in le resultatos.</string>
+    <string name="summary__drawer_hide_apps">Celar application ab le tiratorio de applicationes</string>
+    <string name="summary_app_suggestions">Pro tote le applicationes e le schermo de Initio</string>
+    <string name="pref_appcategorization_style_text">Stylo</string>
+    <string name="title__drawer_sort">Ordinar applicationes</string>
 </resources>
