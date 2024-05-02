@@ -515,4 +515,7 @@
     <string name="hotseat_accessibility_expand">تن توسيع الرف</string>
     <string name="hotseat_accessibility_collapse">تم طي الرف</string>
     <string name="title_expandable_dock">رف قابل لتوسع</string>
+    <string name="title_desktop_free_scrolling">التمرير الحر</string>
+    <string name="title_all_apps_hide_scrollbar">اخفاء شريط السحب</string>
+    <string name="title_themed_background">خلفية أيقونة شفافة</string>
 </resources>
