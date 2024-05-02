@@ -225,9 +225,9 @@
     <string name="hide_app_selected">Скрытые приложения (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d скрыто</item>
-        <item quantity="few"></item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="few">%1$d скрыто</item>
+        <item quantity="many">%1$d скрыто</item>
+        <item quantity="other">%1$d скрыто</item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d приложение</item>
@@ -514,4 +514,5 @@
     <string name="title_desktop_free_scrolling">Свободная прокрутка</string>
     <string name="title_all_apps_hide_scrollbar">Скрыть полосу прокрутки</string>
     <string name="title_themed_background">Прозрачный фон иконки</string>
+    <string name="color_wallpaper_tertiary">Третичные обои</string>
 </resources>
