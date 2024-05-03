@@ -37,7 +37,7 @@ val vPersianDate = "1.7.1"
 val vPalette = "1.0.0"
 val vPrefs = "1.2.1"
 val vProtobuf = "3.24.4"
-val vReorderable = "0.9.6"
+val vReorderable = "2.0.0"
 val vRoom = "2.6.1"
 val vRV = "1.3.2"
 val vResBypass = "2.2"
@@ -300,7 +300,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-drawablepainter:$vAccompanist")
     implementation("androidx.navigation:navigation-compose:$vNavigation")
     implementation("io.coil-kt:coil-compose:$vCoil")
-    implementation("org.burnoutcrew.composereorderable:reorderable:$vReorderable")
+    implementation("sh.calvin.reorderable:reorderable:$vReorderable")
 
     //Room
     implementation("androidx.room:room-runtime:$vRoom")
