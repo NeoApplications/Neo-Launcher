@@ -19,6 +19,7 @@
 package com.saggitt.omega.compose.pages
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -80,12 +81,16 @@ import com.saggitt.omega.groups.ui.GroupItem
 import com.saggitt.omega.groups.ui.SelectTabBottomSheet
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.StringSelectionPref
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun AppCategoriesPage() {
     val context = LocalContext.current
@@ -284,19 +289,22 @@ fun AppCategoriesPage() {
                         contentPadding = PaddingValues(vertical = 8.dp),
                         state = lazyListState,
                     ) {
-                        itemsIndexed(groups) { index, item ->
+                        itemsIndexed(
+                            groups,
+                            key = { _, item -> item.customizations.toString() }) { index, item ->
                             ReorderableItem(
                                 state = reorderableListState,
                                 key = item.customizations.toString(),
                             ) { isDragging ->
-                                val elevation = animateDpAsState(
-                                    if (isDragging) 24.dp else 0.dp,
-                                    label = ""
+                                val elevation by animateDpAsState(
+                                    if (isDragging) 16.dp else 0.dp,
+                                    label = "elevation",
                                 )
-
-                                if (!isDragging) {
-                                    saveGroupPositions(manager, groups)
-                                }
+                                val bgColor by animateColorAsState(
+                                    if (isDragging) MaterialTheme.colorScheme.surfaceContainerHighest
+                                    else MaterialTheme.colorScheme.surfaceContainer,
+                                    label = "bgColor",
+                                )
 
                                 GroupItem(
                                     title = item.title,
@@ -313,8 +321,6 @@ fun AppCategoriesPage() {
                                         FlowerpotTabs.TYPE_FLOWERPOT,
                                         DrawerFolders.TYPE_CUSTOM
                                     ),
-                                    index = index,
-                                    groupSize = groups.size,
                                     onClick = {
                                         coroutineScope.launch {
                                             sheetChanger = Config.BS_EDIT_GROUP

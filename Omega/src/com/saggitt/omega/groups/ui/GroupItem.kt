@@ -30,11 +30,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -42,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
-import com.saggitt.omega.theme.GroupItemShape
 
 @Composable
 fun GroupItem(
@@ -50,21 +47,16 @@ fun GroupItem(
     summary: String?,
     modifier: Modifier = Modifier,
     removable: Boolean,
-    index: Int = 0,
-    groupSize: Int = 1,
+    containerColor: Color = Color.Transparent,
     onClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
 ) {
-    val mShape = GroupItemShape(index, groupSize - 1)
-
     ListItem(
         modifier = modifier
             .fillMaxWidth()
-            .clip(mShape)
             .clickable { onClick() },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp)
-                .copy(alpha = 0.7f)
+            containerColor = containerColor,
         ),
         headlineContent = {
             Row(
@@ -118,7 +110,5 @@ fun GroupItemPreview() {
         title = "Tab 1",
         summary = "--5 APPS",
         removable = true,
-        index = 0,
-        groupSize = 2
     )
 }
