@@ -54,6 +54,7 @@ import com.android.launcher3.popup.ArrowPopup;
 import com.android.launcher3.shortcuts.DeepShortcutView;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.picker.WidgetsFullSheet;
 
 import java.util.ArrayList;
@@ -150,7 +151,7 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
     public void assignMarginsAndBackgrounds(ViewGroup viewGroup) {
         if (ENABLE_MATERIAL_U_POPUP.get()) {
             assignMarginsAndBackgrounds(viewGroup,
-                    getColorStateList(getContext(), mColorIds[0]).getDefaultColor());
+                    Themes.getAttrColor(getContext(), mColorIds[0]));
         } else {
             assignMarginsAndBackgrounds(viewGroup, Color.TRANSPARENT);
         }

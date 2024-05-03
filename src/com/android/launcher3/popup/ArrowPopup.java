@@ -132,7 +132,7 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
 
     private final String mIterateChildrenTag;
 
-    protected final int[] mColorIds;
+    protected final int[] mColorIds; // CHANGE TO AOSP:  use R.attr. instead of colors here, for correct theming
 
     public ArrowPopup(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -171,10 +171,10 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         mIterateChildrenTag = getContext().getString(R.string.popup_container_iterate_children);
 
         if (!ENABLE_MATERIAL_U_POPUP.get() && mActivityContext.canUseMultipleShadesForPopup()) {
-            mColorIds = new int[]{R.color.popup_shade_first, R.color.popup_shade_second,
-                    R.color.popup_shade_third};
+            mColorIds = new int[]{R.attr.popupShadeFirst, R.attr.popupShadeSecond,
+                    R.attr.popupShadeThird};
         } else {
-            mColorIds = new int[]{R.color.popup_color_background};
+            mColorIds = new int[]{R.attr.popupColorBackground};
         }
     }
 
@@ -229,7 +229,7 @@ public abstract class ArrowPopup<T extends Context & ActivityContext>
         if (backgroundColor == Color.TRANSPARENT) {
             // Lazily get the colors so they match the current wallpaper colors.
             colors = Arrays.stream(mColorIds).map(
-                    r -> getColorStateList(getContext(), r).getDefaultColor()).toArray();
+                    r -> Themes.getAttrColor(getContext(),r)).toArray();
         }
 
         int count = viewGroup.getChildCount();
