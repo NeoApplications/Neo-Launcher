@@ -44,9 +44,9 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
-    implementation("androidx.core:core-animation:1.0.0-rc01")
+    implementation("androidx.core:core-animation:1.0.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:rules:1.4.0")
 }
