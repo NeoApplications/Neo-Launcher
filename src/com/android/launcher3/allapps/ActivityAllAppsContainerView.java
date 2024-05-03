@@ -343,9 +343,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
         rebindAdapters(mUsingTabs);
-        if (prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED) {
-            findViewById(R.id.categories_bar).setVisibility(VISIBLE);
-        }
+        View categoriesBar = findViewById(R.id.categories_bar);
+        if (categoriesBar != null) categoriesBar.setVisibility(
+                prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED ? VISIBLE : GONE
+        );
     }
 
     /**
@@ -361,9 +362,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         if (results != null) {
             animateToSearchState(true);
-            if (prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED) {
-                findViewById(R.id.categories_bar).setVisibility(INVISIBLE);
-            }
+            View categoriesBar = findViewById(R.id.categories_bar);
+            if (categoriesBar != null) categoriesBar.setVisibility(
+                    prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIZED ? INVISIBLE : GONE
+            );
         }
     }
 
@@ -693,8 +695,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     private void replaceAppsRVContainer(boolean showTabs) {
-        for (int i = AdapterHolder.MAIN; i <= AdapterHolder.WORK; i++) {
-            ActivityAllAppsContainerView<?>.AdapterHolder holder = mAH.get(i);
+        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
             AllAppsRecyclerView rv = holder.mRecyclerView;
             if (rv != null) {
                 rv.setLayoutManager(null);
@@ -1136,7 +1137,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         if (!mUsingTabs || isPersonalTab()) {
             return mAH.get(AdapterHolder.MAIN).mRecyclerView;
         } else {
-            return mAH.get(AdapterHolder.WORK).mRecyclerView;
+            return mAH.get(mViewPager.getNextPage()).mRecyclerView;
         }
     }
 

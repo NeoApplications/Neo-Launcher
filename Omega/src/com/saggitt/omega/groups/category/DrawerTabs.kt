@@ -105,7 +105,7 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
     }
 
     override fun onGroupsChanged(changeCallback: PreferencesChangeCallback) {
-        changeCallback.launcher.appsView.reloadTabs()
+        changeCallback.reloadTabs()
     }
 
     abstract class Tab(context: Context, type: String, title: String) :
@@ -243,10 +243,10 @@ abstract class DrawerTabs(manager: AppGroupsManager, type: AppGroupsManager.Cate
 
         companion object {
 
-            private fun getTitle(context: Context, profile: Profile): String {
-                if (profile.matchesAll) return context.getString(R.string.apps_label)
-                if (profile.isWork) return context.getString(R.string.all_apps_work_tab)
-                return context.getString(R.string.all_apps_personal_tab)
+            private fun getTitle(context: Context, profile: Profile): String = when {
+                profile.matchesAll -> context.getString(R.string.apps_label)
+                profile.isWork -> context.getString(R.string.all_apps_work_tab)
+                else -> context.getString(R.string.all_apps_personal_tab)
             }
         }
     }
