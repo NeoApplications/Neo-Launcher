@@ -359,7 +359,12 @@ fun AppCategoriesPage() {
                     }
                 }
             }
+        }
 
+        DisposableEffect(key1 = null) {
+            onDispose {
+                prefs.reloadTabs()
+            }
         }
     }
 }
