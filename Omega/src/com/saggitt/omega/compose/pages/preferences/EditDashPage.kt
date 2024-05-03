@@ -17,10 +17,10 @@
  */
 package com.saggitt.omega.compose.pages.preferences
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -37,8 +37,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,7 +78,7 @@ fun EditDashPage() {
     }.map { DashItem(it.key, it.value) }
 
     val enabledItems = remember { mutableStateListOf(*enabledSorted.toTypedArray()) }
-    val disabledItems = remember { mutableStateOf(disabled) }
+    val disabledItems = remember { mutableStateListOf(*disabled.toTypedArray()) }
 
     val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
@@ -127,17 +127,16 @@ fun EditDashPage() {
                     )
 
                     ListItemWithIcon(
-                        title = stringResource(id = item.titleResId),
                         modifier = Modifier
                             .longPressDraggableHandle()
                             .shadow(elevation)
                             .clip(GroupItemShape(subIndex, enabledItems.size - 1))
                             .clickable {
                                 enabledItems.remove(item)
-                                val tempList = disabledItems.value.toMutableList()
-                                tempList.add(0, item)
-                                disabledItems.value = tempList
+                                disabledItems.add(0, item)
                             },
+                        containerColor = bgColor,
+                        title = stringResource(id = item.titleResId),
                         startIcon = {
                             Icon(
                                 painter = painterResource(
@@ -152,9 +151,7 @@ fun EditDashPage() {
                                 modifier = Modifier.size(36.dp),
                                 onClick = {
                                     enabledItems.remove(item)
-                                    val tempList = disabledItems.value.toMutableList()
-                                    tempList.add(0, item)
-                                    disabledItems.value = tempList
+                                    disabledItems.add(0, item)
                                 }
                             ) {
                                 Image(
@@ -164,7 +161,6 @@ fun EditDashPage() {
                                 )
                             }
                         },
-                        verticalPadding = 6.dp
                     )
                 }
             }
@@ -178,24 +174,16 @@ fun EditDashPage() {
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            itemsIndexed(disabledItems.value) { index, item ->
+            itemsIndexed(disabledItems) { subIndex, item ->
                 ListItemWithIcon(
-                    title = stringResource(id = item.titleResId),
                     modifier = Modifier
-                        .height(56.dp)
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = if (index == 0) 16.dp else 6.dp,
-                                topEnd = if (index == 0) 16.dp else 6.dp,
-                                bottomStart = if (index == disabledItems.value.size - 1) 16.dp else 6.dp,
-                                bottomEnd = if (index == disabledItems.value.size - 1) 16.dp else 6.dp
-                            )
-                        )
-                        .background(MaterialTheme.colorScheme.surface)
+                        .clip(GroupItemShape(subIndex, disabledItems.size - 1))
                         .clickable {
-                            disabledItems.value = disabledItems.value - item
+                            disabledItems.remove(item)
                             enabledItems.add(item)
                         },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    title = stringResource(id = item.titleResId),
                     startIcon = {
                         Image(
                             painter = painterResource(
@@ -208,7 +196,6 @@ fun EditDashPage() {
                     endCheckbox = {
                         Spacer(modifier = Modifier.height(32.dp))
                     },
-                    verticalPadding = 6.dp
                 )
             }
 

@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.compose.pages
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -51,6 +51,7 @@ import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.appsState
 
 @Composable
@@ -105,27 +106,22 @@ fun AppSelectionPage(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected.contains(app.key.toString()))
                     }
+                    val bgColor by animateColorAsState(
+                        if (isSelected.value)
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        else MaterialTheme.colorScheme.surfaceContainer
+                        ,label = "bgColor"
+                    )
+
                     ListItemWithIcon(
-                        title = app.label,
                         modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = if (index == 0) 16.dp else 6.dp,
-                                    topEnd = if (index == 0) 16.dp else 6.dp,
-                                    bottomStart = if (index == groupSize - 1) 16.dp else 6.dp,
-                                    bottomEnd = if (index == groupSize - 1) 16.dp else 6.dp
-                                )
-                            )
-                            .background(
-                                color = if (isSelected.value)
-                                    MaterialTheme.colorScheme.primary.copy(0.4f)
-                                else MaterialTheme.colorScheme.surface
-                            )
+                            .clip(GroupItemShape(index, groupSize - 1))
                             .clickable {
                                 selected = if (isSelected.value) selected.minus(app.key.toString())
                                 else selected.plus(app.key.toString())
                             },
-                        summary = "",
+                        title = app.label,
+                        containerColor = bgColor,
                         startIcon = {
                             Image(
                                 painter = BitmapPainter(app.icon.asImageBitmap()),
@@ -143,8 +139,6 @@ fun AppSelectionPage(
                                 colors = colors
                             )
                         },
-                        horizontalPadding = 0.dp,
-                        verticalPadding = 6.dp
                     )
                 }
             }

@@ -211,7 +211,6 @@ fun EditIconPage(
                 itemsIndexed(iconPacks) { _, iconPack ->
                     if (iconPack.packageName != context.getString(R.string.icon_packs_intent_name)) {
                         ListItemWithIcon(
-                            title = iconPack.name,
                             modifier = Modifier
                                 .clickable {
                                     if (iconPack.packageName == "") {
@@ -221,6 +220,7 @@ fun EditIconPage(
                                     }
                                 }
                                 .padding(start = 16.dp),
+                            title = iconPack.name,
                             startIcon = {
                                 Image(
                                     bitmap = drawableToBitmap(iconPack.icon).asImageBitmap(),
@@ -233,8 +233,6 @@ fun EditIconPage(
                                         )
                                 )
                             },
-                            horizontalPadding = 8.dp,
-                            verticalPadding = 8.dp
                         )
                     }
                 }

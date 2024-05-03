@@ -21,99 +21,54 @@ package com.saggitt.omega.compose.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.BracketsCurly
-import com.saggitt.omega.util.addIf
 
 @Composable
 fun ListItemWithIcon(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String,
     summary: String = "",
     startIcon: (@Composable () -> Unit)? = null,
     endCheckbox: (@Composable () -> Unit)? = null,
-    isEnabled: Boolean = true,
-    showDivider: Boolean = false,
-    applyPaddings: Boolean = true,
-    horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 16.dp,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    containerColor: Color = Color.Transparent,
 ) {
-    Column {
-        if (showDivider) {
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
-        }
-        Row(
-            verticalAlignment = verticalAlignment,
-            modifier = modifier
-                .fillMaxWidth()
-                .addIf(applyPaddings) {
-                    padding(
-                        start = 16.dp,
-                        end = horizontalPadding,
-                        top = verticalPadding,
-                        bottom = verticalPadding
-                    )
-                }
-        ) {
-            startIcon?.let {
-                startIcon()
-                if (applyPaddings) {
-                    Spacer(modifier = Modifier.requiredWidth(16.dp))
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .addIf(!isEnabled) {
-                        alpha(0.3f)
-                    }
-            ) {
+    ListItem(
+        modifier = modifier.fillMaxWidth(),
+        leadingContent = startIcon?.apply {} ?: {},
+        colors = ListItemDefaults.colors(
+            containerColor = containerColor,
+        ),
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium
+            )
+        },
+        supportingContent = {
+            if (summary.isNotEmpty()) {
                 Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.titleMedium
+                    text = summary,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
-                if (summary.isNotEmpty()) {
-                    Text(
-                        text = summary,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6F),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontSize = 13.sp
-                    )
-                }
             }
-
-            endCheckbox?.let {
-                if (applyPaddings) {
-                    Spacer(modifier = Modifier.requiredWidth(16.dp))
-                }
-                endCheckbox()
-            }
-        }
-    }
+        },
+        trailingContent = endCheckbox?.apply {} ?: {},
+    )
 }
 
 @Preview
