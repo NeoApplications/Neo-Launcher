@@ -66,8 +66,8 @@ android {
     namespace = "com.android.launcher3"
     compileSdk = 34
 
-    val name = "1.0"
-    val code = 956
+    val name = "1.0.0-alpha01"
+    val code = 1000
 
     defaultConfig {
         minSdk = 26
