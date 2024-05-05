@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.launcherclient;
+package com.saulhdev.launcherclient;
 
 import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
@@ -81,6 +81,7 @@ public class LauncherClient {
 
     private NeoPrefs prefs;
     private String feedProvider = "";
+
     public class OverlayCallback extends ILauncherOverlayCallback.Stub implements Callback {
         public LauncherClient mClient;
         private final Handler mUIHandler = new Handler(Looper.getMainLooper(), this);

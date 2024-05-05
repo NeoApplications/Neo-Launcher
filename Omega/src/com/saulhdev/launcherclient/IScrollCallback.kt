@@ -1,4 +1,4 @@
-package com.saggitt.omega.launcherclient
+package com.saulhdev.launcherclient
 
 interface IScrollCallback {
     fun onOverlayScrollChanged(progress: Float)

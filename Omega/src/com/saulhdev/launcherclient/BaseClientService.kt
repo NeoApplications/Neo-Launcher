@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.launcherclient
+package com.saulhdev.launcherclient
 
 import android.content.ComponentName
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.saggitt.omega.launcherclient;
+package com.saulhdev.launcherclient;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;

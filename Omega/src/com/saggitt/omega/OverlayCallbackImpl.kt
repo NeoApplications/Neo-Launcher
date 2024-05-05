@@ -24,11 +24,11 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks
-import com.saggitt.omega.launcherclient.IScrollCallback
-import com.saggitt.omega.launcherclient.LauncherClient
-import com.saggitt.omega.launcherclient.LauncherClientCallbacks
-import com.saggitt.omega.launcherclient.StaticInteger
 import com.saggitt.omega.preferences.NeoPrefs
+import com.saulhdev.launcherclient.IScrollCallback
+import com.saulhdev.launcherclient.LauncherClient
+import com.saulhdev.launcherclient.LauncherClientCallbacks
+import com.saulhdev.launcherclient.StaticInteger
 
 class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
     LauncherClientCallbacks, LauncherOverlayManager,

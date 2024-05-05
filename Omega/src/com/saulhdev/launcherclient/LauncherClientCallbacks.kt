@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saggitt.omega.launcherclient
+package com.saulhdev.launcherclient
 
-class StaticInteger(data: Int) {
-    @JvmField
-    var mData = data
+interface LauncherClientCallbacks {
+    fun onServiceStateChanged(overlayAttached: Boolean, hotwordActive: Boolean)
+    fun setPersistentFlags(myFlags: Int)
 }
