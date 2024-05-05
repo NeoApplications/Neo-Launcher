@@ -41,6 +41,7 @@ import com.saggitt.omega.gestures.handlers.OpenSettingsGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenWidgetsGestureHandler
 import com.saggitt.omega.gestures.handlers.PressBackGestureHandler
 import com.saggitt.omega.gestures.handlers.SleepGestureHandler
+import com.saggitt.omega.gestures.handlers.SleepGestureHandlerTimeout
 import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -190,6 +191,7 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
             mutableListOf(
                 PressBackGestureHandler(context, null),
                 SleepGestureHandler(context, null),
+                SleepGestureHandlerTimeout(context, null),
                 OpenDashGestureHandler(context, null),
                 OpenDrawerGestureHandler(context, null),
                 OpenWidgetsGestureHandler(context, null),

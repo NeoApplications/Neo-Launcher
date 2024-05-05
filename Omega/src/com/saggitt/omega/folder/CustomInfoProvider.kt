@@ -20,9 +20,12 @@ package com.saggitt.omega.folder
 
 import android.content.Context
 import com.android.launcher3.model.ModelWriter
+import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.saggitt.omega.iconpack.IconEntry
+import com.saulhdev.neolauncher.shortcuts.ShortcutInfoProvider
 
 abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
 
@@ -55,8 +58,14 @@ abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
         fun <T : ItemInfo> forItem(context: Context, info: ItemInfo?): CustomInfoProvider<T> {
             return when (info) {
                 is FolderInfo -> FolderInfoProvider.getInstance(context)
+                is WorkspaceItemInfo -> ShortcutInfoProvider.getInstance(context)
                 else -> throw IllegalArgumentException("Unsupported item type: $info")
             } as CustomInfoProvider<T>
+        }
+
+        fun isEditable(info: ItemInfo): Boolean {
+            return info is AppInfo || (info is WorkspaceItemInfo && !info.hasPromiseIconUi())
+                    || info is FolderInfo
         }
     }
 }
