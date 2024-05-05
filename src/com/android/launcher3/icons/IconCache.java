@@ -20,7 +20,6 @@ import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SH
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
-
 import static java.util.stream.Collectors.groupingBy;
 
 import android.content.ComponentName;
@@ -37,6 +36,7 @@ import android.content.pm.ShortcutInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 import android.os.Trace;
 import android.os.UserHandle;
@@ -46,6 +46,7 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
@@ -57,6 +58,7 @@ import com.android.launcher3.icons.cache.CachingLogic;
 import com.android.launcher3.icons.cache.HandlerRunnable;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.IconRequestInfo;
+import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.PackageItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -68,6 +70,7 @@ import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.widget.WidgetSections;
 import com.android.launcher3.widget.WidgetSections.WidgetSection;
+import com.saggitt.omega.icons.CustomIconProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -553,6 +556,18 @@ public class IconCache extends BaseIconCache {
 
     public Drawable getFullResIcon(LauncherActivityInfo info) {
         return mIconProvider.getIcon(info, mIconDpi);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Drawable getFullResIcon(LauncherActivityInfo info, boolean flattenDrawable) {
+        return mIconProvider.getIcon(info, mIconDpi);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Drawable getFullResIcon(LauncherActivityInfo info, ItemInfo itemInfo, boolean flattenDrawable) {
+        if (mIconProvider instanceof CustomIconProvider)
+            return ((CustomIconProvider) mIconProvider).getIcon(info, mIconDpi);
+        return getFullResIcon(info, flattenDrawable);
     }
 
     public void updateSessionCache(PackageUserKey key, PackageInstaller.SessionInfo info) {

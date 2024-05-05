@@ -18,13 +18,30 @@
 package com.saulhdev.neolauncher.shortcuts
 
 import android.content.Context
+import android.content.pm.LauncherActivityInfo
+import android.content.pm.LauncherApps
+import com.android.launcher3.LauncherAppState
+import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
+import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT
 import com.android.launcher3.R
+import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.model.ModelWriter
 import com.android.launcher3.model.data.WorkspaceItemInfo
+import com.saggitt.omega.data.IconOverrideRepository
+import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.folder.CustomInfoProvider
 import com.saggitt.omega.iconpack.IconEntry
+import com.saggitt.omega.iconpack.IconType
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.util.SingletonHolder
+import com.saggitt.omega.util.ensureOnMainThread
+import com.saggitt.omega.util.useApplicationContext
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemInfo>(context) {
+
+    private val launcherApps by lazy { context.getSystemService(LauncherApps::class.java) }
 
     override fun getTitle(info: WorkspaceItemInfo): String {
         return if (info.title == null || info.title == "")
@@ -44,6 +61,33 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     }
 
     override fun setIcon(info: WorkspaceItemInfo, iconEntry: IconEntry) {
+        if (iconEntry != null) {
+            val launcherActivityInfo = getLauncherActivityInfo(info)
+            val iconCache = LauncherAppState.getInstance(context).iconCache
+            val drawable = iconCache.getFullResIcon(launcherActivityInfo, info, false)
+            val bitmap = LauncherIcons.obtain(context)
+                .createBadgedIconBitmap(drawable, info.user, true)
+            val repository = IconOverrideRepository(context)
+            val scope = MainScope()
+            scope.launch {
+                val iconPicker = IconPickerItem(
+                    packPackageName = "System",
+                    drawableName = bitmap.icon.toString(),
+                    label = info.title.toString(),
+                    type = IconType.Normal
+
+                )
+                repository.setOverride(info.componentKey!!, iconPicker)
+            }
+        }
+    }
+
+    override fun showBadge(info: WorkspaceItemInfo) = when (info.itemType) {
+        ITEM_TYPE_SHORTCUT, ITEM_TYPE_DEEP_SHORTCUT -> {
+            NeoPrefs.getInstance(context).notificationCount.getValue()
+        }
+
+        else -> false
     }
 
     override fun setSwipeUpAction(info: WorkspaceItemInfo, action: String?) {
@@ -53,4 +97,11 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     override fun getSwipeUpAction(info: WorkspaceItemInfo): String? {
         return info.getSwipeUpAction(context)
     }
+
+    private fun getLauncherActivityInfo(info: WorkspaceItemInfo): LauncherActivityInfo? {
+        return launcherApps.resolveActivity(info.getIntent(), info.user)
+    }
+
+    companion object :
+        SingletonHolder<ShortcutInfoProvider, Context>(ensureOnMainThread(useApplicationContext(::ShortcutInfoProvider)))
 }
