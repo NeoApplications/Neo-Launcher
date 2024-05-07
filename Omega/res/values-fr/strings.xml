@@ -105,8 +105,8 @@
     <string name="title__theme_accent_color">Couleur d\'accentuation</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d masqué</item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="many"/>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d application</item>
@@ -468,4 +468,36 @@
     <string name="title__drawer_rows">Nombre de lignes</string>
     <string name="protected_apps">Applications protégées</string>
     <string name="protected_app_selected">Applications protégées (%1$d)</string>
+    <string name="color_wallpaper_secondary">Fond d\'écran secondaire</string>
+    <string name="color_dynamic">Dynamique</string>
+    <string name="title_smartspace_time_format">Format de temps</string>
+    <string name="title_smartspace_calendar">Sélectionner le calendrier</string>
+    <string name="title_calendar_persian">Perse</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="title_themed_background">Fond d’icône transparent</string>
+    <string name="title__dock_icon_size_enforce">Forcer la taille personnalisée de l’icône</string>
+    <string name="title_desktop_widget_corner_radius">Diamètre du coin du widget</string>
+    <string name="cat_dock_search">Tiroir et dock</string>
+    <string name="title_drawer_all_apps">Tout</string>
+    <string name="title_drawer_horizontal">Horizontal</string>
+    <string name="title_drawer_categorized">Catégorisé</string>
+    <string name="title_drawer_custom_categories">Catégories personnalisée</string>
+    <string name="color_wallpaper_tertiary">Troisième fond d\'écran</string>
+    <string name="show_top_shadow">Montrer ombre supérieur</string>
+    <string name="title_calendar_gregorian">Grégorien</string>
+    <string name="folder_swipe_up">Action de glisser vers le haut</string>
+    <string name="accessibility_smartspace_page">Page %1$d de %2$d</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — plein en %2$s</string>
+    <string name="smartspace_flight_qr_code">Code QR</string>
+    <string name="accessibility_next_alarm">Prochain réveil à %s</string>
+    <string name="smartspace_time_follow_system">Suivre le système</string>
+    <string name="smartspace_time_12_hour_format">Format 12h</string>
+    <string name="smartspace_widget_placeholder_date">Vendredi 3 Mars</string>
+    <string name="hotseat_accessibility_collapse">Dock réduit</string>
+    <string name="hotseat_accessibility_expand">Dock ouvert</string>
+    <string name="gesture_press_recents">Bouton des récents</string>
+    <string name="notification_dots_missing_notification_access">Pour montrer les points de notifications, activez l’accès au notification de l\'application</string>
+    <string name="title_all_apps_hide_scrollbar">Cacher la barre de défilement</string>
+    <string name="title_themed_icons">Icônes à thème</string>
+    <string name="title_desktop_free_scrolling">Défilement libre</string>
 </resources>
