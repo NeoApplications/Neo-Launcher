@@ -28,6 +28,9 @@ import com.android.launcher3.SessionCommitReceiver.ADD_ICON_PREFERENCE_KEY
 import com.android.launcher3.states.RotationHelper.ALLOW_ROTATION_PREFERENCE_KEY
 
 object PrefKey {
+    // OnBoarding
+    val ONBOARDING_DOCK_BOUNCE_SEEN = booleanPreferencesKey("onboarding_dock_bounce_seen")
+
     // Profile
     val PROFILE_GLOBAL_LANGUAGE = stringPreferencesKey("profile_language")
     val PROFILE_GLOBAL_THEME = intPreferencesKey("profile_launcher_theme")

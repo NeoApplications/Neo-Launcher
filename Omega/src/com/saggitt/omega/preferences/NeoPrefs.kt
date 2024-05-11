@@ -116,6 +116,14 @@ class NeoPrefs private constructor(val context: Context) {
         return { getOnChangeCallback()?.let { callback(it) } }
     }
 
+    // Onboarding
+    var onboardingBounceSeen = BooleanPref(
+        titleId = R.string.onboarding_swipe_up,
+        dataStore = dataStore,
+        key = PrefKey.ONBOARDING_DOCK_BOUNCE_SEEN,
+        defaultValue = false,
+    )
+
     // Profile
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
