@@ -23,27 +23,27 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import androidx.lifecycle.asLiveData
 import com.saggitt.omega.preferences.NeoPrefs
 
 open class BaseClientService(val context: Context, flags: Int) : ServiceConnection {
     private var mConnected = false
     private val mFlags = flags
-    private var isEnabled = false
     val prefs = NeoPrefs.getInstance(context)
+
+    private val prefObserver: (String?) -> Unit = {
+        if (it != "") {
+            mConnected = context.bindService(
+                LauncherClient.getIntent(context, false),
+                this,
+                mFlags
+            )
+        }
+    }
+
     fun connect(): Boolean {
         if (!mConnected) {
             try {
-                prefs.feedProvider.get().asLiveData().observeForever {
-                    isEnabled = it != ""
-                    if (isEnabled) {
-                        mConnected = context.bindService(
-                            LauncherClient.getIntent(context, false),
-                            this,
-                            mFlags
-                        )
-                    }
-                }
+                prefObserver.invoke(prefs.feedProvider.getValue())
             } catch (e: Throwable) {
                 Log.e("LauncherClient", "Unable to connect to overlay service", e)
             }
@@ -56,7 +56,6 @@ open class BaseClientService(val context: Context, flags: Int) : ServiceConnecti
             context.unbindService(this)
             mConnected = false
         }
-        prefs.feedProvider.get().asLiveData().removeObserver { }
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}

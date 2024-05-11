@@ -20,6 +20,7 @@ package com.saggitt.omega
 
 import android.app.Activity
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
@@ -29,6 +30,7 @@ import com.saulhdev.launcherclient.IScrollCallback
 import com.saulhdev.launcherclient.LauncherClient
 import com.saulhdev.launcherclient.LauncherClientCallbacks
 import com.saulhdev.launcherclient.StaticInteger
+import kotlinx.coroutines.launch
 
 class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
     LauncherClientCallbacks, LauncherOverlayManager,
@@ -51,13 +53,15 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.Launc
     }
 
     override fun onAttachedToWindow() {
-        prefs.feedProvider.get().asLiveData().observeForever {
-            feedEnabled = it != ""
-            mClient = LauncherClient(
-                launcher, this, StaticInteger(
-                    (if (feedEnabled) 1 else 0) or 2 or 4 or 8
-            )
-            )
+        launcher.nLauncher.lifecycleScope.launch {
+            prefs.feedProvider.get().collect {
+                feedEnabled = it != ""
+                mClient = LauncherClient(
+                    launcher, this@OverlayCallbackImpl, StaticInteger(
+                        (if (feedEnabled) 1 else 0) or 2 or 4 or 8
+                    )
+                )
+            }
         }
         mClient?.onAttachedToWindow()
     }
