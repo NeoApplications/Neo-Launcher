@@ -33,6 +33,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.AnimatorListeners;
 import com.android.launcher3.statemanager.StateManager.StateListener;
 import com.android.launcher3.util.OnboardingPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Abstract base class of floating view responsible for showing discovery bounce animation
@@ -122,9 +123,11 @@ public class DiscoveryBounce extends AbstractFloatingView {
     }
 
     private static void showForHomeIfNeeded(Launcher launcher, boolean withDelay) {
-        OnboardingPrefs onboardingPrefs = launcher.getOnboardingPrefs();
+        //OnboardingPrefs onboardingPrefs = launcher.getOnboardingPrefs();
+        NeoPrefs neoPrefs = NeoPrefs.getInstance(launcher);
         if (!launcher.isInState(NORMAL)
-                || onboardingPrefs.getBoolean(OnboardingPrefs.HOME_BOUNCE_SEEN)
+                //|| onboardingPrefs.getBoolean(OnboardingPrefs.HOME_BOUNCE_SEEN)
+                || neoPrefs.getOnboardingBounceSeen().getValue()
                 || AbstractFloatingView.getTopOpenView(launcher) != null
                 || launcher.getSystemService(UserManager.class).isDemoUser()
                 || Utilities.isRunningInTestHarness()) {
@@ -135,7 +138,8 @@ public class DiscoveryBounce extends AbstractFloatingView {
             new Handler().postDelayed(() -> showForHomeIfNeeded(launcher, false), DELAY_MS);
             return;
         }
-        onboardingPrefs.incrementEventCount(OnboardingPrefs.HOME_BOUNCE_COUNT);
+        //onboardingPrefs.incrementEventCount(OnboardingPrefs.HOME_BOUNCE_COUNT);
+        neoPrefs.getOnboardingBounceSeen().setValue(true);
         new DiscoveryBounce(launcher).show();
     }
 
