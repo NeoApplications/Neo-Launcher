@@ -42,7 +42,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
@@ -73,12 +72,11 @@ import com.saggitt.omega.nLauncher
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.search.NeoAppSearchAlgorithm
-import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
+import com.saulhdev.neolauncher.search.SearchProviderController
 
-@OptIn(ExperimentalComposeUiApi::class)
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
     SearchCallback<BaseAllAppsAdapter.AdapterItem> {
@@ -280,8 +278,8 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun onSubmitSearch(query: String?): Boolean =
-        if (spController.searchProvider.searchUrl.isNotEmpty()) {
-            openURLInBrowser(mContext, spController.searchProvider.searchUrl.format(query))
+        if (spController.activeSearchProvider.searchUrl.isNotEmpty()) {
+            openURLInBrowser(mContext, spController.activeSearchProvider.searchUrl.format(query))
             true
         } else {
             mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()

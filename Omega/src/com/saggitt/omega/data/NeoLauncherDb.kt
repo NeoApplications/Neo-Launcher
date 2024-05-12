@@ -31,6 +31,7 @@ import com.saggitt.omega.data.models.PeopleInfo
 import com.saggitt.omega.data.models.SearchProvider
 import com.saggitt.omega.data.models.SearchProvider.Companion.defaultProviders
 import com.saggitt.omega.data.models.SearchProvider.Companion.offlineSearchProvider
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -63,6 +64,7 @@ abstract class NeoLauncherDb : RoomDatabase() {
 
     companion object {
 
+        @OptIn(DelicateCoroutinesApi::class)
         val INSTANCE = MainThreadInitializedObject { context ->
             Room.databaseBuilder(context, NeoLauncherDb::class.java, "NeoLauncher.db")
                 .build()

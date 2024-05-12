@@ -41,9 +41,9 @@ import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.nLauncher
-import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
+import com.saulhdev.neolauncher.search.SearchProviderController
 import org.json.JSONObject
 
 @Keep
@@ -298,7 +298,7 @@ class OpenDashGestureHandler(context: Context, config: JSONObject?) :
 class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
-    private val searchProvider get() = SearchProviderController.getInstance(context).searchProvider
+    private val searchProvider get() = SearchProviderController.getInstance(context).activeSearchProvider
     override val displayName: String = context.getString(R.string.action_global_search)
     override val displayNameRes: Int = R.string.action_global_search
     override val icon: Drawable? by lazy {

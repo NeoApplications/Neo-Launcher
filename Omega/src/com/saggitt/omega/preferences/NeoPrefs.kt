@@ -57,7 +57,6 @@ import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.preferences.PrefKey.DRAWER_HEIGHT_MULTIPLIER
-import com.saggitt.omega.search.SearchProviderController
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
@@ -68,6 +67,7 @@ import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.saulhdev.neolauncher.search.SearchProviderController
 import com.saulhdev.neolauncher.util.CustomPreferencesMigration
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope

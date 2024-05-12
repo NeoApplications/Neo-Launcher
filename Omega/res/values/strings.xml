@@ -428,6 +428,8 @@
     <string name="title_search_contacts">Search Contacts</string>
     <string name="title__search_show_assistant">Show Voice Search Button</string>
     <string name="title_search_provider">Search engine</string>
+    <string name="search_provider">Search Provider</string>
+    <string name="web_search_provider">Web Search Provider</string>
     <string name="title__search_bar_radius">Corner Radius</string>
     <string name="title__feed">Feed</string>
     <string name="summary__search_show_as_assistant_summary">Open Assistant instead of Voice Search</string>
