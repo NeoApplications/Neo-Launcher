@@ -145,7 +145,7 @@ fun IntSelectionPrefDialogUI(
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
                     onClick = {
-                        coroutineScope.launch { pref.set(selected) }
+                        coroutineScope.launch { pref.setValue(selected) }
                         openDialogCustom.value = false
                     }
                 )
