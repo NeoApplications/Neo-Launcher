@@ -226,7 +226,7 @@ fun LongSelectionPrefDialogUI(
                 DialogPositiveButton(
                     cornerRadius = cornerRadius,
                     onClick = {
-                        coroutineScope.launch { pref.set(selected) }
+                        coroutineScope.launch { pref.setValue(selected) }
                         openDialogCustom.value = false
                     }
                 )
