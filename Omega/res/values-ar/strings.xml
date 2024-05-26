@@ -524,4 +524,6 @@
     <string name="title_drawer_horizontal">أفقي</string>
     <string name="title_drawer_categorized">مصنف</string>
     <string name="title_smartspace_background">عرض الخلفية ذات السمات</string>
+    <string name="search_provider">‫موفر البحث</string>
+    <string name="web_search_provider">مزود بحث الويب</string>
 </resources>
