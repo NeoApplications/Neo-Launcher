@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -44,8 +44,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.palette)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.androidx.annotation)
 }
