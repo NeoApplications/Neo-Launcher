@@ -206,4 +206,5 @@
     <string name="protected_apps">Beschermde Apps</string>
     <string name="title__drawer_rows">Aantal rijen</string>
     <string name="protected_app_selected">Beschermde Apps (%1$d)</string>
+    <string name="title_desktop_free_scrolling">Vrij bladeren</string>
 </resources>
