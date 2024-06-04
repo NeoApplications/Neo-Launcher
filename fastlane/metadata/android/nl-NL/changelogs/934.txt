@@ -1,0 +1,8 @@
+Toegevoegd: OWM als weerprovider
+Toegevoegd: LawnIcons-ondersteuning
+Toegevoegd: Thema-pictogramondersteuning voor A13
+Bijgewerkt: de geheel nieuwe instellingen UI / UX
+Opgelost: probleem met Ghost-pictogrammen
+Opgelost: back-upcompatibiliteit tussen release / neo / debug
+Opgelost: apps sorteren op basis van de locale taal
+Bestudeer voor meer details het volledige wijzigingenlogboek…

@@ -1,0 +1,12 @@
+* Samengevoegd: Android-11.0.0_r31
+* Toegevoegd: Behoud van Lege schermvoorkeur
+* Toegevoegd: kleurkeuzeschakelaar voor tabbladen
+* Toegevoegd: extra dash controls
+* Toegevoegd: Dash Customization
+* Toegevoegd: Ondersteuning QuickSwitch
+* Toegevoegd: FiveSecs KLWP
+* Toegevoegd: Searx-provider
+* Toegevoegd: slaapassistent
+* Toegevoegd: Vertical List Apps (Experimental)
+* Opgelost: Dockgrootte op lange schermen
+* Opgelost: crash bij het openen van Google Assistant

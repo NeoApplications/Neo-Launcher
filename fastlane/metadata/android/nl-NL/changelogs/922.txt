@@ -1,0 +1,7 @@
+Opmerking 1: niet compatibel met back-ups van oudere versies
+- Opnieuw gebaseerd op de Launcher van Android 12 / L
+- Toegevoegd: Smartspace
+- Toegevoegd: Direct bewerken van tabbladen / categorieën
+- Toegevoegd: Fuzzy Search-optie
+- Bijgewerkt: Revamp Dash, pictogrammen & gebruikersinterface
+Opmerking 2: ontbrekende functies van oudere versies worden mogelijk bij latere releases toegevoegd
