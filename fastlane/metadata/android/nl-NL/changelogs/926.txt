@@ -1,0 +1,7 @@
+Toegevoegd: optie Aps sorteren op kleur
+Toegevoegd: (zwart) thema volgt achtergrondafbeelding
+Opgelost: crash bij het openen van back-up / herstel
+Opgelost: Tinting Drawer's bovenste balk bij het verlaten van een app
+Opgelost: pictogrammen worden niet bijgewerkt wanneer aangepaste pictogramvorm wordt gebruikt
+Verwijderd: Daglicht-thema volgen
+Verwijderd: OnePlus weergegevensprovider
