@@ -520,4 +520,6 @@
     <string name="title_drawer_custom_categories">Свои категории</string>
     <string name="title_drawer_categorized">Упорядоченно</string>
     <string name="title_smartspace_background">Показывать изменённый фон</string>
+    <string name="web_search_provider">Поисковая система для сети</string>
+    <string name="search_provider">Поисковик</string>
 </resources>
