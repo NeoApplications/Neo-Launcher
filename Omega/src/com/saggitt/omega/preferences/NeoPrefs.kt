@@ -51,6 +51,7 @@ import com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDashGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler
 import com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler
+import com.saggitt.omega.gestures.handlers.StartGlobalSearchGestureHandler
 import com.saggitt.omega.groups.AppGroupsManager
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.iconpack.IconPackInfo
@@ -1124,7 +1125,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.gesture_swipe_up,
         key = PrefKey.GESTURES_SWIPE_UP,
         dataStore = dataStore,
-        defaultValue = NotificationsOpenGestureHandler(context, null).toString(),
+        defaultValue = OpenDrawerGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP.name}"
     )
 
@@ -1132,7 +1133,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.gesture_dock_swipe_up,
         key = PrefKey.GESTURES_SWIPE_UP_DOCK,
         dataStore = dataStore,
-        defaultValue = OpenDrawerGestureHandler(context, null).toString(),
+        defaultValue = StartGlobalSearchGestureHandler(context, null).toString(),
         navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP_DOCK.name}"
     )
 
