@@ -518,4 +518,6 @@
     <string name="gesture_press_recents">Gub za nedavne</string>
     <string name="title_drawer_custom_categories">Prilagođene kategorije</string>
     <string name="web_search_you">You (web)</string>
+    <string name="web_search_provider">Pružatelj usluge web pretrage</string>
+    <string name="search_provider">Pružatelj usluge pretrage</string>
 </resources>
