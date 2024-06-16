@@ -89,6 +89,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
 
     private lateinit var focusManager: FocusManager
+    private lateinit var textFieldFocusRequester: FocusRequester
     private var keyboardController: SoftwareKeyboardController? = null
     val query = mutableStateOf("")
 
@@ -97,7 +98,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         OmegaAppTheme {
             focusManager = LocalFocusManager.current
             keyboardController = LocalSoftwareKeyboardController.current
-            val textFieldFocusRequester = remember { FocusRequester() }
+            textFieldFocusRequester = remember { FocusRequester() }
             val searchProvider = spController.searchProviderState.collectAsState()
             val searchIcon = rememberAsyncImagePainter(searchProvider.value.iconId)
             /*val micIcon = rememberDrawablePainter(
@@ -259,6 +260,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     fun startSearch(searchQuery: String) {
         query.value = searchQuery.trim()
+        textFieldFocusRequester.requestFocus()
     }
 
     override fun getEditText(): ExtendedEditText? = null
