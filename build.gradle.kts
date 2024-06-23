@@ -9,7 +9,6 @@ buildscript {
     }
 }
 
-val vComposeCompiler = "1.5.14"
 val vProtobuf = "3.25.3"
 val prebuiltsDir: String = "prebuilts/"
 
@@ -17,6 +16,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
@@ -114,10 +114,6 @@ android {
         compose = true
         dataBinding = true
         aidl = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = vComposeCompiler
     }
 
     compileOptions {
