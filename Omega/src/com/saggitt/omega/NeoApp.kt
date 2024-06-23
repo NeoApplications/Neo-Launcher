@@ -31,9 +31,13 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
+import com.saggitt.omega.preferences.NeoPrefs.Companion.prefsModule
 import com.saggitt.omega.theme.ThemeManager
 import com.saggitt.omega.util.minSDK
 import org.chickenhook.restrictionbypass.Unseal
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.GlobalContext.startKoin
 import java.io.File
 
 class NeoApp : Application() {
@@ -48,6 +52,13 @@ class NeoApp : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
+        startKoin {
+            androidLogger()
+            androidContext(this@NeoApp)
+            modules(
+                prefsModule,
+            )
+        }
         if (minSDK(Build.VERSION_CODES.P)) {
             try {
                 Unseal.unseal()
@@ -96,7 +107,7 @@ class NeoApp : Application() {
     fun migrateDbName(dbName: String) {
         val dbFile = getDatabasePath(dbName)
         if (dbFile.exists()) return
-        val prefs = NeoPrefs.getInstance(this)
+        val prefs = NeoPrefs.getInstance()
         val dbJournalFile = getJournalFile(dbFile)
         val oldDbSlot = prefs.legacyPrefs.getStringPreference("pref_currentDbSlot", "a")
         val oldDbName = if (oldDbSlot == "a") "launcher.db" else "launcher.db_b"

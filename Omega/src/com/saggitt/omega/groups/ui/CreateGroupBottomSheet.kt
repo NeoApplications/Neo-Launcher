@@ -82,7 +82,7 @@ fun CreateGroupBottomSheet(
 ) {
 
     val context = LocalContext.current
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val flowerpotManager = Flowerpot.Manager.getInstance(context)

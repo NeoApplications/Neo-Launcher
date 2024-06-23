@@ -49,7 +49,7 @@ open class CustomHotseat @JvmOverloads constructor(
     BlurWallpaperProvider.Listener {
 
     val launcher = NeoLauncher.getLauncher(context)
-    val prefs by lazy { NeoPrefs.getInstance(context) }
+    val prefs by lazy { NeoPrefs.getInstance() }
 
     private var backgroundEnable = false
     private var hotseatDisabled = false

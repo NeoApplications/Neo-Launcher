@@ -48,7 +48,7 @@ class IcuDateTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : DoubleShadowTextView(context, attrs) {
 
-    private val prefs = NeoPrefs.getInstance(context)
+    private val prefs = NeoPrefs.getInstance()
     private var calendar: SmartspaceCalendar? = null
     private lateinit var dateTimeOptions: DateTimeOptions
     private var formatterFunction: FormatterFunction? = null

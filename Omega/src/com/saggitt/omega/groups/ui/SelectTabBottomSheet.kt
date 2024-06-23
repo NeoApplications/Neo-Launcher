@@ -45,7 +45,7 @@ fun SelectTabBottomSheet(
     onClose: (Int, AppGroupsManager.Category) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     LazyColumn(
         modifier = Modifier
             .padding(16.dp)

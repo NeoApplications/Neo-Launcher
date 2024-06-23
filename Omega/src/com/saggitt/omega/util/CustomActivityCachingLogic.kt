@@ -25,7 +25,7 @@ import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.preferences.NeoPrefs
 
 class CustomActivityCachingLogic(context: Context) : LauncherActivityCachingLogic() {
-    private val prefs = NeoPrefs.getInstance(context)
+    private val prefs = NeoPrefs.getInstance()
 
     override fun getLabel(info: LauncherActivityInfo): CharSequence {
         val key = ComponentKey(info.componentName, info.user)

@@ -142,7 +142,7 @@ public class LauncherClient {
 
     public LauncherClient(Activity activity, IScrollCallback scrollCallback, StaticInteger flags) {
         mActivity = activity;
-        prefs = NeoPrefs.getInstance(activity);
+        prefs = NeoPrefs.getInstance();
         mScrollCallback = scrollCallback;
         mBaseService = new BaseClientService(activity, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mFlags = flags.mData;
@@ -410,7 +410,7 @@ public class LauncherClient {
 
     static Intent getIntent(Context context, boolean proxy) {
         String pkg = context.getPackageName();
-        NeoPrefs prefs = NeoPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance();
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
                 .setPackage(prefs.getFeedProvider().getValue())
                 .setData(Uri.parse("app://" +

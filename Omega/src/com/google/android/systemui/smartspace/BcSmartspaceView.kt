@@ -25,7 +25,7 @@ class BcSmartspaceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, var previewMode: Boolean = false
 ) : FrameLayout(context, attrs) {
 
-    private val prefs = NeoPrefs.getInstance(context)
+    private val prefs = NeoPrefs.getInstance()
     private val provider = SmartspaceProvider.INSTANCE.get(context)
 
     private lateinit var viewPager: ViewPager

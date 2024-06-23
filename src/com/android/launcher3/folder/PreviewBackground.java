@@ -166,7 +166,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
-        NeoPrefs prefs = NeoPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance();
         mInvalidateDelegate = invalidateDelegate;
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);

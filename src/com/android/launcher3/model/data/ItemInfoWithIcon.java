@@ -245,7 +245,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * Returns a FastBitmapDrawable with the icon.
      */
     public FastBitmapDrawable newIcon(Context context) {
-        NeoPrefs prefs = NeoPrefs.getInstance(context);
+        NeoPrefs prefs = NeoPrefs.getInstance();
         boolean isThemed = prefs.getProfileThemedIcons().getValue();
         if (isThemed) {
             return newIcon(context, isThemed);

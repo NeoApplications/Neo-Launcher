@@ -95,7 +95,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun AppCategoriesPage() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     val manager by lazy { prefs.drawerAppGroupsManager }
     val categoriesEnabled by manager.categorizationEnabled.collectAsState(false)
 

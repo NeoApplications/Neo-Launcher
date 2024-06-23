@@ -28,7 +28,7 @@ import com.saggitt.omega.preferences.NeoPrefs
 open class BaseClientService(val context: Context, flags: Int) : ServiceConnection {
     private var mConnected = false
     private val mFlags = flags
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
 
     private val prefObserver: (String?) -> Unit = {
         if (it != "") {

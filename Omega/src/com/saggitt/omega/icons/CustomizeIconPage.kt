@@ -87,7 +87,7 @@ fun CustomizeIconPage(
     onClose: () -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     var title by remember { mutableStateOf("") }
     val request =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -142,7 +142,7 @@ fun CustomizeIconView(
     launchSelectIcon: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
     val repo = IconOverrideRepository.INSTANCE.get(context)

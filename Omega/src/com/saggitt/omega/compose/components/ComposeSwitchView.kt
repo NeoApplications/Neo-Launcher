@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -87,7 +86,7 @@ fun ComposeSwitchView(
                 Icon(
                     painter = painterResource(id = iconId),
                     contentDescription = "",
-                    tint = Color(NeoPrefs.getInstance(LocalContext.current).profileAccentColor.getColor()),
+                    tint = Color(NeoPrefs.getInstance().profileAccentColor.getColor()),
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(32.dp)

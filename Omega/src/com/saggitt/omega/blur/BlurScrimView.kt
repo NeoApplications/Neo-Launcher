@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
 
 class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs),
                                                               BlurWallpaperProvider.Listener {
-    private val prefs = NeoPrefs.getInstance(context)
+    private val prefs = NeoPrefs.getInstance()
     private var drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
     private var radius = prefs.profileBlurRadius.getValue()
     private var mLauncher = context.nLauncher

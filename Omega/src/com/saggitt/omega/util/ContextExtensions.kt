@@ -56,7 +56,7 @@ val Context.locale: Locale
     get() = this.resources.configuration.locales[0]
 
 val Context.prefs: NeoPrefs
-    get() = NeoPrefs.getInstance(this)
+    get() = NeoPrefs.getInstance()
 
 fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
     try {

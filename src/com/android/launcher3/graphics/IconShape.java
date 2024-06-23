@@ -162,7 +162,7 @@ public abstract class IconShape {
         private final com.saggitt.omega.icons.IconShape mIconShape;
 
         public AdaptiveIconShape(Context context) {
-            String iconShape = NeoPrefs.getInstance(context).getProfileIconShape().getValue();
+            String iconShape = NeoPrefs.getInstance().getProfileIconShape().getValue();
             mIconShape = com.saggitt.omega.icons.IconShape.Companion
                     .fromString(context, iconShape);
         }

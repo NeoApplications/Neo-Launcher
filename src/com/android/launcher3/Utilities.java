@@ -1000,6 +1000,6 @@ public final class Utilities {
     }
 
     public static NeoPrefs getNeoPrefs(Context context) {
-        return NeoPrefs.getInstance(context);
+        return NeoPrefs.getInstance();
     }
 }

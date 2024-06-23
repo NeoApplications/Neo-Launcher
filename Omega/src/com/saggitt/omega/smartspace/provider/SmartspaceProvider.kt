@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 
 class SmartspaceProvider private constructor(context: Context) {
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     private val currentWeather = prefs.smartspaceWeatherProvider.getValue()
     private val weatherProvider = when (currentWeather) {
         GoogleWeatherProvider::class.java.name -> GoogleWeatherProvider(context)

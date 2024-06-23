@@ -144,7 +144,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
                     CustomWidgetManager.INSTANCE, PluginManagerWrapper.INSTANCE,
                     WindowManagerProxy.INSTANCE, DisplayController.INSTANCE);
             mIdp = idp;
-            putBaseInstance(NeoPrefs.INSTANCE);
+            // TODO inject all customs using Koin
             putBaseInstance(IconPackProvider.INSTANCE);
             putBaseInstance(IconOverrideRepository.INSTANCE);
             putBaseInstance(SmartspaceProvider.INSTANCE);

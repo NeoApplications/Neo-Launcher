@@ -42,7 +42,7 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.Launc
     private var mFlagsChanged = false
     private var mFlags = 0
     private var feedEnabled = false
-    private val prefs = NeoPrefs.getInstance(context = launcher)
+    private val prefs = NeoPrefs.getInstance()
 
     init {
         mClient = LauncherClient(

@@ -202,7 +202,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public ActivityAllAppsContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mActivityContext = ActivityContext.lookupContext(context);
-        prefs = NeoPrefs.getInstance(context);
+        prefs = NeoPrefs.getInstance();
         mAllAppsStore = new AllAppsStore<>(mActivityContext);
 
         mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
@@ -705,7 +705,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         View oldView = getAppsRecyclerViewContainer();
         int index = indexOfChild(oldView);
         removeView(oldView);
-        NeoPrefs prefs = NeoPrefs.getInstance(getContext());
         int layout = switch (prefs.getDrawerLayout().getValue()) {
             case LAYOUT_VERTICAL -> R.layout.all_apps_rv_layout;
             case LAYOUT_VERTICAL_ALPHABETICAL ->

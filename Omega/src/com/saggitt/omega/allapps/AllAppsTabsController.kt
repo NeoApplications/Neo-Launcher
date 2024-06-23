@@ -19,7 +19,7 @@ class AllAppsTabsController<T : BaseDraggingActivity>(
     private val container: ActivityAllAppsContainerView<*>,
 ) {
     val tabsCount get() = tabs.count
-    val prefs = NeoPrefs.getInstance(container.context)
+    val prefs = NeoPrefs.getInstance()
     val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_CUSTOM_CATEGORIES
 
     private var holders = mutableListOf<ActivityAllAppsContainerView<*>.AdapterHolder>()

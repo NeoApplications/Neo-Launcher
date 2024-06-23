@@ -72,7 +72,7 @@ public final class FeatureFlags {
     //
     //public static final boolean QSB_ON_FIRST_SCREEN = false;
     public static boolean QSbOnFirstScreen(Context context) {
-        return NeoPrefs.getInstance(context).getSmartspaceEnable().getValue();
+        return NeoPrefs.getInstance().getSmartspaceEnable().getValue();
     }
 
     /**

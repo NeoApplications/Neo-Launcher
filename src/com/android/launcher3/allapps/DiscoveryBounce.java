@@ -124,7 +124,7 @@ public class DiscoveryBounce extends AbstractFloatingView {
 
     private static void showForHomeIfNeeded(Launcher launcher, boolean withDelay) {
         //OnboardingPrefs onboardingPrefs = launcher.getOnboardingPrefs();
-        NeoPrefs neoPrefs = NeoPrefs.getInstance(launcher);
+        NeoPrefs neoPrefs = NeoPrefs.getInstance();
         if (!launcher.isInState(NORMAL)
                 //|| onboardingPrefs.getBoolean(OnboardingPrefs.HOME_BOUNCE_SEEN)
                 || neoPrefs.getOnboardingBounceSeen().getValue()

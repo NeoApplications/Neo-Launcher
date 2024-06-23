@@ -324,7 +324,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         setMotionEventSplittingEnabled(true);
         setOnTouchListener(new WorkspaceTouchListener(mLauncher, this));
         mStatsLogManager = StatsLogManager.newInstance(context);
-        prefs = NeoPrefs.getInstance(context);
+        prefs = NeoPrefs.getInstance();
         setEnableFreeScroll(prefs.getDesktopFreeScrolling().getValue());
     }
 

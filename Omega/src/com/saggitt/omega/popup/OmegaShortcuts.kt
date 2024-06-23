@@ -62,7 +62,7 @@ class OmegaShortcuts {
         originalView
     ) {
 
-        val prefs: NeoPrefs = NeoPrefs.getInstance(launcher)
+        val prefs: NeoPrefs = NeoPrefs.getInstance()
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
             var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
@@ -168,7 +168,7 @@ class OmegaShortcuts {
 
     companion object {
         val CUSTOMIZE = SystemShortcut.Factory<NeoLauncher> { activity, itemInfo, originalView ->
-            val prefs = NeoPrefs.getInstance(activity)
+            val prefs = NeoPrefs.getInstance()
             var customize: Customize? = null
             if (Launcher.getLauncher(activity).isInState(LauncherState.NORMAL)) {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
@@ -194,7 +194,7 @@ class OmegaShortcuts {
         }
 
         val APP_REMOVE = SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
-            val prefs = NeoPrefs.getInstance(launcher)
+            val prefs = NeoPrefs.getInstance()
             var appRemove: AppRemove? = null
             if (Launcher.getLauncher(launcher).isInState(LauncherState.NORMAL)) {
                 if (itemInfo is WorkspaceItemInfo
@@ -212,7 +212,7 @@ class OmegaShortcuts {
 
         val APP_UNINSTALL =
             SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
-                val prefs = NeoPrefs.getInstance(launcher)
+                val prefs = NeoPrefs.getInstance()
                 var appUninstall: AppUninstall? = null
 
                 if (prefs.drawerPopupUninstall && launcher.isInState(LauncherState.ALL_APPS)) {

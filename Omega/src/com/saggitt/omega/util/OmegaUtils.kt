@@ -380,7 +380,7 @@ fun <T, U : Comparable<U>> Comparator<T>.then(extractKey: (T) -> U): Comparator<
 }
 
 fun getFolderPreviewAlpha(context: Context): Int {
-    val prefs = NeoPrefs.getInstance(context)
+    val prefs = NeoPrefs.getInstance()
     return (prefs.desktopFolderOpacity.getValue() * 255).toInt()
 }
 

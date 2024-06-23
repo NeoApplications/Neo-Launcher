@@ -25,8 +25,9 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -82,6 +83,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent.getKoin
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import com.android.launcher3.graphics.IconShape as L3IconShape
@@ -90,13 +93,7 @@ class NeoPrefs private constructor(val context: Context) {
     private val scope = MainScope()
     val publicScope = CoroutineScope(Dispatchers.IO) + CoroutineName("NeoPrefs")
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-        name = "neo_launcher",
-        produceMigrations = {
-            listOf(CustomPreferencesMigration(context = it).preferencesMigration())
-        }
-    )
-    private val dataStore: DataStore<Preferences> = context.dataStore
+    private val dataStore: DataStore<Preferences> by getKoin().inject()
     val legacyPrefs = LegacyPreferences(context)
 
     private var onChangeCallback: PreferencesChangeCallback? = null
@@ -1256,11 +1253,22 @@ class NeoPrefs private constructor(val context: Context) {
     }
 
     companion object {
-        @JvmField
-        val INSTANCE = MainThreadInitializedObject(::NeoPrefs)
+        val prefsModule = module {
+            single { MainThreadInitializedObject(::NeoPrefs).get(get()) }
+            single { provideDataStore(get()) }
+        }
+
+        private fun provideDataStore(context: Context): DataStore<Preferences> {
+            return PreferenceDataStoreFactory.create(
+                produceFile = {
+                    context.preferencesDataStoreFile("neo_launcher")
+                },
+                migrations = listOf(CustomPreferencesMigration(context).preferencesMigration())
+            )
+        }
 
         @JvmStatic
-        fun getInstance(context: Context) = INSTANCE.get(context)!!
+        fun getInstance(): NeoPrefs = getKoin().get()
 
     }
 }

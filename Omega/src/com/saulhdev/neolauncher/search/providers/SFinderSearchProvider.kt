@@ -63,13 +63,13 @@ class SFinderSearchProvider(context: Context) : AbstractSearchProvider(context) 
         get() = R.drawable.ic_search
     override val icon: Drawable
         get() = ResourcesCompat.getDrawable(context.resources, iconRes, null)!!
-            .mutate().apply { setTint(NeoPrefs.getInstance(context).profileAccentColor.getColor()) }
+            .mutate().apply { setTint(NeoPrefs.getInstance().profileAccentColor.getColor()) }
 
     override val voiceIcon: Drawable
         get() = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_mic, null)!!
             .mutate()
             .apply {
-                setTint(NeoPrefs.getInstance(context).profileAccentColor.getColor())
+                setTint(NeoPrefs.getInstance().profileAccentColor.getColor())
             }
 
     companion object {

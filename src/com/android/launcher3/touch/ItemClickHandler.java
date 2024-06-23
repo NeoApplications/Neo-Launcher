@@ -108,7 +108,7 @@ public class ItemClickHandler {
         } else if (tag instanceof AppInfo) {
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
             MODEL_EXECUTOR.execute(() -> {
-                NeoPrefs prefs = NeoPrefs.getInstance(launcher);
+                NeoPrefs prefs = NeoPrefs.getInstance();
 
                 if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
                     prefs.getReloadGrid();

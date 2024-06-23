@@ -93,7 +93,7 @@ class IconPackProvider(private val context: Context) {
         val themedIconPacks = packageManager.getThemedIconPacksInstalled(context)
         val isThemedIconsEnabled =
             context.prefs.profileThemedIcons.getValue() && (iconEntry.packPackageName in themedIconPacks)
-        val prefs = NeoPrefs.getInstance(context)
+        val prefs = NeoPrefs.getInstance()
 
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =

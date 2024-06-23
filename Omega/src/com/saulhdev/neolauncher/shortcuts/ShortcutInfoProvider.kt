@@ -84,7 +84,7 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
 
     override fun showBadge(info: WorkspaceItemInfo) = when (info.itemType) {
         ITEM_TYPE_SHORTCUT, ITEM_TYPE_DEEP_SHORTCUT -> {
-            NeoPrefs.getInstance(context).notificationCount.getValue()
+            NeoPrefs.getInstance().notificationCount.getValue()
         }
 
         else -> false

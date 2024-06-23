@@ -104,7 +104,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
         mTopScrim = Themes.getAttrDrawable(view.getContext(), R.attr.workspaceStatusBarScrim);
-        NeoPrefs prefs = NeoPrefs.Companion.getInstance(view.getContext());
+        NeoPrefs prefs = NeoPrefs.Companion.getInstance();
         mHideSysUiScrim = mTopScrim == null || !prefs.getProfileShowTopShadow().getValue();
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
