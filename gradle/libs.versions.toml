@@ -110,8 +110,6 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
-accompanist-insets-ui = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "compose-accompanist" }
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "compose-accompanist" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "compose-accompanist" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -128,9 +126,6 @@ uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = 
 support-runner = { module = "com.android.support.test:runner", version.ref = "support-runner" }
 support-rules = { module = "com.android.support.test:rules", version.ref = "support-rules" }
 support-uiautomator = { module = "com.android.support.test.uiautomator:uiautomator-v18", version.ref = "support-uiautomator" }
-
-[bundles]
-accompanist = ["accompanist-insets-ui", "accompanist-systemuicontroller", "accompanist-drawablepainter"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

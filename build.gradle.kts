@@ -266,7 +266,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.navigation)
     implementation(libs.coil.compose)
-    implementation(libs.bundles.accompanist)
+    implementation(libs.accompanist.drawablepainter)
     implementation(libs.compose.reorderable)
 
     //Room
