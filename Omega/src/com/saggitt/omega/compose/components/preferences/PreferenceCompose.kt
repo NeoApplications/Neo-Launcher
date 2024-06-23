@@ -352,7 +352,7 @@ fun SwitchPreference(
         onClick = {
             onCheckedChange(!checked)
             check(!checked)
-            coroutineScope.launch { pref.set(!checked) }
+            coroutineScope.launch { pref.setValue(!checked) }
         },
         endWidget = {
             Switch(
@@ -362,7 +362,7 @@ fun SwitchPreference(
                 onCheckedChange = {
                     onCheckedChange(it)
                     check(it)
-                    coroutineScope.launch { pref.set(it) }
+                    coroutineScope.launch { pref.setValue(it) }
                 },
                 thumbContent = {
                     if (checked) {

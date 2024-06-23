@@ -128,7 +128,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
                 coroutineScope.launch {
                     if (cameraId == camManager.cameraIdList[0]) {
-                        prefs.dashTorchState.set(enabled)
+                        prefs.dashTorchState.setValue(enabled)
                     }
                 }
             }

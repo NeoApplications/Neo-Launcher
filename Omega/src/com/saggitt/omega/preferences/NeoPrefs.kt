@@ -64,7 +64,6 @@ import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
 import com.saggitt.omega.smartspace.weather.OWMWeatherProvider
 import com.saggitt.omega.util.Config
-import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
@@ -1217,7 +1216,7 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     init {
-        val iconShape = IconShape.fromString(context, profileIconShape.get().firstBlocking())
+        val iconShape = IconShape.fromString(context, profileIconShape.getValue())
         initializeIconShape(iconShape)
         profileIconShape.get()
             .drop(1)

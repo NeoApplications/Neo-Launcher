@@ -244,7 +244,7 @@ open class StringMultiSelectionPref(
 
     init {
         runBlocking(Dispatchers.IO) {
-            valueList.addAll(get().firstOrNull() ?: defaultValue)
+            valueList.addAll(getValue())
         }
     }
 
@@ -379,7 +379,7 @@ abstract class PrefDelegate<T : Any>(
         return dataStore.data.map { it[key] ?: defaultValue }
     }
 
-    open suspend fun set(value: T) {
+    protected open suspend fun set(value: T) {
         if (getValue() == value) return
         dataStore.edit { it[key] = value }
         onChange(value)

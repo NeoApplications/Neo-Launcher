@@ -228,7 +228,7 @@ fun CustomizeIconView(
                         val newSet = hiddenApps.value.toMutableSet()
                         if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
                         scope.launch {
-                            prefs.drawerHiddenAppSet.set(newSet)
+                            prefs.drawerHiddenAppSet.setValue(newSet)
                         }
                     }
                 )
