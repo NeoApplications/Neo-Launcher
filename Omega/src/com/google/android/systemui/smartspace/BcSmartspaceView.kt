@@ -11,14 +11,19 @@ import android.view.View.MeasureSpec.EXACTLY
 import android.view.View.MeasureSpec.makeMeasureSpec
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.android.launcher3.R
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider
 import com.saggitt.omega.util.repeatOnAttached
 import com.saulhdev.smartspace.SmartspaceTarget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class BcSmartspaceView @JvmOverloads constructor(
@@ -35,12 +40,24 @@ class BcSmartspaceView @JvmOverloads constructor(
     private var pendingTargets: List<SmartspaceTarget>? = null
     private var runningAnimation: Animator? = null
 
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            prefs.smartspaceBackground.get()
+                .distinctUntilChanged()
+                .collect {
+                    if (::viewPager.isInitialized) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            viewPager.background = if (!it) null
+                            else ContextCompat.getDrawable(context, R.drawable.work_card)
+                        }
+                    }
+                }
+        }
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         viewPager = findViewById(R.id.smartspace_card_pager)
-        if (!prefs.smartspaceBackground.getValue()) {
-            viewPager.background = null
-        }
         viewPager.isSaveEnabled = false
         indicator = findViewById(R.id.smartspace_page_indicator)
 
