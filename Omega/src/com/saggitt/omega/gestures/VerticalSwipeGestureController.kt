@@ -163,6 +163,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
                             controller.onSwipeUpDock()
                         } else if (customSwipeUpGesture && !isOverHotseat(currentStart)) {
                             controller.onSwipeUp()
+                        } else {
                         }
                 }
             }

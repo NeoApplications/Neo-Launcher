@@ -59,7 +59,7 @@ class BlurWallpaperFilter(private val context: Context) : WallpaperFilter {
                 .radius(blurRadius)
                 .sampleFactor(BlurWallpaperProvider.DOWN_SAMPLE_FACTOR.toFloat())
                 .forceCopy(false)
-                .needUpscale(true)
+                //.needUpscale(true)
                 .processor()
                 .asyncBlur(wallpaper, object : AsyncBlurTask.Callback {
                     override fun onBlurSuccess(bitmap: Bitmap) {
