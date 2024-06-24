@@ -18,33 +18,20 @@
 
 package com.saggitt.omega.compose.pages
 
-import SearchTextField
-import android.content.Intent
-import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
-import android.os.Process
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,29 +44,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.android.launcher3.R
-import com.google.accompanist.insets.ui.LocalScaffoldPadding
 import com.saggitt.omega.compose.components.LazyGridLayout
-import com.saggitt.omega.compose.components.MutablePaddingValues
-import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.PreferenceLazyColumn
-import com.saggitt.omega.compose.components.SearchBarUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupDescription
 import com.saggitt.omega.compose.components.verticalGridItems
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.navigation.resultSender
 import com.saggitt.omega.data.models.IconPickerItem
-import com.saggitt.omega.iconpack.CustomIconPack
 import com.saggitt.omega.iconpack.IconPack
-import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.iconpack.filter
 import com.saggitt.omega.util.getIcon
 import com.saulhdev.neolauncher.icons.drawableToBitmap
@@ -92,100 +65,20 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun IconListPage(
-    iconPackName: String,
+    iconPackName: MutableState<String?>,
+    iconPack: IconPack,
+    searchQuery: String,
+    onClickItem: (item: IconPickerItem) -> Unit
 ) {
-    val context = LocalContext.current
-    var iconPackage = ""
-    if (iconPackName != "system_icons") {
-        iconPackage = iconPackName
+    BackHandler {
+        iconPackName.value = null
     }
 
-    val iconPack = remember {
-        IconPackProvider.INSTANCE.get(context).getIconPackOrSystem(iconPackage)
-    }
-    if (iconPack == null) {
-        val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-        SideEffect {
-            backDispatcher?.onBackPressed()
-        }
-        return
-    }
-    var searchQuery by remember { mutableStateOf("") }
-    val onClickItem = resultSender<IconPickerItem>()
-    val pickerComponent = remember {
-        val launcherApps = context.getSystemService<LauncherApps>()!!
-        launcherApps
-            .getActivityList(iconPack.packPackageName, Process.myUserHandle())
-            .firstOrNull()?.componentName
-    }
-    val pickerLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val icon = it.data?.getParcelableExtra<Intent.ShortcutIconResource>(
-                Intent.EXTRA_SHORTCUT_ICON_RESOURCE
-            ) ?: return@rememberLauncherForActivityResult
-            val entry = (iconPack as CustomIconPack).createFromExternalPicker(icon)
-                ?: return@rememberLauncherForActivityResult
-            onClickItem(entry)
-        }
-    Column {
-        SearchBarUI(
-            searchInput = {
-                SearchTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier.fillMaxSize(),
-                    placeholder = {
-                        Text(
-                            text = iconPack.label,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.medium),
-                        )
-                    },
-                    singleLine = true
-                )
-            },
-            actions = {
-                if (pickerComponent != null) {
-                    OverflowMenu {
-                        DropdownMenuItem(
-                            onClick = {
-                                val intent = Intent("com.novalauncher.THEME")
-                                    .addCategory("com.novalauncher.category.CUSTOM_ICON_PICKER")
-                                    .setComponent(pickerComponent)
-                                pickerLauncher.launch(intent)
-                                hideMenu()
-                            },
-                            text = { Text(text = stringResource(id = R.string.icon_pack_external_picker)) }
-                        )
-                    }
-                }
-            }
-        ) {
-            val scaffoldPadding = LocalScaffoldPadding.current
-            val innerPadding = remember { MutablePaddingValues() }
-            val layoutDirection = LocalLayoutDirection.current
-            innerPadding.left = scaffoldPadding.calculateLeftPadding(layoutDirection)
-            innerPadding.right = scaffoldPadding.calculateRightPadding(layoutDirection)
-            innerPadding.bottom = scaffoldPadding.calculateBottomPadding()
-
-            val topPadding = scaffoldPadding.calculateTopPadding()
-
-            CompositionLocalProvider(LocalScaffoldPadding provides innerPadding) {
-                IconPickerGrid(
-                    iconPack = iconPack,
-                    searchQuery = searchQuery,
-                    onClickItem = onClickItem,
-                    modifier = Modifier
-                        .padding(top = topPadding)
-                )
-            }
-            Spacer(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxWidth()
-                    .height(topPadding)
-            )
-        }
-    }
+    IconPickerGrid(
+        iconPack = iconPack,
+        searchQuery = searchQuery,
+        onClickItem = onClickItem,
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -282,22 +175,5 @@ fun IconPreview(
             contentDescription = iconItem.drawableName,
             modifier = Modifier.aspectRatio(1f),
         )
-    }
-}
-
-fun NavGraphBuilder.iconPickerGraph(route: String) {
-    preferenceGraph(route, {
-        IconListPage(iconPackName = "")
-    }) { subRoute ->
-        composable(
-            route = subRoute("{iconPackName}"),
-            arguments = listOf(
-                navArgument("iconPackName") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val args = backStackEntry.arguments!!
-            val packageName = args.getString("iconPackName")!!
-            IconListPage(packageName)
-        }
     }
 }

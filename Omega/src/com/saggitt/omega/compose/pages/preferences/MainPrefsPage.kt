@@ -48,7 +48,6 @@ import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.compose.pages.editIconGraph
-import com.saggitt.omega.compose.pages.iconPickerGraph
 
 @Composable
 fun MainPrefsPage() {
@@ -66,7 +65,7 @@ fun MainPrefsPage() {
         PageItem.PrefsGesturesDash
     )
     val otherPrefs = listOfNotNull(
-            //PageItem.PrefsBackup,
+        //PageItem.PrefsBackup,
         //PageItem.PrefsDesktopMode,
         if (prefs.developerOptionsEnabled.getValue()) PageItem.PrefsDeveloper
         else null,
@@ -88,59 +87,59 @@ fun MainPrefsPage() {
     }
 
     ViewWithActionBar(
-            title = stringResource(R.string.settings_button_text),
-            showBackButton = false,
-            actions = {
-                OverflowMenu {
-                    if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
-                        DropdownMenuItem(
-                                onClick = {
-                                    changeDefaultHome(context)
-                                    hideMenu()
-                                },
-                                text = { Text(text = stringResource(id = R.string.change_default_home)) }
-                        )
-                    }
+        title = stringResource(R.string.settings_button_text),
+        showBackButton = false,
+        actions = {
+            OverflowMenu {
+                if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
                     DropdownMenuItem(
-                            onClick = {
-                                Utilities.killLauncher()
-                                hideMenu()
-                            },
-                            text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
-                    )
-                    DropdownMenuItem(
-                            onClick = {
-                                navController.navigate(destination)
-                                hideMenu()
-                            },
-                            text = { Text(text = stringResource(id = R.string.developer_options_title)) }
+                        onClick = {
+                            changeDefaultHome(context)
+                            hideMenu()
+                        },
+                        text = { Text(text = stringResource(id = R.string.change_default_home)) }
                     )
                 }
+                DropdownMenuItem(
+                    onClick = {
+                        Utilities.killLauncher()
+                        hideMenu()
+                    },
+                    text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        navController.navigate(destination)
+                        hideMenu()
+                    },
+                    text = { Text(text = stringResource(id = R.string.developer_options_title)) }
+                )
             }
+        }
     ) { paddingValues ->
         LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 PreferenceGroup(
-                        heading = stringResource(id = R.string.pref_category__interfaces),
-                        prefs = uiPrefs
+                    heading = stringResource(id = R.string.pref_category__interfaces),
+                    prefs = uiPrefs
                 )
             }
             item {
                 PreferenceGroup(
-                        heading = stringResource(id = R.string.pref_category__features),
-                        prefs = featuresPrefs
+                    heading = stringResource(id = R.string.pref_category__features),
+                    prefs = featuresPrefs
                 )
             }
             item {
                 PreferenceGroup(
-                        heading = stringResource(id = R.string.pref_category__others),
-                        prefs = otherPrefs
+                    heading = stringResource(id = R.string.pref_category__others),
+                    prefs = otherPrefs
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -163,6 +162,5 @@ fun NavGraphBuilder.mainPrefsGraph(route: String) {
         gesturesPrefsGraph(route = subRoute(Routes.PREFS_GESTURES))
         aboutPrefsGraph(route = subRoute(Routes.ABOUT))
         editIconGraph(route = subRoute(Routes.EDIT_ICON))
-        iconPickerGraph(route = subRoute(Routes.ICON_PICKER))
     }
 }
