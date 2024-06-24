@@ -44,7 +44,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -100,7 +99,6 @@ fun BasePreference(
     bottomWidget: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val rank = (index + 1f) / groupSize
 
     ListItem(
         modifier = modifier
@@ -112,8 +110,7 @@ fun BasePreference(
                 clickable(enabled = isEnabled, onClick = onClick!!)
             },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme
-                .surfaceColorAtElevation((rank * 24).dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ),
         leadingContent = startWidget,
         headlineContent = {

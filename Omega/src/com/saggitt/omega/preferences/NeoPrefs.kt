@@ -250,7 +250,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -426,7 +426,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         },
     )
@@ -888,7 +888,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_ENABLED,
         titleId = R.string.title_smartspace,
         defaultValue = false,
-        onChange = { recreate() }
+        onChange = { reloadAll() }
     )
 
     val smartspaceBackground = BooleanPref(
@@ -896,7 +896,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_BACKGROUND,
         titleId = R.string.title_smartspace_background,
         defaultValue = true,
-        onChange = { recreate() }
     )
 
     val smartspaceDate = BooleanPref(
@@ -1016,7 +1015,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )

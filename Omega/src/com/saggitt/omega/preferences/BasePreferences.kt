@@ -376,12 +376,12 @@ abstract class PrefDelegate<T : Any>(
     }
 
     open fun get(): Flow<T> {
-        return dataStore.data.map { it[key] ?: defaultValue }
+        return dataStore.data.map { prefs -> prefs[key] ?: defaultValue }
     }
 
     protected open suspend fun set(value: T) {
         if (getValue() == value) return
-        dataStore.edit { it[key] = value }
+        dataStore.edit { prefs -> prefs[key] = value }
         onChange(value)
     }
 }

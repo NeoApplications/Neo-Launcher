@@ -122,7 +122,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
                     SingleAxisSwipeDetector.DIRECTION_POSITIVE
             }
 
-            else -> {
+            else                                               -> {
                 SingleAxisSwipeDetector.DIRECTION_NEGATIVE.or(
                     if ((customSwipeUpGesture && !isOverHotseat(currentStart)) ||
                         isOverHotseat(currentStart)
@@ -151,7 +151,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
                 (swipeUpOverride as? VerticalSwipeGestureHandler)?.onDrag(displacement, velocity)
             }
             when {
-                velocity > triggerVelocity && state == GestureState.Free -> {
+                velocity > triggerVelocity && state == GestureState.Free  -> {
                     state = GestureState.Triggered
                     controller.onSwipeDown()
                 }

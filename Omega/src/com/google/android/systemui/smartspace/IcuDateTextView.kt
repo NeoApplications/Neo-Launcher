@@ -31,7 +31,6 @@ import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.smartspace.model.SmartspaceCalendar
 import com.saggitt.omega.smartspace.model.SmartspaceTimeFormat
 import com.saggitt.omega.util.broadcastReceiverFlow
-import com.saggitt.omega.util.firstBlocking
 import com.saggitt.omega.util.repeatOnAttached
 import com.saggitt.omega.util.subscribeBlocking
 import kotlinx.coroutines.flow.combine
