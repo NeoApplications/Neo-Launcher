@@ -38,102 +38,102 @@ import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringSetPref
 import com.saggitt.omega.preferences.StringTextPref
 
-val PreferenceBuilder =
-    @Composable { pref: Any, onDialogPref: (Any) -> Unit, index: Int, size: Int ->
-        when (pref) {
-            is IntentLauncherPref       -> IntentLauncherPreference(
-                pref = pref,
-                index = index,
-                groupSize = size
-            ) { onDialogPref(pref) }
+@Composable
+fun PreferenceBuilder(pref: Any, onDialogPref: (Any) -> Unit, index: Int, size: Int) = when (pref) {
+    is IntentLauncherPref       -> IntentLauncherPreference(
+        pref = pref,
+        index = index,
+        groupSize = size
+    ) { onDialogPref(pref) }
 
-            is GridSize2D               -> GridSize2DPreference(
-                pref = pref,
-                index = index,
-                groupSize = size
-            ) { onDialogPref(pref) }
+    is GridSize2D               -> GridSize2DPreference(
+        pref = pref,
+        index = index,
+        groupSize = size
+    ) { onDialogPref(pref) }
 
-            is GridSize                 -> GridSizePreference(
-                pref = pref,
-                index = index,
-                groupSize = size
-            ) { onDialogPref(pref) }
+    is GridSize                 -> GridSizePreference(
+        pref = pref,
+        index = index,
+        groupSize = size
+    ) { onDialogPref(pref) }
 
-            is BooleanPref              -> SwitchPreference(
-                pref = pref,
-                index = index,
-                groupSize = size
+    is BooleanPref              -> SwitchPreference(
+        pref = pref,
+        index = index,
+        groupSize = size
+    )
+
+    is NavigationPref           ->
+        NavigationPreference(pref = pref, index = index, groupSize = size)
+
+    is ColorIntPref             ->
+        ColorIntPreference(pref = pref, index = index, groupSize = size)
+
+    is StringPref               ->
+        StringPreference(pref = pref, index = index, groupSize = size)
+
+    is StringSetPref            ->
+        StringSetPreference(pref = pref, index = index, groupSize = size)
+
+    is FloatPref                ->
+        SeekBarPreference(pref = pref, index = index, groupSize = size)
+
+    is IntPref                  ->
+        IntSeekBarPreference(pref = pref, index = index, groupSize = size)
+
+    is IdpIntPref               ->
+        IntSeekBarPreference(pref = pref, index = index, groupSize = size)
+
+    is DialogPref               ->
+        AlertDialogPreference(pref = pref, index = index, groupSize = size) {
+            onDialogPref(
+                pref
             )
-
-            is NavigationPref           ->
-                NavigationPreference(pref = pref, index = index, groupSize = size)
-
-            is ColorIntPref             ->
-                ColorIntPreference(pref = pref, index = index, groupSize = size)
-
-            is StringPref               ->
-                StringPreference(pref = pref, index = index, groupSize = size)
-
-            is StringSetPref            ->
-                StringSetPreference(pref = pref, index = index, groupSize = size)
-
-            is FloatPref                ->
-                SeekBarPreference(pref = pref, index = index, groupSize = size)
-
-            is IntPref                  ->
-                IntSeekBarPreference(pref = pref, index = index, groupSize = size)
-
-            is IdpIntPref               ->
-                IntSeekBarPreference(pref = pref, index = index, groupSize = size)
-
-            is DialogPref               ->
-                AlertDialogPreference(pref = pref, index = index, groupSize = size) {
-                    onDialogPref(
-                        pref
-                    )
-                }
-
-            is IntSelectionPref         ->
-                IntSelectionPreference(
-                    pref = pref,
-                    index = index,
-                    groupSize = size
-                ) { onDialogPref(pref) }
-
-            is LongSelectionPref        ->
-                LongSelectionPreference(
-                    pref = pref,
-                    index = index,
-                    groupSize = size
-                ) { onDialogPref(pref) }
-
-            is StringSelectionPref      ->
-                StringSelectionPreference(
-                    pref = pref,
-                    index = index,
-                    groupSize = size
-                ) { onDialogPref(pref) }
-
-            is StringTextPref           ->
-                StringTextPreference(
-                    pref = pref,
-                    index = index,
-                    groupSize = size
-                ) { onDialogPref(pref) }
-
-            is StringMultiSelectionPref -> StringMultiSelectionPreference(
-                pref = pref,
-                index = index,
-                groupSize = size
-            ) { onDialogPref(pref) }
-
-            is PageItem                 ->
-                PagePreference(
-                    titleId = pref.titleId,
-                    icon = pref.icon,
-                    route = pref.route,
-                    index = index,
-                    groupSize = size
-                )
         }
-    }
+
+    is IntSelectionPref         ->
+        IntSelectionPreference(
+            pref = pref,
+            index = index,
+            groupSize = size
+        ) { onDialogPref(pref) }
+
+    is LongSelectionPref        ->
+        LongSelectionPreference(
+            pref = pref,
+            index = index,
+            groupSize = size
+        ) { onDialogPref(pref) }
+
+    is StringSelectionPref      ->
+        StringSelectionPreference(
+            pref = pref,
+            index = index,
+            groupSize = size
+        ) { onDialogPref(pref) }
+
+    is StringTextPref           ->
+        StringTextPreference(
+            pref = pref,
+            index = index,
+            groupSize = size
+        ) { onDialogPref(pref) }
+
+    is StringMultiSelectionPref -> StringMultiSelectionPreference(
+        pref = pref,
+        index = index,
+        groupSize = size
+    ) { onDialogPref(pref) }
+
+    is PageItem                 ->
+        PagePreference(
+            titleId = pref.titleId,
+            icon = pref.icon,
+            route = pref.route,
+            index = index,
+            groupSize = size
+        )
+
+    else                        -> {}
+}

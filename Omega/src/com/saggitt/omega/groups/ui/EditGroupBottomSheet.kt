@@ -26,14 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -126,13 +124,6 @@ fun EditGroupBottomSheet(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            HorizontalDivider(
-                modifier = Modifier
-                    .width(48.dp)
-                    .height(2.dp)
-            )
-        }
         item {
             OutlinedTextField(
                 value = title,
@@ -283,7 +274,7 @@ fun EditGroupBottomSheet(
                             }
                         }
 
-                        else -> { // AppGroupsManager.Category.FLOWERPOT
+                        else                                            -> { // AppGroupsManager.Category.FLOWERPOT
                             BasePreference(
                                 titleId = R.string.pref_appcategorization_flowerpot_title,
                                 summary = flowerpotManager.getAllPots()
@@ -396,12 +387,12 @@ fun EditGroupBottomSheet(
 
                             AppGroupsManager.Category.TAB,
                             AppGroupsManager.Category.FLOWERPOT,
-                            -> {
+                                                             -> {
                                 prefs.drawerTabs.saveToJson()
                                 prefs.reloadTabs()
                             }
 
-                            else -> {}
+                            else                             -> {}
                         }
                         onClose(Config.BS_SELECT_TAB_TYPE)
                     },
