@@ -32,12 +32,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewWithActionBar(
+    modifier: Modifier = Modifier,
     title: String,
     floatingActionButton: @Composable () -> Unit = {},
     showBackButton: Boolean = true,
@@ -47,6 +49,7 @@ fun ViewWithActionBar(
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
