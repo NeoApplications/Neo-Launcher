@@ -1,0 +1,7 @@
+Toegevoegd: gebaar Veeg omhoog naar mappen
+Toegevoegd: Feed-Provider-instelling
+Opgelost: taalvoorkeur
+Bijgewerkt: verhoog het raster / kolombereik naar 2-16
+Verwijderd: Google App en Google GO als zoekproviders
+Verwijderd: StartAppSearch, StartApp en TimeoutSleep-gebaren
+Veel oplossingen voor crashes
