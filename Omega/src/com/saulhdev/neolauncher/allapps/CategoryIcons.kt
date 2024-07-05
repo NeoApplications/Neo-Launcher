@@ -23,6 +23,8 @@ import com.saggitt.omega.compose.icons.phosphor.Asterisk
 import com.saggitt.omega.compose.icons.phosphor.CirclesFour
 import com.saggitt.omega.compose.icons.phosphor.ImageSquare
 import com.saggitt.omega.compose.icons.phosphor.MapPin
+import com.saggitt.omega.compose.icons.phosphor.PaintBrush
+import com.saggitt.omega.compose.icons.phosphor.Pizza
 import com.saggitt.omega.compose.icons.phosphor.SpeakerHigh
 import com.saggitt.omega.compose.icons.phosphor.Swatches
 import com.saggitt.omega.compose.icons.phosphor.Wrench
@@ -31,6 +33,8 @@ const val FILTER_CATEGORY_ALL = "All"
 val String.appCategoryIcon: ImageVector
     get() = when (this.lowercase()) {
         FILTER_CATEGORY_ALL.lowercase() -> Phosphor.CirclesFour
+        "art and design" -> Phosphor.PaintBrush
+        "food and drink" -> Phosphor.Pizza
         "photography" -> Phosphor.ImageSquare
         "music" -> Phosphor.SpeakerHigh
         "personalization" -> Phosphor.Swatches
