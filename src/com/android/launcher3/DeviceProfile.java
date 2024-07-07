@@ -939,6 +939,7 @@ public class DeviceProfile {
         float invIconTextSizeSp = inv.iconTextSize[mTypeIndex];
         iconSizePx = Math.max(1, pxFromDp(invIconSizeDp, mMetrics));
         iconTextSizePx = pxFromSp(invIconTextSizeSp, mMetrics);
+        iconTextSizePx *= mTextFactors.getIconTextSizeFactor();
         iconCenterVertically = mIsScalableGrid || mIsResponsiveGrid;
 
         updateIconSize(1f, res);
