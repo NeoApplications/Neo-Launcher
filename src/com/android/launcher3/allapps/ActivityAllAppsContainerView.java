@@ -1064,6 +1064,15 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     mWorkManager.reset();
                 }
             }
+        } else if (mHasWorkApps && !prefs.getDrawerSeparateWorkApps().getValue()) {
+            mHasWorkApps = false;
+            if (!isSearching()) {
+                rebindAdapters(mUsingTabs);
+                mWorkManager.reset();
+                AllAppsTabs allAppsTabs = mTabsController.getTabs();
+                force = allAppsTabs.getHasWorkApps() != mHasWorkApps;
+                allAppsTabs.setHasWorkApps(mHasWorkApps);
+            }
         }
         mActivityContext.getStatsLogManager().logger()
                 .withCardinality(mAllAppsStore.getApps().length)
