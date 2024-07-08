@@ -632,6 +632,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_SORT_MODE,
         defaultValue = Config.SORT_AZ,
         entries = Config.drawerSortOptions,
+        onChange = { reloadGrid() },
     )
 
     var drawerHiddenAppSet = StringSetPref(
@@ -641,7 +642,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         defaultValue = setOf(),
         navRoute = Routes.HIDDEN_APPS,
-        onChange = { reloadGrid() }
+        onChange = { reloadTabs() }
     )
 
     var drawerProtectedAppsSet = StringSetPref(
@@ -752,6 +753,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_WORK_APPS_SEPARATE,
         titleId = R.string.title_separate_work_apps,
         defaultValue = false,
+        onChange = { reloadGrid() }
     )
 
     val drawerAppGroupsManager by lazy { AppGroupsManager(this, dataStore) }
@@ -774,6 +776,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_SCROLLBAR_HIDDEN,
         titleId = R.string.title_all_apps_hide_scrollbar,
         defaultValue = false,
+        onChange = { reloadTabs() }
     )
 
     val drawerCustomBackground = BooleanPref(
