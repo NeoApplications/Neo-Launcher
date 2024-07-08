@@ -526,7 +526,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_ENABLED,
         titleId = R.string.title__dock_hide,
         defaultValue = false,
-        onChange = { recreate() }
+        onChange = { reloadGrid() }
     )
     var dockExpandable = BooleanPref(
         dataStore = dataStore,
@@ -555,6 +555,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0.70f,
         steps = 100,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() }
     )
 
     val dockCustomBackground = BooleanPref(
@@ -602,6 +603,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 2f,
         maxValue = 16f,
         steps = 13,
+        onChange = { reloadGrid() },
     )
     val dockNumRows = IntPref(
         dataStore = dataStore,
@@ -610,7 +612,8 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = 2,
         minValue = 2,
         maxValue = 3,
-        steps = 3
+        steps = 3,
+        onChange = { reloadGrid() },
     )
 
     // Drawer
