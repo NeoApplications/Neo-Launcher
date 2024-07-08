@@ -638,6 +638,25 @@ public class DeviceProfile {
         int cellLayoutPaddingX = fullWidthWidgets ? 0 : cellLayoutPadding;
         cellLayoutPaddingPx = new Rect(cellLayoutPaddingX, cellLayoutPadding, cellLayoutPaddingX,
                 cellLayoutPadding);
+
+
+        float targetDockScale = prefs.getDockScale().getValue();
+        int previousDockSize = hotseatBarSizePx;
+        int previousDockBottomPadding = hotseatBarBottomSpacePx;
+        int extraSpace = (int) (targetDockScale * previousDockSize - hotseatBarSizePx);
+        if (extraSpace != 0) {
+            hotseatBarSizePx += extraSpace;
+
+            int dockTopSpace = workspacePageIndicatorHeight - mWorkspacePageIndicatorOverlapWorkspace;
+            int dockBottomSpace =
+                    Math.max(hotseatBarBottomSpacePx - previousDockBottomPadding, dockTopSpace);
+            int dockVerticalSpace = dockTopSpace + dockBottomSpace;
+
+            hotseatBarBottomSpacePx += extraSpace * ((float) dockBottomSpace / dockVerticalSpace);
+
+            updateAvailableDimensions(res);
+        }
+
         updateWorkspacePadding();
 
         // Folder scaling requires correct workspace paddings
