@@ -295,6 +295,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 Themes.getAttrColor(getContext(), R.attr.materialColorSurfaceDim);
         updateBackgroundVisibility(mActivityContext.getDeviceProfile());
         mSearchUiManager.initializeSearch(this);
+        mFastScroller.setVisibility(prefs.getDrawerHideScrollbar().getValue() ? INVISIBLE : VISIBLE);
     }
 
     @Override
@@ -666,6 +667,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             }
         }
 
+        mFastScroller.setVisibility(prefs.getDrawerHideScrollbar().getValue() ? INVISIBLE : VISIBLE);
         mTabsController.registerIconContainers(mAllAppsStore);
         mAllAppsStore.registerIconContainer(mAH.get(getSearchHolderIndex()).mRecyclerView);
     }
