@@ -100,6 +100,7 @@ class NeoPrefs private constructor(val context: Context) {
     private val _changePoker = MutableSharedFlow<Int>()
     val changePoker = _changePoker.asSharedFlow()
 
+    // TODO add more differentiate callbacks
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
     val restart = { onChangeCallback?.restart() }
@@ -503,6 +504,8 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = { "${(it * 100).roundToInt()}%" },
         onChange = { reloadGrid() },
     )
+
+    // TODO add different settings for Folder desktop vs. open background
 
     val desktopMultilineLabel = BooleanPref(
         dataStore = dataStore,
@@ -1032,9 +1035,9 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.SEARCH_CORNER_RADIUS,
         titleId = R.string.title__search_bar_radius,
         defaultValue = -1f,
-        maxValue = 24f,
+        maxValue = 36f,
         minValue = -1f,
-        steps = 24,
+        steps = 36,
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)

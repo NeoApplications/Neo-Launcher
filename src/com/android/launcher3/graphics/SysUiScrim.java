@@ -27,7 +27,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -36,12 +35,10 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.DeviceProfile;
-import com.android.launcher3.R;
 import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
-import com.android.launcher3.util.Themes;
 import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
@@ -88,7 +85,6 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
     private final View mRoot;
     private final BaseDraggingActivity mActivity;
-    private final Drawable mTopScrim;
     private final boolean mHideSysUiScrim;
     private boolean mSkipScrimAnimationForTest = false;
 
@@ -103,9 +99,8 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
-        mTopScrim = Themes.getAttrDrawable(view.getContext(), R.attr.workspaceStatusBarScrim);
         NeoPrefs prefs = NeoPrefs.Companion.getInstance();
-        mHideSysUiScrim = mTopScrim == null || !prefs.getProfileShowTopShadow().getValue();
+        mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
                 new int[]{0x50FFFFFF, 0x0AFFFFFF, 0x00FFFFFF},
