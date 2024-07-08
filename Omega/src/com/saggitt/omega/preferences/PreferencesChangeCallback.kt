@@ -32,7 +32,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
         idp.onPreferencesChanged(launcher)
     }
 
-    fun reloadAll() {
+    fun reloadModel() {
         launcher.model.forceReload()
     }
 

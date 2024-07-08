@@ -103,8 +103,9 @@ class NeoPrefs private constructor(val context: Context) {
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
     val restart = { onChangeCallback?.restart() }
-    val reloadAll = { onChangeCallback?.reloadAll() }
+    val reloadModel = { onChangeCallback?.reloadModel() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
+    val reloadAll = { reloadModel(); reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }
 
     inline fun withChangeCallback(
@@ -195,7 +196,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE_LESS,
         defaultValue = false,
-        onChange = { reloadAll() }
+        onChange = { reloadModel() }
     )
 
     var profileBlurEnable = BooleanPref(
@@ -250,7 +251,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -266,6 +267,7 @@ class NeoPrefs private constructor(val context: Context) {
         }
     )
 
+    // TODO fix this
     val profileShowTopShadow = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.PROFILE_STATUSBAR_SHADOW,
@@ -304,6 +306,7 @@ class NeoPrefs private constructor(val context: Context) {
         }
     )
 
+    // TODO fix this
     val desktopLock = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_LOCK_CHANGES,
@@ -311,6 +314,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
+    // TODO test on device
     val desktopHideStatusBar = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_STATUS_BAR_HIDE,
@@ -345,6 +349,7 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadGrid() }
     )
 
+    // TODO fix this
     val desktopAllowFullWidthWidgets = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_WIDGETS_FULL_WIDTH,
@@ -353,6 +358,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
+    // TODO fix this
     var desktopWidgetCornerRadius = FloatPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_WIDGETS_CORNER_RADIUS,
@@ -426,19 +432,19 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         },
+        onChange = { reloadGrid() },
     )
 
     val desktopCustomFolderBackground = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_CUSTOM,
         titleId = R.string.folder_custom_background,
-        defaultValue = false
-    ) {
-        pokeChange()
-    }
+        defaultValue = false,
+        onChange = { reloadGrid() },
+    )
 
     val desktopFolderBackgroundColor = ColorIntPref(
         titleId = R.string.folder_background,
@@ -446,16 +452,16 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
         defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
         navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
+        onChange = { reloadGrid() },
     )
 
     val desktopFolderStroke = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE,
         titleId = R.string.folder_draw_stroke,
-        defaultValue = false
-    ) {
-        pokeChange()
-    }
+        defaultValue = false,
+        onChange = { reloadGrid() },
+    )
 
     val desktopFolderStrokeColor = ColorIntPref(
         titleId = R.string.folder_stroke_color,
@@ -463,6 +469,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
         defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
         navRoute = Routes.COLOR_STROKE_FOLDER,
+        onChange = { reloadGrid() },
     )
 
     val desktopFolderColumns = IntPref(
@@ -494,6 +501,7 @@ class NeoPrefs private constructor(val context: Context) {
         minValue = 0f,
         steps = 10,
         specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() },
     )
 
     val desktopMultilineLabel = BooleanPref(
@@ -509,6 +517,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FREE_SCROLLING,
         titleId = R.string.title_desktop_free_scrolling,
         defaultValue = false,
+        onChange = { recreate() },
     )
 
     // Dock
@@ -888,7 +897,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_ENABLED,
         titleId = R.string.title_smartspace,
         defaultValue = false,
-        onChange = { reloadAll() }
+        onChange = { reloadModel() }
     )
 
     val smartspaceBackground = BooleanPref(
@@ -1015,7 +1024,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
+                else -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -1185,7 +1194,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     //Misc
     val customAppName =
-        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadAll() }) {
+        object : MutableMapPref<ComponentKey, String>(context, "app_name_map", { reloadModel() }) {
             override fun flattenKey(key: ComponentKey) = key.toString()
             override fun unflattenKey(key: String) = makeComponentKey(context, key)
             override fun flattenValue(value: String) = value
