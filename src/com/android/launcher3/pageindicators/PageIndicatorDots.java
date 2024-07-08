@@ -404,7 +404,8 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         float x = startX + mDotRadius;
         float y = getHeight() / 2;
 
-        if (mEntryAnimationRadiusFactors != null) {
+        boolean show = Utilities.getNeoPrefs(getContext()).getDockShowPageIndicator().getValue();
+        if (!show) { } else if (mEntryAnimationRadiusFactors != null) {
             // During entry animation, only draw the circles
             if (mIsRtl) {
                 x = getWidth() - x;
