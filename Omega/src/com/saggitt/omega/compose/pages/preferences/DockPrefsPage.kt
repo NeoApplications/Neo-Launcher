@@ -74,6 +74,7 @@ fun DockPrefsPage() {
                     null
                 },
                 prefs.dockShowPageIndicator,
+                prefs.dockDotsPageIndicator,
                 prefs.dockScale
             ).toTypedArray()
         )

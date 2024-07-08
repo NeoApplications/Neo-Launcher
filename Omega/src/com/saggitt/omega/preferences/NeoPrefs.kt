@@ -582,6 +582,14 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = true,
     )
 
+    val dockDotsPageIndicator = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_PAGE_INDICATOR_DOT,
+        titleId = R.string.hotseat_show_dots_page_indicator,
+        defaultValue = true,
+        onChange = { recreate() },
+    )
+
     private val dockGridSizeDelegate = ResettableLazy {
         GridSize(
             titleId = R.string.title__dock_hotseat_icons,

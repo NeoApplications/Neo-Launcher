@@ -1378,10 +1378,10 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-        if (SHOW_DOT_PAGINATION.get() && WorkspacePageIndicator.class.getName().equals(name)) {
+        /*if (SHOW_DOT_PAGINATION.get() && WorkspacePageIndicator.class.getName().equals(name)) {
             return LayoutInflater.from(context).inflate(R.layout.page_indicator_dots,
                     (ViewGroup) parent, false);
-        }
+        }*/
         return super.onCreateView(parent, name, context, attrs);
     }
 

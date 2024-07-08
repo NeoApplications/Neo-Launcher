@@ -85,6 +85,7 @@
     <string name="dock_colored_google">Color Icons</string>
     <string name="title_opacity">Opacity</string>
     <string name="hotseat_show_page_indicator">Show Page Indicator</string>
+    <string name="hotseat_show_dots_page_indicator">Show Dots Page Indicator Instead of Lines</string>
     <string name="title_disabled">Off</string>
     <string name="dock_search_value" translatable="false">%1$s %2$s</string>
     <string name="num_hotseat_icons_pref_title">Icon Count</string>

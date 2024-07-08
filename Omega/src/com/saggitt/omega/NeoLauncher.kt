@@ -31,6 +31,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
+import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -55,6 +57,7 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
+import com.android.launcher3.pageindicators.WorkspacePageIndicator
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
@@ -145,6 +148,21 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 packageName
             ), true
         )
+    }
+
+    override fun onCreateView(
+        parent: View?,
+        name: String,
+        context: Context,
+        attrs: AttributeSet
+    ): View? {
+        if (prefs.dockDotsPageIndicator.getValue() && WorkspacePageIndicator::class.java.name == name) {
+            return LayoutInflater.from(context).inflate(
+                R.layout.page_indicator_dots,
+                parent as ViewGroup, false
+            )
+        }
+        return super.onCreateView(parent, name, context, attrs)
     }
 
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
