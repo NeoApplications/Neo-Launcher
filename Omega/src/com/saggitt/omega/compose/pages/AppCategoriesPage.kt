@@ -105,12 +105,7 @@ fun AppCategoriesPage() {
     if (prefs.profileWindowCornerRadius.getValue() > -1) {
         radius = prefs.profileWindowCornerRadius.getValue().dp
     }
-    val sheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.Hidden,
-        //confirmValueChange = { it != SheetValue.PartiallyExpanded },
-        skipHiddenState = false
-    )
-    val scaffoldState = rememberBottomSheetScaffoldState(sheetState)
+    val scaffoldState = rememberBottomSheetScaffoldState()
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
     val openDialog = remember { mutableStateOf(false) }
@@ -118,7 +113,7 @@ fun AppCategoriesPage() {
 
     val selectedCategorizationKey by manager.categorizationType.getState()
 
-    val groups = remember(selectedCategorizationKey, scaffoldState.bottomSheetState) {
+    val groups = remember(selectedCategorizationKey, scaffoldState.bottomSheetState.currentValue) {
         mutableStateListOf(*loadAppGroups(manager, hasWorkApps))
     }
 
@@ -136,7 +131,7 @@ fun AppCategoriesPage() {
     when (selectedCategorizationKey) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-                                             -> {
+        -> {
             categoryTitle = stringResource(id = R.string.app_categorization_tabs)
         }
 
@@ -149,14 +144,14 @@ fun AppCategoriesPage() {
         mutableIntStateOf(Config.BS_NONE)
     }
 
-    BackHandler(scaffoldState.bottomSheetState.isVisible) {
+    BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
         coroutineScope.launch {
-            scaffoldState.bottomSheetState.hide()
+            scaffoldState.bottomSheetState.partialExpand()
             sheetChanger = Config.BS_NONE
         }
     }
 
-    if (scaffoldState.bottomSheetState.currentValue != SheetValue.Hidden) {
+    if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
         DisposableEffect(Unit) {
             onDispose {
                 sheetChanger = Config.BS_NONE
@@ -171,7 +166,6 @@ fun AppCategoriesPage() {
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetShape = RoundedCornerShape(topStart = radius, topEnd = radius),
         sheetPeekHeight = 0.dp,
         sheetContent = {
             when (sheetChanger) {
@@ -187,7 +181,7 @@ fun AppCategoriesPage() {
                 }
 
                 //Create tab or folder
-                Config.BS_CREATE_GROUP    -> {
+                Config.BS_CREATE_GROUP -> {
                     CreateGroupBottomSheet(category = openedOption) {
                         sheetChanger =
                             if (openedOption == AppGroupsManager.Category.TAB
@@ -195,7 +189,7 @@ fun AppCategoriesPage() {
                             ) Config.BS_SELECT_TAB_TYPE
                             else Config.BS_CREATE_GROUP
                         coroutineScope.launch {
-                            scaffoldState.bottomSheetState.hide()
+                            scaffoldState.bottomSheetState.partialExpand()
                         }
                         groups.clear()
                         groups.addAll(loadAppGroups(manager, hasWorkApps))
@@ -203,12 +197,12 @@ fun AppCategoriesPage() {
                 }
 
                 //Edit group
-                Config.BS_EDIT_GROUP      -> {
+                Config.BS_EDIT_GROUP -> {
                     editGroup.value?.let { editGroup ->
                         EditGroupBottomSheet(openedOption, editGroup) {
                             sheetChanger = it
                             coroutineScope.launch {
-                                scaffoldState.bottomSheetState.hide()
+                                scaffoldState.bottomSheetState.partialExpand()
                             }
                             groups.clear()
                             groups.addAll(loadAppGroups(manager, hasWorkApps))
@@ -222,24 +216,24 @@ fun AppCategoriesPage() {
             modifier = Modifier.padding(it),
             title = stringResource(id = R.string.title_app_categorize),
             floatingActionButton = {
+                // TODO fix
                 FloatingActionButton(
                     onClick = {
                         sheetChanger =
                             when (selectedCategorizationKey) {
                                 AppGroupsManager.Category.FOLDER.key
-                                     -> Config.BS_CREATE_GROUP
+                                -> Config.BS_CREATE_GROUP
 
                                 AppGroupsManager.Category.TAB.key,
                                 AppGroupsManager.Category.FLOWERPOT.key,
-                                     -> Config.BS_SELECT_TAB_TYPE
+                                -> Config.BS_SELECT_TAB_TYPE
 
                                 else -> Config.BS_NONE
                             }
                         coroutineScope.launch {
-                            if (scaffoldState.bottomSheetState.isVisible) {
-                                scaffoldState.bottomSheetState.hide()
+                            if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                                scaffoldState.bottomSheetState.partialExpand()
                             } else {
-                                scaffoldState.bottomSheetState.show()
                                 scaffoldState.bottomSheetState.expand()
                             }
                         }
@@ -338,13 +332,12 @@ fun AppCategoriesPage() {
                                             sheetChanger = Config.BS_EDIT_GROUP
                                             onOptionOpen(
                                                 when (item.type) {
-                                                    DrawerTabs.TYPE_CUSTOM       -> AppGroupsManager.Category.TAB
+                                                    DrawerTabs.TYPE_CUSTOM -> AppGroupsManager.Category.TAB
                                                     FlowerpotTabs.TYPE_FLOWERPOT -> AppGroupsManager.Category.FLOWERPOT
-                                                    else                         -> AppGroupsManager.Category.FOLDER
+                                                    else -> AppGroupsManager.Category.FOLDER
                                                 }
                                             )
                                             editGroup.value = item
-                                            scaffoldState.bottomSheetState.show()
                                             scaffoldState.bottomSheetState.expand()
                                         }
                                     },
@@ -368,7 +361,7 @@ fun AppCategoriesPage() {
                             openDialogCustom = openDialog
                         )
 
-                        else                   -> {}
+                        else -> {}
                     }
                 }
             }
@@ -386,7 +379,7 @@ fun saveGroupPositions(manager: AppGroupsManager, groups: List<AppGroups.Group>)
     when (manager.categorizationType.getValue()) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-                                             -> {
+        -> {
             manager.drawerTabs.setGroups(groups as List<DrawerTabs.Tab>)
             manager.drawerTabs.saveToJson()
         }
@@ -402,7 +395,7 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
     return when (manager.categorizationType.getValue()) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-                                             -> {
+        -> {
             if (hasWorkApps) manager.drawerTabs.getGroups()
                 .filter { it !is DrawerTabs.ProfileTab || !it.profile.matchesAll }
             else manager.drawerTabs.getGroups()
@@ -414,7 +407,7 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
             manager.drawerFolders.getGroups()
         }
 
-        else                                 -> {
+        else -> {
             emptyList()
         }
     }.toTypedArray()
