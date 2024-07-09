@@ -36,7 +36,7 @@ android {
     compileSdk = 34
 
     val name = "1.0.0-alpha02"
-    val code = 1002
+    val code = 1003
 
     defaultConfig {
         minSdk = 26
