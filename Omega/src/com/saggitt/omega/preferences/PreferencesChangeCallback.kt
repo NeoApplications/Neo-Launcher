@@ -42,6 +42,12 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
         }
     }
 
+    fun scheduleRecreate() {
+        MAIN_EXECUTOR.execute {
+            launcher.scheduleRecreate()
+        }
+    }
+
     fun reloadTabs() {
         launcher.appsView.reloadTabs()
     }

@@ -103,6 +103,7 @@ class NeoPrefs private constructor(val context: Context) {
     // TODO add more differentiate callbacks
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
+    val scheduleRecreate = { onChangeCallback?.scheduleRecreate() }
     val restart = { onChangeCallback?.restart() }
     val reloadModel = { onChangeCallback?.reloadModel() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
@@ -252,7 +253,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -433,7 +434,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         },
         onChange = { reloadGrid() },
@@ -520,7 +521,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FREE_SCROLLING,
         titleId = R.string.title_desktop_free_scrolling,
         defaultValue = false,
-        onChange = { recreate() },
+        onChange = { scheduleRecreate() },
     )
 
     // Dock
@@ -536,7 +537,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_EXPANDABLE,
         titleId = R.string.title_expandable_dock,
         defaultValue = false,
-        onChange = { recreate() }
+        onChange = { scheduleRecreate() }
     )
     val dockIconScale = FloatPref(
         dataStore = dataStore,
@@ -590,7 +591,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_PAGE_INDICATOR_DOT,
         titleId = R.string.hotseat_show_dots_page_indicator,
         defaultValue = true,
-        onChange = { recreate() },
+        onChange = { scheduleRecreate() },
     )
 
     private val dockGridSizeDelegate = ResettableLazy {
@@ -1041,7 +1042,7 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
-                else -> "${it.roundToInt()}dp"
+                else    -> "${it.roundToInt()}dp"
             }
         }
     )
@@ -1106,7 +1107,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_feed_provider,
         defaultValue = "",
         entries = context.getFeedProviders(),
-        onChange = { restart() }
+        onChange = { reloadModel() }
     )
 
     // GESTURES & Dash

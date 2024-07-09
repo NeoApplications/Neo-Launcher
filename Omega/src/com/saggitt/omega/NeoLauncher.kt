@@ -364,6 +364,12 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
+    fun scheduleRecreate() {
+        if (paused) {
+            sRestartFlags = FLAG_RECREATE
+        }
+    }
+
     private fun restartIfPending() {
         when {
             sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
