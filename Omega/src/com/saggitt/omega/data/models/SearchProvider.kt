@@ -161,8 +161,8 @@ data class SearchProvider(
         private val SEARX_INFO = defaultProvider(
             name = "Searx.info",
             iconId = R.drawable.ic_searx_search,
-            searchUrl = "https://searx.info/search?q=%s&categories=general&language=%s",
-            suggestionUrl = "https://searx.info/autocompleter?q=%s",
+            searchUrl = "https://searxng.site/search?q=%s&categories=general&language=%s",
+            suggestionUrl = "https://searxng.site/autocompleter?q=%s",
         )
 
         private val STARTPAGE = defaultProvider(
