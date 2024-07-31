@@ -535,4 +535,5 @@
     <string name="title_smartspace_background">Mostra sfondo a tema</string>
     <string name="search_provider">Fornitore di ricerca</string>
     <string name="web_search_provider">Fornitore di ricerca Web</string>
+    <string name="hotseat_show_dots_page_indicator">Mostra indicatore di pagina con punti invece di linee</string>
 </resources>
