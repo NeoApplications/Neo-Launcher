@@ -43,23 +43,22 @@ build:
             - .gradle/wrapper
     artifacts:
         paths:
-            - app/build/outputs/*.apk
+            - app/build/outputs/
         expire_in: 
             1 week
 
     before_script:
-        #- echo $KEYSTORE_FILE | xxd -r -p - > keystore.jks
-        # - echo -e "storePassword=$KEYSTORE_PASSWORD\nkeyPassword=$KEY_PASSWORD\nkeyAlias=$KEY_ALIAS\nstoreFile=keystore.jks" > keystore.properties
-        #- chmod +x gradlew
-        #- ./gradlew signingConfig
+        - echo $KEYSTORE_FILE | base64 -d > keystore.jks
+        - echo -e "storePassword=$KEYSTORE_PASSWORD\nkeyPassword=$KEY_PASSWORD\nkeyAlias=$KEY_ALIAS\nstoreFile=keystore.jks" > keystore.properties
+        - ./gradlew signingConfig
 
     after_script:
-        # - rm -f keystore.jks || true
-            #- ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/*.apk | head -n 1)
-            #- ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
-            #- echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
-            #- echo "ARTIFACT_PATHNAME_APK=$ARTIFACT_PATHNAME_APK" >> $CI_JOB_ENV
-            #- echo "ARTIFACT_NAME_APK=$ARTIFACT_NAME_APK" >> $CI_JOB_ENV
+        - rm -f keystore.jks || true
+        - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/*.apk | head -n 1)
+        - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
+        - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
+        - echo "ARTIFACT_PATHNAME_APK=$ARTIFACT_PATHNAME_APK" >> $CI_JOB_ENV
+        - echo "ARTIFACT_NAME_APK=$ARTIFACT_NAME_APK" >> $CI_JOB_ENV
 
 deploy:
     stage: deploy
