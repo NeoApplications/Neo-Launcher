@@ -39,8 +39,7 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - $(pwd)
-        - ls -R app/build/outputs/
+        - ls -R app/build/outputs/builds/NeoApplications/Neo-Launcher/
         - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
         - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
