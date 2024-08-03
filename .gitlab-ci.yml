@@ -39,7 +39,7 @@ build:
         - ./gradlew signingConfig
 
     after_script:
-        - ls -R
+        - ls ../ -R
         - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
         - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
