@@ -25,7 +25,6 @@ before_script:
     - unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
     - mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
     - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin
-      # use yes to accept all licenses
     - yes | sdkmanager --licenses > /dev/null || true
     - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
     - sdkmanager "platform-tools"
@@ -35,8 +34,6 @@ before_script:
 build:
     stage: build
     interruptible: true
-    script:
-        - ./gradlew assembleAospOmegaDebug
     cache:    
         paths:
             - .gradle/caches
@@ -52,6 +49,9 @@ build:
         - echo -e "storePassword=$KEYSTORE_PASSWORD\nkeyPassword=$KEY_PASSWORD\nkeyAlias=$KEY_ALIAS\nstoreFile=keystore.jks" > keystore.properties
         - ./gradlew signingConfig
 
+    script:
+        - ./gradlew assembleAospOmegaDebug
+    
     after_script:
         - rm -f keystore.jks || true
         - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/*.apk | head -n 1)
