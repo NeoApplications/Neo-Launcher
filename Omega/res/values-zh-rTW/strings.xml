@@ -503,4 +503,12 @@
     <string name="hotseat_accessibility_collapse">Dock 收起</string>
     <string name="title_expandable_dock">擴展 Dock</string>
     <string name="title_desktop_free_scrolling">自由滾動</string>
+    <string name="title_drawer_all_apps">全部</string>
+    <string name="title_all_apps_hide_scrollbar">隱藏捲軸</string>
+    <plurals name="hidden_apps_count">
+        <item quantity="other">%1$d 隱藏</item>
+    </plurals>
+    <string name="title_smartspace_background">顯示主題背景</string>
+    <string name="title_drawer_horizontal">水平</string>
+    <string name="title_drawer_custom_categories">自訂類別</string>
 </resources>
