@@ -9,11 +9,11 @@
     <string name="summary__general_desktop">Personaliseer je startscherm</string>
     <string name="summary__general_theme">Verander kleuren, pictogrammenpakket en -vorm</string>
     <string name="summary__general_search">Zoekfunctie-aanbieder, stijl, pictogrammen</string>
-    <string name="title__general_notifications">Gebaren en meldingen</string>
-    <string name="summary__general_smartspace">Datum, tijd, home-widget</string>
+    <string name="title__general_notifications">Gebaren en Meldingen</string>
+    <string name="summary__general_smartspace">Datum, tijd, thuiswidget</string>
     <string name="summary__general_about">Meer over Neo Launcher</string>
     <string name="pref_category__interfaces">Gebruikersinterface</string>
-    <string name="pref_category__inputs">Gebaren en zoeken</string>
+    <string name="pref_category__inputs">Gebaren en Zoeken</string>
     <string name="pref_category__others">Overige</string>
     <string name="allow_rotation_blocked_desc">De huidige weergave-instelling laat rotatie niet toe</string>
     <string name="title__desktop_icon_size">Pictogramgrootte</string>
