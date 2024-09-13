@@ -511,4 +511,10 @@
     <string name="title_smartspace_background">顯示主題背景</string>
     <string name="title_drawer_horizontal">水平</string>
     <string name="title_drawer_custom_categories">自訂類別</string>
+    <string name="color_wallpaper_tertiary">次要桌布</string>
+    <string name="title_themed_background">透明圖示背景</string>
+    <string name="web_search_provider">網頁搜尋提供者</string>
+    <string name="search_provider">搜尋提供者</string>
+    <string name="hotseat_show_dots_page_indicator">顯示點狀頁面指示器而非線條</string>
+    <string name="title_drawer_categorized">已分類</string>
 </resources>
