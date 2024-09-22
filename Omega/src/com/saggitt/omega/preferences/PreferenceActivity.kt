@@ -26,11 +26,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
@@ -48,7 +48,7 @@ import kotlinx.coroutines.plus
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class PreferenceActivity : AppCompatActivity(), ThemeManager.ThemeableActivity {
+class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
     private lateinit var navController: NavHostController
     override var currentTheme = 0
     override var currentAccent = 0
