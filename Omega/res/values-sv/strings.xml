@@ -285,4 +285,5 @@
     <string name="gesture_press_home">Hemknappstryck</string>
     <string name="gesture_press_back">Bakåtknapp</string>
     <string name="omega_actions">Åtgärder</string>
+    <string name="title__drawer_paged_apps">Sidindelad app-vy</string>
 </resources>
