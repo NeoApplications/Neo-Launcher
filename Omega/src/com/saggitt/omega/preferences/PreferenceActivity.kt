@@ -89,8 +89,8 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
     companion object {
-        fun createIntent(context: Context, destination: String): Intent {
-            val uri = "android-app://androidx.navigation//$destination".toUri()
+        fun navigateIntent(context: Context, destination: String): Intent {
+            val uri = "$NAV_BASE$destination".toUri()
             return Intent(Intent.ACTION_VIEW, uri, context, PreferenceActivity::class.java)
         }
 

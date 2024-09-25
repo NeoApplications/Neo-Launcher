@@ -69,7 +69,7 @@ class SmartspaceProvider private constructor(context: Context) {
         headerAction = SmartspaceAction(
             id = "smartspaceSetupAction",
             title = context.getString(R.string.smartspace_setup_text),
-            intent = PreferenceActivity.createIntent(context, "${Routes.PREFS_WIDGETS}/")
+            intent = PreferenceActivity.navigateIntent(context, Routes.PREFS_WIDGETS)
         ),
         score = -1,
         featureType = SmartspaceTarget.FEATURE_TIPS

@@ -50,7 +50,7 @@ class SmartspaceViewContainer @JvmOverloads constructor(
         context, R.string.customize, R.drawable.ic_setting,
         StatsLogManager.LauncherEvent.IGNORE
     ) {
-        context.startActivity(PreferenceActivity.createIntent(context, "${Routes.PREFS_WIDGETS}/"))
+        context.startActivity(PreferenceActivity.navigateIntent(context, Routes.PREFS_WIDGETS))
         true
     }
 

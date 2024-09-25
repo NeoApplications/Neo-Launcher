@@ -96,8 +96,9 @@ fun CustomizeIconPage(
         }
 
     val openEditIcon = {
-        val destination = "${Routes.EDIT_ICON}/$componentKey/"
-        request.launch(PreferenceActivity.createIntent(context, destination))
+        request.launch(
+            PreferenceActivity.navigateIntent(context, "${Routes.EDIT_ICON}/$componentKey")
+        )
     }
 
     DisposableEffect(key1 = null) {

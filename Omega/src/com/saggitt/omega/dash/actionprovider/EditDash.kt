@@ -33,10 +33,7 @@ class EditDash(context: Context) : DashActionProvider(context) {
 
     override fun runAction(context: Context) {
         context.startActivity(
-            PreferenceActivity.createIntent(
-                context,
-                "${Routes.PREFS_GESTURES}/${Routes.EDIT_DASH}/"
-            )
+            PreferenceActivity.navigateIntent(context, Routes.EDIT_DASH)
         )
     }
 }

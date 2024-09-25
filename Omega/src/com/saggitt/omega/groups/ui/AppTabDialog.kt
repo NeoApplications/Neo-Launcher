@@ -145,10 +145,7 @@ fun AppTabDialogUI(
                     onClick = {
                         openDialogCustom.value = false
                         context.startActivity(
-                            PreferenceActivity.createIntent(
-                                context,
-                                "/${Routes.CATEGORIZE_APPS}/"
-                            )
+                            PreferenceActivity.navigateIntent(context, Routes.CATEGORIZE_APPS)
                         )
                     },
                 )

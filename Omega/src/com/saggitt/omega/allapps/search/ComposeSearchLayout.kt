@@ -204,10 +204,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                 )
                 IconButton(onClick = {
                     mContext.startActivity(
-                        PreferenceActivity.createIntent(
-                            mContext,
-                            "${Routes.PREFS_SEARCH}/"
-                        )
+                        PreferenceActivity.navigateIntent(mContext, Routes.PREFS_SEARCH)
                     )
                 }) {
                     Icon(

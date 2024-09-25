@@ -149,7 +149,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
         checkPermissionGranted().not()
 
     override suspend fun startSetup(activity: Activity) {
-        val intent = PreferenceActivity.createIntent(activity, "/${Routes.PREFS_MAIN}/")
+        val intent = PreferenceActivity.navigateIntent(activity, Routes.PREFS_WIDGETS)
         val message = activity.getString(
             R.string.event_provider_missing_notification_dots,
             activity.getString(providerName)

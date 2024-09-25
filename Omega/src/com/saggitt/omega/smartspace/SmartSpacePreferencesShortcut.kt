@@ -9,7 +9,7 @@ class SmartSpacePreferencesShortcut : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startActivity(PreferenceActivity.createIntent(this, "/${Routes.PREFS_WIDGETS}/"))
+        startActivity(PreferenceActivity.navigateIntent(this, Routes.PREFS_WIDGETS))
         finish()
     }
 }
