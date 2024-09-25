@@ -295,6 +295,7 @@ fun SeekBarPreference(
     )
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StringSetPreference(
     modifier: Modifier = Modifier,
@@ -303,8 +304,7 @@ fun StringSetPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
-    val navController = LocalNavController.current
-    val route = subRoute(pref.navRoute)
+    val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
@@ -312,11 +312,7 @@ fun StringSetPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = {
-            if (pref.navRoute != "") {
-                navController.navigate(route)
-            }
-        }
+        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) },
     )
 }
 

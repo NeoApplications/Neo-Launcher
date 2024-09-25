@@ -221,8 +221,8 @@ open class StringSetPref(
     @StringRes summaryId: Int = -1,
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<Set<String>>,
+    val navRoute: NavRoute,
     val defaultValue: Set<String> = emptySet(),
-    val navRoute: String = "",
     onChange: (Set<String>) -> Unit = {}
 ) : PrefDelegate<Set<String>>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
