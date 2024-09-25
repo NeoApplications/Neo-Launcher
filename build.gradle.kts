@@ -216,6 +216,7 @@ dependencies {
     implementation(project(":smartspace"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.ksp)
+    implementation(libs.collections.immutable)
 
     //UI
     implementation(libs.androidx.core)
