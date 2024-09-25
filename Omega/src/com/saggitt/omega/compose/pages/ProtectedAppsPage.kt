@@ -19,6 +19,7 @@
 package com.saggitt.omega.compose.pages
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.compose.navigation.LocalNavController
-import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
@@ -35,18 +34,24 @@ import com.saggitt.omega.util.prefs
 fun ProtectedAppsPage() {
     val context = LocalContext.current
     val prefs = Utilities.getNeoPrefs(context)
-    val navController = LocalNavController.current
-    if (prefs.drawerEnableProtectedApps.getValue() && Utilities.ATLEAST_R) {
-        Config.showLockScreen(
-            context,
-            context.resources.getString(R.string.trust_apps_manager_name)
-        ) {
-            navController.popBackStack()
-            navController.navigate(Routes.PROTECTED_APPS_VIEW)
+    val showView = remember { mutableStateOf(false) }
+
+    LaunchedEffect(showView.value) {
+        if (!showView.value) {
+            if (prefs.drawerEnableProtectedApps.getValue() && Utilities.ATLEAST_R) {
+                Config.showLockScreen(
+                    context,
+                    context.resources.getString(R.string.trust_apps_manager_name)
+                ) { showView.value = true }
+            } else {
+                showView.value = true
+            }
         }
-    } else {
-        ProtectedAppsView()
     }
+
+    // TODO add button for relaunching lock screen when not unlocked yet
+    if (showView.value)
+        ProtectedAppsView()
 }
 
 @Composable

@@ -70,7 +70,7 @@ import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     val prefs = LocalContext.current.prefs
@@ -82,7 +82,7 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
         PrefKey.NOTIFICATION_DOTS_COLOR     -> prefs.notificationBackground
         else                                -> prefs.profileAccentColor
     }
-    val navController = LocalNavController.current
+    val paneNavigator = LocalPaneNavigator.current
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
@@ -134,7 +134,7 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
                         .fillMaxWidth(),
                     onClick = {
                         pref.setValue(currentAccentColor.value)
-                        navController.popBackStack()
+                        paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
                     }
                 ) {
                     Text(

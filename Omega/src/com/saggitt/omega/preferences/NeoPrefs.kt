@@ -39,7 +39,7 @@ import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.android.launcher3.util.Themes.KEY_THEMED_ICONS
-import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash
 import com.saggitt.omega.dash.actionprovider.LaunchAssistant
@@ -147,7 +147,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__theme_accent_color,
         key = PrefKey.PROFILE_ACCENT_COLOR,
         defaultValue = "system_accent",
-        navRoute = Routes.COLOR_ACCENT
+        navRoute = NavRoute.Profile.AccentColor(),
     )
 
     var profileIconShape = NavigationPref(
@@ -155,7 +155,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE,
         defaultValue = "system",
-        navRoute = Routes.ICON_SHAPE
+        navRoute = NavRoute.Profile.IconShape(),
     )
 
     var profileIconPack = StringSelectionPref(
@@ -453,7 +453,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
         defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
-        navRoute = Routes.COLOR_BG_DESKTOP_FOLDER,
+        navRoute = NavRoute.Desktop.FolderBG(),
         onChange = { reloadGrid() },
     )
 
@@ -470,7 +470,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
         defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
-        navRoute = Routes.COLOR_STROKE_FOLDER,
+        navRoute = NavRoute.Desktop.FolderStroke(),
         onChange = { reloadGrid() },
     )
 
@@ -576,7 +576,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_BG_COLOR,
         titleId = R.string.title_dock_background_color,
         defaultValue = "custom|#ff101010",
-        navRoute = Routes.COLOR_BG_DOCK,
+        navRoute = NavRoute.Dock.BG(),
     )
 
     val dockShowPageIndicator = BooleanPref(
@@ -640,21 +640,21 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     var drawerHiddenAppSet = StringSetPref(
-        key = PrefKey.DRAWER_HIDDEN_APPS_LIST,
-        titleId = R.string.title__drawer_hide_apps,
-        summaryId = R.string.summary__drawer_hide_apps,
         dataStore = dataStore,
+        titleId = R.string.title__drawer_hide_apps,
+        key = PrefKey.DRAWER_HIDDEN_APPS_LIST,
+        navRoute = NavRoute.Drawer.HiddenApps(),
         defaultValue = setOf(),
-        navRoute = Routes.HIDDEN_APPS,
+        summaryId = R.string.summary__drawer_hide_apps,
         onChange = { reloadTabs() }
     )
 
     var drawerProtectedAppsSet = StringSetPref(
-        key = PrefKey.DRAWER_PROTECTED_APPS_LIST,
-        titleId = R.string.protected_apps,
         dataStore = dataStore,
+        titleId = R.string.protected_apps,
+        key = PrefKey.DRAWER_PROTECTED_APPS_LIST,
+        navRoute = NavRoute.Drawer.ProtectedApps(),
         defaultValue = setOf(),
-        navRoute = Routes.PROTECTED_APPS,
         onChange = { reloadGrid() }
     )
 
@@ -797,7 +797,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_BG_COLOR,
         titleId = R.string.title_dock_background_color,
         defaultValue = "custom|#ff101010",
-        navRoute = Routes.COLOR_BG_DRAWER,
+        navRoute = NavRoute.Drawer.BG(),
     )
 
     val drawerBackgroundOpacity = FloatPref(
@@ -812,11 +812,11 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     var drawerAppGroups = NavigationPref(
-        key = PrefKey.DRAWER_CATEGORIZATION,
         dataStore = dataStore,
+        key = PrefKey.DRAWER_CATEGORIZATION,
         titleId = R.string.title_app_categorize,
         summaryId = R.string.summary_app_categorize,
-        navRoute = Routes.CATEGORIZE_APPS
+        navRoute = NavRoute.Drawer.Categorize(),
     )
 
     var drawerLayout = IntSelectionPref(
@@ -907,7 +907,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.NOTIFICATION_DOTS_COLOR,
         titleId = R.string.title__notification_background,
         defaultValue = "custom|#FFF32020",
-        navRoute = Routes.COLOR_DOTS_NOTIFICATION,
+        navRoute = NavRoute.Widgets.NotificationDots(),
     )
 
     val smartspaceEnable = BooleanPref(
@@ -1116,7 +1116,6 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.GESTURES_DOUBLE_TAP,
         defaultValue = OpenDashGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_DOUBLE_TAP.name}"
     )
 
     var gestureLongPress = GesturePref(
@@ -1124,7 +1123,6 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.GESTURES_LONG_TAP,
         defaultValue = OpenOverviewGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_LONG_TAP.name}"
     )
 
     var gestureHomePress = GesturePref(
@@ -1132,7 +1130,6 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.GESTURES_HOME_PRESS,
         defaultValue = BlankGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_HOME_PRESS.name}"
     )
 
     var gestureSwipeDown = GesturePref(
@@ -1140,7 +1137,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.GESTURES_SWIPE_DOWN,
         dataStore = dataStore,
         defaultValue = NotificationsOpenGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_DOWN.name}"
     )
 
     var gestureSwipeUp = GesturePref(
@@ -1148,7 +1144,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.GESTURES_SWIPE_UP,
         dataStore = dataStore,
         defaultValue = OpenDrawerGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP.name}"
     )
 
     var gestureDockSwipeUp = GesturePref(
@@ -1156,7 +1151,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.GESTURES_SWIPE_UP_DOCK,
         dataStore = dataStore,
         defaultValue = StartGlobalSearchGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_SWIPE_UP_DOCK.name}"
     )
 
     var gestureBackPress = GesturePref(
@@ -1164,7 +1158,6 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.GESTURES_BACK_PRESS,
         defaultValue = BlankGestureHandler(context, null).toString(),
-        navRoute = "${Routes.GESTURE_SELECTOR}/${PrefKey.GESTURES_BACK_PRESS.name}"
     )
 
     var dashLineSize = IntPref(
@@ -1199,7 +1192,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DASH_EDIT,
         titleId = R.string.edit_dash,
         summaryId = R.string.edit_dash_summary,
-        navRoute = Routes.EDIT_DASH,
+        navRoute = NavRoute.Gestures.EditDash(),
     )
 
     var dashTorchState = BooleanPref(

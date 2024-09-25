@@ -31,10 +31,13 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.saggitt.omega.compose.navigation.NAV_BASE
 import com.saggitt.omega.compose.navigation.PrefsComposeView
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.theme.ThemeManager
@@ -55,6 +58,7 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
+    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         themeOverride = ThemeOverride(themeSet, this)
@@ -62,6 +66,8 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
         currentTheme = themeOverride.getTheme(this)
         currentAccent = prefs.profileAccentColor.getColor()
         setContent {
+            val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
+
             LaunchedEffect(Unit) {
                 (MainScope() + CoroutineName("PreferenceActivity")).launch {
                     prefs.profileTheme.get().distinctUntilChanged().collect {
@@ -81,7 +87,7 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
 
             OmegaAppTheme {
                 navController = rememberNavController()
-                PrefsComposeView(navController)
+                PrefsComposeView(navController, paneNavigator)
             }
         }
     }
