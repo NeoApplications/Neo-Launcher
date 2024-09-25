@@ -44,6 +44,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,6 +67,8 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.LocalNavController
 import com.saggitt.omega.compose.navigation.subRoute
+import com.saggitt.omega.compose.navigation.LocalPaneNavigator
+import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.preferences.BooleanPref
 import com.saggitt.omega.preferences.ColorIntPref
 import com.saggitt.omega.preferences.DialogPref
@@ -166,6 +170,7 @@ fun StringPreference(
     )
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun NavigationPreference(
     modifier: Modifier = Modifier,
@@ -174,8 +179,7 @@ fun NavigationPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
-    val navController = LocalNavController.current
-    val route = subRoute(pref.navRoute)
+    val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
@@ -183,13 +187,7 @@ fun NavigationPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = {
-            if (pref.navRoute != "") {
-                navController.navigate(route)
-            } else {
-                pref.onClick?.invoke()
-            }
-        }
+        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) }
     )
 }
 

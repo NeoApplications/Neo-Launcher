@@ -167,10 +167,9 @@ open class NavigationPref(
     @StringRes summaryId: Int = -1,
     dataStore: DataStore<Preferences>,
     val key: Preferences.Key<String>,
+    val navRoute: NavRoute,
     val defaultValue: String = "",
-    val onClick: (() -> Unit)? = null,
-    val navRoute: String = "",
-    onChange: (String) -> Unit = {}
+    onChange: (String) -> Unit = {},
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
 class GesturePref(
@@ -179,16 +178,13 @@ class GesturePref(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<String>,
     defaultValue: String = "",
-    onClick: (() -> Unit)? = null,
-    navRoute: String = ""
 ) : NavigationPref(
     titleId = titleId,
     summaryId = summaryId,
     dataStore = dataStore,
     key = key,
+    navRoute = NavRoute.Gestures.Gesture(key.name),
     defaultValue = defaultValue,
-    onClick = onClick,
-    navRoute = navRoute
 ) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
         return getValue()
