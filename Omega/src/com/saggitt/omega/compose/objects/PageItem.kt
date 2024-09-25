@@ -18,86 +18,78 @@ import com.saggitt.omega.compose.icons.phosphor.Palette
 import com.saggitt.omega.compose.icons.phosphor.ScribbleLoop
 import com.saggitt.omega.compose.icons.phosphor.SquaresFour
 import com.saggitt.omega.compose.icons.phosphor.Translate
-import com.saggitt.omega.compose.navigation.Routes
+import com.saggitt.omega.compose.navigation.NavRoute
 
 open class PageItem(
     @StringRes val titleId: Int,
     val icon: ImageVector? = null,
-    val route: String,
+    val route: NavRoute,
 ) {
     companion object {
         val PrefsProfile = PageItem(
-            R.string.title__general_profile,
-            Phosphor.Palette,
-            Routes.PREFS_PROFILE
+            titleId = R.string.title__general_profile,
+            icon = Phosphor.Palette,
+            route = NavRoute.Profile()
         )
         val PrefsDesktop = PageItem(
-            R.string.title__general_desktop,
-            Phosphor.Monitor,
-            Routes.PREFS_DESKTOP
+            titleId = R.string.title__general_desktop,
+            icon = Phosphor.Monitor,
+            route = NavRoute.Desktop()
         )
         val PrefsDock = PageItem(
-            R.string.title__general_dock,
-            PhosphorCustom.DeviceMobileDock,
-            Routes.PREFS_DOCK
+            titleId = R.string.title__general_dock,
+            icon = PhosphorCustom.DeviceMobileDock,
+            route = NavRoute.Dock()
         )
-
         val PrefsDrawer = PageItem(
-            R.string.title__general_drawer,
-            Phosphor.DotsNine,
-            Routes.PREFS_DRAWER
+            titleId = R.string.title__general_drawer,
+            icon = Phosphor.DotsNine,
+            route = NavRoute.Drawer()
         )
-
         val PrefsWidgetsNotifications = PageItem(
-            R.string.title__general_widgets_notifications,
-            Phosphor.SquaresFour,
-            Routes.PREFS_WIDGETS
+            titleId = R.string.title__general_widgets_notifications,
+            icon = Phosphor.SquaresFour,
+            route = NavRoute.Widgets()
         )
         val PrefsSearchFeed = PageItem(
-            R.string.title__general_search_feed,
-            Phosphor.MagnifyingGlass,
-            Routes.PREFS_SEARCH
+            titleId = R.string.title__general_search_feed,
+            icon = Phosphor.MagnifyingGlass,
+            route = NavRoute.Search()
         )
         val PrefsGesturesDash = PageItem(
-            R.string.title__general_gestures_dash,
-            Phosphor.ScribbleLoop,
-            Routes.PREFS_GESTURES
+            titleId = R.string.title__general_gestures_dash,
+            icon = Phosphor.ScribbleLoop,
+            route = NavRoute.Gestures()
         )
-
         val PrefsBackup = PageItem(
-            R.string.backups,
-            Phosphor.ClockCounterClockwise,
-            Routes.PREFS_BACKUPS
-        )
-        val PrefsDesktopMode = PageItem(
-            R.string.pref_desktop_mode,
-            Phosphor.Monitor,
-            Routes.PREFS_DM
+            titleId = R.string.backups,
+            icon = Phosphor.ClockCounterClockwise,
+            route = NavRoute.Backup()
         )
         val PrefsDeveloper = PageItem(
-            R.string.developer_options_title,
-            Phosphor.BracketsCurly,
-            Routes.PREFS_DEV
+            titleId = R.string.developer_options_title,
+            icon = Phosphor.BracketsCurly,
+            route = NavRoute.Dev()
         )
         val PrefsAbout = PageItem(
-            R.string.title__general_about,
-            Phosphor.Info,
-            Routes.ABOUT
+            titleId = R.string.title__general_about,
+            icon = Phosphor.Info,
+            route = NavRoute.About()
         )
         val AboutTranslators = PageItem(
             titleId = R.string.about_translators,
             icon = Phosphor.Translate,
-            route = Routes.TRANSLATORS,
+            route = NavRoute.About.Translators()
         )
         val AboutLicense = PageItem(
             titleId = R.string.category__about_licenses,
             icon = Phosphor.Copyleft,
-            route = Routes.LICENSE,
+            route = NavRoute.About.License()
         )
         val AboutChangelog = PageItem(
             titleId = R.string.title__about_changelog,
             icon = Phosphor.ListDashes,
-            route = Routes.CHANGELOG,
+            route = NavRoute.About.Changelog()
         )
     }
 }
