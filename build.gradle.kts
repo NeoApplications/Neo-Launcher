@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.jetbrains.kotlin.utils.addIfNotNull
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -311,9 +312,9 @@ task("detectAndroidLocals") {
         if (this.file.path.endsWith("strings.xml")
             && this.file.canonicalFile.readText().contains("<string")
         ) {
-            var languageCode = this.file.parentFile.name.replace("values-", "")
+            var languageCode = this.file.parentFile?.name?.replace("values-", "")
             languageCode = if (languageCode == "values") "en" else languageCode
-            langsList.add(languageCode)
+            langsList.addIfNotNull(languageCode)
         }
     }
     val langsListString = "{${langsList.joinToString(",") { "\"${it}\"" }}}"
