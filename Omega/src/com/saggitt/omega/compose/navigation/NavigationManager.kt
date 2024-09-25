@@ -15,64 +15,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.saggitt.omega.compose.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.saggitt.omega.compose.pages.preferences.mainPrefsGraph
 
 object Routes {
     const val PREFS_MAIN = "prefs_main"
-    const val PREFS_PROFILE = "prefs_profile"
-    const val PREFS_DESKTOP = "prefs_desktop"
-    const val PREFS_DOCK = "prefs_dock"
-    const val PREFS_DRAWER = "prefs_drawer"
     const val PREFS_WIDGETS = "prefs_widgets"
     const val PREFS_SEARCH = "prefs_search"
-    const val PREFS_GESTURES = "prefs_gestures"
-    const val PREFS_BACKUPS = "prefs_backups"
-    const val PREFS_DM = "prefs_desktop_mode"
-    const val PREFS_DEV = "prefs_developer"
-
-    const val ABOUT = "about"
-    const val TRANSLATORS = "translators"
-    const val LICENSE = "license"
-    const val CHANGELOG = "changelog"
     const val EDIT_ICON = "edit_icon"
-    const val ICON_PICKER = "icon_picker"
-    const val GESTURE_SELECTOR = "gesture_selector"
-    const val HIDDEN_APPS = "hidden_apps"
-    const val PROTECTED_APPS = "protected_apps"
-    const val PROTECTED_APPS_VIEW = "protected_apps_view"
     const val CATEGORIZE_APPS = "categorize_apps"
     const val EDIT_DASH = "edit_dash"
-    const val ICON_SHAPE = "icon_shape"
-    const val COLOR_ACCENT = "color_accent"
-    const val COLOR_BG_DESKTOP_FOLDER = "color_bg_desktop_folder"
-    const val COLOR_STROKE_FOLDER = "color_stroke_folder"
-    const val COLOR_BG_DOCK = "color_bg_dock"
-    const val COLOR_BG_DRAWER = "color_bg_drawer"
-    const val COLOR_DOTS_NOTIFICATION = "color_dots_notification"
 }
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("CompositionLocal LocalNavController not present")
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+val LocalPaneNavigator = staticCompositionLocalOf<ThreePaneScaffoldNavigator<Any>> {
+    error("CompositionLocal LocalPaneNavigator not present")
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun PrefsComposeView(navController: NavHostController) {
+fun PrefsComposeView(
+    navController: NavHostController,
+    paneNavigator: ThreePaneScaffoldNavigator<Any>,
+) {
     CompositionLocalProvider(
-        LocalNavController provides navController
+        LocalNavController provides navController,
+        LocalPaneNavigator provides paneNavigator,
     ) {
         NavHost(
             navController = navController,
-            startDestination = "/",
+            startDestination = NavRoute.Main(),
             enterTransition = {
                 slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
             },
@@ -86,7 +71,7 @@ fun PrefsComposeView(navController: NavHostController) {
                 slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
             },
         ) {
-            mainPrefsGraph(route = "/")
+            prefsGraph()
         }
     }
 }
