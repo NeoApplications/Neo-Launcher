@@ -191,6 +191,7 @@ fun NavigationPreference(
     )
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ColorIntPreference(
     modifier: Modifier = Modifier,
@@ -199,9 +200,7 @@ fun ColorIntPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
-    val navController = LocalNavController.current
-    val route = subRoute(pref.navRoute)
-
+    val paneNavigator = LocalPaneNavigator.current
     val currentColor by remember(pref) {
         mutableIntStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
     }
@@ -213,11 +212,7 @@ fun ColorIntPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = {
-            if (pref.navRoute != "") {
-                navController.navigate(route)
-            }
-        },
+        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) },
         endWidget = {
             Canvas(
                 modifier = Modifier

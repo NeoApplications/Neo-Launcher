@@ -28,6 +28,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.android.launcher3.InvariantDeviceProfile
+import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.theme.AccentColorOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -146,7 +147,7 @@ open class ColorIntPref(
     dataStore: DataStore<Preferences>,
     val defaultValue: String = "system_accent",
     key: Preferences.Key<String>,
-    val navRoute: String = "",
+    val navRoute: NavRoute,
     onChange: (String) -> Unit = {}
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
