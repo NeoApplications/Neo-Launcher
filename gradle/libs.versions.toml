@@ -112,6 +112,9 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+compose-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
+compose-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout" }
+compose-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "compose-accompanist" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
