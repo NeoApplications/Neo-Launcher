@@ -65,8 +65,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.saggitt.omega.compose.navigation.LocalNavController
-import com.saggitt.omega.compose.navigation.subRoute
 import com.saggitt.omega.compose.navigation.LocalPaneNavigator
 import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.preferences.BooleanPref
@@ -541,18 +539,18 @@ fun StringTextPreference(
     )
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun PagePreference(
     modifier: Modifier = Modifier,
     @StringRes titleId: Int,
+    route: NavRoute,
     icon: ImageVector? = null,
     index: Int = 1,
     groupSize: Int = 1,
     isEnabled: Boolean = true,
-    route: String,
 ) {
-    val navController = LocalNavController.current
-    val destination = subRoute(route)
+    val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
         titleId = titleId,
@@ -567,7 +565,7 @@ fun PagePreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = { navController.navigate(destination) }
+        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, route) }
     )
 }
 
