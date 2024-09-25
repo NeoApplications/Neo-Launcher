@@ -22,3 +22,5 @@ gradlew*
 *.hprof
 /.settings/org.eclipse.buildship.core.prefs
 /.vscode/settings.json
+/aospOmega/neo/
+/aospOmega/release/
