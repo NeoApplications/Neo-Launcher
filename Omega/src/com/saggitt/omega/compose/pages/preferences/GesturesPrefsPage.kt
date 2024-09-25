@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -41,9 +40,6 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.gesturesPageGraph
 import com.saggitt.omega.gestures.BlankGestureHandler
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.preferences.IntSelectionPref
@@ -114,12 +110,12 @@ fun GesturesPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
                         pref = dialogPref as IntSelectionPref,
                         openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
                         pref = dialogPref as StringSelectionPref,
                         openDialogCustom = openDialog
                     )
@@ -131,12 +127,5 @@ fun GesturesPrefsPage() {
                 }
             }
         }
-    }
-}
-
-fun NavGraphBuilder.gesturesPrefsGraph(route: String) {
-    preferenceGraph(route, { GesturesPrefsPage() }) { subRoute ->
-        gesturesPageGraph(route = subRoute(Routes.GESTURE_SELECTOR))
-        preferenceGraph(route = subRoute(Routes.EDIT_DASH), { EditDashPage() })
     }
 }

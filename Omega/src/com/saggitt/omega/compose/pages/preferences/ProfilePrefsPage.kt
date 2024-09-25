@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -45,14 +44,9 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.ResetCustomIconsDialog
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectionPage
-import com.saggitt.omega.compose.pages.IconShapePage
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
-import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.collectAsStateBlocking
@@ -104,27 +98,27 @@ fun ProfilePrefsPage() {
     }
 
     ViewWithActionBar(
-            title = stringResource(R.string.title__general_profile)
+        title = stringResource(R.string.title__general_profile)
     ) { paddingValues ->
         LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.title__general_profile),
-                        prefs = profilePrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.title__general_profile),
+                    prefs = profilePrefs,
+                    onPrefDialog = onPrefDialog
                 )
             }
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.pref_category__others),
-                        prefs = others,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.pref_category__others),
+                    prefs = others,
+                    onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -133,36 +127,27 @@ fun ProfilePrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
                     is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is DialogPref -> ResetCustomIconsDialog(
-                            pref = dialogPref as DialogPref,
-                            openDialogCustom = openDialog
+                    is DialogPref               -> ResetCustomIconsDialog(
+                        pref = dialogPref as DialogPref,
+                        openDialogCustom = openDialog
                     )
                 }
             }
         }
-    }
-}
-
-fun NavGraphBuilder.profilePrefsGraph(route: String) {
-    preferenceGraph(route, { ProfilePrefsPage() }) { subRoute ->
-        preferenceGraph(route = subRoute(Routes.ICON_SHAPE), { IconShapePage() })
-        preferenceGraph(
-            route = subRoute(Routes.COLOR_ACCENT),
-            { ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR) })
     }
 }

@@ -31,12 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.saggitt.omega.compose.components.preferences.BasePreference
 
-@ExperimentalCoilApi
 @Composable
 fun ContributorRow(
     @StringRes nameId: Int,
@@ -70,9 +68,9 @@ fun ContributorRow(
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                        .clip(CircleShape)
-                        .size(30.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12F))
+                    .clip(CircleShape)
+                    .size(30.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12F))
             )
         }
     )

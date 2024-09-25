@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -45,12 +44,8 @@ import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringTextPrefDialogUI
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.IntentLauncherPref
-import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.preferences.StringTextPref
@@ -74,11 +69,8 @@ fun WidgetsPrefsPage() {
                 prefs.smartspaceEnable,
                 prefs.smartspaceBackground,
                 prefs.smartspaceDate,
-                if(prefs.smartspaceDate.getValue()){
-                    prefs.smartspaceCalendar
-                }else{
-                    null
-                },
+                if (prefs.smartspaceDate.getValue()) prefs.smartspaceCalendar
+                else null,
                 prefs.smartspaceTime,
                 prefs.smartspaceTime24H,
                 prefs.smartspaceWeatherProvider,
@@ -107,70 +99,62 @@ fun WidgetsPrefsPage() {
         )
     }
 
-        ViewWithActionBar(
-            title = stringResource(R.string.title__general_widgets_notifications)
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.title__general_smartspace),
-                        prefs = smartspacePrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                }
-                item {
-                    PreferenceGroup(
-                        stringResource(id = R.string.pref_category__notifications),
-                        prefs = notificationsPrefs,
-                        onPrefDialog = onPrefDialog
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+    ViewWithActionBar(
+        title = stringResource(R.string.title__general_widgets_notifications)
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                PreferenceGroup(
+                    stringResource(id = R.string.title__general_smartspace),
+                    prefs = smartspacePrefs,
+                    onPrefDialog = onPrefDialog
+                )
             }
+            item {
+                PreferenceGroup(
+                    stringResource(id = R.string.pref_category__notifications),
+                    prefs = notificationsPrefs,
+                    onPrefDialog = onPrefDialog
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
 
-            if (openDialog.value) {
-                BaseDialog(openDialogCustom = openDialog) {
-                    when (dialogPref) {
-                        is IntentLauncherPref       -> IntentLauncherDialogUI(
-                            pref = dialogPref as IntentLauncherPref,
-                            openDialogCustom = openDialog
-                        )
+        if (openDialog.value) {
+            BaseDialog(openDialogCustom = openDialog) {
+                when (dialogPref) {
+                    is IntentLauncherPref       -> IntentLauncherDialogUI(
+                        pref = dialogPref as IntentLauncherPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is IntSelectionPref         -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
-                        )
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is StringSelectionPref      -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
-                        )
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
-                        )
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
+                    )
 
-                        is StringTextPref           -> StringTextPrefDialogUI(
-                            pref = dialogPref as StringTextPref,
-                            openDialogCustom = openDialog
-                        )
-                    }
+                    is StringTextPref           -> StringTextPrefDialogUI(
+                        pref = dialogPref as StringTextPref,
+                        openDialogCustom = openDialog
+                    )
                 }
             }
         }
-    }
-
-fun NavGraphBuilder.widgetsPrefsGraph(route: String) {
-    preferenceGraph(route, { WidgetsPrefsPage() }) { subRoute ->
-        preferenceGraph(
-            route = subRoute(Routes.COLOR_DOTS_NOTIFICATION),
-            { ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR) })
     }
 }

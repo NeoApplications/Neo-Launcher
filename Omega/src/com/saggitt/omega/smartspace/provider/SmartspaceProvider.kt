@@ -25,9 +25,9 @@ class SmartspaceProvider private constructor(context: Context) {
     private val currentWeather = prefs.smartspaceWeatherProvider.getValue()
     private val weatherProvider = when (currentWeather) {
         GoogleWeatherProvider::class.java.name -> GoogleWeatherProvider(context)
-        OWMWeatherProvider::class.java.name -> OWMWeatherProvider(context)
-        PixelWeatherProvider::class.java.name -> PixelWeatherProvider(context)
-        else -> BlankWeatherProvider(context)
+        OWMWeatherProvider::class.java.name    -> OWMWeatherProvider(context)
+        PixelWeatherProvider::class.java.name  -> PixelWeatherProvider(context)
+        else                                   -> BlankWeatherProvider(context)
     }
 
     private val dataSources = arrayListOf(
@@ -37,10 +37,10 @@ class SmartspaceProvider private constructor(context: Context) {
     val providers = prefs.smartspaceEventProviders.getValue().forEach { provider ->
         when (provider) {
             BatteryStatusProvider::class.java.name -> BatteryStatusProvider(context)
-            NowPlayingProvider::class.java.name -> NowPlayingProvider(context)
+            NowPlayingProvider::class.java.name    -> NowPlayingProvider(context)
             CalendarEventProvider::class.java.name -> CalendarEventProvider(context)
-            AlarmEventProvider::class.java.name -> AlarmEventProvider(context)
-            else -> null
+            AlarmEventProvider::class.java.name    -> AlarmEventProvider(context)
+            else                                   -> null
         }?.let { dataSources.add(it) }
     }
 

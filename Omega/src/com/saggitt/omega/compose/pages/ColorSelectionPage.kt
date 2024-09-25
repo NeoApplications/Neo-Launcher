@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.pages
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +41,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +63,7 @@ import com.saggitt.omega.compose.components.ColorItem
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
-import com.saggitt.omega.compose.navigation.LocalNavController
+import com.saggitt.omega.compose.navigation.LocalPaneNavigator
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.theme.GroupItemShape

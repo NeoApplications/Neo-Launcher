@@ -124,12 +124,12 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         .focusRequester(textFieldFocusRequester)
                         .onFocusChanged {
                             when {
-                                !it.isFocused && query.value.isEmpty() -> {
+                                !it.isFocused && query.value.isEmpty()   -> {
                                     mAppsView?.animateToSearchState(false, 0)
                                     keyboardController?.hide()
                                 }
 
-                                !it.isFocused -> {
+                                !it.isFocused                            -> {
                                     keyboardController?.hide()
                                 }
 

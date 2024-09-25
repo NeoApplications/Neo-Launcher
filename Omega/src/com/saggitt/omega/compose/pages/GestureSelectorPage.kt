@@ -18,9 +18,7 @@
 
 package com.saggitt.omega.compose.pages
 
-import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,11 +63,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.drawable.toBitmap
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shortcuts.ShortcutKey
@@ -79,38 +72,17 @@ import com.saggitt.omega.compose.components.NavBarItem
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
-import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.data.AppItemWithShortcuts
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.handlers.StartAppGestureHandler
 import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.App
-import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.appsState
 import com.saggitt.omega.util.blockBorder
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-fun NavGraphBuilder.gesturesPageGraph(route: String) {
-    preferenceGraph(route, { }) { subRoute ->
-        composable(
-            route = subRoute("{key}"),
-            arguments = listOf(
-                navArgument("key") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val args = backStackEntry.arguments!!
-            val key = stringPreferencesKey(args.getString("key")!!)
-            val prefs = Config.gesturePrefs(LocalContext.current)
-            Log.d("GestureSelector", "key: $key")
-            val gesture = prefs.first { it.key == key }
-            GestureSelectorPage(prefs = gesture)
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GestureSelectorPage(prefs: NavigationPref) {
 

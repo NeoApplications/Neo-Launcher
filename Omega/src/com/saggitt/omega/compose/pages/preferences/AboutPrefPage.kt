@@ -56,8 +56,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
-import androidx.navigation.NavGraphBuilder
-import coil.annotation.ExperimentalCoilApi
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.ContributorRow
@@ -70,35 +68,11 @@ import com.saggitt.omega.compose.icons.phosphor.BracketsSquare
 import com.saggitt.omega.compose.icons.phosphor.GithubLogo
 import com.saggitt.omega.compose.icons.phosphor.Megaphone
 import com.saggitt.omega.compose.icons.phosphor.TelegramLogo
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.objects.PageItem
 import com.saggitt.omega.theme.kaushanScript
 import com.saggitt.omega.util.Config
 import java.io.InputStream
 
-@OptIn(ExperimentalCoilApi::class)
-fun NavGraphBuilder.aboutPrefsGraph(route: String) {
-    preferenceGraph(route, { AboutPrefPage() }) { subRoute ->
-        licenseGraph(route = subRoute(Routes.LICENSE))
-        translatorsGraph(route = subRoute(Routes.TRANSLATORS))
-        changelogGraph(route = subRoute(Routes.CHANGELOG))
-    }
-}
-
-fun NavGraphBuilder.licenseGraph(route: String) {
-    preferenceGraph(route, { LicenseScreen() })
-}
-
-fun NavGraphBuilder.translatorsGraph(route: String) {
-    preferenceGraph(route, { TranslatorsScreen() })
-}
-
-fun NavGraphBuilder.changelogGraph(route: String) {
-    preferenceGraph(route, { ChangelogScreen() })
-}
-
-@ExperimentalCoilApi
 @Composable
 fun AboutPrefPage() {
     ViewWithActionBar(
@@ -106,21 +80,21 @@ fun AboutPrefPage() {
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                .fillMaxSize()
+                .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
             item {
                 Column(
                     modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp)
-                            .background(
-                                    MaterialTheme.colorScheme.surface,
-                                    MaterialTheme.shapes.extraLarge
-                            )
-                            .padding(12.dp),
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.shapes.extraLarge
+                        )
+                        .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -144,8 +118,8 @@ fun AboutPrefPage() {
                                     bitmap = bitmap.asImageBitmap(),
                                     contentDescription = null,
                                     modifier = Modifier
-                                            .requiredSize(84.dp)
-                                            .clip(MaterialTheme.shapes.large)
+                                        .requiredSize(84.dp)
+                                        .clip(MaterialTheme.shapes.large)
                                 )
                             }
                         },
@@ -214,10 +188,11 @@ fun AboutPrefPage() {
                 )
             }
             item {
+                val page = PageItem.AboutTranslators
                 PagePreference(
-                    titleId = PageItem.AboutTranslators.titleId,
-                    icon = PageItem.AboutTranslators.icon,
-                    route = PageItem.AboutTranslators.route,
+                    titleId = page.titleId,
+                    icon = page.icon,
+                    route = page.route,
                     index = 1,
                     groupSize = 2
                 )
@@ -225,11 +200,11 @@ fun AboutPrefPage() {
             item {
                 PreferenceGroupHeading(stringResource(id = R.string.about_build_information))
             }
-            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, it ->
+            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, page ->
                 PagePreference(
-                    titleId = it.titleId,
-                    icon = it.icon,
-                    route = it.route,
+                    titleId = page.titleId,
+                    icon = page.icon,
+                    route = page.route,
                     index = i,
                     groupSize = 2
                 )

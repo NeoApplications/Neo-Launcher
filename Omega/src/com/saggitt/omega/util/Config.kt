@@ -39,7 +39,6 @@ import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.allapps.CustomAppFilter
-import com.saggitt.omega.preferences.NavigationPref
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
@@ -184,19 +183,6 @@ class Config(val context: Context) {
         fun hasWorkApps(context: Context): Boolean {
             return context.prefs.drawerSeparateWorkApps.getValue() &&
                     UserCache.INSTANCE.get(context).userProfiles.size > 1
-        }
-
-        fun gesturePrefs(context: Context): List<NavigationPref> {
-            val prefs = Utilities.getNeoPrefs(context)
-            return listOf(
-                prefs.gestureDoubleTap,
-                prefs.gestureLongPress,
-                prefs.gestureSwipeDown,
-                prefs.gestureSwipeUp,
-                prefs.gestureDockSwipeUp,
-                prefs.gestureHomePress,
-                prefs.gestureBackPress,
-            )
         }
 
         /**

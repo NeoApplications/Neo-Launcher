@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -44,12 +43,8 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
-import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.prefs
@@ -100,41 +95,41 @@ fun DesktopPrefsPage() {
     )
 
     ViewWithActionBar(
-            title = stringResource(R.string.title__general_desktop)
+        title = stringResource(R.string.title__general_desktop)
     ) { paddingValues ->
         LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.cat_drawer_icons),
-                        prefs = iconPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.cat_drawer_icons),
+                    prefs = iconPrefs,
+                    onPrefDialog = onPrefDialog
                 )
             }
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.cat_desktop_grid),
-                        prefs = gridPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.cat_desktop_grid),
+                    prefs = gridPrefs,
+                    onPrefDialog = onPrefDialog
                 )
             }
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.app_categorization_folders),
-                        prefs = folderPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.app_categorization_folders),
+                    prefs = folderPrefs,
+                    onPrefDialog = onPrefDialog
                 )
             }
             item {
                 PreferenceGroup(
-                        stringResource(id = R.string.pref_category__others),
-                        prefs = otherPrefs,
-                        onPrefDialog = onPrefDialog
+                    stringResource(id = R.string.pref_category__others),
+                    prefs = otherPrefs,
+                    onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -143,40 +138,27 @@ fun DesktopPrefsPage() {
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
                 when (dialogPref) {
-                    is IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
                     is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
                     )
 
-                    is GridSize -> GridSizePrefDialogUI(
-                            pref = dialogPref as GridSize,
-                            openDialogCustom = openDialog
+                    is GridSize                 -> GridSizePrefDialogUI(
+                        pref = dialogPref as GridSize,
+                        openDialogCustom = openDialog
                     )
                 }
             }
         }
-    }
-}
-
-
-fun NavGraphBuilder.desktopPrefsGraph(route: String) {
-    preferenceGraph(route, { DesktopPrefsPage() }) { subRoute ->
-        preferenceGraph(
-                route = subRoute(Routes.COLOR_BG_DESKTOP_FOLDER),
-                { ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR) })
-
-        preferenceGraph(
-                route = subRoute(Routes.COLOR_STROKE_FOLDER),
-                { ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR) })
     }
 }

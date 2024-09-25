@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
@@ -42,12 +41,8 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
-import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.compose.navigation.preferenceGraph
-import com.saggitt.omega.compose.pages.ColorSelectionPage
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.IntSelectionPref
-import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.prefs
@@ -80,56 +75,48 @@ fun DockPrefsPage() {
         )
     }
 
-        ViewWithActionBar(
-            title = stringResource(R.string.title__general_dock)
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    PreferenceGroup(
-                        prefs = dockPrefs,
-                        onPrefDialog = onPrefDialog
+    ViewWithActionBar(
+        title = stringResource(R.string.title__general_dock)
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                PreferenceGroup(
+                    prefs = dockPrefs,
+                    onPrefDialog = onPrefDialog
+                )
+            }
+        }
+
+        if (openDialog.value) {
+            BaseDialog(openDialogCustom = openDialog) {
+                when (dialogPref) {
+                    is IntSelectionPref         -> IntSelectionPrefDialogUI(
+                        pref = dialogPref as IntSelectionPref,
+                        openDialogCustom = openDialog
+                    )
+
+                    is StringSelectionPref      -> StringSelectionPrefDialogUI(
+                        pref = dialogPref as StringSelectionPref,
+                        openDialogCustom = openDialog
+                    )
+
+                    is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
+                        pref = dialogPref as StringMultiSelectionPref,
+                        openDialogCustom = openDialog
+                    )
+
+                    is GridSize                 -> GridSizePrefDialogUI(
+                        pref = dialogPref as GridSize,
+                        openDialogCustom = openDialog
                     )
                 }
             }
-
-            if (openDialog.value) {
-                BaseDialog(openDialogCustom = openDialog) {
-                    when (dialogPref) {
-                        is IntSelectionPref -> IntSelectionPrefDialogUI(
-                            pref = dialogPref as IntSelectionPref,
-                            openDialogCustom = openDialog
-                        )
-
-                        is StringSelectionPref -> StringSelectionPrefDialogUI(
-                            pref = dialogPref as StringSelectionPref,
-                            openDialogCustom = openDialog
-                        )
-
-                        is StringMultiSelectionPref -> StringMultiSelectionPrefDialogUI(
-                            pref = dialogPref as StringMultiSelectionPref,
-                            openDialogCustom = openDialog
-                        )
-
-                        is GridSize -> GridSizePrefDialogUI(
-                            pref = dialogPref as GridSize,
-                            openDialogCustom = openDialog
-                        )
-                    }
-                }
-            }
         }
-    }
-
-fun NavGraphBuilder.dockPrefsGraph(route: String) {
-    preferenceGraph(route, { DockPrefsPage() }) { subRoute ->
-        preferenceGraph(
-            route = subRoute(Routes.COLOR_BG_DOCK),
-            { ColorSelectionPage(PrefKey.DOCK_BG_COLOR) })
     }
 }

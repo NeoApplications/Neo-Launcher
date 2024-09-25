@@ -20,7 +20,6 @@ package com.saggitt.omega.compose.pages
 
 import SearchTextField
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
@@ -71,18 +70,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.android.launcher3.R
-import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.SearchBarUI
 import com.saggitt.omega.compose.navigation.OnResult
-import com.saggitt.omega.compose.navigation.preferenceGraph
 import com.saggitt.omega.compose.navigation.resultSender
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.data.models.IconPickerItem
@@ -90,7 +83,6 @@ import com.saggitt.omega.iconpack.CustomIconPack
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.util.blockBorder
-import com.saggitt.omega.util.getUserForProfileId
 import com.saulhdev.neolauncher.icons.drawableToBitmap
 import kotlinx.coroutines.launch
 
@@ -333,26 +325,6 @@ fun EditIconPage(
                     }
                 }
             }
-        }
-    }
-}
-
-fun NavGraphBuilder.editIconGraph(route: String) {
-    preferenceGraph(route, { }) { subRoute ->
-        composable(
-            route = subRoute("{packageName}/{nameAndUser}"),
-            arguments = listOf(
-                navArgument("packageName") { type = NavType.StringType },
-                navArgument("nameAndUser") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val args = backStackEntry.arguments!!
-            val packageName = args.getString("packageName") ?: ""
-            val nameAndUser = (args.getString("nameAndUser") ?: "#0").split("#")
-            val user = UserCache.INSTANCE.get(LocalContext.current)
-                .getUserForProfileId(nameAndUser[1].toInt())
-            val key = ComponentKey(ComponentName(packageName, nameAndUser[0]), user)
-            EditIconPage(key)
         }
     }
 }
