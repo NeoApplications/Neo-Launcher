@@ -8,8 +8,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,7 +37,7 @@ fun SearchTextField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = Color.Transparent,
         unfocusedBorderColor = Color.Transparent,
         disabledBorderColor = Color.Transparent
