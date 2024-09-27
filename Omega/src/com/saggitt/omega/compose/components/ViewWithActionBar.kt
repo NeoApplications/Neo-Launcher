@@ -81,6 +81,7 @@ fun ViewWithActionBar(
         floatingActionButton = floatingActionButton,
         content = content,
         bottomBar = bottomBar,
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
     )
 }

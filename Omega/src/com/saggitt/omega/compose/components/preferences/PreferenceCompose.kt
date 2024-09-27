@@ -89,8 +89,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun BasePreference(
-    modifier: Modifier = Modifier,
     @StringRes titleId: Int,
+    modifier: Modifier = Modifier,
     @StringRes summaryId: Int = -1,
     summary: String? = null,
     isEnabled: Boolean = true,
@@ -101,7 +101,6 @@ fun BasePreference(
     bottomWidget: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-
     ListItem(
         modifier = modifier
             .fillMaxWidth()
@@ -548,23 +547,16 @@ fun PagePreference(
     icon: ImageVector? = null,
     index: Int = 1,
     groupSize: Int = 1,
-    isEnabled: Boolean = true,
 ) {
     val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
         titleId = titleId,
-        startWidget = if (icon != null) {
-            {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = stringResource(id = titleId),
-                )
-            }
-        } else null,
+        startWidget = icon?.let {
+            { Icon(imageVector = icon, contentDescription = stringResource(id = titleId)) }
+        },
         index = index,
         groupSize = groupSize,
-        isEnabled = isEnabled,
         onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, route) }
     )
 }

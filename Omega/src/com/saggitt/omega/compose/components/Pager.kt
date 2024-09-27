@@ -88,7 +88,7 @@ fun NavBarItem(
                 contentDescription = stringResource(id = labelId),
                 modifier = Modifier
                     .background(
-                        if (selected) MaterialTheme.colorScheme.surfaceColorAtElevation(48.dp)
+                        if (selected) MaterialTheme.colorScheme.surfaceContainerHighest
                         else Color.Transparent,
                         CircleShape
                     )

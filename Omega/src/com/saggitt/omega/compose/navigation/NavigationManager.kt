@@ -52,7 +52,7 @@ fun PrefsComposeView(
     paneNavigator: ThreePaneScaffoldNavigator<Any>,
 ) {
     CompositionLocalProvider(
-        LocalNavController provides navController,
+        //LocalNavController provides navController,
         LocalPaneNavigator provides paneNavigator,
     ) {
         NavHost(
@@ -70,8 +70,9 @@ fun PrefsComposeView(
             popExitTransition = {
                 slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
             },
-        ) {
-            prefsGraph()
-        }
+            builder = {
+                prefsGraph()
+            }
+        )
     }
 }

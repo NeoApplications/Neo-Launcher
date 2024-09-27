@@ -44,7 +44,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     private val mLauncher = Launcher.getLauncher(context)
     private var imeShift = 0f
     private var _hintCloseProgress = mutableFloatStateOf(0f)
-    private val hintCloseProgress get() = _hintCloseProgress.value
+    private val hintCloseProgress get() = _hintCloseProgress.floatValue
     private var hintCloseDistance = 0f
 
     init {
@@ -178,7 +178,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
         private val HINT_CLOSE_PROGRESS =
             object : FloatProperty<ComposeBottomSheet>("hintCloseProgress") {
                 override fun setValue(view: ComposeBottomSheet, value: Float) {
-                    view._hintCloseProgress.value = value
+                    view._hintCloseProgress.floatValue = value
                 }
 
                 override fun get(view: ComposeBottomSheet) = view._hintCloseProgress.value

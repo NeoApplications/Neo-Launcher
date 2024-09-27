@@ -147,11 +147,7 @@ fun MainPrefsPage() {
             ) { paddingValues ->
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = paddingValues + PaddingValues(
-                        top = 8.dp,
-                        start = 8.dp,
-                        end = 8.dp
-                    ),
+                    contentPadding = paddingValues + PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {

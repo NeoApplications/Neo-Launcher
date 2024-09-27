@@ -45,7 +45,7 @@ fun ItemLink(
         border = null,
         shape = MaterialTheme.shapes.medium,
         colors = AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         leadingIcon = {
             Icon(
@@ -58,7 +58,7 @@ fun ItemLink(
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

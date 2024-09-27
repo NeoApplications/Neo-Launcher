@@ -52,7 +52,7 @@ fun ColorItem(
             .background(Color(color))
             .clickable(onClick = onClick)
     ) {
-        Crossfade(targetState = selected) {
+        Crossfade(targetState = selected, label = "checkmark") {
             if (it) {
                 Icon(
                     modifier = Modifier.aspectRatio(ratio = 0.5f),

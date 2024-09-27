@@ -64,7 +64,8 @@ fun IconShapeItem(
                     .fillMaxWidth(0.8f)
                     .aspectRatio(1f),
                 shape = item.getIcon(),
-                color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (checked) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
             ) {}
             if (checked) {
                 Icon(
@@ -84,12 +85,10 @@ fun IconShapeItem(
         Text(
             text = item.shapeName,
             modifier = Modifier.fillMaxWidth(),
-            softWrap = true,
+            style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleSmall
+            maxLines = 1
         )
     }
 }

@@ -27,7 +27,7 @@ fun Modifier.blockBorder() = composed {
         .clip(MaterialTheme.shapes.extraLarge)
         .border(
             1.dp,
-            MaterialTheme.colorScheme.outlineVariant,
+            MaterialTheme.colorScheme.outline,
             MaterialTheme.shapes.extraLarge,
         )
 }
