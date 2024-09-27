@@ -111,7 +111,7 @@ fun EditDashPage() {
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            itemsIndexed(enabledItems, { _, it -> it.key }) { subIndex, item ->
+            itemsIndexed(enabledItems, key = { _, it -> it.key }) { subIndex, item ->
                 ReorderableItem(
                     reorderableListState,
                     key = item.key,
@@ -174,7 +174,7 @@ fun EditDashPage() {
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            itemsIndexed(disabledItems) { subIndex, item ->
+            itemsIndexed(disabledItems, key = { _, it -> it.key }) { subIndex, item ->
                 ListItemWithIcon(
                     modifier = Modifier
                         .clip(GroupItemShape(subIndex, disabledItems.size - 1))
