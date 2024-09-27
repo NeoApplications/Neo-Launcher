@@ -20,18 +20,16 @@ package com.saggitt.omega.folder
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -125,15 +123,13 @@ fun CustomizeFolderView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Divider(
-            modifier = Modifier
-                .width(48.dp)
-                .height(2.dp)
+        HorizontalDivider(
+            modifier = Modifier.width(48.dp),
+            thickness = 2.dp,
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Box(
             modifier = Modifier
@@ -148,8 +144,6 @@ fun CustomizeFolderView(
                     .requiredSize(64.dp)
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = title,
@@ -185,36 +179,40 @@ fun CustomizeFolderView(
             isError = title.isEmpty()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ComposeSwitchView(
-            title = stringResource(R.string.folder_cover_mode),
-            summary = stringResource(R.string.folder_cover_mode_desc),
-            isChecked = folder.isCoverMode,
-            onCheckedChange = { newValue ->
-                folder.setCoverMode(newValue, launcher.modelWriter)
-                coverMode.value = newValue
-            }
-        )
-
-        val openDialogCustom = remember { mutableStateOf(false) }
-        PreferenceItem(
-            title = stringResource(R.string.gesture_swipe_up),
-            summary = handlerName.value,
-            modifier = Modifier.clickable {
-                openDialogCustom.value = true
-            },
-            enabled = !coverMode.value
-        )
-        if (openDialogCustom.value) {
-            FolderListDialog(
-                folder = folder,
-                openDialogCustom = openDialogCustom,
-                currentGesture = swipeUpHandler,
-                onClose = {
-                    handlerName.value = it.displayName
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            ComposeSwitchView(
+                title = stringResource(R.string.folder_cover_mode),
+                summary = stringResource(R.string.folder_cover_mode_desc),
+                isChecked = folder.isCoverMode,
+                index = 0,
+                groupSize = 2,
+                onCheckedChange = { newValue ->
+                    folder.setCoverMode(newValue, launcher.modelWriter)
+                    coverMode.value = newValue
                 }
             )
+
+            val openDialogCustom = remember { mutableStateOf(false) }
+            PreferenceItem(
+                title = stringResource(R.string.gesture_swipe_up),
+                summary = handlerName.value,
+                isEnabled = !coverMode.value,
+                index = 1,
+                groupSize = 2,
+                onClick = { openDialogCustom.value = true }
+            )
+            if (openDialogCustom.value) {
+                FolderListDialog(
+                    folder = folder,
+                    openDialogCustom = openDialogCustom,
+                    currentGesture = swipeUpHandler,
+                    onClose = {
+                        handlerName.value = it.displayName
+                    }
+                )
+            }
         }
     }
 }

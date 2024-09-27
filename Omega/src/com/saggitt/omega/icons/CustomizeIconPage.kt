@@ -25,6 +25,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -68,7 +69,6 @@ import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.saggitt.omega.compose.components.ComposeSwitchView
-import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.data.IconOverrideRepository
@@ -156,7 +156,8 @@ fun CustomizeIconView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         HorizontalDivider(
             modifier = Modifier
@@ -164,15 +165,14 @@ fun CustomizeIconView(
                 .height(2.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 16.dp)
+                .clip(MaterialTheme.shapes.small)
                 .addIfNotNull(launchSelectIcon) {
                     clickable(onClick = it)
                 }
-                .clip(MaterialTheme.shapes.small)
         ) {
             Image(
                 painter = rememberDrawablePainter(icon),
@@ -181,7 +181,6 @@ fun CustomizeIconView(
                     .requiredSize(64.dp)
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = title,
@@ -217,14 +216,16 @@ fun CustomizeIconView(
             isError = title.isEmpty()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        PreferenceGroup {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
                 val stringKey = componentKey.toString()
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
                     isChecked = hiddenApps.value.contains(stringKey),
+                    index = 0,
+                    groupSize = if (hasOverride || prefs.drawerTabs.isEnabled) 2 else 1,
                     onCheckedChange = { newValue ->
                         val newSet = hiddenApps.value.toMutableSet()
                         if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
@@ -237,6 +238,8 @@ fun CustomizeIconView(
                 if (hasOverride) {
                     PreferenceItem(
                         title = stringResource(R.string.reset_custom_icon),
+                        index = 1,
+                        groupSize = if (prefs.drawerTabs.isEnabled) 3 else 2,
                         modifier = Modifier.clickable {
                             scope.launch {
                                 repo.deleteOverride(componentKey)
@@ -250,6 +253,8 @@ fun CustomizeIconView(
                     val openDialogCustom = remember { mutableStateOf(false) }
                     PreferenceItem(
                         title = stringResource(R.string.app_categorization_tabs),
+                        index = 2,
+                        groupSize = 3,
                         modifier = Modifier.clickable {
                             openDialogCustom.value = true
                         }
@@ -264,32 +269,37 @@ fun CustomizeIconView(
             }
         }
         if (prefs.showDebugInfo.getValue()) {
-            val component =
-                componentKey.componentName.packageName + "/" + componentKey.componentName.className
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp)
-                    .height(1.dp),
-                color = MaterialTheme.colorScheme.outline
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                val component =
+                    componentKey.componentName.packageName + "/" + componentKey.componentName.className
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outline
+                )
 
-            Text(
-                text = stringResource(id = R.string.debug_options_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+                Text(
+                    text = stringResource(id = R.string.debug_options_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
-            PreferenceItem(
-                title = stringResource(id = R.string.debug_component_name),
-                summary = component
-            )
-            PreferenceItem(
-                title = stringResource(id = R.string.app_version),
-                summary = context.packageManager.getPackageVersion(componentKey.componentName.packageName)
-            )
+                Spacer(modifier = Modifier.height(8.dp))
+                PreferenceItem(
+                    title = stringResource(id = R.string.debug_component_name),
+                    index = 1,
+                    groupSize = 4,
+                    summary = component
+                )
+                PreferenceItem(
+                    title = stringResource(id = R.string.app_version),
+                    index = 2,
+                    groupSize = 4,
+                    summary = context.packageManager.getPackageVersion(componentKey.componentName.packageName)
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
