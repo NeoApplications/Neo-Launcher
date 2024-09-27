@@ -21,16 +21,13 @@ package com.saggitt.omega.compose.pages
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -72,6 +69,17 @@ fun IconShapePage() {
             IconShape.Egg,
         )
         val listItems = iconShapes.map { ShapeModel(it.toString()) }
+        val iconPrefs = listOfNotNull(
+            prefs.profileIconAdaptify,
+            prefs.profileIconColoredBackground,
+            prefs.profileShapeLessIcon
+        )
+        val openDialog = remember { mutableStateOf(false) }
+        var dialogPref by remember { mutableStateOf<Any?>(null) }
+        val onPrefDialog = { pref: Any ->
+            dialogPref = pref
+            openDialog.value = true
+        }
 
         Column(
             modifier = Modifier
@@ -82,6 +90,7 @@ fun IconShapePage() {
                     end = 8.dp,
                     bottom = paddingValues.calculateBottomPadding() + 8.dp
                 ),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
@@ -101,35 +110,13 @@ fun IconShapePage() {
                         }
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Divider(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .height(1.dp)
-            )
-
-            val openDialog = remember { mutableStateOf(false) }
-            var dialogPref by remember { mutableStateOf<Any?>(null) }
-            val onPrefDialog = { pref: Any ->
-                dialogPref = pref
-                openDialog.value = true
-            }
-
-            val iconPrefs = listOfNotNull(
-                prefs.profileIconAdaptify,
-                prefs.profileIconColoredBackground,
-                prefs.profileShapeLessIcon
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        thickness = 1.dp
+                    )
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     PreferenceGroup(
                         heading = null,
                         prefs = iconPrefs,
