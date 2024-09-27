@@ -21,7 +21,6 @@ package com.saggitt.omega.folder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,6 +51,7 @@ import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
+import com.saggitt.omega.util.blockShadow
 
 @Composable
 fun FolderListDialog(
@@ -91,18 +91,17 @@ fun FolderListDialogUI(
     val gestures = GestureController.getGestureHandlers(context, isSwipeUp = true, hasBlank = true)
     var selected by remember { mutableStateOf(currentGesture.javaClass.name.toString()) }
     var selectedGesture by remember { mutableStateOf(currentGesture) }
+
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-
             Text(
                 text = stringResource(id = R.string.folder_swipe_up),
                 style = MaterialTheme.typography.titleLarge
@@ -111,6 +110,7 @@ fun FolderListDialogUI(
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
+                    .blockShadow()
             ) {
                 items(items = gestures) {
                     val isSelected = rememberSaveable(selected) {
@@ -128,18 +128,16 @@ fun FolderListDialogUI(
             }
         }
 
-        //Button Rows
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DialogNegativeButton(
                 cornerRadius = cornerRadius,
                 onClick = { openDialogCustom.value = false }
             )
-            Spacer(Modifier.weight(1f))
             DialogPositiveButton(
                 modifier = Modifier.padding(start = 16.dp),
                 cornerRadius = cornerRadius,
@@ -150,6 +148,5 @@ fun FolderListDialogUI(
                 }
             )
         }
-
     }
 }

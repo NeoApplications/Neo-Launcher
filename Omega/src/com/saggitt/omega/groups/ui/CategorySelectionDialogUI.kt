@@ -56,7 +56,7 @@ fun CategorySelectionDialogUI(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

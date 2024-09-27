@@ -18,7 +18,7 @@
 
 package com.saggitt.omega.groups.ui
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,10 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -42,9 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.android.launcher3.R
@@ -52,10 +47,12 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
+import com.saggitt.omega.compose.components.MultiSelectionListItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addOrRemove
+import com.saggitt.omega.util.blockShadow
 
 @Composable
 fun AppTabDialog(
@@ -90,46 +87,38 @@ fun AppTabDialogUI(
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
-        Column {
-            val tabs: List<DrawerTabs.CustomTab> =
-                prefs.drawerTabs.getGroups().mapNotNull { it as? DrawerTabs.CustomTab }
-            val entries = tabs.map { it.title }.toList()
-            val checkedEntries = tabs.map {
-                it.contents.value().contains(componentKey)
-            }.toBooleanArray()
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val tabs: List<DrawerTabs.Tab> =
+                prefs.drawerTabs.getGroups()
+            val selectedItems = tabs
+                .map {
+                    (it as? DrawerTabs.CustomTab)?.contents?.value()?.contains(componentKey)
+                        ?: false
+                }
+                .toMutableList()
 
-            val selectedItems = checkedEntries.toMutableList()
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
+                    .blockShadow()
             ) {
-                itemsIndexed(entries) { index, tabName ->
+                itemsIndexed(tabs) { index, tab ->
                     var isSelected by rememberSaveable { mutableStateOf(selectedItems[index]) }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                isSelected = !isSelected
-                                selectedItems[index] = isSelected
-                            },
-                        verticalAlignment = Alignment.CenterVertically
+
+                    MultiSelectionListItem(
+                        text = tab.title,
+                        isChecked = isSelected,
+                        isEnabled = tab is DrawerTabs.CustomTab,
                     ) {
-                        Checkbox(
-                            checked = isSelected,
-                            onCheckedChange = {
-                                isSelected = !isSelected
-                                selectedItems[index] = isSelected
-                            },
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colorScheme.primary,
-                            )
-                        )
-                        Text(text = tabName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        isSelected = !isSelected
+                        selectedItems[index] = isSelected
                     }
                 }
             }
@@ -137,11 +126,11 @@ fun AppTabDialogUI(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 8.dp),
             ) {
-                DialogPositiveButton(
-                    cornerRadius = cornerRadius,
+                DialogNegativeButton(
                     textId = R.string.tabs_manage,
+                    cornerRadius = cornerRadius,
                     onClick = {
                         openDialogCustom.value = false
                         context.startActivity(
@@ -149,9 +138,7 @@ fun AppTabDialogUI(
                         )
                     },
                 )
-
                 Spacer(Modifier.weight(1f))
-
                 DialogNegativeButton(
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
@@ -159,14 +146,15 @@ fun AppTabDialogUI(
                         openDialogCustom.value = false
                     }
                 )
-
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
                     onClick = {
-                        tabs.forEachIndexed { index, tab ->
-                            tab.contents.value().addOrRemove(componentKey, selectedItems[index])
-                        }
+                        tabs
+                            .forEachIndexed { index, tab ->
+                                (tab as? DrawerTabs.CustomTab)?.contents?.value()
+                                    ?.addOrRemove(componentKey, selectedItems[index])
+                            }
                         tabs.hashCode()
                         prefs.drawerTabs.saveToJson()
                         prefs.reloadTabs()

@@ -3,7 +3,6 @@ package com.saggitt.omega.compose.components.preferences
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -43,10 +42,10 @@ fun IntentLauncherDialogUI(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
         elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -57,13 +56,15 @@ fun IntentLauncherDialogUI(
             )
 
             Row(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
                     cornerRadius = cornerRadius,
                     onClick = { openDialogCustom.value = false }
                 )
-                Spacer(Modifier.weight(1f))
                 DialogPositiveButton(
                     textId = pref.positiveAnswerId,
                     modifier = Modifier.padding(start = 16.dp),

@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.compose.components.preferences
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,7 +60,7 @@ import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.LongSelectionPref
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
-import com.saggitt.omega.util.blockBorder
+import com.saggitt.omega.util.blockShadow
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -92,12 +91,11 @@ fun IntSelectionPrefDialogUI(
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(12.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -106,11 +104,7 @@ fun IntSelectionPrefDialogUI(
                 modifier = Modifier
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .weight(1f, false)
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.shapes.extraLarge
-                    )
-                    .blockBorder()
+                    .blockShadow()
             ) {
                 item {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -134,7 +128,7 @@ fun IntSelectionPrefDialogUI(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -180,12 +174,11 @@ fun LongSelectionPrefDialogUI(
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(12.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -194,11 +187,7 @@ fun LongSelectionPrefDialogUI(
                 modifier = Modifier
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .weight(1f, false)
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = MaterialTheme.shapes.extraLarge
-                    )
-                    .blockBorder(),
+                    .blockShadow(),
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -216,7 +205,7 @@ fun LongSelectionPrefDialogUI(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -253,28 +242,20 @@ fun StringSelectionPrefDialogUI(
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(12.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(
-                        vertical = 8.dp,
-                        horizontal = 4.dp
-                    )
+                    .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = MaterialTheme.shapes.extraLarge
-                    )
-                    .blockBorder()
+                    .blockShadow()
             ) {
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -292,7 +273,7 @@ fun StringSelectionPrefDialogUI(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
@@ -329,25 +310,20 @@ fun StringMultiSelectionPrefDialogUI(
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(12.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 4.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = MaterialTheme.shapes.extraLarge
-                    )
-                    .blockBorder()
+                    .blockShadow()
             ) {
                 items(items = entryPairs) { item ->
                     val isSelected = rememberSaveable(selected) {
@@ -369,14 +345,12 @@ fun StringMultiSelectionPrefDialogUI(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
                     cornerRadius = cornerRadius,
-                    onClick = {
-                        openDialogCustom.value = false
-                    }
+                    onClick = { openDialogCustom.value = false }
                 )
                 DialogPositiveButton(
                     cornerRadius = cornerRadius,
@@ -406,34 +380,28 @@ fun ResetCustomIconsDialog(
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(12.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.reset_custom_icons_confirmation),
                 style = MaterialTheme.typography.titleMedium
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
                     cornerRadius = cornerRadius,
-                    onClick = {
-                        openDialogCustom.value = false
-                    }
+                    onClick = { openDialogCustom.value = false }
                 )
                 DialogPositiveButton(
                     cornerRadius = cornerRadius,

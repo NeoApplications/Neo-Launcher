@@ -23,12 +23,10 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -81,27 +79,27 @@ fun GridSizePrefDialogUI(
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                    .padding(vertical = 8.dp)
+                    .weight(1f, false),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {
-
-                    var menuExpanded by remember { mutableStateOf(false) }
                     Row(
                         modifier = Modifier.height(40.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
+                        var menuExpanded by remember { mutableStateOf(false) }
                         Icon(
                             modifier = Modifier
                                 .size(32.dp)
@@ -129,9 +127,8 @@ fun GridSizePrefDialogUI(
                             text = numColumns.toString(),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.widthIn(min = 28.dp)
+                            modifier = Modifier.widthIn(min = 32.dp)
                         )
-                        Spacer(modifier = Modifier.requiredWidth(8.dp))
                         Slider(
                             modifier = Modifier
                                 .requiredHeight(24.dp)
@@ -144,12 +141,11 @@ fun GridSizePrefDialogUI(
                     }
                 }
                 if (pref is GridSize2D) item {
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.height(40.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-
                         var menuExpanded by remember { mutableStateOf(false) }
                         Icon(
                             modifier = Modifier
@@ -180,7 +176,6 @@ fun GridSizePrefDialogUI(
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.widthIn(min = 32.dp),
                         )
-                        Spacer(modifier = Modifier.requiredWidth(8.dp))
                         Slider(
                             modifier = Modifier
                                 .requiredHeight(24.dp)
@@ -195,13 +190,15 @@ fun GridSizePrefDialogUI(
             }
 
             Row(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DialogNegativeButton(
                     cornerRadius = cornerRadius,
                     onClick = { openDialogCustom.value = false }
                 )
-                Spacer(Modifier.weight(1f))
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     cornerRadius = cornerRadius,
