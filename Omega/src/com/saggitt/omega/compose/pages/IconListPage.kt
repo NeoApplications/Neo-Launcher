@@ -19,19 +19,20 @@
 package com.saggitt.omega.compose.pages
 
 import android.graphics.drawable.Drawable
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,14 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.saggitt.omega.compose.components.LazyGridLayout
-import com.saggitt.omega.compose.components.PreferenceLazyColumn
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupDescription
-import com.saggitt.omega.compose.components.verticalGridItems
 import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.filter
@@ -60,91 +57,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-/*
-* List Icons from a given IconPack
- */
 @Composable
 fun IconListPage(
-    iconPackName: MutableState<String?>,
-    iconPack: IconPack,
-    searchQuery: String,
-    onClickItem: (item: IconPickerItem) -> Unit
-) {
-    BackHandler {
-        iconPackName.value = null
-    }
-
-    IconPickerGrid(
-        iconPack = iconPack,
-        searchQuery = searchQuery,
-        onClickItem = onClickItem,
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun IconPickerGrid(
     iconPack: IconPack,
     searchQuery: String,
     onClickItem: (item: IconPickerItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var loadFailed by remember { mutableStateOf(false) }
-    val categoriesFlow = remember {
+    val categoriesFlow = remember(iconPack) {
         iconPack.getAllIcons()
             .catch { loadFailed = true }
     }
     val categories by categoriesFlow.collectAsState(emptyList())
     val filteredCategories by remember(searchQuery) {
         derivedStateOf {
-            categories.asSequence()
-                .map { it.filter(searchQuery) }
-                .filter { it.items.isNotEmpty() }
-                .toList()
+            categories.mapNotNull {
+                it.filter(searchQuery)
+                    .takeUnless { cat -> cat.items.isEmpty() }
+            }
         }
     }
 
-    val density = LocalDensity.current
-    val gridLayout = remember {
-        LazyGridLayout(
-            minWidth = 56.dp,
-            gapWidth = 16.dp,
-            density = density
-        )
-    }
-    val numColumns by gridLayout.numColumns
-    PreferenceLazyColumn(modifier = modifier.then(gridLayout.onSizeChanged())) {
-        if (numColumns != 0) {
-            filteredCategories.forEach { category ->
-                stickyHeader {
-                    Text(
-                        text = category.title,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(16.dp),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                verticalGridItems(
+    LazyVerticalGrid(
+        modifier = modifier.fillMaxSize(),
+        columns = GridCells.FixedSize(72.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        filteredCategories.forEach { category ->
+            // TODO restoring stickyHeaders in future
+            item(
+                span = { GridItemSpan(this.maxLineSpan) },
+            ) {
+                Text(
+                    text = category.title,
                     modifier = Modifier
-                        .padding(horizontal = 8.dp),
-                    items = category.items,
-                    numColumns = numColumns,
-                ) { _, item ->
-                    IconPreview(
-                        iconPack = iconPack,
-                        iconItem = item,
-                        onClick = {
-                            onClickItem(item)
-                        }
-                    )
-                }
+                        .padding(12.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            items(
+                items = category.items,
+                key = { it.drawableName },
+            ) { item ->
+                IconPreview(
+                    iconPack = iconPack,
+                    iconItem = item,
+                    onClick = {
+                        onClickItem(item)
+                    }
+                )
             }
         }
         if (loadFailed) {
-            item {
+            item(
+                span = { GridItemSpan(this.maxLineSpan) },
+            ) {
                 PreferenceGroupDescription(
                     description = stringResource(id = R.string.icon_picker_load_failed)
                 )
