@@ -108,41 +108,43 @@ fun MainPrefsPage() {
         }
     }
 
-    ViewWithActionBar(
-        title = stringResource(R.string.settings_button_text),
-        showBackButton = false,
-        actions = {
-            OverflowMenu {
-                if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
-                    DropdownMenuItem(
-                        onClick = {
-                            changeDefaultHome(context)
-                            hideMenu()
-                        },
-                        text = { Text(text = stringResource(id = R.string.change_default_home)) }
-                    )
+    NavigableListDetailPaneScaffold(
+        navigator = paneNavigator,
+        listPane = {
+            ViewWithActionBar(
+                title = stringResource(R.string.settings_button_text),
+                showBackButton = false,
+                actions = {
+                    OverflowMenu {
+                        if (BuildConfig.APPLICATION_ID != resolveDefaultHome()) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    changeDefaultHome(context)
+                                    hideMenu()
+                                },
+                                text = { Text(text = stringResource(id = R.string.change_default_home)) }
+                            )
+                        }
+                        DropdownMenuItem(
+                            onClick = {
+                                Utilities.killLauncher()
+                                hideMenu()
+                            },
+                            text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                paneNavigator.navigateTo(
+                                    ListDetailPaneScaffoldRole.Detail,
+                                    NavRoute.Dev()
+                                )
+                                hideMenu()
+                            },
+                            text = { Text(text = stringResource(id = R.string.developer_options_title)) }
+                        )
+                    }
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        Utilities.killLauncher()
-                        hideMenu()
-                    },
-                    text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, NavRoute.Dev())
-                        hideMenu()
-                    },
-                    text = { Text(text = stringResource(id = R.string.developer_options_title)) }
-                )
-            }
-        }
-    ) { paddingValues ->
-
-        NavigableListDetailPaneScaffold(
-            navigator = paneNavigator,
-            listPane = {
+            ) { paddingValues ->
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = paddingValues + PaddingValues(
@@ -171,101 +173,101 @@ fun MainPrefsPage() {
                         )
                     }
                 }
-            },
-            detailPane = {
-                pageData.value = paneNavigator.currentDestination
-                    ?.takeIf { it.pane == this.role }?.content
-                    ?.let { it as? NavRoute }
+            }
+        },
+        detailPane = {
+            pageData.value = paneNavigator.currentDestination
+                ?.takeIf { it.pane == this.role }?.content
+                ?.let { it as? NavRoute }
 
-                pageData.value?.let {
-                    AnimatedPane {
-                        when (it) {
-                            is NavRoute.Profile.IconShape
-                            -> IconShapePage()
+            pageData.value?.let {
+                AnimatedPane {
+                    when (it) {
+                        is NavRoute.Profile.IconShape
+                        -> IconShapePage()
 
-                            is NavRoute.Profile.AccentColor
-                            -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
+                        is NavRoute.Profile.AccentColor
+                        -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
 
-                            is NavRoute.Profile
-                            -> ProfilePrefsPage()
+                        is NavRoute.Profile
+                        -> ProfilePrefsPage()
 
-                            is NavRoute.Desktop.FolderBG
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
+                        is NavRoute.Desktop.FolderBG
+                        -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
 
-                            is NavRoute.Desktop.FolderStroke
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
+                        is NavRoute.Desktop.FolderStroke
+                        -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
 
-                            is NavRoute.Desktop
-                            -> DesktopPrefsPage()
+                        is NavRoute.Desktop
+                        -> DesktopPrefsPage()
 
-                            is NavRoute.Dock.BG
-                            -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
+                        is NavRoute.Dock.BG
+                        -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
 
-                            is NavRoute.Dock
-                            -> DockPrefsPage()
+                        is NavRoute.Dock
+                        -> DockPrefsPage()
 
-                            is NavRoute.Drawer.BG
-                            -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
+                        is NavRoute.Drawer.BG
+                        -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
 
-                            is NavRoute.Drawer.Categorize
-                            -> AppCategoriesPage()
+                        is NavRoute.Drawer.Categorize
+                        -> AppCategoriesPage()
 
-                            is NavRoute.Drawer.HiddenApps
-                            -> HiddenAppsPage()
+                        is NavRoute.Drawer.HiddenApps
+                        -> HiddenAppsPage()
 
-                            is NavRoute.Drawer.ProtectedApps
-                            -> ProtectedAppsPage()
+                        is NavRoute.Drawer.ProtectedApps
+                        -> ProtectedAppsPage()
 
-                            is NavRoute.Drawer.ProtectedAppsView
-                            -> ProtectedAppsView()
+                        is NavRoute.Drawer.ProtectedAppsView
+                        -> ProtectedAppsView()
 
-                            is NavRoute.Drawer
-                            -> DrawerPrefsPage()
+                        is NavRoute.Drawer
+                        -> DrawerPrefsPage()
 
-                            is NavRoute.Widgets.NotificationDots
-                            -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
+                        is NavRoute.Widgets.NotificationDots
+                        -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
 
-                            is NavRoute.Widgets
-                            -> WidgetsPrefsPage()
+                        is NavRoute.Widgets
+                        -> WidgetsPrefsPage()
 
-                            is NavRoute.Search
-                            -> SearchPrefsPage()
+                        is NavRoute.Search
+                        -> SearchPrefsPage()
 
-                            is NavRoute.Gestures.EditDash
-                            -> EditDashPage()
+                        is NavRoute.Gestures.EditDash
+                        -> EditDashPage()
 
-                            is NavRoute.Gestures.Gesture
-                            -> GestureSelectorPage(gesturesMap[it.key]!!)
+                        is NavRoute.Gestures.Gesture
+                        -> GestureSelectorPage(gesturesMap[it.key]!!)
 
-                            is NavRoute.Gestures
-                            -> GesturesPrefsPage()
+                        is NavRoute.Gestures
+                        -> GesturesPrefsPage()
 
-                            is NavRoute.Backup
-                            -> BackupsPrefsPage()
+                        is NavRoute.Backup
+                        -> BackupsPrefsPage()
 
-                            is NavRoute.Dev.Categorize
-                            -> AppCategoriesPage()
+                        is NavRoute.Dev.Categorize
+                        -> AppCategoriesPage()
 
-                            is NavRoute.Dev
-                            -> DevPrefsPage()
+                        is NavRoute.Dev
+                        -> DevPrefsPage()
 
-                            is NavRoute.About.License
-                            -> LicenseScreen()
+                        is NavRoute.About.License
+                        -> LicenseScreen()
 
-                            is NavRoute.About.Translators
-                            -> TranslatorsScreen()
+                        is NavRoute.About.Translators
+                        -> TranslatorsScreen()
 
-                            is NavRoute.About.Changelog
-                            -> ChangelogScreen()
+                        is NavRoute.About.Changelog
+                        -> ChangelogScreen()
 
-                            is NavRoute.About
-                            -> AboutPrefPage()
+                        is NavRoute.About
+                        -> AboutPrefPage()
 
-                            else -> {}
-                        }
+                        else -> {}
                     }
                 }
             }
-        )
-    }
+        }
+    )
 }
