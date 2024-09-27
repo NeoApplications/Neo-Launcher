@@ -18,12 +18,10 @@
 
 package com.saggitt.omega.compose.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,20 +38,19 @@ fun DialogPositiveButton(
     textId: Int = android.R.string.ok,
     onClick: () -> Unit = {},
 ) {
-    OutlinedButton(
+    TextButton(
         shape = RoundedCornerShape(cornerRadius),
         onClick = onClick,
         modifier = modifier,
-            colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.65F))
+        )
     ) {
         Text(
             text = stringResource(id = textId),
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
         )
     }
 }
@@ -73,7 +70,7 @@ fun DialogNegativeButton(
         Text(
             text = stringResource(id = textId),
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+            modifier = Modifier.padding(vertical = 5.dp, horizontal = 8.dp)
         )
     }
 }
