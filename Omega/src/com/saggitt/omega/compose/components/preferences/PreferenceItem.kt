@@ -18,21 +18,17 @@
 
 package com.saggitt.omega.compose.components.preferences
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
+import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.addIf
 
 @Composable
@@ -42,56 +38,44 @@ fun PreferenceItem(
     summary: String = "",
     startWidget: (@Composable () -> Unit)? = null,
     endWidget: (@Composable () -> Unit)? = null,
-    enabled: Boolean = true,
-    showDivider: Boolean = false,
-    applyPaddings: Boolean = true,
-    horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 16.dp,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically
+    index: Int = 0,
+    groupSize: Int = 1,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit)? = null,
 ) {
-    Column {
-        if (showDivider) {
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
-        }
-        Row(
-            verticalAlignment = verticalAlignment,
-            modifier = modifier
-                .fillMaxWidth()
-                .addIf(applyPaddings) {
-                    padding(horizontal = horizontalPadding, vertical = verticalPadding)
-                }
-        ) {
-            startWidget?.let {
-                startWidget()
-                if (applyPaddings) {
-                    Spacer(modifier = Modifier.requiredWidth(16.dp))
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .addIf(!enabled) {
-                        alpha(0.3f)
-                    }
-            ) {
+    ListItem(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(
+                GroupItemShape(index, groupSize - 1)
+            )
+            .addIf(onClick != null) {
+                clickable(enabled = isEnabled, onClick = onClick!!)
+            },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        ),
+        leadingContent = startWidget,
+        headlineContent = {
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        supportingContent = {
+            if (summary.isNotEmpty()) {
                 Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.titleMedium
+                    modifier = Modifier
+                        .addIf(!isEnabled) {
+                            alpha(0.3f)
+                        },
+                    text = summary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
-                if (summary.isNotEmpty()) {
-                    Text(
-                        text = summary,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6F)
-                    )
-                }
             }
-            endWidget?.let {
-                if (applyPaddings) {
-                    Spacer(modifier = Modifier.requiredWidth(16.dp))
-                }
-                endWidget()
-            }
-        }
-    }
+        },
+        trailingContent = endWidget,
+    )
 }
