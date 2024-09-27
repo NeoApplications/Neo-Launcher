@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.groups.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,12 +28,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
@@ -58,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.BaseDialog
+import com.saggitt.omega.compose.components.DialogNegativeButton
+import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.preferences.BasePreference
 import com.saggitt.omega.compose.pages.AppSelectionPage
 import com.saggitt.omega.compose.pages.ColorSelectionDialog
@@ -78,9 +77,9 @@ fun CreateGroupBottomSheet(
     category: AppGroupsManager.Category,
     onClose: (Int) -> Unit,
 ) {
-
     val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
+    val coroutineScope = rememberCoroutineScope()
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
@@ -118,14 +117,17 @@ fun CreateGroupBottomSheet(
         )
     }
 
-    val coroutineScope = rememberCoroutineScope()
+    var cornerRadius = 16.dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        cornerRadius = prefs.profileWindowCornerRadius.getValue().dp
+    }
 
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             OutlinedTextField(
@@ -213,7 +215,7 @@ fun CreateGroupBottomSheet(
                             shape = MaterialTheme.shapes.extraLarge,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                         ) {
                             GroupAppSelection(
                                 selectedApps = selectedApps.map { it.toString() }.toSet(),
@@ -230,7 +232,7 @@ fun CreateGroupBottomSheet(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             BasePreference(
                 titleId = R.string.tab_hide_from_main,
                 startWidget = {
@@ -255,7 +257,7 @@ fun CreateGroupBottomSheet(
                 else 2
             )
             if (category != AppGroupsManager.Category.FOLDER) {
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 BasePreference(
                     titleId = R.string.tab_color,
                     startWidget = {
@@ -277,14 +279,18 @@ fun CreateGroupBottomSheet(
                             shape = MaterialTheme.shapes.extraLarge,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                         ) {
                             ColorSelectionDialog(
-                                defaultColor = color
-                            ) {
-                                color = it
-                                colorPicker.value = false
-                            }
+                                defaultColor = color,
+                                onCancel = {
+                                    colorPicker.value = false
+                                },
+                                onSave = {
+                                    color = it
+                                    colorPicker.value = false
+                                }
+                            )
                         }
                     }
                 }
@@ -292,24 +298,18 @@ fun CreateGroupBottomSheet(
         }
         item {
             Row(
-                modifier = Modifier
+                Modifier
                     .fillMaxWidth()
-                    .padding(end = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                OutlinedButton(
-                    onClick = {
-                        onClose(Config.BS_SELECT_TAB_TYPE)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                ) {
-                    Text(text = stringResource(id = android.R.string.cancel))
-                }
-                OutlinedButton(
+                DialogNegativeButton(
+                    cornerRadius = cornerRadius,
+                    onClick = { onClose(Config.BS_SELECT_TAB_TYPE) }
+                )
+                DialogPositiveButton(
+                    cornerRadius = cornerRadius,
+                    textId = R.string.tab_bottom_sheet_save,
                     onClick = {
                         coroutineScope.launch {
                             (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
@@ -350,19 +350,8 @@ fun CreateGroupBottomSheet(
                             }
                         }
                         onClose(Config.BS_SELECT_TAB_TYPE)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.65F)
-                    ),
-                ) {
-                    Text(text = stringResource(id = R.string.tab_bottom_sheet_save))
-                }
+                    }
+                )
             }
         }
     }

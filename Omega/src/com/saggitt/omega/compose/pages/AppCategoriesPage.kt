@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomSheetScaffold
@@ -43,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -58,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -93,7 +90,6 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 )
 @Composable
 fun AppCategoriesPage() {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val prefs = NeoPrefs.getInstance()
     val manager by lazy { prefs.drawerAppGroupsManager }
@@ -101,10 +97,6 @@ fun AppCategoriesPage() {
 
     var categoryTitle by remember { mutableStateOf("") }
 
-    var radius = 16.dp
-    if (prefs.profileWindowCornerRadius.getValue() > -1) {
-        radius = prefs.profileWindowCornerRadius.getValue().dp
-    }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
@@ -131,7 +123,7 @@ fun AppCategoriesPage() {
     when (selectedCategorizationKey) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-        -> {
+                                             -> {
             categoryTitle = stringResource(id = R.string.app_categorization_tabs)
         }
 
@@ -162,6 +154,7 @@ fun AppCategoriesPage() {
     val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         groups.move(from.index, to.index)
+        saveGroupPositions(manager, groups)
     }
 
     BottomSheetScaffold(
@@ -181,7 +174,7 @@ fun AppCategoriesPage() {
                 }
 
                 //Create tab or folder
-                Config.BS_CREATE_GROUP -> {
+                Config.BS_CREATE_GROUP    -> {
                     CreateGroupBottomSheet(category = openedOption) {
                         sheetChanger =
                             if (openedOption == AppGroupsManager.Category.TAB
@@ -197,7 +190,7 @@ fun AppCategoriesPage() {
                 }
 
                 //Edit group
-                Config.BS_EDIT_GROUP -> {
+                Config.BS_EDIT_GROUP      -> {
                     editGroup.value?.let { editGroup ->
                         EditGroupBottomSheet(openedOption, editGroup) {
                             sheetChanger = it
@@ -222,11 +215,11 @@ fun AppCategoriesPage() {
                         sheetChanger =
                             when (selectedCategorizationKey) {
                                 AppGroupsManager.Category.FOLDER.key
-                                -> Config.BS_CREATE_GROUP
+                                     -> Config.BS_CREATE_GROUP
 
                                 AppGroupsManager.Category.TAB.key,
                                 AppGroupsManager.Category.FLOWERPOT.key,
-                                -> Config.BS_SELECT_TAB_TYPE
+                                     -> Config.BS_SELECT_TAB_TYPE
 
                                 else -> Config.BS_NONE
                             }
@@ -239,13 +232,12 @@ fun AppCategoriesPage() {
                         }
                     },
                     modifier = Modifier.padding(16.dp),
-                    containerColor = MaterialTheme.colorScheme.primary.copy(0.65f),
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(id = R.string.title_create),
-                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             },
@@ -297,7 +289,8 @@ fun AppCategoriesPage() {
                     ) {
                         itemsIndexed(
                             groups,
-                            key = { _, item -> item.customizations.toString() }) { index, item ->
+                            key = { _, item -> item.customizations.toString() }
+                        ) { index, item ->
                             ReorderableItem(
                                 state = reorderableListState,
                                 key = item.customizations.toString(),
@@ -307,7 +300,7 @@ fun AppCategoriesPage() {
                                     label = "elevation",
                                 )
                                 val bgColor by animateColorAsState(
-                                    if (isDragging) MaterialTheme.colorScheme.surfaceContainerHighest
+                                    if (isDragging) MaterialTheme.colorScheme.primaryContainer
                                     else MaterialTheme.colorScheme.surfaceContainer,
                                     label = "bgColor",
                                 )
@@ -316,9 +309,7 @@ fun AppCategoriesPage() {
                                     title = item.title,
                                     summary = item.summary,
                                     modifier = Modifier
-                                        .longPressDraggableHandle {
-                                            saveGroupPositions(manager, groups)
-                                        }
+                                        .longPressDraggableHandle()
                                         .shadow(elevation)
                                         .clip(GroupItemShape(index, groups.size - 1)),
                                     containerColor = bgColor,
@@ -332,9 +323,9 @@ fun AppCategoriesPage() {
                                             sheetChanger = Config.BS_EDIT_GROUP
                                             onOptionOpen(
                                                 when (item.type) {
-                                                    DrawerTabs.TYPE_CUSTOM -> AppGroupsManager.Category.TAB
+                                                    DrawerTabs.TYPE_CUSTOM       -> AppGroupsManager.Category.TAB
                                                     FlowerpotTabs.TYPE_FLOWERPOT -> AppGroupsManager.Category.FLOWERPOT
-                                                    else -> AppGroupsManager.Category.FOLDER
+                                                    else                         -> AppGroupsManager.Category.FOLDER
                                                 }
                                             )
                                             editGroup.value = item
@@ -361,7 +352,7 @@ fun AppCategoriesPage() {
                             openDialogCustom = openDialog
                         )
 
-                        else -> {}
+                        else                   -> {}
                     }
                 }
             }
@@ -379,7 +370,7 @@ fun saveGroupPositions(manager: AppGroupsManager, groups: List<AppGroups.Group>)
     when (manager.categorizationType.getValue()) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-        -> {
+                                             -> {
             manager.drawerTabs.setGroups(groups as List<DrawerTabs.Tab>)
             manager.drawerTabs.saveToJson()
         }
@@ -395,7 +386,7 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
     return when (manager.categorizationType.getValue()) {
         AppGroupsManager.Category.TAB.key,
         AppGroupsManager.Category.FLOWERPOT.key,
-        -> {
+                                             -> {
             if (hasWorkApps) manager.drawerTabs.getGroups()
                 .filter { it !is DrawerTabs.ProfileTab || !it.profile.matchesAll }
             else manager.drawerTabs.getGroups()
@@ -407,7 +398,7 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
             manager.drawerFolders.getGroups()
         }
 
-        else -> {
+        else                                 -> {
             emptyList()
         }
     }.toTypedArray()

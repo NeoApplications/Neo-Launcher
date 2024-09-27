@@ -18,7 +18,6 @@
 
 package com.saggitt.omega.groups.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,12 +28,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
@@ -58,6 +55,8 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.components.BaseDialog
+import com.saggitt.omega.compose.components.DialogNegativeButton
+import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.preferences.BasePreference
 import com.saggitt.omega.compose.pages.ColorSelectionDialog
 import com.saggitt.omega.flowerpot.Flowerpot
@@ -85,6 +84,11 @@ fun EditGroupBottomSheet(
     val openDialog = remember { mutableStateOf(false) }
 
     var title by remember { mutableStateOf(group.title) }
+
+    var cornerRadius = 16.dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        cornerRadius = prefs.profileWindowCornerRadius.getValue().dp
+    }
 
     var isHidden by remember {
         mutableStateOf(
@@ -122,7 +126,7 @@ fun EditGroupBottomSheet(
             .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             OutlinedTextField(
@@ -150,7 +154,6 @@ fun EditGroupBottomSheet(
                 },
                 isError = title.isEmpty()
             )
-
         }
         val summary = context.resources.getQuantityString(
             R.plurals.tab_apps_count,
@@ -185,7 +188,7 @@ fun EditGroupBottomSheet(
                                 shape = MaterialTheme.shapes.extraLarge,
                                 modifier = Modifier.padding(8.dp),
                                 elevation = CardDefaults.elevatedCardElevation(8.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                             ) {
                                 GroupAppSelection(
                                     selectedApps = selectedApps.map { it.toString() }.toSet(),
@@ -225,7 +228,7 @@ fun EditGroupBottomSheet(
                                 index = 0,
                                 groupSize = 3
                             ) { openDialog.value = true }
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             BasePreference(
                                 titleId = R.string.tab_hide_from_main,
                                 startWidget = {
@@ -255,7 +258,7 @@ fun EditGroupBottomSheet(
                                         shape = MaterialTheme.shapes.extraLarge,
                                         modifier = Modifier.padding(8.dp),
                                         elevation = CardDefaults.elevatedCardElevation(8.dp),
-                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                                     ) {
                                         GroupAppSelection(
                                             selectedApps = selectedApps.map { it.toString() }
@@ -310,7 +313,7 @@ fun EditGroupBottomSheet(
                 }
             }
             if (group.type != DrawerFolders.TYPE_CUSTOM) {
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 BasePreference(
                     titleId = R.string.tab_color,
                     startWidget = {
@@ -332,14 +335,18 @@ fun EditGroupBottomSheet(
                             shape = MaterialTheme.shapes.extraLarge,
                             modifier = Modifier.padding(8.dp),
                             elevation = CardDefaults.elevatedCardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                         ) {
                             ColorSelectionDialog(
-                                defaultColor = color
-                            ) {
-                                color = it
-                                colorPicker.value = false
-                            }
+                                defaultColor = color,
+                                onCancel = {
+                                    colorPicker.value = false
+                                },
+                                onSave = {
+                                    color = it
+                                    colorPicker.value = false
+                                }
+                            )
                         }
                     }
                 }
@@ -348,25 +355,18 @@ fun EditGroupBottomSheet(
 
         item {
             Row(
-                modifier = Modifier
+                Modifier
                     .fillMaxWidth()
-                    .padding(end = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                OutlinedButton(
-                    onClick = {
-                        onClose(Config.BS_SELECT_TAB_TYPE)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                ) {
-                    Text(text = stringResource(id = android.R.string.cancel))
-                }
-
-                OutlinedButton(
+                DialogNegativeButton(
+                    cornerRadius = cornerRadius,
+                    onClick = { onClose(Config.BS_SELECT_TAB_TYPE) }
+                )
+                DialogPositiveButton(
+                    cornerRadius = cornerRadius,
+                    textId = R.string.tab_bottom_sheet_save,
                     onClick = {
                         (config[AppGroups.KEY_TITLE] as? AppGroups.StringCustomization)?.value =
                             title
@@ -395,19 +395,8 @@ fun EditGroupBottomSheet(
                             else                             -> {}
                         }
                         onClose(Config.BS_SELECT_TAB_TYPE)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35F),
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.65F)
-                    ),
-                ) {
-                    Text(text = stringResource(id = R.string.tab_bottom_sheet_save))
-                }
+                    }
+                )
             }
         }
     }

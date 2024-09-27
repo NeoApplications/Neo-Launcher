@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
@@ -42,14 +41,13 @@ import com.saggitt.omega.util.Config
 fun SelectTabBottomSheet(
     onClose: (Int, AppGroupsManager.Category) -> Unit,
 ) {
-    val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             Text(
@@ -63,7 +61,6 @@ fun SelectTabBottomSheet(
             CategoryTabItem(
                 titleId = R.string.tab_type_smart,
                 summaryId = R.string.pref_appcategorization_flowerpot_summary,
-                modifier = Modifier.height(72.dp),
                 iconId = R.drawable.ic_category,
                 onClick = {
                     onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.FLOWERPOT)
@@ -74,7 +71,6 @@ fun SelectTabBottomSheet(
             CategoryTabItem(
                 titleId = R.string.custom,
                 summaryId = R.string.tab_type_custom_desc,
-                modifier = Modifier.height(72.dp),
                 iconId = R.drawable.ic_squares_four,
                 onClick = {
                     onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.TAB)
