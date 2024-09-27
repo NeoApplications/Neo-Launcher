@@ -59,9 +59,9 @@ fun DashPage() {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(lineSize),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(4.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(8.dp)
     ) {
         if (activeDashProviders.contains(AudioPlayer::class.java.name)) item(
             span = { GridItemSpan(lineSize) }) { // TODO abstract DashProviders to Constants

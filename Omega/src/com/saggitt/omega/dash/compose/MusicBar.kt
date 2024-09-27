@@ -24,13 +24,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,7 +52,7 @@ fun MusicBar(
     Row(
         modifier = Modifier
             .background(Color.Transparent, MaterialTheme.shapes.medium),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         listOf(
             MusicControlItem.PREVIOUS,
@@ -63,13 +61,12 @@ fun MusicBar(
         ).forEach {
             FilledTonalIconButton(
                 modifier = Modifier
-                    .padding(4.dp)
                     .weight(1f)
                     .aspectRatio(ratio / 2.8f),
                 shape = MaterialTheme.shapes.medium,
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
-                    contentColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 onClick = {
                     it.onClick(audioManager)
