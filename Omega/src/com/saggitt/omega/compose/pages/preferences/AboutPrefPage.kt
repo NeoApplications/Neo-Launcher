@@ -41,12 +41,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -91,15 +93,18 @@ fun AboutPrefPage() {
                         .fillMaxWidth()
                         .padding(4.dp)
                         .background(
-                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surfaceContainerHighest,
                             MaterialTheme.shapes.extraLarge
                         )
-                        .padding(12.dp),
+                        .clip(MaterialTheme.shapes.extraLarge),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     ListItem(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                        ),
                         leadingContent = {
                             ResourcesCompat.getDrawable(
                                 LocalContext.current.resources,
@@ -137,12 +142,12 @@ fun AboutPrefPage() {
                                     text = stringResource(id = R.string.app_version) + ": "
                                             + BuildConfig.VERSION_NAME + " ( Build " + BuildConfig.VERSION_CODE + " )",
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
                                     text = BuildConfig.APPLICATION_ID,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -150,6 +155,7 @@ fun AboutPrefPage() {
 
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(8.dp),
                     ) {
                         items(links) { link ->
                             ItemLink(
