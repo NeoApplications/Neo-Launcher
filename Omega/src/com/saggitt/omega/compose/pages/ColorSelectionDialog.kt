@@ -18,28 +18,41 @@
 
 package com.saggitt.omega.compose.pages
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
+import com.saggitt.omega.compose.components.DialogNegativeButton
+import com.saggitt.omega.compose.components.HorizontalPagerNavBar
 import com.saggitt.omega.compose.components.HorizontalPagerPage
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.theme.AccentColorOption
-import com.saggitt.omega.theme.OmegaAppTheme
+import com.saggitt.omega.util.blockBorder
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.staticColors
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColorSelectionDialog(
     defaultColor: String,
-    onClose: (String) -> Unit,
+    onCancel: (String) -> Unit,
+    onSave: (String) -> Unit,
 ) {
     val currentColor = remember { mutableStateOf(defaultColor) }
     val dynamicColors = dynamicColors
@@ -76,24 +89,52 @@ fun ColorSelectionDialog(
     }
     val pagerState = rememberPagerState(initialPage = defaultTabIndex, pageCount = { tabs.size })
 
-    OmegaAppTheme {
-        ViewWithActionBar(
-            title = stringResource(R.string.tab_color),
-            onBackAction = {
-                onClose(currentColor.value)
+    ViewWithActionBar(
+        title = stringResource(R.string.tab_color),
+        showBackButton = false,
+        bottomBar = {
+            Column {
+                HorizontalPagerNavBar(tabs = tabs, pagerState = pagerState)
+                BottomAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.background
+                ) {
+                    DialogNegativeButton(
+                        onClick = {
+                            onCancel(currentColor.value)
+                        }
+                    )
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        onClick = { onSave(currentColor.value) }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.button_apply),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
             }
-        ) { paddingValues ->
-            HorizontalPagerPage(
-                pagerState = pagerState,
-                tabs = tabs,
-                paddingValues = paddingValues
-            )
         }
+    ) { paddingValues ->
+        HorizontalPagerPage(
+            pagerState = pagerState,
+            tabs = tabs,
+            modifier = Modifier
+                .padding(paddingValues)
+                .blockBorder()
+                .fillMaxSize(),
+        )
     }
 
     DisposableEffect(key1 = null) {
         onDispose {
-            onClose(currentColor.value)
+            onCancel(currentColor.value)
         }
     }
 }

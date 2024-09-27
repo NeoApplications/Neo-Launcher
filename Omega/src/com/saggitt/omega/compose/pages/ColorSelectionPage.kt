@@ -19,31 +19,27 @@
 package com.saggitt.omega.compose.pages
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,13 +56,16 @@ import com.android.launcher3.R
 import com.raedapps.alwan.rememberAlwanState
 import com.raedapps.alwan.ui.Alwan
 import com.saggitt.omega.compose.components.ColorItem
+import com.saggitt.omega.compose.components.DialogNegativeButton
+import com.saggitt.omega.compose.components.HorizontalPagerNavBar
 import com.saggitt.omega.compose.components.HorizontalPagerPage
+import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.compose.components.TabItem
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.navigation.LocalPaneNavigator
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.theme.AccentColorOption
-import com.saggitt.omega.theme.GroupItemShape
+import com.saggitt.omega.util.blockBorder
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
@@ -122,35 +121,43 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     ViewWithActionBar(
         title = stringResource(pref.titleId),
         bottomBar = {
-            BottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                containerColor = MaterialTheme.colorScheme.background
-            ) {
-
-                Button(
+            Column {
+                HorizontalPagerNavBar(tabs = tabs, pagerState = pagerState)
+                BottomAppBar(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
-                        .height(48.dp)
                         .fillMaxWidth(),
-                    onClick = {
-                        pref.setValue(currentAccentColor.value)
-                        paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
-                    }
+                    containerColor = MaterialTheme.colorScheme.background
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.button_apply),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface
+                    DialogNegativeButton(
+                        onClick = { paneNavigator.navigateBack(BackNavigationBehavior.PopLatest) }
                     )
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        onClick = {
+                            pref.setValue(currentAccentColor.value)
+                            paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.button_apply),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
     ) { paddingValues ->
         HorizontalPagerPage(
-            pagerState,
-            tabs,
-            paddingValues
+            pagerState = pagerState,
+            tabs = tabs,
+            modifier = Modifier
+                .padding(paddingValues)
+                .blockBorder()
+                .fillMaxSize(),
         )
     }
 }
@@ -161,28 +168,20 @@ fun PresetsPage(
     onSelectColor: (String) -> Unit,
     isColorSelected: (String) -> Boolean,
 ) {
-    Column(
+    LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
+        columns = GridCells.FixedSize(72.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        contentPadding = PaddingValues(12.dp)
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(5),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            itemsIndexed(presetColors) { _, colorOption ->
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ColorItem(
-                        color = colorOption.accentColor,
-                        selected = isColorSelected(colorOption.toString()),
-                        modifier = Modifier.widthIn(0.dp, 64.dp),
-                        onClick = { onSelectColor(colorOption.toString()) }
-                    )
-                }
-            }
+        itemsIndexed(presetColors) { _, colorOption ->
+            ColorItem(
+                color = colorOption.accentColor,
+                selected = isColorSelected(colorOption.toString()),
+                modifier = Modifier.widthIn(0.dp, 64.dp),
+                onClick = { onSelectColor(colorOption.toString()) }
+            )
         }
     }
 }
@@ -192,33 +191,37 @@ fun CustomPage(
     initialColor: Color,
     onSelectColor: (String) -> Unit,
 ) {
-    Column(
+    val current = rememberAlwanState(initialColor = initialColor)
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(12.dp),
     ) {
-        val current = rememberAlwanState(initialColor = initialColor)
-        Box(
-            modifier = Modifier
-                .height(72.dp)
-                .padding(12.dp)
-                .fillMaxWidth()
-                .clip(MaterialTheme.shapes.large)
-                .background(current.color),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = Integer.toHexString(current.color.hashCode()), color = Color.White)
+        item {
+            Box(
+                modifier = Modifier
+                    .height(48.dp)
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(current.color),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = Integer.toHexString(current.color.hashCode()), color = Color.White)
+            }
         }
-
-        Alwan(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            onColorChanged = {
-                onSelectColor("custom|#${Integer.toHexString(current.color.hashCode())}")
-            },
-            state = current,
-            showAlphaSlider = true,
-        )
+        item {
+            Alwan(
+                modifier = Modifier
+                    .widthIn(min = 500.dp)
+                    .padding(horizontal = 24.dp),
+                onColorChanged = {
+                    onSelectColor("custom|#${Integer.toHexString(current.color.hashCode())}")
+                },
+                state = current,
+                showAlphaSlider = true,
+            )
+        }
     }
 }
 
@@ -228,42 +231,16 @@ fun DynamicPage(
     onSelectColor: (String) -> Unit,
     isColorSelected: (String) -> Boolean,
 ) {
-    val groupSize = dynamicColors.size
-    Column(
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp, top = 16.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp)
     ) {
-        dynamicColors.forEachIndexed { index, option ->
-            val rank = (index + 1f) / groupSize
-            ListItem(
-                modifier = Modifier
-                    .clip(
-                        GroupItemShape(index, groupSize - 1)
-                    )
-                    .clickable {
-                        onSelectColor(option.toString())
-                    }
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation((rank * 24).dp)),
-                leadingContent = {
-                    RadioButton(
-                        selected = isColorSelected(option.toString()),
-                        onClick = {
-                            onSelectColor(option.toString())
-                        },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = MaterialTheme.colorScheme.primary,
-                            unselectedColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                },
-                headlineContent = {
-                    Text(
-                        text = stringResource(id = option.displayName),
-                    )
-                },
-                trailingContent = {
+        itemsIndexed(dynamicColors) { _, option ->
+            SingleSelectionListItem(
+                text = stringResource(id = option.displayName),
+                isSelected = isColorSelected(option.toString()),
+                endWidget = {
                     ColorItem(
                         color = option.accentColor,
                         selected = false,
@@ -271,8 +248,10 @@ fun DynamicPage(
                         onClick = { onSelectColor(option.toString()) }
                     )
                 },
+                onClick = {
+                    onSelectColor(option.toString())
+                }
             )
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
