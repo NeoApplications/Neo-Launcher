@@ -23,6 +23,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -38,8 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -52,6 +53,7 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.move
+import com.saggitt.omega.compose.components.plus
 import com.saggitt.omega.dash.dashProviderOptions
 import com.saggitt.omega.preferences.iconIds
 import com.saggitt.omega.theme.GroupItemShape
@@ -62,23 +64,22 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun EditDashPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val dashProvidersItems = Utilities.getNeoPrefs(context).dashProvidersItems
     val iconList = iconIds
 
     val allItems = dashProviderOptions
 
-    val enabled = allItems.filter {
-        it.key in prefs.dashProvidersItems.getValue()
-    }.map { DashItem(it.key, it.value) }.associateBy { it.key }
+    val (enabled, disabled) = allItems
+        .map { DashItem(it.key, it.value) }
+        .partition {
+            it.key in dashProvidersItems.getValue()
+        }
+    val enabledMap = enabled.associateBy { it.key }
 
-    val enabledSorted = prefs.dashProvidersItems.getValue().mapNotNull { enabled[it] }
+    val enabledSorted = dashProvidersItems.getValue().mapNotNull { enabledMap[it] }
 
-    val disabled = allItems.filter {
-        it.key !in prefs.dashProvidersItems.getValue()
-    }.map { DashItem(it.key, it.value) }
-
-    val enabledItems = remember { mutableStateListOf(*enabledSorted.toTypedArray()) }
-    val disabledItems = remember { mutableStateListOf(*disabled.toTypedArray()) }
+    val enabledItems = remember { enabledSorted.toMutableStateList() }
+    val disabledItems = remember { disabled.toMutableStateList() }
 
     val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
@@ -92,18 +93,16 @@ fun EditDashPage() {
         title = stringResource(id = R.string.edit_dash),
         onBackAction = {
             val enabledKeys = enabledItems.map { it.key }
-            prefs.dashProvidersItems.setAll(enabledKeys)
+            dashProvidersItems.setAll(enabledKeys)
         }
     ) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp),
-            contentPadding = paddingValues,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = paddingValues + PaddingValues(horizontal = 8.dp),
             state = lazyListState,
         ) {
-            item {
+            stickyHeader {
                 Text(
                     text = stringResource(id = R.string.enabled_events),
                     style = MaterialTheme.typography.titleMedium,
@@ -121,7 +120,7 @@ fun EditDashPage() {
                         label = "elevation",
                     )
                     val bgColor by animateColorAsState(
-                        if (isDragging) MaterialTheme.colorScheme.surfaceContainerHighest
+                        if (isDragging) MaterialTheme.colorScheme.primaryContainer
                         else MaterialTheme.colorScheme.surfaceContainer,
                         label = "bgColor",
                     )
@@ -165,7 +164,7 @@ fun EditDashPage() {
                 }
             }
 
-            item {
+            stickyHeader {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(id = R.string.tap_to_enable),
@@ -208,7 +207,7 @@ fun EditDashPage() {
     DisposableEffect(key1 = null) {
         onDispose {
             val enabledKeys = enabledItems.map { it.key }
-            prefs.dashProvidersItems.setAll(enabledKeys)
+            dashProvidersItems.setAll(enabledKeys)
         }
     }
 }
