@@ -20,23 +20,13 @@ package com.saggitt.omega.groups.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
-import com.saggitt.omega.theme.GroupItemShape
+import com.saggitt.omega.compose.components.preferences.BasePreference
 
 @Composable
 fun CategoryTabItem(
@@ -46,13 +36,11 @@ fun CategoryTabItem(
     @DrawableRes iconId: Int? = null,
     onClick: () -> Unit,
 ) {
-    ListItem(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(GroupItemShape(0, 0))
-            .clickable(onClick = onClick),
-        tonalElevation = 12.dp,
-        leadingContent = {
+    BasePreference(
+        titleId = titleId,
+        summaryId = summaryId,
+        modifier = modifier,
+        startWidget = {
             if (iconId != null) {
                 Icon(
                     painter = painterResource(id = iconId),
@@ -60,28 +48,13 @@ fun CategoryTabItem(
                 )
             }
         },
-        headlineContent = {
-            Text(
-                text = stringResource(id = titleId),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        },
-        supportingContent = {
-            Text(
-                text = stringResource(id = summaryId),
-                style = MaterialTheme.typography.headlineLarge,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        trailingContent = {
+        endWidget = {
             Icon(
                 painter = painterResource(id = R.drawable.chevron_right),
                 contentDescription = "",
             )
-        }
+        },
+        onClick = onClick,
     )
 }
 
