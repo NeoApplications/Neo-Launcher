@@ -165,8 +165,15 @@ public class IconProvider {
      * Loads the icon for the provided activity info
      */
     public Drawable getIcon(ActivityInfo info, int iconDpi) {
+        UserHandle userHandle;
+        try {
+            userHandle = (UserHandle) UserHandle.class.getDeclaredMethod("of", int.class)
+                    .invoke(null,info.applicationInfo.uid);
+        } catch (Exception e) {
+            userHandle = UserHandle.getUserHandleForUid(info.applicationInfo.uid);
+        }
         return getIconWithOverrides(info.applicationInfo.packageName, iconDpi,
-                info.name, UserHandle.getUserHandleForUid(info.applicationInfo.uid),
+                info.name, userHandle,
                 () -> loadActivityInfoIcon(info, iconDpi));
     }
 
