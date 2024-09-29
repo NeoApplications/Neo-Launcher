@@ -112,6 +112,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         }
         pool.setMaxRecycledViews(
                 AllAppsGridAdapter.VIEW_TYPE_ICON, maxPoolSizeForAppIcons);
+        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, maxPoolSizeForAppIcons);
     }
 
     @Override

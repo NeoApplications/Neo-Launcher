@@ -22,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,8 +32,12 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.NeoLauncher;
+import com.saggitt.omega.groups.DrawerFolderItem;
+import com.saggitt.omega.groups.category.DrawerFolderInfo;
 
 /**
  * Adapter for all the apps.
@@ -54,11 +59,14 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
     public static final int VIEW_TYPE_WORK_EDU_CARD = 1 << 4;
     public static final int VIEW_TYPE_WORK_DISABLED_CARD = 1 << 5;
 
-    public static final int NEXT_ID = 6;
+    // Drawer folders
+    public static final int VIEW_TYPE_FOLDER = 1 << 6;
+
+    public static final int NEXT_ID = 7;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
-    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON;
+    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_FOLDER;
 
     protected final SearchAdapterProvider<?> mAdapterProvider;
 
@@ -89,6 +97,8 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public int rowAppIndex;
         // The associated ItemInfoWithIcon for the item
         public AppInfo itemInfo = null;
+        // The associated folder for the folder
+        public DrawerFolderItem folderItem = null;
 
         public AdapterItem(int viewType) {
             this.viewType = viewType;
@@ -100,6 +110,12 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
         public static AdapterItem asApp(AppInfo appInfo) {
             AdapterItem item = new AdapterItem(VIEW_TYPE_ICON);
             item.itemInfo = appInfo;
+            return item;
+        }
+
+        public static AdapterItem asFolder(DrawerFolderInfo folderInfo) {
+            AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
+            item.folderItem = new DrawerFolderItem(folderInfo);
             return item;
         }
 
@@ -191,6 +207,13 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
                     icon.getLayoutParams().height += mExtraTextHeight;
                 }
                 return new ViewHolder(icon);
+            case VIEW_TYPE_FOLDER:
+                FrameLayout frame = new FrameLayout(mActivityContext);
+                ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
+                        mActivityContext.getDeviceProfile().allAppsCellWidthPx,
+                        mActivityContext.getDeviceProfile().allAppsCellHeightPx);
+                frame.setLayoutParams(lp);
+                return new ViewHolder(frame);
             case VIEW_TYPE_EMPTY_SEARCH:
                 return new ViewHolder(mLayoutInflater.inflate(R.layout.all_apps_empty_search,
                         parent, false));
@@ -219,6 +242,17 @@ public abstract class BaseAllAppsAdapter<T extends Context & ActivityContext> ex
                 BubbleTextView icon = (BubbleTextView) holder.itemView;
                 icon.reset();
                 icon.applyFromApplicationInfo(adapterItem.itemInfo);
+                break;
+            }
+            case VIEW_TYPE_FOLDER: {
+                ViewGroup container = (ViewGroup) holder.itemView;
+                FolderIcon folderIcon = mApps.getAdapterItems().get(position)
+                        .folderItem.getFolderIcon(NeoLauncher.getLauncher(mActivityContext), container);
+
+                container.removeAllViews();
+                container.addView(folderIcon);
+
+                //folderIcon.verifyHighRes();
                 break;
             }
             case VIEW_TYPE_EMPTY_SEARCH: {
