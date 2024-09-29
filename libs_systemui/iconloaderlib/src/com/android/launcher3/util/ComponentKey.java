@@ -22,6 +22,8 @@ import android.os.UserHandle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class ComponentKey {
@@ -75,9 +77,10 @@ public class ComponentKey {
             return null;
         }
         try {
+            Method ofMethod = UserHandle.class.getDeclaredMethod("of", int.class);
             return new ComponentKey(componentName,
-                    UserHandle.getUserHandleForUid(Integer.parseInt(str.substring(sep + 1))));
-        } catch (NumberFormatException ex) {
+                    (UserHandle) ofMethod.invoke(null, Integer.parseInt(str.substring(sep + 1))));
+        } catch (NumberFormatException | InvocationTargetException | NoSuchMethodException | IllegalAccessException ex) {
             return null;
         }
     }
