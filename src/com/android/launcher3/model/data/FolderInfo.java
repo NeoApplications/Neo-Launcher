@@ -241,6 +241,10 @@ public class FolderInfo extends ItemInfo {
         return hasOption(FLAG_COVER_MODE);
     }
 
+    public boolean isInDrawer() {
+        return container == ItemInfo.NO_ID;
+    }
+
     public void setCoverMode(boolean enable, ModelWriter modelWriter) {
         setOption(FLAG_COVER_MODE, enable, modelWriter);
         onIconChanged();
