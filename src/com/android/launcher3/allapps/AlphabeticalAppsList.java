@@ -253,6 +253,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
      */
     public void updateAdapterItems() {
         List<AdapterItem> oldItems = new ArrayList<>(mAdapterItems);
+        String lastSectionName = null;
         // Prepare to update the list of sections, filtered apps, etc.
         mFastScrollerSections.clear();
         mAdapterItems.clear();
@@ -265,13 +266,35 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         } else {
             int position = 0;
             boolean addApps = true;
+
+            for (DrawerFolderInfo info : getFolderInfos()) {
+                String sectionName = "#";
+
+                // Create a new section if the section names do not match
+                if (!sectionName.equals(lastSectionName)) {
+                    lastSectionName = sectionName;
+                    mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
+                }
+                if (mAllAppsStore != null) {
+                    info.setAppsStore(mAllAppsStore);
+                }
+
+                AdapterItem folderItem = AdapterItem.asFolder(info);
+                mAdapterItems.add(folderItem);
+                position++;
+            }
+
             if (mWorkProviderManager != null) {
                 position += mWorkProviderManager.addWorkItems(mAdapterItems);
                 addApps = mWorkProviderManager.shouldShowWorkApps();
             }
+
+            Set<ComponentKey> folderFilters = getFolderFilteredApps();
             if (addApps) {
-                String lastSectionName = null;
                 for (AppInfo info : mApps) {
+                    if (mSearchResults.isEmpty() && folderFilters.contains(info.toComponentKey())) {
+                        continue;
+                    }
                     mAdapterItems.add(AdapterItem.asApp(info));
 
                     String sectionName = info.sectionName;
@@ -334,7 +357,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     }
 
     private Set<ComponentKey> getFolderFilteredApps() {
-
         return Utilities.getNeoPrefs(mLauncher)
                 .getDrawerFolders()
                 .getHiddenComponents();
