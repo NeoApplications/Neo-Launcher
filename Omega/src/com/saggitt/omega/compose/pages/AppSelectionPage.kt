@@ -20,7 +20,6 @@ package com.saggitt.omega.compose.pages
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -109,8 +108,7 @@ fun AppSelectionPage(
                     val bgColor by animateColorAsState(
                         if (isSelected.value)
                             MaterialTheme.colorScheme.surfaceContainerHighest
-                        else MaterialTheme.colorScheme.surfaceContainer
-                        ,label = "bgColor"
+                        else MaterialTheme.colorScheme.surfaceContainer, label = "bgColor"
                     )
 
                     ListItemWithIcon(
@@ -120,7 +118,7 @@ fun AppSelectionPage(
                                 selected = if (isSelected.value) selected.minus(app.key.toString())
                                 else selected.plus(app.key.toString())
                             },
-                        title = app.label,
+                        title = app.label + if (app.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
                         containerColor = bgColor,
                         startIcon = {
                             Image(
