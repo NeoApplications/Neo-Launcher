@@ -44,6 +44,7 @@ val themeItems = mutableMapOf(
 
 const val PREFS_DESKTOP_POPUP_EDIT = "desktop_popup_edit"
 const val PREFS_DESKTOP_POPUP_REMOVE = "desktop_popup_remove"
+const val PREFS_DESKTOP_POPUP_UNINSTALL = "desktop_popup_uninstall"
 
 const val PREFS_DRAWER_POPUP_EDIT = "drawer_popup_edit"
 const val PREFS_DRAWER_POPUP_UNINSTALL = "drawer_popup_uninstall"
@@ -58,6 +59,7 @@ const val LAYOUT_CATEGORIZED = 4
 val desktopPopupOptions = mutableMapOf(
     PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,
     PREFS_DESKTOP_POPUP_EDIT to R.string.action_preferences,
+    PREFS_DESKTOP_POPUP_UNINSTALL to R.string.uninstall_drop_target_label,
 )
 
 val drawerPopupOptions = mutableMapOf(
@@ -66,11 +68,11 @@ val drawerPopupOptions = mutableMapOf(
 )
 
 val drawerLayoutOptions = mutableMapOf(
-    LAYOUT_CUSTOM_CATEGORIES to R.string.title_drawer_custom_categories,
     LAYOUT_VERTICAL to R.string.title_drawer_vertical,
     LAYOUT_VERTICAL_ALPHABETICAL to R.string.title_drawer_vertical_list,
     LAYOUT_HORIZONTAL to R.string.title_drawer_horizontal,
     LAYOUT_CATEGORIZED to R.string.title_drawer_categorized,
+    LAYOUT_CUSTOM_CATEGORIES to R.string.title_drawer_custom_categories
 )
 
 val temperatureUnitOptions = listOfNotNull(
@@ -87,10 +89,12 @@ val temperatureUnitOptions = listOfNotNull(
     valueTransform = { "${it.name} (${it.suffix})" }
 )
 
+
 val iconIds = mapOf(
     // Desktop Popup
     PREFS_DESKTOP_POPUP_REMOVE to R.drawable.ic_remove_no_shadow,
     PREFS_DESKTOP_POPUP_EDIT to R.drawable.ic_edit_no_shadow,
+    PREFS_DESKTOP_POPUP_UNINSTALL to R.drawable.ic_uninstall_no_shadow,
     // Drawer Popup
     PREFS_DRAWER_POPUP_UNINSTALL to R.drawable.ic_uninstall_no_shadow,
     PREFS_DRAWER_POPUP_EDIT to R.drawable.ic_edit_no_shadow,

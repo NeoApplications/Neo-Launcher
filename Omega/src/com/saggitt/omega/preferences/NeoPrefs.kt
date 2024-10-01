@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -324,6 +325,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
+    // TODO fix this
     var desktopAllowEmptyScreens = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_EMPTY_SCREENS_ALLOW,
@@ -385,6 +387,8 @@ class NeoPrefs private constructor(val context: Context) {
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_EDIT)
     val desktopPopupRemove: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
+    val desktopPopupUninstall: Boolean
+        get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_UNINSTALL)
 
     private var desktopGridSizeDelegate = ResettableLazy {
         GridSize2D(
@@ -629,7 +633,6 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     // Drawer
-    // TODO drawerLayout
     var drawerSortMode = IntSelectionPref(
         dataStore = dataStore,
         titleId = R.string.title__sort_mode,
@@ -823,8 +826,22 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DRAWER_LAYOUT,
         titleId = R.string.title_drawer_layout,
-        defaultValue = LAYOUT_CUSTOM_CATEGORIES,
-        entries = drawerLayoutOptions
+        defaultValue = LAYOUT_VERTICAL,
+        entries = drawerLayoutOptions,
+        onChange = {
+            Log.d("NeoPref", "Drawer layout changed to $it")
+        }
+    )
+
+    var categoriesLayout = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_LAYOUT_CATEGORIES,
+        titleId = R.string.title_drawer_layout_categories,
+        defaultValue = setOf(),
+        entries = Config.layoutCategories(context),
+        onChange = {
+            Log.d("NeoPref", "Categories layout changed to $it")
+        }
     )
 
     // Notifications & Widgets/Smartspace
@@ -922,7 +939,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_BACKGROUND,
         titleId = R.string.title_smartspace_background,
-        defaultValue = true,
+        defaultValue = false,
     )
 
     val smartspaceDate = BooleanPref(

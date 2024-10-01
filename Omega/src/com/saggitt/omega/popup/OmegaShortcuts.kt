@@ -213,17 +213,18 @@ class OmegaShortcuts {
         val APP_UNINSTALL =
             SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
                 val prefs = NeoPrefs.getInstance()
-                var appUninstall: AppUninstall? = null
+                val inUninstallState =
+                    (prefs.drawerPopupUninstall && launcher.isInState(LauncherState.ALL_APPS)) ||
+                            (prefs.desktopPopupUninstall && !launcher.isInState(LauncherState.ALL_APPS))
 
-                if (prefs.drawerPopupUninstall && launcher.isInState(LauncherState.ALL_APPS)) {
-
-                    if (itemInfo is ItemInfoWithIcon) {
-                        if (!itemInfo.runtimeStatusFlags.hasFlags(FLAG_SYSTEM_YES)) {
-                            appUninstall = AppUninstall(launcher, itemInfo, originalView)
-                        }
-                    }
+                if (inUninstallState && itemInfo is ItemInfoWithIcon && !itemInfo.runtimeStatusFlags.hasFlags(
+                        FLAG_SYSTEM_YES
+                    )
+                ) {
+                    AppUninstall(launcher, itemInfo, originalView)
+                } else {
+                    null
                 }
-                appUninstall
             }
     }
 }
