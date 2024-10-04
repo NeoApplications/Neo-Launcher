@@ -1,242 +1,213 @@
-package com.saggitt.omega.smartspace.provider;
+package com.saggitt.omega.smartspace.provider
 
-import android.app.Notification;
-import android.content.Context;
-import android.media.MediaMetadata;
-import android.media.session.MediaController;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
-import android.os.Bundle;
-import android.os.Handler;
-import android.service.notification.StatusBarNotification;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.app.Notification
+import android.content.Context
+import android.media.MediaMetadata
+import android.media.session.MediaController
+import android.media.session.MediaSession
+import android.media.session.PlaybackState
+import android.os.Handler
+import android.service.notification.StatusBarNotification
+import android.util.Log
+import android.view.KeyEvent
+import androidx.core.util.Consumer
+import com.saggitt.omega.util.FlowCollector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import java.util.Objects
 
-import androidx.core.util.Consumer;
+class MediaListener(private val mContext: Context, onChange: Consumer<MediaListener>) :
+    MediaController.Callback() {
+    private val mOnChange = Runnable { onChange.accept(this) }
+    private var mControllers = emptyList<MediaNotificationController>()
+    var tracking: MediaNotificationController? = null
+        private set
+    private val mHandler = Handler()
+    private val mFlowCollector: FlowCollector<List<StatusBarNotification>>
+    private var mNotifications = emptyList<StatusBarNotification>()
 
-import com.saggitt.omega.util.FlowCollector;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-public class MediaListener extends MediaController.Callback {
-    private static final String TAG = "MediaListener";
-
-    private final Context mContext;
-    private final Runnable mOnChange;
-    private List<MediaNotificationController> mControllers = Collections.emptyList();
-    private MediaNotificationController mTracking;
-    private final Handler mHandler = new Handler();
-    private final FlowCollector<List<StatusBarNotification>> mFlowCollector;
-    private List<StatusBarNotification> mNotifications = Collections.emptyList();
-
-    public MediaListener(Context context, Consumer<MediaListener> onChange) {
-        mContext = context;
-        mOnChange = () -> onChange.accept(this);
-        NotificationsManager notificationManager = NotificationsManager.INSTANCE.get(context);
-        mFlowCollector = new FlowCollector<>(
-                notificationManager.getNotifications(),
-                item -> {
-                    mNotifications = item;
-                    updateTracking();
-                }
-        );
-    }
-
-    public void onResume() {
-        updateTracking();
-        mFlowCollector.start();
-    }
-
-    public void onPause() {
-        updateTracking();
-        mFlowCollector.stop();
-    }
-
-    public MediaNotificationController getTracking() {
-        return mTracking;
-    }
-
-    public String getPackage() {
-        return mTracking.controller.getPackageName();
-    }
-
-    private void updateControllers(List<MediaNotificationController> controllers) {
-        for (MediaNotificationController mnc : mControllers) {
-            mnc.controller.unregisterCallback(this);
+    init {
+        val notificationManager = NotificationsManager.INSTANCE[mContext]
+        mFlowCollector = FlowCollector(notificationManager.notifications) { list ->
+            mNotifications = list
+            updateTracking()
         }
-        for (MediaNotificationController mnc : controllers) {
-            mnc.controller.registerCallback(this);
-        }
-        mControllers = controllers;
     }
 
-    private void updateTracking() {
-        updateControllers(getControllers());
+    fun onResume() {
+        updateTracking()
+        mFlowCollector.start()
+    }
 
-        if (mTracking != null) {
-            mTracking.reloadInfo();
+    fun onPause() {
+        updateTracking()
+        mFlowCollector.stop()
+    }
+
+    val `package`: String
+        get() = tracking!!.controller.packageName
+
+    private fun updateControllers(controllers: List<MediaNotificationController>) {
+        for (mnc in mControllers) {
+            mnc.controller.unregisterCallback(this)
+        }
+        for (mnc in controllers) {
+            mnc.controller.registerCallback(this)
+        }
+        mControllers = controllers
+    }
+
+    private fun updateTracking() {
+        updateControllers(controllers)
+
+        if (tracking != null) {
+            tracking!!.reloadInfo()
         }
 
         // If the current controller is not playing, stop tracking it.
-        if (mTracking != null
-                && (!mControllers.contains(mTracking) || !mTracking.isPlaying())) {
-            mTracking = null;
+        if (tracking != null
+            && (!mControllers.contains(tracking) || !tracking!!.isPlaying)
+        ) {
+            tracking = null
         }
 
-        for (MediaNotificationController mnc : mControllers) {
+        for (mnc in mControllers) {
             // Either we are not tracking a controller and this one is valid,
             // or this one is playing while the one we track is not.
-            if ((mTracking == null && mnc.isPlaying())
-                    || (mTracking != null && mnc.isPlaying() && !mTracking.isPlaying())) {
-                mTracking = mnc;
+            if ((tracking == null && mnc.isPlaying)
+                || (tracking != null && mnc.isPlaying && !tracking!!.isPlaying)
+            ) {
+                tracking = mnc
             }
         }
 
-        mHandler.removeCallbacks(mOnChange);
-        mHandler.post(mOnChange);
+        mHandler.removeCallbacks(mOnChange)
+        mHandler.post(mOnChange)
     }
 
-    private void pressButton(int keyCode) {
-        if (mTracking != null) {
-            mTracking.pressButton(keyCode);
+    private fun pressButton(keyCode: Int) {
+        if (tracking != null) {
+            tracking!!.pressButton(keyCode)
         }
     }
 
-    void toggle(boolean finalClick) {
+    fun toggle(finalClick: Boolean) {
         if (!finalClick) {
-            Log.d(TAG, "Toggle");
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+            Log.d(TAG, "Toggle")
+            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
         }
     }
 
-    void next(boolean finalClick) {
+    fun next(finalClick: Boolean) {
         if (finalClick) {
-            Log.d(TAG, "Next");
-            pressButton(KeyEvent.KEYCODE_MEDIA_NEXT);
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
+            Log.d(TAG, "Next")
+            pressButton(KeyEvent.KEYCODE_MEDIA_NEXT)
+            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY)
         }
     }
 
-    void previous(boolean finalClick) {
+    fun previous(finalClick: Boolean) {
         if (finalClick) {
-            Log.d(TAG, "Previous");
-            pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
+            Log.d(TAG, "Previous")
+            pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY)
         }
     }
 
-    private List<MediaNotificationController> getControllers() {
-        List<MediaNotificationController> controllers = new ArrayList<>();
-        for (StatusBarNotification notif : mNotifications) {
-            Bundle extras = notif.getNotification().extras;
-            MediaSession.Token notifToken = extras.getParcelable(Notification.EXTRA_MEDIA_SESSION);
-            if (notifToken != null) {
-                MediaController controller = new MediaController(mContext, notifToken);
-                controllers.add(new MediaNotificationController(controller, notif));
+    private val controllers: List<MediaNotificationController>
+        get() {
+            val controllers: MutableList<MediaNotificationController> =
+                ArrayList()
+            for (notif in mNotifications) {
+                val extras = notif.notification.extras
+                val notifToken =
+                    extras.getParcelable<MediaSession.Token>(Notification.EXTRA_MEDIA_SESSION)
+                if (notifToken != null) {
+                    val controller =
+                        MediaController(mContext, notifToken)
+                    controllers.add(MediaNotificationController(controller, notif))
+                }
             }
+            return controllers
         }
-        return controllers;
-    }
 
     /**
      * Events that refresh the current handler.
      */
-    public void onPlaybackStateChanged(PlaybackState state) {
-        super.onPlaybackStateChanged(state);
-        updateTracking();
+    override fun onPlaybackStateChanged(state: PlaybackState?) {
+        super.onPlaybackStateChanged(state)
+        updateTracking()
     }
 
-    public void onMetadataChanged(MediaMetadata metadata) {
-        super.onMetadataChanged(metadata);
-        updateTracking();
+    override fun onMetadataChanged(metadata: MediaMetadata?) {
+        super.onMetadataChanged(metadata)
+        updateTracking()
     }
 
-    public class MediaInfo {
+    inner class MediaInfo {
+        var title: CharSequence? = null
+        var artist: CharSequence? = null
+        var album: CharSequence? = null
 
-        private CharSequence title;
-        private CharSequence artist;
-        private CharSequence album;
-
-        public CharSequence getTitle() {
-            return title;
+        override fun equals(o: Any?): Boolean {
+            if (this === o) return true
+            if (o == null || javaClass != o.javaClass) return false
+            val mediaInfo = o as MediaInfo
+            return title == mediaInfo.title && artist == mediaInfo.artist && album == mediaInfo.album
         }
 
-        public CharSequence getArtist() {
-            return artist;
-        }
-
-        public CharSequence getAlbum() {
-            return album;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            MediaInfo mediaInfo = (MediaInfo) o;
-            return Objects.equals(title, mediaInfo.title) && Objects.equals(artist, mediaInfo.artist) && Objects.equals(album, mediaInfo.album);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(title, artist, album);
+        override fun hashCode(): Int {
+            return Objects.hash(title, artist, album)
         }
     }
 
-    public class MediaNotificationController {
+    inner class MediaNotificationController(
+        val controller: MediaController,
+        sbn: StatusBarNotification
+    ) {
+        val sbn: StatusBarNotification? = sbn
+        var info: MediaInfo? = null
+            private set
 
-        private final MediaController controller;
-        private final StatusBarNotification sbn;
-        private MediaInfo info;
-
-        private MediaNotificationController(MediaController controller, StatusBarNotification sbn) {
-            this.controller = controller;
-            this.sbn = sbn;
-            reloadInfo();
+        init {
+            reloadInfo()
         }
 
-        private boolean hasTitle() {
-            return info != null && info.title != null;
+        private fun hasTitle(): Boolean {
+            return info != null && info!!.title != null
         }
 
-        private boolean isPlaying() {
-            if (!hasTitle()) return false;
-            PlaybackState playbackState = controller.getPlaybackState();
-            if (playbackState == null) return false;
-            return playbackState.getState() == PlaybackState.STATE_PLAYING;
+        val isPlaying: Boolean
+            get() {
+                if (!hasTitle()) return false
+                val playbackState = controller.playbackState ?: return false
+                return playbackState.state == PlaybackState.STATE_PLAYING
+            }
+
+        fun pressButton(keyCode: Int) {
+            controller.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+            controller.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
         }
 
-        private void pressButton(int keyCode) {
-            controller.dispatchMediaButtonEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keyCode));
-            controller.dispatchMediaButtonEvent(new KeyEvent(KeyEvent.ACTION_UP, keyCode));
-        }
-
-        private void reloadInfo() {
-            MediaMetadata metadata = controller.getMetadata();
+        fun reloadInfo() {
+            val metadata = controller.metadata
             if (metadata != null) {
-                info = new MediaInfo();
-                info.title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
-                info.artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
-                info.album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
+                info = MediaInfo()
+                info!!.title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE)
+                info!!.artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST)
+                info!!.album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM)
             } else if (sbn != null) {
-                info = new MediaInfo();
-                info.title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE);
+                info = MediaInfo()
+                info!!.title = sbn.notification.extras.getCharSequence(Notification.EXTRA_TITLE)
             }
         }
 
-        public String getPackageName() {
-            return controller.getPackageName();
-        }
+        val packageName: String
+            get() = controller.packageName
+    }
 
-        public StatusBarNotification getSbn() {
-            return sbn;
-        }
-
-        public MediaInfo getInfo() {
-            return info;
-        }
+    companion object {
+        private const val TAG = "MediaListener"
     }
 }
