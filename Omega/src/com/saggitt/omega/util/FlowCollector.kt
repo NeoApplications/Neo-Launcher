@@ -7,25 +7,20 @@ import kotlinx.coroutines.launch
 
 class FlowCollector<T>(
     private val flow: Flow<T>,
-    private val callback: Listener<T>
+    private val callback: (T) -> Unit
 ) {
-
     private val scope = MainScope()
     private var job: Job? = null
 
     fun start() {
         job = scope.launch {
-            flow.collect(callback::onItem)
+            flow.collect(callback)
         }
     }
 
     fun stop() {
         job?.cancel()
         job = null
-    }
-
-    interface Listener<T> {
-        fun onItem(item: T)
     }
 }
 
