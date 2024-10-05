@@ -59,6 +59,8 @@ class BcSmartspaceView @JvmOverloads constructor(
         super.onFinishInflate()
         viewPager = findViewById(R.id.smartspace_card_pager)
         viewPager.isSaveEnabled = false
+        viewPager.pageMargin =
+            resources.getDimensionPixelSize(R.dimen.enhanced_smartspace_dismiss_margin)
         indicator = findViewById(R.id.smartspace_page_indicator)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
