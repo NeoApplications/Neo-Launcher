@@ -92,7 +92,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
                 iconView.text = baseAction.subtitle
                 iconView.setCompoundDrawablesRelative(icon, null, null, null)
                 iconView.isVisible = true
-                BcSmartSpaceUtil.setOnClickListener(iconView, baseAction, null, "BcSmartspaceCard")
+                BcSmartSpaceUtil.setOnClickListener(iconView, baseAction, "BcSmartspaceCard")
                 setFormattedContentDescription(
                     iconView,
                     baseAction.subtitle,
@@ -111,20 +111,20 @@ class BcSmartspaceCard @JvmOverloads constructor(
                 title = "unusedTitle",
                 intent = BcSmartSpaceUtil.getOpenCalendarIntent()
             )
-            BcSmartSpaceUtil.setOnClickListener(it, calendarAction, null, "BcSmartspaceCard")
+            BcSmartSpaceUtil.setOnClickListener(it, calendarAction, "BcSmartspaceCard")
         }
 
         when {
             headerAction.hasIntent -> {
-                BcSmartSpaceUtil.setOnClickListener(this, headerAction, null, "BcSmartspaceCard")
+                BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
             }
 
-            baseAction.hasIntent -> {
-                BcSmartSpaceUtil.setOnClickListener(this, baseAction, null, "BcSmartspaceCard")
+            baseAction.hasIntent   -> {
+                BcSmartSpaceUtil.setOnClickListener(this, baseAction, "BcSmartspaceCard")
             }
 
-            else -> {
-                BcSmartSpaceUtil.setOnClickListener(this, headerAction, null, "BcSmartspaceCard")
+            else                   -> {
+                BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
             }
         }
     }
