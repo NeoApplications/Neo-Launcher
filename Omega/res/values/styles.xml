@@ -241,31 +241,26 @@
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
     </style>
 
-    <style name="EnhancedSmartspaceTextSubtitle" parent="@style/EnhancedSmartspaceTextTitle">
-        <item name="android:textSize">@dimen/enhanced_smartspace_subtitle_size</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
+    <style name="EnhancedSmartspaceTextSubtitle" parent="@android:style/TextAppearance.Material.Title">
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.009375</item>
+        <item name="lineHeight">22sp</item>
+        <item name="android:lineHeight">22sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:fontFamily">google-sans-text</item>
-        <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
-        <item name="android:lineHeight" tools:targetApi="p">20.0sp</item>
     </style>
 
-    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/Theme.Material">
-        <item name="android:textSize">@dimen/enhanced_smartspace_title_size</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="android:ellipsize">end</item>
+    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/TextAppearance.Material.Headline">
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="lineHeight">26sp</item>
+        <item name="android:lineHeight">26sp</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:drawablePadding">@dimen/enhanced_smartspace_icon_margin</item>
         <item name="android:fontFamily">google-sans</item>
-        <item name="android:lineHeight" tools:targetApi="p">24.0sp</item>
-
-        <item name="ambientShadowBlur">@dimen/ambient_text_shadow_radius</item>
-        <item name="ambientShadowColor">?attr/workspaceAmbientShadowColor</item>
-        <item name="keyShadowBlur">@dimen/key_text_shadow_radius</item>
-        <item name="keyShadowColor">?attr/workspaceAmbientShadowColor</item>
-        <item name="keyShadowOffsetX">@dimen/key_text_shadow_dx</item>
-        <item name="keyShadowOffsetY">@dimen/key_text_shadow_dy</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 </resources>
 

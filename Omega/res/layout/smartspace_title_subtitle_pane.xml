@@ -16,36 +16,25 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/text_group"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <Space
-        android:id="@+id/top_padding"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/title_text"
-        app:layout_constraintHeight_max="@dimen/enhanced_smartspace_padding_top"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="1" />
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <com.google.android.systemui.smartspace.DoubleShadowTextView
         android:id="@+id/title_text"
-        android:focusable="true"
+        style="@style/EnhancedSmartspaceTextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@+id/smartspace_subtitle_group"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_padding"
-        style="@style/EnhancedSmartspaceTextTitle" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/smartspace_subtitle_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/enhanced_smartspace_subtitle_margin_top"
         app:layout_constraintBottom_toTopOf="@+id/smartspace_extras_group"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text">
@@ -55,12 +44,11 @@
 
     <LinearLayout
         android:id="@+id/smartspace_extras_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="top"
         android:orientation="horizontal"
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_min="wrap"
         app:layout_constraintStart_toStartOf="parent"

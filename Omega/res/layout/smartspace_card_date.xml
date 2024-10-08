@@ -3,13 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false"
-    android:paddingTop="@dimen/enhanced_smartspace_padding_top">
+    android:baselineAligned="false">
 
-    <RelativeLayout
-        android:id="@id/text_group"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/text_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,32 +18,37 @@
 
         <com.google.android.systemui.smartspace.IcuDateTextView
             android:id="@+id/date"
-            style="@style/EnhancedSmartspaceTextTitle"
+            style="@style/TextAppearance.Material3.TitleLarge"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true" />
+            app:layout_constraintBottom_toTopOf="@+id/smartspace_subtitle_group"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/smartspace_subtitle_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/date"
-            android:layout_marginTop="@dimen/enhanced_smartspace_subtitle_margin_top">
+            app:layout_constraintBottom_toTopOf="@+id/smartspace_extras_group"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date">
 
             <include layout="@layout/smartspace_subtitle_pane" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/smartspace_extras_group"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/smartspace_subtitle_group"
-            android:layout_marginTop="8dp"
+            android:gravity="top"
             android:orientation="horizontal"
-            android:visibility="invisible">
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_min="wrap"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/smartspace_subtitle_group">
 
             <include layout="@layout/smartspace_extras" />
         </LinearLayout>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.systemui.smartspace.BcSmartspaceCard>
