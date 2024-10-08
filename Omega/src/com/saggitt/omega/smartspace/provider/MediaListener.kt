@@ -6,24 +6,22 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import android.os.Handler
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.view.KeyEvent
-import androidx.core.util.Consumer
 import com.saggitt.omega.util.FlowCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.Objects
 
-class MediaListener(private val mContext: Context, onChange: Consumer<MediaListener>) :
-    MediaController.Callback() {
-    private val mOnChange = Runnable { onChange.accept(this) }
+class MediaListener(private val mContext: Context, onChange: (MediaListener) -> Unit) {
+    private val mOnChange = { onChange(this) }
     private var mControllers = emptyList<MediaNotificationController>()
     var tracking: MediaNotificationController? = null
         private set
-    private val mHandler = Handler()
+    private val mScope = CoroutineScope(Dispatchers.Main + Job())
     private val mFlowCollector: FlowCollector<List<StatusBarNotification>>
     private var mNotifications = emptyList<StatusBarNotification>()
 
@@ -49,41 +47,22 @@ class MediaListener(private val mContext: Context, onChange: Consumer<MediaListe
         get() = tracking!!.controller.packageName
 
     private fun updateControllers(controllers: List<MediaNotificationController>) {
-        for (mnc in mControllers) {
-            mnc.controller.unregisterCallback(this)
-        }
-        for (mnc in controllers) {
-            mnc.controller.registerCallback(this)
-        }
+        mControllers.forEach { it.controller.unregisterCallback(mediaControllerCallback) }
+        controllers.forEach { it.controller.registerCallback(mediaControllerCallback) }
         mControllers = controllers
     }
 
     private fun updateTracking() {
         updateControllers(controllers)
-
-        if (tracking != null) {
-            tracking!!.reloadInfo()
-        }
+        tracking?.reloadInfo()
 
         // If the current controller is not playing, stop tracking it.
-        if (tracking != null
-            && (!mControllers.contains(tracking) || !tracking!!.isPlaying)
-        ) {
+        if (tracking != null && (!mControllers.contains(tracking) || !tracking!!.isPlaying)) {
             tracking = null
         }
+        tracking = mControllers.find { it.isPlaying } ?: tracking
 
-        for (mnc in mControllers) {
-            // Either we are not tracking a controller and this one is valid,
-            // or this one is playing while the one we track is not.
-            if ((tracking == null && mnc.isPlaying)
-                || (tracking != null && mnc.isPlaying && !tracking!!.isPlaying)
-            ) {
-                tracking = mnc
-            }
-        }
-
-        mHandler.removeCallbacks(mOnChange)
-        mHandler.post(mOnChange)
+        mScope.launch { mOnChange() }
     }
 
     private fun pressButton(keyCode: Int) {
@@ -116,33 +95,23 @@ class MediaListener(private val mContext: Context, onChange: Consumer<MediaListe
     }
 
     private val controllers: List<MediaNotificationController>
-        get() {
-            val controllers: MutableList<MediaNotificationController> =
-                ArrayList()
-            for (notif in mNotifications) {
-                val extras = notif.notification.extras
-                val notifToken =
-                    extras.getParcelable<MediaSession.Token>(Notification.EXTRA_MEDIA_SESSION)
-                if (notifToken != null) {
-                    val controller =
-                        MediaController(mContext, notifToken)
-                    controllers.add(MediaNotificationController(controller, notif))
-                }
-            }
-            return controllers
+        get() = mNotifications.mapNotNull { notif ->
+            val extras = notif.notification.extras
+            val notifToken =
+                extras.getParcelable<MediaSession.Token>(Notification.EXTRA_MEDIA_SESSION)
+            notifToken?.let { MediaNotificationController(MediaController(mContext, it), notif) }
         }
 
-    /**
-     * Events that refresh the current handler.
-     */
-    override fun onPlaybackStateChanged(state: PlaybackState?) {
-        super.onPlaybackStateChanged(state)
-        updateTracking()
-    }
+    private val mediaControllerCallback = object : MediaController.Callback() {
+        override fun onPlaybackStateChanged(state: PlaybackState?) {
+            super.onPlaybackStateChanged(state)
+            updateTracking()
+        }
 
-    override fun onMetadataChanged(metadata: MediaMetadata?) {
-        super.onMetadataChanged(metadata)
-        updateTracking()
+        override fun onMetadataChanged(metadata: MediaMetadata?) {
+            super.onMetadataChanged(metadata)
+            updateTracking()
+        }
     }
 
     inner class MediaInfo {
@@ -150,11 +119,13 @@ class MediaListener(private val mContext: Context, onChange: Consumer<MediaListe
         var artist: CharSequence? = null
         var album: CharSequence? = null
 
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            val mediaInfo = o as MediaInfo
-            return title == mediaInfo.title && artist == mediaInfo.artist && album == mediaInfo.album
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val mediaInfo = other as MediaInfo
+            return title == mediaInfo.title
+                    && artist == mediaInfo.artist
+                    && album == mediaInfo.album
         }
 
         override fun hashCode(): Int {
@@ -164,9 +135,8 @@ class MediaListener(private val mContext: Context, onChange: Consumer<MediaListe
 
     inner class MediaNotificationController(
         val controller: MediaController,
-        sbn: StatusBarNotification
+        val sbn: StatusBarNotification,
     ) {
-        val sbn: StatusBarNotification? = sbn
         var info: MediaInfo? = null
             private set
 
@@ -197,7 +167,7 @@ class MediaListener(private val mContext: Context, onChange: Consumer<MediaListe
                 info!!.title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE)
                 info!!.artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST)
                 info!!.album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM)
-            } else if (sbn != null) {
+            } else {
                 info = MediaInfo()
                 info!!.title = sbn.notification.extras.getCharSequence(Notification.EXTRA_TITLE)
             }
