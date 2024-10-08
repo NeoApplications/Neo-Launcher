@@ -78,6 +78,8 @@ import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent.inject
 import java.util.stream.Stream
 
 class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
@@ -444,5 +446,8 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     }
 }
 
-val Context.nLauncher: NeoLauncher
-    get() = NeoLauncher.getLauncher(this)
+val Context.nLauncher: NeoLauncher by inject(NeoLauncher::class.java)
+
+val neoModule = module {
+    single { NeoLauncher.getLauncher(get()) }
+}

@@ -57,6 +57,7 @@ class NeoApp : Application() {
             androidContext(this@NeoApp)
             modules(
                 prefsModule,
+                neoModule,
             )
         }
         if (minSDK(Build.VERSION_CODES.P)) {
