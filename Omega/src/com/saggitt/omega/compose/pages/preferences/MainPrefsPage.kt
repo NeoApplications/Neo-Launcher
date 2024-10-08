@@ -93,6 +93,7 @@ fun MainPrefsPage() {
         prefs.gestureDockSwipeUp,
         prefs.gestureHomePress,
         prefs.gestureBackPress,
+        prefs.gestureLaunchAssistant,
     ).associateBy { it.key.name }
     val pageData: MutableState<NavRoute?> = remember { mutableStateOf(null) }
 

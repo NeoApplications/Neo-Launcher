@@ -26,6 +26,7 @@ import com.android.launcher3.util.TouchController
 import com.android.launcher3.util.VibratorWrapper
 import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
+import com.saggitt.omega.gestures.gestures.LaunchAssistantGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture
 import com.saggitt.omega.gestures.gestures.PressBackGesture
 import com.saggitt.omega.gestures.gestures.PressHomeGesture
@@ -56,7 +57,7 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
     private val pressHomeGesture = PressHomeGesture(this)
     private val pressBackGesture = PressBackGesture(this)
     private val longPressGesture = LongPressGesture(this)
-    //private val assistantGesture = LaunchAssistantGesture(this)
+    private val assistantGesture = LaunchAssistantGesture(this)
 
     val swipeUpGesture = SwipeUpGesture(this)
     val swipeUpDockGesture = SwipeUpDockGesture(this)
@@ -102,9 +103,9 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
         triggerGesture(swipeDownGesture)
     }
 
-    /*fun onLaunchAssistant() {
+    fun onLaunchAssistant() {
         triggerGesture(assistantGesture)
-    }*/
+    }
 
     fun triggerGesture(gesture: Gesture, withHaptic: Boolean = false) {
         if (!gesture.isEnabled) return

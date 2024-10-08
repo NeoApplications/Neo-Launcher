@@ -1177,6 +1177,13 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = BlankGestureHandler(context, null).toString(),
     )
 
+    var gestureLaunchAssistant = GesturePref(
+        titleId = R.string.gesture_launch_assistant,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_LAUNCH_ASSISTANT,
+        defaultValue = BlankGestureHandler(context, null).toString(),
+    )
+
     var dashLineSize = IntPref(
         dataStore = dataStore,
         key = PrefKey.DASH_LINE_SIZE,
