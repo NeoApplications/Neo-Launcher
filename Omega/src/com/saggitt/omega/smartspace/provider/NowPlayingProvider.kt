@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.first
 class NowPlayingProvider(context: Context) : SmartspaceDataSource(
     context, R.string.event_provider_now_playing
 ) {
-
     private val defaultIcon = Icon.createWithResource(context, R.drawable.ic_music_note)
 
     override val internalTargets = callbackFlow {
@@ -34,13 +33,12 @@ class NowPlayingProvider(context: Context) : SmartspaceDataSource(
         val title = tracking.info?.title ?: return null
 
         val sbn = tracking.sbn
-        val icon = sbn?.notification?.smallIcon ?: defaultIcon
+        val icon = sbn.notification?.smallIcon ?: defaultIcon
 
         val mediaInfo = tracking.info
         val subtitle = mediaInfo?.artist?.takeIf { it.isNotEmpty() }
-            ?: sbn?.getAppName(context)
-            ?: context.getAppName(tracking.packageName)
-        val intent = sbn?.notification?.contentIntent
+            ?: sbn.getAppName(context)
+        val intent = sbn.notification?.contentIntent
         return SmartspaceTarget(
             smartspaceTargetId = "nowPlaying-${mediaInfo.hashCode()}",
             headerAction = SmartspaceAction(

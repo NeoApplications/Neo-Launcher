@@ -14,35 +14,8 @@ class SmartspaceAction(
     val contentDescription: CharSequence? = null,
     val pendingIntent: PendingIntent? = null,
     val intent: Intent? = null,
-    val extras: Bundle? = null
-) {
-    class Builder(val id: String, val title: String) {
-        val icon: Icon? = null
-        val subtitle: CharSequence? = null
-        val contentDescription: CharSequence? = null
-        val pendingIntent: PendingIntent? = null
-        private var intent: Intent? = null
-        val extras: Bundle? = null
-
-        fun setIntent(mIntent: Intent?): Builder {
-            intent = mIntent
-            return this
-        }
-
-        fun build(): SmartspaceAction {
-            return SmartspaceAction(
-                id = id,
-                icon = icon,
-                title = title,
-                subtitle = subtitle,
-                contentDescription = contentDescription,
-                pendingIntent = pendingIntent,
-                intent = intent,
-                extras = extras
-            )
-        }
-    }
-}
     val onClick: View.OnClickListener? = null,
+    val extras: Bundle? = null,
+)
 
 val SmartspaceAction?.hasIntent get() = this != null && (intent != null || pendingIntent != null || onClick != null)

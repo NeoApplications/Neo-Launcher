@@ -374,7 +374,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     private fun restartIfPending() {
         when {
-            sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
+            sRestartFlags and FLAG_RESTART != 0  -> neoApp.restart(false)
             sRestartFlags and FLAG_RECREATE != 0 -> {
                 sRestartFlags = 0
                 recreate()

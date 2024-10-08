@@ -1,8 +1,6 @@
 package com.saulhdev.smartspace
 
 import android.content.ComponentName
-import android.os.Process
-import android.os.UserHandle
 import androidx.annotation.IntDef
 import com.saulhdev.smartspace.uitemplatedata.BaseTemplateData
 
@@ -12,7 +10,7 @@ data class SmartspaceTarget(
     val baseAction: SmartspaceAction? = null,
     val creationTimeMillis: Long = 0,
     val score: Int = 0,
-    val featureType: Int,
+    @FeatureType val featureType: Int,
     val templateData: BaseTemplateData? = null,
     val actionChips: List<SmartspaceAction> = listOf(),
     val iconGrid: List<SmartspaceAction> = listOf(),
@@ -33,38 +31,6 @@ data class SmartspaceTarget(
         AnnotationRetention.SOURCE
     )
     annotation class UiTemplateType {}
-
-    class Builder(
-        val smartspaceTargetId: String,
-        val componentName: ComponentName,
-        val user: UserHandle = Process.myUserHandle()
-    ) {
-        private var mFeatureType: Int = -1
-        private val score = 0
-        private val actionChips: List<SmartspaceAction> = ArrayList()
-        private val iconGrid: List<SmartspaceAction> = ArrayList()
-        private val headerAction: SmartspaceAction? = null
-        private val baseAction: SmartspaceAction? = null
-        private val templateData: BaseTemplateData? = null
-        fun setFeatureType(featureType: Int): Builder {
-            mFeatureType = featureType
-            return this
-        }
-
-        fun build(): SmartspaceTarget {
-            check(!(smartspaceTargetId == null || componentName == null || user == null)) { "Please assign a value to all @NonNull args." }
-            return SmartspaceTarget(
-                smartspaceTargetId = smartspaceTargetId,
-                headerAction = headerAction,
-                baseAction = baseAction,
-                score = score,
-                featureType = mFeatureType,
-                templateData = templateData,
-                actionChips = actionChips,
-                iconGrid = iconGrid
-            )
-        }
-    }
 
     companion object {
         //FeatureType
