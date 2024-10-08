@@ -136,6 +136,17 @@
             android:name="com.saggitt.omega.gestures.handlers.SleepTimeoutActivity"
             android:theme="@style/SleepTimeoutTheme" />
 
+        <activity
+            android:name="com.saggitt.omega.gestures.AssistantGestureReceiver"
+            android:exported="true"
+            android:theme="@style/SettingsTheme.Black">
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST" />
+                <action android:name="android.intent.action.SEARCH_LONG_PRESS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- DT2S using device admin -->
         <receiver
