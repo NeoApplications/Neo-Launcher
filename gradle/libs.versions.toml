@@ -1,6 +1,6 @@
 [versions]
 activity = "1.9.2"
-agp = "8.6.1"
+agp = "8.7.0"
 alwan = "1.0.1"
 androidx-animation = "1.0.0"
 androidx-core = "1.13.1"
