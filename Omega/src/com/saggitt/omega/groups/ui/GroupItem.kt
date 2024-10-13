@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
+import com.materialkolor.ktx.harmonize
 
 @Composable
 fun GroupItem(
@@ -83,7 +84,10 @@ fun GroupItem(
                         painter = painterResource(id = R.drawable.ic_uninstall_no_shadow),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        colorFilter = ColorFilter.tint(Color(0xFFDA0831))
+                        colorFilter = ColorFilter.tint(
+                            Color(0xFFDA0831)
+                                .harmonize(MaterialTheme.colorScheme.tertiaryContainer)
+                        )
                     )
                 }
                 IconButton(
