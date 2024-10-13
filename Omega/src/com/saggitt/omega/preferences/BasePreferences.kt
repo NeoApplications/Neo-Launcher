@@ -141,6 +141,45 @@ open class LongSelectionPref(
     onChange: (Long) -> Unit = {}
 ) : PrefDelegate<Long>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 
+open class LongMultiSelectionPref(
+    @StringRes titleId: Int,
+    @StringRes summaryId: Int = -1,
+    private val dataStore: DataStore<Preferences>,
+    private val key: Preferences.Key<Set<String>>,
+    val defaultValue: Set<Long> = emptySet(),
+    val entries: () -> Map<Long, String>,
+    onChange: (Set<Long>) -> Unit = { }
+) : PrefDelegate<Set<String>>(
+    titleId,
+    summaryId,
+    dataStore,
+    key,
+    defaultValue.mapTo(mutableSetOf()) { it.toString() },
+    { set -> onChange(set.mapTo(mutableSetOf()) { it.toLong() }) }
+) {
+    private val valueList = arrayListOf<String>()
+
+    init {
+        runBlocking(Dispatchers.IO) {
+            valueList.addAll(getValue())
+        }
+    }
+
+    fun getAll(): List<Long> = valueList.map { it.toLong() }
+
+    fun setAll(value: List<Long>) {
+        valueList.clear()
+        valueList.addAll(value.map { it.toString() })
+        return runBlocking(Dispatchers.IO) {
+            saveChanges()
+        }
+    }
+
+    private suspend fun saveChanges() {
+        dataStore.edit { it[key] = valueList.toSet() }
+    }
+}
+
 open class ColorIntPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
