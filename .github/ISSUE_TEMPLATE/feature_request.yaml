@@ -1,7 +1,6 @@
 name: Feature request
 description: Suggest an idea for Neo Launcher
 title: "[Feature Request] "
-labels: ""
 body:
   - type: markdown
     attributes:
@@ -52,5 +51,5 @@ body:
         - App's Version:
   - type: markdown
     attributes:
-    value: |
-    **Thanks for contributing ideas!**
+      value: |
+        **Thanks for contributing ideas!**
