@@ -135,6 +135,8 @@ object PrefKey {
 
     // Search
     val SEARCH_PROVIDER = longPreferencesKey("search_provider")
+    val SEARCH_PROVIDERS_EDIT = stringPreferencesKey("search_providers_edit")
+    val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
     val SEARCH_SHOW_MIC = booleanPreferencesKey("search_bar_show_mic")
     val SEARCH_SHOW_ASSISTANT = booleanPreferencesKey("search_bar_show_assistant")
     val SEARCH_GLOBAL_ENABLED = booleanPreferencesKey("search_global_enable") // is it needed?

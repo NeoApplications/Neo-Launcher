@@ -36,7 +36,6 @@ import com.android.launcher3.Utilities.makeComponentKey
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.android.launcher3.util.Themes.KEY_THEMED_ICONS
@@ -1040,12 +1039,20 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    var searchProvider = LongSelectionPref(
+    var searchProvidersEdit = NavigationPref(
         dataStore = dataStore,
-        titleId = R.string.title_search_provider,
-        key = PrefKey.SEARCH_PROVIDER,
-        defaultValue = 1L,
-        entries = { SearchProviderController.getSearchProvidersMap(context) }
+        key = PrefKey.SEARCH_PROVIDERS_EDIT,
+        titleId = R.string.title_search_providers,
+        summaryId = R.string.edit_search_summary,
+        navRoute = NavRoute.Search.SearchProviders(),
+    )
+
+    var searchProviders = LongMultiSelectionPref(
+        dataStore = dataStore,
+        titleId = R.string.title_search_providers,
+        key = PrefKey.SEARCH_PROVIDERS,
+        defaultValue = setOf(1L),
+        entries = { SearchProviderController.getSearchProvidersMap() },
     )
 
     var searchBarRadius = FloatPref(
@@ -1296,7 +1303,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     companion object {
         val prefsModule = module {
-            single { MainThreadInitializedObject(::NeoPrefs).get(get()) }
+            single { NeoPrefs(get()) }
             single { provideDataStore(get()) }
         }
 

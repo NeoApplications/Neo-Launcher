@@ -59,7 +59,7 @@ fun SearchPrefsPage() {
     }
 
     val searchPrefs = listOf(
-        prefs.searchProvider,
+        prefs.searchProvidersEdit,
         prefs.searchHiddenApps,
         prefs.searchFuzzy,
         prefs.searchBarRadius
@@ -80,7 +80,7 @@ fun SearchPrefsPage() {
         ) {
             item {
                 PreferenceGroup(
-                    stringResource(id = R.string.title_search_provider),
+                    stringResource(id = R.string.title_search_providers),
                     prefs = searchPrefs,
                     onPrefDialog = onPrefDialog
                 )

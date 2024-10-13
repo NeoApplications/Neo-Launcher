@@ -68,7 +68,10 @@ open class NavRoute : Parcelable {
     }
 
     @Serializable
-    class Search : NavRoute()
+    open class Search : NavRoute() {
+        @Serializable
+        class SearchProviders : Search()
+    }
 
     @Serializable
     class Backup : NavRoute()
