@@ -1,6 +1,6 @@
 /*
- *  This file is part of Omega Launcher
- *  Copyright (c) 2021   Omega Launcher Team
+ *  This file is part of Neo Launcher
+ *  Copyright (c) 2024   Neo Launcher Team
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as
@@ -20,18 +20,19 @@ package com.saggitt.omega.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.android.launcher3.Utilities
+import com.materialkolor.PaletteStyle
+import com.materialkolor.dynamicColorScheme
 import com.saggitt.omega.preferences.THEME_BLACK
 import com.saggitt.omega.preferences.THEME_DARK
 import com.saggitt.omega.preferences.THEME_LIGHT
@@ -47,14 +48,22 @@ fun OmegaAppTheme(
     blackTheme: Boolean = LocalContext.current.isBlackTheme,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        blackTheme && darkTheme -> BlackColors
-        darkTheme -> DarkColors
-        else -> LightColors
-    }.copy(
-        primary = Color(LocalContext.current.prefs.profileAccentColor.getColorFromState()),
-        surfaceTint = Color(LocalContext.current.prefs.profileAccentColor.getColorFromState()),
-    )
+    val accentPref by LocalContext.current.prefs.profileAccentColor.getState()
+    val accentColor by remember(accentPref) {
+        mutableIntStateOf(AccentColorOption.fromString(accentPref).accentColor)
+    }
+
+    val colorScheme = dynamicColorScheme(
+        seedColor = Color(accentColor),
+        isDark = darkTheme,
+        isAmoled = blackTheme,
+        style = PaletteStyle.Fidelity,
+    ) {
+        it.copy(
+            primary = Color(accentColor),
+            scrim = it.background,
+        )
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -67,15 +76,15 @@ fun isDarkTheme(): Boolean {
     val theme = LocalContext.current.prefs.profileTheme.get().collectAsState(-1)
     return when (theme.value) {
         THEME_LIGHT
-        -> false
+             -> false
 
         THEME_DARK,
         THEME_BLACK,
-        -> true
+             -> true
 
         THEME_WALLPAPER,
         THEME_WALLPAPER_BLACK,
-        -> wallpaperSupportsDarkTheme()
+             -> wallpaperSupportsDarkTheme()
 
         else -> isAutoThemeDark()
     }
@@ -84,7 +93,7 @@ fun isDarkTheme(): Boolean {
 @Composable
 fun isAutoThemeDark() = when {
     Utilities.ATLEAST_P -> isSystemInDarkTheme()
-    else -> wallpaperSupportsDarkTheme()
+    else                -> wallpaperSupportsDarkTheme()
 }
 
 @Composable
@@ -103,39 +112,3 @@ fun wallpaperSupportsDarkTheme(): Boolean {
     }
     return supportsDarkTheme
 }
-
-private val LightColors = lightColorScheme(
-    background = LightBackground,
-    onBackground = LightOnBackground,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    primary = LightPrimary,
-    onPrimary = LightOnPrimary,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightOutline
-)
-
-private val DarkColors = darkColorScheme(
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    primary = DarkPrimary,
-    onPrimary = DarkOnPrimary,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
-    outline = DarkOutline
-)
-
-private val BlackColors = darkColorScheme(
-    background = BlackBackground,
-    onBackground = BlackOnBackground,
-    surface = BlackSurface,
-    onSurface = BlackOnSurface,
-    primary = BlackPrimary,
-    onPrimary = BlackOnPrimary,
-    surfaceVariant = BlackSurfaceVariant,
-    onSurfaceVariant = BlackOnSurfaceVariant,
-    outline = BlackOutline
-)
