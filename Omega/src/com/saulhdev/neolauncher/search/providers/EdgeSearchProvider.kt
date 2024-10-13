@@ -32,7 +32,7 @@ open class EdgeSearchProvider(context: Context) : AbstractSearchProvider(context
     override val supportsVoiceSearch = false
     override val supportsAssistant = false
     override val supportsFeed = false
-    override val id = 1004
+    override val id = 1004L
     override val packageName: String
         get() = "com.microsoft.emmx"
 

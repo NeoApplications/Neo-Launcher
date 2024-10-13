@@ -37,7 +37,7 @@ class SFinderSearchProvider(context: Context) : AbstractSearchProvider(context) 
     override val supportsAssistant: Boolean
         get() = false
     override val supportsFeed = false
-    override val id = 1006
+    override val id = 1006L
     override val packageName: String
         get() = PACKAGE
 

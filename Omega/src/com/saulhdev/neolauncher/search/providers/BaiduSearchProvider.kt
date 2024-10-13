@@ -33,7 +33,7 @@ class BaiduSearchProvider(context: Context) : AbstractSearchProvider(context) {
     override val supportsVoiceSearch = true
     override val supportsAssistant = false
     override val supportsFeed = true
-    override val id = 1001
+    override val id = 1001L
     override val packageName: String
         get() = "com.baidu.searchbox"
 

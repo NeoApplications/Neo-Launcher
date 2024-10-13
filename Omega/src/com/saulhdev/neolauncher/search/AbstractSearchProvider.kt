@@ -29,7 +29,7 @@ abstract class AbstractSearchProvider(val context: Context) {
     abstract val supportsVoiceSearch: Boolean
     abstract val supportsAssistant: Boolean
     abstract val supportsFeed: Boolean
-    abstract val id: Int
+    abstract val id: Long
 
     open val isAvailable: Boolean = false
     abstract fun startSearch(callback: (intent: Intent) -> Unit = {})

@@ -33,7 +33,7 @@ class GoogleGoSearchProvider(context: Context) : AbstractSearchProvider(context)
     override val supportsVoiceSearch = true
     override val supportsAssistant = false
     override val supportsFeed = true
-    override val id = 1005
+    override val id = 1005L
     override val packageName: String
         get() = "com.google.android.apps.searchlite"
     override val isAvailable: Boolean

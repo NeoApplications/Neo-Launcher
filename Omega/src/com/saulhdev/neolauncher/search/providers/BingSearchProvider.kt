@@ -43,7 +43,7 @@ class BingSearchProvider(context: Context) : AbstractSearchProvider(context) {
     override val supportsAssistant: Boolean
         get() = cortanaInstalled || alexaInstalled || copilotInstalled
     override val supportsFeed = false
-    override val id = 1002
+    override val id = 1002L
     override val packageName: String
         get() = PACKAGE
 

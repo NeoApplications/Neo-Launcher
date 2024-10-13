@@ -30,7 +30,7 @@ import com.saulhdev.neolauncher.util.isAppEnabled
 class DuckDuckGoSearchProvider(context: Context) : AbstractSearchProvider(context) {
 
     override val name = context.getString(R.string.search_provider_ddg)
-    override val id = 1003
+    override val id = 1003L
     override val supportsVoiceSearch: Boolean
         get() = false
     override val supportsAssistant: Boolean

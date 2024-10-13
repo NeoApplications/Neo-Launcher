@@ -32,7 +32,7 @@ open class FirefoxSearchProvider(context: Context) : AbstractSearchProvider(cont
     override val supportsVoiceSearch = false
     override val supportsAssistant = false
     override val supportsFeed = true
-    override val id = 1005
+    override val id = 1005L
     override val packageName: String
         get() = getPackage(context)!!
 
