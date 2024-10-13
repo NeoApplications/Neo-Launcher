@@ -74,6 +74,13 @@ data class SearchProvider(
             order = -1,
         )
 
+        private val ALTERNATIVE_TO = defaultProvider(
+            name = "AlternativeTo",
+            iconId = R.drawable.ic_alternative_to,
+            searchUrl = "https://alternativeto.net/browse/search/?q=%s",
+            suggestionUrl = null,
+        )
+
         private val BAIDU = defaultProvider(
             name = "Baidu",
             iconId = R.drawable.ic_baidu,
@@ -201,7 +208,7 @@ data class SearchProvider(
         )
 
         val defaultProviders = listOf(
-            BAIDU, BING, BRAVE, DUCKDUCKGO,
+            ALTERNATIVE_TO, BAIDU, BING, BRAVE, DUCKDUCKGO,
             ECOSIA, GOOGLE, METAGER_ORG, METAGER_DE, METAGER_ES,
             PERPLEXITY, PHIND, QWANT, SEARX_INFO,
             STARTPAGE, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
