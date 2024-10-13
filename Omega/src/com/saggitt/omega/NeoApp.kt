@@ -29,6 +29,7 @@ import android.util.Log
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
 import com.saggitt.omega.blur.BlurWallpaperProvider
+import com.saggitt.omega.data.reposModule
 import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.NeoPrefs.Companion.prefsModule
@@ -58,6 +59,7 @@ class NeoApp : Application() {
             modules(
                 prefsModule,
                 neoModule,
+                reposModule,
             )
         }
         if (minSDK(Build.VERSION_CODES.P)) {

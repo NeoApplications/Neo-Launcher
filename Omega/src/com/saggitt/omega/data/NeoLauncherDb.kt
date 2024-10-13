@@ -35,6 +35,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.dsl.module
 
 @Database(
     entities = [
@@ -78,4 +79,10 @@ abstract class NeoLauncherDb : RoomDatabase() {
                 }
         }
     }
+}
+
+val reposModule = module {
+    single { SearchProviderRepository(get()) }
+    single { PeopleRepository(get()) }
+    // TODO migrate others
 }
