@@ -640,4 +640,11 @@
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
     <string name="title_override_corner_radius_value">Global corner radius</string>
     <string name="dash_line_size">Dash line size</string>
+    <string name="title_search_providers">Search Providers</string>
+    <string name="edit_search_summary">Select and sort active search providers</string>
+    <string name="add_search_provider">Add provider</string>
+    <string name="edit_search_provider">Edit search provider</string>
+    <string name="search_provider_search_url">Search URL</string>
+    <string name="search_provider_suggestion_url">Suggestion URL</string>
+    <string name="search_provider_url_hint">Use %s in place of the search term</string>
 </resources>
