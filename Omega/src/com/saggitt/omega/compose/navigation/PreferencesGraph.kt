@@ -13,8 +13,8 @@ import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.compose.pages.AppCategoriesPage
 import com.saggitt.omega.compose.pages.EditIconPage
 import com.saggitt.omega.compose.pages.preferences.EditDashPage
+import com.saggitt.omega.compose.pages.preferences.SearchProvidersPage
 import com.saggitt.omega.compose.pages.preferences.MainPrefsPage
-import com.saggitt.omega.compose.pages.preferences.SearchPrefsPage
 import com.saggitt.omega.compose.pages.preferences.WidgetsPrefsPage
 import com.saggitt.omega.util.getUserForProfileId
 
@@ -36,7 +36,7 @@ inline fun <reified T : Any> NavGraphBuilder.preferenceGraph(
 fun NavGraphBuilder.prefsGraph() {
     preferenceGraph<NavRoute.Main>(deepLink = Routes.PREFS_MAIN) { MainPrefsPage() }
     preferenceGraph<NavRoute.Widgets>(deepLink = Routes.PREFS_WIDGETS) { WidgetsPrefsPage() }
-    preferenceGraph<NavRoute.Search>(deepLink = Routes.PREFS_SEARCH) { SearchPrefsPage() }
+    preferenceGraph<NavRoute.Search.SearchProviders>(deepLink = Routes.PREFS_SEARCH) { SearchProvidersPage() }
     preferenceGraph<NavRoute.Gestures.EditDash>(deepLink = Routes.EDIT_DASH) { EditDashPage() }
     preferenceGraph<NavRoute.Drawer.Categorize>(deepLink = Routes.CATEGORIZE_APPS) { AppCategoriesPage() }
     preferenceGraph<NavRoute.EditIcon>(deepLink = "${Routes.EDIT_ICON}/{packageName}/{name}#{user}") {

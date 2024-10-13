@@ -228,6 +228,9 @@ fun MainPrefsPage() {
                         is NavRoute.Widgets
                         -> WidgetsPrefsPage()
 
+                        is NavRoute.Search.SearchProviders
+                            -> SearchProvidersPage()
+
                         is NavRoute.Search
                         -> SearchPrefsPage()
 
