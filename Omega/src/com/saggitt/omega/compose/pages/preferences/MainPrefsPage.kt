@@ -22,9 +22,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -33,6 +36,8 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -66,6 +71,7 @@ fun MainPrefsPage() {
     val context = LocalContext.current
     val paneNavigator = LocalPaneNavigator.current
     val prefs = Utilities.getNeoPrefs(context)
+    val showDev by prefs.developerOptionsEnabled.get().collectAsState(false)
 
     val uiPrefs = persistentListOf(
         PageItem.PrefsProfile,
@@ -81,7 +87,7 @@ fun MainPrefsPage() {
     val otherPrefs: List<PageItem> = listOfNotNull(
         //PageItem.PrefsBackup,
         //PageItem.PrefsDesktopMode,
-        if (prefs.developerOptionsEnabled.getValue()) PageItem.PrefsDeveloper
+        if (showDev) PageItem.PrefsDeveloper
         else null,
         PageItem.PrefsAbout
     )
@@ -146,29 +152,26 @@ fun MainPrefsPage() {
                     }
                 }
             ) { paddingValues ->
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = paddingValues + PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxSize()
+                        .padding(paddingValues + PaddingValues(8.dp)),
+                    //contentPadding = paddingValues + PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    item {
-                        PreferenceGroup(
-                            heading = stringResource(id = R.string.pref_category__interfaces),
-                            prefs = uiPrefs
-                        )
-                    }
-                    item {
-                        PreferenceGroup(
-                            heading = stringResource(id = R.string.pref_category__features),
-                            prefs = featuresPrefs
-                        )
-                    }
-                    item {
-                        PreferenceGroup(
-                            heading = stringResource(id = R.string.pref_category__others),
-                            prefs = otherPrefs
-                        )
-                    }
+                    PreferenceGroup(
+                        heading = stringResource(id = R.string.pref_category__interfaces),
+                        prefs = uiPrefs
+                    )
+                    PreferenceGroup(
+                        heading = stringResource(id = R.string.pref_category__features),
+                        prefs = featuresPrefs
+                    )
+                    PreferenceGroup(
+                        heading = stringResource(id = R.string.pref_category__others),
+                        prefs = otherPrefs
+                    )
                 }
             }
         },
