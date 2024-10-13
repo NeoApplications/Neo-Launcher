@@ -23,6 +23,7 @@ ksp = "2.0.20-1.0.25"
 lifecycle = "2.8.6"
 lifecycle-ext = "2.2.0"
 material = "1.12.0"
+material-kolor = "2.0.0"
 navigation = "2.8.2"
 okhttp = "5.0.0-alpha.14"
 owm = "2.1.0"
@@ -116,6 +117,7 @@ compose-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
 compose-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout" }
 compose-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "compose-accompanist" }
+material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 junit5 = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit5" }

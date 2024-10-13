@@ -273,6 +273,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.compose.reorderable)
+    implementation(libs.material.kolor)
 
     //Room
     implementation(libs.room.runtime)
