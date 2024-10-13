@@ -79,17 +79,17 @@ android {
     }
 
     buildTypes {
-        named("debug") {
+        debug {
             isMinifyEnabled = false
             applicationIdSuffix = ".alpha"
             signingConfig = signingConfigs.getByName("debug")
         }
-        create("neo") {
+        register("neo") {
             isMinifyEnabled = false
             applicationIdSuffix = ".neo"
         }
 
-        named("release") {
+        release {
             isMinifyEnabled = false
             setProguardFiles(listOf("proguard-android-optimize.txt", "proguard.flags"))
         }

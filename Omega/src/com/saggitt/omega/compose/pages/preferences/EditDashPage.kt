@@ -53,7 +53,6 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.move
-import com.saggitt.omega.compose.components.plus
 import com.saggitt.omega.dash.dashProviderOptions
 import com.saggitt.omega.preferences.iconIds
 import com.saggitt.omega.theme.GroupItemShape
@@ -98,8 +97,10 @@ fun EditDashPage() {
     ) { paddingValues ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = paddingValues + PaddingValues(horizontal = 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(horizontal = 8.dp),
             state = lazyListState,
         ) {
             stickyHeader {

@@ -109,9 +109,4 @@ class SearchProviderRepository(context: Context) {
     fun delete(provider: SearchProvider) {
         scope.launch { dao.delete(provider) }
     }
-
-    companion object {
-        @JvmField
-        val INSTANCE = MainThreadInitializedObject(::SearchProviderRepository)
-    }
 }

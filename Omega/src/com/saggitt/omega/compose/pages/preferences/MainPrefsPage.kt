@@ -181,88 +181,88 @@ fun MainPrefsPage() {
                 AnimatedPane {
                     when (it) {
                         is NavRoute.Profile.IconShape
-                        -> IconShapePage()
+                            -> IconShapePage()
 
                         is NavRoute.Profile.AccentColor
-                        -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
+                            -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
 
                         is NavRoute.Profile
-                        -> ProfilePrefsPage()
+                            -> ProfilePrefsPage()
 
                         is NavRoute.Desktop.FolderBG
-                        -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
+                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
 
                         is NavRoute.Desktop.FolderStroke
-                        -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
+                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
 
                         is NavRoute.Desktop
-                        -> DesktopPrefsPage()
+                            -> DesktopPrefsPage()
 
                         is NavRoute.Dock.BG
-                        -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
+                            -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
 
                         is NavRoute.Dock
-                        -> DockPrefsPage()
+                            -> DockPrefsPage()
 
                         is NavRoute.Drawer.BG
-                        -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
+                            -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
 
                         is NavRoute.Drawer.Categorize
-                        -> AppCategoriesPage()
+                            -> AppCategoriesPage()
 
                         is NavRoute.Drawer.HiddenApps
-                        -> HiddenAppsPage()
+                            -> HiddenAppsPage()
 
                         is NavRoute.Drawer.ProtectedApps
-                        -> ProtectedAppsPage()
+                            -> ProtectedAppsPage()
 
                         is NavRoute.Drawer.ProtectedAppsView
-                        -> ProtectedAppsView()
+                            -> ProtectedAppsView()
 
                         is NavRoute.Drawer
-                        -> DrawerPrefsPage()
+                            -> DrawerPrefsPage()
 
                         is NavRoute.Widgets.NotificationDots
-                        -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
+                            -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
 
                         is NavRoute.Widgets
-                        -> WidgetsPrefsPage()
+                            -> WidgetsPrefsPage()
 
                         is NavRoute.Search.SearchProviders
                             -> SearchProvidersPage()
 
                         is NavRoute.Search
-                        -> SearchPrefsPage()
+                            -> SearchPrefsPage()
 
                         is NavRoute.Gestures.EditDash
-                        -> EditDashPage()
+                            -> EditDashPage()
 
                         is NavRoute.Gestures.Gesture
-                        -> GestureSelectorPage(gesturesMap[it.key]!!)
+                            -> GestureSelectorPage(gesturesMap[it.key]!!)
 
                         is NavRoute.Gestures
-                        -> GesturesPrefsPage()
+                            -> GesturesPrefsPage()
 
                         is NavRoute.Backup
-                        -> BackupsPrefsPage()
+                            -> BackupsPrefsPage()
 
                         is NavRoute.Dev.Categorize
-                        -> AppCategoriesPage()
+                            -> AppCategoriesPage()
 
                         is NavRoute.Dev
-                        -> DevPrefsPage()
+                            -> DevPrefsPage()
 
                         is NavRoute.About.License
-                        -> LicenseScreen()
+                            -> LicenseScreen()
 
                         is NavRoute.About.Translators
-                        -> TranslatorsScreen()
+                            -> TranslatorsScreen()
 
                         is NavRoute.About.Changelog
-                        -> ChangelogScreen()
+                            -> ChangelogScreen()
 
                         is NavRoute.About
-                        -> AboutPrefPage()
+                            -> AboutPrefPage()
 
                         else -> {}
                     }
