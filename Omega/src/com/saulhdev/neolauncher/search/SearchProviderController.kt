@@ -32,27 +32,33 @@ import com.saulhdev.neolauncher.search.providers.EdgeSearchProvider
 import com.saulhdev.neolauncher.search.providers.FirefoxSearchProvider
 import com.saulhdev.neolauncher.search.providers.GoogleGoSearchProvider
 import com.saulhdev.neolauncher.search.providers.SFinderSearchProvider
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import org.koin.java.KoinJavaComponent.getKoin
 
 class SearchProviderController(private val context: Context) {
     private val themeOverride = ThemeOverride(ThemeOverride.Launcher(), ThemeListener())
 
     private var themeRes: Int = 0
+
     init {
         ThemeManager.getInstance(context).addOverride(themeOverride)
     }
 
-    val searchProviderState: StateFlow<SearchProvider>
-        get() = SearchProviderRepository.INSTANCE.get(context).activeProvider
-    val activeSearchProvider: SearchProvider // TODO add support for multiple providers
-        get() = SearchProviderRepository.INSTANCE.get(context).activeProvider.value
-
-    fun appSearchProvider(searchId: Int): AbstractSearchProvider {
-        val result = getSearchProviders(context).first { it.id == searchId }
-        return result
+    val searchProvidersState: StateFlow<List<SearchProvider>>
+        get() = getKoin().get<SearchProviderRepository>().activeProviders
+    private val _searchProviderSelector: MutableStateFlow<Int> = MutableStateFlow(0)
+    val searchProviderSelector: Flow<Int> = _searchProviderSelector.map {
+        it.coerceIn(0, searchProvidersState.value.size)
     }
+    val activeSearchProvider: SearchProvider
+        get() = searchProvidersState.value[_searchProviderSelector.value]
 
-
+    fun changeSearchProvider() {
+        _searchProviderSelector.tryEmit((_searchProviderSelector.value + 1) % searchProvidersState.value.size)
+    }
 
     inner class ThemeListener : ThemeOverride.ThemeOverrideListener {
 
@@ -72,15 +78,21 @@ class SearchProviderController(private val context: Context) {
             useApplicationContext(::SearchProviderController)
         )
     ) {
-        fun getSearchProvidersMap(context: Context): Map<Long, String> =
-            SearchProviderRepository.INSTANCE.get(context)
+        fun getSearchProvidersMap(): Map<Long, String> =
+            getKoin().get<SearchProviderRepository>()
                 .allProviders
                 .value
                 .associate {
                     Pair(it.id, it.name)
                 }
 
-        fun getSearchProviders(context: Context): List<AbstractSearchProvider> {
+        fun getSearchProviders(): Map<Long, SearchProvider> =
+            getKoin().get<SearchProviderRepository>()
+                .allProviders
+                .value
+                .associateBy { it.id }
+
+        fun getAppSearchProviders(context: Context): List<AbstractSearchProvider> {
             val list = listOf(
                 BaiduSearchProvider(context),
                 BingSearchProvider(context),
@@ -91,16 +103,6 @@ class SearchProviderController(private val context: Context) {
                 SFinderSearchProvider(context)
             )
             return list
-        }
-
-        fun getProviderName(context: Context, provider: Int): String {
-            if (provider > 1000) {
-                val providers = getSearchProviders(context)
-                val currentProvider = providers.filter { it.id == provider }
-                return currentProvider.first().name
-            } else {
-                return SearchProviderRepository.INSTANCE.get(context).activeProvider.value.name
-            }
         }
     }
 }

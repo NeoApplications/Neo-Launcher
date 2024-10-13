@@ -99,7 +99,10 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
             focusManager = LocalFocusManager.current
             keyboardController = LocalSoftwareKeyboardController.current
             textFieldFocusRequester = remember { FocusRequester() }
-            val searchProvider = spController.searchProviderState.collectAsState()
+            val searchProviderSelector by spController.searchProviderSelector.collectAsState(0)
+            val searchProviders by spController.searchProvidersState.collectAsState()
+            val searchProvider =
+                remember { derivedStateOf { searchProviders[searchProviderSelector] } }
             val searchIcon = rememberAsyncImagePainter(searchProvider.value.iconId)
             /*val micIcon = rememberDrawablePainter(
                 drawable = if (searchProvider.supportsAssistant) searchProvider.assistantIcon
