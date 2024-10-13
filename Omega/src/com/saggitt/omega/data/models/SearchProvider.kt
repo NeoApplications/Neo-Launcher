@@ -144,6 +144,13 @@ data class SearchProvider(
             suggestionUrl = null,
         )
 
+        private val OPENVERSE = defaultProvider(
+            name = "Openverse",
+            iconId = R.drawable.ic_openverse,
+            searchUrl = "https://openverse.org/search/?q=%s",
+            suggestionUrl = null,
+        )
+
         private val PERPLEXITY = defaultProvider(
             name = "Perplexity",
             iconId = R.drawable.ic_perplexity,
@@ -165,6 +172,13 @@ data class SearchProvider(
             suggestionUrl = "https://api.qwant.com/api/suggest/?q=%s&client=opensearch&lang=%s"
         )
 
+        private val REDDIT = defaultProvider(
+            name = "Reddit",
+            iconId = R.drawable.ic_reddit,
+            searchUrl = "https://www.reddit.com/search/?q=%s",
+            suggestionUrl = null,
+        )
+
         private val SEARX_INFO = defaultProvider(
             name = "Searx.info",
             iconId = R.drawable.ic_searx_search,
@@ -177,6 +191,13 @@ data class SearchProvider(
             iconId = R.drawable.ic_startpage_search,
             searchUrl = "https://www.startpage.com/search?q=%s",
             suggestionUrl = "https://www.startpage.com/suggestions?q=%s&segment=startpage.udog&lui=%s&limit=\$MAX_SUGGESTIONS&format=json",
+        )
+
+        private val SWISSCOWS = defaultProvider(
+            name = "Swisscows",
+            iconId = R.drawable.ic_swisscows,
+            searchUrl = "https://swisscows.com/en/web?query=%s",
+            suggestionUrl = null,
         )
 
         private val WOLFRAM_ALPHA = defaultProvider(
@@ -210,8 +231,8 @@ data class SearchProvider(
         val defaultProviders = listOf(
             ALTERNATIVE_TO, BAIDU, BING, BRAVE, DUCKDUCKGO,
             ECOSIA, GOOGLE, METAGER_ORG, METAGER_DE, METAGER_ES,
-            PERPLEXITY, PHIND, QWANT, SEARX_INFO,
-            STARTPAGE, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
+            OPENVERSE, PERPLEXITY, PHIND, QWANT, REDDIT, SEARX_INFO,
+            STARTPAGE, SWISSCOWS, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
         )
 
         const val MAX_SUGGESTIONS = 5
