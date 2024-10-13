@@ -39,13 +39,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -63,7 +63,6 @@ import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Plus
 import com.saggitt.omega.data.SearchProviderRepository
 import com.saggitt.omega.theme.GroupItemShape
-import com.saulhdev.neolauncher.search.SearchProviderController
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
 import sh.calvin.reorderable.ReorderableItem
@@ -74,35 +73,29 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun SearchProvidersPage() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+
+    val searchProviderRepository: SearchProviderRepository = getKoin().get()
+    val searchProviders = Utilities.getNeoPrefs(context).searchProviders
     val openDialog = remember { mutableStateOf(false) }
     var selectedProvider by remember {
         mutableLongStateOf(0L)
     }
 
-    // TODO pulling directly from DB (fixes reactivity of add/delete/rename)
-    val searchProviders = Utilities.getNeoPrefs(context).searchProviders
-    val allItems = SearchProviderController.getSearchProviders()
-    val (enabled, disabled) = allItems
-        .toList()
-        .partition {
-            it.first in searchProviders.getAll()
-        }
-    val enabledMap = enabled.associateBy { it.first }
-    val enabledSorted = searchProviders.getAll().mapNotNull { enabledMap[it] }
-    val enabledItems = remember { enabledSorted.toMutableStateList() }
-    val disabledItems = remember { disabled.toMutableStateList() }
+    val enabledItems by searchProviderRepository.enabledProviders.collectAsState()
+    val disabledItems by searchProviderRepository.disabledProviders.collectAsState()
 
     val saveList = {
-        val enabledKeys = enabledItems.map { it.first }
+        val enabledKeys = enabledItems.map { it.id }
         searchProviders.setAll(enabledKeys)
     }
 
-    val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        val fromIndex = enabledItems.indexOfFirst { it.first == from.key }
-        val toIndex = enabledItems.indexOfFirst { it.first == to.key }
-
-        enabledItems.move(fromIndex, toIndex)
+        val newList = enabledItems.toMutableList()
+        val fromIndex = enabledItems.indexOfFirst { it.id == from.key }
+        val toIndex = enabledItems.indexOfFirst { it.id == to.key }
+        newList.move(fromIndex, toIndex)
+        searchProviderRepository.updateProvidersOrder(newList)
     }
 
     ViewWithActionBar(
@@ -124,7 +117,7 @@ fun SearchProvidersPage() {
                 },
                 onClick = {
                     scope.launch {
-                        selectedProvider = getKoin().get<SearchProviderRepository>().insertNew()
+                        selectedProvider = searchProviderRepository.insertNew()
                         openDialog.value = true
                     }
                 }
@@ -147,10 +140,10 @@ fun SearchProvidersPage() {
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            itemsIndexed(enabledItems, key = { _, it -> it.first }) { subIndex, item ->
+            itemsIndexed(enabledItems, key = { _, it -> it.id }) { subIndex, item ->
                 ReorderableItem(
                     reorderableListState,
-                    key = item.first,
+                    key = item.id,
                 ) { isDragging ->
                     val elevation by animateDpAsState(
                         if (isDragging) 16.dp else 0.dp,
@@ -169,20 +162,19 @@ fun SearchProvidersPage() {
                             .clip(GroupItemShape(subIndex, enabledItems.size - 1))
                             .combinedClickable(
                                 onClick = {
-                                    enabledItems.remove(item)
-                                    disabledItems.add(0, item)
+                                    searchProviderRepository.disableProvider(item)
                                 },
                                 onLongClick = {
-                                    selectedProvider = item.first
+                                    selectedProvider = item.id
                                     openDialog.value = true
                                 }
                             ),
                         containerColor = bgColor,
-                        title = item.second.name,
+                        title = item.name,
                         startIcon = {
                             Image(
-                                painter = painterResource(id = item.second.iconId),
-                                contentDescription = item.second.name,
+                                painter = painterResource(id = item.iconId),
+                                contentDescription = item.name,
                                 modifier = Modifier.size(30.dp)
                             )
                         },
@@ -190,8 +182,7 @@ fun SearchProvidersPage() {
                             IconButton(
                                 modifier = Modifier.size(36.dp),
                                 onClick = {
-                                    enabledItems.remove(item)
-                                    disabledItems.add(0, item)
+                                    searchProviderRepository.disableProvider(item)
                                 }
                             ) {
                                 Image(
@@ -214,26 +205,25 @@ fun SearchProvidersPage() {
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
             }
-            itemsIndexed(disabledItems, key = { _, it -> it.first }) { subIndex, item ->
+            itemsIndexed(disabledItems, key = { _, it -> it.id }) { subIndex, item ->
                 ListItemWithIcon(
                     modifier = Modifier
                         .clip(GroupItemShape(subIndex, disabledItems.size - 1))
                         .combinedClickable(
                             onClick = {
-                                disabledItems.remove(item)
-                                enabledItems.add(item)
+                                searchProviderRepository.enableProvider(item)
                             },
                             onLongClick = {
-                                selectedProvider = item.first
+                                selectedProvider = item.id
                                 openDialog.value = true
                             }
                         ),
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    title = item.second.name,
+                    title = item.name,
                     startIcon = {
                         Image(
-                            painter = painterResource(id = item.second.iconId),
-                            contentDescription = item.second.name,
+                            painter = painterResource(id = item.iconId),
+                            contentDescription = item.name,
                             modifier = Modifier.size(30.dp)
                         )
                     },
@@ -254,11 +244,8 @@ fun SearchProvidersPage() {
             SearchProviderDialogUI(
                 repositoryId = selectedProvider,
                 openDialogCustom = openDialog,
-                onDelete = {
-                    getKoin().get<SearchProviderRepository>().delete(it)
-
-                },
-                onSave = { getKoin().get<SearchProviderRepository>().update(it) }
+                onDelete = { searchProviderRepository.delete(it) },
+                onSave = { searchProviderRepository.update(it) }
             )
         }
     }

@@ -62,7 +62,7 @@ class SearchProviderRepository(context: Context) {
         listOf(SearchProvider.offlineSearchProvider(context))
     )
 
-    fun get(id: Long): SearchProvider? = allProviders.value.find { it.id == id }
+    fun get(id: Long): SearchProvider? = dao.get(id)
 
     fun getFlow(id: Long): Flow<SearchProvider?> = dao.getFlow(id)
 
@@ -86,20 +86,29 @@ class SearchProviderRepository(context: Context) {
         )
     }.await()
 
-    fun setEnabled(provider: SearchProvider, enable: Boolean = true) {
-        scope.launch {
-            dao.insert(provider.copy(enabled = enable))
-        }
-    }
-
-    fun setOrder(provider: SearchProvider, order: Int = -1) {
-        scope.launch {
-            dao.insert(provider.copy(order = order))
-        }
-    }
-
     fun update(provider: SearchProvider?) = provider?.let {
         scope.launch { dao.upsert(it) }
+    }
+
+    fun updateProvidersOrder(providers: List<SearchProvider>) {
+        scope.launch {
+            providers.forEachIndexed { index, provider ->
+                dao.upsert(provider.copy(order = index, enabled = true))
+            }
+        }
+    }
+
+    fun enableProvider(provider: SearchProvider) {
+        scope.launch {
+            val maxOrder = enabledProviders.value.maxOfOrNull { it.order } ?: -1
+            dao.upsert(provider.copy(enabled = true, order = maxOrder + 1))
+        }
+    }
+
+    fun disableProvider(provider: SearchProvider) {
+        scope.launch {
+            dao.upsert(provider.copy(enabled = false, order = -1))
+        }
     }
 
     fun delete(id: Long?) = id?.let {
