@@ -23,12 +23,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.data.models.AppTracker
 import com.saggitt.omega.data.models.GestureItemInfo
 import com.saggitt.omega.data.models.IconOverride
 import com.saggitt.omega.data.models.PeopleInfo
 import com.saggitt.omega.data.models.SearchProvider
+import com.saggitt.omega.data.models.SearchProvider.Companion.addedProvidersV6
 import com.saggitt.omega.data.models.SearchProvider.Companion.defaultProviders
 import com.saggitt.omega.data.models.SearchProvider.Companion.offlineSearchProvider
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -36,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent.getKoin
 
 @Database(
     entities = [
@@ -45,12 +49,17 @@ import org.koin.dsl.module
         GestureItemInfo::class,
         SearchProvider::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
             from = 4,
             to = 5,
+        ),
+        AutoMigration(
+            from = 5,
+            to = 6,
+            spec = NeoLauncherDb.Companion.MigrationSpec5to6::class
         ),
     ]
 )
@@ -77,6 +86,23 @@ abstract class NeoLauncherDb : RoomDatabase() {
                         }
                     }
                 }
+        }
+
+        class MigrationSpec5to6 : AutoMigrationSpec {
+            override fun onPostMigrate(db: SupportSQLiteDatabase) {
+                super.onPostMigrate(db)
+                onPostMigrate(5)
+            }
+        }
+
+        fun onPostMigrate(from: Int) {
+            val preRepos = mutableListOf<SearchProvider>()
+            if (from == 5) preRepos.addAll(addedProvidersV6)
+            GlobalScope.launch(Dispatchers.IO) {
+                preRepos.forEach {
+                    getKoin().get<SearchProviderRepository>().insert(it)
+                }
+            }
         }
     }
 }

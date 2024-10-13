@@ -235,6 +235,10 @@ data class SearchProvider(
             STARTPAGE, SWISSCOWS, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
         )
 
+        val addedProvidersV6 = listOf(
+            ALTERNATIVE_TO, OPENVERSE, REDDIT, SWISSCOWS
+        )
+
         const val MAX_SUGGESTIONS = 5
     }
 }
