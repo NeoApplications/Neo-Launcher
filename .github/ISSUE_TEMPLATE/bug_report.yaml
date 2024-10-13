@@ -1,7 +1,6 @@
 name: Bug Report
 description: Report a bug in Neo Launcher's functionality
 title: "[Bug] "
-labels: ""
 body:
   - type: markdown
     attributes:
