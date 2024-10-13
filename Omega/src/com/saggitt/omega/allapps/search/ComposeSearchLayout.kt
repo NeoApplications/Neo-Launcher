@@ -23,19 +23,24 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +52,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -143,16 +149,25 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                        focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
                     ),
                     shape = RoundedCornerShape(radius.dp),
                     leadingIcon = {
-                        Image(
-                            modifier = Modifier.size(24.dp),
-                            painter = searchIcon,
-                            contentDescription = stringResource(id = R.string.label_search),
-                        )
+                        FilledIconButton(
+                            modifier = Modifier.height(IntrinsicSize.Max),
+                            shape = RoundedCornerShape(radius.dp),
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            onClick = { spController.changeSearchProvider() }
+                        ) {
+                            Image(
+                                modifier = Modifier.size(24.dp),
+                                painter = searchIcon,
+                                contentDescription = stringResource(id = R.string.label_search),
+                            )
+                        }
                     },
                     trailingIcon = {
                         Row {
