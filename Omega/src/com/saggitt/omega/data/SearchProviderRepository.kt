@@ -20,12 +20,14 @@
 package com.saggitt.omega.data
 
 import android.content.Context
-import com.android.launcher3.util.MainThreadInitializedObject
+import com.android.launcher3.R
 import com.saggitt.omega.data.models.SearchProvider
 import com.saggitt.omega.util.prefs
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -51,21 +53,38 @@ class SearchProviderRepository(context: Context) {
         SharingStarted.Eagerly,
         emptyList()
     )
-    val activeProvider = combine(allProviders, context.prefs.searchProvider.get()) { ps, pref ->
-        ps.find { it.id == pref } ?: SearchProvider.offlineSearchProvider(context)
+    val activeProviders = combine(allProviders, context.prefs.searchProviders.get()) { ps, pref ->
+        ps.filter { pref.contains(it.id.toString()) }.takeIf { it.isNotEmpty() }
+            ?: listOf(SearchProvider.offlineSearchProvider(context))
     }.stateIn(
         scope,
         SharingStarted.Eagerly,
-        SearchProvider.offlineSearchProvider(context)
+        listOf(SearchProvider.offlineSearchProvider(context))
     )
 
     fun get(id: Long): SearchProvider? = allProviders.value.find { it.id == id }
+
+    fun getFlow(id: Long): Flow<SearchProvider?> = dao.getFlow(id)
 
     fun insert(provider: SearchProvider) {
         scope.launch {
             dao.insert(provider)
         }
     }
+
+    suspend fun insertNew(): Long = scope.async {
+        dao.insert(
+            SearchProvider(
+                id = 0,
+                name = "New provider",
+                iconId = R.drawable.ic_search,
+                searchUrl = "",
+                suggestionUrl = null,
+                enabled = false,
+                order = -1,
+            )
+        )
+    }.await()
 
     fun setEnabled(provider: SearchProvider, enable: Boolean = true) {
         scope.launch {
@@ -79,8 +98,12 @@ class SearchProviderRepository(context: Context) {
         }
     }
 
-    fun delete(id: Int) {
-        scope.launch { dao.delete(id) }
+    fun update(provider: SearchProvider?) = provider?.let {
+        scope.launch { dao.upsert(it) }
+    }
+
+    fun delete(id: Long?) = id?.let {
+        scope.launch { dao.delete(it) }
     }
 
     fun delete(provider: SearchProvider) {

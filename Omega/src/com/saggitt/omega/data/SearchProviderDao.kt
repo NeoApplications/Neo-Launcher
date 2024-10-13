@@ -25,6 +25,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.saggitt.omega.data.models.SearchProvider
 import kotlinx.coroutines.flow.Flow
 
@@ -58,14 +59,17 @@ interface SearchProviderDao {
     fun getFlow(id: Long): Flow<SearchProvider?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(appTracker: SearchProvider)
+    fun insert(appTracker: SearchProvider): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(appTracker: SearchProvider)
+
+    @Upsert
+    fun upsert(appTracker: SearchProvider)
 
     @Delete
     fun delete(appTracker: SearchProvider)
 
     @Query("DELETE FROM searchprovider WHERE id = :id")
-    suspend fun delete(id: Int)
+    suspend fun delete(id: Long)
 }
