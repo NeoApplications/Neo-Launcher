@@ -43,7 +43,7 @@ interface SearchProviderDao {
     @get:Query("SELECT * FROM searchprovider WHERE enabled = 1")
     val enabled: List<SearchProvider>
 
-    @get:Query("SELECT * FROM searchprovider WHERE enabled = 1")
+    @get:Query("SELECT * FROM searchprovider WHERE enabled = 1 ORDER BY `order` ASC")
     val enabledFlow: Flow<List<SearchProvider>>
 
     @get:Query("SELECT * FROM searchprovider WHERE enabled = 0")
