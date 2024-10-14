@@ -49,6 +49,8 @@ data class SearchProvider(
     }
 
     companion object {
+        const val MAX_SUGGESTIONS = 5
+
         fun offlineSearchProvider(context: Context) = SearchProvider(
             id = 1,
             name = context.getString(R.string.search_provider_appsearch),
@@ -113,14 +115,14 @@ data class SearchProvider(
             name = "Ecosia",
             iconId = R.drawable.ic_ecosia,
             searchUrl = "https://www.ecosia.org/search?q=%s",
-            suggestionUrl = "https://ac.ecosia.org/autocomplete?q=%s&type=list&mkt=%s",
+            suggestionUrl = "https://ac.ecosia.org/autocomplete?q=%s&type=list",
         )
 
         private val GOOGLE = defaultProvider(
             name = "Google",
             iconId = R.drawable.ic_super_g_color,
             searchUrl = "https://www.google.com/search?q=%s",
-            suggestionUrl = "https://www.google.com/complete/search?client=chrome&q=%s&hl=%s",
+            suggestionUrl = "https://www.google.com/complete/search?client=chrome&q=%s",
         )
 
         private val METAGER_ORG = defaultProvider(
@@ -169,7 +171,7 @@ data class SearchProvider(
             name = "Qwant",
             iconId = R.drawable.ic_qwant,
             searchUrl = "https://www.qwant.com/?q=%s",
-            suggestionUrl = "https://api.qwant.com/api/suggest/?q=%s&client=opensearch&lang=%s"
+            suggestionUrl = "https://api.qwant.com/api/suggest/?q=%s&client=opensearch&lang=en"
         )
 
         private val REDDIT = defaultProvider(
@@ -182,7 +184,7 @@ data class SearchProvider(
         private val SEARX_INFO = defaultProvider(
             name = "Searx.info",
             iconId = R.drawable.ic_searx_search,
-            searchUrl = "https://searxng.site/search?q=%s&categories=general&language=%s",
+            searchUrl = "https://searxng.site/search?q=%s",
             suggestionUrl = "https://searxng.site/autocompleter?q=%s",
         )
 
@@ -190,14 +192,14 @@ data class SearchProvider(
             name = "Startpage",
             iconId = R.drawable.ic_startpage_search,
             searchUrl = "https://www.startpage.com/search?q=%s",
-            suggestionUrl = "https://www.startpage.com/suggestions?q=%s&segment=startpage.udog&lui=%s&limit=\$MAX_SUGGESTIONS&format=json",
+            suggestionUrl = "https://www.startpage.com/suggestions?q=%s&limit=$MAX_SUGGESTIONS&format=json",
         )
 
         private val SWISSCOWS = defaultProvider(
             name = "Swisscows",
             iconId = R.drawable.ic_swisscows,
             searchUrl = "https://swisscows.com/en/web?query=%s",
-            suggestionUrl = null,
+            suggestionUrl = "https://swisscows.com/api/suggest?query=%s&itemsCount=$MAX_SUGGESTIONS",
         )
 
         private val WOLFRAM_ALPHA = defaultProvider(
@@ -218,7 +220,7 @@ data class SearchProvider(
             name = "Yandex",
             iconId = R.drawable.ic_yandex,
             searchUrl = "https://yandex.ru/search/?text=%s",
-            suggestionUrl = "https://suggest.yandex.com/suggest-ff.cgi?part=%s&uil=%s",
+            suggestionUrl = "https://suggest.yandex.com/suggest-ff.cgi?part=%s",
         )
 
         private val YOU = defaultProvider(
@@ -238,7 +240,5 @@ data class SearchProvider(
         val addedProvidersV6 = listOf(
             ALTERNATIVE_TO, OPENVERSE, REDDIT, SWISSCOWS
         )
-
-        const val MAX_SUGGESTIONS = 5
     }
 }
