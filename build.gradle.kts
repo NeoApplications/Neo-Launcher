@@ -36,16 +36,13 @@ android {
     namespace = "com.android.launcher3"
     compileSdk = 34
 
-    val name = "1.0.0-alpha03"
-    val code = 1004
-
     defaultConfig {
         minSdk = 26
         targetSdk = 33
         applicationId = "com.saggitt.omega"
 
-        versionName = name
-        versionCode = code
+        versionName = "1.0.0-alpha03hf"
+        versionCode = 1005
 
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
