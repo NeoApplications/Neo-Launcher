@@ -536,4 +536,11 @@
     <string name="search_provider">Fornitore di ricerca</string>
     <string name="web_search_provider">Fornitore di ricerca Web</string>
     <string name="hotseat_show_dots_page_indicator">Mostra indicatore di pagina con punti invece di linee</string>
+    <string name="add_search_provider">Aggiungi fornitore</string>
+    <string name="title_search_providers">Motori di ricerca</string>
+    <string name="edit_search_summary">Seleziona e ordina i motori di ricerca attivi</string>
+    <string name="search_provider_suggestion_url">URL del suggerimento</string>
+    <string name="search_provider_url_hint">Usa %s al posto del termine di ricerca</string>
+    <string name="edit_search_provider">Modifica motore di ricerca</string>
+    <string name="search_provider_search_url">URL di ricerca</string>
 </resources>
