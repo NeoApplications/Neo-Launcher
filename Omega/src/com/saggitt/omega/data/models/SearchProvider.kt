@@ -55,7 +55,7 @@ data class SearchProvider(
             iconId = R.drawable.ic_search,
             searchUrl = "",
             suggestionUrl = "",
-            enabled = false,
+            enabled = true,
             order = -1,
         )
 

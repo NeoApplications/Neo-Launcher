@@ -72,4 +72,7 @@ interface SearchProviderDao {
 
     @Query("DELETE FROM searchprovider WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("DELETE FROM searchprovider")
+    fun emptyTable()
 }

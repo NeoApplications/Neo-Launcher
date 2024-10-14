@@ -118,4 +118,8 @@ class SearchProviderRepository(context: Context) {
     fun delete(provider: SearchProvider) {
         scope.launch { dao.delete(provider) }
     }
+
+    fun emptyTable() {
+        scope.launch { dao.emptyTable() }
+    }
 }

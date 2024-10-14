@@ -49,7 +49,7 @@ import org.koin.java.KoinJavaComponent.getKoin
         GestureItemInfo::class,
         SearchProvider::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -60,6 +60,16 @@ import org.koin.java.KoinJavaComponent.getKoin
             from = 5,
             to = 6,
             spec = NeoLauncherDb.Companion.MigrationSpec5to6::class
+        ),
+        AutoMigration(
+            from = 6,
+            to = 7,
+            spec = NeoLauncherDb.Companion.MigrationSpec6to7::class
+        ),
+        AutoMigration(
+            from = 5,
+            to = 7,
+            spec = NeoLauncherDb.Companion.MigrationSpec5to7::class
         ),
     ]
 )
@@ -91,16 +101,36 @@ abstract class NeoLauncherDb : RoomDatabase() {
         class MigrationSpec5to6 : AutoMigrationSpec {
             override fun onPostMigrate(db: SupportSQLiteDatabase) {
                 super.onPostMigrate(db)
-                onPostMigrate(5)
+                onPostMigrate(5, 6)
             }
         }
 
-        fun onPostMigrate(from: Int) {
+        class MigrationSpec6to7 : AutoMigrationSpec {
+            override fun onPostMigrate(db: SupportSQLiteDatabase) {
+                super.onPostMigrate(db)
+                onPostMigrate(6, 7)
+            }
+        }
+
+        class MigrationSpec5to7 : AutoMigrationSpec {
+            override fun onPostMigrate(db: SupportSQLiteDatabase) {
+                super.onPostMigrate(db)
+                onPostMigrate(5, 7)
+            }
+        }
+
+        fun onPostMigrate(from: Int, to: Int) {
             val preRepos = mutableListOf<SearchProvider>()
             if (from == 5) preRepos.addAll(addedProvidersV6)
             GlobalScope.launch(Dispatchers.IO) {
                 preRepos.forEach {
                     getKoin().get<SearchProviderRepository>().insert(it)
+                }
+                if (to == 7) GlobalScope.launch(Dispatchers.IO) {
+                    getKoin().get<SearchProviderRepository>().emptyTable()
+                    defaultProviders.forEach {
+                        getKoin().get<SearchProviderRepository>().insert(it)
+                    }
                 }
             }
         }
