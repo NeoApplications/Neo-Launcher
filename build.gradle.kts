@@ -69,7 +69,7 @@ android {
         val variant = this
         outputs.all {
             (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                "NeoLauncher_v${variant.versionName}_build_${variant.versionCode}.apk"
+                "Neo_Launcher_${variant.versionName}_${variant.buildType.name}.apk"
         }
         variant.resValue(
             "string",
