@@ -70,3 +70,7 @@ body:
         - Device:
         - Android Version:
         - ROM: (AOSP, CalyxOS, MIUI, GOS...)
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for making us aware of the bug!**
