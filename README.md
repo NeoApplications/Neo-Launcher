@@ -91,6 +91,6 @@ Translations are handled via Weblate. If want to help,
 visit <a href="https://hosted.weblate.org/projects/neolauncher">Hosted Weblate</a>.
 
 #### **Translation stats:
-** [<img align="right" src="https://hosted.weblate.org/widgets/neolauncher/-/287x66-white.png" alt="Übersetzungsstatus" />](https://hosted.weblate.org/engage/omegalauncher/?utm_source=widget)
+** [<img align="right" src="https://hosted.weblate.org/widgets/neolauncher/-/287x66-white.png" alt="Übersetzungsstatus" />](https://hosted.weblate.org/engage/neolauncher/?utm_source=widget)
 
 <img src="https://hosted.weblate.org/widgets/neolauncher/-/multi-red.svg" />
