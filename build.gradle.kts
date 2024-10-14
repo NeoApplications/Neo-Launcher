@@ -53,7 +53,6 @@ android {
         buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -163,18 +162,6 @@ android {
             assets.srcDirs(listOf("assets"))
             manifest.srcFile("AndroidManifest-common.xml")
         }
-
-        /*
-        named("androidTest") {
-            res.srcDirs(listOf("tests/res"))
-            java.srcDirs(listOf("tests/src", "tests/tapl"))
-            manifest.srcFile("tests/AndroidManifest-common.xml")
-        }
-
-        named("androidTestDebug") {
-            java.srcDirs("tests/src_common")
-            manifest.srcFile("tests/AndroidManifest.xml")
-        }*/
 
         named("aosp") {
             java.srcDirs(listOf("src_flags", "src_shortcuts_overrides"))
@@ -327,11 +314,6 @@ task("detectAndroidLocals") {
 }
 tasks.preBuild.dependsOn("detectAndroidLocals")
 
-@SuppressWarnings(
-    "UnnecessaryQualifiedReference",
-    "SpellCheckingInspection",
-    "GroovyUnusedDeclaration"
-)
 // Returns the build date in a RFC3339 compatible format. TZ is always converted to UTC
 fun getBuildDate(): String {
     val RFC3339_LIKE = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
