@@ -527,4 +527,11 @@
     <string name="search_provider">‫موفر البحث</string>
     <string name="web_search_provider">مزود بحث الويب</string>
     <string name="hotseat_show_dots_page_indicator">عرض مؤشر صفحة النقاط بدلاً من الأسطر</string>
+    <string name="search_provider_suggestion_url">عنوان URL للاقتراح</string>
+    <string name="search_provider_url_hint">استخدم %s بدلاً من مصطلح البحث</string>
+    <string name="title_search_providers">موفري البحث</string>
+    <string name="edit_search_summary">تحديد وفرز مزودي البحث النشطين</string>
+    <string name="add_search_provider">اضف مزود</string>
+    <string name="edit_search_provider">تعديل موفر البحث</string>
+    <string name="search_provider_search_url">عنوان البحث</string>
 </resources>
