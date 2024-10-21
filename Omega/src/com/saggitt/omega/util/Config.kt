@@ -39,8 +39,10 @@ import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.allapps.CustomAppFilter
+import com.saggitt.omega.flowerpot.Flowerpot
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
+import com.saggitt.omega.smartspace.provider.CalendarEventProvider
 import com.saggitt.omega.smartspace.provider.NowPlayingProvider
 import com.saggitt.omega.smartspace.weather.BlankWeatherProvider
 import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider
@@ -134,7 +136,7 @@ class Config(val context: Context) {
         val smartspaceEventProviders = mapOf(
             BatteryStatusProvider::class.java.name to R.string.battery_status,
             NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
-            //CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
+            CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
             //AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events,
         )
 
@@ -157,6 +159,16 @@ class Config(val context: Context) {
                 R.string.title_calendar_persian
             )
         )
+
+
+        fun layoutCategories(context: Context) =
+            Flowerpot.Manager.getInstance(context).getAllPots().map {
+                it.name to context.resources.getIdentifier(
+                    "category_${it.name.lowercase()}",
+                    "string",
+                    context.packageName
+                )
+            }.toMap()
 
         fun getCurrentTheme(context: Context): Int {
             val themeSet = ThemeOverride.Settings()
