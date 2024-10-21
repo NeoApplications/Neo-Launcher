@@ -27,7 +27,7 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
         internalTargets = flow {
             while (true) {
                 emit(alarmTarget())
-                delay(TimeUnit.MINUTES.toMillis(10))
+                delay(TimeUnit.MINUTES.toMillis(2))
             }
         }
     }
@@ -66,11 +66,9 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun getPendingIntent(): PendingIntent {
-        return PendingIntent.getActivity(
-            context, 0,
-            Intent(AlarmClock.ACTION_SHOW_ALARMS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }, 0
-        )
+        val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }
