@@ -133,9 +133,9 @@
 
     <style name="LauncherTheme.DarkText" parent="@style/LauncherTheme">
         <item name="workspaceTextColor">@color/workspace_text_color_dark</item>
-        <item name="workspaceShadowColor">@android:color/transparent</item>
-        <item name="workspaceAmbientShadowColor">@android:color/transparent</item>
-        <item name="workspaceKeyShadowColor">@android:color/transparent</item>
+        <item name="workspaceShadowColor">@android:color/white</item>
+        <item name="workspaceAmbientShadowColor">@android:color/white</item>
+        <item name="workspaceKeyShadowColor">@android:color/white</item>
         <item name="isWorkspaceDarkText">true</item>
         <item name="workspaceAccentColor">@color/workspace_accent_color_dark</item>
         <item name="dropTargetHoverTextColor">@color/drop_target_hover_text_color_dark</item>

@@ -18,7 +18,7 @@
 
         <com.google.android.systemui.smartspace.IcuDateTextView
             android:id="@+id/date"
-            style="@style/TextAppearance.Material3.TitleLarge"
+            style="@style/SmartspaceTextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/smartspace_subtitle_group"

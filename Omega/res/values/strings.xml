@@ -134,6 +134,7 @@
     <string name="label_turn_off_suggestions">Disable</string>
     <string name="title_text_color">Text Color</string>
     <string name="title_drawer_layout">Layout Mode</string>
+    <string name="title_drawer_layout_categories">Layout Categories</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Categorized</string>
