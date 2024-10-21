@@ -46,7 +46,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             while (true) {
                 requiresSetup()
                 emit(calendarTarget())
-                delay(TimeUnit.MINUTES.toMillis(30))
+                delay(TimeUnit.MINUTES.toMillis(5))
             }
         }
     }
