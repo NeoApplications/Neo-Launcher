@@ -1,6 +1,5 @@
 package com.saggitt.omega.smartspace.provider
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
@@ -10,7 +9,6 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.provider.CalendarContract
 import android.text.format.DateFormat
-import android.util.Log
 import com.android.launcher3.R
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.preferences.PreferenceActivity
@@ -32,12 +30,12 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
 
     private val requiredPermissions = listOf(android.Manifest.permission.READ_CALENDAR)
     private val calendarProjection = arrayOf(
-        CalendarContract.Instances._ID,
-        CalendarContract.Instances.TITLE,
-        CalendarContract.Instances.DTSTART,
-        CalendarContract.Instances.DTEND,
-        CalendarContract.Instances.EVENT_LOCATION,
-        CalendarContract.Instances.CUSTOM_APP_PACKAGE
+        CalendarContract.Events._ID,
+        CalendarContract.Events.TITLE,
+        CalendarContract.Events.DTSTART,
+        CalendarContract.Events.DTEND,
+        CalendarContract.Events.EVENT_LOCATION,
+        CalendarContract.Events.CUSTOM_APP_PACKAGE
     )
     private val oneMinute = TimeUnit.MINUTES.toMillis(1)
     private val includeBehind = oneMinute * 15
@@ -54,31 +52,31 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun calendarTarget(): List<SmartspaceTarget> {
-        val event = getNextEvent()
-        Log.d("CalendarEventProvider", "calendarTarget " + event?.title)
-        if (event != null) {
-            val timeText = "${formatTime(event.start)} – ${formatTime(event.end)}"
-            val subtitle = if (event.location != null) {
-                "${event.location} $timeText"
-            } else {
-                timeText
-            }
+        val events = getNextEvent()
 
-            val target = SmartspaceTarget(
-                smartspaceTargetId = "CalendarEvent",
-                headerAction = SmartspaceAction(
-                    id = "CalendarEvent",
-                    icon = Icon.createWithResource(context, R.drawable.ic_calendar),
-                    title = "${event.title} ${formatTimeRelative(event.start)}",
-                    subtitle = subtitle,
-                    pendingIntent = getPendingIntent(event)
-                ),
-                score = SmartspaceScores.SCORE_CALENDAR,
-                featureType = SmartspaceTarget.FEATURE_CALENDAR,
-            )
-            return listOf(target)
+        return if (events != null && events.isNotEmpty()) {
+            val eventTargets = mutableListOf<SmartspaceTarget>()
+            events.map { event ->
+                val timeText = "${formatTime(event.start)} – ${formatTime(event.end)}"
+                val subtitle = event.location?.let { "$it $timeText" } ?: timeText
+
+                val target = SmartspaceTarget(
+                    smartspaceTargetId = "CalendarEvent",
+                    headerAction = SmartspaceAction(
+                        id = "CalendarEvent",
+                        icon = Icon.createWithResource(context, R.drawable.ic_calendar),
+                        title = "${event.title} ${formatTimeRelative(event.start)}",
+                        subtitle = subtitle,
+                        pendingIntent = getPendingIntent(event)
+                    ),
+                    score = SmartspaceScores.SCORE_CALENDAR,
+                    featureType = SmartspaceTarget.FEATURE_CALENDAR,
+                )
+                eventTargets.add(target)
+            }
+            eventTargets
         } else {
-            return disabledTargets
+            disabledTargets
         }
     }
 
@@ -113,30 +111,32 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             data = Uri.parse("content://com.android.calendar/events/${event.id}")
             `package` = event.appPackage
         }
-        return PendingIntent.getActivity(context, 0, intent, 0)
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 
-    @SuppressLint("Range")
-    private fun getNextEvent(): CalendarEvent? {
+    private fun getNextEvent(): MutableList<CalendarEvent>? {
         val currentTime = System.currentTimeMillis()
         context.contentResolver.query(
             CalendarContract.Events.CONTENT_URI,
             calendarProjection,
             "${CalendarContract.Events.DTSTART} >= ? AND ${CalendarContract.Events.DTSTART} <= ?",
             arrayOf("${currentTime - includeBehind}", "${currentTime + includeAhead}"),
-            "${CalendarContract.Events.DTSTART} ASC LIMIT 1"
+            "${CalendarContract.Events.DTSTART} ASC LIMIT 3"
         )
-            ?.use { c ->
-                while (c.moveToNext()) {
-                    return CalendarEvent(
-                        c.getLong(c.getColumnIndex(CalendarContract.Events._ID)),
-                        c.getString(c.getColumnIndex(CalendarContract.Events.TITLE)),
-                        c.getLong(c.getColumnIndex(CalendarContract.Events.DTSTART)),
-                        c.getLong(c.getColumnIndex(CalendarContract.Events.DTEND)),
-                        c.getString(c.getColumnIndex(CalendarContract.Events.EVENT_LOCATION)),
-                        c.getString(c.getColumnIndex(CalendarContract.Events.CUSTOM_APP_PACKAGE))
+            ?.use {
+                val targets = mutableListOf<CalendarEvent>()
+                while (it.moveToNext()) {
+                    val event = CalendarEvent(
+                        id = it.getLong(0),
+                        title = it.getString(1),
+                        start = it.getLong(2),
+                        end = it.getLong(3),
+                        location = it.getString(4),
+                        appPackage = it.getString(5)
                     )
+                    targets.add(event)
                 }
+                return targets
             }
         return null
     }
