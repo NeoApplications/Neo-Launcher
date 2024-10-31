@@ -526,4 +526,5 @@
     <string name="edit_dash_summary">Indítók be- vagy kikapcsolása</string>
     <string name="drag_to_enable_packs">Húzza felfelé a bekapcsoláshoz</string>
     <string name="wallpaper_pick_summary">Háttérképválasztó megnyitása</string>
+    <string name="title_drawer_layout_categories">Elrendezési kategóriák</string>
 </resources>
