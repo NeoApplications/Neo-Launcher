@@ -526,4 +526,5 @@
     <string name="edit_search_summary">Actieve zoekmachines selecteren en sorteren</string>
     <string name="add_search_provider">Aanbieder toevoegen</string>
     <string name="search_provider_url_hint">Gebruik %s in plaats van de zoekterm</string>
+    <string name="title_drawer_layout_categories">Lay-outcategorieën</string>
 </resources>
