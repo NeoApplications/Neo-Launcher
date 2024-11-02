@@ -528,4 +528,5 @@
     <string name="search_provider_suggestion_url">Sugerir una url</string>
     <string name="edit_search_provider">Editar proveedor de búsqueda</string>
     <string name="search_provider_url_hint">Utilizar %s en lugar del término de búsqueda</string>
+    <string name="title_drawer_layout_categories">Categorías de diseño</string>
 </resources>
