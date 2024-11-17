@@ -18,8 +18,9 @@ before_script:
     - install -d $ANDROID_HOME
     - export GRADLE_OPTS="-Dorg.gradle.daemon=false"
     - apt-get update -qy
-    - apt-get install -y openjdk-17-jdk
-    - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+    - apt-get install -y openjdk-22-jdk
+    - export JAVA_HOME="/usr/lib/jvm/java-22-openjdk-amd64"
+    - export PATH=$PATH:$JAVA_HOME/bin
     - chmod +x gradlew
     - wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
     - unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
@@ -40,12 +41,19 @@ build:
             - .gradle/wrapper
     artifacts:
         paths:
-            - /application/app/build/outputs/
+            - app/build/outputs/
         expire_in: 
             1 week
 
     before_script:
-        - echo $KEYSTORE_FILE | base64 -d > keystore.jks
+        - /usr/lib/jvm/java-22-openjdk-amd64/bin/keytool -importkeystore \
+            -srckeystore $KEYSTORE_FILE \
+            -srcstoretype PKCS12 \
+            -destkeystore keystore.jks \
+            -deststoretype JKS \
+            -srcstorepass $KEYSTORE_PASSWORD \
+            -deststorepass $KEYSTORE_PASSWORD
+
         - echo -e "storePassword=$KEYSTORE_PASSWORD\nkeyPassword=$KEY_PASSWORD\nkeyAlias=$KEY_ALIAS\nstoreFile=keystore.jks" > keystore.properties
         - ./gradlew signingConfig
 
@@ -54,6 +62,7 @@ build:
     
     after_script:
         - rm -f keystore.jks || true
+        - ls /builds/NeoApplications/Neo-Launcher/build/
         - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
         - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
