@@ -55,7 +55,7 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
                     pendingIntent = getPendingIntent()
                 ),
                 score = SmartspaceScores.SCORE_ALARM,
-                featureType = SmartspaceTarget.FEATURE_ALARM
+                featureType = SmartspaceTarget.FEATURE_UPCOMING_ALARM
             )
 
             return listOf(target)
