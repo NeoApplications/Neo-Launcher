@@ -45,7 +45,14 @@ build:
             1 week
 
     before_script:
-        - echo $KEYSTORE_FILE | base64 -d > keystore.jks
+        - keytool -importkeystore \
+            -srckeystore $KEYSTORE_FILE \
+            -srcstoretype PKCS12 \
+            -destkeystore keystore.jks \
+            -deststoretype JKS \
+            -srcstorepass $KEYSTORE_PASSWORD \
+            -deststorepass $KEYSTORE_PASSWORD
+
         - echo -e "storePassword=$KEYSTORE_PASSWORD\nkeyPassword=$KEY_PASSWORD\nkeyAlias=$KEY_ALIAS\nstoreFile=keystore.jks" > keystore.properties
         - ./gradlew signingConfig
 
