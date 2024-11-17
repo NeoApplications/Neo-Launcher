@@ -20,6 +20,7 @@ before_script:
     - apt-get update -qy
     - apt-get install -y openjdk-22-jdk
     - export JAVA_HOME="/usr/lib/jvm/java-22-openjdk-amd64"
+    - export PATH=$PATH:/usr/lib/jvm/java-22-openjdk-amd64/bin
     - chmod +x gradlew
     - wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
     - unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
@@ -61,7 +62,7 @@ build:
     
     after_script:
         - rm -f keystore.jks || true
-        - ls app/build/outputs/
+        - ls /app/build/outputs/
         - ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
         - ARTIFACT_NAME_APK=basename $ARTIFACT_PATHNAME_APK
         - echo "ARTIFACT_NAME_APK is $ARTIFACT_NAME_APK"
