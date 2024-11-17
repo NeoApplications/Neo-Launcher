@@ -30,6 +30,7 @@ import androidx.datastore.preferences.core.edit
 import com.android.launcher3.InvariantDeviceProfile
 import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.theme.AccentColorOption
+import com.saggitt.omega.util.runOnMainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -418,6 +419,8 @@ abstract class PrefDelegate<T : Any>(
     protected open suspend fun set(value: T) {
         if (getValue() == value) return
         dataStore.edit { prefs -> prefs[key] = value }
-        onChange(value)
+        runOnMainThread {
+            onChange(value)
+        }
     }
 }
