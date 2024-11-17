@@ -18,8 +18,8 @@ before_script:
     - install -d $ANDROID_HOME
     - export GRADLE_OPTS="-Dorg.gradle.daemon=false"
     - apt-get update -qy
-    - apt-get install -y openjdk-17-jdk
-    - export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+    - apt-get install -y openjdk-22-jdk
+    - export JAVA_HOME="/usr/lib/jvm/java-22-openjdk-amd64"
     - chmod +x gradlew
     - wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
     - unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
@@ -40,7 +40,7 @@ build:
             - .gradle/wrapper
     artifacts:
         paths:
-            - /application/app/build/outputs/
+            - app/build/outputs/
         expire_in: 
             1 week
 
