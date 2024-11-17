@@ -30,7 +30,6 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
 
     private val requiredPermissions = listOf(android.Manifest.permission.READ_CALENDAR)
     private val calendarProjection = arrayOf(
-        CalendarContract.Events._ID,
         CalendarContract.Events.TITLE,
         CalendarContract.Events.DTSTART,
         CalendarContract.Events.DTEND,
@@ -46,10 +45,13 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             while (true) {
                 requiresSetup()
                 emit(calendarTarget())
-                delay(TimeUnit.MINUTES.toMillis(5))
+                delay(TimeUnit.MINUTES.toMillis(3))
             }
         }
     }
+
+    override suspend fun requiresSetup(): Boolean =
+        checkPermissionGranted().not()
 
     private fun calendarTarget(): List<SmartspaceTarget> {
         val events = getNextEvent()
@@ -144,9 +146,6 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
     private fun checkPermissionGranted(): Boolean {
         return requiredPermissions.all { context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
     }
-
-    override suspend fun requiresSetup(): Boolean =
-        checkPermissionGranted().not()
 
     override suspend fun startSetup(activity: Activity) {
         val intent = PreferenceActivity.navigateIntent(activity, Routes.PREFS_WIDGETS)
