@@ -61,12 +61,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
 
     fun setContent(
         content: @Composable ComposeBottomSheet.() -> Unit,
-        contentPaddings: PaddingValues = PaddingValues(
-            top = 0.dp,
-            bottom = 50.dp,
-            start = 0.dp,
-            end = 0.dp
-        ),
+        contentPaddings: PaddingValues
     ) {
         container.setContent {
             OmegaAppTheme {
@@ -186,11 +181,17 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
 
         fun show(
             context: Context,
+            paddings: PaddingValues = PaddingValues(
+                top = 0.dp,
+                bottom = 50.dp,
+                start = 0.dp,
+                end = 0.dp
+            ),
             content: @Composable (ComposeBottomSheet.() -> Unit),
         ) {
             val bottomSheet = ComposeBottomSheet(context)
             bottomSheet.show()
-            bottomSheet.setContent(content)
+            bottomSheet.setContent(content, paddings)
         }
     }
 }

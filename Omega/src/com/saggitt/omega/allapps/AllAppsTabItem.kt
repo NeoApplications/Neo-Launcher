@@ -24,6 +24,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.HorizontalScrollView
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.unit.dp
 import com.android.launcher3.AbstractFloatingView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
@@ -204,7 +206,10 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
             button.refreshColor()
             button.text = tab.name
             button.setOnLongClickListener { v: View ->
-                ComposeBottomSheet.show(v.context) {
+                ComposeBottomSheet.show(
+                    context = v.context,
+                    paddings = PaddingValues(all = 0.dp),
+                ) {
                     EditGroupBottomSheet(
                         category = prefs.drawerGroupsType!!,
                         group = tab.drawerTab,
