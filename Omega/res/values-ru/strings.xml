@@ -523,4 +523,12 @@
     <string name="web_search_provider">Поисковая система для сети</string>
     <string name="search_provider">Поисковик</string>
     <string name="hotseat_show_dots_page_indicator">Отображать страницы точками вместо полос</string>
+    <string name="search_provider_search_url">URL поисковых запросов</string>
+    <string name="search_provider_suggestion_url">URL поисковых предложений</string>
+    <string name="search_provider_url_hint">Искомая фраза будет размещена заместо %s в адресе</string>
+    <string name="edit_search_summary">Выберите и расставьте активные поисковики</string>
+    <string name="add_search_provider">Добавить поисковик</string>
+    <string name="edit_search_provider">Изменить поисковик</string>
+    <string name="title_search_providers">Поисковики</string>
+    <string name="title_drawer_layout_categories">Категории компоновки</string>
 </resources>

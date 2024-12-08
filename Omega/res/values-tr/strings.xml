@@ -90,9 +90,9 @@
     <string name="failed">Bir şeyler yanlış gitti.</string>
     <string name="developer_options_enabled">Geliştirici seçenekleri açık</string>
     <string name="read_external_storage_required">Yedekleme oluşturmak için depolama erişimi verin.</string>
-    <string name="backup_location_device_storage">Omega Klasörü</string>
+    <string name="backup_location_device_storage">Dahili klasör</string>
     <string name="backup_location">Konum</string>
-    <string name="backup_share_text">Omega yedekleme dosyası</string>
+    <string name="backup_share_text">Neo Launcher yedekleme dosyası</string>
     <string name="backup_share_title">Yedeklemeyi paylaş</string>
     <string name="restore_read_meta_fail">Geçersiz yedekleme dosyası</string>
     <string name="restore_failed">Geri yükleme başarısız</string>
@@ -149,7 +149,7 @@
     <string name="title_smartspace_weather_units">Sıcaklık birimi</string>
     <string name="title_smartspace_widget_provider">Hava durumu kaynağı</string>
     <string name="title_smartspace_time_above">Büyük Saati Göster</string>
-    <string name="title_smartspace_time_24_h">24 Saat Biçimini Kullan</string>
+    <string name="title_smartspace_time_24_h">24 Saat Formatı</string>
     <string name="title_smartspace_date">Tarihi Göster</string>
     <string name="title_smartspace_time">Saati Göster</string>
     <string name="title_show_google_app">Google uygulamasını göster</string>
@@ -177,14 +177,14 @@
     <string name="theme_auto">Duvar kağıdını takip et</string>
     <string name="summary__theme_blur">Sayfa arka planlarını bulanıklaştır</string>
     <string name="title_theme_icon_packs">Simge Paketleri</string>
-    <string name="title__theme_icon_shape">Simge şeklini değiştir</string>
+    <string name="title__theme_icon_shape">Simge şekli</string>
     <string name="msg_missing_usage_access">Uygulama önerilerini göstermek için <xliff:g example="My App" id="name">%1$s</xliff:g> için kullanım erişimini açın</string>
     <string name="needs_usage_access">Kullanım erişimi gerekli</string>
     <string name="hide_app_reset">Gizli uygulamaları sıfırla</string>
-    <string name="hide_app_selected">Gizli Uygulamalar</string>
+    <string name="hide_app_selected">Gizli Uygulamalar (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Gizli</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Uygulama</item>
@@ -440,7 +440,7 @@
     <string name="debug_options_title">Hata ayıklama bilgileri</string>
     <string name="tap_to_enable">Etkinleştirmek için öğeye dokunun</string>
     <string name="folder_name">Klasör İsmi</string>
-    <string name="selected_apps">Seçili Uygulamalar</string>
+    <string name="selected_apps">Seçili Uygulamalar (%1$d)</string>
     <string name="title__general_profile">Profil</string>
     <string name="title__general_search_feed">Arama &amp; Destek Olma</string>
     <string name="title__general_widgets_notifications">Widget\'lar &amp; Bildirimler</string>
@@ -467,4 +467,41 @@
     <string name="author_role">Geliştirici</string>
     <string name="contributor_role">Katkıda bulunan</string>
     <string name="title_override_corner_radius_value">Küresel köşe yarıçapı</string>
+    <string name="title_themed_icons">Temalı Simgeler</string>
+    <string name="color_wallpaper_secondary">İkincil Duvar Kağıdı</string>
+    <string name="app_reset">Seçimi Sıfırla</string>
+    <string name="title__dock_icon_size_enforce">Simge boyutunu özel olarak ayarla</string>
+    <string name="title_drawer_all_apps">Hepsi</string>
+    <string name="title_drawer_horizontal">Yatay</string>
+    <string name="title_drawer_categorized">Kategorize edilmiş</string>
+    <string name="title_drawer_custom_categories">Özel Kategoriler</string>
+    <string name="color_wallpaper_tertiary">Üçüncül Duvar Kağıdı</string>
+    <string name="weather_city">Şehir</string>
+    <string name="accessibility_next_alarm">Sonraki alarm: %s</string>
+    <string name="edit_search_provider">Arama sağlayıcısını düzenle</string>
+    <string name="add_search_provider">Sağlayıcı ekle</string>
+    <string name="search_provider_search_url">URL\'yi ara</string>
+    <string name="reset_custom_icon">Özel Simgeyi Kaldır</string>
+    <string name="title_desktop_free_scrolling">Serbest Kaydırma</string>
+    <string name="show_top_shadow">Üst Gölgelendirmeyi Göster</string>
+    <string name="title_smartspace_calendar">Takvim Seç</string>
+    <string name="title_calendar_persian">Farsça</string>
+    <string name="owm_get_your_own_key">API anahtarınızı api.openweathermap.org adresinden alınız.</string>
+    <string name="title_smartspace_time_format">Zaman Formatı</string>
+    <string name="title_calendar_gregorian">Gregoryen</string>
+    <string name="about_community_matrix">Matrix Topluluğu</string>
+    <string name="title_smartspace_background">Temalı Arkaplanı Göster</string>
+    <string name="title_all_apps_hide_scrollbar">Kaydırma Çubuğunu Gizle</string>
+    <string name="web_search_provider">Web Arama Sağlayıcısı</string>
+    <string name="title_drawer_layout_categories">Düzen Kategorileri</string>
+    <string name="title_themed_background">Şeffaf simge arkaplanı</string>
+    <string name="smartspace_flight_qr_code">QR kodu</string>
+    <string name="gesture_press_recents">Son kullanılanlar düğmesi</string>
+    <string name="search_provider">Arama Sağlayıcı</string>
+    <string name="about_community_telegram">Telegram Topluluğu</string>
+    <string name="web_search_you">Siz (Web)</string>
+    <string name="title_search_providers">Arama Sağlayıcıları</string>
+    <string name="edit_search_summary">Aktif olan arama sağlayıcılarını seçin ve sıralayın</string>
+    <string name="color_dynamic">Dinamik</string>
+    <string name="weather_provider_owm" translatable="true">OpenWeatherMap (Açık Hava Haritası)</string>
 </resources>
