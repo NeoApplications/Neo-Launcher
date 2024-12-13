@@ -184,7 +184,7 @@
     <string name="hide_app_selected">Gizli Uygulamalar (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Gizli</item>
-        <item quantity="other"/>
+        <item quantity="other">%1$d Gizlenmiş</item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Uygulama</item>
@@ -504,4 +504,27 @@
     <string name="edit_search_summary">Aktif olan arama sağlayıcılarını seçin ve sıralayın</string>
     <string name="color_dynamic">Dinamik</string>
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap (Açık Hava Haritası)</string>
+    <string name="weather_api_key">OWM API Anahtarı</string>
+    <string name="full_wday_month_day_no_year">EEEE, MMMM d</string>
+    <string name="title_desktop_widget_corner_radius">Widget köşe yarıçapı</string>
+    <string name="title_expandable_dock">Genişletilebilir Rıhtım</string>
+    <string name="protected_app_selected">Korumalı Uygulamalar (%1$d)</string>
+    <string name="theme_auto_black">Duvar kağıdını takip et (Siyah)</string>
+    <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
+    <string name="title__general_gestures_dash">Hareketler ve Çizgi</string>
+    <string name="search_provider_suggestion_url">Öneri URL\'si</string>
+    <string name="search_provider_url_hint">Arama terimi yerine %s kullanın</string>
+    <string name="cat_dock_search">Çekmece ve Rıhtım</string>
+    <string name="accessibility_smartspace_page">%2$d\'nin %1$d sayfası</string>
+    <string name="battery_charging_percentage_charging_time">%1$d%% — %2$s içinde dolu</string>
+    <string name="hotseat_accessibility_expand">Rıhtım genişletildi</string>
+    <string name="web_search_perplexity">Perplexity(Web)</string>
+    <string name="hotseat_show_dots_page_indicator">Çizgiler Yerine Noktalı Sayfa Göstergesini Göster</string>
+    <string name="n_percent">%1$d%%</string>
+    <string name="default_city">San Salvador, SV</string>
+    <string name="smartspace_icu_date_pattern">EEEMMM d</string>
+    <string name="hotseat_accessibility_collapse">Rıhtım çöktü</string>
+    <string name="web_search_neeva">Neeva(Web)</string>
+    <string name="web_search_wolfram_alpha">Wolfram Alpha(Web)</string>
+    <string name="web_search_phind">Phind(Web)</string>
 </resources>
