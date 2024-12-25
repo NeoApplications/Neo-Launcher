@@ -13,8 +13,8 @@ import android.os.UserHandle
 import androidx.core.content.ContextCompat
 import com.android.launcher3.R
 import com.android.launcher3.icons.ClockDrawableWrapper
-import com.android.launcher3.icons.IconProvider.ThemeData
 import com.android.launcher3.icons.ThemedIconDrawable
+import com.android.launcher3.icons.ThemedIconDrawable.ThemeData
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
@@ -23,7 +23,6 @@ import com.saggitt.omega.util.prefs
 import com.saulhdev.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saulhdev.neolauncher.icons.IconPreferences
-import com.saulhdev.neolauncher.util.getThemedIconPacksInstalled
 
 class IconPackProvider(private val context: Context) {
     private val iconPacks = mutableMapOf<String, IconPack?>()
@@ -90,15 +89,13 @@ class IconPackProvider(private val context: Context) {
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
         val clockMetadata =
             if (user == Process.myUserHandle()) iconPack.getClock(iconEntry) else null
-        val themedIconPacks = packageManager.getThemedIconPacksInstalled(context)
-        val isThemedIconsEnabled =
-            context.prefs.profileThemedIcons.getValue() && (iconEntry.packPackageName in themedIconPacks)
+        val shouldTintBackgrounds = context.prefs.profileIconColoredBackground.getValue()
         val prefs = NeoPrefs.getInstance()
 
         if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
-                    if (isThemedIconsEnabled)
+                    if (shouldTintBackgrounds)
                         wrapThemedData(
                             packageManager,
                             iconEntry,
@@ -106,15 +103,13 @@ class IconPackProvider(private val context: Context) {
                         )
                     else drawable
                 }
-            if (clockDrawable != null) {
-                return if (isThemedIconsEnabled && prefs.profileTransparentBgIcons.getValue())
+            return if (shouldTintBackgrounds && prefs.profileTransparentBgIcons.getValue())
                     clockDrawable.foreground
                 else
                     CustomAdaptiveIconDrawable(clockDrawable.background, clockDrawable.foreground)
-            }
         }
 
-        if (isThemedIconsEnabled) {
+        if (shouldTintBackgrounds) {
             return wrapThemedData(packageManager, iconEntry, drawable)
         }
         return drawable

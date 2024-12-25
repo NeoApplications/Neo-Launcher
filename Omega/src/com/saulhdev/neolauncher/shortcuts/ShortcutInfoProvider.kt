@@ -66,7 +66,7 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
             val iconCache = LauncherAppState.getInstance(context).iconCache
             val drawable = iconCache.getFullResIcon(launcherActivityInfo, info, false)
             val bitmap = LauncherIcons.obtain(context)
-                .createBadgedIconBitmap(drawable, info.user, true)
+                .createBadgedIconBitmap(drawable)
             val repository = IconOverrideRepository(context)
             val scope = MainScope()
             scope.launch {

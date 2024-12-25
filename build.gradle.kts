@@ -41,7 +41,7 @@ android {
         targetSdk = 33
         applicationId = "com.saggitt.omega"
 
-        versionName = "1.0.0-alpha03hf"
+        versionName = "1.0.0-alpha04hf"
         versionCode = 1005
 
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")

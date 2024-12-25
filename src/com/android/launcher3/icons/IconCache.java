@@ -37,6 +37,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.os.Process;
 import android.os.Trace;
 import android.os.UserHandle;
@@ -51,11 +52,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.ComponentWithLabel.ComponentCachingLogic;
 import com.android.launcher3.icons.cache.BaseIconCache;
 import com.android.launcher3.icons.cache.CachingLogic;
-import com.android.launcher3.icons.cache.HandlerRunnable;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.IconRequestInfo;
 import com.android.launcher3.model.data.ItemInfo;
@@ -65,6 +66,7 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
+import com.android.launcher3.util.CancellableTask;
 import com.android.launcher3.util.InstantAppResolver;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
@@ -103,11 +105,15 @@ public class IconCache extends BaseIconCache {
     private final UserCache mUserManager;
     private final InstantAppResolver mInstantAppResolver;
     private final IconProvider mIconProvider;
-    private final HandlerRunnable mCancelledRunnable;
+    private final CancellableTask mCancelledTask;
 
     private final SparseArray<BitmapInfo> mWidgetCategoryBitmapInfos;
 
     private int mPendingIconRequestCount = 0;
+
+    public IconCache(Context context, InvariantDeviceProfile idp) {
+        this(context, idp, LauncherFiles.APP_ICONS_DB, new CustomIconProvider(context));
+    }
 
     public IconCache(Context context, InvariantDeviceProfile idp, String dbFileName,
             IconProvider iconProvider) {
@@ -122,9 +128,9 @@ public class IconCache extends BaseIconCache {
         mIconProvider = iconProvider;
         mWidgetCategoryBitmapInfos = new SparseArray<>();
 
-        mCancelledRunnable = new HandlerRunnable(
-                mWorkerHandler, () -> null, MAIN_EXECUTOR, c -> { });
-        mCancelledRunnable.cancel();
+        mCancelledTask = new CancellableTask(() -> null, MAIN_EXECUTOR, c -> {
+        });
+        mCancelledTask.cancel();
     }
 
     @Override
@@ -177,8 +183,8 @@ public class IconCache extends BaseIconCache {
      *
      * @return a request ID that can be used to cancel the request.
      */
-    public HandlerRunnable updateIconInBackground(final ItemInfoUpdateReceiver caller,
-            final ItemInfoWithIcon info) {
+    public CancellableTask updateIconInBackground(final ItemInfoUpdateReceiver caller,
+                                                  final ItemInfoWithIcon info) {
         Preconditions.assertUIThread();
         Supplier<ItemInfoWithIcon> task;
         if (info instanceof AppInfo || info instanceof WorkspaceItemInfo) {
@@ -194,16 +200,23 @@ public class IconCache extends BaseIconCache {
         } else {
             Log.i(TAG, "Icon update not supported for "
                     + info == null ? "null" : info.getClass().getName());
-            return mCancelledRunnable;
+            return mCancelledTask;
         }
 
-        if (mPendingIconRequestCount <= 0) {
-            MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+        Runnable endRunnable;
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            if (mPendingIconRequestCount <= 0) {
+                MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+            }
+            mPendingIconRequestCount++;
+            endRunnable = this::onIconRequestEnd;
+        } else {
+            endRunnable = () -> {
+            };
         }
-        mPendingIconRequestCount++;
 
-        HandlerRunnable<ItemInfoWithIcon> request = new HandlerRunnable<>(mWorkerHandler,
-                task, MAIN_EXECUTOR, caller::reapplyItemInfo, this::onIconRequestEnd);
+        CancellableTask<ItemInfoWithIcon> request = new CancellableTask<>(
+                task, MAIN_EXECUTOR, caller::reapplyItemInfo, endRunnable);
         Utilities.postAsyncCallback(mWorkerHandler, request);
         return request;
     }
@@ -524,8 +537,7 @@ public class IconCache extends BaseIconCache {
 
         try (LauncherIcons li = LauncherIcons.obtain(mContext)) {
             final BitmapInfo tempBitmap = li.createBadgedIconBitmap(
-                    mContext.getDrawable(widgetSection.mSectionDrawable),
-                    new BaseIconFactory.IconOptions().setShrinkNonAdaptiveIcons(false));
+                    mContext.getDrawable(widgetSection.mSectionDrawable));
             mWidgetCategoryBitmapInfos.put(infoInOut.widgetCategory, tempBitmap);
             infoInOut.bitmap = getBadgedIcon(tempBitmap, infoInOut.user);
         } catch (Exception e) {

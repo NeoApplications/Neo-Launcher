@@ -18,7 +18,6 @@ package com.android.launcher3.icons;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,10 +34,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
-import java.nio.ByteBuffer;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.nio.ByteBuffer;
 
 public class IconNormalizer {
 
@@ -132,6 +131,7 @@ public class IconNormalizer {
      * @param d Should be AdaptiveIconDrawable
      * @param size Canvas size to use
      */
+    @TargetApi(Build.VERSION_CODES.O)
     public static float normalizeAdaptiveIcon(Drawable d, int size, @Nullable RectF outBounds) {
         Rect tmpBounds = new Rect(d.getBounds());
         d.setBounds(0, 0, size, size);

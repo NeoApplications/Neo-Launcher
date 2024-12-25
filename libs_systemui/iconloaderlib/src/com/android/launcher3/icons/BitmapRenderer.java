@@ -23,6 +23,7 @@ import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 
 /**
  * Interface representing a bitmap draw operation.
@@ -56,7 +57,7 @@ public interface BitmapRenderer {
      * same object as source, or a copy may have been made.
      */
     static Bitmap createBitmap(Bitmap source, int x, int y, int width, int height) {
-        if (source.getConfig() == Config.HARDWARE) {
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.O && source.getConfig() == Config.HARDWARE) {
             return createHardwareBitmap(width, height, c -> c.drawBitmap(source,
                     new Rect(x, y, x + width, y + height), new RectF(0, 0, width, height), null));
         } else {

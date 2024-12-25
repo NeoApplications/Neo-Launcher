@@ -69,13 +69,13 @@ import com.android.launcher3.icons.DotRenderer;
 import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.icons.IconCache.ItemInfoUpdateReceiver;
 import com.android.launcher3.icons.PlaceHolderIconDrawable;
-import com.android.launcher3.icons.cache.HandlerRunnable;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.search.StringMatcherUtility;
+import com.android.launcher3.util.CancellableTask;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MultiTranslateDelegate;
 import com.android.launcher3.util.SafeCloseable;
@@ -192,7 +192,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mDisableRelayout = false;
 
-    private HandlerRunnable mIconLoadRequest;
+    private CancellableTask mIconLoadRequest;
     private NeoPrefs prefs;
 
     private boolean mEnableIconUpdateAnimation = false;
@@ -420,7 +420,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         if (mHideBadge) {
             flags |= FLAG_NO_BADGE;
         }
-        FastBitmapDrawable iconDrawable = info.newIcon(getContext(), flags);
+        FastBitmapDrawable iconDrawable = info.newIcon(getContext(), shouldUseTheme());
         mDotParams.appColor = iconDrawable.getIconColor();
         mDotParams.dotColor = Themes.getAttrColor(getContext(), R.attr.notificationDotColor);
         setIcon(iconDrawable);
@@ -428,11 +428,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     }
 
     protected boolean shouldUseTheme() {
-        if (mDisplay == DISPLAY_ALL_APPS) {
+        /*if (mDisplay == DISPLAY_ALL_APPS) {
             return prefs.getProfileThemedIcons().getValue();
         }
         return mDisplay == DISPLAY_WORKSPACE || mDisplay == DISPLAY_FOLDER
                 || mDisplay == DISPLAY_TASKBAR;
+
+         */
+        return prefs.getProfileThemedIcons().getValue();
     }
 
     /**

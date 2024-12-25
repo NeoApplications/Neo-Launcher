@@ -86,7 +86,8 @@ public class SimpleIconCache extends BaseIconCache {
 
     @Override
     protected boolean isInstantApp(@NonNull ApplicationInfo info) {
-        return false; //info.isInstantApp();
+        //return info.isInstantApp();
+        return false;
     }
 
     @NonNull

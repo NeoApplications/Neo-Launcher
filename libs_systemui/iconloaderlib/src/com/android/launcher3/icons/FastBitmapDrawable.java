@@ -17,6 +17,8 @@
 package com.android.launcher3.icons;
 
 import static com.android.launcher3.icons.BaseIconFactory.getBadgeSizeForIconSize;
+import static com.android.launcher3.icons.BitmapInfo.FLAG_NO_BADGE;
+import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
 import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
 
 import android.animation.ObjectAnimator;
@@ -39,6 +41,8 @@ import android.view.animation.PathInterpolator;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
+
+import com.android.launcher3.icons.BitmapInfo.DrawableCreationFlags;
 
 public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
 
@@ -70,6 +74,9 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
     @VisibleForTesting protected boolean mIsHovered;
     protected boolean mIsDisabled;
     float mDisabledAlpha = 1f;
+
+    @DrawableCreationFlags
+    int mCreationFlags = 0;
 
     // Animator and properties for the fast bitmap drawable's scale
     @VisibleForTesting protected static final FloatProperty<FastBitmapDrawable> SCALE
@@ -153,6 +160,14 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
      */
     public boolean isThemed() {
         return false;
+    }
+
+    /**
+     * Returns true if the drawable was created with theme, even if it doesn't
+     * support theming itself.
+     */
+    public boolean isCreatedForTheme() {
+        return isThemed() || (mCreationFlags & FLAG_THEMED) != 0;
     }
 
     @Override
@@ -298,6 +313,11 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         updateFilter();
     }
 
+    @VisibleForTesting
+    public Drawable getBadge() {
+        return mBadge;
+    }
+
     /**
      * Updates the paint to reflect the current brightness and saturation.
      */
@@ -320,11 +340,17 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         if (mBadge != null) {
             cs.mBadgeConstantState = mBadge.getConstantState();
         }
+        cs.mCreationFlags = mCreationFlags;
         return cs;
     }
 
     public static ColorFilter getDisabledColorFilter() {
         return getDisabledColorFilter(1);
+    }
+
+    // Returns if the FastBitmapDrawable contains a badge.
+    public boolean hasBadge() {
+        return (mCreationFlags & FLAG_NO_BADGE) == 0;
     }
 
     private static ColorFilter getDisabledColorFilter(float disabledAlpha) {
@@ -398,6 +424,9 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         protected boolean mIsDisabled;
         private ConstantState mBadgeConstantState;
 
+        @DrawableCreationFlags
+        int mCreationFlags = 0;
+
         public FastBitmapConstantState(Bitmap bitmap, int color) {
             mBitmap = bitmap;
             mIconColor = color;
@@ -408,12 +437,13 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         }
 
         @Override
-        public FastBitmapDrawable newDrawable() {
+        public final FastBitmapDrawable newDrawable() {
             FastBitmapDrawable drawable = createDrawable();
             drawable.setIsDisabled(mIsDisabled);
             if (mBadgeConstantState != null) {
                 drawable.setBadge(mBadgeConstantState.newDrawable());
             }
+            drawable.mCreationFlags = mCreationFlags;
             return drawable;
         }
 

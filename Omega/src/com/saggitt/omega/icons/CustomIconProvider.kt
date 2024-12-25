@@ -69,7 +69,6 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.function.Supplier
 
-
 class CustomIconProvider @JvmOverloads constructor(
     private val context: Context,
     supportsIconTheme: Boolean = false,
@@ -85,11 +84,11 @@ class CustomIconProvider @JvmOverloads constructor(
     private val iconPack get() = iconPackProvider.getIconPackOrSystem(iconPackPref.getValue())
     private var iconPackVersion = 0L
     private var themeMapName: String = ""
-    private var _themeMap: Map<ComponentName, ThemeData>? = null
+    private var _themeMap: Map<ComponentName, ThemedIconDrawable.ThemeData>? = null
     private val themedIconPack
         get() = iconPackProvider.getIconPack(context.getString(R.string.icon_packs_intent_name))
             ?.apply { loadBlocking() }
-    private val themeMap: Map<ComponentName, ThemeData>
+    private val themeMap: Map<ComponentName, ThemedIconDrawable.ThemeData>
         get() {
             if (drawerThemedIcons && !(isOlderLawnIconsInstalled)) {
                 _themeMap = DISABLED_MAP
@@ -137,16 +136,16 @@ class CustomIconProvider @JvmOverloads constructor(
 
     override fun getIconWithOverrides(
         packageName: String,
-        iconDpi: Int,
         component: String,
         user: UserHandle,
+        iconDpi: Int,
         fallback: Supplier<Drawable>,
     ): Drawable {
         val componentName = ComponentName(packageName, component)
         val iconEntry = resolveIconEntry(componentName, user)
         var resolvedEntry = iconEntry
         var iconType = ICON_TYPE_DEFAULT
-        var themeData: ThemeData? = null
+        var themeData: ThemedIconDrawable.ThemeData? = null
         if (iconEntry != null) {
             val clock = iconPackProvider.getClockMetadata(iconEntry)
             when {
@@ -165,7 +164,7 @@ class CustomIconProvider @JvmOverloads constructor(
                 }
                 packageName == mClock.packageName -> {
                     // is clock app but icon might not be adaptive, fallback to static themed clock
-                    themeData = ThemeData(
+                    themeData = ThemedIconDrawable.ThemeData(
                         context.resources,
                         BuildConfig.APPLICATION_ID,
                         R.drawable.themed_icon_static_clock
@@ -182,27 +181,46 @@ class CustomIconProvider @JvmOverloads constructor(
                 }
             }
         }
-
         val icon = resolvedEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
         val td = themeData
         if (icon != null) return if (td != null) td.wrapDrawable(icon, iconType) else icon
+
+        // use default icon from system
         var defaultIcon =
-            super.getIconWithOverrides(packageName, iconDpi, component, user, fallback)
-        if (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && defaultIcon.monochrome != null
+            super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
+        if ((prefs.profileIconColoredBackground.getValue() && defaultIcon is AdaptiveIconDrawable) ||
+            (prefs.profileThemedIcons.getValue() && defaultIcon is AdaptiveIconDrawable)
         ) {
-            defaultIcon = defaultIcon.monochrome
-            return if (td != null) {
-                td.wrapDrawable(defaultIcon, iconType)
-            } else {
-                val themedColors = ThemedIconDrawable.getThemedColors(context)
-                if (prefs.profileTransparentBgIcons.getValue()) {
-                    return defaultIcon.apply { setTint(themedColors[1]) }
+            if (Utilities.ATLEAST_T && defaultIcon.monochrome != null) {
+                defaultIcon = defaultIcon.monochrome
+                return if (td != null) {
+                    td.wrapDrawable(defaultIcon, iconType)
+                } else {
+                    val themedColors = ThemedIconDrawable.getThemedColors(context)
+                    if (prefs.profileTransparentBgIcons.getValue()) {
+                        return defaultIcon.apply { setTint(themedColors[1]) }
+                    }
+                    CustomAdaptiveIconDrawable(
+                        ColorDrawable(themedColors[0]),
+                        defaultIcon.apply { setTint(themedColors[1]) },
+                    )
                 }
-                CustomAdaptiveIconDrawable(
-                    ColorDrawable(themedColors[0]),
-                    defaultIcon.apply { setTint(themedColors[1]) },
-                )
+            } else {
+                val iconCompat =
+                    ThemedIconCompat.getThemedIcon(context, componentName) ?: return defaultIcon
+
+                return if (td != null) {
+                    td.wrapDrawable(iconCompat, iconType)
+                } else {
+                    val themedColors = ThemedIconDrawable.getThemedColors(context)
+                    if (prefs.profileTransparentBgIcons.getValue()) {
+                        return iconCompat.apply { setTint(themedColors[1]) }
+                    }
+                    CustomAdaptiveIconDrawable(
+                        ColorDrawable(themedColors[0]),
+                        iconCompat.apply { setTint(themedColors[1]) },
+                    )
+                }
             }
         }
         return defaultIcon
@@ -212,7 +230,7 @@ class CustomIconProvider @JvmOverloads constructor(
         return _themeMap != DISABLED_MAP
     }
 
-    override fun getThemeData(componentName: ComponentName): ThemeData? {
+    override fun getThemeData(componentName: ComponentName): ThemedIconDrawable.ThemeData? {
         val td = getDynamicIconsFromMap(context, themeMap, componentName)
         if (td != null) {
             return td
@@ -458,8 +476,8 @@ class CustomIconProvider @JvmOverloads constructor(
         }
     }
 
-    private fun createThemedIconMap(): MutableMap<ComponentName, ThemeData> {
-        val map = ArrayMap<ComponentName, ThemeData>()
+    private fun createThemedIconMap(): MutableMap<ComponentName, ThemedIconDrawable.ThemeData> {
+        val map = ArrayMap<ComponentName, ThemedIconDrawable.ThemeData>()
 
         fun updateMapFromResources(resources: Resources, packageName: String) {
             try {
@@ -480,7 +498,7 @@ class CustomIconProvider @JvmOverloads constructor(
                             val iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0)
                             if (iconId != 0 && pkg.isNotEmpty()) {
                                 map[ComponentName(pkg, cmp)] =
-                                    ThemeData(resources, packageName, iconId)
+                                    ThemedIconDrawable.ThemeData(resources, packageName, iconId)
                             }
                         }
                     }
@@ -511,7 +529,7 @@ class CustomIconProvider @JvmOverloads constructor(
     companion object {
         const val TAG = "CustomIconProvider"
 
-        val DISABLED_MAP = emptyMap<ComponentName, ThemeData>()
+        val DISABLED_MAP = emptyMap<ComponentName, ThemedIconDrawable.ThemeData>()
         const val MANIFEST_XML = "AndroidManifest.xml"
     }
 }

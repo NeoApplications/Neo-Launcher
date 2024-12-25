@@ -30,13 +30,13 @@ import android.util.SparseBooleanArray;
 
 import com.android.launcher3.icons.cache.BaseIconCache.IconDB;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Utility class to handle updating the Icon cache
@@ -57,7 +57,7 @@ public class IconCacheUpdateHandler {
      */
     private static final boolean MODE_CLEAR_VALID_ITEMS = false;
 
-    private static final Object ICON_UPDATE_TOKEN = new Object();
+    static final Object ICON_UPDATE_TOKEN = new Object();
 
     private final HashMap<String, PackageInfo> mPkgInfoMap;
     private final BaseIconCache mIconCache;
@@ -101,6 +101,7 @@ public class IconCacheUpdateHandler {
     /**
      * Updates the persistent DB, such that only entries corresponding to {@param apps} remain in
      * the DB and are updated.
+     *
      * @return The set of packages for which icons have updated.
      */
     public <T> void updateIcons(List<T> apps, CachingLogic<T> cachingLogic,
@@ -130,6 +131,7 @@ public class IconCacheUpdateHandler {
     /**
      * Updates the persistent DB, such that only entries corresponding to {@param apps} remain in
      * the DB and are updated.
+     *
      * @return The set of packages for which icons have updated.
      */
     @SuppressWarnings("unchecked")
@@ -141,7 +143,7 @@ public class IconCacheUpdateHandler {
         }
         long userSerial = mIconCache.getSerialNumberForUser(user);
 
-        Stack<T> appsToUpdate = new Stack<>();
+        ArrayDeque<T> appsToUpdate = new ArrayDeque<>();
 
         try (Cursor c = mIconCache.mIconDb.query(
                 new String[]{IconDB.COLUMN_ROWID, IconDB.COLUMN_COMPONENT,
@@ -183,7 +185,7 @@ public class IconCacheUpdateHandler {
                 if (version == info.versionCode
                         && updateTime == cachingLogic.getLastUpdatedTime(app, info)
                         && TextUtils.equals(c.getString(systemStateIndex),
-                                mIconCache.getIconSystemState(info.packageName))) {
+                        mIconCache.getIconSystemState(info.packageName))) {
 
                     if (mFilterMode == MODE_CLEAR_VALID_ITEMS) {
                         mItemsToDelete.put(rowId, false);
@@ -207,8 +209,9 @@ public class IconCacheUpdateHandler {
 
         // Insert remaining apps.
         if (!componentMap.isEmpty() || !appsToUpdate.isEmpty()) {
-            Stack<T> appsToAdd = new Stack<>();
+            ArrayDeque<T> appsToAdd = new ArrayDeque<>();
             appsToAdd.addAll(componentMap.values());
+            mIconCache.setIconUpdateInProgress(true);
             new SerializedIconUpdateTask(userSerial, user, appsToAdd, appsToUpdate, cachingLogic,
                     onUpdateCallback).scheduleNext();
         }
@@ -226,7 +229,7 @@ public class IconCacheUpdateHandler {
                 .append(" IN (");
 
         int count = mItemsToDelete.size();
-        for (int i = 0;  i < count; i++) {
+        for (int i = 0; i < count; i++) {
             if (mItemsToDelete.valueAt(i)) {
                 if (deleteCount > 0) {
                     queryBuilder.append(", ");
@@ -250,14 +253,14 @@ public class IconCacheUpdateHandler {
     private class SerializedIconUpdateTask<T> implements Runnable {
         private final long mUserSerial;
         private final UserHandle mUserHandle;
-        private final Stack<T> mAppsToAdd;
-        private final Stack<T> mAppsToUpdate;
+        private final ArrayDeque<T> mAppsToAdd;
+        private final ArrayDeque<T> mAppsToUpdate;
         private final CachingLogic<T> mCachingLogic;
         private final HashSet<String> mUpdatedPackages = new HashSet<>();
         private final OnUpdateCallback mOnUpdateCallback;
 
         SerializedIconUpdateTask(long userSerial, UserHandle userHandle,
-                Stack<T> appsToAdd, Stack<T> appsToUpdate, CachingLogic<T> cachingLogic,
+                                 ArrayDeque<T> appsToAdd, ArrayDeque<T> appsToUpdate, CachingLogic<T> cachingLogic,
                 OnUpdateCallback onUpdateCallback) {
             mUserHandle = userHandle;
             mUserSerial = userSerial;
@@ -270,7 +273,7 @@ public class IconCacheUpdateHandler {
         @Override
         public void run() {
             if (!mAppsToUpdate.isEmpty()) {
-                T app = mAppsToUpdate.pop();
+                T app = mAppsToUpdate.removeLast();
                 String pkg = mCachingLogic.getComponent(app).getPackageName();
                 PackageInfo info = mPkgInfoMap.get(pkg);
 
@@ -286,8 +289,9 @@ public class IconCacheUpdateHandler {
                 // Let it run one more time.
                 scheduleNext();
             } else if (!mAppsToAdd.isEmpty()) {
-                T app = mAppsToAdd.pop();
-                PackageInfo info = mPkgInfoMap.get(mCachingLogic.getComponent(app).getPackageName());
+                T app = mAppsToAdd.removeLast();
+                PackageInfo info = mPkgInfoMap.get(
+                        mCachingLogic.getComponent(app).getPackageName());
                 // We do not check the mPkgInfoMap when generating the mAppsToAdd. Although every
                 // app should have package info, this is not guaranteed by the api
                 if (info != null) {
@@ -297,6 +301,10 @@ public class IconCacheUpdateHandler {
 
                 if (!mAppsToAdd.isEmpty()) {
                     scheduleNext();
+                } else if (!mIconCache.mWorkerHandler.hasMessages(0, ICON_UPDATE_TOKEN)) {
+                    // This checks if there is a second icon update process happening
+                    // before notifying BaseIconCache that the updates are over
+                    mIconCache.setIconUpdateInProgress(false);
                 }
             }
         }

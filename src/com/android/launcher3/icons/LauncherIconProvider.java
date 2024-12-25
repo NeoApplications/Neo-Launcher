@@ -40,9 +40,9 @@ public class LauncherIconProvider extends IconProvider {
     private static final String ATTR_DRAWABLE = "drawable";
 
     private static final String TAG = "LIconProvider";
-    private static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
+    private static final Map<String, ThemedIconDrawable.ThemeData> DISABLED_MAP = Collections.emptyMap();
 
-    private Map<String, ThemeData> mThemedIconMap;
+    private Map<String, ThemedIconDrawable.ThemeData> mThemedIconMap;
     private boolean mSupportsIconTheme;
 
     public LauncherIconProvider(Context context, boolean supportsIconTheme) {
@@ -59,16 +59,11 @@ public class LauncherIconProvider extends IconProvider {
                 ? null : DISABLED_MAP;
     }
 
-    @Override
-    protected ThemeData getThemeDataForPackage(String packageName) {
-        return getThemedIconMap().get(packageName);
-    }
-
-    private Map<String, ThemeData> getThemedIconMap() {
+    private Map<String, ThemedIconDrawable.ThemeData> getThemedIconMap() {
         if (mThemedIconMap != null) {
             return mThemedIconMap;
         }
-        ArrayMap<String, ThemeData> map = new ArrayMap<>();
+        ArrayMap<String, ThemedIconDrawable.ThemeData> map = new ArrayMap<>();
         Resources res = mContext.getResources();
         try (XmlResourceParser parser = res.getXml(R.xml.grayscale_icon_map)) {
             final int depth = parser.getDepth();
@@ -85,7 +80,7 @@ public class LauncherIconProvider extends IconProvider {
                     String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
                     int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
                     if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                        map.put(pkg, new ThemeData(res, pkg, iconId));
+                        map.put(pkg, new ThemedIconDrawable.ThemeData(res, pkg, iconId));
                     }
                 }
             }

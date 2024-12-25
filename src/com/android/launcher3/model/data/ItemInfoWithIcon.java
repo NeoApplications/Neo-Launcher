@@ -27,7 +27,6 @@ import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.util.PackageManagerHelper;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Represents an ItemInfo which also holds an icon.
@@ -245,13 +244,14 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * Returns a FastBitmapDrawable with the icon.
      */
     public FastBitmapDrawable newIcon(Context context) {
-        NeoPrefs prefs = NeoPrefs.getInstance();
-        boolean isThemed = prefs.getProfileThemedIcons().getValue();
-        if (isThemed) {
-            return newIcon(context, isThemed);
-        } else {
-            return newIcon(context, 0);
-        }
+        return bitmap.newIcon(context);
+    }
+
+    public FastBitmapDrawable newIcon(Context context, boolean applyTheme) {
+        FastBitmapDrawable drawable = applyTheme
+                ? bitmap.newIcon(context) : bitmap.newIcon(context, BitmapInfo.FLAG_NO_BADGE);
+        drawable.setIsDisabled(isDisabled());
+        return drawable;
     }
 
     /**
@@ -259,13 +259,6 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      */
     public FastBitmapDrawable newIcon(Context context, @DrawableCreationFlags int creationFlags) {
         FastBitmapDrawable drawable = bitmap.newIcon(context, creationFlags);
-        drawable.setIsDisabled(isDisabled());
-        return drawable;
-    }
-
-    public FastBitmapDrawable newIcon(Context context, boolean applyTheme) {
-        FastBitmapDrawable drawable = applyTheme
-                ? bitmap.newThemedIcon(context) : bitmap.newIcon(context);
         drawable.setIsDisabled(isDisabled());
         return drawable;
     }
