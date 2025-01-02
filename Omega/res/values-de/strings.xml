@@ -83,7 +83,7 @@
     <string name="hide_app_selected">Ausgeblendete Apps (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Versteckt</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d App</item>
@@ -508,4 +508,9 @@
     <string name="hotseat_accessibility_collapse">Dock eingeklappt</string>
     <string name="title_expandable_dock">Ausklappbares Dock</string>
     <string name="title_desktop_free_scrolling">Freies Scrollen</string>
+    <string name="title_drawer_all_apps">Alle</string>
+    <string name="title_all_apps_hide_scrollbar">Laufleiste ausblenden</string>
+    <string name="title_drawer_horizontal">Horizontal</string>
+    <string name="title_drawer_categorized">Kategorisiert</string>
+    <string name="title_drawer_custom_categories">Benutzerdefinierte Kategorien</string>
 </resources>
