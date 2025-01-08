@@ -339,7 +339,7 @@
     <string name="title_drawer_paged">Impaginato</string>
     <string name="title_drawer_vertical_list">Elenco verticale</string>
     <string name="title_drawer_vertical">Verticale</string>
-    <string name="title_drawer_layout">Modalità disposizione</string>
+    <string name="title_drawer_layout">Modalità di layout</string>
     <string name="title_text_color">Colore testo</string>
     <string name="label_turn_off_suggestions">Disattiva</string>
     <string name="msg_disable_suggestions_prompt">I dati di uso verranno eliminati.</string>
@@ -450,7 +450,7 @@
     <string name="dash_torch_summary">Accendi o spegni la luce del flash.</string>
     <string name="enabled_events">Abilitato</string>
     <string name="title_app_categorization_enable">Abilita categorie per le app</string>
-    <string name="cat_desktop_grid">Griglia e disposizione</string>
+    <string name="cat_desktop_grid">Griglia e layout</string>
     <string name="about_community">Comunità</string>
     <string name="dash_wifi_summary">Stato e connessione Wi-Fi</string>
     <string name="summary_fuzzy_search">Corrispondenza approssimativa per ricerche app.</string>
@@ -536,4 +536,12 @@
     <string name="search_provider">Fornitore di ricerca</string>
     <string name="web_search_provider">Fornitore di ricerca Web</string>
     <string name="hotseat_show_dots_page_indicator">Mostra indicatore di pagina con punti invece di linee</string>
+    <string name="add_search_provider">Aggiungi fornitore</string>
+    <string name="title_search_providers">Motori di ricerca</string>
+    <string name="edit_search_summary">Seleziona e ordina i motori di ricerca attivi</string>
+    <string name="search_provider_suggestion_url">URL del suggerimento</string>
+    <string name="search_provider_url_hint">Usa %s al posto del termine di ricerca</string>
+    <string name="edit_search_provider">Modifica motore di ricerca</string>
+    <string name="search_provider_search_url">URL di ricerca</string>
+    <string name="title_drawer_layout_categories">Categorie di layout</string>
 </resources>

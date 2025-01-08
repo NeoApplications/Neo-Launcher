@@ -521,4 +521,12 @@
     <string name="search_provider">Proveedor de búsqueda</string>
     <string name="web_search_provider">Proveedor de búsqueda web</string>
     <string name="hotseat_show_dots_page_indicator">Mostrar indicador de página con puntos en lugar de líneas</string>
+    <string name="edit_search_summary">Seleccionar y ordenar proveedores de búsqueda activos</string>
+    <string name="title_search_providers">Proveedores de búsqueda</string>
+    <string name="add_search_provider">Añadir proveedor</string>
+    <string name="search_provider_search_url">Buscar url</string>
+    <string name="search_provider_suggestion_url">Sugerir una url</string>
+    <string name="edit_search_provider">Editar proveedor de búsqueda</string>
+    <string name="search_provider_url_hint">Utilizar %s en lugar del término de búsqueda</string>
+    <string name="title_drawer_layout_categories">Categorías de diseño</string>
 </resources>

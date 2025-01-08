@@ -519,4 +519,12 @@
     <string name="web_search_neeva">Neeva (Web)</string>
     <string name="pref_desktop_mode">Desktop-modus</string>
     <string name="hotseat_show_dots_page_indicator">Pagina-indicator met punten weergeven i.p.v. lijnen</string>
+    <string name="edit_search_provider">Zoekmachine bewerken</string>
+    <string name="search_provider_search_url">Zoek-URL</string>
+    <string name="search_provider_suggestion_url">Suggestie URL</string>
+    <string name="title_search_providers">Zoekmachines</string>
+    <string name="edit_search_summary">Actieve zoekmachines selecteren en sorteren</string>
+    <string name="add_search_provider">Aanbieder toevoegen</string>
+    <string name="search_provider_url_hint">Gebruik %s in plaats van de zoekterm</string>
+    <string name="title_drawer_layout_categories">Lay-outcategorieën</string>
 </resources>
