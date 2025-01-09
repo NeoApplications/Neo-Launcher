@@ -66,4 +66,13 @@
     <string name="title_disabled">Mati</string>
     <string name="title__dock_hide_labels">Sembunyikan Label</string>
     <string name="title__sort_alphabetical_az">A→Z</string>
+    <string name="title__dock_show_arrow">Tampilkan Panah</string>
+    <string name="title__dock_scale">Ukuran Dock</string>
+    <string name="title__dock_hide">Sembunyikan Dock</string>
+    <string name="title__drawer_categorization">Kategori</string>
+    <string name="title_expandable_dock">Dock Dapat Diperluas</string>
+    <string name="title_dock_search">Bilah Pencarian Dock</string>
+    <string name="title_desktop_free_scrolling">Bebas Scrolling</string>
+    <string name="title__dock_icon_size_enforce">Atur ukuran ikon kustom</string>
+    <string name="title_dock_background_color">Warna Latar Belakang</string>
 </resources>
