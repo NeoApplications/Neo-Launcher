@@ -16,9 +16,11 @@
 
 package com.android.launcher3.dragndrop;
 
+import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.pm.LauncherApps.PinItemRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -33,6 +35,7 @@ import com.android.launcher3.widget.WidgetAddFlowHandler;
  * No config activity is shown even if it is defined in widget config. And a callback is sent when
  * the widget is bound.
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class PinWidgetFlowHandler extends WidgetAddFlowHandler implements Parcelable {
 
     private final PinItemRequest mRequest;

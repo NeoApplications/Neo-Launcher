@@ -1,17 +1,34 @@
+/*
+ * This file is part of Neo Launcher
+ * Copyright (c) 2025   Neo Launcher Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ */
+
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.jetbrains.kotlin.utils.addIfNotNull
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 
+val vProtobuf = "3.25.3"
+val prebuiltsDir: String = "prebuilts/"
+
 buildscript {
     dependencies {
         classpath(libs.gradle)
     }
 }
-
-val vProtobuf = "3.25.3"
-val prebuiltsDir: String = "prebuilts/"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -34,20 +51,23 @@ allprojects {
 
 android {
     namespace = "com.android.launcher3"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
-        applicationId = "com.saggitt.omega"
+        targetSdk = 35
+        applicationId = "com.neoapps.neolauncher"
 
-        versionName = "1.0.0-alpha04hf"
-        versionCode = 1005
+        versionName = "2.0.0-alpha01"
+        versionCode = 2001
 
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
         buildConfigField("boolean", "IS_DEBUG_DEVICE", "false")
         buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
+        buildConfigField("boolean", "QSB_ON_FIRST_SCREEN", "true")
+        buildConfigField("boolean", "WIDGET_ON_FIRST_SCREEN", "true")
+        buildConfigField("boolean", "WIDGETS_ENABLED", "true")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -70,7 +90,7 @@ android {
         variant.resValue(
             "string",
             "launcher_component",
-            "${variant.applicationId}/com.saggitt.omega.OmegaLauncher"
+            "${variant.applicationId}/com.neoapps.neolauncher.NeoLauncher"
         )
     }
 
@@ -114,18 +134,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_22
+        targetCompatibility = JavaVersion.VERSION_22
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = compileOptions.sourceCompatibility.toString()
-        }
+        jvmTarget = JavaVersion.VERSION_22.toString()
     }
 
     packaging {
@@ -143,7 +157,7 @@ android {
     productFlavors {
         create("aosp") {
             dimension = "app"
-            applicationId = "com.saggitt.omega"
+            applicationId = "com.neoapps.neolauncher"
             testApplicationId = "com.android.launcher3.tests"
         }
 
@@ -155,7 +169,7 @@ android {
     sourceSets {
         named("main") {
             res.srcDirs(listOf("res"))
-            java.srcDirs(listOf("src", "src_plugins", "src_ui_overrides"))
+            java.srcDirs(listOf("src", "src_plugins", "src_ui_overrides", "flags/src"))
             assets.srcDirs(listOf("assets"))
             manifest.srcFile("AndroidManifest-common.xml")
         }
@@ -165,10 +179,10 @@ android {
         }
 
         named("omega") {
-            res.srcDirs(listOf("Omega/res"))
-            java.srcDirs(listOf("Omega/src", "Omega/src_overrides"))
-            aidl.srcDirs(listOf("Omega/aidl"))
-            manifest.srcFile("Omega/AndroidManifest.xml")
+            res.srcDirs(listOf("neo_launcher/res"))
+            java.srcDirs(listOf("neo_launcher/src"))
+            aidl.srcDirs(listOf("neo_launcher/aidl"))
+            manifest.srcFile("neo_launcher/AndroidManifest.xml")
         }
 
         protobuf {
@@ -198,7 +212,6 @@ android {
 dependencies {
     implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
-    implementation(project(":smartspace"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.ksp)
     implementation(libs.collections.immutable)
@@ -265,8 +278,9 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-14.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-14.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-core.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-15.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-15.jar"))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))

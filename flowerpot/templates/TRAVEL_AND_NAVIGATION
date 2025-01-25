@@ -1,5 +1,0 @@
-&category|maps
-com.google.android.apps.maps
-# Intents
-:android.intent.category.CAR_DOCK
-:android.intent.category.CAR_MODE

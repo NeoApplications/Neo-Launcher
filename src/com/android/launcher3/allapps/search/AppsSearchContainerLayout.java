@@ -42,10 +42,8 @@ import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.SearchUiManager;
 import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.search.NeoAppSearchAlgorithm;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Layout to contain the All-apps search UI.
@@ -133,7 +131,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void initializeSearch(ActivityAllAppsContainerView<?> appsView) {
         mAppsView = appsView;
         mSearchBarController.initialize(
-                new NeoAppSearchAlgorithm(getContext()),
+                new DefaultAppSearchAlgorithm(getContext(), true),
                 this, mLauncher, this);
     }
 
@@ -167,12 +165,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     }
 
     @Override
-    public void startSearch() {
-        // TODO
-    }
-
-    @Override
-    public void onSearchResult(String query, ArrayList<AdapterItem> items, List<String> suggestions) {
+    public void onSearchResult(String query, ArrayList<AdapterItem> items) {
         if (items != null) {
             mAppsView.setSearchResults(items);
         }
@@ -185,11 +178,6 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         mSearchQueryBuilder.clearSpans();
         Selection.setSelection(mSearchQueryBuilder, 0);
         mAppsView.onClearSearchResult();
-    }
-
-    @Override
-    public boolean onSubmitSearch(String query) {
-        return false;
     }
 
     @Override

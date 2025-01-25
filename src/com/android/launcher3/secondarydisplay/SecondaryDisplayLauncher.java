@@ -17,7 +17,6 @@ package com.android.launcher3.secondarydisplay;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -37,7 +36,6 @@ import com.android.launcher3.DropTarget;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
-import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
@@ -57,11 +55,11 @@ import com.android.launcher3.popup.PopupDataProvider;
 import com.android.launcher3.touch.ItemClickHandler.ItemClickProxy;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntSet;
-import com.android.launcher3.util.OnboardingPrefs;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
+import com.android.launcher3.widget.picker.model.WidgetPickerDataProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,11 +77,11 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     private View mAppsButton;
 
     private PopupDataProvider mPopupDataProvider;
+    private WidgetPickerDataProvider mWidgetPickerDataProvider;
 
     private boolean mAppDrawerShown = false;
 
     private StringCache mStringCache;
-    private OnboardingPrefs<?> mOnboardingPrefs;
     private boolean mBindingItems = false;
     private SecondaryDisplayPredictions mSecondaryDisplayPredictions;
 
@@ -94,7 +92,6 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
         super.onCreate(savedInstanceState);
         mModel = LauncherAppState.getInstance(this).getModel();
         mDragController = new SecondaryDragController(this);
-        mOnboardingPrefs = new OnboardingPrefs<>(this, LauncherPrefs.getPrefs(this));
         mSecondaryDisplayPredictions = SecondaryDisplayPredictions.newInstance(this);
         if (getWindow().getDecorView().isAttachedToWindow()) {
             initUi();
@@ -205,23 +202,12 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     }
 
     @Override
-    public <T extends View> T getOverviewPanel() {
-        return null;
-    }
-
-    @Override
     public View getRootView() {
         return mDragLayer;
     }
 
     @Override
-    public ActivityOptions getActivityLaunchOptions(View v) {
-        return null;
-    }
-
-    @Override
-    protected void reapplyUi() {
-    }
+    protected void reapplyUi() { }
 
     @Override
     public BaseDragLayer getDragLayer() {
@@ -279,11 +265,6 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     }
 
     @Override
-    public OnboardingPrefs<?> getOnboardingPrefs() {
-        return mOnboardingPrefs;
-    }
-
-    @Override
     public void startBinding() {
         mBindingItems = true;
         mDragController.cancelDrag();
@@ -333,6 +314,11 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
 
     public PopupDataProvider getPopupDataProvider() {
         return mPopupDataProvider;
+    }
+
+    @Override
+    public WidgetPickerDataProvider getWidgetPickerDataProvider() {
+        return mWidgetPickerDataProvider;
     }
 
     @Override

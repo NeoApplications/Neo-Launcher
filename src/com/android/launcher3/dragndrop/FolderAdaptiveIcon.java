@@ -37,7 +37,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import com.android.launcher3.Utilities;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.folder.PreviewBackground;
 import com.android.launcher3.icons.BitmapRenderer;
@@ -47,6 +46,7 @@ import com.android.launcher3.views.ActivityContext;
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 
@@ -73,13 +73,9 @@ public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
         return mBadge;
     }
 
-    @TargetApi(Build.VERSION_CODES.P)
     public static @Nullable FolderAdaptiveIcon createFolderAdaptiveIcon(
             ActivityContext activity, int folderId, Point size) {
         Preconditions.assertNonUiThread();
-        if (!Utilities.ATLEAST_P) {
-            return null;
-        }
 
         // assume square
         if (size.x != size.y) {

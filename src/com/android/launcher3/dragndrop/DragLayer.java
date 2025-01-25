@@ -42,6 +42,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Interpolator;
 
+import androidx.annotation.Nullable;
+
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.DropTargetBar;
@@ -155,7 +157,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
                         isOverFolderOrSearchBar = isEventOverView(topView, ev) ||
                                 isEventOverAccessibleDropTargetBar(ev);
                         if (!isOverFolderOrSearchBar) {
-                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            sendTapOutsideFolderAccessibilityEvent(
+                                    currentFolder.getIsEditingName());
                             mHoverPointClosesFolder = true;
                             return true;
                         }
@@ -165,7 +168,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
                         isOverFolderOrSearchBar = isEventOverView(topView, ev) ||
                                 isEventOverAccessibleDropTargetBar(ev);
                         if (!isOverFolderOrSearchBar && !mHoverPointClosesFolder) {
-                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            sendTapOutsideFolderAccessibilityEvent(
+                                    currentFolder.getIsEditingName());
                             mHoverPointClosesFolder = true;
                             return true;
                         } else if (!isOverFolderOrSearchBar) {
@@ -388,7 +392,13 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         mDropAnim.start();
     }
 
-    public void clearAnimatedView() {
+    /**
+     * Remove the drop view and end the drag animation.
+     *
+     * @return {@link DragView} that is removed.
+     */
+    @Nullable
+    public DragView clearAnimatedView() {
         if (mDropAnim != null) {
             mDropAnim.cancel();
         }
@@ -396,8 +406,10 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         if (mDropView != null) {
             mDragController.onDeferredEndDrag(mDropView);
         }
+        DragView ret = mDropView;
         mDropView = null;
         invalidate();
+        return ret;
     }
 
     public View getAnimatedView() {

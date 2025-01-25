@@ -51,6 +51,7 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.AllAppsContainer;
+import com.android.launcher3.logger.LauncherAtom.Attribute;
 import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import com.android.launcher3.logger.LauncherAtom.PredictionContainer;
 import com.android.launcher3.logger.LauncherAtom.SettingsContainer;
@@ -60,21 +61,26 @@ import com.android.launcher3.logger.LauncherAtom.TaskSwitcherContainer;
 import com.android.launcher3.logger.LauncherAtom.WallpapersContainer;
 import com.android.launcher3.logger.LauncherAtomExtensions.ExtendedContainers;
 import com.android.launcher3.model.ModelWriter;
+import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.SettingsCache;
+import com.android.launcher3.util.UserIconInfo;
+import com.android.systemui.shared.system.SysUiStatsLog;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Represents an item in the launcher.
  */
 public class ItemInfo {
+    private static final String TAG = "ItemInfo";
 
     public static final boolean DEBUG = false;
     public static final int NO_ID = -1;
-    // An id that doesn't match any item, including predicted apps with have an id=NO_ID
-    public static final int NO_MATCHING_ID = Integer.MIN_VALUE;
 
     /** Hidden field Settings.Secure.NAV_BAR_KIDS_MODE */
     private static final Uri NAV_BAR_KIDS_MODE = Settings.Secure.getUriFor("nav_bar_kids_mode");
@@ -91,6 +97,10 @@ public class ItemInfo {
      * {@link Favorites#ITEM_TYPE_APP_PAIR},
      * {@link Favorites#ITEM_TYPE_APPWIDGET} or
      * {@link Favorites#ITEM_TYPE_CUSTOM_APPWIDGET}.
+     * {@link Favorites#ITEM_TYPE_TASK}.
+     * {@link Favorites#ITEM_TYPE_QSB}.
+     * {@link Favorites#ITEM_TYPE_SEARCH_ACTION}.
+     * {@link Favorites#ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON}.
      */
     public int itemType;
 
@@ -157,6 +167,13 @@ public class ItemInfo {
     public CharSequence title;
 
     /**
+     * Optionally set: The appTitle might e.g. be different if {@code title} is used to
+     * display progress (e.g. Downloading..).
+     */
+    @Nullable
+    public CharSequence appTitle;
+
+    /**
      * Content description of the item.
      */
     @Nullable
@@ -171,6 +188,12 @@ public class ItemInfo {
 
     @NonNull
     public UserHandle user;
+
+    @NonNull
+    private ExtendedContainers mExtendedContainers = ExtendedContainers.getDefaultInstance();
+
+    @NonNull
+    private List<Attribute> mAttributeList = Collections.EMPTY_LIST;
 
     public ItemInfo() {
         user = Process.myUserHandle();
@@ -271,7 +294,7 @@ public class ItemInfo {
     @Override
     @NonNull
     public final String toString() {
-        return getClass().getSimpleName() + "(" + dumpProperties() + ")";
+        return TAG + "(" + dumpProperties() + ")";
     }
 
     @NonNull
@@ -335,10 +358,9 @@ public class ItemInfo {
 
     /**
      * Creates {@link LauncherAtom.ItemInfo} with important fields and parent container info.
-     * @param fInfo
      */
     @NonNull
-    public LauncherAtom.ItemInfo buildProto(@Nullable final FolderInfo fInfo) {
+    public LauncherAtom.ItemInfo buildProto(@Nullable final CollectionInfo cInfo) {
         LauncherAtom.ItemInfo.Builder itemBuilder = getDefaultItemInfoBuilder();
         Optional<ComponentName> nullableComponent = Optional.ofNullable(getTargetComponent());
         switch (itemType) {
@@ -384,21 +406,21 @@ public class ItemInfo {
             default:
                 break;
         }
-        if (fInfo != null) {
+        if (cInfo != null) {
             LauncherAtom.FolderContainer.Builder folderBuilder =
                     LauncherAtom.FolderContainer.newBuilder();
             folderBuilder.setGridX(cellX).setGridY(cellY).setPageIndex(screenId);
 
-            switch (fInfo.container) {
+            switch (cInfo.container) {
                 case CONTAINER_HOTSEAT:
                 case CONTAINER_HOTSEAT_PREDICTION:
                     folderBuilder.setHotseat(LauncherAtom.HotseatContainer.newBuilder()
-                            .setIndex(fInfo.screenId));
+                            .setIndex(cInfo.screenId));
                     break;
                 case CONTAINER_DESKTOP:
                     folderBuilder.setWorkspace(LauncherAtom.WorkspaceContainer.newBuilder()
-                            .setPageIndex(fInfo.screenId)
-                            .setGridX(fInfo.cellX).setGridY(fInfo.cellY));
+                            .setPageIndex(cInfo.screenId)
+                            .setGridX(cInfo.cellX).setGridY(cInfo.cellY));
                     break;
             }
             itemBuilder.setContainerInfo(ContainerInfo.newBuilder().setFolder(folderBuilder));
@@ -414,11 +436,12 @@ public class ItemInfo {
     @NonNull
     protected LauncherAtom.ItemInfo.Builder getDefaultItemInfoBuilder() {
         LauncherAtom.ItemInfo.Builder itemBuilder = LauncherAtom.ItemInfo.newBuilder();
-        itemBuilder.setIsWork(!Process.myUserHandle().equals(user));
-        SettingsCache settingsCache = SettingsCache.INSTANCE.getNoCreate();
-        boolean isKidsMode = settingsCache != null && settingsCache.getValue(NAV_BAR_KIDS_MODE, 0);
-        itemBuilder.setIsKidsMode(isKidsMode);
+        SettingsCache.INSTANCE.executeIfCreated(cache ->
+                itemBuilder.setIsKidsMode(cache.getValue(NAV_BAR_KIDS_MODE, 0)));
+        UserCache.INSTANCE.executeIfCreated(cache ->
+                itemBuilder.setUserType(getUserType(cache.getUserInfo(user))));
         itemBuilder.setRank(rank);
+        itemBuilder.addAllItemAttributes(mAttributeList);
         return itemBuilder;
     }
 
@@ -477,7 +500,7 @@ public class ItemInfo {
             default:
                 if (container <= EXTENDED_CONTAINERS) {
                     return ContainerInfo.newBuilder()
-                            .setExtendedContainers(getExtendedContainer())
+                            .setExtendedContainers(mExtendedContainers)
                             .build();
                 }
         }
@@ -485,12 +508,21 @@ public class ItemInfo {
     }
 
     /**
-     * Returns non-AOSP container wrapped by {@link ExtendedContainers} object. Should be overridden
-     * by build variants.
+     * Sets extra container info wrapped by {@link ExtendedContainers} object.
      */
-    @NonNull
-    protected ExtendedContainers getExtendedContainer() {
-        return ExtendedContainers.getDefaultInstance();
+    public void setExtendedContainers(@NonNull ExtendedContainers extendedContainers) {
+        mExtendedContainers = extendedContainers;
+    }
+
+    /**
+     * Adds extra attributes to be added during logs
+     */
+    public void addLogAttributes(List<LauncherAtom.Attribute> attributeList) {
+        if (mAttributeList.isEmpty()) {
+            mAttributeList = new ArrayList<>(attributeList);
+        } else {
+            mAttributeList.addAll(attributeList);
+        }
     }
 
     /**
@@ -509,5 +541,29 @@ public class ItemInfo {
     public void setTitle(@Nullable final CharSequence title,
             @Nullable final ModelWriter modelWriter) {
         this.title = title;
+    }
+
+    /**
+     * Returns a string ID that is stable for a user session, but may not be persisted
+     */
+    @Nullable
+    public Object getStableId() {
+        return getComponentKey();
+    }
+
+    private int getUserType(UserIconInfo info) {
+        if (info == null) {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_UNKNOWN;
+        } else if (info.isMain()) {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_MAIN;
+        } else if (info.isPrivate()) {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_PRIVATE;
+        } else if (info.isWork()) {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_WORK;
+        } else if (info.isCloned()) {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_CLONED;
+        } else {
+            return SysUiStatsLog.LAUNCHER_UICHANGED__USER_TYPE__TYPE_UNKNOWN;
+        }
     }
 }

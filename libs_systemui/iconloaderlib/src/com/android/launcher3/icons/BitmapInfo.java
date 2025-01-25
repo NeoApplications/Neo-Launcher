@@ -66,8 +66,6 @@ public class BitmapInfo {
     public @BitmapInfoFlags int flags;
     private BitmapInfo badgeInfo;
 
-    protected static final byte TYPE_THEMED_V2 = 3;
-
     public BitmapInfo(Bitmap icon, int color) {
         this.icon = icon;
         this.color = color;
@@ -155,7 +153,7 @@ public class BitmapInfo {
     }
 
     protected void applyFlags(Context context, FastBitmapDrawable drawable,
-                              @DrawableCreationFlags int creationFlags) {
+            @DrawableCreationFlags int creationFlags) {
         drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
         drawable.mCreationFlags = creationFlags;
         if ((creationFlags & FLAG_NO_BADGE) == 0) {
@@ -218,13 +216,11 @@ public class BitmapInfo {
          * Called for creating a custom BitmapInfo
          */
         BitmapInfo getExtendedInfo(Bitmap bitmap, int color,
-                                   BaseIconFactory iconFactory, float normalizationScale);
+                BaseIconFactory iconFactory, float normalizationScale);
 
         /**
          * Called to draw the UI independent of any runtime configurations like time or theme
          */
         void drawForPersistence(Canvas canvas);
-
-        Drawable getThemedDrawable(Context context);
     }
 }

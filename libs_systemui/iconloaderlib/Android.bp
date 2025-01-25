@@ -22,12 +22,14 @@ android_library {
     min_sdk_version: "26",
     static_libs: [
         "androidx.core_core",
+        "com_android_launcher3_flags_lib",
     ],
     resource_dirs: [
         "res",
     ],
     srcs: [
         "src/**/*.java",
+        "src/**/*.kt",
     ],
 }
 
@@ -37,13 +39,16 @@ android_library {
     min_sdk_version: "26",
     static_libs: [
         "androidx.core_core",
+        "com_android_launcher3_flags_lib",
     ],
     resource_dirs: [
         "res",
     ],
     srcs: [
         "src/**/*.java",
+        "src/**/*.kt",
         "src_full_lib/**/*.java",
+        "src_full_lib/**/*.kt",
     ],
     apex_available: [
         "//apex_available:platform",

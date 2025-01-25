@@ -16,7 +16,7 @@
 
 package com.android.launcher3.pageindicators;
 
-import static com.android.launcher3.config.FeatureFlags.SHOW_DOT_PAGINATION;
+import static com.android.launcher3.config.FeatureFlags.FOLDABLE_SINGLE_PAGE;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -43,6 +43,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.Insettable;
 import com.android.launcher3.R;
@@ -69,7 +70,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
     private static final int PAGE_INDICATOR_ALPHA = 255;
     private static final int DOT_ALPHA = 128;
     private static final float DOT_ALPHA_FRACTION = 0.5f;
-    private static final int DOT_GAP_FACTOR = SHOW_DOT_PAGINATION.get() ? 4 : 3;
+    private static final int DOT_GAP_FACTOR = 4;
     private static final int VISIBLE_ALPHA = 255;
     private static final int INVISIBLE_ALPHA = 0;
     private Paint mPaginationPaint;
@@ -130,7 +131,9 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
      */
     private float mCurrentPosition;
     private float mFinalPosition;
-    private boolean mAreScreensBinding;
+    private boolean mIsScrollPaused;
+    @VisibleForTesting
+    boolean mIsTwoPanels;
     private ObjectAnimator mAnimator;
     private @Nullable ObjectAnimator mAlphaAnimator;
 
@@ -152,11 +155,8 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
 
         mPaginationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaginationPaint.setStyle(Style.FILL);
-        mPaginationPaint.setColor(Themes.getAttrColor(context, R.attr.folderPaginationColor));
-        mDotRadius = (SHOW_DOT_PAGINATION.get()
-                ? getResources().getDimension(R.dimen.page_indicator_dot_size_v2)
-                : getResources().getDimension(R.dimen.page_indicator_dot_size))
-                / 2;
+        mPaginationPaint.setColor(Themes.getAttrColor(context, R.attr.pageIndicatorDotColor));
+        mDotRadius = getResources().getDimension(R.dimen.page_indicator_dot_size) / 2;
         mCircleGap = DOT_GAP_FACTOR * mDotRadius;
         setOutlineProvider(new MyOutlineProver());
         mIsRtl = Utilities.isRtl(getResources());
@@ -164,7 +164,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
 
     @Override
     public void setScroll(int currentScroll, int totalScroll) {
-        if (SHOW_DOT_PAGINATION.get() && currentScroll == 0 && totalScroll == 0) {
+        if (currentScroll == 0 && totalScroll == 0) {
             CURRENT_POSITION.set(this, (float) mActivePage);
             return;
         }
@@ -174,7 +174,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         }
 
         // Skip scroll update during binding. We will update it when binding completes.
-        if (mAreScreensBinding) {
+        if (mIsScrollPaused) {
             return;
         }
 
@@ -217,7 +217,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
 
     @Override
     public void setShouldAutoHide(boolean shouldAutoHide) {
-        mShouldAutoHide = shouldAutoHide && SHOW_DOT_PAGINATION.get();
+        mShouldAutoHide = shouldAutoHide;
         if (shouldAutoHide && mPaginationPaint.getAlpha() > INVISIBLE_ALPHA) {
             hideAfterDelay();
         } else if (!shouldAutoHide) {
@@ -353,6 +353,12 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
 
     @Override
     public void setActiveMarker(int activePage) {
+        // In unfolded foldables, every page has two CellLayouts, so we need to halve the active
+        // page for it to be accurate.
+        if (mIsTwoPanels && !FOLDABLE_SINGLE_PAGE.get()) {
+            activePage = activePage / 2;
+        }
+
         if (mActivePage != activePage) {
             mActivePage = activePage;
         }
@@ -361,17 +367,26 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
     @Override
     public void setMarkersCount(int numMarkers) {
         mNumPages = numMarkers;
+
+        // If the last page gets removed we want to go to the previous page.
+        if (mNumPages > 0 && mNumPages == mActivePage) {
+            mActivePage--;
+            CURRENT_POSITION.set(this, (float) mActivePage);
+        }
+
         requestLayout();
     }
 
     @Override
-    public void setAreScreensBinding(boolean areScreensBinding) {
+    public void setPauseScroll(boolean pause, boolean isTwoPanels) {
+        mIsTwoPanels = isTwoPanels;
+
         // Reapply correct current position which was skipped during setScroll.
-        if (mAreScreensBinding && !areScreensBinding) {
+        if (mIsScrollPaused && !pause) {
             CURRENT_POSITION.set(this, (float) mActivePage);
         }
 
-        mAreScreensBinding = areScreensBinding;
+        mIsScrollPaused = pause;
     }
 
     @Override
@@ -404,8 +419,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         float x = startX + mDotRadius;
         float y = getHeight() / 2;
 
-        boolean show = Utilities.getNeoPrefs(getContext()).getDockShowPageIndicator().getValue();
-        if (!show) { } else if (mEntryAnimationRadiusFactors != null) {
+        if (mEntryAnimationRadiusFactors != null) {
             // During entry animation, only draw the circles
             if (mIsRtl) {
                 x = getWidth() - x;
@@ -421,16 +435,14 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
             int alpha = mPaginationPaint.getAlpha();
 
             // Here we draw the dots
-            mPaginationPaint.setAlpha(SHOW_DOT_PAGINATION.get()
-                    ? ((int) (alpha * DOT_ALPHA_FRACTION))
-                    : DOT_ALPHA);
+            mPaginationPaint.setAlpha((int) (alpha * DOT_ALPHA_FRACTION));
             for (int i = 0; i < mNumPages; i++) {
                 canvas.drawCircle(x, y, mDotRadius, mPaginationPaint);
                 x += circleGap;
             }
 
             // Here we draw the current page indicator
-            mPaginationPaint.setAlpha(SHOW_DOT_PAGINATION.get() ? alpha : PAGE_INDICATOR_ALPHA);
+            mPaginationPaint.setAlpha(alpha);
             canvas.drawRoundRect(getActiveRect(), mDotRadius, mDotRadius, mPaginationPaint);
         }
     }
@@ -467,6 +479,21 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         return sTempRect;
     }
 
+    @VisibleForTesting
+    int getActivePage() {
+        return mActivePage;
+    }
+
+    @VisibleForTesting
+    int getNumPages() {
+        return mNumPages;
+    }
+
+    @VisibleForTesting
+    float getCurrentPosition() {
+        return mCurrentPosition;
+    }
+
     private class MyOutlineProver extends ViewOutlineProvider {
 
         @Override
@@ -499,7 +526,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         @Override
         public void onAnimationEnd(Animator animation) {
             if (!mCancelled) {
-                if (mShouldAutoHide && SHOW_DOT_PAGINATION.get()) {
+                if (mShouldAutoHide) {
                     hideAfterDelay();
                 }
                 mAnimator = null;

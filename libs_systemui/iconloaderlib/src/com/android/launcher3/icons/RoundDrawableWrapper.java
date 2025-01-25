@@ -31,18 +31,27 @@ public class RoundDrawableWrapper extends DrawableWrapper {
     private final RectF mTempRect = new RectF();
     private final Path mClipPath = new Path();
     private final float mRoundedCornersRadius;
+    private float mScaledCornerRadius;
 
     public RoundDrawableWrapper(Drawable dr, float radius) {
         super(dr);
         mRoundedCornersRadius = radius;
+        mScaledCornerRadius = mRoundedCornersRadius;
+    }
+
+    /**
+     * Sets the scaling to be applied to the corner radius when it draws next time.
+     */
+    public void setCornerRadiusScale(float scale) {
+        mScaledCornerRadius = Math.round(mRoundedCornersRadius * scale);
     }
 
     @Override
     protected void onBoundsChange(Rect bounds) {
         mTempRect.set(getBounds());
         mClipPath.reset();
-        mClipPath.addRoundRect(mTempRect, mRoundedCornersRadius,
-                mRoundedCornersRadius, Path.Direction.CCW);
+        mClipPath.addRoundRect(mTempRect, mScaledCornerRadius, mScaledCornerRadius,
+                Path.Direction.CCW);
         super.onBoundsChange(bounds);
     }
 

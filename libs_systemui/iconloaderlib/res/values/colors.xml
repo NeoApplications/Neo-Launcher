@@ -16,9 +16,9 @@
 ** limitations under the License.
 */
 -->
-<resources>
-    <color name="themed_icon_color">#0842A0</color>
-    <color name="themed_icon_background_color">#D3E3FD</color>
+<resources xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
+    <color name="themed_icon_color">@androidprv:color/system_on_theme_app_light</color>
+    <color name="themed_icon_background_color">@androidprv:color/system_theme_app_light</color>
     <color name="themed_badge_icon_color">#0842A0</color>
     <color name="themed_badge_icon_background_color">#D3E3FD</color>
 

@@ -20,8 +20,10 @@ import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.SettingsCache.NOTIFICATION_BADGING_URI;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -32,14 +34,12 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.util.Pair;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SettingsCache;
-import com.saggitt.omega.smartspace.provider.NotificationsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
  * as well and when this service first connects. An instance of NotificationListener,
  * and its methods for getting notifications, can be obtained via {@link #getInstanceIfConnected()}.
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class NotificationListener extends NotificationListenerService {
 
     public static final String TAG = "NotificationListener";
@@ -62,8 +63,7 @@ public class NotificationListener extends NotificationListenerService {
     private static final int MSG_NOTIFICATION_POSTED = 1;
     private static final int MSG_NOTIFICATION_REMOVED = 2;
     private static final int MSG_NOTIFICATION_FULL_REFRESH = 3;
-    private static final int MSG_CANCEL_NOTIFICATION = 4;
-    private static final int MSG_RANKING_UPDATE = 5;
+    private static final int MSG_RANKING_UPDATE = 4;
 
     private static NotificationListener sNotificationListenerInstance = null;
     private static final ArraySet<NotificationsChangedListener> sNotificationsChangedListeners =
@@ -79,13 +79,8 @@ public class NotificationListener extends NotificationListenerService {
     /** Maps keys to their corresponding current group key */
     private final Map<String, String> mNotificationGroupKeyMap = new HashMap<>();
 
-    /** The last notification key that was dismissed from launcher UI */
-    private String mLastKeyDismissedByLauncher;
-
     private SettingsCache mSettingsCache;
     private SettingsCache.OnChangeListener mNotificationSettingsChangedListener;
-
-    private NotificationsManager mNotificationManager;
 
     public NotificationListener() {
         mWorkerHandler = new Handler(MODEL_EXECUTOR.getLooper(), this::handleWorkerMessage);
@@ -93,7 +88,7 @@ public class NotificationListener extends NotificationListenerService {
         sNotificationListenerInstance = this;
     }
 
-    public static @Nullable NotificationListener getInstanceIfConnected() {
+    private static @Nullable NotificationListener getInstanceIfConnected() {
         return sIsConnected ? sNotificationListenerInstance : null;
     }
 
@@ -120,12 +115,6 @@ public class NotificationListener extends NotificationListenerService {
         }
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mNotificationManager = NotificationsManager.INSTANCE.get(this);
-    }
-
     private boolean handleWorkerMessage(Message message) {
         switch (message.what) {
             case MSG_NOTIFICATION_POSTED: {
@@ -145,16 +134,8 @@ public class NotificationListener extends NotificationListenerService {
                 if (notificationGroup != null) {
                     notificationGroup.removeChildKey(key);
                     if (notificationGroup.isEmpty()) {
-                        if (key.equals(mLastKeyDismissedByLauncher)) {
-                            // Only cancel the group notification if launcher dismissed the
-                            // last child.
-                            cancelNotification(notificationGroup.getGroupSummaryKey());
-                        }
                         mNotificationGroupMap.remove(sbn.getGroupKey());
                     }
-                }
-                if (key.equals(mLastKeyDismissedByLauncher)) {
-                    mLastKeyDismissedByLauncher = null;
                 }
                 return true;
             }
@@ -170,11 +151,6 @@ public class NotificationListener extends NotificationListenerService {
 
                 mUiHandler.obtainMessage(message.what, activeNotifications).sendToTarget();
                 return true;
-            case MSG_CANCEL_NOTIFICATION: {
-                mLastKeyDismissedByLauncher = (String) message.obj;
-                cancelNotification(mLastKeyDismissedByLauncher);
-                return true;
-            }
             case MSG_RANKING_UPDATE: {
                 String[] keys = ((RankingMap) message.obj).getOrderedKeys();
                 for (StatusBarNotification sbn : getActiveNotificationsSafely(keys)) {
@@ -249,7 +225,6 @@ public class NotificationListener extends NotificationListenerService {
 
     private void onNotificationFullRefresh() {
         mWorkerHandler.obtainMessage(MSG_NOTIFICATION_FULL_REFRESH).sendToTarget();
-        mNotificationManager.onNotificationFullRefresh();
     }
 
     @Override
@@ -264,7 +239,6 @@ public class NotificationListener extends NotificationListenerService {
     public void onNotificationPosted(final StatusBarNotification sbn) {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_POSTED, sbn).sendToTarget();
-            mNotificationManager.onNotificationPosted(sbn);
         }
     }
 
@@ -272,21 +246,12 @@ public class NotificationListener extends NotificationListenerService {
     public void onNotificationRemoved(final StatusBarNotification sbn) {
         if (sbn != null) {
             mWorkerHandler.obtainMessage(MSG_NOTIFICATION_REMOVED, sbn).sendToTarget();
-            mNotificationManager.onNotificationRemoved(sbn);
         }
     }
 
     @Override
     public void onNotificationRankingUpdate(RankingMap rankingMap) {
         mWorkerHandler.obtainMessage(MSG_RANKING_UPDATE, rankingMap).sendToTarget();
-    }
-
-    /**
-     * Cancels a notification
-     */
-    @AnyThread
-    public void cancelNotificationFromLauncher(String key) {
-        mWorkerHandler.obtainMessage(MSG_CANCEL_NOTIFICATION, key).sendToTarget();
     }
 
     @WorkerThread
@@ -321,15 +286,6 @@ public class NotificationListener extends NotificationListenerService {
                 notificationGroup.addChildKey(childKey);
             }
         }
-    }
-
-    /**
-     * This makes a potentially expensive binder call and should be run on a background thread.
-     */
-    @WorkerThread
-    public List<StatusBarNotification> getNotificationsForKeys(List<NotificationKeyData> keys) {
-        return Arrays.asList(getActiveNotificationsSafely(
-                keys.stream().map(n -> n.notificationKey).toArray(String[]::new)));
     }
 
     /**

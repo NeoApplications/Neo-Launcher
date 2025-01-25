@@ -1,0 +1,50 @@
+package: "com.android.launcher3"
+container: "system"
+
+flag {
+    name: "enable_grid_only_overview"
+    namespace: "launcher_overview"
+    description: "Enable a grid-only overview without a focused task."
+    bug: "257950105"
+}
+
+flag {
+    name: "enable_overview_icon_menu"
+    namespace: "launcher_overview"
+    description: "Enable updated overview icon and menu within task."
+    bug: "257950105"
+}
+
+flag {
+    name: "enable_refactor_task_thumbnail"
+    namespace: "launcher_overview"
+    description: "Enables rewritten version of TaskThumbnailViews in Overview"
+    bug: "331753115"
+}
+
+flag {
+    name: "enable_hover_of_child_elements_in_taskview"
+    namespace: "launcher_overview"
+    description: "Enables child elements to receive hover events in TaskView and respond visually to those hover events."
+    bug: "342594235"
+    metadata {
+      purpose: PURPOSE_BUGFIX
+    }
+}
+
+flag {
+    name: "enable_large_desktop_windowing_tile"
+    namespace: "launcher_overview"
+    description: "Makes the desktop tiles larger and moves them to the front of the list in Overview."
+    bug: "353947137"
+}
+
+flag {
+    name: "enable_overview_command_helper_timeout"
+    namespace: "launcher_overview"
+    description: "Enables OverviewCommandHelper new version with a timeout to prevent the queue to be unresponsive."
+    bug: "351122926"
+    metadata {
+      purpose: PURPOSE_BUGFIX
+    }
+}

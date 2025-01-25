@@ -17,7 +17,6 @@ package com.android.launcher3.graphics;
 
 import static android.graphics.Paint.DITHER_FLAG;
 import static android.graphics.Paint.FILTER_BITMAP_FLAG;
-import static com.android.launcher3.config.FeatureFlags.KEYGUARD_ANIMATION;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
@@ -35,11 +34,12 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.DeviceProfile;
+import com.android.launcher3.R;
 import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.android.launcher3.util.Themes;
 
 /**
  * View scrim which draws behind hotseat and workspace
@@ -69,7 +69,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
     private static final int ALPHA_MASK_BITMAP_WIDTH_DP = 2;
 
     private static final int BOTTOM_MASK_HEIGHT_DP = 200;
-    private static final int TOP_MASK_HEIGHT_DP = 100;
+    private static final int TOP_MASK_HEIGHT_DP = 70;
 
     private boolean mDrawTopScrim, mDrawBottomScrim;
 
@@ -99,18 +99,17 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
-        NeoPrefs prefs = NeoPrefs.Companion.getInstance();
-        mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
+        mHideSysUiScrim = Themes.getAttrBoolean(view.getContext(), R.attr.isWorkspaceDarkText);
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
-                new int[]{0x50FFFFFF, 0x0AFFFFFF, 0x00FFFFFF},
+                new int[]{0x3DFFFFFF, 0x0AFFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.7f, 1f});
         mTopMaskPaint.setColor(0xFF222222);
         mBottomMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mBottomMaskHeight,
                 new int[]{0x00FFFFFF, 0x2FFFFFFF},
                 new float[]{0f, 1f});
 
-        if (!KEYGUARD_ANIMATION.get() && !mHideSysUiScrim) {
+        if (!mHideSysUiScrim) {
             view.addOnAttachStateChangeListener(this);
         }
     }

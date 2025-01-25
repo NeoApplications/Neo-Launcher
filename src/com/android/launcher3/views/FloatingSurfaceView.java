@@ -16,16 +16,14 @@
 package com.android.launcher3.views;
 
 import static com.android.launcher3.views.FloatingIconView.getLocationBoundsForView;
-import static com.android.launcher3.views.IconLabelDotView.setIconAndDotVisible;
+import static com.android.launcher3.views.FloatingIconViewCompanion.setPropertiesVisible;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Picture;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -47,7 +45,6 @@ import com.android.launcher3.util.window.RefreshRateTracker;
  * Similar to {@link FloatingIconView} but displays a surface with the targetIcon. It then passes
  * the surfaceHandle to the {@link GestureNavContract}.
  */
-@TargetApi(Build.VERSION_CODES.R)
 public class FloatingSurfaceView extends AbstractFloatingView implements
         OnGlobalLayoutListener, Insettable, SurfaceHolder.Callback2 {
 
@@ -162,7 +159,7 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
         if (mContract == null) {
             return;
         }
-        View icon = mLauncher.getFirstMatchForAppClose(-1,
+        View icon = mLauncher.getFirstMatchForAppClose(null /* StableViewInfo */,
                 mContract.componentName.getPackageName(), mContract.user,
                 false /* supportsAllAppsState */);
 
@@ -178,7 +175,6 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
 
             if (!mTmpPosition.equals(mIconPosition)) {
                 mIconPosition.set(mTmpPosition);
-                sendIconInfo();
 
                 LayoutParams lp = (LayoutParams) mSurfaceView.getLayoutParams();
                 lp.width = Math.round(mIconPosition.width());
@@ -187,6 +183,9 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
                 lp.topMargin = Math.round(mIconPosition.top);
             }
         }
+
+        sendIconInfo();
+
         if (mIcon != null && iconChanged && !mIconBounds.isEmpty()) {
             // Record the icon display
             setCurrentIconVisible(true);
@@ -200,7 +199,7 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
     }
 
     private void sendIconInfo() {
-        if (mContract != null && !mIconPosition.isEmpty()) {
+        if (mContract != null) {
             mContract.sendEndPosition(mIconPosition, mLauncher, mSurfaceView.getSurfaceControl());
         }
     }
@@ -237,7 +236,7 @@ public class FloatingSurfaceView extends AbstractFloatingView implements
 
     private void setCurrentIconVisible(boolean isVisible) {
         if (mIcon != null) {
-            setIconAndDotVisible(mIcon, isVisible);
+            setPropertiesVisible(mIcon, isVisible);
         }
     }
 }

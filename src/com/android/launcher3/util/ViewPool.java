@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.util.ViewPool.Reusable;
 
@@ -43,9 +44,16 @@ public class ViewPool<T extends View & Reusable> {
 
     public ViewPool(Context context, @Nullable ViewGroup parent,
             int layoutId, int maxSize, int initialSize) {
+        this(LayoutInflater.from(context).cloneInContext(context),
+                parent, layoutId, maxSize, initialSize);
+    }
+
+    @VisibleForTesting
+    ViewPool(LayoutInflater inflater, @Nullable ViewGroup parent,
+            int layoutId, int maxSize, int initialSize) {
         mLayoutId = layoutId;
         mParent = parent;
-        mInflater = LayoutInflater.from(context);
+        mInflater = inflater;
         mPool = new Object[maxSize];
 
         if (initialSize > 0) {

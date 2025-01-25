@@ -22,13 +22,9 @@ import static com.android.app.animation.Interpolators.EMPHASIZED_DECELERATE;
 import static com.android.app.animation.Interpolators.FINAL_FRAME;
 import static com.android.app.animation.Interpolators.INSTANT;
 import static com.android.app.animation.Interpolators.LINEAR;
-import static com.android.app.animation.Interpolators.clampToProgress;
-import static com.android.app.animation.Interpolators.mapToProgress;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.states.StateAnimationConfig.ANIM_ALL_APPS_BOTTOM_SHEET_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_ALL_APPS_FADE;
-import static com.android.launcher3.states.StateAnimationConfig.ANIM_ALL_APPS_KEYBOARD_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_DEPTH;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_HOTSEAT_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_HOTSEAT_SCALE;
@@ -37,15 +33,12 @@ import static com.android.launcher3.states.StateAnimationConfig.ANIM_SCRIM_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_VERTICAL_PROGRESS;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_WORKSPACE_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_WORKSPACE_SCALE;
-import static com.android.launcher3.states.StateAnimationConfig.ANIM_WORKSPACE_TRANSLATE;
-import static com.android.launcher3.states.StateAnimationConfig.SKIP_OVERVIEW;
 
 import android.view.MotionEvent;
 import android.view.animation.Interpolator;
 
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.AbstractFloatingView;
-import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.states.StateAnimationConfig;
@@ -166,7 +159,7 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
 
     @Override
     protected LauncherState getTargetState(LauncherState fromState, boolean isDragTowardPositive) {
-        if (fromState == NORMAL && isDragTowardPositive) {
+        if (fromState == NORMAL && shouldOpenAllApps(isDragTowardPositive)) {
             return ALL_APPS;
         } else if (fromState == ALL_APPS && !isDragTowardPositive) {
             return NORMAL;
@@ -192,7 +185,7 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
     protected StateAnimationConfig getConfigForStates(LauncherState fromState,
             LauncherState toState) {
         StateAnimationConfig config = super.getConfigForStates(fromState, toState);
-        config.userControlled = true;
+        config.animProps |= StateAnimationConfig.USER_CONTROLLED;
         if (fromState == NORMAL && toState == ALL_APPS) {
             applyNormalToAllAppsAnimConfig(mLauncher, config);
         } else if (fromState == ALL_APPS && toState == NORMAL) {
@@ -209,13 +202,13 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
             config.setInterpolator(ANIM_SCRIM_FADE,
                     Interpolators.reverse(ALL_APPS_SCRIM_RESPONDER));
             config.setInterpolator(ANIM_ALL_APPS_FADE, FINAL_FRAME);
-            if (!config.userControlled) {
+            if (!config.isUserControlled()) {
                 config.setInterpolator(ANIM_VERTICAL_PROGRESS, EMPHASIZED);
             }
             config.setInterpolator(ANIM_WORKSPACE_SCALE, DECELERATED_EASE);
             config.setInterpolator(ANIM_DEPTH, DECELERATED_EASE);
         } else {
-            if (config.userControlled) {
+            if (config.isUserControlled()) {
                 config.setInterpolator(ANIM_DEPTH, Interpolators.reverse(BLUR_MANUAL));
                 config.setInterpolator(ANIM_WORKSPACE_FADE,
                         Interpolators.reverse(WORKSPACE_FADE_MANUAL));
@@ -250,61 +243,34 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
         if (launcher.getDeviceProfile().isTablet) {
             config.setInterpolator(ANIM_ALL_APPS_FADE, INSTANT);
             config.setInterpolator(ANIM_SCRIM_FADE, ALL_APPS_SCRIM_RESPONDER);
-            if (!config.userControlled) {
+            if (!config.isUserControlled()) {
                 config.setInterpolator(ANIM_VERTICAL_PROGRESS, EMPHASIZED);
             }
             config.setInterpolator(ANIM_WORKSPACE_SCALE, DECELERATED_EASE);
             config.setInterpolator(ANIM_DEPTH, DECELERATED_EASE);
         } else {
-            config.setInterpolator(ANIM_DEPTH, config.userControlled ? BLUR_MANUAL : BLUR_ATOMIC);
+            config.setInterpolator(ANIM_DEPTH,
+                    config.isUserControlled() ? BLUR_MANUAL : BLUR_ATOMIC);
             config.setInterpolator(ANIM_WORKSPACE_FADE,
-                    config.userControlled ? WORKSPACE_FADE_MANUAL : WORKSPACE_FADE_ATOMIC);
+                    config.isUserControlled() ? WORKSPACE_FADE_MANUAL : WORKSPACE_FADE_ATOMIC);
             config.setInterpolator(ANIM_WORKSPACE_SCALE,
-                    config.userControlled ? WORKSPACE_SCALE_MANUAL : WORKSPACE_SCALE_ATOMIC);
+                    config.isUserControlled() ? WORKSPACE_SCALE_MANUAL : WORKSPACE_SCALE_ATOMIC);
             config.setInterpolator(ANIM_HOTSEAT_FADE,
-                    config.userControlled ? HOTSEAT_FADE_MANUAL : HOTSEAT_FADE_ATOMIC);
+                    config.isUserControlled() ? HOTSEAT_FADE_MANUAL : HOTSEAT_FADE_ATOMIC);
             config.setInterpolator(ANIM_HOTSEAT_SCALE,
-                    config.userControlled ? HOTSEAT_SCALE_MANUAL : HOTSEAT_SCALE_ATOMIC);
+                    config.isUserControlled() ? HOTSEAT_SCALE_MANUAL : HOTSEAT_SCALE_ATOMIC);
             config.setInterpolator(ANIM_HOTSEAT_TRANSLATE,
-                    config.userControlled ? HOTSEAT_TRANSLATE_MANUAL : HOTSEAT_TRANSLATE_ATOMIC);
+                    config.isUserControlled()
+                            ? HOTSEAT_TRANSLATE_MANUAL
+                            : HOTSEAT_TRANSLATE_ATOMIC);
             config.setInterpolator(ANIM_SCRIM_FADE,
-                    config.userControlled ? SCRIM_FADE_MANUAL : SCRIM_FADE_ATOMIC);
+                    config.isUserControlled() ? SCRIM_FADE_MANUAL : SCRIM_FADE_ATOMIC);
             config.setInterpolator(ANIM_ALL_APPS_FADE,
-                    config.userControlled ? ALL_APPS_FADE_MANUAL : ALL_APPS_FADE_ATOMIC);
+                    config.isUserControlled() ? ALL_APPS_FADE_MANUAL : ALL_APPS_FADE_ATOMIC);
             config.setInterpolator(ANIM_VERTICAL_PROGRESS,
-                    config.userControlled
+                    config.isUserControlled()
                             ? ALL_APPS_VERTICAL_PROGRESS_MANUAL
                             : ALL_APPS_VERTICAL_PROGRESS_ATOMIC);
-        }
-    }
-
-    /**
-     * Applies Animation config values for transition from overview to all apps.
-     *
-     * @param threshold progress at which all apps will open upon release
-     */
-    public static void applyOverviewToAllAppsAnimConfig(
-            DeviceProfile deviceProfile, StateAnimationConfig config, float threshold) {
-        config.userControlled = true;
-        config.animFlags = SKIP_OVERVIEW;
-        if (deviceProfile.isTablet) {
-            config.setInterpolator(ANIM_ALL_APPS_FADE, INSTANT);
-            config.setInterpolator(ANIM_SCRIM_FADE, ALL_APPS_SCRIM_RESPONDER);
-            // The fact that we end on Workspace is not very ideal, but since we do, fade it in at
-            // the end of the transition. Don't scale/translate it.
-            config.setInterpolator(ANIM_WORKSPACE_FADE, clampToProgress(LINEAR, 0.8f, 1));
-            config.setInterpolator(ANIM_WORKSPACE_SCALE, INSTANT);
-            config.setInterpolator(ANIM_WORKSPACE_TRANSLATE, INSTANT);
-        } else {
-            // Pop the background panel, keyboard, and content in at full opacity at the threshold.
-            config.setInterpolator(ANIM_ALL_APPS_BOTTOM_SHEET_FADE,
-                    thresholdInterpolator(threshold, INSTANT));
-            config.setInterpolator(ANIM_ALL_APPS_KEYBOARD_FADE,
-                    thresholdInterpolator(threshold, INSTANT));
-            config.setInterpolator(ANIM_ALL_APPS_FADE, thresholdInterpolator(threshold, INSTANT));
-
-            config.setInterpolator(ANIM_VERTICAL_PROGRESS,
-                    thresholdInterpolator(threshold, mapToProgress(LINEAR, threshold, 1f)));
         }
     }
 

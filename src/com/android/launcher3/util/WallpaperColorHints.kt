@@ -23,7 +23,6 @@ import android.app.WallpaperManager.OnColorsChangedListener
 import android.content.Context
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
-import com.android.launcher3.Utilities
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 
@@ -34,36 +33,34 @@ import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 class WallpaperColorHints(private val context: Context) : SafeCloseable {
     var hints: Int = 0
         private set
+
     private val wallpaperManager
         get() = context.getSystemService(WallpaperManager::class.java)!!
+
     private val onColorHintsChangedListeners = mutableListOf<OnColorHintListener>()
     private val onClose: SafeCloseable
 
     init {
-        if (Utilities.ATLEAST_S) {
-            hints = wallpaperManager.getWallpaperColors(FLAG_SYSTEM)?.colorHints ?: 0
-            val onColorsChangedListener = OnColorsChangedListener { colors, which ->
-                onColorsChanged(colors, which)
-            }
+        hints = wallpaperManager.getWallpaperColors(FLAG_SYSTEM)?.colorHints ?: 0
+        val onColorsChangedListener = OnColorsChangedListener { colors, which ->
+            onColorsChanged(colors, which)
+        }
+        UI_HELPER_EXECUTOR.execute {
+            wallpaperManager.addOnColorsChangedListener(
+                onColorsChangedListener,
+                MAIN_EXECUTOR.handler,
+            )
+        }
+        onClose = SafeCloseable {
             UI_HELPER_EXECUTOR.execute {
-                wallpaperManager.addOnColorsChangedListener(
-                    onColorsChangedListener,
-                    MAIN_EXECUTOR.handler
-                )
+                wallpaperManager.removeOnColorsChangedListener(onColorsChangedListener)
             }
-            onClose = SafeCloseable {
-                UI_HELPER_EXECUTOR.execute {
-                    wallpaperManager.removeOnColorsChangedListener(onColorsChangedListener)
-                }
-            }
-        } else {
-            onClose = SafeCloseable {}
         }
     }
 
     @MainThread
     private fun onColorsChanged(colors: WallpaperColors?, which: Int) {
-        if ((which and FLAG_SYSTEM) != 0 && Utilities.ATLEAST_S) {
+        if ((which and FLAG_SYSTEM) != 0) {
             val newHints = colors?.colorHints ?: 0
             if (newHints != hints) {
                 hints = newHints
@@ -86,6 +83,7 @@ class WallpaperColorHints(private val context: Context) : SafeCloseable {
         @VisibleForTesting
         @JvmField
         val INSTANCE = MainThreadInitializedObject { WallpaperColorHints(it) }
+
         @JvmStatic fun get(context: Context): WallpaperColorHints = INSTANCE.get(context)
     }
 }

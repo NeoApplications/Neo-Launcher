@@ -26,7 +26,5 @@
 
     <string name="calendar_component_name" translatable="false"></string>
     <string name="clock_component_name" translatable="false"></string>
-    <string-array name="dynamic_calendar_components_name">
-        <item>default</item>
-    </string-array>
+
 </resources>

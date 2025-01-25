@@ -18,6 +18,7 @@ package com.android.launcher3.icons;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -34,10 +35,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.nio.ByteBuffer;
 
 public class IconNormalizer {
 

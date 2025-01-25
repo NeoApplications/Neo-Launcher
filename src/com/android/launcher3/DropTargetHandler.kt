@@ -2,7 +2,9 @@ package com.android.launcher3
 
 import android.content.ComponentName
 import android.view.View
+import com.android.launcher3.BaseDraggingActivity.EVENT_RESUMED
 import com.android.launcher3.DropTarget.DragObject
+import com.android.launcher3.LauncherConstants.ActivityCodes
 import com.android.launcher3.SecondaryDropTarget.DeferredOnComplete
 import com.android.launcher3.dragndrop.DragLayer
 import com.android.launcher3.logging.StatsLogManager.LauncherEvent
@@ -32,9 +34,8 @@ class DropTargetHandler(launcher: Launcher) {
                 if (d.dragSource is SecondaryDropTarget.DeferredOnComplete) {
                     target?.let {
                         deferred.mPackageName = it.packageName
-                        mLauncher.addOnResumeCallback { deferred.onLauncherResume() }
-                    }
-                        ?: deferred.sendFailure()
+                        mLauncher.addEventCallback(EVENT_RESUMED) { deferred.onLauncherResume() }
+                    } ?: deferred.sendFailure()
                 }
             }
         }
@@ -45,17 +46,8 @@ class DropTargetHandler(launcher: Launcher) {
         mLauncher.appWidgetHolder.startConfigActivity(
             mLauncher,
             widgetId,
-            Launcher.REQUEST_RECONFIGURE_APPWIDGET
+            ActivityCodes.REQUEST_RECONFIGURE_APPWIDGET,
         )
-    }
-
-    fun dismissPrediction(
-        announcement: CharSequence,
-        onActionClicked: Runnable,
-        onDismiss: Runnable?
-    ) {
-        mLauncher.dragLayer.announceForAccessibility(announcement)
-        Snackbar.show(mLauncher, R.string.item_removed, R.string.undo, onDismiss, onActionClicked)
     }
 
     fun getViewUnderDrag(info: ItemInfo): View? {
@@ -93,7 +85,7 @@ class DropTargetHandler(launcher: Launcher) {
             R.string.item_removed,
             R.string.undo,
             mLauncher.modelWriter::commitDelete,
-            onUndoClicked
+            onUndoClicked,
         )
     }
 

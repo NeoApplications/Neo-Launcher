@@ -19,9 +19,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PatternMatcher;
 import android.text.TextUtils;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 
 import java.util.function.Consumer;
@@ -30,8 +33,16 @@ public class SimpleBroadcastReceiver extends BroadcastReceiver {
 
     private final Consumer<Intent> mIntentConsumer;
 
-    public SimpleBroadcastReceiver(Consumer<Intent> intentConsumer) {
+    // Handler to register/unregister broadcast receiver
+    private final Handler mHandler;
+
+    public SimpleBroadcastReceiver(LooperExecutor looperExecutor, Consumer<Intent> intentConsumer) {
+        this(looperExecutor.getHandler(), intentConsumer);
+    }
+
+    public SimpleBroadcastReceiver(Handler handler, Consumer<Intent> intentConsumer) {
         mIntentConsumer = intentConsumer;
+        mHandler = handler;
     }
 
     @Override
@@ -39,18 +50,109 @@ public class SimpleBroadcastReceiver extends BroadcastReceiver {
         mIntentConsumer.accept(intent);
     }
 
-    /**
-     * Helper method to register multiple actions
-     */
+    /** Calls {@link #register(Context, Runnable, String...)} with null completionCallback. */
+    @AnyThread
     public void register(Context context, String... actions) {
-        context.registerReceiver(this, getFilter(actions));
+        register(context, null, actions);
     }
 
     /**
-     * Helper method to register multiple actions associated with a paction
+     * Calls {@link #register(Context, Runnable, int, String...)} with null completionCallback.
      */
+    @AnyThread
+    public void register(Context context, int flags, String... actions) {
+        register(context, null, flags, actions);
+    }
+
+    /**
+     * Register broadcast receiver. If this method is called on the same looper with mHandler's
+     * looper, then register will be called synchronously. Otherwise asynchronously. This ensures
+     * register happens on {@link #mHandler}'s looper.
+     *
+     * @param completionCallback callback that will be triggered after registration is completed,
+     *                           caller usually pass this callback to check if states has changed
+     *                           while registerReceiver() is executed on a binder call.
+     */
+    @AnyThread
+    public void register(
+            Context context, @Nullable Runnable completionCallback, String... actions) {
+        if (Looper.myLooper() == mHandler.getLooper()) {
+            registerInternal(context, completionCallback, actions);
+        } else {
+            mHandler.post(() -> registerInternal(context, completionCallback, actions));
+        }
+    }
+
+    /** Register broadcast receiver and run completion callback if passed. */
+    @AnyThread
+    private void registerInternal(
+            Context context, @Nullable Runnable completionCallback, String... actions) {
+        context.registerReceiver(this, getFilter(actions));
+        if (completionCallback != null) {
+            completionCallback.run();
+        }
+    }
+
+    /**
+     * Same as {@link #register(Context, Runnable, String...)} above but with additional flags
+     * params.
+     */
+    @AnyThread
+    public void register(
+            Context context, @Nullable Runnable completionCallback, int flags, String... actions) {
+        if (Looper.myLooper() == mHandler.getLooper()) {
+            registerInternal(context, completionCallback, flags, actions);
+        } else {
+            mHandler.post(() -> registerInternal(context, completionCallback, flags, actions));
+        }
+    }
+
+    /** Register broadcast receiver and run completion callback if passed. */
+    @AnyThread
+    private void registerInternal(
+            Context context, @Nullable Runnable completionCallback, int flags, String... actions) {
+        context.registerReceiver(this, getFilter(actions), flags);
+        if (completionCallback != null) {
+            completionCallback.run();
+        }
+    }
+
+    /** Same as {@link #register(Context, Runnable, String...)} above but with pkg name. */
+    @AnyThread
     public void registerPkgActions(Context context, @Nullable String pkg, String... actions) {
-        context.registerReceiver(this, getPackageFilter(pkg, actions));
+        if (Looper.myLooper() == mHandler.getLooper()) {
+            context.registerReceiver(this, getPackageFilter(pkg, actions));
+        } else {
+            mHandler.post(() -> {
+                context.registerReceiver(this, getPackageFilter(pkg, actions));
+            });
+        }
+    }
+
+    /**
+     * Unregister broadcast receiver. If this method is called on the same looper with mHandler's
+     * looper, then unregister will be called synchronously. Otherwise asynchronously. This ensures
+     * unregister happens on {@link #mHandler}'s looper.
+     */
+    @AnyThread
+    public void unregisterReceiverSafely(Context context) {
+        if (Looper.myLooper() == mHandler.getLooper()) {
+            unregisterReceiverSafelyInternal(context);
+        } else {
+            mHandler.post(() -> {
+                unregisterReceiverSafelyInternal(context);
+            });
+        }
+    }
+
+    /** Unregister broadcast receiver ignoring any errors. */
+    @AnyThread
+    private void unregisterReceiverSafelyInternal(Context context) {
+        try {
+            context.unregisterReceiver(this);
+        } catch (IllegalArgumentException e) {
+            // It was probably never registered or already unregistered. Ignore.
+        }
     }
 
     /**
@@ -71,16 +173,5 @@ public class SimpleBroadcastReceiver extends BroadcastReceiver {
             filter.addAction(action);
         }
         return filter;
-    }
-
-    /**
-     * Unregisters the receiver ignoring any errors
-     */
-    public void unregisterReceiverSafely(Context context) {
-        try {
-            context.unregisterReceiver(this);
-        } catch (IllegalArgumentException e) {
-            // It was probably never registered or already unregistered. Ignore.
-        }
     }
 }

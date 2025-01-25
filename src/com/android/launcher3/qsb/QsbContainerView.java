@@ -20,6 +20,8 @@ import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_BIND;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_PROVIDER;
 
+import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
@@ -59,7 +61,7 @@ import com.android.launcher3.widget.util.WidgetSizes;
  */
 public class QsbContainerView extends FrameLayout {
 
-    public static final String SEARCH_PROVIDER_SETTINGS_KEY = "SEARCH_PROVIDER_PACKAGE_NAME";
+    public static final String SEARCH_ENGINE_SETTINGS_KEY = "selected_search_engine";
 
     /**
      * Returns the package name for user configured search provider or from searchManager
@@ -69,8 +71,8 @@ public class QsbContainerView extends FrameLayout {
     @WorkerThread
     @Nullable
     public static String getSearchWidgetPackageName(@NonNull Context context) {
-        String providerPkg = Settings.Global.getString(context.getContentResolver(),
-                SEARCH_PROVIDER_SETTINGS_KEY);
+        String providerPkg = Settings.Secure.getString(context.getContentResolver(),
+                SEARCH_ENGINE_SETTINGS_KEY);
         if (providerPkg == null) {
             SearchManager searchManager = context.getSystemService(SearchManager.class);
             ComponentName componentName = searchManager.getGlobalSearchActivity();
@@ -290,7 +292,8 @@ public class QsbContainerView extends FrameLayout {
         }
 
         public boolean isQsbEnabled() {
-            return FeatureFlags.QSbOnFirstScreen(getContext());
+            return FeatureFlags.QSB_ON_FIRST_SCREEN
+                    && !SHOULD_SHOW_FIRST_PAGE_WIDGET;
         }
 
         protected Bundle createBindOptions() {

@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.R;
-import com.android.launcher3.popup.PopupDataProvider;
 
 /**
  * View for a search bar with an edit text with a cancel button.
@@ -51,7 +50,8 @@ public class LauncherWidgetsSearchBar extends LinearLayout implements WidgetsSea
     }
 
     @Override
-    public void initialize(PopupDataProvider dataProvider, SearchModeListener searchModeListener) {
+    public void initialize(WidgetsSearchDataProvider dataProvider,
+            SearchModeListener searchModeListener) {
         mController = new WidgetsSearchBarController(
                 new SimpleWidgetsSearchAlgorithm(dataProvider),
                 mEditText, mCancelButton, searchModeListener);

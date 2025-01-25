@@ -17,7 +17,10 @@ package com.android.launcher3.model;
 
 import static android.content.pm.LauncherApps.ShortcutQuery.FLAG_GET_KEY_FIELDS_ONLY;
 
-import static com.android.launcher3.model.WidgetsModel.GO_DISABLE_WIDGETS;
+import static com.android.launcher3.BuildConfig.QSB_ON_FIRST_SCREEN;
+import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
+import static com.android.launcher3.Flags.enableSmartspaceRemovalToggle;
+import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
 import static com.android.launcher3.shortcuts.ShortcutRequest.PINNED;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -30,6 +33,8 @@ import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
+import android.util.Pair;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +44,8 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.model.data.AppInfo;
+import com.android.launcher3.model.data.AppPairInfo;
+import com.android.launcher3.model.data.CollectionInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
@@ -51,10 +58,10 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.IntSet;
 import com.android.launcher3.util.IntSparseArrayMap;
+import com.android.launcher3.util.ItemInflater;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
-import com.saggitt.omega.NeoApp;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -97,9 +104,9 @@ public class BgDataModel {
     public final ArrayList<LauncherAppWidgetInfo> appWidgets = new ArrayList<>();
 
     /**
-     * Map of id to FolderInfos of all the folders created by LauncherModel
+     * Map of id to CollectionInfos of all the folders or app pairs created by LauncherModel
      */
-    public final IntSparseArrayMap<FolderInfo> folders = new IntSparseArrayMap<>();
+    public final IntSparseArrayMap<CollectionInfo> collections = new IntSparseArrayMap<>();
 
     /**
      * Extra container based items
@@ -130,6 +137,8 @@ public class BgDataModel {
      * Load id for which the callbacks were successfully bound
      */
     public int lastLoadId = -1;
+    public boolean isFirstPagePinnedItemEnabled = QSB_ON_FIRST_SCREEN
+            && !enableSmartspaceRemovalToggle();
 
     /**
      * Clears all the data
@@ -137,7 +146,7 @@ public class BgDataModel {
     public synchronized void clear() {
         workspaceItems.clear();
         appWidgets.clear();
-        folders.clear();
+        collections.clear();
         itemsIdMap.clear();
         deepShortcutMap.clear();
         extraItems.clear();
@@ -153,7 +162,9 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if (FeatureFlags.QSbOnFirstScreen(NeoApp.getInstance()) || screenSet.isEmpty()) {
+        if ((FeatureFlags.QSB_ON_FIRST_SCREEN
+                && !SHOULD_SHOW_FIRST_PAGE_WIDGET)
+                || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);
         }
         return screenSet.getArray();
@@ -170,12 +181,16 @@ public class BgDataModel {
         for (int i = 0; i < appWidgets.size(); i++) {
             writer.println(prefix + '\t' + appWidgets.get(i).toString());
         }
-        writer.println(prefix + " ---- folder items ");
-        for (int i = 0; i< folders.size(); i++) {
-            writer.println(prefix + '\t' + folders.valueAt(i).toString());
+        writer.println(prefix + " ---- collection items ");
+        for (int i = 0; i < collections.size(); i++) {
+            writer.println(prefix + '\t' + collections.valueAt(i).toString());
+        }
+        writer.println(prefix + " ---- extra items ");
+        for (int i = 0; i < extraItems.size(); i++) {
+            writer.println(prefix + '\t' + extraItems.valueAt(i).toString());
         }
         writer.println(prefix + " ---- items id map ");
-        for (int i = 0; i< itemsIdMap.size(); i++) {
+        for (int i = 0; i < itemsIdMap.size(); i++) {
             writer.println(prefix + '\t' + itemsIdMap.valueAt(i).toString());
         }
 
@@ -198,12 +213,12 @@ public class BgDataModel {
             switch (item.itemType) {
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
                 case LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR:
-                    folders.remove(item.id);
+                    collections.remove(item.id);
                     if (FeatureFlags.IS_STUDIO_BUILD) {
                         for (ItemInfo info : itemsIdMap) {
                             if (info.container == item.id) {
-                                // We are deleting a folder which still contains items that
-                                // think they are contained by that folder.
+                                // We are deleting a collection which still contains items that
+                                // think they are contained by that collection.
                                 String msg = "deleting a collection (" + item + ") which still "
                                         + "contains items (" + info + ")";
                                 Log.e(TAG, msg);
@@ -245,10 +260,15 @@ public class BgDataModel {
         itemsIdMap.put(item.id, item);
         switch (item.itemType) {
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-            case LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR:
-                folders.put(item.id, (FolderInfo) item);
+                collections.put(item.id, (FolderInfo) item);
                 workspaceItems.add(item);
                 break;
+            case LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR:
+                collections.put(item.id, (AppPairInfo) item);
+                // Fall through here. App pairs are both containers (like folders) and containable
+                // items (can be placed in folders). So we need to add app pairs to the folders
+                // array (above) but also verify the existence of their container, like regular
+                // apps (below).
             case LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT:
             case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
                 if (item.container == LauncherSettings.Favorites.CONTAINER_DESKTOP ||
@@ -256,14 +276,14 @@ public class BgDataModel {
                     workspaceItems.add(item);
                 } else {
                     if (newItem) {
-                        if (!folders.containsKey(item.container)) {
+                        if (!collections.containsKey(item.container)) {
                             // Adding an item to a nonexistent collection.
                             String msg = "attempted to add item: " + item + " to a nonexistent app"
                                     + " collection";
                             Log.e(TAG, msg);
                         }
                     } else {
-                        findOrMakeFolder(item.container).add((WorkspaceItemInfo) item, false);
+                        findOrMakeFolder(item.container).add(item);
                     }
                 }
                 break;
@@ -292,7 +312,7 @@ public class BgDataModel {
      * shortcuts and unpinning any extra shortcuts.
      */
     public synchronized void updateShortcutPinnedState(Context context, UserHandle user) {
-        if (GO_DISABLE_WIDGETS) {
+        if (!WIDGETS_ENABLED) {
             return;
         }
 
@@ -358,15 +378,18 @@ public class BgDataModel {
      * Return an existing FolderInfo object if we have encountered this ID previously,
      * or make a new one.
      */
-    public synchronized FolderInfo findOrMakeFolder(int id) {
+    public synchronized CollectionInfo findOrMakeFolder(int id) {
         // See if a placeholder was created for us already
-        FolderInfo folderInfo = folders.get(id);
-        if (folderInfo == null) {
-            // No placeholder -- create a new instance
-            folderInfo = new FolderInfo();
-            folders.put(id, folderInfo);
+        CollectionInfo collectionInfo = collections.get(id);
+        if (collectionInfo == null) {
+            // No placeholder -- create a new blank folder instance. At this point, we don't know
+            // if the desired container is supposed to be a folder or an app pair. In the case that
+            // it is an app pair, the blank folder will be replaced by a blank app pair when the app
+            // pair is getting processed, in WorkspaceItemProcessor.processFolderOrAppPair().
+            collectionInfo = new FolderInfo();
+            collections.put(id, collectionInfo);
         }
-        return folderInfo;
+        return collectionInfo;
     }
 
     /**
@@ -443,6 +466,20 @@ public class BgDataModel {
             this.containerId = containerId;
             this.items = Collections.unmodifiableList(items);
         }
+
+        @Override
+        @NonNull
+        public final String toString() {
+            StringBuilder s = new StringBuilder();
+            s.append("FixedContainerItems:");
+            s.append(" id=").append(containerId);
+            s.append(" itemCount=").append(items.size());
+            for (int i = 0; i < items.size(); i++) {
+                s.append(" item #").append(i).append(": ").append(items.get(i).toString());
+            }
+            return s.toString();
+        }
+
     }
 
 
@@ -453,6 +490,10 @@ public class BgDataModel {
         int FLAG_QUIET_MODE_ENABLED = 1 << 1;
         // If launcher can change quiet mode
         int FLAG_QUIET_MODE_CHANGE_PERMISSION = 1 << 2;
+        // If quiet mode is enabled for work profile user
+        int FLAG_WORK_PROFILE_QUIET_MODE_ENABLED = 1 << 3;
+        // If quiet mode is enabled for private profile user
+        int FLAG_PRIVATE_PROFILE_QUIET_MODE_ENABLED = 1 << 4;
 
         /**
          * Returns an IntSet of page ids to bind first, synchronously if possible
@@ -467,8 +508,17 @@ public class BgDataModel {
         default void clearPendingBinds() { }
         default void startBinding() { }
 
-        default void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons) { }
+        @Nullable
+        default ItemInflater getItemInflater() {
+            return null;
+        }
+
+        default void bindItems(@NonNull List<ItemInfo> shortcuts, boolean forceAnimateIcons) { }
+        /** Alternate method to bind preinflated views */
+        default void bindInflatedItems(@NonNull List<Pair<ItemInfo, View>> items) { }
+
         default void bindScreens(IntArray orderedScreenIds) { }
+        default void setIsFirstPagePinnedItemEnabled(boolean isFirstPagePinnedItemEnabled) { }
         default void finishBindingItems(IntSet pagesBoundFirst) { }
         default void preAddApps() { }
         default void bindAppsAdded(IntArray newScreens,
@@ -488,9 +538,12 @@ public class BgDataModel {
         default void bindRestoreItemsChange(HashSet<ItemInfo> updates) { }
         default void bindWorkspaceComponentsRemoved(Predicate<ItemInfo> matcher) { }
         default void bindAllWidgets(List<WidgetsListBaseEntry> widgets) { }
+        default void bindSmartspaceWidget() { }
 
         /** Called when workspace has been bound. */
-        default void onInitialBindComplete(IntSet boundPages, RunnableList pendingTasks,
+        default void onInitialBindComplete(@NonNull IntSet boundPages,
+                @NonNull RunnableList pendingTasks,
+                @NonNull RunnableList onCompleteSignal,
                 int workspaceItemCount, boolean isBindSync) {
             pendingTasks.executeAllAndDestroy();
         }

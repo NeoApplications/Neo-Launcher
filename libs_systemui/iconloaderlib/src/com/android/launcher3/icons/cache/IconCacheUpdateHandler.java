@@ -28,6 +28,8 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.launcher3.icons.cache.BaseIconCache.IconDB;
 
 import java.util.ArrayDeque;
@@ -66,6 +68,15 @@ public class IconCacheUpdateHandler {
 
     private final SparseBooleanArray mItemsToDelete = new SparseBooleanArray();
     private boolean mFilterMode = MODE_SET_INVALID_ITEMS;
+
+    /**
+     * Constructor for testing.
+     */
+    @VisibleForTesting
+    public IconCacheUpdateHandler(HashMap<String, PackageInfo> pkgInfoMap, BaseIconCache cache) {
+        mIconCache = cache;
+        mPkgInfoMap = pkgInfoMap;
+    }
 
     IconCacheUpdateHandler(BaseIconCache cache) {
         mIconCache = cache;
@@ -152,53 +163,9 @@ public class IconCacheUpdateHandler {
                 IconDB.COLUMN_USER + " = ? ",
                 new String[]{Long.toString(userSerial)})) {
 
-            final int indexComponent = c.getColumnIndex(IconDB.COLUMN_COMPONENT);
-            final int indexLastUpdate = c.getColumnIndex(IconDB.COLUMN_LAST_UPDATED);
-            final int indexVersion = c.getColumnIndex(IconDB.COLUMN_VERSION);
-            final int rowIndex = c.getColumnIndex(IconDB.COLUMN_ROWID);
-            final int systemStateIndex = c.getColumnIndex(IconDB.COLUMN_SYSTEM_STATE);
-
             while (c.moveToNext()) {
-                String cn = c.getString(indexComponent);
-                ComponentName component = ComponentName.unflattenFromString(cn);
-                PackageInfo info = mPkgInfoMap.get(component.getPackageName());
-
-                int rowId = c.getInt(rowIndex);
-                if (info == null) {
-                    if (!ignorePackages.contains(component.getPackageName())) {
-
-                        if (mFilterMode == MODE_SET_INVALID_ITEMS) {
-                            mIconCache.remove(component, user);
-                            mItemsToDelete.put(rowId, true);
-                        }
-                    }
-                    continue;
-                }
-                if ((info.applicationInfo.flags & ApplicationInfo.FLAG_IS_DATA_ONLY) != 0) {
-                    // Application is not present
-                    continue;
-                }
-
-                long updateTime = c.getLong(indexLastUpdate);
-                int version = c.getInt(indexVersion);
-                T app = componentMap.remove(component);
-                if (version == info.versionCode
-                        && updateTime == cachingLogic.getLastUpdatedTime(app, info)
-                        && TextUtils.equals(c.getString(systemStateIndex),
-                        mIconCache.getIconSystemState(info.packageName))) {
-
-                    if (mFilterMode == MODE_CLEAR_VALID_ITEMS) {
-                        mItemsToDelete.put(rowId, false);
-                    }
-                    continue;
-                }
-
-                if (app == null) {
-                    if (mFilterMode == MODE_SET_INVALID_ITEMS) {
-                        mIconCache.remove(component, user);
-                        mItemsToDelete.put(rowId, true);
-                    }
-                } else {
+                var app = updateOrDeleteIcon(c, componentMap, ignorePackages, user, cachingLogic);
+                if (app != null) {
                     appsToUpdate.add(app);
                 }
             }
@@ -215,6 +182,71 @@ public class IconCacheUpdateHandler {
             new SerializedIconUpdateTask(userSerial, user, appsToAdd, appsToUpdate, cachingLogic,
                     onUpdateCallback).scheduleNext();
         }
+    }
+
+    /**
+     * This method retrieves the component and either adds it to the list of apps to update or
+     * adds it to a list of apps to delete from cache later. Returns the individual app if it
+     * should be updated, or null if nothing should be updated.
+     */
+    @VisibleForTesting
+    public <T> T updateOrDeleteIcon(Cursor c, HashMap<ComponentName, T> componentMap,
+            Set<String> ignorePackages, UserHandle user, CachingLogic<T> cachingLogic) {
+
+        final int indexComponent = c.getColumnIndex(IconDB.COLUMN_COMPONENT);
+        final int indexLastUpdate = c.getColumnIndex(IconDB.COLUMN_LAST_UPDATED);
+        final int indexVersion = c.getColumnIndex(IconDB.COLUMN_VERSION);
+        final int rowIndex = c.getColumnIndex(IconDB.COLUMN_ROWID);
+        final int systemStateIndex = c.getColumnIndex(IconDB.COLUMN_SYSTEM_STATE);
+
+        int rowId = c.getInt(rowIndex);
+        String cn = c.getString(indexComponent);
+        ComponentName component = ComponentName.unflattenFromString(cn);
+        if (component == null) {
+            // b/357725795
+            Log.e(TAG, "Invalid component name while updating icon cache: " + cn);
+            mItemsToDelete.put(rowId, true);
+            return null;
+        }
+
+        PackageInfo info = mPkgInfoMap.get(component.getPackageName());
+
+        if (info == null) {
+            if (!ignorePackages.contains(component.getPackageName())) {
+
+                if (mFilterMode == MODE_SET_INVALID_ITEMS) {
+                    mIconCache.remove(component, user);
+                    mItemsToDelete.put(rowId, true);
+                }
+            }
+            return null;
+        }
+        if ((info.applicationInfo.flags & ApplicationInfo.FLAG_IS_DATA_ONLY) != 0) {
+            // Application is not present
+            return null;
+        }
+
+        long updateTime = c.getLong(indexLastUpdate);
+        int version = c.getInt(indexVersion);
+        T app = componentMap.remove(component);
+        if (version == info.versionCode
+                && updateTime == cachingLogic.getLastUpdatedTime(app, info)
+                && TextUtils.equals(c.getString(systemStateIndex),
+                mIconCache.getIconSystemState(info.packageName))) {
+
+            if (mFilterMode == MODE_CLEAR_VALID_ITEMS) {
+                mItemsToDelete.put(rowId, false);
+            }
+            return null;
+        }
+
+        if (app == null) {
+            if (mFilterMode == MODE_SET_INVALID_ITEMS) {
+                mIconCache.remove(component, user);
+                mItemsToDelete.put(rowId, true);
+            }
+        }
+        return app;
     }
 
     /**
@@ -260,7 +292,7 @@ public class IconCacheUpdateHandler {
         private final OnUpdateCallback mOnUpdateCallback;
 
         SerializedIconUpdateTask(long userSerial, UserHandle userHandle,
-                                 ArrayDeque<T> appsToAdd, ArrayDeque<T> appsToUpdate, CachingLogic<T> cachingLogic,
+                ArrayDeque<T> appsToAdd, ArrayDeque<T> appsToUpdate, CachingLogic<T> cachingLogic,
                 OnUpdateCallback onUpdateCallback) {
             mUserHandle = userHandle;
             mUserSerial = userSerial;

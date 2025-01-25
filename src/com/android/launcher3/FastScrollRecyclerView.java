@@ -16,6 +16,8 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.testing.shared.TestProtocol.SCROLL_FINISHED_MESSAGE;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.compat.AccessibilityManagerCompat;
@@ -52,9 +55,12 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
         super(context, attrs, defStyleAttr);
     }
 
-    public void bindFastScrollbar(RecyclerViewFastScroller scrollbar) {
+    public void bindFastScrollbar(RecyclerViewFastScroller scrollbar,
+            RecyclerViewFastScroller.FastScrollerLocation location) {
         mScrollbar = scrollbar;
         mScrollbar.setRecyclerView(this);
+        mScrollbar.setFastScrollerLocation(location);
+        scrollToTop();
         onUpdateScrollbar(0);
     }
 
@@ -152,13 +158,20 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      * <p>Override in each subclass of this base class.
      */
-    public abstract String scrollToPositionAtProgress(float touchFraction);
+    public abstract CharSequence scrollToPositionAtProgress(float touchFraction);
 
     /**
      * Updates the bounds for the scrollbar.
      * <p>Override in each subclass of this base class.
      */
     public abstract void onUpdateScrollbar(int dy);
+
+    /**
+     * Return the fast scroll letter list view in the A-Z list.
+     */
+    public ConstraintLayout getLetterList() {
+        return null;
+    }
 
     /**
      * <p>Override in each subclass of this base class.
@@ -170,7 +183,8 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
         super.onScrollStateChanged(state);
 
         if (state == SCROLL_STATE_IDLE) {
-            AccessibilityManagerCompat.sendScrollFinishedEventToTest(getContext());
+            AccessibilityManagerCompat.sendTestProtocolEventToTest(getContext(),
+                    SCROLL_FINISHED_MESSAGE);
         }
     }
 

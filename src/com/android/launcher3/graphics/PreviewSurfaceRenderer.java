@@ -37,8 +37,8 @@ import android.view.Display;
 import android.view.SurfaceControlViewHost;
 import android.view.SurfaceControlViewHost.SurfacePackage;
 import android.view.View;
-import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,13 +49,12 @@ import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.graphics.LauncherPreviewRenderer.PreviewContext;
+import com.android.launcher3.model.BaseLauncherBinder;
 import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.GridSizeMigrationUtil;
-import com.android.launcher3.model.LauncherBinder;
 import com.android.launcher3.model.LoaderTask;
 import com.android.launcher3.model.ModelDbController;
 import com.android.launcher3.provider.LauncherDbUtils;
@@ -63,6 +62,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.LocalColorExtractor;
+import com.android.systemui.shared.Flags;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -88,18 +88,22 @@ public class PreviewSurfaceRenderer {
     private final int mHeight;
     private String mGridName;
 
+    private final int mDisplayId;
     private final Display mDisplay;
     private final WallpaperColors mWallpaperColors;
-    private final RunnableList mOnDestroyCallbacks = new RunnableList();
+    private final RunnableList mLifeCycleTracker;
 
     private final SurfaceControlViewHost mSurfaceControlViewHost;
 
     private boolean mDestroyed = false;
     private LauncherPreviewRenderer mRenderer;
     private boolean mHideQsb;
+    @Nullable private FrameLayout mViewRoot = null;
 
-    public PreviewSurfaceRenderer(Context context, Bundle bundle) throws Exception {
+    public PreviewSurfaceRenderer(
+            Context context, RunnableList lifecycleTracker, Bundle bundle) throws Exception {
         mContext = context;
+        mLifeCycleTracker = lifecycleTracker;
         mGridName = bundle.getString("name");
         bundle.remove("name");
         if (mGridName == null) {
@@ -111,13 +115,24 @@ public class PreviewSurfaceRenderer {
         mHostToken = bundle.getBinder(KEY_HOST_TOKEN);
         mWidth = bundle.getInt(KEY_VIEW_WIDTH);
         mHeight = bundle.getInt(KEY_VIEW_HEIGHT);
+        mDisplayId = bundle.getInt(KEY_DISPLAY_ID);
         mDisplay = context.getSystemService(DisplayManager.class)
-                .getDisplay(bundle.getInt(KEY_DISPLAY_ID));
+                .getDisplay(mDisplayId);
+        if (mDisplay == null) {
+            throw new IllegalArgumentException("Display ID does not match any displays.");
+        }
 
-        mSurfaceControlViewHost = MAIN_EXECUTOR.submit(() -> new SurfaceControlViewHost(mContext,
+        mSurfaceControlViewHost = MAIN_EXECUTOR.submit(() -> new MySurfaceControlViewHost(
+                mContext,
                 context.getSystemService(DisplayManager.class).getDisplay(DEFAULT_DISPLAY),
-                mHostToken)).get(5, TimeUnit.SECONDS);
-        mOnDestroyCallbacks.add(mSurfaceControlViewHost::release);
+                mHostToken,
+                mLifeCycleTracker))
+                .get(5, TimeUnit.SECONDS);
+        mLifeCycleTracker.add(this::destroy);
+    }
+
+    public int getDisplayId() {
+        return mDisplayId;
     }
 
     public IBinder getHostToken() {
@@ -128,25 +143,18 @@ public class PreviewSurfaceRenderer {
         return mSurfaceControlViewHost.getSurfacePackage();
     }
 
-    /**
-     * Destroys the preview and all associated data
-     */
-    @UiThread
-    public void destroy() {
+    private void destroy() {
         mDestroyed = true;
-        mOnDestroyCallbacks.executeAllAndDestroy();
     }
 
     /**
      * A function that queries for the launcher app widget span info
      *
-     * @param context The context to get the content resolver from, should be related to launcher
      * @return A SparseArray with the app widget id being the key and the span info being the values
      */
     @WorkerThread
     @Nullable
-    public SparseArray<Size> getLoadedLauncherWidgetInfo(
-            @NonNull final Context context) {
+    public SparseArray<Size> getLoadedLauncherWidgetInfo() {
         final SparseArray<Size> widgetInfo = new SparseArray<>();
         final String query = LauncherSettings.Favorites.ITEM_TYPE + " = "
                 + LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
@@ -186,6 +194,19 @@ public class PreviewSurfaceRenderer {
     }
 
     /**
+     * Update the grid of the launcher preview
+     *
+     * @param gridName Name of the grid, e.g. normal, practical
+     */
+    public void updateGrid(@NonNull String gridName) {
+        if (gridName.equals(mGridName)) {
+            return;
+        }
+        mGridName = gridName;
+        loadAsync();
+    }
+
+    /**
      * Hides the components in the bottom row.
      *
      * @param hide True to hide and false to show.
@@ -206,10 +227,6 @@ public class PreviewSurfaceRenderer {
             return new ContextThemeWrapper(context,
                     Themes.getActivityThemeRes(context));
         }
-        if (Utilities.ATLEAST_R) {
-            context = context.createWindowContext(
-                    LayoutParams.TYPE_APPLICATION_OVERLAY, null);
-        }
         LocalColorExtractor.newInstance(context)
                 .applyColorsOverride(context, mWallpaperColors);
         return new ContextThemeWrapper(context,
@@ -225,7 +242,7 @@ public class PreviewSurfaceRenderer {
             PreviewContext previewContext = new PreviewContext(inflationContext, idp);
             // Copy existing data to preview DB
             LauncherDbUtils.copyTable(LauncherAppState.getInstance(mContext)
-                    .getModel().getModelDbController().getDb(),
+                            .getModel().getModelDbController().getDb(),
                     TABLE_NAME,
                     LauncherAppState.getInstance(previewContext)
                             .getModel().getModelDbController().getDb(),
@@ -240,7 +257,7 @@ public class PreviewSurfaceRenderer {
                     /* bgAllAppsList= */ null,
                     bgModel,
                     LauncherAppState.getInstance(previewContext).getModel().getModelDelegate(),
-                    new LauncherBinder(LauncherAppState.getInstance(previewContext), bgModel,
+                    new BaseLauncherBinder(LauncherAppState.getInstance(previewContext), bgModel,
                             /* bgAllAppsList= */ null, new Callbacks[0])) {
 
                 @Override
@@ -254,15 +271,13 @@ public class PreviewSurfaceRenderer {
                         query += " or " + LauncherSettings.Favorites.SCREEN + " = "
                                 + Workspace.SECOND_SCREEN_ID;
                     }
-                    loadWorkspace(new ArrayList<>(), query, null);
+                    loadWorkspace(new ArrayList<>(), query, null, null);
 
-                    final SparseArray<Size> spanInfo =
-                            getLoadedLauncherWidgetInfo(previewContext.getBaseContext());
-
+                    final SparseArray<Size> spanInfo = getLoadedLauncherWidgetInfo();
                     MAIN_EXECUTOR.execute(() -> {
                         renderView(previewContext, mBgDataModel, mWidgetProvidersMap, spanInfo,
                                 idp);
-                        mOnDestroyCallbacks.add(previewContext::onDestroy);
+                        mLifeCycleTracker.add(previewContext::onDestroy);
                     });
                 }
             }.run();
@@ -298,11 +313,61 @@ public class PreviewSurfaceRenderer {
         view.setPivotY(0);
         view.setTranslationX((mWidth - scale * view.getWidth()) / 2);
         view.setTranslationY((mHeight - scale * view.getHeight()) / 2);
-        view.setAlpha(0);
-        view.animate().alpha(1)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(FADE_IN_ANIMATION_DURATION)
-                .start();
-        mSurfaceControlViewHost.setView(view, view.getMeasuredWidth(), view.getMeasuredHeight());
+        if (!Flags.newCustomizationPickerUi()) {
+            view.setAlpha(0);
+            view.animate().alpha(1)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(FADE_IN_ANIMATION_DURATION)
+                    .start();
+            mSurfaceControlViewHost.setView(
+                    view,
+                    view.getMeasuredWidth(),
+                    view.getMeasuredHeight()
+            );
+            return;
+        }
+
+        if (mViewRoot == null) {
+            mViewRoot = new FrameLayout(inflationContext);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, // Width
+                    FrameLayout.LayoutParams.WRAP_CONTENT  // Height
+            );
+            mViewRoot.setLayoutParams(layoutParams);
+            mViewRoot.addView(view);
+            mViewRoot.setAlpha(0);
+            mViewRoot.animate().alpha(1)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(FADE_IN_ANIMATION_DURATION)
+                    .start();
+            mSurfaceControlViewHost.setView(
+                    mViewRoot,
+                    view.getMeasuredWidth(),
+                    view.getMeasuredHeight()
+            );
+        } else  {
+            mViewRoot.removeAllViews();
+            mViewRoot.addView(view);
+        }
     }
+
+    private static class MySurfaceControlViewHost extends SurfaceControlViewHost {
+
+        private final RunnableList mLifecycleTracker;
+
+        MySurfaceControlViewHost(Context context, Display display, IBinder hostToken,
+                RunnableList lifeCycleTracker) {
+            super(context, display, hostToken);
+            mLifecycleTracker = lifeCycleTracker;
+            mLifecycleTracker.add(this::release);
+        }
+
+        @Override
+        public void release() {
+            super.release();
+            // RunnableList ensures that the callback is only called once
+            MAIN_EXECUTOR.execute(mLifecycleTracker::executeAllAndDestroy);
+        }
+    }
+
 }

@@ -22,6 +22,8 @@ import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
@@ -33,16 +35,11 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
         implements Parcelable {
 
-    public final int providerId;
-    public boolean noPadding;
-
-    protected CustomAppWidgetProviderInfo(Parcel parcel, boolean readSelf, int providerId, boolean noPadding) {
+    protected CustomAppWidgetProviderInfo(Parcel parcel, boolean readSelf) {
         super(parcel);
         if (readSelf) {
-            this.providerId = parcel.readInt();
-            this.noPadding = parcel.readByte() != 0;
-
-            provider = new ComponentName(parcel.readString(), CLS_CUSTOM_WIDGET_PREFIX + providerId);
+            provider = new ComponentName(parcel.readString(),
+                    CLS_CUSTOM_WIDGET_PREFIX + parcel.readString());
 
             label = parcel.readString();
             initialLayout = parcel.readInt();
@@ -54,14 +51,17 @@ public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
             spanY = parcel.readInt();
             minSpanX = parcel.readInt();
             minSpanY = parcel.readInt();
-        } else {
-            this.providerId = providerId;
-            this.noPadding = noPadding;
         }
     }
 
+    @VisibleForTesting
+    CustomAppWidgetProviderInfo() {}
+
     @Override
-    public void initSpans(Context context, InvariantDeviceProfile idp) { }
+    public void initSpans(Context context, InvariantDeviceProfile idp) {
+        mIsMinSizeFulfilled = Math.min(spanX, minSpanX) <= idp.numColumns
+                && Math.min(spanY, minSpanY) <= idp.numRows;
+    }
 
     @Override
     public String getLabel(PackageManager packageManager) {
@@ -76,9 +76,8 @@ public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
     @Override
     public void writeToParcel(Parcel out, int flags) {
         super.writeToParcel(out, flags);
-        out.writeInt(providerId);
-        out.writeByte((byte) (noPadding ? 1 : 0));
         out.writeString(provider.getPackageName());
+        out.writeString(provider.getClassName());
 
         out.writeString(label);
         out.writeInt(initialLayout);
@@ -92,12 +91,12 @@ public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
         out.writeInt(minSpanY);
     }
 
-    public static final Parcelable.Creator<CustomAppWidgetProviderInfo> CREATOR
-            = new Parcelable.Creator<CustomAppWidgetProviderInfo>() {
+    public static final Parcelable.Creator<CustomAppWidgetProviderInfo> CREATOR =
+            new Parcelable.Creator<>() {
 
         @Override
         public CustomAppWidgetProviderInfo createFromParcel(Parcel parcel) {
-            return new CustomAppWidgetProviderInfo(parcel, true, 0, false);
+            return new CustomAppWidgetProviderInfo(parcel, true);
         }
 
         @Override

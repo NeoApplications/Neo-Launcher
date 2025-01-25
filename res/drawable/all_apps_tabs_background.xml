@@ -30,7 +30,7 @@
                 android:state_selected="false">
                 <shape android:shape="rectangle">
                     <corners android:radius="@dimen/all_apps_header_pill_corner_radius" />
-                    <solid android:color="@color/material_color_surface_bright" />
+                    <solid android:color="?attr/materialColorSurfaceBright" />
                 </shape>
             </item>
 
@@ -39,7 +39,7 @@
                 android:state_selected="true">
                 <shape android:shape="rectangle">
                     <corners android:radius="@dimen/all_apps_header_pill_corner_radius" />
-                    <solid android:color="@color/material_color_primary" />
+                    <solid android:color="?attr/materialColorPrimary" />
                 </shape>
             </item>
         </selector>

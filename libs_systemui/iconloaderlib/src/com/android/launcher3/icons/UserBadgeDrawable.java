@@ -77,7 +77,7 @@ public class UserBadgeDrawable extends DrawableWrapper {
     }
 
     private UserBadgeDrawable(Drawable base, int bgColor, int baseColor,
-                              boolean shouldDrawBackground) {
+            boolean shouldDrawBackground) {
         super(base);
         mIsThemed = false;
         mBgColor = bgColor;
@@ -155,7 +155,7 @@ public class UserBadgeDrawable extends DrawableWrapper {
         private final boolean mShouldDrawBackground;
 
         MyConstantState(ConstantState base, int bgColor, int baseColor,
-                        boolean shouldDrawBackground) {
+                boolean shouldDrawBackground) {
             mBase = base;
             mBgColor = bgColor;
             mBaseColor = baseColor;

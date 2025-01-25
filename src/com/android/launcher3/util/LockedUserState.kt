@@ -20,20 +20,28 @@ import android.content.Intent
 import android.os.Process
 import android.os.UserManager
 import androidx.annotation.VisibleForTesting
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 
 class LockedUserState(private val mContext: Context) : SafeCloseable {
     val isUserUnlockedAtLauncherStartup: Boolean
-    var isUserUnlocked: Boolean
-        private set
+    var isUserUnlocked = false
+        private set(value) {
+            field = value
+            if (value) {
+                notifyUserUnlocked()
+            }
+        }
+
     private val mUserUnlockedActions: RunnableList = RunnableList()
 
     @VisibleForTesting
-    val mUserUnlockedReceiver = SimpleBroadcastReceiver {
-        if (Intent.ACTION_USER_UNLOCKED == it.action) {
-            isUserUnlocked = true
-            notifyUserUnlocked()
+    val mUserUnlockedReceiver =
+        SimpleBroadcastReceiver(UI_HELPER_EXECUTOR) {
+            if (Intent.ACTION_USER_UNLOCKED == it.action) {
+                isUserUnlocked = true
+            }
         }
-    }
 
     init {
         // 1) when user reboots devices, launcher process starts at lock screen and both
@@ -42,17 +50,25 @@ class LockedUserState(private val mContext: Context) : SafeCloseable {
         // yet isUserUnlockedAtLauncherStartup will remains as false.
         // 2) when launcher process restarts after user has unlocked screen, both variable are
         // init as true and will not change.
-        isUserUnlocked =
-            mContext
-                .getSystemService(UserManager::class.java)!!
-                .isUserUnlocked(Process.myUserHandle())
+        isUserUnlocked = checkIsUserUnlocked()
         isUserUnlockedAtLauncherStartup = isUserUnlocked
-        if (isUserUnlocked) {
-            notifyUserUnlocked()
-        } else {
-            mUserUnlockedReceiver.register(mContext, Intent.ACTION_USER_UNLOCKED)
+        if (!isUserUnlocked) {
+            mUserUnlockedReceiver.register(
+                mContext,
+                {
+                    // If user is unlocked while registering broadcast receiver, we should update
+                    // [isUserUnlocked], which will call [notifyUserUnlocked] in setter
+                    if (checkIsUserUnlocked()) {
+                        MAIN_EXECUTOR.execute { isUserUnlocked = true }
+                    }
+                },
+                Intent.ACTION_USER_UNLOCKED
+            )
         }
     }
+
+    private fun checkIsUserUnlocked() =
+        mContext.getSystemService(UserManager::class.java)!!.isUserUnlocked(Process.myUserHandle())
 
     private fun notifyUserUnlocked() {
         mUserUnlockedActions.executeAllAndDestroy()

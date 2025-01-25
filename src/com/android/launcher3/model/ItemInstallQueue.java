@@ -22,6 +22,7 @@ import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICA
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
 import static com.android.launcher3.model.data.AppInfo.makeLaunchIntent;
+import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ARCHIVED;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
 import android.appwidget.AppWidgetManager;
@@ -39,6 +40,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.android.launcher3.Flags;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
@@ -52,6 +54,7 @@ import com.android.launcher3.shortcuts.ShortcutRequest;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.PersistedItemArray;
 import com.android.launcher3.util.Preconditions;
+import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 
 import java.util.HashSet;
@@ -62,7 +65,7 @@ import java.util.stream.Stream;
 /**
  * Class to maintain a queue of pending items to be added to the workspace.
  */
-public class ItemInstallQueue {
+public class ItemInstallQueue implements SafeCloseable {
 
     private static final String LOG = "ItemInstallQueue";
 
@@ -95,6 +98,9 @@ public class ItemInstallQueue {
     private ItemInstallQueue(Context context) {
         mContext = context;
     }
+
+    @Override
+    public void close() {}
 
     @WorkerThread
     private void ensureQueueLoaded() {
@@ -186,22 +192,18 @@ public class ItemInstallQueue {
     }
 
     private void queuePendingShortcutInfo(PendingInstallShortcutInfo info) {
-        final Exception stackTrace = new Exception();
 
         // Queue the item up for adding if launcher has not loaded properly yet
         MODEL_EXECUTOR.post(() -> {
             Pair<ItemInfo, Object> itemInfo = info.getItemInfo(mContext);
             if (itemInfo == null) {
                 FileLog.d(LOG,
-                        "Adding PendingInstallShortcutInfo with no attached info to queue.",
-                        stackTrace);
+                        "Adding PendingInstallShortcutInfo with no attached info to queue.");
             } else {
                 FileLog.d(LOG,
-                        "Adding PendingInstallShortcutInfo to queue. Attached info: "
-                                + itemInfo.first,
-                        stackTrace);
+                        "Adding PendingInstallShortcutInfo to queue."
+                                + " Attached info: " + itemInfo.first);
             }
-
             addToQueue(info);
         });
         flushInstallQueue();
@@ -276,6 +278,7 @@ public class ItemInstallQueue {
             return intent;
         }
 
+        @SuppressWarnings("NewApi")
         public Pair<ItemInfo, Object> getItemInfo(Context context) {
             switch (itemType) {
                 case ITEM_TYPE_APPLICATION: {
@@ -297,6 +300,10 @@ public class ItemInstallQueue {
                     } else {
                         lai = laiList.get(0);
                         si.intent = makeLaunchIntent(lai);
+                        if (Flags.enableSupportForArchiving()
+                                && lai.getActivityInfo().isArchived) {
+                            si.runtimeStatusFlags |= FLAG_ARCHIVED;
+                        }
                     }
                     LauncherAppState.getInstance(context).getIconCache()
                             .getTitleAndIcon(si, () -> lai, usePackageIcon, false);

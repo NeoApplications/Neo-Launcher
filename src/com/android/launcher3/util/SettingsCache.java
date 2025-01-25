@@ -18,14 +18,14 @@ package com.android.launcher3.util;
 
 import static android.provider.Settings.System.ACCELEROMETER_ROTATION;
 
+import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.Settings;
-
-import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +57,17 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
     /** Hidden field Settings.Secure.SWIPE_BOTTOM_TO_NOTIFICATION_ENABLED */
     public static final String ONE_HANDED_SWIPE_BOTTOM_TO_NOTIFICATION_ENABLED =
             "swipe_bottom_to_notification_enabled";
+    /** Hidden field Settings.Secure.HIDE_PRIVATESPACE_ENTRY_POINT */
+    public static final Uri PRIVATE_SPACE_HIDE_WHEN_LOCKED_URI =
+            Settings.Secure.getUriFor("hide_privatespace_entry_point");
     public static final Uri ROTATION_SETTING_URI =
             Settings.System.getUriFor(ACCELEROMETER_ROTATION);
+    /** Hidden field {@link Settings.System#TOUCHPAD_NATURAL_SCROLLING}. */
+    public static final Uri TOUCHPAD_NATURAL_SCROLLING = Settings.System.getUriFor(
+            "touchpad_natural_scrolling");
 
     private static final String SYSTEM_URI_PREFIX = Settings.System.CONTENT_URI.toString();
+    private static final String GLOBAL_URI_PREFIX = Settings.Global.CONTENT_URI.toString();
 
     /**
      * Caches the last seen value for registered keys.
@@ -82,7 +89,7 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
 
     @Override
     public void close() {
-        mResolver.unregisterContentObserver(this);
+        UI_HELPER_EXECUTOR.execute(() -> mResolver.unregisterContentObserver(this));
     }
 
     @Override
@@ -130,7 +137,8 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
             CopyOnWriteArrayList<OnChangeListener> l = new CopyOnWriteArrayList<>();
             l.add(changeListener);
             mListenerMap.put(uri, l);
-            mResolver.registerContentObserver(uri, false, this);
+            UI_HELPER_EXECUTOR.execute(
+                    () -> mResolver.registerContentObserver(uri, false, this));
         }
     }
 
@@ -139,6 +147,8 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
         boolean newVal;
         if (keyUri.toString().startsWith(SYSTEM_URI_PREFIX)) {
             newVal = Settings.System.getInt(mResolver, key, defaultValue) == 1;
+        } else if (keyUri.toString().startsWith(GLOBAL_URI_PREFIX)) {
+            newVal = Settings.Global.getInt(mResolver, key, defaultValue) == 1;
         } else { // SETTING_SECURE
             newVal = Settings.Secure.getInt(mResolver, key, defaultValue) == 1;
         }
@@ -154,23 +164,9 @@ public class SettingsCache extends ContentObserver implements SafeCloseable {
      */
     public void unregister(Uri uri, OnChangeListener listener) {
         List<OnChangeListener> listenersToRemoveFrom = mListenerMap.get(uri);
-        if (listenersToRemoveFrom == null) {
-            return;
+        if (listenersToRemoveFrom != null) {
+            listenersToRemoveFrom.remove(listener);
         }
-
-        listenersToRemoveFrom.remove(listener);
-        if (listenersToRemoveFrom.isEmpty()) {
-            mListenerMap.remove(uri);
-        }
-    }
-
-    /**
-     * Don't use this. Ever.
-     * @param keyCache Cache to replace {@link #mKeyCache}
-     */
-    @VisibleForTesting
-    void setKeyCache(Map<Uri, Boolean> keyCache) {
-        mKeyCache = keyCache;
     }
 
     public interface OnChangeListener {

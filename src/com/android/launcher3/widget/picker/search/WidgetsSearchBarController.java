@@ -32,7 +32,6 @@ import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controller for a search bar with an edit text and a cancel button.
@@ -71,7 +70,7 @@ public class WidgetsSearchBarController implements TextWatcher,
             mCancelButton.setVisibility(GONE);
         } else {
             mSearchAlgorithm.cancel(/* interruptActiveRequests= */ false);
-            mSearchModeListener.enterSearchMode();
+            mSearchModeListener.enterSearchMode(true);
             mSearchAlgorithm.doSearch(mQuery, this);
             mCancelButton.setVisibility(VISIBLE);
         }
@@ -88,23 +87,17 @@ public class WidgetsSearchBarController implements TextWatcher,
     }
 
     @Override
-    public void onSearchResult(String query, ArrayList<WidgetsListBaseEntry> items, List<String> suggestions) {
+    public void onSearchResult(String query, ArrayList<WidgetsListBaseEntry> items) {
         if (DEBUG) {
             Log.d(TAG, "onSearchResult query: " + query + " items: " + items);
         }
         mSearchModeListener.onSearchResults(items);
-
     }
 
     @Override
     public void clearSearchResult() {
         // Any existing search session will be cancelled by setting text to empty.
         mInput.setText("");
-    }
-
-    @Override
-    public boolean onSubmitSearch(String query) {
-        return false;
     }
 
     /**

@@ -15,7 +15,9 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.config.FeatureFlags.ALL_APPS_GONE_VISIBILITY;
+import static androidx.constraintlayout.widget.ConstraintSet.MATCH_CONSTRAINT;
+import static androidx.constraintlayout.widget.ConstraintSet.WRAP_CONTENT;
+
 import static com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import static com.android.launcher3.logger.LauncherAtom.SearchResultContainer;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_DOWN;
@@ -33,21 +35,31 @@ import static com.android.launcher3.util.LogConfig.SEARCH_LOGGING;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.FastScrollRecyclerView;
+import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.views.ActivityContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,10 +69,12 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     protected static final String TAG = "AllAppsRecyclerView";
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_LATENCY = Utilities.isPropertyEnabled(SEARCH_LOGGING);
+    private Consumer<View> mChildAttachedConsumer;
 
     protected final int mNumAppsPerRow;
     private final AllAppsFastScrollHelper mFastScrollHelper;
     private int mCumulativeVerticalScroll;
+    private ConstraintLayout mLetterList;
 
     protected AlphabeticalAppsList<?> mApps;
 
@@ -95,24 +109,29 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
     }
 
     protected void updatePoolSize() {
+        updatePoolSize(false);
+    }
+
+    void updatePoolSize(boolean hasWorkProfile) {
         DeviceProfile grid = ActivityContext.lookupContext(getContext()).getDeviceProfile();
         RecyclerView.RecycledViewPool pool = getRecycledViewPool();
-        int approxRows = (int) Math.ceil(grid.availableHeightPx / grid.allAppsIconSizePx);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_EMPTY_SEARCH, 1);
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ALL_APPS_DIVIDER, 1);
 
-        // If all apps' hidden visibility is INVISIBLE, we will need to preinflate one page of
-        // all apps icons for smooth scrolling.
-        int maxPoolSizeForAppIcons = (approxRows + 1) * grid.numShownAllAppsColumns;
-        if (ALL_APPS_GONE_VISIBILITY.get()) {
-            // If all apps' hidden visibility is GONE, we need to increase prefinated icons number
-            // by [PREINFLATE_ICONS_ROW_COUNT] rows + [EXTRA_ICONS_COUNT] for fast opening all apps.
-            maxPoolSizeForAppIcons +=
-                    PREINFLATE_ICONS_ROW_COUNT * grid.numShownAllAppsColumns + EXTRA_ICONS_COUNT;
+        // By default the max num of pool size for app icons is num of app icons in one page of
+        // all apps.
+        int maxPoolSizeForAppIcons = grid.getMaxAllAppsRowCount()
+                * grid.numShownAllAppsColumns;
+        // If we set all apps' hidden visibility to GONE and enable pre-inflation, we want to
+        // preinflate one page of all apps icons plus [PREINFLATE_ICONS_ROW_COUNT] rows +
+        // [EXTRA_ICONS_COUNT]. Thus we need to bump the max pool size of app icons accordingly.
+        maxPoolSizeForAppIcons +=
+                PREINFLATE_ICONS_ROW_COUNT * grid.numShownAllAppsColumns + EXTRA_ICONS_COUNT;
+        if (hasWorkProfile) {
+            maxPoolSizeForAppIcons *= 2;
         }
         pool.setMaxRecycledViews(
                 AllAppsGridAdapter.VIEW_TYPE_ICON, maxPoolSizeForAppIcons);
-        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, maxPoolSizeForAppIcons);
     }
 
     @Override
@@ -168,7 +187,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
      * Maps the touch (from 0..1) to the adapter position that should be visible.
      */
     @Override
-    public String scrollToPositionAtProgress(float touchFraction) {
+    public CharSequence scrollToPositionAtProgress(float touchFraction) {
         int rowCount = mApps.getNumAppRows();
         if (rowCount == 0) {
             return "";
@@ -226,6 +245,9 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
             return;
         }
 
+        if (Flags.letterFastScroller() && !mScrollbar.isDraggingThumb()) {
+            setLettersToScrollLayout(mApps.getFastScrollerSections());
+        }
         // Only show the scrollbar if there is height to be scrolled
         int availableScrollBarHeight = getAvailableScrollBarHeight();
         int availableScrollHeight = getAvailableScrollHeight();
@@ -275,11 +297,25 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         }
     }
 
+    /**
+     * This will be called just before a new child is attached to the window. Passing in null will
+     * remove the consumer.
+     */
+    protected void setChildAttachedConsumer(@Nullable Consumer<View> childAttachedConsumer) {
+        mChildAttachedConsumer = childAttachedConsumer;
+    }
+
+    @Override
+    public void onChildAttachedToWindow(@NonNull View child) {
+        if (mChildAttachedConsumer != null) {
+            mChildAttachedConsumer.accept(child);
+        }
+        super.onChildAttachedToWindow(child);
+    }
+
     @Override
     public int getScrollBarTop() {
-        return ActivityContext.lookupContext(getContext()).getAppsView().isSearchSupported()
-                ? getResources().getDimensionPixelOffset(R.dimen.all_apps_header_top_padding)
-                : 0;
+        return getResources().getDimensionPixelOffset(R.dimen.all_apps_header_top_padding);
     }
 
     @Override
@@ -293,8 +329,78 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         return false;
     }
 
-    public void setScrollbarColor(int color) {
-        mScrollbar.setColor(color, Color.WHITE);
+    public void setLettersToScrollLayout(
+            List<AlphabeticalAppsList.FastScrollSectionInfo> fastScrollSections) {
+        if (mLetterList != null) {
+            mLetterList.removeAllViews();
+        }
+        Context context = getContext();
+        ActivityAllAppsContainerView<?> allAppsContainerView =
+                ActivityContext.lookupContext(context).getAppsView();
+        mLetterList = allAppsContainerView.getFastScrollerLetterList();
+        mLetterList.setPadding(0, getScrollBarTop(), 0, getScrollBarMarginBottom());
+        List<LetterListTextView> textViews = new ArrayList<>();
+        for (int i = 0; i < fastScrollSections.size(); i++) {
+            AlphabeticalAppsList.FastScrollSectionInfo sectionInfo = fastScrollSections.get(i);
+            LetterListTextView textView =
+                    (LetterListTextView) LayoutInflater.from(context).inflate(
+                            R.layout.fast_scroller_letter_list_text_view, mLetterList, false);
+            int viewId = View.generateViewId();
+            textView.setId(viewId);
+            sectionInfo.setId(viewId);
+            textView.setText(sectionInfo.sectionName);
+            if (i == fastScrollSections.size() - 1) {
+                // The last section info is just a duplicate so that user can scroll to the bottom.
+                textView.setVisibility(INVISIBLE);
+            }
+            ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(
+                    MATCH_CONSTRAINT, WRAP_CONTENT);
+            lp.dimensionRatio = "v,1:1";
+            textView.setLayoutParams(lp);
+            textViews.add(textView);
+            mLetterList.addView(textView);
+        }
+        // Need to add an extra textview to be aligned.
+        LetterListTextView lastLetterListTextView = new LetterListTextView(context);
+        int currentId = View.generateViewId();
+        lastLetterListTextView.setId(currentId);
+        lastLetterListTextView.setVisibility(INVISIBLE);
+        textViews.add(lastLetterListTextView);
+        mLetterList.addView(lastLetterListTextView);
+        constraintTextViewsVertically(mLetterList, textViews);
+        mLetterList.setVisibility(VISIBLE);
+    }
+
+    private void constraintTextViewsVertically(ConstraintLayout constraintLayout,
+            List<LetterListTextView> textViews) {
+        ConstraintSet chain = new ConstraintSet();
+        chain.clone(constraintLayout);
+        for (int i = 0; i < textViews.size(); i++) {
+            LetterListTextView currentView = textViews.get(i);
+            if (i == 0) {
+                chain.connect(currentView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID,
+                        ConstraintSet.TOP);
+            } else {
+                chain.connect(currentView.getId(), ConstraintSet.TOP, textViews.get(i-1).getId(),
+                        ConstraintSet.BOTTOM);
+            }
+            chain.connect(currentView.getId(), ConstraintSet.START, constraintLayout.getId(),
+                    ConstraintSet.START);
+            chain.connect(currentView.getId(), ConstraintSet.END, constraintLayout.getId(),
+                    ConstraintSet.END);
+        }
+        int[] viewIds = textViews.stream().mapToInt(TextView::getId).toArray();
+        float[] weights = new float[textViews.size()];
+        Arrays.fill(weights,1); // fill with 1 for equal weights
+        chain.createVerticalChain(constraintLayout.getId(), ConstraintSet.TOP,
+                constraintLayout.getId(), ConstraintSet.BOTTOM, viewIds, weights,
+                ConstraintSet.CHAIN_SPREAD);
+        chain.applyTo(constraintLayout);
+    }
+
+    @Override
+    public ConstraintLayout getLetterList() {
+        return mLetterList;
     }
 
     private void logCumulativeVerticalScroll() {

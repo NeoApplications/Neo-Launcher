@@ -15,14 +15,10 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip.getTabWidth;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.WindowInsets;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,7 +31,6 @@ import com.android.launcher3.Insettable;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.KeyboardInsetAnimationCallback;
-import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.StringCache;
 import com.android.launcher3.views.ActivityContext;
 /**
@@ -53,12 +48,11 @@ public class WorkModeSwitch extends LinearLayout implements Insettable,
     private final Rect mImeInsets = new Rect();
     private int mFlags;
     private final ActivityContext mActivityContext;
+    private final Context mContext;
 
     // Threshold when user scrolls up/down to determine when should button extend/collapse
     private final int mScrollThreshold;
-    private ImageView mIcon;
     private TextView mTextView;
-    private final StatsLogManager mStatsLogManager;
 
 
     public WorkModeSwitch(@NonNull Context context) {
@@ -71,23 +65,20 @@ public class WorkModeSwitch extends LinearLayout implements Insettable,
 
     public WorkModeSwitch(@NonNull Context context, @NonNull AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         mScrollThreshold = Utilities.dpToPx(SCROLL_THRESHOLD_DP);
         mActivityContext = ActivityContext.lookupContext(getContext());
-        mStatsLogManager = mActivityContext.getStatsLogManager();
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mIcon = findViewById(R.id.work_icon);
         mTextView = findViewById(R.id.pause_text);
         setSelected(true);
-        if (Utilities.ATLEAST_R) {
-            KeyboardInsetAnimationCallback keyboardInsetAnimationCallback =
-                    new KeyboardInsetAnimationCallback(this);
-            setWindowInsetsAnimationCallback(keyboardInsetAnimationCallback);
-        }
+        KeyboardInsetAnimationCallback keyboardInsetAnimationCallback =
+                new KeyboardInsetAnimationCallback(this);
+        setWindowInsetsAnimationCallback(keyboardInsetAnimationCallback);
 
         setInsets(mActivityContext.getDeviceProfile().getInsets());
         updateStringFromCache();
@@ -116,13 +107,9 @@ public class WorkModeSwitch extends LinearLayout implements Insettable,
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        View parent = (View) getParent();
-        int allAppsLeftRightPadding = mActivityContext.getDeviceProfile().allAppsLeftRightPadding;
-        int size = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()
-                - 2 * allAppsLeftRightPadding;
-        int tabWidth = getTabWidth(getContext(), size);
-        int shift = (size - tabWidth) / 2 + allAppsLeftRightPadding;
-        setTranslationX(Utilities.isRtl(getResources()) ? shift : -shift);
+        boolean isRtl = Utilities.isRtl(getResources());
+        int shift = mActivityContext.getDeviceProfile().getAllAppsIconStartMargin(mContext);
+        setTranslationX(isRtl ? shift : -shift);
     }
 
     @Override

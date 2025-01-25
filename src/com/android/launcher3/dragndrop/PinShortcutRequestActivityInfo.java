@@ -17,11 +17,13 @@
 package com.android.launcher3.dragndrop;
 
 import static android.content.pm.LauncherApps.EXTRA_PIN_ITEM_REQUEST;
+
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
 import static com.android.launcher3.LauncherState.EDIT_MODE;
 import static com.android.launcher3.LauncherState.SPRING_LOADED;
 import static com.android.launcher3.config.FeatureFlags.MULTI_SELECT_EDIT_MODE;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +33,7 @@ import android.content.pm.LauncherApps.PinItemRequest;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 
 import com.android.launcher3.Launcher;
@@ -49,6 +52,7 @@ import java.util.function.Supplier;
  * Extension of ShortcutConfigActivityInfo to be used in the confirmation prompt for pin item
  * request.
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class PinShortcutRequestActivityInfo extends ShortcutConfigActivityInfo {
 
     // Class name used in the target component, such that it will never represent an

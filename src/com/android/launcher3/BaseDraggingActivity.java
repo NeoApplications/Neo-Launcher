@@ -18,14 +18,10 @@ package com.android.launcher3;
 
 import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
 
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.ActionMode;
-import android.view.Display;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -39,12 +35,9 @@ import com.android.launcher3.util.DisplayController;
 import com.android.launcher3.util.DisplayController.DisplayInfoChangeListener;
 import com.android.launcher3.util.DisplayController.Info;
 import com.android.launcher3.util.OnColorHintListener;
-import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
-import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.util.WallpaperColorHints;
 import com.android.launcher3.util.WindowBounds;
-import com.saggitt.omega.theme.ThemeOverride;
 
 /**
  * Extension of BaseActivity allowing support for drag-n-drop
@@ -53,25 +46,17 @@ import com.saggitt.omega.theme.ThemeOverride;
 public abstract class BaseDraggingActivity extends BaseActivity
         implements OnColorHintListener, DisplayInfoChangeListener {
 
-    private static final String TAG = "BaseDraggingActivity";
-
     // When starting an action mode, setting this tag will cause the action mode to be cancelled
     // automatically when user interacts with the launcher.
     public static final Object AUTO_CANCEL_ACTION_MODE = new Object();
 
     private ActionMode mCurrentActionMode;
-    protected boolean mIsSafeModeEnabled;
 
-    private Runnable mOnStartCallback;
-    private final RunnableList mOnResumeCallbacks = new RunnableList();
     private int mThemeRes = R.style.AppTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mIsSafeModeEnabled = TraceHelper.allowIpcs("isSafeMode",
-                () -> getPackageManager().isSafeMode());
         DisplayController.INSTANCE.get(this).addChangeListener(this);
 
         // Update theme
@@ -81,24 +66,6 @@ public abstract class BaseDraggingActivity extends BaseActivity
             mThemeRes = themeRes;
             setTheme(themeRes);
         }
-        // Register theme override
-        ThemeOverride themeOverride = new ThemeOverride(getLauncherThemeSet(), this);
-        themeOverride.applyTheme(this);
-    }
-
-    @NonNull
-    protected ThemeOverride.ThemeSet getLauncherThemeSet() {
-        return new ThemeOverride.Launcher();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mOnResumeCallbacks.executeAllAndClear();
-    }
-
-    public void addOnResumeCallback(Runnable callback) {
-        mOnResumeCallbacks.add(callback);
     }
 
     @MainThread
@@ -144,44 +111,25 @@ public abstract class BaseDraggingActivity extends BaseActivity
         return false;
     }
 
-    public abstract <T extends View> T getOverviewPanel();
-
     public abstract View getRootView();
 
     public void returnToHomescreen() {
         // no-op
     }
 
-    public final Bundle getActivityLaunchOptionsAsBundle(View v) {
-        ActivityOptions activityOptions = getActivityLaunchOptions(v);
-        return activityOptions == null ? null : activityOptions.toBundle();
-    }
-
-    public abstract ActivityOptions getActivityLaunchOptions(View v);
-
     @Override
     @NonNull
     public ActivityOptionsWrapper getActivityLaunchOptions(View v, @Nullable ItemInfo item) {
         ActivityOptionsWrapper wrapper = super.getActivityLaunchOptions(v, item);
-        addOnResumeCallback(wrapper.onEndCallback::executeAllAndDestroy);
+        addEventCallback(EVENT_RESUMED, wrapper.onEndCallback::executeAllAndDestroy);
         return wrapper;
     }
 
     @Override
     public ActivityOptionsWrapper makeDefaultActivityOptions(int splashScreenStyle) {
         ActivityOptionsWrapper wrapper = super.makeDefaultActivityOptions(splashScreenStyle);
-        addOnResumeCallback(wrapper.onEndCallback::executeAllAndDestroy);
+        addEventCallback(EVENT_RESUMED, wrapper.onEndCallback::executeAllAndDestroy);
         return wrapper;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (mOnStartCallback != null) {
-            mOnStartCallback.run();
-            mOnStartCallback = null;
-        }
     }
 
     @Override
@@ -191,23 +139,12 @@ public abstract class BaseDraggingActivity extends BaseActivity
         WallpaperColorHints.get(this).unregisterOnColorsChangedListener(this);
     }
 
-    public void runOnceOnStart(Runnable action) {
-        mOnStartCallback = action;
-    }
-
-    public void clearRunOnceOnStartCallback() {
-        mOnStartCallback = null;
-    }
-
     protected void onDeviceProfileInitiated() {
-        if (mDeviceProfile.isVerticalBarLayout()) {
-            mDeviceProfile.updateIsSeascape(this);
-        }
     }
 
     @Override
     public void onDisplayInfoChanged(Context context, Info info, int flags) {
-        if ((flags & CHANGE_ROTATION) != 0 && mDeviceProfile.updateIsSeascape(this)) {
+        if ((flags & CHANGE_ROTATION) != 0 && mDeviceProfile.isVerticalBarLayout()) {
             reapplyUi();
         }
     }
@@ -220,19 +157,11 @@ public abstract class BaseDraggingActivity extends BaseActivity
     protected abstract void reapplyUi();
 
     protected WindowBounds getMultiWindowDisplaySize() {
-        if (Utilities.ATLEAST_R) {
-            return WindowBounds.fromWindowMetrics(getWindowManager().getCurrentWindowMetrics());
-        }
-        // Note: Calls to getSize() can't rely on our cached DefaultDisplay since it can return
-        // the app window size
-        Display display = getWindowManager().getDefaultDisplay();
-        Point mwSize = new Point();
-        display.getSize(mwSize);
-        return new WindowBounds(new Rect(0, 0, mwSize.x, mwSize.y), new Rect());
+        return WindowBounds.fromWindowMetrics(getWindowManager().getCurrentWindowMetrics());
     }
 
     @Override
     public boolean isAppBlockedForSafeMode() {
-        return mIsSafeModeEnabled;
+        return LauncherAppState.getInstance(this).isSafeModeEnabled();
     }
 }

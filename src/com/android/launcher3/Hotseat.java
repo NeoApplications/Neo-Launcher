@@ -16,6 +16,12 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.LauncherAnimUtils.VIEW_TRANSLATE_X;
+import static com.android.launcher3.util.MultiTranslateDelegate.INDEX_BUBBLE_ADJUSTMENT_ANIM;
+
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -27,18 +33,44 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
+
+import com.android.launcher3.util.HorizontalInsettableView;
+import com.android.launcher3.util.MultiPropertyFactory.MultiProperty;
+import com.android.launcher3.util.MultiTranslateDelegate;
+import com.android.launcher3.util.MultiValueAlpha;
+import com.android.launcher3.views.ActivityContext;
+
+import java.io.PrintWriter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * View class that represents the bottom row of the home screen.
  */
 public class Hotseat extends CellLayout implements Insettable {
 
+    public static final int ALPHA_CHANNEL_TASKBAR_ALIGNMENT = 0;
+    public static final int ALPHA_CHANNEL_PREVIEW_RENDERER = 1;
+    public static final int ALPHA_CHANNEL_TASKBAR_STASH = 2;
+    public static final int ALPHA_CHANNEL_CHANNELS_COUNT = 3;
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @IntDef({ALPHA_CHANNEL_TASKBAR_ALIGNMENT, ALPHA_CHANNEL_PREVIEW_RENDERER,
+            ALPHA_CHANNEL_TASKBAR_STASH})
+    public @interface HotseatQsbAlphaId {
+    }
+
     // Ratio of empty space, qsb should take up to appear visually centered.
     public static final float QSB_CENTER_FACTOR = .325f;
+    private static final int BUBBLE_BAR_ADJUSTMENT_ANIMATION_DURATION_MS = 250;
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private boolean mHasVerticalHotseat;
     private Workspace<?> mWorkspace;
     private boolean mSendTouchToWorkspace;
+    private final MultiValueAlpha mIconsAlphaChannels;
+    private final MultiValueAlpha mQsbAlphaChannels;
 
     private final View mQsb;
 
@@ -52,9 +84,11 @@ public class Hotseat extends CellLayout implements Insettable {
 
     public Hotseat(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
         mQsb = LayoutInflater.from(context).inflate(R.layout.search_container_hotseat, this, false);
         addView(mQsb);
+        mIconsAlphaChannels = new MultiValueAlpha(getShortcutsAndWidgets(),
+                ALPHA_CHANNEL_CHANNELS_COUNT);
+        mQsbAlphaChannels = new MultiValueAlpha(mQsb, ALPHA_CHANNEL_CHANNELS_COUNT);
     }
 
     /**
@@ -71,16 +105,99 @@ public class Hotseat extends CellLayout implements Insettable {
         return mHasVerticalHotseat ? (getCountY() - (rank + 1)) : 0;
     }
 
+    boolean isHasVerticalHotseat() {
+        return mHasVerticalHotseat;
+    }
+
     public void resetLayout(boolean hasVerticalHotseat) {
+        ActivityContext activityContext = ActivityContext.lookupContext(getContext());
+        boolean bubbleBarEnabled = activityContext.isBubbleBarEnabled();
+        boolean hasBubbles = activityContext.hasBubbles();
         removeAllViewsInLayout();
         mHasVerticalHotseat = hasVerticalHotseat;
         DeviceProfile dp = mActivity.getDeviceProfile();
+
+        if (bubbleBarEnabled) {
+            float adjustedBorderSpace = dp.getHotseatAdjustedBorderSpaceForBubbleBar(getContext());
+            if (hasBubbles && Float.compare(adjustedBorderSpace, 0f) != 0) {
+                getShortcutsAndWidgets().setTranslationProvider(cellX -> {
+                    float borderSpaceDelta = adjustedBorderSpace - dp.hotseatBorderSpace;
+                    return dp.iconSizePx + cellX * borderSpaceDelta;
+                });
+                if (mQsb instanceof HorizontalInsettableView) {
+                    HorizontalInsettableView insettableQsb = (HorizontalInsettableView) mQsb;
+                    final float insetFraction = (float) dp.iconSizePx / dp.hotseatQsbWidth;
+                    // post this to the looper so that QSB has a chance to redraw itself, e.g.
+                    // after device rotation
+                    mQsb.post(() -> insettableQsb.setHorizontalInsets(insetFraction));
+                }
+            } else {
+                getShortcutsAndWidgets().setTranslationProvider(null);
+                if (mQsb instanceof HorizontalInsettableView) {
+                    ((HorizontalInsettableView) mQsb).setHorizontalInsets(0);
+                }
+            }
+        }
+
         resetCellSize(dp);
         if (hasVerticalHotseat) {
             setGridSize(1, dp.numShownHotseatIcons);
         } else {
             setGridSize(dp.numShownHotseatIcons, 1);
         }
+    }
+
+    /**
+     * Adjust the hotseat icons for the bubble bar.
+     *
+     * <p>When the bubble bar becomes visible, if needed, this method animates the hotseat icons
+     * to reduce the spacing between them and make room for the bubble bar. The QSB width is
+     * animated as well to align with the hotseat icons.
+     *
+     * <p>When the bubble bar goes away, any adjustments that were previously made are reversed.
+     */
+    public void adjustForBubbleBar(boolean isBubbleBarVisible) {
+        DeviceProfile dp = mActivity.getDeviceProfile();
+        float adjustedBorderSpace = dp.getHotseatAdjustedBorderSpaceForBubbleBar(getContext());
+        if (Float.compare(adjustedBorderSpace, 0f) == 0) {
+            return;
+        }
+
+        ShortcutAndWidgetContainer icons = getShortcutsAndWidgets();
+        AnimatorSet animatorSet = new AnimatorSet();
+        float borderSpaceDelta = adjustedBorderSpace - dp.hotseatBorderSpace;
+
+        // update the translation provider for future layout passes of hotseat icons.
+        if (isBubbleBarVisible) {
+            icons.setTranslationProvider(cellX -> dp.iconSizePx + cellX * borderSpaceDelta);
+        } else {
+            icons.setTranslationProvider(null);
+        }
+
+        for (int i = 0; i < icons.getChildCount(); i++) {
+            View child = icons.getChildAt(i);
+            float tx = isBubbleBarVisible ? dp.iconSizePx + i * borderSpaceDelta : 0;
+            if (child instanceof Reorderable) {
+                MultiTranslateDelegate mtd = ((Reorderable) child).getTranslateDelegate();
+                animatorSet.play(
+                        mtd.getTranslationX(INDEX_BUBBLE_ADJUSTMENT_ANIM).animateToValue(tx));
+            } else {
+                animatorSet.play(ObjectAnimator.ofFloat(child, VIEW_TRANSLATE_X, tx));
+            }
+        }
+        if (mQsb instanceof HorizontalInsettableView horizontalInsettableQsb) {
+            final float currentInsetFraction = horizontalInsettableQsb.getHorizontalInsets();
+            final float targetInsetFraction =
+                    isBubbleBarVisible ? (float) dp.iconSizePx / dp.hotseatQsbWidth : 0;
+            ValueAnimator qsbAnimator =
+                    ValueAnimator.ofFloat(currentInsetFraction, targetInsetFraction);
+            qsbAnimator.addUpdateListener(animation -> {
+                float insetFraction = (float) animation.getAnimatedValue();
+                horizontalInsettableQsb.setHorizontalInsets(insetFraction);
+            });
+            animatorSet.play(qsbAnimator);
+        }
+        animatorSet.setDuration(BUBBLE_BAR_ADJUSTMENT_ANIMATION_DURATION_MS).start();
     }
 
     @Override
@@ -113,6 +230,7 @@ public class Hotseat extends CellLayout implements Insettable {
 
     public void setWorkspace(Workspace<?> w) {
         mWorkspace = w;
+        setCellLayoutContainer(w);
     }
 
     @Override
@@ -175,21 +293,27 @@ public class Hotseat extends CellLayout implements Insettable {
     }
 
     /**
-     * Sets the alpha value of just our ShortcutAndWidgetContainer.
+     * Sets the alpha value of the specified alpha channel of just our ShortcutAndWidgetContainer.
      */
-    public void setIconsAlpha(float alpha) {
-        getShortcutsAndWidgets().setAlpha(alpha);
+    public void setIconsAlpha(float alpha, @HotseatQsbAlphaId int channelId) {
+        getIconsAlpha(channelId).setValue(alpha);
     }
 
     /**
      * Sets the alpha value of just our QSB.
      */
-    public void setQsbAlpha(float alpha) {
-        mQsb.setAlpha(alpha);
+    public void setQsbAlpha(float alpha, @HotseatQsbAlphaId int channelId) {
+        getQsbAlpha(channelId).setValue(alpha);
     }
 
-    public float getIconsAlpha() {
-        return getShortcutsAndWidgets().getAlpha();
+    /** Returns the alpha channel for ShortcutAndWidgetContainer */
+    public MultiProperty getIconsAlpha(@HotseatQsbAlphaId int channelId) {
+        return mIconsAlphaChannels.get(channelId);
+    }
+
+    /** Returns the alpha channel for Qsb */
+    public MultiProperty getQsbAlpha(@HotseatQsbAlphaId int channelId) {
+        return mQsbAlphaChannels.get(channelId);
     }
 
     /**
@@ -197,6 +321,26 @@ public class Hotseat extends CellLayout implements Insettable {
      */
     public View getQsb() {
         return mQsb;
+    }
+
+    /** Dumps the Hotseat internal state */
+    public void dump(String prefix, PrintWriter writer) {
+        writer.println(prefix + "Hotseat:");
+        mIconsAlphaChannels.dump(
+                prefix + "\t",
+                writer,
+                "mIconsAlphaChannels",
+                "ALPHA_CHANNEL_TASKBAR_ALIGNMENT",
+                "ALPHA_CHANNEL_PREVIEW_RENDERER",
+                "ALPHA_CHANNEL_TASKBAR_STASH");
+        mQsbAlphaChannels.dump(
+                prefix + "\t",
+                writer,
+                "mQsbAlphaChannels",
+                "ALPHA_CHANNEL_TASKBAR_ALIGNMENT",
+                "ALPHA_CHANNEL_PREVIEW_RENDERER",
+                "ALPHA_CHANNEL_TASKBAR_STASH"
+        );
     }
 
 }

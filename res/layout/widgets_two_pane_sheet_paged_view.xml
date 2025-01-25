@@ -20,14 +20,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="start"
-        android:paddingHorizontal="@dimen/widget_list_horizontal_margin_two_pane"
         android:layout_gravity="start"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:layout_alignParentStart="true">
+        <!-- Note: the paddingHorizontal has to be on WidgetPagedView level so that talkback
+         correctly orders the lists to be after the search and suggestions header. See b/209579563.
+          -->
         <com.android.launcher3.widget.picker.WidgetPagedView
             android:id="@+id/widgets_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/widget_list_horizontal_margin_two_pane"
             android:descendantFocusability="afterDescendants"
             launcher:pageIndicator="@+id/tabs" >
 
@@ -46,27 +51,50 @@
         </com.android.launcher3.widget.picker.WidgetPagedView>
 
         <!-- SearchAndRecommendationsView without the tab layout as well -->
+        <!-- Note: the horizontal padding matches with the WidgetPagedView -->
         <com.android.launcher3.views.StickyHeaderLayout
             android:id="@+id/search_and_recommendations_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToOutline="true"
+            android:paddingHorizontal="@dimen/widget_list_horizontal_margin_two_pane"
             android:orientation="vertical">
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/search_bar_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:background="?attr/widgetPickerPrimarySurfaceColor"
-                android:clipToPadding="false"
-                android:elevation="0.1dp"
-                android:paddingBottom="8dp"
+                android:gravity="center_vertical"
                 launcher:layout_sticky="true">
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clipToPadding="false"
+                    android:elevation="0.1dp"
+                    android:paddingBottom="8dp">
 
-                <include layout="@layout/widgets_search_bar" />
-            </FrameLayout>
+                    <include layout="@layout/widgets_search_bar" />
+                </FrameLayout>
 
-            <LinearLayout
+                <ImageButton
+                    android:id="@+id/widget_picker_widget_options_menu"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/full_rounded_transparent_ripple"
+                    android:contentDescription="@string/widget_picker_widget_options_button_description"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_more_vert_dots"
+                    android:visibility="gone"
+                    android:tint="?attr/widgetPickerWidgetOptionsMenuColor" />
+            </LinearLayout>
+
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/suggestions_header"
@@ -74,7 +102,7 @@
                 android:orientation="horizontal"
                 android:background="?attr/widgetPickerPrimarySurfaceColor"
                 launcher:layout_sticky="true">
-            </LinearLayout>
+            </FrameLayout>
 
             <com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip
                 android:id="@+id/tabs"
@@ -92,7 +120,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/widget_tabs_button_horizontal_padding"
-                    android:layout_marginVertical="@dimen/widget_apps_tabs_vertical_padding"
                     android:layout_weight="1"
                     android:background="@drawable/widget_picker_tabs_background"
                     android:text="@string/widgets_full_sheet_personal_tab"
@@ -105,7 +132,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/widget_tabs_button_horizontal_padding"
-                    android:layout_marginVertical="@dimen/widget_apps_tabs_vertical_padding"
                     android:layout_weight="1"
                     android:background="@drawable/widget_picker_tabs_background"
                     android:text="@string/widgets_full_sheet_work_tab"

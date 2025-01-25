@@ -20,7 +20,7 @@ import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_I
 
 import android.graphics.Point;
 
-import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 
@@ -41,21 +41,30 @@ public class FolderGridOrganizer {
     private int mCountX;
     private int mCountY;
     private boolean mDisplayingUpperLeftQuadrant = false;
+    private static final int PREVIEW_MAX_ROWS = 2;
+    private static final int PREVIEW_MAX_COLUMNS = 2;
 
     /**
      * Note: must call {@link #setFolderInfo(FolderInfo)} manually for verifier to work.
      */
-    public FolderGridOrganizer(InvariantDeviceProfile profile) {
-        mMaxCountX = profile.numFolderColumns;
-        mMaxCountY = profile.numFolderRows;
+    public FolderGridOrganizer(int maxCountX, int maxCountY) {
+        mMaxCountX = maxCountX;
+        mMaxCountY = maxCountY;
         mMaxItemsPerPage = mMaxCountX * mMaxCountY;
+    }
+
+    /**
+     * Creates a FolderGridOrganizer for the given DeviceProfile
+     */
+    public static FolderGridOrganizer createFolderGridOrganizer(DeviceProfile profile) {
+        return new FolderGridOrganizer(profile.numFolderColumns, profile.numFolderRows);
     }
 
     /**
      * Updates the organizer with the provided folder info
      */
     public FolderGridOrganizer setFolderInfo(FolderInfo info) {
-        return setContentSize(info.contents.size());
+        return setContentSize(info.getContents().size());
     }
 
     /**
@@ -127,6 +136,7 @@ public class FolderGridOrganizer {
 
     /**
      * Updates the item's cellX, cellY and rank corresponding to the provided rank.
+     *
      * @return true if there was any change
      */
     public boolean updateRankAndPos(ItemInfo item, int rank) {
@@ -189,8 +199,9 @@ public class FolderGridOrganizer {
         if (page > 0 || mDisplayingUpperLeftQuadrant) {
             int col = rank % mCountX;
             int row = rank / mCountX;
-            return col < 2 && row < 2;
+            return col < PREVIEW_MAX_COLUMNS && row < PREVIEW_MAX_ROWS;
         }
+        // If we have less than 4 items do this
         return rank < MAX_NUM_ITEMS_IN_PREVIEW;
     }
 }

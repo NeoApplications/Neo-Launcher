@@ -1,0 +1,15 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace "com.android.launcher3.flags"
+    compileSdk 33
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+        }
+    }
+}

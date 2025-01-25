@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.util.Themes;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -40,14 +41,14 @@ public class LauncherIconProvider extends IconProvider {
     private static final String ATTR_DRAWABLE = "drawable";
 
     private static final String TAG = "LIconProvider";
-    private static final Map<String, ThemedIconDrawable.ThemeData> DISABLED_MAP = Collections.emptyMap();
+    private static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
 
-    private Map<String, ThemedIconDrawable.ThemeData> mThemedIconMap;
+    private Map<String, ThemeData> mThemedIconMap;
     private boolean mSupportsIconTheme;
 
-    public LauncherIconProvider(Context context, boolean supportsIconTheme) {
-        super(context, supportsIconTheme);
-        setIconThemeSupported(supportsIconTheme);
+    public LauncherIconProvider(Context context) {
+        super(context);
+        setIconThemeSupported(Themes.isThemedIconEnabled(context));
     }
 
     /**
@@ -59,11 +60,21 @@ public class LauncherIconProvider extends IconProvider {
                 ? null : DISABLED_MAP;
     }
 
-    private Map<String, ThemedIconDrawable.ThemeData> getThemedIconMap() {
+    @Override
+    protected ThemeData getThemeDataForPackage(String packageName) {
+        return getThemedIconMap().get(packageName);
+    }
+
+    @Override
+    public String getSystemIconState() {
+        return super.getSystemIconState() + (mSupportsIconTheme ? ",with-theme" : ",no-theme");
+    }
+
+    private Map<String, ThemeData> getThemedIconMap() {
         if (mThemedIconMap != null) {
             return mThemedIconMap;
         }
-        ArrayMap<String, ThemedIconDrawable.ThemeData> map = new ArrayMap<>();
+        ArrayMap<String, ThemeData> map = new ArrayMap<>();
         Resources res = mContext.getResources();
         try (XmlResourceParser parser = res.getXml(R.xml.grayscale_icon_map)) {
             final int depth = parser.getDepth();
@@ -80,7 +91,7 @@ public class LauncherIconProvider extends IconProvider {
                     String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
                     int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
                     if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                        map.put(pkg, new ThemedIconDrawable.ThemeData(res, pkg, iconId));
+                        map.put(pkg, new ThemeData(res, iconId));
                     }
                 }
             }

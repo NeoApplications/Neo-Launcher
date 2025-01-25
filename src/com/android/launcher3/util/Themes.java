@@ -19,6 +19,8 @@ package com.android.launcher3.util;
 import static android.app.WallpaperColors.HINT_SUPPORTS_DARK_TEXT;
 import static android.app.WallpaperColors.HINT_SUPPORTS_DARK_THEME;
 
+import static com.android.launcher3.LauncherPrefs.THEMED_ICONS;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -30,11 +32,11 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Various utility methods associated with theming.
@@ -50,10 +52,8 @@ public class Themes {
     }
 
     public static int getActivityThemeRes(Context context, int wallpaperColorHints) {
-        boolean supportsDarkText = Utilities.ATLEAST_S
-                && (wallpaperColorHints & HINT_SUPPORTS_DARK_TEXT) != 0;
-        boolean isMainColorDark = Utilities.ATLEAST_S
-                && (wallpaperColorHints & HINT_SUPPORTS_DARK_THEME) != 0;
+        boolean supportsDarkText = (wallpaperColorHints & HINT_SUPPORTS_DARK_TEXT) != 0;
+        boolean isMainColorDark = (wallpaperColorHints & HINT_SUPPORTS_DARK_THEME) != 0;
 
         if (Utilities.isDarkTheme(context)) {
             return supportsDarkText ? R.style.AppTheme_Dark_DarkText
@@ -68,7 +68,7 @@ public class Themes {
      * Returns true if workspace icon theming is enabled
      */
     public static boolean isThemedIconEnabled(Context context) {
-        return NeoPrefs.Companion.getInstance().getProfileThemedIcons().getValue();
+        return LauncherPrefs.get(context).get(THEMED_ICONS);
     }
 
     public static String getDefaultBodyFont(Context context) {
