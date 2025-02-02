@@ -503,5 +503,5 @@
     <string name="default_city">San Salvador, SV</string>
     <string name="title_smartspace_background">Fond d\'écran à thème</string>
     <string name="hotseat_show_dots_page_indicator">Afficher l\'indicateur de page avec des points au lieu de lignes</string>
-    <string name="title_expandable_dock">Dock extensible</string>
+    <string name="title_expandable_dock">Bandeau extensible</string>
 </resources>
