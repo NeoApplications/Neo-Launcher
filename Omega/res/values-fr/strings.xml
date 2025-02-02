@@ -105,8 +105,8 @@
     <string name="title__theme_accent_color">Couleur d\'accentuation</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Masqué</item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="many"/>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d application</item>
@@ -475,15 +475,15 @@
     <string name="title_calendar_persian">Perse</string>
     <string name="n_percent">%1$d%%</string>
     <string name="title_themed_background">Fond d’icône transparent</string>
-    <string name="title__dock_icon_size_enforce">Forcer la taille personnalisée de l’icône</string>
-    <string name="title_desktop_widget_corner_radius">Diamètre du coin du widget</string>
+    <string name="title__dock_icon_size_enforce">Imposer un taille d\'icône personnalisée</string>
+    <string name="title_desktop_widget_corner_radius">Arrondi des coins des widgets</string>
     <string name="cat_dock_search">Tiroir et dock</string>
     <string name="title_drawer_all_apps">Tout</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Catégorisé</string>
     <string name="title_drawer_custom_categories">Catégories personnalisée</string>
     <string name="color_wallpaper_tertiary">Troisième fond d\'écran</string>
-    <string name="show_top_shadow">Montrer ombre supérieur</string>
+    <string name="show_top_shadow">Afficher l\'ombre en haut du bureau</string>
     <string name="title_calendar_gregorian">Grégorien</string>
     <string name="folder_swipe_up">Action de glisser vers le haut</string>
     <string name="accessibility_smartspace_page">Page %1$d de %2$d</string>
