@@ -446,8 +446,8 @@ public class LoaderTask implements Runnable {
                 mInstallingPkgsCached = installingPkgs;
             }
             installingPkgs.forEach(mApp.getIconCache()::updateSessionCache);
-            FileLog.d(TAG, "loadWorkspace: Packages with active install sessions: "
-                    + installingPkgs.keySet().stream().map(info -> info.mPackageName).toList());
+            FileLog.d(TAG, "loadWorkspace: Packages with active install sessions: ");
+            //+ installingPkgs.keySet().stream().map(info -> info.mPackageName).toList());
 
             mFirstScreenBroadcast = new FirstScreenBroadcast(installingPkgs);
 

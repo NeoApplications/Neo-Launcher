@@ -16,13 +16,11 @@
  */
 
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.jetbrains.kotlin.utils.addIfNotNull
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 
 val vProtobuf = "3.25.3"
-val prebuiltsDir: String = "prebuilts/"
 
 buildscript {
     dependencies {
@@ -42,9 +40,11 @@ plugins {
 }
 
 allprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                "-opt-in=kotlin.RequiresOptIn",
+            )
         }
     }
 }
@@ -68,6 +68,7 @@ android {
         buildConfigField("boolean", "QSB_ON_FIRST_SCREEN", "true")
         buildConfigField("boolean", "WIDGET_ON_FIRST_SCREEN", "true")
         buildConfigField("boolean", "WIDGETS_ENABLED", "true")
+        buildConfigField("boolean", "NOTIFICATION_DOTS_ENABLED", "true")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -77,6 +78,12 @@ android {
                     arg("room.schemaLocation", "$projectDir/schemas")
                     arg("room.incremental", "true")
                 }
+            }
+        }
+        gradle.projectsEvaluated {
+            val frameworkJar = File("prebuilts/libs/", "framework-15.jar")
+            tasks.withType<JavaCompile>().configureEach {
+                classpath = files(frameworkJar, classpath)
             }
         }
     }
@@ -134,12 +141,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_22
-        targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_22.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
+    }
+
+    plugins.withType<JavaBasePlugin> {
+        extensions.configure<JavaPluginExtension> {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+        }
     }
 
     packaging {
@@ -169,7 +183,7 @@ android {
     sourceSets {
         named("main") {
             res.srcDirs(listOf("res"))
-            java.srcDirs(listOf("src", "src_plugins", "src_ui_overrides", "flags/src"))
+            java.srcDirs(listOf("src", "src_plugins", "src_no_quickstep"))
             assets.srcDirs(listOf("assets"))
             manifest.srcFile("AndroidManifest-common.xml")
         }
@@ -210,8 +224,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
+    implementation(project(":iconloaderlib"))
+    implementation(project(":plugincore"))
+    implementation(project(":flags"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.ksp)
     implementation(libs.collections.immutable)
@@ -226,6 +242,7 @@ dependencies {
     implementation(libs.preference)
 
     implementation(libs.material)
+    implementation(libs.material.kolor)
 
     implementation(libs.datastore.preferences)
     implementation(libs.lifecycle.runtime)
@@ -234,6 +251,9 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.extensions)
     implementation(libs.slice)
+
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
 
     //Libs
     implementation(libs.protobuf.javalite)
@@ -255,22 +275,21 @@ dependencies {
     implementation(libs.fuzzywuzzy)
 
     //Compose
-    implementation(libs.activity.compose)
     api(platform(libs.compose.bom))
+    implementation(libs.activity.compose)
+    implementation(libs.compose.adaptive)
+    implementation(libs.compose.adaptive.layout)
+    implementation(libs.compose.adaptive.navigation)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.navigation)
+    implementation(libs.compose.reorderable)
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.navigation)
-    implementation(libs.compose.adaptive)
-    implementation(libs.compose.adaptive.layout)
-    implementation(libs.compose.adaptive.navigation)
     implementation(libs.coil.compose)
     implementation(libs.accompanist.drawablepainter)
-    implementation(libs.compose.reorderable)
-    implementation(libs.material.kolor)
 
     //Room
     implementation(libs.room.runtime)
@@ -278,9 +297,10 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-core.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-15.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-15.jar"))
+    compileOnly(fileTree(baseDir = "libs").include("SystemUI-core.jar"))
+    compileOnly(fileTree(baseDir = "libs").include("SystemUI-statsd-15.jar"))
+    compileOnly(fileTree(baseDir = "libs").include("WindowManager-Shell-15.jar"))
+    compileOnly(fileTree(baseDir = "libs").include("framework-15.jar"))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
@@ -304,7 +324,7 @@ dependencies {
 
 // using a task as a preBuild dependency instead of a function that takes some time insures that it runs
 task("detectAndroidLocals") {
-    val langsList: MutableSet<String> = HashSet()
+    val langList: MutableSet<String> = HashSet()
 
     // in /res are (almost) all languages that have a translated string is saved. this is safer and saves some time
     fileTree("res").visit {
@@ -313,14 +333,16 @@ task("detectAndroidLocals") {
         ) {
             var languageCode = this.file.parentFile?.name?.replace("values-", "")
             languageCode = if (languageCode == "values") "en" else languageCode
-            langsList.addIfNotNull(languageCode)
+            if (languageCode != null) {
+                langList.add(languageCode)
+            }
         }
     }
-    val langsListString = "{${langsList.joinToString(",") { "\"${it}\"" }}}"
+    val langListString = "{${langList.joinToString(",") { "\"${it}\"" }}}"
     android.defaultConfig.buildConfigField(
         "String[]",
         "DETECTED_ANDROID_LOCALES",
-        langsListString
+        langListString
     )
 }
 tasks.preBuild.dependsOn("detectAndroidLocals")

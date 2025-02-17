@@ -20,6 +20,8 @@ import android.app.ActivityThread
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 
 /** Utility class to manage a set of device configurations */
@@ -117,6 +119,7 @@ class DeviceConfigHelper<ConfigType>(private val factory: (PropReader) -> Config
         val valueInCode: T,
     )
 
+    @RequiresApi(Build.VERSION_CODES.N)
     companion object {
         const val NAMESPACE_LAUNCHER = "launcher"
 

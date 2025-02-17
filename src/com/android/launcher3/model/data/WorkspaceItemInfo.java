@@ -178,9 +178,9 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
 
     public void updateFromDeepShortcutInfo(@NonNull final ShortcutInfo shortcutInfo,
             @NonNull final Context context) {
-        if (com.android.wm.shell.Flags.enableBubbleAnything()) {
+        //if (com.android.wm.shell.Flags.enableBubbleAnything()) {
             mShortcutInfo = shortcutInfo;
-        }
+        //}
         // {@link ShortcutInfo#getActivity} can change during an update. Recreate the intent
         intent = ShortcutKey.makeIntent(shortcutInfo);
         title = shortcutInfo.getShortLabel();

@@ -22,7 +22,6 @@ import com.android.launcher3.R;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.ResourceBasedOverride;
 import com.android.launcher3.util.SafeCloseable;
-import com.android.systemui.contextualeducation.GestureType;
 
 /**
  * A class to update contextual education data. It is a no-op implementation and could be
@@ -35,11 +34,11 @@ public class ContextualEduStatsManager implements ResourceBasedOverride, SafeClo
 
     /**
      * Updates contextual education stats when a gesture is triggered
-     * @param isTrackpadGesture indicates if the gesture is triggered by trackpad
-     * @param gestureType type of gesture triggered
+     *  isTrackpadGesture indicates if the gesture is triggered by trackpad
+     *  gestureType type of gesture triggered
      */
-    public void updateEduStats(boolean isTrackpadGesture, GestureType gestureType) {
-    }
+    /*public void updateEduStats(boolean isTrackpadGesture, GestureType gestureType) {
+    }*/
 
     @Override
     public void close() {

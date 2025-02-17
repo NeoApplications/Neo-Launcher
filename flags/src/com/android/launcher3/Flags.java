@@ -101,6 +101,22 @@ public final class Flags {
     /** @hide */
     public static final String FLAG_USE_ACTIVITY_OVERLAY = "com.android.launcher3.use_activity_overlay";
 
+    public static boolean enableDismissPredictionUndo() {
+        return true;
+    }
+
+    public static boolean letterFastScroller() {
+        return false;
+    }
+
+    public static boolean multilineSearchBar() {
+        return false;
+    }
+
+    public static boolean navigateToChildPreference() {
+        return true;
+    }
+
     public static boolean enableAddAppWidgetViaConfigActivityV2() {
         return FEATURE_FLAGS.enableAddAppWidgetViaConfigActivityV2();
     }
@@ -135,6 +151,10 @@ public final class Flags {
 
     public static boolean enableGeneratedPreviews() {
         return FEATURE_FLAGS.enableGeneratedPreviews();
+    }
+
+    public static boolean useNewIconForArchivedApps() {
+        return false;
     }
 
     public static boolean enableGridMigrationFix() {

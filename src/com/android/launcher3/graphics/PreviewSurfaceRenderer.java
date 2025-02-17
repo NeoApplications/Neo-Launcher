@@ -17,7 +17,6 @@
 package com.android.launcher3.graphics;
 
 import static android.view.Display.DEFAULT_DISPLAY;
-
 import static com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
@@ -62,7 +61,6 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.LocalColorExtractor;
-import com.android.systemui.shared.Flags;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -313,7 +311,10 @@ public class PreviewSurfaceRenderer {
         view.setPivotY(0);
         view.setTranslationX((mWidth - scale * view.getWidth()) / 2);
         view.setTranslationY((mHeight - scale * view.getHeight()) / 2);
-        if (!Flags.newCustomizationPickerUi()) {
+
+        boolean newCustomizationPickerUi = false;
+        //if (!Flags.newCustomizationPickerUi()) {
+        if (!newCustomizationPickerUi) {
             view.setAlpha(0);
             view.animate().alpha(1)
                     .setInterpolator(new AccelerateDecelerateInterpolator())

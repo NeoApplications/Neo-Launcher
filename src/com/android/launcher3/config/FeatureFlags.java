@@ -18,8 +18,6 @@ package com.android.launcher3.config;
 
 import static com.android.launcher3.config.FeatureFlags.BooleanFlag.DISABLED;
 import static com.android.launcher3.config.FeatureFlags.BooleanFlag.ENABLED;
-import static com.android.wm.shell.Flags.enableTaskbarNavbarUnification;
-import static com.android.wm.shell.Flags.enableTaskbarOnPhones;
 
 import android.content.res.Resources;
 
@@ -103,8 +101,8 @@ public final class FeatureFlags {
     public static final BooleanFlag NOTIFY_CRASHES = getDebugFlag(270393108, "NOTIFY_CRASHES",
             DISABLED, "Sends a notification whenever launcher encounters an uncaught exception.");
 
-    public static final boolean ENABLE_TASKBAR_NAVBAR_UNIFICATION =
-            enableTaskbarNavbarUnification() && (!isPhone() || enableTaskbarOnPhones());
+    public static final boolean ENABLE_TASKBAR_NAVBAR_UNIFICATION = false;
+    //enableTaskbarNavbarUnification() && (!isPhone() || enableTaskbarOnPhones());
 
     private static boolean isPhone() {
         final boolean isPhone;
@@ -161,7 +159,7 @@ public final class FeatureFlags {
             "Enables the ability to create and save app pairs on the Home screen for easy"
                     + " split screen launching.");
     public static boolean enableAppPairs() {
-        return ENABLE_APP_PAIRS.get() || com.android.wm.shell.Flags.enableAppPairs();
+        return ENABLE_APP_PAIRS.get();
     }
 
     // TODO(Block 20): Clean up flags
@@ -217,8 +215,7 @@ public final class FeatureFlags {
             270393453, "ENABLE_SPLIT_FROM_WORKSPACE_TO_WORKSPACE", DISABLED,
             "Enable initiating split screen from workspace to workspace.");
     public static boolean enableSplitContextually() {
-        return ENABLE_SPLIT_FROM_WORKSPACE_TO_WORKSPACE.get() ||
-                com.android.wm.shell.Flags.enableSplitContextual();
+        return ENABLE_SPLIT_FROM_WORKSPACE_TO_WORKSPACE.get();
     }
 
     // TODO(Block 29): Clean up flags
@@ -228,7 +225,7 @@ public final class FeatureFlags {
             "Enables displaying the all apps button in the hotseat.");
 
     public static boolean enableAllAppsButtonInHotseat() {
-        return ENABLE_ALL_APPS_BUTTON_IN_HOTSEAT.get() || Flags.enableAllAppsButtonInHotseat();
+        return ENABLE_ALL_APPS_BUTTON_IN_HOTSEAT.get();
     }
 
     // TODO(Block 30): Clean up flags

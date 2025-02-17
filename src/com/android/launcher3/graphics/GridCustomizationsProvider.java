@@ -45,7 +45,6 @@ import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.RunnableList;
-import com.android.systemui.shared.Flags;
 
 import java.util.Collections;
 import java.util.Set;
@@ -175,7 +174,8 @@ public class GridCustomizationsProvider extends ContentProvider {
                 }
 
                 idp.setCurrentGrid(context, gridName);
-                if (Flags.newCustomizationPickerUi()) {
+                boolean newCustomizationPickerUi = true;
+                if (newCustomizationPickerUi) {
                     try {
                         // Wait for device profile to be fully reloaded and applied to the launcher
                         loadModelSync(context);

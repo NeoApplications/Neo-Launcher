@@ -2,11 +2,9 @@
 package com.android.launcher3.model;
 
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
-
 import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
 import static com.android.launcher3.pm.ShortcutConfigActivityInfo.queryList;
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
-
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
@@ -38,7 +36,6 @@ import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.WidgetManagerHelper;
 import com.android.launcher3.widget.WidgetSections;
-import com.android.wm.shell.Flags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -289,7 +286,7 @@ public class WidgetsModel {
         @Override
         public boolean test(WidgetItem widgetItem) {
             if (BUBBLES_SHORTCUT_WIDGET.equals(widgetItem.componentName.flattenToString())) {
-                return Flags.enableRetrievableBubbles();
+                return false;
             }
             return true;
         }

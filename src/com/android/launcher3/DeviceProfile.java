@@ -31,7 +31,6 @@ import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTO
 import static com.android.launcher3.testing.shared.ResourceUtils.INVALID_RESOURCE_HANDLE;
 import static com.android.launcher3.testing.shared.ResourceUtils.pxFromDp;
 import static com.android.launcher3.testing.shared.ResourceUtils.roundPxValueFromFloat;
-import static com.android.wm.shell.Flags.enableTinyTaskbar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -416,7 +415,7 @@ public class DeviceProfile {
         isTablet = info.isTablet(windowBounds);
         isPhone = !isTablet;
         isTwoPanels = isTablet && isMultiDisplay;
-        isTaskbarPresent = (isTablet || (enableTinyTaskbar() && isGestureMode))
+        isTaskbarPresent = (isTablet || (isGestureMode))
                 && WindowManagerProxy.INSTANCE.get(context).isTaskbarDrawnInProcess();
 
         // Some more constants.
@@ -792,8 +791,7 @@ public class DeviceProfile {
         int leftRightSplitPortraitResId = Resources.getSystem().getIdentifier(
                 "config_leftRightSplitInPortrait", "bool", "android");
         boolean allowLeftRightSplitInPortrait =
-                com.android.wm.shell.Flags.enableLeftRightSplitInPortrait()
-                    && leftRightSplitPortraitResId > 0
+                leftRightSplitPortraitResId > 0
                     && res.getBoolean(leftRightSplitPortraitResId);
         if (allowLeftRightSplitInPortrait && isTablet) {
             isLeftRightSplit = !isLandscape;

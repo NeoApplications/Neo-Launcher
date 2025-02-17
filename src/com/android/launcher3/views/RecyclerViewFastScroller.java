@@ -17,11 +17,8 @@
 package com.android.launcher3.views;
 
 import static android.view.HapticFeedbackConstants.CLOCK_TICK;
-
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
-
 import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.ALL_APPS_SCROLLER;
-import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.WIDGET_SCROLLER;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -48,7 +45,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.FastScrollRecyclerView;
-import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.LetterListTextView;
@@ -442,8 +438,7 @@ public class RecyclerViewFastScroller extends View {
     }
 
     boolean shouldUseLetterFastScroller() {
-        return Flags.letterFastScroller()
-                && getScrollerLocation() == FastScrollerLocation.ALL_APPS_SCROLLER;
+        return getScrollerLocation() == FastScrollerLocation.ALL_APPS_SCROLLER;
     }
 
     @Override

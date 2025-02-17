@@ -30,10 +30,22 @@ dependencyResolutionManagement {
         maven(url = "https://jitpack.io")
     }
 }
-include(":iconloaderlib")
-project(":iconloaderlib").projectDir = File(rootDir, "libs_systemui/iconloaderlib")
 
 include(":animationlib")
-project(":animationlib").projectDir = File(rootDir, "libs_systemui/animationlib")
+project(":animationlib").projectDir = File(rootDir, "systemui/animationlib")
+
+include(":iconloaderlib")
+project(":iconloaderlib").projectDir = File(rootDir, "systemui/iconloaderlib")
+
+include(":searchuilib")
+project(":searchuilib").projectDir = File(rootDir, "systemui/searchuilib")
+
+include(":plugincore")
+project(":plugincore").projectDir = File(rootDir, "systemui/plugin_core")
+
+include(":flags")
+project(":flags").projectDir = File(rootDir, "flags")
+
+include(":hidden-api")
 
 rootProject.name = "Neo Launcher"

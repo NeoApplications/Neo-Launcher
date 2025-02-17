@@ -17,7 +17,6 @@ package com.android.launcher3.allapps;
 
 import static androidx.constraintlayout.widget.ConstraintSet.MATCH_CONSTRAINT;
 import static androidx.constraintlayout.widget.ConstraintSet.WRAP_CONTENT;
-
 import static com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import static com.android.launcher3.logger.LauncherAtom.SearchResultContainer;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_DOWN;
@@ -51,7 +50,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.FastScrollRecyclerView;
-import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -245,7 +243,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
             return;
         }
 
-        if (Flags.letterFastScroller() && !mScrollbar.isDraggingThumb()) {
+        if (!mScrollbar.isDraggingThumb()) {
             setLettersToScrollLayout(mApps.getFastScrollerSections());
         }
         // Only show the scrollbar if there is height to be scrolled
