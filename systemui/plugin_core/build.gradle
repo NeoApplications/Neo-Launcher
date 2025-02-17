@@ -1,0 +1,27 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace "com.android.systemui.plugin_core"
+    compileSdkVersion 35
+    buildFeatures {
+        aidl true
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+}
+dependencies {
+    implementation libs.androidx.annotation.jvm
+    compileOnly fileTree(dir: 'libs', include: ['SystemUI-core.jar'])
+    compileOnly fileTree(dir: 'libs', include: ['SystemUI-statsd.jar'])
+    compileOnly fileTree(dir: 'libs', include: ['WindowManager-Shell-15.jar'])
+    implementation fileTree(dir: 'libs', include: ['framework-15.jar'])
+}
