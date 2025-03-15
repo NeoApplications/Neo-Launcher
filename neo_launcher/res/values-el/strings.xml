@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folder_name">Όνομα Φακέλου</string>
+    <string name="title__general_notifications">Χειρονομίες &amp; Ειδοποιήσεις</string>
+    <string name="summary__general_desktop">Παραμετροποίηση της επιφάνειας εργασίας</string>
+    <string name="web_search_searx">Searx (Ιστός)</string>
+    <string name="title__general_advanced">Προηγμένες Ρυθμίσεις</string>
+    <string name="title__general_dock">Μπάρα εφαρμογών</string>
+    <string name="title__general_theme">Θέμα</string>
+    <string name="title__general_search">Αναζήτηση &amp; Φάκελοι</string>
+    <string name="title__general_smartspace">Γραφικό Αρχικής Οθόνης</string>
+    <string name="title__general_drawer">Συρτάρι εφαρμογών</string>
+    <string name="default_folder_name">Νέος Φάκελος</string>
+    <string name="title__general_about">Σχετικά</string>
+    <string name="title__general_desktop">Επιφάνεια εργασίας</string>
+    <string name="title__general_search_feed">Αναζήτηση &amp; Ροή</string>
+    <string name="title__general_widgets_notifications">Γραφικά στοιχεία &amp; Ειδοποιήσεις</string>
+    <string name="summary__general_dock">Εικονίδια Μπάρας εφαρμογών, γραμμή αναζήτησης</string>
+    <string name="title__general_profile">Προφίλ</string>
+    <string name="title__general_gestures_dash">Χειρονομίες &amp; Ταμπλό</string>
+    <string name="icu_abbrev_date">d MMMM</string>
+</resources>
