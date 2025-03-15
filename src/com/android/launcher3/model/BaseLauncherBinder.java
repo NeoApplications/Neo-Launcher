@@ -413,7 +413,7 @@ public class BaseLauncherBinder {
             ModelWriter writer = mApp.getModel()
                     .getWriter(false /* verifyChanges */, CellPosMapper.DEFAULT, null);
             List<Pair<ItemInfo, View>> bindItems = items.stream().map(i ->
-                    Pair.create(i, inflater.inflateItem(i, writer, null))).toList();
+                    Pair.create(i, inflater.inflateItem(i, writer, null))).collect(Collectors.toList());
             executeCallbacksTask(c -> c.bindInflatedItems(bindItems), executor);
         }
 
