@@ -95,7 +95,7 @@ public final class WidgetsTableUtils {
         List<ArrayList<WidgetItem>> rows = groupWidgetItemsUsingRowPxWithoutReordering(
                 sortedWidgetItems, context, dp, rowPx,
                 cellPadding);
-        return rows.stream().sorted(WIDGETS_TABLE_ROW_SIZE_COMPARATOR).toList();
+        return rows.stream().sorted(WIDGETS_TABLE_ROW_SIZE_COMPARATOR).collect(Collectors.toList());
     }
 
     /**
