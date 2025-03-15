@@ -103,9 +103,8 @@
             android:name="com.android.launcher3.settings.SettingsActivity"
             android:exported="true"
             tools:node="remove" />
-        <!--
         <activity
-            android:name="com.saggitt.omega.preferences.PreferenceActivity"
+            android:name="com.neoapps.launcher.preferences.PreferenceActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true"
             android:label="@string/settings_button_text"
@@ -116,6 +115,7 @@
             </intent-filter>
         </activity>
 
+        <!--
         <activity
             android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
             android:theme="@style/Theme.Transparent" />
