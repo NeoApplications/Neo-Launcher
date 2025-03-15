@@ -17,7 +17,30 @@
 
 package com.neoapps.launcher.preferences
 
+import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.neoapps.launcher.navigation.PrefsComposeView
+import com.neoapps.launcher.theme.LauncherAppTheme
 
 class PreferenceActivity : ComponentActivity() {
+    private lateinit var navController: NavHostController
+
+    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
+
+            LauncherAppTheme {
+                navController = rememberNavController()
+                PrefsComposeView(navController, paneNavigator)
+            }
+        }
+    }
 }
