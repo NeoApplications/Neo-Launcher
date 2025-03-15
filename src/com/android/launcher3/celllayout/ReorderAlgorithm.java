@@ -23,6 +23,7 @@ import com.android.launcher3.util.CellAndSpan;
 import com.android.launcher3.util.GridOccupancy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -148,7 +149,8 @@ public class ReorderAlgorithm {
         ).thenComparing(
                 view -> ((CellLayoutLayoutParams) ((View) view).getLayoutParams()).getCellY()
         );
-        List<View> views = solution.map.keySet().stream().sorted(comparator).toList();
+        List<View> views = new ArrayList<>(solution.map.keySet());
+        Collections.sort(views, comparator);
         for (View child : views) {
             if (child == ignoreView) continue;
             CellAndSpan c = solution.map.get(child);
