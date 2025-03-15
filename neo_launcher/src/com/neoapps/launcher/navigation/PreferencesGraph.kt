@@ -22,7 +22,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
-import com.neoapps.launcher.views.preferences.MainPrefsPage
+import com.neoapps.launcher.ui.preferences.MainPrefsPage
 
 const val NAV_BASE = "nl-navigation://androidx.navigation/"
 
