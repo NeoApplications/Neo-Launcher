@@ -17,12 +17,11 @@
 
 package com.neoapps.launcher.components
 
-
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,13 +39,16 @@ import com.android.launcher3.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewWithActionBar(
-    modifier: Modifier = Modifier,
     title: String,
+    modifier: Modifier = Modifier,
     floatingActionButton: @Composable () -> Unit = {},
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     onBackAction: () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.background
+    ),
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -53,7 +56,11 @@ fun ViewWithActionBar(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = title, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 },
                 navigationIcon = {
                     if (showBackButton) {
@@ -61,21 +68,20 @@ fun ViewWithActionBar(
                             LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
                         IconButton(
                             onClick = {
-                                onBackAction.invoke()
+                                onBackAction()
                                 backDispatcher?.onBackPressed()
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(id = R.string.gesture_press_back),
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
                 },
                 actions = actions,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+                colors = topAppBarColors
             )
         },
         floatingActionButton = floatingActionButton,
