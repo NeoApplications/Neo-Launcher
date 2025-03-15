@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  */
 
-package com.neoapps.launcher.preferences
+package com.neoapps.launcher.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

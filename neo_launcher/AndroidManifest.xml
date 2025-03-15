@@ -104,7 +104,7 @@
             android:exported="true"
             tools:node="remove" />
         <activity
-            android:name="com.neoapps.launcher.preferences.PreferenceActivity"
+            android:name="com.neoapps.launcher.view.PreferenceActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true"
             android:label="@string/settings_button_text"
