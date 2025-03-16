@@ -28,6 +28,7 @@ import com.android.launcher3.widget.model.WidgetsListBaseEntriesBuilder
 import java.util.Objects
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import java.util.stream.Collectors
 
 /** Class with utility methods and properties for running a LauncherModel Task */
 class ModelTaskController(
@@ -54,7 +55,8 @@ class ModelTaskController(
     fun bindUpdatedWorkspaceItems(allUpdates: List<WorkspaceItemInfo>) {
         // Bind workspace items
         val workspaceUpdates =
-            allUpdates.stream().filter { info -> info.id != ItemInfo.NO_ID }.toList()
+            allUpdates.stream().filter { info -> info.id != ItemInfo.NO_ID }
+                .collect(Collectors.toList());
         if (workspaceUpdates.isNotEmpty()) {
             scheduleCallbackTask { it.bindWorkspaceItemsChanged(workspaceUpdates) }
         }
