@@ -17,6 +17,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
     gradle.projectsEvaluated {
         def frameworkJar = fileTree(dir: 'libs', include: ['framework-15.jar']).files.singleFile
         gradle.projectsEvaluated {

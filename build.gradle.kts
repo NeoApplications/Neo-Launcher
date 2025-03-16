@@ -239,17 +239,19 @@ dependencies {
     implementation(libs.androidx.dynamic.animation)
     implementation(libs.androidx.palette)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.preference)
 
     implementation(libs.material)
     implementation(libs.material.kolor)
 
+    implementation(libs.preference)
     implementation(libs.datastore.preferences)
+
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.common)
     implementation(libs.lifecycle.livedata)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.extensions)
+
     implementation(libs.slice)
 
     implementation(libs.dagger.hilt.android)
@@ -259,10 +261,18 @@ dependencies {
     implementation(libs.protobuf.javalite)
     implementation(libs.restriction.bypass)
     implementation(libs.coroutines.android)
+
+    api(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.koin.android)
-    implementation(libs.koin.workmanager)
-    implementation(libs.koin.annotations)
-    ksp(libs.koin.compiler)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.core.viewmodel)
+    implementation(libs.koin.androidx.startup)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.navigation)
+    implementation(libs.koin.androidx.workmanager)
+    ksp(libs.koin.ksp.compiler)
+
     implementation(libs.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.persian.date)
@@ -276,7 +286,7 @@ dependencies {
 
     //Compose
     api(platform(libs.compose.bom))
-    implementation(libs.activity.compose)
+    implementation(libs.compose.activity)
     implementation(libs.compose.adaptive)
     implementation(libs.compose.adaptive.layout)
     implementation(libs.compose.adaptive.navigation)
