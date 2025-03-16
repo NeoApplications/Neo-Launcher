@@ -19,7 +19,7 @@ android {
     }
 }
 dependencies {
-    implementation libs.androidx.annotation.jvm
+    implementation libs.androidx.annotation
     compileOnly fileTree(dir: 'libs', include: ['SystemUI-core.jar'])
     compileOnly fileTree(dir: 'libs', include: ['SystemUI-statsd.jar'])
     compileOnly fileTree(dir: 'libs', include: ['WindowManager-Shell-15.jar'])
