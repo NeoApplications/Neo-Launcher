@@ -21,7 +21,6 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 import static android.view.WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-
 import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
 import static com.android.launcher3.AbstractFloatingView.TYPE_ICON_SURFACE;
@@ -270,6 +269,7 @@ import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
 import com.android.window.flags.Flags;
+import com.neoapps.launcher.util.Config;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -508,6 +508,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         super.onCreate(savedInstanceState);
 
         LauncherAppState app = LauncherAppState.getInstance(this);
+        app.setLauncher(this);
         mModel = app.getModel();
 
         mRotationHelper = new RotationHelper(this);
@@ -2151,6 +2152,13 @@ public class Launcher extends StatefulActivity<LauncherState>
             result.add(() -> btv.setStayPressed(false));
         }
         return result;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public void startActivitySafelyAuth(View v, Intent intent, ItemInfo item) {
+        Config.Companion.showLockScreen(this, getString(R.string.trust_apps_manager_name), () -> {
+            startActivitySafely(v, intent, item);
+        });
     }
 
     boolean isHotseatLayout(View layout) {
