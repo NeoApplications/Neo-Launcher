@@ -29,6 +29,8 @@ import android.os.UserManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.drawable.DrawableKt;
+import androidx.palette.graphics.Palette;
 
 import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherSettings;
@@ -36,6 +38,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.util.ApiWrapper;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.UserIconInfo;
 
@@ -106,6 +109,9 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         }
         uid = info.getApplicationInfo().uid;
         updateRuntimeFlagsForActivityTarget(this, info, userIconInfo, apiWrapper, pmHelper);
+        this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
+                .generate()
+                .getDominantColor(0);
     }
 
     public AppInfo(AppInfo info) {
@@ -114,6 +120,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         title = Utilities.trim(info.title);
         intent = new Intent(info.intent);
         uid = info.uid;
+        this.iconColor = info.iconColor;
     }
 
     @VisibleForTesting
@@ -158,6 +165,10 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         }
 
         return workspaceItemInfo;
+    }
+
+    public ComponentKey toComponentKey() {
+        return new ComponentKey(componentName, user);
     }
 
     public static Intent makeLaunchIntent(LauncherActivityInfo info) {
