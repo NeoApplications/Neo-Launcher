@@ -17,7 +17,23 @@
 
 package com.neoapps.launcher
 
+import android.content.Context
+import android.content.ContextWrapper
 import com.android.launcher3.Launcher
+import com.android.launcher3.LauncherAppState
+import com.neoapps.launcher.preferences.NeoPrefs
+import com.neoapps.launcher.util.CoreUtils
+
 
 class NeoLauncher: Launcher() {
+    val prefs: NeoPrefs by lazy { CoreUtils.getNeoPrefs() }
+
+    companion object {
+        @JvmStatic
+        fun getLauncher(context: Context): NeoLauncher {
+            return context as? NeoLauncher
+                ?: (context as ContextWrapper).baseContext as? NeoLauncher
+                ?: LauncherAppState.getInstance(context).launcher as NeoLauncher
+        }
+    }
 }

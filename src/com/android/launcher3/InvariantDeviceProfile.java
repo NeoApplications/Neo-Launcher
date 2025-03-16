@@ -494,6 +494,10 @@ public class InvariantDeviceProfile implements SafeCloseable {
         mChangeListeners.remove(listener);
     }
 
+    public void onPreferencesChanged(Context context) {
+        Context appContext = context.getApplicationContext();
+        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
+    }
 
     public void setCurrentGrid(Context context, String gridName) {
         LauncherPrefs.get(context).put(GRID_NAME, gridName);

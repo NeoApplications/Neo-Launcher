@@ -23,7 +23,6 @@ import android.os.Process;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.Flags;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.BitmapInfo.DrawableCreationFlags;
 import com.android.launcher3.icons.FastBitmapDrawable;
@@ -144,6 +143,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * total download progress.
      */
     private int mProgressLevel = 100;
+    public int iconColor;
 
     protected ItemInfoWithIcon() {
     }
@@ -154,6 +154,7 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
         mProgressLevel = info.mProgressLevel;
         runtimeStatusFlags = info.runtimeStatusFlags;
         user = info.user;
+        iconColor = info.iconColor;
     }
 
     @Override

@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageInstaller.SessionInfo;
+import android.os.Build;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
@@ -70,6 +71,9 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
+import com.neoapps.launcher.data.repository.AppTrackerRepository;
+import com.neoapps.launcher.util.Config;
+import com.neoapps.launcher.util.CoreUtils;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -398,6 +402,7 @@ public class ItemClickHandler {
         if (intent == null) {
             throw new IllegalArgumentException("Input must have a valid intent");
         }
+        boolean isProtected = false;
         if (item instanceof WorkspaceItemInfo) {
             WorkspaceItemInfo si = (WorkspaceItemInfo) item;
             if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)
@@ -421,7 +426,19 @@ public class ItemClickHandler {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
-        launcher.startActivitySafely(v, intent, item);
+        if (item instanceof AppInfo) {
+            AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
+            repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
+
+            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
+                    ((AppInfo) item).toComponentKey()) &&
+                    CoreUtils.Companion.getNeoPrefs().getDrawerEnableProtectedApps().getValue();
+        }
+        if (isProtected && CoreUtils.Companion.minSDK(Build.VERSION_CODES.R)) {
+            launcher.startActivitySafelyAuth(v, intent, item);
+        } else {
+            launcher.startActivitySafely(v, intent, item);
+        }
     }
 
     /**

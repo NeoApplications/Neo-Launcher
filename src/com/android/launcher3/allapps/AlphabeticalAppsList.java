@@ -21,6 +21,7 @@ import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_R
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_NOTHING;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT;
+import static com.neoapps.launcher.util.AppUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -32,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DiffUtil;
 
+import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
@@ -39,9 +41,12 @@ import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.neoapps.launcher.preferences.NeoPrefs;
+import com.neoapps.launcher.util.CoreUtils;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -107,22 +112,26 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
     private final SpannableString mPrivateProfileAppScrollerBadge;
     private BaseAllAppsAdapter<T> mAdapter;
-    private AppInfoComparator mAppNameComparator;
+    private Comparator<AppInfo> mAppNameComparator;
     private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
+    private final NeoPrefs prefs;
+    private final BaseDraggingActivity mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore<T> appsStore,
             WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = ActivityContext.lookupContext(context);
-        mAppNameComparator = new AppInfoComparator(context);
         mWorkProviderManager = workProfileManager;
         mPrivateProviderManager = privateProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
         if (mAllAppsStore != null) {
             mAllAppsStore.addUpdateListener(this);
         }
+        prefs = CoreUtils.Companion.getNeoPrefs();
+        mLauncher = BaseDraggingActivity.fromContext(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortApps().getValue());
         mPrivateProfileAppScrollerBadge = new SpannableString(" ");
         mPrivateProfileAppScrollerBadge.setSpan(new ImageSpan(context,
                         R.drawable.ic_private_profile_app_scroller_badge, ImageSpan.ALIGN_CENTER),
@@ -232,9 +241,12 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // Sort the list of apps
         mApps.clear();
         mPrivateApps.clear();
+        mAppNameComparator = getAllAppsComparator(mLauncher, prefs.getDrawerSortApps().getValue());
 
         Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
         Stream<AppInfo> privateAppStream = Stream.of(mAllAppsStore.getApps());
+        appSteam = appSteam.sorted(mAppNameComparator);
+        privateAppStream = privateAppStream.sorted(mAppNameComparator);
 
         if (!hasSearchResults() && mItemFilter != null) {
             appSteam = appSteam.filter(mItemFilter);

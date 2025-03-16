@@ -19,10 +19,11 @@ package com.neoapps.launcher.wallpaper
 
 import android.app.WallpaperManager
 import android.content.Context
+import android.os.Build
 import androidx.core.content.ContextCompat.getSystemService
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.android.launcher3.util.SafeCloseable
-import com.neoapps.launcher.util.CoreUtils
+import com.neoapps.launcher.util.CoreUtils.Companion.minSDK
 import com.neoapps.launcher.wallpaper.WallpaperColorsCompat.Companion.HINT_SUPPORTS_DARK_THEME
 
 sealed class WallpaperManagerCompat(val context: Context) : SafeCloseable {
@@ -56,8 +57,8 @@ sealed class WallpaperManagerCompat(val context: Context) : SafeCloseable {
         @JvmField
         val INSTANCE = MainThreadInitializedObject { context ->
             when {
-                CoreUtils.AT_LEAST_S -> WallpaperManagerCompatVS(context)
-                CoreUtils.AT_LEAST_OREO_MR1 -> WallpaperManagerCompatVOMR1(context)
+                minSDK(Build.VERSION_CODES.S) -> WallpaperManagerCompatVS(context)
+                minSDK(Build.VERSION_CODES.O_MR1) -> WallpaperManagerCompatVOMR1(context)
                 else -> WallpaperManagerCompatVO(context)
             }
         }
