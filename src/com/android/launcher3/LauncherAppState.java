@@ -18,7 +18,6 @@ package com.android.launcher3;
 
 import static android.app.admin.DevicePolicyManager.ACTION_DEVICE_POLICY_RESOURCE_UPDATED;
 import static android.content.Context.RECEIVER_EXPORTED;
-
 import static com.android.launcher3.Flags.enableSmartspaceRemovalToggle;
 import static com.android.launcher3.LauncherPrefs.ICON_STATE;
 import static com.android.launcher3.LauncherPrefs.THEMED_ICONS;
@@ -83,6 +82,7 @@ public class LauncherAppState implements SafeCloseable {
     private boolean mIsSafeModeEnabled;
 
     private final RunnableList mOnTerminateCallback = new RunnableList();
+    private Launcher mLauncher;
 
     public static LauncherAppState getInstance(Context context) {
         return INSTANCE.get(context);
@@ -90,6 +90,14 @@ public class LauncherAppState implements SafeCloseable {
 
     public Context getContext() {
         return mContext;
+    }
+
+    public void setLauncher(Launcher launcher) {
+        mLauncher = launcher;
+    }
+
+    public Launcher getLauncher() {
+        return mLauncher;
     }
 
     @SuppressWarnings("NewApi")
