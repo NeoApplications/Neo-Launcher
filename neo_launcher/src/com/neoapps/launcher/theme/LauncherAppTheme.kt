@@ -17,6 +17,7 @@
 
 package com.neoapps.launcher.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.neoapps.launcher.util.CoreUtils
+import com.neoapps.launcher.util.CoreUtils.Companion.minSDK
 import com.neoapps.launcher.wallpaper.WallpaperColorsCompat
 import com.neoapps.launcher.wallpaper.WallpaperManagerCompat
 
@@ -55,7 +56,7 @@ fun isBlackTheme(): Boolean {
 
 @Composable
 fun isAutoThemeDark() = when {
-    CoreUtils.AT_LEAST_P -> isSystemInDarkTheme()
+    minSDK(Build.VERSION_CODES.P) -> isSystemInDarkTheme()
     else -> wallpaperSupportsDarkTheme()
 }
 
