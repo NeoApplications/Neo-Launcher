@@ -224,7 +224,7 @@
     <string name="needs_usage_access">Требуется доступ к использованию</string>
     <string name="hide_app_selected">Скрытые приложения (%1$d)</string>
     <plurals name="hidden_apps_count">
-        <item quantity="one">%1$d скрыто</item>
+        <item quantity="one">%1$d скрыт</item>
         <item quantity="few">%1$d скрыто</item>
         <item quantity="many">%1$d скрыто</item>
         <item quantity="other">%1$d скрыто</item>
@@ -388,7 +388,7 @@
     <string name="pref_category__incubating">В разработке</string>
     <string name="title_theme_customize_icons">Настроить иконки</string>
     <string name="summary_colored_backgrounds">Для фона адаптивных иконок.</string>
-    <string name="title_dock_search">Панель поиска</string>
+    <string name="title_dock_search">Поисковая строка Dock</string>
     <string name="summary_dock_search">Показать под панелью</string>
     <string name="summary_app_categorize">Выбрать между вкладками или папками</string>
     <string name="cat_desktop_grid">Сетка</string>
@@ -484,7 +484,7 @@
     <string name="smartspace_icu_date_pattern">ГГГМММд</string>
     <string name="smartspace_flight_qr_code">QR код</string>
     <string name="generic_smartspace_concatenated_desc">%1$s, %2$s</string>
-    <string name="smartspace_time_follow_system">Как в системе</string>
+    <string name="smartspace_time_follow_system">Следует системным настройкам</string>
     <string name="smartspace_time_12_hour_format">12-Часовой Формат</string>
     <string name="smartspace_widget_placeholder_date">Пн, 3 марта</string>
     <string name="folder_swipe_up">Действие свайпа наверх</string>
