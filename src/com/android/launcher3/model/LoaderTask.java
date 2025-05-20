@@ -17,6 +17,7 @@
 package com.android.launcher3.model;
 
 import static com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME;
+import static com.android.launcher3.Utilities.drawableToBitmap;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_HAS_SHORTCUT_PERMISSION;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_QUIET_MODE_CHANGE_PERMISSION;
 import static com.android.launcher3.model.BgDataModel.Callbacks.FLAG_QUIET_MODE_ENABLED;
@@ -40,6 +41,8 @@ import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInstaller.SessionInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Trace;
@@ -64,6 +67,7 @@ import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderGridOrganizer;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.folder.FolderNameProvider;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.ComponentWithLabelAndIcon;
 import com.android.launcher3.icons.ComponentWithLabelAndIcon.ComponentWithIconCachingLogic;
 import com.android.launcher3.icons.IconCache;
@@ -415,7 +419,6 @@ public class LoaderTask implements Runnable {
                 }
 
                 List<IconRequestInfo<WorkspaceItemInfo>> iconRequestInfos = new ArrayList<>();
-
                 while (!mStopped && c.moveToNext()) {
                     processWorkspaceItem(c, memoryLogger, installingPkgs, isSdCardReady,
                             tempPackageKey, widgetHelper, pmHelper,
@@ -875,6 +878,16 @@ public class LoaderTask implements Runnable {
                     iconRequestInfo.loadWorkspaceIcon(mApp.getContext());
                 }
             }
+            for (IconRequestInfo<WorkspaceItemInfo> iconRequestInfo : iconRequestInfos) {
+                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
+                Bitmap oldIcon = itemInfo.bitmap.icon;
+
+                if (oldIcon != null && !oldIcon.isRecycled()) {
+                    oldIcon = toSoftwareBitmap(oldIcon);
+                    Bitmap newIcon = removeWhiteBackground(oldIcon);
+                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
+                }
+            }
         } finally {
             Trace.endSection();
         }
@@ -965,7 +978,7 @@ public class LoaderTask implements Runnable {
 
         if (FeatureFlags.PROMISE_APPS_IN_ALL_APPS.get()) {
             // get all active sessions and add them to the all apps list
-            for (PackageInstaller.SessionInfo info :
+            for (SessionInfo info :
                     mSessionHelper.getAllVerifiedSessions()) {
                 AppInfo promiseAppInfo = mBgAllAppsList.addPromiseApp(
                         mApp.getContext(),
@@ -986,6 +999,17 @@ public class LoaderTask implements Runnable {
             mIconCache.getTitlesAndIconsInBulk(iconRequestInfos);
             iconRequestInfos.forEach(iconRequestInfo ->
                     mBgAllAppsList.updateSectionName(iconRequestInfo.itemInfo));
+            for (IconRequestInfo<AppInfo> iconRequestInfo : iconRequestInfos) {
+                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
+                Bitmap oldIcon = itemInfo.bitmap.icon;
+
+                if (oldIcon != null && !oldIcon.isRecycled()) {
+                    oldIcon = toSoftwareBitmap(oldIcon);
+                    Bitmap newIcon = removeWhiteBackground(oldIcon);
+                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
+                }
+            }
+
         } finally {
             Trace.endSection();
         }
@@ -1001,6 +1025,46 @@ public class LoaderTask implements Runnable {
         mBgAllAppsList.getAndResetChangeFlag();
         return allActivityList;
     }
+
+    private static Bitmap toSoftwareBitmap(Bitmap bmp) {
+        if (bmp.getConfig() == Bitmap.Config.HARDWARE) {
+            // Config.HARDWARE -> ARGB_8888, 不可变 -> 可变或不可变都行
+            return bmp.copy(Bitmap.Config.ARGB_8888, false);
+        }
+        return bmp;
+    }
+
+
+
+    public static Bitmap removeWhiteBackground(Bitmap source) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixel = source.getPixel(x, y);
+
+                // 判断是否是接近白色的像素
+                if (isWhite(pixel)) {
+                    result.setPixel(x, y, Color.TRANSPARENT);
+                } else {
+                    result.setPixel(x, y, pixel);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean isWhite(int color) {
+        int r = Color.red(color);
+        int g = Color.green(color);
+        int b = Color.blue(color);
+        return r > 240 && g > 240 && b > 240;
+    }
+
+
 
     private List<ShortcutInfo> loadDeepShortcuts() {
         List<ShortcutInfo> allShortcuts = new ArrayList<>();

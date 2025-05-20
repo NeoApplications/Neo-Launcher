@@ -109,6 +109,7 @@ class NeoPrefs private constructor(val context: Context) {
     val reloadGrid = { onChangeCallback?.reloadGrid() }
     val reloadAll = { reloadModel(); reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }
+    val reloadTransparentIcon = { onChangeCallback?.reloadTransparentIcon() }
 
     inline fun withChangeCallback(
         crossinline callback: (PreferencesChangeCallback) -> Unit,
@@ -189,7 +190,8 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_themed_background,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
-        defaultValue = false
+        defaultValue = false,
+        onChange = { reloadModel() }
     )
 
     var profileShapeLessIcon = BooleanPref(

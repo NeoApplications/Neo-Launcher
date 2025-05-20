@@ -66,6 +66,7 @@ fun DesktopPrefsPage() {
         prefs.desktopMultilineLabel,
         prefs.desktopLabelScale,
         prefs.desktopPopup,
+        prefs.profileTransparentBgIcons
     )
     val gridPrefs = listOf(
         prefs.desktopGridSize,
