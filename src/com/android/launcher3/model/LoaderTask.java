@@ -878,16 +878,16 @@ public class LoaderTask implements Runnable {
                     iconRequestInfo.loadWorkspaceIcon(mApp.getContext());
                 }
             }
-            for (IconRequestInfo<WorkspaceItemInfo> iconRequestInfo : iconRequestInfos) {
-                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
-                Bitmap oldIcon = itemInfo.bitmap.icon;
-
-                if (oldIcon != null && !oldIcon.isRecycled()) {
-                    oldIcon = toSoftwareBitmap(oldIcon);
-                    Bitmap newIcon = removeWhiteBackground(oldIcon);
-                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
-                }
-            }
+//            for (IconRequestInfo<WorkspaceItemInfo> iconRequestInfo : iconRequestInfos) {
+//                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
+//                Bitmap oldIcon = itemInfo.bitmap.icon;
+//
+//                if (oldIcon != null && !oldIcon.isRecycled()) {
+//                    oldIcon = toSoftwareBitmap(oldIcon);
+//                    Bitmap newIcon = removeWhiteBackground(oldIcon);
+//                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
+//                }
+//            }
         } finally {
             Trace.endSection();
         }
@@ -999,16 +999,16 @@ public class LoaderTask implements Runnable {
             mIconCache.getTitlesAndIconsInBulk(iconRequestInfos);
             iconRequestInfos.forEach(iconRequestInfo ->
                     mBgAllAppsList.updateSectionName(iconRequestInfo.itemInfo));
-            for (IconRequestInfo<AppInfo> iconRequestInfo : iconRequestInfos) {
-                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
-                Bitmap oldIcon = itemInfo.bitmap.icon;
-
-                if (oldIcon != null && !oldIcon.isRecycled()) {
-                    oldIcon = toSoftwareBitmap(oldIcon);
-                    Bitmap newIcon = removeWhiteBackground(oldIcon);
-                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
-                }
-            }
+//            for (IconRequestInfo<AppInfo> iconRequestInfo : iconRequestInfos) {
+//                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
+//                Bitmap oldIcon = itemInfo.bitmap.icon;
+//
+//                if (oldIcon != null && !oldIcon.isRecycled()) {
+//                    oldIcon = toSoftwareBitmap(oldIcon);
+//                    Bitmap newIcon = removeWhiteBackground(oldIcon);
+//                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
+//                }
+//            }
 
         } finally {
             Trace.endSection();
