@@ -878,16 +878,6 @@ public class LoaderTask implements Runnable {
                     iconRequestInfo.loadWorkspaceIcon(mApp.getContext());
                 }
             }
-//            for (IconRequestInfo<WorkspaceItemInfo> iconRequestInfo : iconRequestInfos) {
-//                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
-//                Bitmap oldIcon = itemInfo.bitmap.icon;
-//
-//                if (oldIcon != null && !oldIcon.isRecycled()) {
-//                    oldIcon = toSoftwareBitmap(oldIcon);
-//                    Bitmap newIcon = removeWhiteBackground(oldIcon);
-//                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
-//                }
-//            }
         } finally {
             Trace.endSection();
         }
@@ -999,17 +989,6 @@ public class LoaderTask implements Runnable {
             mIconCache.getTitlesAndIconsInBulk(iconRequestInfos);
             iconRequestInfos.forEach(iconRequestInfo ->
                     mBgAllAppsList.updateSectionName(iconRequestInfo.itemInfo));
-//            for (IconRequestInfo<AppInfo> iconRequestInfo : iconRequestInfos) {
-//                ItemInfoWithIcon itemInfo = iconRequestInfo.itemInfo;
-//                Bitmap oldIcon = itemInfo.bitmap.icon;
-//
-//                if (oldIcon != null && !oldIcon.isRecycled()) {
-//                    oldIcon = toSoftwareBitmap(oldIcon);
-//                    Bitmap newIcon = removeWhiteBackground(oldIcon);
-//                    itemInfo.bitmap = new BitmapInfo(newIcon, itemInfo.bitmap.color);
-//                }
-//            }
-
         } finally {
             Trace.endSection();
         }
@@ -1033,38 +1012,6 @@ public class LoaderTask implements Runnable {
         }
         return bmp;
     }
-
-
-
-    public static Bitmap removeWhiteBackground(Bitmap source) {
-        int width = source.getWidth();
-        int height = source.getHeight();
-        Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int pixel = source.getPixel(x, y);
-
-                // 判断是否是接近白色的像素
-                if (isWhite(pixel)) {
-                    result.setPixel(x, y, Color.TRANSPARENT);
-                } else {
-                    result.setPixel(x, y, pixel);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static boolean isWhite(int color) {
-        int r = Color.red(color);
-        int g = Color.green(color);
-        int b = Color.blue(color);
-        return r > 240 && g > 240 && b > 240;
-    }
-
-
 
     private List<ShortcutInfo> loadDeepShortcuts() {
         List<ShortcutInfo> allShortcuts = new ArrayList<>();
