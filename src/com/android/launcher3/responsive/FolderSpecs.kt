@@ -89,7 +89,7 @@ data class FolderSpec(
             attrs.getDimensionPixelSize(R.styleable.ResponsiveSpec_maxAvailableSize, 0),
         specType =
             SpecType.values()[
-                    attrs.getInt(R.styleable.ResponsiveSpec_specType, SpecType.HEIGHT.ordinal)],
+                    attrs.getInt(R.styleable.ResponsiveSpec_dimensionType, SpecType.HEIGHT.ordinal)],
         startPadding = specs.getOrError(SizeSpec.XmlTags.START_PADDING),
         endPadding = specs.getOrError(SizeSpec.XmlTags.END_PADDING),
         gutter = specs.getOrError(SizeSpec.XmlTags.GUTTER),

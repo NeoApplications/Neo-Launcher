@@ -103,7 +103,7 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
     override val iconResource: Intent.ShortcutIconResource by lazy {
         Intent.ShortcutIconResource.fromContext(
             context,
-            R.drawable.ic_drag_handle
+            R.drawable.ic_plus
         )
     }
     override val requiresForeground = false

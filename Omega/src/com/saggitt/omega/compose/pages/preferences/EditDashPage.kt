@@ -155,7 +155,7 @@ fun EditDashPage() {
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.ic_drag_handle),
+                                    painter = painterResource(id = R.drawable.ic_plus),
                                     contentDescription = null,
                                     modifier = Modifier.size(24.dp)
                                 )

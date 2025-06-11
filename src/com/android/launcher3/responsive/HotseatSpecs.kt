@@ -60,7 +60,7 @@ data class HotseatSpec(
         specType =
             ResponsiveSpec.SpecType.values()[
                     attrs.getInt(
-                        R.styleable.ResponsiveSpec_specType,
+                        R.styleable.ResponsiveSpec_dimensionType,
                         ResponsiveSpec.SpecType.HEIGHT.ordinal
                     )],
         hotseatQsbSpace = specs.getOrError(SizeSpec.XmlTags.HOTSEAT_QSB_SPACE)

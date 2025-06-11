@@ -38,7 +38,7 @@ fun PackageManager.getPackageVersionCode(packageName: String) =
 fun PackageManager.getPackageVersion(packageName: String) =
     try {
         val packageInfo = getPackageInfo(packageName, 0)
-        packageInfo.versionName
+        packageInfo.versionName.orEmpty()
     }
     catch (e: PackageManager.NameNotFoundException) {
         ""
