@@ -15,8 +15,8 @@
  */
 package com.android.launcher3.ui;
 
+import static com.android.launcher3.LauncherPrefs.WORK_EDU_STEP;
 import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.allapps.AllAppsStore.DEFER_UPDATES_TEST;
 import static com.android.launcher3.util.TestUtil.installDummyAppForUser;
 import static com.android.launcher3.util.rule.TestStabilityRule.LOCAL;
@@ -26,45 +26,57 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import android.os.Process;
 import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.allapps.AllAppsPagedView;
 import com.android.launcher3.allapps.WorkEduCard;
 import com.android.launcher3.allapps.WorkPausedCard;
 import com.android.launcher3.allapps.WorkProfileManager;
-import com.android.launcher3.tapl.LauncherInstrumentation;
+import com.android.launcher3.util.BaseLauncherActivityTest;
 import com.android.launcher3.util.TestUtil;
+import com.android.launcher3.util.rule.ScreenRecordRule;
+import com.android.launcher3.util.rule.TestStabilityRule;
 import com.android.launcher3.util.rule.TestStabilityRule.Stability;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.Objects;
 import java.util.function.Predicate;
 
-public class WorkProfileTest extends AbstractLauncherUiTest {
+@LargeTest
+@RunWith(AndroidJUnit4.class)
+public class WorkProfileTest extends BaseLauncherActivityTest<Launcher> {
 
     private static final int WORK_PAGE = ActivityAllAppsContainerView.AdapterHolder.WORK;
+    public static final int WAIT_TIME_MS = 30000;
+
+    @Rule
+    public ScreenRecordRule mScreenRecordRule = new ScreenRecordRule();
+    @Rule
+    public TestStabilityRule mTestStabilityRule = new TestStabilityRule();
 
     private int mProfileUserId;
     private boolean mWorkProfileSetupSuccessful;
-    private final String TAG = "WorkProfileTest";
+    private static final String TAG = "WorkProfileTest";
 
     @Before
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
-        String output =
-                mDevice.executeShellCommand(
-                        "pm create-user --profileOf 0 --managed TestProfile");
-        // b/203817455
+        String output = executeShellCommand(String.format(
+                "pm create-user --profileOf %d --managed TestProfile",
+                Process.myUserHandle().getIdentifier()));
         updateWorkProfileSetupSuccessful("pm create-user", output);
 
         String[] tokens = output.split("\\s+");
@@ -80,55 +92,43 @@ public class WorkProfileTest extends AbstractLauncherUiTest {
             return; // no need to setup launcher since all tests will skip.
         }
 
-        mDevice.pressHome();
-        waitForLauncherCondition("Launcher didn't start", Objects::nonNull);
-        waitForStateTransitionToEnd("Launcher internal state didn't switch to Normal",
-                () -> NORMAL);
-        waitForResumed("Launcher internal state is still Background");
-        mLauncher.getWorkspace().switchToAllApps();
-        waitForStateTransitionToEnd("Launcher internal state didn't switch to All Apps",
-                () -> ALL_APPS);
+        loadLauncherSync();
+        goToState(ALL_APPS);
+        waitForState("Launcher internal state didn't switch to All Apps", () -> ALL_APPS);
     }
 
     @After
     public void removeWorkProfile() throws Exception {
-        executeOnLauncher(launcher -> {
-            if (launcher == null || launcher.getAppsView() == null) {
-                return;
-            }
-            launcher.getAppsView().getAppsStore().disableDeferUpdates(DEFER_UPDATES_TEST);
-        });
         TestUtil.uninstallDummyApp();
-        mDevice.executeShellCommand("pm remove-user " + mProfileUserId);
+        executeShellCommand("pm remove-user --wait " + mProfileUserId);
     }
 
     private void waitForWorkTabSetup() {
-        // Added for b/243688989 flake to determine if we really are in allApps or not at this point
-        mLauncher.getAllApps();
         waitForLauncherCondition("Work tab not setup", launcher -> {
             if (launcher.getAppsView().getContentView() instanceof AllAppsPagedView) {
                 launcher.getAppsView().getAppsStore().enableDeferUpdates(DEFER_UPDATES_TEST);
                 return true;
             }
             return false;
-        }, LauncherInstrumentation.WAIT_TIME_MS);
+        }, WAIT_TIME_MS);
     }
 
     @Test
-    @Stability(flavors = LOCAL | PLATFORM_POSTSUBMIT) // b/243688989
+    @com.android.launcher3.util.rule.ScreenRecordRule.ScreenRecord // b/325383911
     public void workTabExists() {
         assumeTrue(mWorkProfileSetupSuccessful);
         waitForWorkTabSetup();
         waitForLauncherCondition("Personal tab is missing",
                 launcher -> launcher.getAppsView().isPersonalTabVisible(),
-                LauncherInstrumentation.WAIT_TIME_MS);
+                WAIT_TIME_MS);
         waitForLauncherCondition("Work tab is missing",
                 launcher -> launcher.getAppsView().isWorkTabVisible(),
-                LauncherInstrumentation.WAIT_TIME_MS);
+                WAIT_TIME_MS);
     }
 
+    // Staging; will be promoted to presubmit if stable
+    @Stability(flavors = LOCAL | PLATFORM_POSTSUBMIT)
     @Test
-    @Ignore("b/243855320")
     public void toggleWorks() {
         assumeTrue(mWorkProfileSetupSuccessful);
         waitForWorkTabSetup();
@@ -139,24 +139,23 @@ public class WorkProfileTest extends AbstractLauncherUiTest {
 
         WorkProfileManager manager = getFromLauncher(l -> l.getAppsView().getWorkManager());
 
-
         waitForLauncherCondition("work profile initial state check failed", launcher ->
-                        manager.getWorkModeSwitch() != null
+                        manager.getWorkUtilityView() != null
                                 && manager.getCurrentState() == WorkProfileManager.STATE_ENABLED
-                                && manager.getWorkModeSwitch().isEnabled(),
-                LauncherInstrumentation.WAIT_TIME_MS);
+                                && manager.getWorkUtilityView().isEnabled(),
+                WAIT_TIME_MS);
 
         //start work profile toggle OFF test
         executeOnLauncher(l -> {
             // Ensure updates are not deferred so notification happens when apps pause.
             l.getAppsView().getAppsStore().disableDeferUpdates(DEFER_UPDATES_TEST);
-            l.getAppsView().getWorkManager().getWorkModeSwitch().performClick();
+            l.getAppsView().getWorkManager().getWorkUtilityView().getWorkFAB().performClick();
         });
 
         waitForLauncherCondition("Work profile toggle OFF failed", launcher -> {
             manager.reset(); // pulls current state from system
             return manager.getCurrentState() == WorkProfileManager.STATE_DISABLED;
-        }, LauncherInstrumentation.WAIT_TIME_MS);
+        }, WAIT_TIME_MS);
 
         waitForWorkCard("Work paused card not shown", view -> view instanceof WorkPausedCard);
 
@@ -171,17 +170,16 @@ public class WorkProfileTest extends AbstractLauncherUiTest {
         waitForLauncherCondition("Work profile toggle ON failed", launcher -> {
             manager.reset(); // pulls current state from system
             return manager.getCurrentState() == WorkProfileManager.STATE_ENABLED;
-        }, LauncherInstrumentation.WAIT_TIME_MS);
+        }, WAIT_TIME_MS);
 
     }
 
     @Test
-    @Stability(flavors = LOCAL | PLATFORM_POSTSUBMIT) // b/243688989
     public void testEdu() {
         assumeTrue(mWorkProfileSetupSuccessful);
         waitForWorkTabSetup();
         executeOnLauncher(l -> {
-            l.getSharedPrefs().edit().putInt(WorkProfileManager.KEY_WORK_EDU_STEP, 0).commit();
+            LauncherPrefs.get(l).putSync(WORK_EDU_STEP.to(0));
             ((AllAppsPagedView) l.getAppsView().getContentView()).setCurrentPage(WORK_PAGE);
             l.getAppsView().getWorkManager().reset();
         });
@@ -199,7 +197,7 @@ public class WorkProfileTest extends AbstractLauncherUiTest {
             } finally {
                 l.getAppsView().getAppsStore().enableDeferUpdates(DEFER_UPDATES_TEST);
             }
-        }, LauncherInstrumentation.WAIT_TIME_MS);
+        }, WAIT_TIME_MS);
     }
 
     private void updateWorkProfileSetupSuccessful(String cli, String output) {

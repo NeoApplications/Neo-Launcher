@@ -19,6 +19,8 @@ package com.android.launcher3.tapl;
 import static com.android.launcher3.tapl.LauncherInstrumentation.WAIT_TIME_MS;
 import static com.android.launcher3.tapl.LauncherInstrumentation.log;
 
+import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.graphics.Rect;
 
 import androidx.test.uiautomator.By;
@@ -30,17 +32,34 @@ import androidx.test.uiautomator.Until;
 import com.android.launcher3.testing.shared.TestProtocol;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * All widgets container.
  */
-public final class Widgets extends LauncherInstrumentation.VisibleContainer {
+public final class Widgets extends LauncherInstrumentation.VisibleContainer
+        implements KeyboardQuickSwitchSource {
     private static final int FLING_STEPS = 10;
     private static final int SCROLL_ATTEMPTS = 60;
 
     Widgets(LauncherInstrumentation launcher) {
         super(launcher);
         verifyActiveContainer();
+    }
+
+    @Override
+    public LauncherInstrumentation getLauncher() {
+        return mLauncher;
+    }
+
+    @Override
+    public LauncherInstrumentation.ContainerType getStartingContainerType() {
+        return getContainerType();
+    }
+
+    @Override
+    public boolean isHomeState() {
+        return true;
     }
 
     /**
@@ -98,17 +117,26 @@ public final class Widgets extends LauncherInstrumentation.VisibleContainer {
                 .getInt(TestProtocol.TEST_INFO_RESPONSE_FIELD);
     }
 
-    public Widget getWidget(String labelText) {
+    /** Get widget with supplied text. */
+    public Widget getWidget(CharSequence labelText) {
+        return getWidget(labelText.toString(), null);
+    }
+
+    /** Get widget with supplied text and app package */
+    public Widget getWidget(String labelText, @Nullable String testAppWidgetPackage) {
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
              LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                      "getting widget " + labelText + " in widgets list")) {
             final UiObject2 searchBar = findSearchBar();
             final int searchBarHeight = searchBar.getVisibleBounds().height();
             final UiObject2 fullWidgetsPicker = verifyActiveContainer();
-            mLauncher.assertTrue("Widgets container didn't become scrollable",
-                    fullWidgetsPicker.wait(Until.scrollable(true), WAIT_TIME_MS));
 
-            final UiObject2 widgetsContainer = findTestAppWidgetsTableContainer();
+            // Widget picker may not be scrollable if there are few items. Instead of waiting on
+            // picker being scrollable, we wait on widget headers to be available.
+            waitForWidgetListItems(fullWidgetsPicker);
+
+            final UiObject2 widgetsContainer =
+                    findTestAppWidgetsTableContainer(testAppWidgetPackage);
             mLauncher.assertTrue("Can't locate widgets list for the test app: "
                             + mLauncher.getLauncherPackageName(),
                     widgetsContainer != null);
@@ -152,6 +180,13 @@ public final class Widgets extends LauncherInstrumentation.VisibleContainer {
         }
     }
 
+    private void waitForWidgetListItems(UiObject2 fullWidgetsPicker) {
+        List<UiObject2> headers = fullWidgetsPicker.wait(Until.findObjects(
+                By.res(mLauncher.getLauncherPackageName(), "widgets_list_header")), WAIT_TIME_MS);
+        mLauncher.assertTrue("Widgets list is not available",
+                headers != null && !headers.isEmpty());
+    }
+
     private UiObject2 findSearchBar() {
         final BySelector searchBarContainerSelector = By.res(mLauncher.getLauncherPackageName(),
                 "search_and_recommendations_container");
@@ -164,22 +199,49 @@ public final class Widgets extends LauncherInstrumentation.VisibleContainer {
         return searchBar;
     }
 
-    /** Finds the widgets list of this test app from the collapsed full widgets picker. */
-    private UiObject2 findTestAppWidgetsTableContainer() {
+    /**
+     * Finds the widgets list of this test app or supplied test app package from the collapsed full
+     * widgets picker.
+     */
+    private UiObject2 findTestAppWidgetsTableContainer(@Nullable String testAppWidgetPackage) {
         final BySelector headerSelector = By.res(mLauncher.getLauncherPackageName(),
                 "widgets_list_header");
         final BySelector widgetPickerSelector = By.res(mLauncher.getLauncherPackageName(),
                 "container");
-        final BySelector targetAppSelector = By.clazz("android.widget.TextView").text(
-                mLauncher.getContext().getPackageName());
+
+        String packageName =  mLauncher.getContext().getPackageName();
+        String packageNameToFind =
+                (testAppWidgetPackage == null || testAppWidgetPackage.isEmpty()) ? packageName
+                        : testAppWidgetPackage;
+
+        final BySelector targetAppSelector = By
+                .clazz("android.widget.TextView")
+                .text(packageNameToFind);
+        final BySelector expandListButtonSelector =
+                By.res(mLauncher.getLauncherPackageName(), "widget_list_expand_button");
         final BySelector widgetsContainerSelector = By.res(mLauncher.getLauncherPackageName(),
                 "widgets_table");
 
         boolean hasHeaderExpanded = false;
+        // List was expanded by clicking "Show all" button.
+        boolean hasListExpanded = false;
+
         int scrollDistance = 0;
         for (int i = 0; i < SCROLL_ATTEMPTS; i++) {
             UiObject2 widgetPicker = mLauncher.waitForLauncherObject(widgetPickerSelector);
             UiObject2 widgetListView = verifyActiveContainer();
+
+            // Press "Show all" button if it exists. Otherwise, keep scrolling to
+            // find the header or show all button.
+            UiObject2 expandListButton =
+                    mLauncher.findObjectInContainer(widgetListView, expandListButtonSelector);
+            if (expandListButton != null) {
+                expandListButton.click();
+                hasListExpanded = true;
+                i = -1;
+                continue;
+            }
+
             UiObject2 header = mLauncher.waitForObjectInContainer(widgetListView,
                     headerSelector);
             // If a header is barely visible in the bottom edge of the screen, its height could be
@@ -190,6 +252,17 @@ public final class Widgets extends LauncherInstrumentation.VisibleContainer {
             // Look for a header that has the test app name.
             UiObject2 headerTitle = mLauncher.findObjectInContainer(widgetListView,
                     targetAppSelector);
+
+            final UiObject2 searchBar = findSearchBar();
+            // If header's title is under or above search bar, let's not process the header yet,
+            // scroll a bit more to bring the header into visible area.
+            if (headerTitle != null
+                    && headerTitle.getVisibleCenter().y <= searchBar.getVisibleCenter().y) {
+                log("Test app's header is behind the searchbar, scrolling up");
+                mLauncher.scrollUpByDistance(widgetListView, scrollDistance);
+                continue;
+            }
+
             if (headerTitle != null) {
                 // If we find the header and it has not been expanded, let's click it to see the
                 // widgets list. Note that we wait until the header is out of the gesture region at
@@ -226,11 +299,24 @@ public final class Widgets extends LauncherInstrumentation.VisibleContainer {
                     widgetPicker,
                     widgetsContainerSelector);
 
-            mLauncher.scrollDownByDistance(hasHeaderExpanded && rightPane != null
-                    ? rightPane
-                    : widgetListView, scrollDistance);
+            if (hasListExpanded && packageNameToFind.compareToIgnoreCase(
+                    getFirstHeaderTitle(widgetListView)) < 0) {
+                mLauncher.scrollUpByDistance(hasHeaderExpanded && rightPane != null
+                        ? rightPane
+                        : widgetListView, scrollDistance);
+            } else {
+                mLauncher.scrollDownByDistance(hasHeaderExpanded && rightPane != null
+                        ? rightPane
+                        : widgetListView, scrollDistance);
+            }
         }
 
         return null;
+    }
+
+    @NonNull
+    private String getFirstHeaderTitle(UiObject2 widgetListView) {
+        UiObject2 firstHeader = mLauncher.getObjectsInContainer(widgetListView, "app_title").get(0);
+        return firstHeader != null ? firstHeader.getText() : "";
     }
 }

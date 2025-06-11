@@ -1,33 +1,32 @@
 /*
  * Copyright (C) 2017 The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.android.launcher3.ui.widget;
 
-import static com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME;
 import static com.android.launcher3.WorkspaceLayoutManager.FIRST_SCREEN_ID;
 import static com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_ID_NOT_VALID;
 import static com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY;
 import static com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_RESTORE_STARTED;
 import static com.android.launcher3.provider.LauncherDbUtils.itemIdMatch;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
+import static com.android.launcher3.util.TestUtil.getOnUiThread;
+import static com.android.launcher3.util.Wait.atMost;
 import static com.android.launcher3.util.WidgetUtils.createWidgetInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -36,11 +35,13 @@ import android.content.pm.PackageInstaller.SessionParams;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherSettings;
@@ -48,12 +49,12 @@ import com.android.launcher3.R;
 import com.android.launcher3.celllayout.FavoriteItemsTransaction;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.pm.InstallSessionHelper;
-import com.android.launcher3.tapl.Widget;
-import com.android.launcher3.tapl.Workspace;
-import com.android.launcher3.ui.AbstractLauncherUiTest;
 import com.android.launcher3.ui.TestViewHelpers;
+import com.android.launcher3.util.BaseLauncherActivityTest;
 import com.android.launcher3.util.rule.ShellCommandRule;
+import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
+import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetManagerHelper;
 
 import org.junit.After;
@@ -65,6 +66,7 @@ import org.junit.runner.RunWith;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Tests for bind widget flow.
@@ -73,7 +75,7 @@ import java.util.function.Consumer;
  */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class BindWidgetTest extends AbstractLauncherUiTest {
+public class BindWidgetTest extends BaseLauncherActivityTest<Launcher> {
 
     @Rule
     public ShellCommandRule mGrantWidgetRule = ShellCommandRule.grantWidgetBind();
@@ -85,11 +87,9 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
 
     private LauncherModel mModel;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        mModel = LauncherAppState.getInstance(mTargetContext).getModel();
+        mModel = LauncherAppState.getInstance(targetContext()).getModel();
     }
 
     @After
@@ -99,7 +99,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         }
 
         if (mSessionId > -1) {
-            mTargetContext.getPackageManager().getPackageInstaller().abandonSession(mSessionId);
+            targetContext().getPackageManager().getPackageInstaller().abandonSession(mSessionId);
         }
     }
 
@@ -120,13 +120,12 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         LauncherAppWidgetProviderInfo info = addWidgetToScreen(false, false,
                 item -> item.appWidgetId = -33);
 
-        final Workspace workspace = mLauncher.getWorkspace();
         // Item deleted from db
         mCursor = queryItem();
         assertEquals(0, mCursor.getCount());
 
         // The view does not exist
-        assertTrue("Widget exists", workspace.tryGetWidget(info.label, 0) == null);
+        verifyItemEventuallyNull("Widget exists", widgetProvider(info));
     }
 
     @Test
@@ -152,18 +151,19 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         // Widget has a valid Id now.
         assertEquals(0, mCursor.getInt(mCursor.getColumnIndex(LauncherSettings.Favorites.RESTORED))
                 & FLAG_ID_NOT_VALID);
-        assertNotNull(AppWidgetManager.getInstance(mTargetContext)
+        assertNotNull(AppWidgetManager.getInstance(targetContext())
                 .getAppWidgetInfo(mCursor.getInt(mCursor.getColumnIndex(
                         LauncherSettings.Favorites.APPWIDGET_ID))));
 
         // send OPTION_APPWIDGET_RESTORE_COMPLETED
         int appWidgetId = mCursor.getInt(
                 mCursor.getColumnIndex(LauncherSettings.Favorites.APPWIDGET_ID));
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mTargetContext);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(targetContext());
 
         Bundle b = new Bundle();
         b.putBoolean(WidgetManagerHelper.WIDGET_OPTION_RESTORE_COMPLETED, true);
-        RemoteViews remoteViews = new RemoteViews(mTargetPackage, R.layout.appwidget_not_ready);
+        RemoteViews remoteViews = new RemoteViews(
+                targetContext().getPackageName(), R.layout.appwidget_not_ready);
         appWidgetManager.updateAppWidgetOptions(appWidgetId, b);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 
@@ -173,15 +173,14 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
                         WidgetManagerHelper.WIDGET_OPTION_RESTORE_COMPLETED));
         executeOnLauncher(l -> l.getAppWidgetHolder().startListening());
         verifyWidgetPresent(info);
-        assertNull(mLauncher.getWorkspace().tryGetPendingWidget(100));
+        verifyItemEventuallyNull("Pending widget exists", pendingWidgetProvider());
     }
 
     @Test
     public void testPendingWidget_notRestored_removed() {
         addPendingItemToScreen(getInvalidWidgetInfo(), FLAG_ID_NOT_VALID | FLAG_PROVIDER_NOT_READY);
 
-        assertTrue("Pending widget exists",
-                mLauncher.getWorkspace().tryGetPendingWidget(0) == null);
+        verifyItemEventuallyNull("Pending widget exists", pendingWidgetProvider());
         // Item deleted from db
         mCursor = queryItem();
         assertEquals(0, mCursor.getCount());
@@ -214,7 +213,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         // Create an active installer session
         SessionParams params = new SessionParams(SessionParams.MODE_FULL_INSTALL);
         params.setAppPackageName(item.providerName.getPackageName());
-        PackageInstaller installer = mTargetContext.getPackageManager().getPackageInstaller();
+        PackageInstaller installer = targetContext().getPackageManager().getPackageInstaller();
         mSessionId = installer.createSession(params);
 
         addPendingItemToScreen(item, FLAG_ID_NOT_VALID | FLAG_PROVIDER_NOT_READY);
@@ -232,36 +231,47 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
     }
 
     private void verifyWidgetPresent(LauncherAppWidgetProviderInfo info) {
-        final Widget widget = mLauncher.getWorkspace().tryGetWidget(info.label, DEFAULT_UI_TIMEOUT);
-        assertTrue("Widget is not present",
-                widget != null);
+        getOnceNotNull("Widget is not present", widgetProvider(info));
     }
 
     private void verifyPendingWidgetPresent() {
-        final Widget widget = mLauncher.getWorkspace().tryGetPendingWidget(DEFAULT_UI_TIMEOUT);
-        assertTrue("Pending widget is not present",
-                widget != null);
+        getOnceNotNull("Widget is not present", pendingWidgetProvider());
+    }
+
+    private Function<Launcher, Object> pendingWidgetProvider() {
+        return l -> l.getWorkspace().getFirstMatch(
+                (item, view) -> view instanceof PendingAppWidgetHostView);
+    }
+
+    private Function<Launcher, Object> widgetProvider(LauncherAppWidgetProviderInfo info) {
+        return l -> l.getWorkspace().getFirstMatch((item, view) ->
+                view instanceof LauncherAppWidgetHostView
+                        && TextUtils.equals(info.label, view.getContentDescription()));
+    }
+
+    private void verifyItemEventuallyNull(String message, Function<Launcher, Object> provider) {
+        atMost(message, () -> getFromLauncher(provider) == null);
     }
 
     private void addPendingItemToScreen(LauncherAppWidgetInfo item, int restoreStatus) {
         item.restoreStatus = restoreStatus;
         item.screenId = FIRST_SCREEN_ID;
-        new FavoriteItemsTransaction(mTargetContext)
-                .addItem(() -> item)
-                .commitAndLoadHome(mLauncher);
+        new FavoriteItemsTransaction(targetContext()).addItem(() -> item).commit();
+        loadLauncherSync();
     }
 
     private LauncherAppWidgetProviderInfo addWidgetToScreen(boolean hasConfigureScreen,
             boolean bindWidget, Consumer<LauncherAppWidgetInfo> itemOverride) {
         LauncherAppWidgetProviderInfo info = TestViewHelpers.findWidgetProvider(hasConfigureScreen);
-        new FavoriteItemsTransaction(mTargetContext)
+        new FavoriteItemsTransaction(targetContext())
                 .addItem(() -> {
-                    LauncherAppWidgetInfo item = createWidgetInfo(info, mTargetContext, bindWidget);
+                    LauncherAppWidgetInfo item =
+                            createWidgetInfo(info, targetContext(), bindWidget);
                     item.screenId = FIRST_SCREEN_ID;
                     itemOverride.accept(item);
                     return item;
-                })
-                .commitAndLoadHome(mLauncher);
+                }).commit();
+        loadLauncherSync();
         return info;
     }
 
@@ -275,13 +285,13 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
 
         Set<String> activePackage = getOnUiThread(() -> {
             Set<String> packages = new HashSet<>();
-            InstallSessionHelper.INSTANCE.get(mTargetContext).getActiveSessions()
+            InstallSessionHelper.INSTANCE.get(targetContext()).getActiveSessions()
                     .keySet().forEach(packageUserKey -> packages.add(packageUserKey.mPackageName));
             return packages;
         });
         while (true) {
             try {
-                mTargetContext.getPackageManager().getPackageInfo(
+                targetContext().getPackageManager().getPackageInfo(
                         pkg, PackageManager.GET_UNINSTALLED_PACKAGES);
             } catch (Exception e) {
                 if (!activePackage.contains(pkg)) {
@@ -307,7 +317,7 @@ public class BindWidgetTest extends AbstractLauncherUiTest {
         try {
             return MODEL_EXECUTOR.submit(() ->
                 mModel.getModelDbController().query(
-                                TABLE_NAME, null, itemIdMatch(0), null, null)).get();
+                        null, itemIdMatch(0), null, null)).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

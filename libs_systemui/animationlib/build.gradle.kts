@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.android.launcher3.animation"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26

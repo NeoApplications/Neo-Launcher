@@ -45,21 +45,19 @@
             android:id="@+id/app_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/WidgetListHeader.Title"
             android:layout_gravity="start|center_vertical"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"
             tools:text="App name" />
 
         <TextView
             android:id="@+id/app_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/WidgetListHeader.SubTitle"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?android:attr/textColorSecondary"
-            android:alpha="0.7"
             tools:text="m widgets, n shortcuts" />
 
     </LinearLayout>

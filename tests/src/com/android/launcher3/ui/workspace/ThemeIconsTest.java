@@ -15,32 +15,35 @@
  */
 package com.android.launcher3.ui.workspace;
 
+import static com.android.launcher3.AbstractFloatingView.TYPE_ACTION_POPUP;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.TestConstants.AppNames.TEST_APP_NAME;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
 
+import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.icons.ThemedIconDrawable;
-import com.android.launcher3.tapl.HomeAllApps;
-import com.android.launcher3.tapl.HomeAppIcon;
-import com.android.launcher3.tapl.HomeAppIconMenuItem;
-import com.android.launcher3.ui.AbstractLauncherUiTest;
-import com.android.launcher3.ui.TaplTestsLauncher3;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
+import com.android.launcher3.allapps.AllAppsRecyclerView;
+import com.android.launcher3.celllayout.FavoriteItemsTransaction;
+import com.android.launcher3.dagger.LauncherComponentProvider;
+import com.android.launcher3.icons.mono.ThemedIconDrawable;
+import com.android.launcher3.popup.ArrowPopup;
+import com.android.launcher3.util.BaseLauncherActivityTest;
 import com.android.launcher3.util.Executors;
+import com.android.launcher3.util.TestUtil;
 
 import org.junit.Test;
-
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * Tests for theme icon support in Launcher
@@ -48,129 +51,124 @@ import java.util.Queue;
  * Note running these tests will clear the workspace on the device.
  */
 @LargeTest
-public class ThemeIconsTest extends AbstractLauncherUiTest {
+public class ThemeIconsTest extends BaseLauncherActivityTest<Launcher> {
 
     private static final String APP_NAME = "IconThemedActivity";
-    private static final String SHORTCUT_APP_NAME = "LauncherTestApp";
     private static final String SHORTCUT_NAME = "Shortcut 1";
 
     @Test
     public void testIconWithoutTheme() throws Exception {
         setThemeEnabled(false);
-        TaplTestsLauncher3.initialize(this);
+        new FavoriteItemsTransaction(targetContext()).commit();
+        loadLauncherSync();
+        switchToAllApps();
 
-        HomeAllApps allApps = mLauncher.getWorkspace().switchToAllApps();
-        allApps.freeze();
-
-        try {
-            HomeAppIcon icon = allApps.getAppIcon(APP_NAME);
-            executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getAppsView(), false));
-            icon.dragToWorkspace(false, false);
-            executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getWorkspace(), false));
-        } finally {
-            allApps.unfreeze();
-        }
+        scrollToAppIcon(APP_NAME);
+        BubbleTextView btv = getFromLauncher(
+                l -> verifyIconTheme(APP_NAME, l.getAppsView(), false));
+        addToWorkspace(btv);
+        executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getWorkspace(), false));
     }
 
     @Test
     public void testShortcutIconWithoutTheme() throws Exception {
         setThemeEnabled(false);
-        TaplTestsLauncher3.initialize(this);
+        new FavoriteItemsTransaction(targetContext()).commit();
+        loadLauncherSync();
+        switchToAllApps();
 
-        HomeAllApps allApps = mLauncher.getWorkspace().switchToAllApps();
-        allApps.freeze();
+        scrollToAppIcon(TEST_APP_NAME);
+        BubbleTextView btv = getFromLauncher(l -> findBtv(TEST_APP_NAME, l.getAppsView()));
+        TestUtil.runOnExecutorSync(MAIN_EXECUTOR, btv::performLongClick);
 
-        try {
-            HomeAppIcon icon = allApps.getAppIcon(SHORTCUT_APP_NAME);
-            HomeAppIconMenuItem shortcutItem =
-                    (HomeAppIconMenuItem) icon.openDeepShortcutMenu().getMenuItem(SHORTCUT_NAME);
-            shortcutItem.dragToWorkspace(false, false);
-            executeOnLauncher(l -> verifyIconTheme(SHORTCUT_NAME, l.getWorkspace(), false));
-        } finally {
-            allApps.unfreeze();
-        }
+        BubbleTextView menuItem = getOnceNotNull("Popup menu not open", l ->
+                (AbstractFloatingView.getOpenView(l, TYPE_ACTION_POPUP) instanceof ArrowPopup ap)
+                        ? findBtv(SHORTCUT_NAME, ap) : null);
+        addToWorkspace(menuItem);
+        executeOnLauncher(l -> verifyIconTheme(SHORTCUT_NAME, l.getWorkspace(), false));
     }
 
     @Test
     public void testIconWithTheme() throws Exception {
         setThemeEnabled(true);
-        TaplTestsLauncher3.initialize(this);
+        new FavoriteItemsTransaction(targetContext()).commit();
+        loadLauncherSync();
+        switchToAllApps();
 
-        HomeAllApps allApps = mLauncher.getWorkspace().switchToAllApps();
-        allApps.freeze();
-
-        try {
-            HomeAppIcon icon = allApps.getAppIcon(APP_NAME);
-            executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getAppsView(), false));
-            icon.dragToWorkspace(false, false);
-            executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getWorkspace(), true));
-        } finally {
-            allApps.unfreeze();
-        }
+        scrollToAppIcon(APP_NAME);
+        BubbleTextView btv = getFromLauncher(l ->
+                verifyIconTheme(APP_NAME, l.getAppsView(), false));
+        addToWorkspace(btv);
+        executeOnLauncher(l -> verifyIconTheme(APP_NAME, l.getWorkspace(), true));
     }
 
     @Test
     public void testShortcutIconWithTheme() throws Exception {
         setThemeEnabled(true);
-        TaplTestsLauncher3.initialize(this);
+        loadLauncherSync();
+        switchToAllApps();
 
-        HomeAllApps allApps = mLauncher.getWorkspace().switchToAllApps();
-        allApps.freeze();
+        scrollToAppIcon(TEST_APP_NAME);
+        BubbleTextView btv = getFromLauncher(l -> findBtv(TEST_APP_NAME, l.getAppsView()));
+        TestUtil.runOnExecutorSync(MAIN_EXECUTOR, btv::performLongClick);
 
-        try {
-            HomeAppIcon icon = allApps.getAppIcon(SHORTCUT_APP_NAME);
-            HomeAppIconMenuItem shortcutItem =
-                    (HomeAppIconMenuItem) icon.openDeepShortcutMenu().getMenuItem(SHORTCUT_NAME);
-            shortcutItem.dragToWorkspace(false, false);
-            executeOnLauncher(l -> verifyIconTheme(SHORTCUT_NAME, l.getWorkspace(), true));
-        } finally {
-            allApps.unfreeze();
-        }
+        BubbleTextView menuItem = getOnceNotNull("Popup menu not open", l ->
+                (AbstractFloatingView.getOpenView(l, TYPE_ACTION_POPUP) instanceof ArrowPopup ap)
+                        ? findBtv(SHORTCUT_NAME, ap) : null);
+        addToWorkspace(menuItem);
+        executeOnLauncher(l -> verifyIconTheme(SHORTCUT_NAME, l.getWorkspace(), true));
     }
 
-    private void verifyIconTheme(String title, ViewGroup parent, boolean isThemed) {
+    private BubbleTextView findBtv(String title, ViewGroup parent) {
         // Wait for Launcher model to be completed
         try {
             Executors.MODEL_EXECUTOR.submit(() -> { }).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        // Find the app icon
-        Queue<View> viewQueue = new ArrayDeque<>();
-        viewQueue.add(parent);
-        BubbleTextView icon = null;
-        while (!viewQueue.isEmpty()) {
-            View view = viewQueue.poll();
-            if (view instanceof ViewGroup) {
-                parent = (ViewGroup) view;
-                for (int i = parent.getChildCount() - 1; i >= 0; i--) {
-                    viewQueue.add(parent.getChildAt(i));
-                }
-            } else if (view instanceof BubbleTextView btv) {
-                if (title.equals(btv.getContentDescription().toString())) {
-                    icon = btv;
-                    break;
-                }
-            }
-        }
-
-        assertNotNull(icon.getIcon());
-        assertEquals(isThemed, icon.getIcon() instanceof ThemedIconDrawable);
+        return (BubbleTextView) searchView(parent, v ->
+                v instanceof BubbleTextView btv
+                    && btv.getContentDescription() != null
+                        && title.equals(btv.getContentDescription().toString()));
     }
 
-    private void setThemeEnabled(boolean isEnabled) throws Exception {
+    private BubbleTextView verifyIconTheme(String title, ViewGroup parent, boolean isThemed) {
+        BubbleTextView icon = findBtv(title, parent);
+        assertNotNull(icon.getIcon());
+        assertEquals(isThemed, icon.getIcon() instanceof ThemedIconDrawable);
+        return icon;
+    }
+
+    private void setThemeEnabled(boolean isEnabled) {
         Uri uri = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
-                .authority(mTargetPackage + ".grid_control")
+                .authority(targetContext().getPackageName() + ".grid_control")
                 .appendPath("set_icon_themed")
                 .build();
         ContentValues values = new ContentValues();
         values.put("boolean_value", isEnabled);
-        try (ContentProviderClient client = mTargetContext.getContentResolver()
-                .acquireContentProviderClient(uri)) {
-            int result = client.update(uri, values, null);
-            assertTrue(result > 0);
-        }
+
+        int result = LauncherComponentProvider.get(targetContext()).getGridCustomizationsProxy()
+                .update(uri, values, null, null);
+        assertTrue(result > 0);
+    }
+
+    private void switchToAllApps() {
+        goToState(LauncherState.ALL_APPS);
+        waitForState("Launcher internal state didn't switch to All Apps",
+                () -> LauncherState.ALL_APPS);
+        freezeAllApps();
+    }
+
+    private void scrollToAppIcon(String appName) {
+        executeOnLauncher(l -> {
+            l.hideKeyboard();
+            AllAppsRecyclerView rv = l.getAppsView().getActiveRecyclerView();
+            int pos = rv.getApps().getAdapterItems().indexOf(rv.getApps().getAdapterItems().stream()
+                    .filter(i -> i.itemInfo != null && appName.equals(i.itemInfo.title.toString()))
+                    .findFirst()
+                    .get());
+            rv.getLayoutManager().scrollToPosition(pos);
+        });
     }
 }

@@ -16,7 +16,7 @@
 ** limitations under the License.
 */
 -->
-<com.android.launcher3.dragndrop.AddItemDragLayer
+<com.android.launcher3.dragndrop.SimpleDragLayer
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_item_drag_layer"
     android:layout_width="match_parent"
@@ -71,7 +71,8 @@
                 android:id="@+id/widget_preview_scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginVertical="16dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/widgets_surface_background"
                 android:layout_weight="1">
 
                 <include
@@ -121,6 +122,6 @@
         </LinearLayout>
     </com.android.launcher3.widget.AddItemWidgetsBottomSheet>
 
-</com.android.launcher3.dragndrop.AddItemDragLayer>
+</com.android.launcher3.dragndrop.SimpleDragLayer>
 
 

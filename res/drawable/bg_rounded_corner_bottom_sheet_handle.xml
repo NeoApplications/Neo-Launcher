@@ -16,6 +16,6 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle" >
-    <solid android:color="?attr/colorSurfaceVariant" />
+    <solid android:color="@color/materialColorOutlineVariant"/>
     <corners android:radius="@dimen/bottom_sheet_handle_corner_radius" />
 </shape>
