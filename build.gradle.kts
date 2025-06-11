@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.jetbrains.kotlin.utils.addIfNotNull
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -24,17 +23,14 @@ plugins {
     alias(libs.plugins.protobuf)
 }
 
-allprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
-        }
-    }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 android {
     namespace = "com.android.launcher3"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
@@ -50,15 +46,6 @@ android {
         buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                ksp {
-                    arg("room.schemaLocation", "$projectDir/schemas")
-                    arg("room.incremental", "true")
-                }
-            }
-        }
     }
 
     applicationVariants.all {
@@ -120,12 +107,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = compileOptions.sourceCompatibility.toString()
-        }
+        freeCompilerArgs = listOf("-Xjvm-default=all-compatibility")
     }
 
     packaging {
@@ -289,7 +271,7 @@ dependencies {
 }
 
 // using a task as a preBuild dependency instead of a function that takes some time insures that it runs
-task("detectAndroidLocals") {
+tasks.register("detectAndroidLocals") {
     val langsList: MutableSet<String> = HashSet()
 
     // in /res are (almost) all languages that have a translated string is saved. this is safer and saves some time
@@ -299,15 +281,13 @@ task("detectAndroidLocals") {
         ) {
             var languageCode = this.file.parentFile?.name?.replace("values-", "")
             languageCode = if (languageCode == "values") "en" else languageCode
-            langsList.addIfNotNull(languageCode)
+            languageCode?.let {
+                langsList.add(languageCode)
+            }
         }
     }
-    val langsListString = "{${langsList.joinToString(",") { "\"${it}\"" }}}"
-    android.defaultConfig.buildConfigField(
-        "String[]",
-        "DETECTED_ANDROID_LOCALES",
-        langsListString
-    )
+    val langsListString = "{${langsList.sorted().joinToString(",") { "\"${it}\"" }}}"
+    android.defaultConfig.buildConfigField("String[]", "DETECTED_ANDROID_LOCALES", langsListString)
 }
 tasks.preBuild.dependsOn("detectAndroidLocals")
 
