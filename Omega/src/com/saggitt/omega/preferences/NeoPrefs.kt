@@ -189,7 +189,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_themed_background,
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
-        defaultValue = false
+        defaultValue = false,
     )
 
     var profileShapeLessIcon = BooleanPref(
@@ -1277,6 +1277,17 @@ class NeoPrefs private constructor(val context: Context) {
                 LauncherAppState.getInstance(context).refreshAndReloadLauncher()
             }
             .launchIn(scope)
+        setIconBackgroundTransparent(profileTransparentBgIcons.getValue())
+
+        // 响应配置变化
+        profileTransparentBgIcons.get()
+            .drop(1)
+            .distinctUntilChanged()
+            .onEach { isTransparent ->
+                setIconBackgroundTransparent(isTransparent)
+                LauncherAppState.getInstance(context).refreshAndReloadLauncher()
+            }
+            .launchIn(scope)
     }
 
     fun registerCallback(callback: PreferencesChangeCallback) {
@@ -1299,6 +1310,10 @@ class NeoPrefs private constructor(val context: Context) {
         CustomAdaptiveIconDrawable.sInitialized = true
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
         CustomAdaptiveIconDrawable.sMask = shape.getMaskPath()
+    }
+
+    private fun setIconBackgroundTransparent(isTransparent: Boolean) {
+        CustomAdaptiveIconDrawable.sTransparentBg = isTransparent
     }
 
     companion object {

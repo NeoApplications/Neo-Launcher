@@ -52,10 +52,10 @@ their TODOs and plans.
         <td colspan="4"><img src="https://github.com/NeoApplications/Neo-Launcher/blob/main/snapshots/theme.png" alt="" width="512"></td>
     </tr>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega1.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega5.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega6.jpg" alt="" width="256"></td>
-        <td><img src="https://raw.githubusercontent.com/NeoApplications/Neo-Launcher/blob/main/snapshots/omega8.jpg" alt="" width="256"></td>
+        <td><img src="snapshots/omega1.jpg" alt="" width="256"></td>
+        <td><img src="snapshots/omega3.jpg" alt="" width="256"></td>
+        <td><img src="snapshots/omega5.jpg" alt="" width="256"></td>
+        <td><img src="snapshots/omega7.jpg" alt="" width="256"></td>
     </tr>
 </table>
 

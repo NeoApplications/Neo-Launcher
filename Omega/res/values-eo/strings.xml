@@ -38,7 +38,7 @@
     <string name="hide_app_selected">  kaŝita</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Kaŝita</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d Aplikaĵo</item>
@@ -95,4 +95,10 @@
     <string name="title__general_advanced">Altnivelaj Agordoj</string>
     <string name="title__general_smartspace">Hejma Fenestraĵo</string>
     <string name="title__general_desktop">Labortablo</string>
+    <string name="folder_name">Dosieruja Nomo</string>
+    <string name="summary__general_drawer">Personigu vian tirkeston</string>
+    <string name="summary__general_notifications">Insignia nombro, insignia koloro, gestoj</string>
+    <string name="allow_rotation_blocked_desc">Nunaj montrigaj agordoj malpermesas rotacion</string>
+    <string name="title__general_profile">Profilo</string>
+    <string name="title_desktop_keep_empty">Permesu malplenajn paĝojn</string>
 </resources>

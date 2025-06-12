@@ -5,7 +5,7 @@
     <string name="title__general_dock">Telakka</string>
     <string name="title__general_drawer">Sovellusvalikko</string>
     <string name="title__general_search">Haku ja kansiot</string>
-    <string name="title__general_smartspace">Koti-widget</string>
+    <string name="title__general_smartspace">Koti-vimpain</string>
     <string name="title__general_advanced">Lisäasetukset</string>
     <string name="title__general_notifications">Eleet ja ilmoitukset</string>
     <string name="summary__general_desktop">Mukauta aloitusnäyttöäsi</string>
@@ -13,7 +13,7 @@
     <string name="summary__general_drawer">Mukauta sovellusvalikkoasi</string>
     <string name="summary__general_theme">Muuta värejä, kuvakepakettia, kuvakkeen muotoa</string>
     <string name="summary__general_search">Hakupalvelu, tyyli, kuvakkeet</string>
-    <string name="summary__general_smartspace">Päivämäärä, aika, kotiwidget</string>
+    <string name="summary__general_smartspace">Päivämäärä, aika, koti-vimpain</string>
     <string name="summary__general_notifications">Ilmoitusten laskuri, ilmoitusten väri, eleet</string>
     <string name="summary__general_advanced">Kieli, varmuuskopiointi, asetusten haku</string>
     <string name="summary__general_about">Lisätietoja Neo Launcherista</string>
@@ -21,18 +21,18 @@
     <string name="pref_category__inputs">Eleet ja haku</string>
     <string name="pref_category__others">Muut</string>
     <string name="allow_rotation_blocked_desc">Nykyinen näyttöasetus ei salli kiertoa</string>
-    <string name="title_desktop_full_width_widgets">Täysleveät widgetit</string>
+    <string name="title_desktop_full_width_widgets">Täysleveät vimpaimet</string>
     <string name="title__desktop_icon_size">Kuvakkeen koko</string>
     <string name="title__desktop_grid_size">Ruudukon koko</string>
     <string name="title__desktop_hide_icon_labels">Piilota kuvakkeiden otsikot aloitusnäytössä</string>
-    <string name="title_desktop_overlap_placement">Salli päällekkäiset widgetit</string>
+    <string name="title_desktop_overlap_placement">Salli päällekkäiset vimpaimet</string>
     <string name="title_desktop_lock_desktop">Lukitse aloitusnäyttö</string>
     <string name="title_desktop_keep_empty">Salli tyhjät sivut</string>
     <string name="title__multiline_labels">Moniriviset sovellusten nimet</string>
     <string name="title_desktop_icon_popup_menu">Ponnahdusvalikon kohteet</string>
     <string name="title_desktop_hide_statusbar">Piilota tilapalkki</string>
     <string name="title_desktop_text_size">Tekstin koko</string>
-    <string name="summary_full_width_widgets">Salli widgetien ylittää koko leveys ilman täyttöä</string>
+    <string name="summary_full_width_widgets">Salli vimpainten ylittää koko leveys ilman täyttöä</string>
     <string name="grid_size_height">Korkeus</string>
     <string name="grid_size_width">Leveys</string>
     <string name="title__dock_icon_size">Kuvakkeen koko</string>
@@ -101,7 +101,7 @@
     </plurals>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Piilotettu</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <string name="hide_app_selected"> piilotettu</string>
     <string name="hide_app_reset">Nollaa piilotetut sovellukset</string>
@@ -228,7 +228,7 @@
     <string name="action_open_dash">Avaa Dash</string>
     <string name="action_open_app">Avaa sovellus</string>
     <string name="action_open_app_with_target">Avaa “%s”</string>
-    <string name="action_open_widgets">Avaa Widget-valikko</string>
+    <string name="action_open_widgets">Avaa vimpain-laatikko</string>
     <string name="action_open_notifications">Avaa ilmoitukset</string>
     <string name="action_overlay">Avaa Google-syöte</string>
     <string name="action_close_notifications">Sulje ilmoitukset</string>
@@ -303,8 +303,8 @@
     <string name="title__restart_launcher">Käynnistä uudelleen</string>
     <string name="summary__dev_restart">Voi olla hyödyllistä, jos joitain asetuksia ei ole otettu käyttöön oikein</string>
     <string name="change_default_home">Aseta kotisovellukseksi</string>
-    <string name="feed_add_widget">Lisää widget</string>
-    <string name="feed_widget">Widgetit</string>
+    <string name="feed_add_widget">Lisää vimpain</string>
+    <string name="feed_widget">Vimpaimet</string>
     <string name="title__about_donate">Lahjoita</string>
     <string name="title__about_changelog">Muutosloki</string>
     <string name="about_copyright">Tekijänoikeus © 2020-2021</string>
@@ -366,7 +366,7 @@
     <string name="button_organize_screens">Järjestä sivut</string>
     <string name="modify_system_settings">Muokkaa järjestelmäasetuksia</string>
     <string name="modify_system_settings_message">Myönnetään mahdollisuus muuttaa järjestelmäasetuksia, jotta tämä toimisi</string>
-    <string name="app_widget_name">Kello widget</string>
+    <string name="app_widget_name">Kello-vimpain</string>
     <string name="pref_desktop_mode">Työpöytätila</string>
     <string name="pref_desktop_mode_summary">Aktivoi Androidin työpöytätila</string>
     <string name="pref_desktop_mode_settings">Työpöytätilan asetukset</string>
@@ -414,4 +414,6 @@
     <string name="tabs_manage">Hallitse</string>
     <string name="folder_cover_mode">Käytä kansitilaa</string>
     <string name="dismiss_drop_target_label">Älä näytä</string>
+    <string name="title_desktop_widget_corner_radius">Vimpaimen kulman säde</string>
+    <string name="title__general_widgets_notifications">Vimpaimet ja ilmoitukset</string>
 </resources>

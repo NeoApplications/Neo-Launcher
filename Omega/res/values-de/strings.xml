@@ -83,7 +83,7 @@
     <string name="hide_app_selected">Ausgeblendete Apps (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Versteckt</item>
-        <item quantity="other"></item>
+        <item quantity="other">%1$d Versteckt</item>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d App</item>
@@ -493,7 +493,7 @@
     <string name="smartspace_icu_date_pattern">EEEddMMM</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>
-    <string name="color_wallpaper_secondary">Sekundärfarbe des Hintergrunds</string>
+    <string name="color_wallpaper_secondary">Sekundäre Hintergrundfarbe</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
     <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
@@ -508,4 +508,23 @@
     <string name="hotseat_accessibility_collapse">Dock eingeklappt</string>
     <string name="title_expandable_dock">Ausklappbares Dock</string>
     <string name="title_desktop_free_scrolling">Freies Scrollen</string>
+    <string name="title_drawer_all_apps">Alle</string>
+    <string name="title_all_apps_hide_scrollbar">Laufleiste ausblenden</string>
+    <string name="title_drawer_horizontal">Horizontal</string>
+    <string name="title_drawer_categorized">Kategorisiert</string>
+    <string name="title_drawer_custom_categories">Benutzerdefinierte Kategorien</string>
+    <string name="title_smartspace_background">Zeige Farbschema-Hintergrund an</string>
+    <string name="hotseat_show_dots_page_indicator">Seitenindikator mit Punkten anstelle von Linien anzeigen</string>
+    <string name="search_provider_url_hint">Verwende %s anstatt des Suchbegriffs</string>
+    <string name="search_provider_suggestion_url">URL für Suchvorschläge</string>
+    <string name="title_drawer_layout_categories">Layout Kategorien</string>
+    <string name="color_wallpaper_tertiary">Tertiäre Hintergrundfarbe</string>
+    <string name="title_themed_background">Dem Farbschema angepasster Hintergrund</string>
+    <string name="search_provider">Suchanbieter</string>
+    <string name="web_search_provider">Anbieter von Websuchen</string>
+    <string name="title_search_providers">Suchanbieter</string>
+    <string name="edit_search_summary">Aktive Suchanbieter auswählen und sortieren</string>
+    <string name="add_search_provider">Suchanbieter hinzufügen</string>
+    <string name="edit_search_provider">Suchanbieter bearbeiten</string>
+    <string name="search_provider_search_url">URL der Suchmaschine</string>
 </resources>

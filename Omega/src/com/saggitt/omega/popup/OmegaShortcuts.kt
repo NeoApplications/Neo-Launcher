@@ -43,6 +43,7 @@ import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.saggitt.omega.NeoLauncher
 import com.saggitt.omega.compose.components.ComposeBottomSheet
+import com.saggitt.omega.encrypt.SetOrChangeAppPinPage
 import com.saggitt.omega.icons.CustomizeIconPage
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.hasFlag
@@ -100,6 +101,47 @@ class OmegaShortcuts {
             }
         }
     }
+
+    class AppLock(
+        private val launcher: NeoLauncher,
+        private val appInfo: ModelAppInfo,
+        itemInfo: ItemInfo,
+        originalView: View,
+    ) : SystemShortcut<NeoLauncher>(
+        R.drawable.ic_lock, // 你可以自定义图标
+        R.string.app_lock, // 记得在 strings.xml 里加上此资源
+        launcher, itemInfo, originalView
+    ) {
+
+        private val prefs: NeoPrefs = NeoPrefs.getInstance()
+
+        override fun onClick(v: View?) {
+            val componentKey = appInfo.toComponentKey()
+
+            if (launcher.isInState(LauncherState.ALL_APPS)) {
+                if (prefs.drawerPopupEdit) {
+                    AbstractFloatingView.closeAllOpenViews(mTarget)
+                    ComposeBottomSheet.show(launcher) {
+                        SetOrChangeAppPinPage(
+                            componentKey = componentKey,
+                            onClose = { close(true) }
+                        )
+                    }
+                }
+            } else {
+                if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
+                    AbstractFloatingView.closeAllOpenViews(mTarget)
+                    ComposeBottomSheet.show(launcher) {
+                        SetOrChangeAppPinPage(
+                            componentKey = componentKey,
+                            onClose = { close(true) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
     class AppRemove(
         private val launcher: NeoLauncher,
@@ -167,6 +209,7 @@ class OmegaShortcuts {
     }
 
     companion object {
+
         val CUSTOMIZE = SystemShortcut.Factory<NeoLauncher> { activity, itemInfo, originalView ->
             val prefs = NeoPrefs.getInstance()
             var customize: Customize? = null
@@ -184,6 +227,25 @@ class OmegaShortcuts {
                 }
             }
             customize
+        }
+
+        val APP_LOCK = SystemShortcut.Factory<NeoLauncher> { activity, itemInfo, originalView ->
+            val prefs = NeoPrefs.getInstance()
+            var appLock: AppLock? = null
+            if (Launcher.getLauncher(activity).isInState(LauncherState.NORMAL)) {
+                if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
+                    getAppInfo(activity, itemInfo)?.let {
+                        appLock = AppLock(activity, it, itemInfo, originalView)
+                    }
+                }
+            } else {
+                if (prefs.drawerPopupEdit) {
+                    getAppInfo(activity, itemInfo)?.let {
+                        appLock = AppLock(activity, it, itemInfo, originalView)
+                    }
+                }
+            }
+            appLock
         }
 
         private fun getAppInfo(launcher: NeoLauncher, itemInfo: ItemInfo): ModelAppInfo? {

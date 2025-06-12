@@ -66,4 +66,22 @@
     <string name="title_disabled">Mati</string>
     <string name="title__dock_hide_labels">Sembunyikan Label</string>
     <string name="title__sort_alphabetical_az">A→Z</string>
+    <string name="title__dock_show_arrow">Tampilkan Panah</string>
+    <string name="title__dock_scale">Skala Dock</string>
+    <string name="title__dock_hide">Sembunyikan Dock</string>
+    <string name="title__drawer_categorization">Kategori</string>
+    <string name="title_expandable_dock">Dock yang Dapat Diperluas</string>
+    <string name="title_dock_search">Bilah pencarian dock</string>
+    <string name="title_desktop_free_scrolling">Pengguliran Bebas</string>
+    <string name="title__dock_icon_size_enforce">Atur ukuran ikon kustom</string>
+    <string name="title_dock_background_color">Warna Latar Belakang</string>
+    <string name="title__dock_hotseat_icons">Jumlah ikon</string>
+    <string name="title_opacity">Opasitas</string>
+    <string name="title__drawer_icon_popup_menu">Gelembung Pintasan</string>
+    <string name="dock_colored_google">Warna Ikon</string>
+    <string name="title_drawer_all_apps">Semua</string>
+    <string name="title__drawer_hide_apps">Pintasan Aplikasi Tersembunyi</string>
+    <string name="title__drawer_all_apps">Tampilkan label Semua Aplikasi</string>
+    <string name="hotseat_show_dots_page_indicator">Tampilkan Indikator Halaman Titik, Bukan Garis</string>
+    <string name="title__drawer_hide_icon_labels">Sembunyikan nama aplikasi</string>
 </resources>

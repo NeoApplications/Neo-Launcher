@@ -284,6 +284,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             super.getSupportedShortcuts(),
             Stream.of(
                 OmegaShortcuts.CUSTOMIZE,
+                OmegaShortcuts.APP_LOCK,
                 OmegaShortcuts.APP_REMOVE,
                 OmegaShortcuts.APP_UNINSTALL
             )
