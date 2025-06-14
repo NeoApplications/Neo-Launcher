@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.allapps;
 
+import static android.view.HapticFeedbackConstants.CLOCK_TICK;
+
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -70,7 +72,8 @@ public class AllAppsFastScrollHelper {
 
         @Override
         protected int getVerticalSnapPreference() {
-            return SNAP_TO_START;
+            mRv.performHapticFeedback(CLOCK_TICK);
+            return SNAP_TO_ANY;
         }
 
         @Override
