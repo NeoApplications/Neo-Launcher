@@ -1,3 +1,20 @@
+/*
+ * This file is part of Neo Launcher
+ * Copyright (c) 2025   Neo Launcher Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ */
+
 pluginManagement {
     repositories {
         mavenCentral()
@@ -13,12 +30,19 @@ dependencyResolutionManagement {
         maven(url = "https://jitpack.io")
     }
 }
-include(":iconloaderlib")
-project(":iconloaderlib").projectDir = File(rootDir, "libs_systemui/iconloaderlib")
 
 include(":animationlib")
-project(":animationlib").projectDir = File(rootDir, "libs_systemui/animationlib")
+project(":animationlib").projectDir = File(rootDir, "systemui/animationlib")
 
-include(":smartspace")
-project(":smartspace").projectDir = File(rootDir, "libs_systemui/smartspace")
+include(":iconloaderlib")
+project(":iconloaderlib").projectDir = File(rootDir, "systemui/iconloaderlib")
+
+include(":plugincore")
+project(":plugincore").projectDir = File(rootDir, "systemui/plugin_core")
+
+include(":flags")
+project(":flags").projectDir = File(rootDir, "flags")
+
+include(":hidden-api")
+
 rootProject.name = "Neo Launcher"

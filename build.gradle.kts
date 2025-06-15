@@ -10,7 +10,6 @@ buildscript {
 }
 
 val vProtobuf = "3.25.3"
-val prebuiltsDir: String = "prebuilts/"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -101,12 +100,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
         freeCompilerArgs = listOf("-Xjvm-default=all-compatibility")
     }
 
@@ -147,10 +146,10 @@ android {
         }
 
         named("omega") {
-            res.srcDirs(listOf("Omega/res"))
-            java.srcDirs(listOf("Omega/src", "Omega/src_overrides"))
-            aidl.srcDirs(listOf("Omega/aidl"))
-            manifest.srcFile("Omega/AndroidManifest.xml")
+            res.srcDirs(listOf("neo_launcher/res"))
+            java.srcDirs(listOf("neo_launcher/src"))
+            aidl.srcDirs(listOf("neo_launcher/aidl"))
+            manifest.srcFile("neo_launcher/AndroidManifest.xml")
         }
 
         protobuf {
@@ -180,7 +179,8 @@ android {
 dependencies {
     implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
-    implementation(project(":smartspace"))
+    implementation(project(":plugincore"))
+    implementation(project(":flags"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.ksp)
     implementation(libs.collections.immutable)
@@ -247,8 +247,10 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-14.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-14.jar"))
+    implementation(fileTree(baseDir = "libs").include("SystemUI-core.jar"))
+    implementation(fileTree(baseDir = "libs").include("SystemUI-statsd-15.jar"))
+    implementation(fileTree(baseDir = "libs").include("WindowManager-Shell-15.jar"))
+    implementation(fileTree(baseDir = "libs").include("framework-15.jar"))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
