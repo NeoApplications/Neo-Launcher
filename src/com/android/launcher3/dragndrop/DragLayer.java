@@ -42,12 +42,15 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Interpolator;
 
+import androidx.annotation.Nullable;
+
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.DropTargetBar;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.ShortcutAndWidgetContainer;
+import com.android.launcher3.ShortcutAndWidgetContainer.TranslationProvider;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.anim.PendingAnimation;
@@ -67,7 +70,9 @@ import java.util.ArrayList;
 public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverlayCallbacks {
 
     public static final int ALPHA_INDEX_OVERLAY = 0;
-    private static final int ALPHA_CHANNEL_COUNT = 1;
+
+    public static final int ALPHA_INDEX_LOADER = 1;
+    private static final int ALPHA_CHANNEL_COUNT = 2;
 
     public static final int ANIMATION_END_DISAPPEAR = 0;
     public static final int ANIMATION_END_REMAIN_VISIBLE = 2;
@@ -119,7 +124,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
 
     @Override
     public void recreateControllers() {
-        mControllers = mActivity.createTouchControllers();
+        mControllers = mContainer.createTouchControllers();
     }
 
     public ViewGroupFocusHelper getFocusIndicatorHelper() {
@@ -132,15 +137,15 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
     }
 
     private boolean isEventOverAccessibleDropTargetBar(MotionEvent ev) {
-        return isInAccessibleDrag() && isEventOverView(mActivity.getDropTargetBar(), ev);
+        return isInAccessibleDrag() && isEventOverView(mContainer.getDropTargetBar(), ev);
     }
 
     @Override
     public boolean onInterceptHoverEvent(MotionEvent ev) {
-        if (mActivity == null || mActivity.getWorkspace() == null) {
+        if (mContainer == null || mContainer.getWorkspace() == null) {
             return false;
         }
-        AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(mActivity);
+        AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(mContainer);
         if (!(topView instanceof Folder)) {
             return false;
         } else {
@@ -155,7 +160,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
                         isOverFolderOrSearchBar = isEventOverView(topView, ev) ||
                                 isEventOverAccessibleDropTargetBar(ev);
                         if (!isOverFolderOrSearchBar) {
-                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            sendTapOutsideFolderAccessibilityEvent(
+                                    currentFolder.getIsEditingName());
                             mHoverPointClosesFolder = true;
                             return true;
                         }
@@ -165,7 +171,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
                         isOverFolderOrSearchBar = isEventOverView(topView, ev) ||
                                 isEventOverAccessibleDropTargetBar(ev);
                         if (!isOverFolderOrSearchBar && !mHoverPointClosesFolder) {
-                            sendTapOutsideFolderAccessibilityEvent(currentFolder.isEditingName());
+                            sendTapOutsideFolderAccessibilityEvent(
+                                    currentFolder.getIsEditingName());
                             mHoverPointClosesFolder = true;
                             return true;
                         } else if (!isOverFolderOrSearchBar) {
@@ -193,7 +200,7 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
 
 
     private boolean isInAccessibleDrag() {
-        return mActivity.getAccessibilityDelegate().isInAccessibleDrag();
+        return mContainer.getAccessibilityDelegate().isInAccessibleDrag();
     }
 
     @Override
@@ -206,12 +213,12 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
 
     @Override
     public void addChildrenForAccessibility(ArrayList<View> childrenForAccessibility) {
-        View topView = AbstractFloatingView.getTopOpenViewWithType(mActivity,
+        View topView = AbstractFloatingView.getTopOpenViewWithType(mContainer,
                 AbstractFloatingView.TYPE_ACCESSIBLE);
         if (topView != null) {
             addAccessibleChildToList(topView, childrenForAccessibility);
             if (isInAccessibleDrag()) {
-                addAccessibleChildToList(mActivity.getDropTargetBar(), childrenForAccessibility);
+                addAccessibleChildToList(mContainer.getDropTargetBar(), childrenForAccessibility);
             }
         } else {
             super.addChildrenForAccessibility(childrenForAccessibility);
@@ -229,8 +236,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
     }
 
     public void animateViewIntoPosition(DragView dragView, final int[] pos, float alpha,
-            float scaleX, float scaleY, int animationEndStyle, Runnable onFinishRunnable,
-            int duration) {
+                                        float scaleX, float scaleY, int animationEndStyle, Runnable onFinishRunnable,
+                                        int duration) {
         animateViewIntoPosition(dragView, pos[0], pos[1], alpha, scaleX, scaleY,
                 onFinishRunnable, animationEndStyle, duration, null);
     }
@@ -240,25 +247,29 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
     }
 
     public void animateViewIntoPosition(DragView dragView, final View child, int duration,
-            View anchorView) {
+                                        View anchorView) {
 
-        ShortcutAndWidgetContainer parentChildren = (ShortcutAndWidgetContainer) child.getParent();
+        ShortcutAndWidgetContainer childParent = (ShortcutAndWidgetContainer) child.getParent();
         CellLayoutLayoutParams lp =  (CellLayoutLayoutParams) child.getLayoutParams();
-        parentChildren.measureChild(child);
-        parentChildren.layoutChild(child);
+        childParent.measureChild(child);
+        childParent.layoutChild(child);
 
         float coord[] = new float[2];
         float childScale = child.getScaleX();
 
         coord[0] = lp.x + (child.getMeasuredWidth() * (1 - childScale) / 2);
         coord[1] = lp.y + (child.getMeasuredHeight() * (1 - childScale) / 2);
+        TranslationProvider translationProvider = childParent.getTranslationProvider();
+        if (translationProvider != null) {
+            coord[0] = coord[0] + translationProvider.getTranslationX(lp.getCellX());
+        }
 
         // Since the child hasn't necessarily been laid out, we force the lp to be updated with
         // the correct coordinates (above) and use these to determine the final location
         float scale = getDescendantCoordRelativeToSelf((View) child.getParent(), coord);
 
         // We need to account for the scale of the child itself, as the above only accounts for
-        // for the scale in parents.
+        // the scale in parents.
         scale *= childScale;
         int toX = Math.round(coord[0]);
         int toY = Math.round(coord[1]);
@@ -297,9 +308,9 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
      * This method animates a view at the end of a drag and drop animation.
      */
     public void animateViewIntoPosition(final DragView view,
-            final int toX, final int toY, float finalAlpha,
-            float finalScaleX, float finalScaleY, Runnable onCompleteRunnable,
-            int animationEndStyle, int duration, View anchorView) {
+                                        final int toX, final int toY, float finalAlpha,
+                                        float finalScaleX, float finalScaleY, Runnable onCompleteRunnable,
+                                        int animationEndStyle, int duration, View anchorView) {
         Rect to = new Rect(toX, toY, toX + view.getMeasuredWidth(), toY + view.getMeasuredHeight());
         animateView(view, to, finalAlpha, finalScaleX, finalScaleY, duration,
                 null, onCompleteRunnable, animationEndStyle, anchorView);
@@ -310,8 +321,8 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
      * @param view The view to be animated. This view is drawn directly into DragLayer, and so
      *        doesn't need to be a child of DragLayer.
      * @param to The final location of the view. Only the left and top parameters are used. This
-*        location doesn't account for scaling, and so should be centered about the desired
-*        final location (including scaling).
+     *        location doesn't account for scaling, and so should be centered about the desired
+     *        final location (including scaling).
      * @param finalAlpha The final alpha of the view, in case we want it to fade as it animates.
      * @param finalScaleX The final scale of the view. The view is scaled about its center.
      * @param finalScaleY The final scale of the view. The view is scaled about its center.
@@ -319,13 +330,13 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
      * @param motionInterpolator The interpolator to use for the location of the view.
      * @param onCompleteRunnable Optional runnable to run on animation completion.
      * @param animationEndStyle Whether or not to fade out the view once the animation completes.
-*        {@link #ANIMATION_END_DISAPPEAR} or {@link #ANIMATION_END_REMAIN_VISIBLE}.
+     *        {@link #ANIMATION_END_DISAPPEAR} or {@link #ANIMATION_END_REMAIN_VISIBLE}.
      * @param anchorView If not null, this represents the view which the animated view stays
      */
     public void animateView(final DragView view, final Rect to,
-            final float finalAlpha, final float finalScaleX, final float finalScaleY, int duration,
-            final Interpolator motionInterpolator, final Runnable onCompleteRunnable,
-            final int animationEndStyle, View anchorView) {
+                            final float finalAlpha, final float finalScaleX, final float finalScaleY, int duration,
+                            final Interpolator motionInterpolator, final Runnable onCompleteRunnable,
+                            final int animationEndStyle, View anchorView) {
         view.cancelAnimation();
         view.requestLayout();
 
@@ -388,7 +399,13 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         mDropAnim.start();
     }
 
-    public void clearAnimatedView() {
+    /**
+     * Remove the drop view and end the drag animation.
+     *
+     * @return {@link DragView} that is removed.
+     */
+    @Nullable
+    public DragView clearAnimatedView() {
         if (mDropAnim != null) {
             mDropAnim.cancel();
         }
@@ -396,8 +413,10 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
         if (mDropView != null) {
             mDragController.onDeferredEndDrag(mDropView);
         }
+        DragView ret = mDropView;
         mDropView = null;
         invalidate();
+        return ret;
     }
 
     public View getAnimatedView() {
@@ -408,14 +427,14 @@ public class DragLayer extends BaseDragLayer<Launcher> implements LauncherOverla
     public void onViewAdded(View child) {
         super.onViewAdded(child);
         updateChildIndices();
-        mActivity.onDragLayerHierarchyChanged();
+        mContainer.onDragLayerHierarchyChanged();
     }
 
     @Override
     public void onViewRemoved(View child) {
         super.onViewRemoved(child);
         updateChildIndices();
-        mActivity.onDragLayerHierarchyChanged();
+        mContainer.onDragLayerHierarchyChanged();
     }
 
     @Override
