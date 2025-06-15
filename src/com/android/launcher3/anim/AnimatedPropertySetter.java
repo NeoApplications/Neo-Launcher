@@ -20,6 +20,7 @@ import static com.android.launcher3.LauncherAnimUtils.VIEW_BACKGROUND_COLOR;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
@@ -75,7 +76,7 @@ public class AnimatedPropertySetter extends PropertySetter {
 
     @Override
     public <T> Animator setFloat(T target, FloatProperty<T> property, float value,
-            TimeInterpolator interpolator) {
+                                 TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }
@@ -87,7 +88,7 @@ public class AnimatedPropertySetter extends PropertySetter {
 
     @Override
     public <T> Animator setInt(T target, IntProperty<T> property, int value,
-            TimeInterpolator interpolator) {
+                               TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }
@@ -100,7 +101,7 @@ public class AnimatedPropertySetter extends PropertySetter {
     @NonNull
     @Override
     public <T> Animator setColor(T target, IntProperty<T> property, int value,
-            TimeInterpolator interpolator) {
+                                 TimeInterpolator interpolator) {
         if (property.get(target) == value) {
             return NO_OP;
         }
@@ -121,19 +122,31 @@ public class AnimatedPropertySetter extends PropertySetter {
      * Adds a listener to be run on every frame of the animation
      */
     public void addOnFrameListener(ValueAnimator.AnimatorUpdateListener listener) {
-        if (mProgressAnimator == null) {
-            mProgressAnimator = ValueAnimator.ofFloat(0, 1);
-        }
-
-        mProgressAnimator.addUpdateListener(listener);
+        getProgressAnimator().addUpdateListener(listener);
     }
 
     @Override
     public void addEndListener(Consumer<Boolean> listener) {
+        getProgressAnimator().addListener(AnimatorListeners.forEndCallback(listener));
+    }
+
+    /**
+     * Add a callback to run on progress start.
+     */
+    public void addStartListener(Runnable listener) {
+        getProgressAnimator().addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                listener.run();
+            }
+        });
+    }
+
+    private ValueAnimator getProgressAnimator() {
         if (mProgressAnimator == null) {
             mProgressAnimator = ValueAnimator.ofFloat(0, 1);
         }
-        mProgressAnimator.addListener(AnimatorListeners.forEndCallback(listener));
+        return mProgressAnimator;
     }
 
     /**
