@@ -20,7 +20,6 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import static com.android.launcher3.LauncherAnimUtils.VIEW_ALPHA;
-import static com.android.launcher3.Utilities.getBadge;
 import static com.android.launcher3.icons.FastBitmapDrawable.getDisabledColorFilter;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
@@ -30,6 +29,8 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.annotation.TargetApi;
+import android.appwidget.AppWidgetHostView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,25 +42,27 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
 import com.android.app.animation.Interpolators;
-import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.icons.FastBitmapDrawable;
-import com.android.launcher3.icons.LauncherIcons;
-import com.android.launcher3.model.data.FolderInfo;
+import com.android.launcher3.icons.IconNormalizer;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.views.ActivityContext;
@@ -115,8 +118,8 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
     private Drawable mBadge;
 
     public DragView(T launcher, Drawable drawable, int registrationX,
-            int registrationY, final float initialScale, final float scaleOnDrop,
-            final float finalScaleDps) {
+                    int registrationY, final float initialScale, final float scaleOnDrop,
+                    final float finalScaleDps) {
         this(launcher, getViewFromDrawable(launcher, drawable),
                 drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(),
                 registrationX, registrationY, initialScale, scaleOnDrop, finalScaleDps);
@@ -138,8 +141,8 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
      * @param finalScaleDps the scale used in the zoom out animation when the drag view is shown.
      */
     public DragView(T activity, View content, int width, int height, int registrationX,
-            int registrationY, final float initialScale, final float scaleOnDrop,
-            final float finalScaleDps) {
+                    int registrationY, final float initialScale, final float scaleOnDrop,
+                    final float finalScaleDps) {
         super(activity);
         mActivity = activity;
         mDragLayer = activity.getDragLayer();
@@ -222,7 +225,6 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
 
         mBlurSizeOutline = getResources().getDimensionPixelSize(R.dimen.blur_size_medium_outline);
-        setElevation(getResources().getDimension(R.dimen.drag_elevation));
         setWillNotDraw(false);
     }
 
@@ -240,24 +242,18 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
      * Initialize {@code #mIconDrawable} if the item can be represented using
      * an {@link AdaptiveIconDrawable} or {@link FolderAdaptiveIcon}.
      */
+    @TargetApi(Build.VERSION_CODES.O)
     public void setItemInfo(final ItemInfo info) {
-        if (info.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
-                && info.itemType != LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
-                && info.itemType != LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            return;
-        }
-        if (info instanceof FolderInfo && ((FolderInfo) info).usingCustomIcon(mActivity)) {
-            return;
-        }
         // Load the adaptive icon on a background thread and add the view in ui thread.
         MODEL_EXECUTOR.getHandler().postAtFrontOfQueue(() -> {
-            Object[] outObj = new Object[1];
-            boolean[] outIsIconThemed = new boolean[1];
+            ThemeManager themeManager = ThemeManager.INSTANCE.get(getContext());
             int w = mWidth;
             int h = mHeight;
-            Drawable dr = Utilities.getFullDrawable(mActivity, info, w, h,
-                    true /* shouldThemeIcon */, outObj, outIsIconThemed);
-            if (dr instanceof AdaptiveIconDrawable) {
+            Pair<AdaptiveIconDrawable, Drawable> fullDrawable = Utilities.getFullDrawable(
+                    mActivity, info, w, h,
+                    themeManager.isIconThemeEnabled());
+            if (fullDrawable != null) {
+                AdaptiveIconDrawable adaptiveIcon = fullDrawable.first;
                 int blurMargin = (int) mActivity.getResources()
                         .getDimension(R.dimen.blur_size_medium_outline) / 2;
 
@@ -265,31 +261,19 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
                 bounds.inset(blurMargin, blurMargin);
                 // Badge is applied after icon normalization so the bounds for badge should not
                 // be scaled down due to icon normalization.
-                mBadge = getBadge(mActivity, info, outObj[0], outIsIconThemed[0]);
+                mBadge = fullDrawable.second;
                 FastBitmapDrawable.setBadgeBounds(mBadge, bounds);
-
-                // Do not draw the background in case of folder as its translucent
-                final boolean shouldDrawBackground = !(dr instanceof FolderAdaptiveIcon);
-
-                try (LauncherIcons li = LauncherIcons.obtain(mActivity)) {
-                    Drawable nDr; // drawable to be normalized
-                    if (shouldDrawBackground) {
-                        nDr = dr;
-                    } else {
-                        // Since we just want the scale, avoid heavy drawing operations
-                        nDr = new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK), null);
-                    }
-                    Utilities.scaleRectAboutCenter(bounds,
-                            li.getNormalizer().getScale(nDr, null, null, null));
-                }
-                AdaptiveIconDrawable adaptiveIcon = (AdaptiveIconDrawable) dr;
+                Utilities.scaleRectAboutCenter(bounds, IconNormalizer.ICON_VISIBLE_AREA_FACTOR);
 
                 // Shrink very tiny bit so that the clip path is smaller than the original bitmap
                 // that has anti aliased edges and shadows.
                 Rect shrunkBounds = new Rect(bounds);
                 Utilities.scaleRectAboutCenter(shrunkBounds, 0.98f);
                 adaptiveIcon.setBounds(shrunkBounds);
-                final Path mask = adaptiveIcon.getIconMask();
+
+                final Path mask = (adaptiveIcon instanceof FolderAdaptiveIcon
+                        ? themeManager.getFolderShape() : themeManager.getIconShape())
+                        .getPath(shrunkBounds);
 
                 mTranslateX = new SpringFloatValue(DragView.this,
                         w * AdaptiveIconDrawable.getExtraInsetFraction());
@@ -475,7 +459,7 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
      * Animate this DragView to the given DragLayer coordinates and then remove it.
      */
     public abstract void animateTo(int toTouchX, int toTouchY, Runnable onCompleteRunnable,
-            int duration);
+                                   int duration);
 
     public void animateShift(final int shiftX, final int shiftY) {
         if (mShiftAnim.isStarted()) return;
@@ -579,6 +563,11 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
         return mContentViewParent;
     }
 
+    /** Return true if {@link #mContent} is a {@link AppWidgetHostView}. */
+    public boolean containsAppWidgetHostView() {
+        return mContent instanceof AppWidgetHostView;
+    }
+
     private static class SpringFloatValue {
 
         private static final FloatPropertyCompat<SpringFloatValue> VALUE =
@@ -631,7 +620,7 @@ public abstract class DragView<T extends Context & ActivityContext> extends Fram
     /**
      * Removes any stray DragView from the DragLayer.
      */
-    public static void removeAllViews(ActivityContext activity) {
+    public static void removeAllViews(@NonNull ActivityContext activity) {
         BaseDragLayer dragLayer = activity.getDragLayer();
         // Iterate in reverse order. DragView is added later to the dragLayer,
         // and will be one of the last views.
