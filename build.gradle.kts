@@ -20,6 +20,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt) apply false
     alias(libs.plugins.protobuf)
 }
 
@@ -212,6 +213,8 @@ dependencies {
     implementation(libs.koin.workmanager)
     implementation(libs.koin.annotations)
     ksp(libs.koin.compiler)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation(libs.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.persian.date)
