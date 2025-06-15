@@ -328,7 +328,7 @@ public class GridSizeMigrationUtil {
             @NonNull final List<DbEntry> sortedItemsToPlace, final boolean matchingScreenIdOnly) {
         final GridOccupancy occupied = new GridOccupancy(trgX, trgY);
         final Point trg = new Point(trgX, trgY);
-        final Point next = new Point(0, screenId == 0 && FeatureFlags.QSbOnFirstScreen(NeoApp.getInstance())
+        final Point next = new Point(0, screenId == 0 && FeatureFlags.QSbOnFirstScreen()
                 ? 1 /* smartspace */ : 0);
         List<DbEntry> existedEntries = destReader.mWorkspaceEntriesByScreenId.get(screenId);
         if (existedEntries != null) {

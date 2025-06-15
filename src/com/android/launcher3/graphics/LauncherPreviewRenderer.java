@@ -106,7 +106,6 @@ import com.android.launcher3.widget.util.WidgetSizes;
 import com.saggitt.omega.DeviceProfileOverrides;
 import com.saggitt.omega.data.IconOverrideRepository;
 import com.saggitt.omega.iconpack.IconPackProvider;
-import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.smartspace.provider.SmartspaceProvider;
 
 import java.util.ArrayList;
@@ -542,7 +541,7 @@ public class LauncherPreviewRenderer extends ContextWrapper
         }
 
         // Add first page QSB
-        if (FeatureFlags.QSbOnFirstScreen(mContext)) {
+        if (FeatureFlags.QSbOnFirstScreen()) {
             CellLayout firstScreen = mWorkspaceScreens.get(FIRST_SCREEN_ID);
             View qsb = mHomeElementInflater.inflate(R.layout.qsb_preview, firstScreen, false);
             CellLayoutLayoutParams lp = new CellLayoutLayoutParams(

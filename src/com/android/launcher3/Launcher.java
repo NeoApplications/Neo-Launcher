@@ -181,7 +181,6 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.notification.NotificationListener;
-import com.android.launcher3.pageindicators.WorkspacePageIndicator;
 import com.android.launcher3.pm.PinRequestHelper;
 import com.android.launcher3.popup.ArrowPopup;
 import com.android.launcher3.popup.PopupContainerWithArrow;
@@ -2374,11 +2373,11 @@ public class Launcher extends StatefulActivity<LauncherState>
     public void bindScreens(IntArray orderedScreenIds) {
         mWorkspace.mPageIndicator.setAreScreensBinding(true);
         int firstScreenPosition = 0;
-        if (FeatureFlags.QSbOnFirstScreen(this) &&
+        if (FeatureFlags.QSbOnFirstScreen() &&
                 orderedScreenIds.indexOf(Workspace.FIRST_SCREEN_ID) != firstScreenPosition) {
             orderedScreenIds.removeValue(Workspace.FIRST_SCREEN_ID);
             orderedScreenIds.add(firstScreenPosition, Workspace.FIRST_SCREEN_ID);
-        } else if (!FeatureFlags.QSbOnFirstScreen(this) && orderedScreenIds.isEmpty()) {
+        } else if (!FeatureFlags.QSbOnFirstScreen() && orderedScreenIds.isEmpty()) {
             // If there are no screens, we need to have an empty screen
             mWorkspace.addExtraEmptyScreens();
         }
@@ -2426,7 +2425,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         int count = orderedScreenIds.size();
         for (int i = 0; i < count; i++) {
             int screenId = orderedScreenIds.get(i);
-            if (FeatureFlags.QSbOnFirstScreen(this) && screenId == Workspace.FIRST_SCREEN_ID) {
+            if (FeatureFlags.QSbOnFirstScreen() && screenId == Workspace.FIRST_SCREEN_ID) {
                 // No need to bind the first screen, as its always bound.
                 continue;
             }
