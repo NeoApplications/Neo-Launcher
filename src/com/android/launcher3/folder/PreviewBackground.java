@@ -49,6 +49,9 @@ import androidx.core.graphics.ColorUtils;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
+import com.android.launcher3.celllayout.DelegatedCellDrawing;
+import com.android.launcher3.graphics.ShapeDelegate;
+import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.preferences.NeoPrefs;
@@ -58,7 +61,7 @@ import com.saggitt.omega.util.OmegaUtilsKt;
  * This object represents a FolderIcon preview background. It stores drawing / measurement
  * information, handles drawing, and animation (accept state <--> rest state).
  */
-public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
+public class PreviewBackground extends DelegatedCellDrawing {
 
     private static final boolean DRAW_SHADOW = false;
     private static boolean DRAW_STROKE = false;
@@ -69,6 +72,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
     @VisibleForTesting protected static final int HOVER_ANIMATION_DURATION = 300;
     private static final float ACCEPT_COLOR_MULTIPLIER = 1.5f;
 
+    private final Context mContext;
     private final PorterDuffXfermode mShadowPorterDuffXfermode
             = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
     private RadialGradient mShadowShader = null;
@@ -141,6 +145,10 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
                     previewBackground.invalidate();
                 }
             };
+
+    public PreviewBackground(Context context) {
+        mContext = context;
+    }
 
     /**
      * Draws folder background under cell layout
@@ -271,6 +279,10 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
         drawShadow(canvas);
     }
 
+    private ShapeDelegate getShape() {
+        return ThemeManager.INSTANCE.get(mContext).getFolderShape();
+    }
+
     public void drawShadow(Canvas canvas) {
         if (!DRAW_SHADOW) {
             return;
@@ -380,7 +392,7 @@ public class PreviewBackground extends CellLayout.DelegatedCellDrawing {
 
     public Path getClipPath() {
         mPath.reset();
-        float radius = getScaledRadius() * ICON_OVERLAP_FACTOR;
+        float radius = getScaledRadius() * ClippedFolderIconLayoutRule.getIconOverlapFactor();
         // Find the difference in radius so that the clip path remains centered.
         float radiusDifference = radius - getRadius();
         float offsetX = basePreviewOffsetX - radiusDifference;

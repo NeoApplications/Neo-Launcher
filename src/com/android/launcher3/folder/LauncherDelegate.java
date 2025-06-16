@@ -28,13 +28,12 @@ import com.android.launcher3.DragSource;
 import com.android.launcher3.DropTarget;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
-import com.android.launcher3.celllayout.CellPosMapper;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.StatsLogManager.StatsLogger;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.FolderInfo;
-import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 
@@ -87,15 +86,16 @@ public class LauncherDelegate {
                 FolderInfo info = folder.mInfo;
                 if (itemCount <= 1) {
                     View newIcon = null;
-                    WorkspaceItemInfo finalItem = null;
+                    ItemInfo finalItem = null;
 
                     if (itemCount == 1) {
                         // Move the item from the folder to the workspace, in the position of the
                         // folder
                         CellLayout cellLayout = mLauncher.getCellLayout(info.container,
                                 mLauncher.getCellPosMapper().mapModelToPresenter(info).screenId);
-                        finalItem =  info.contents.remove(0);
-                        newIcon = mLauncher.createShortcut(cellLayout, finalItem);
+                        finalItem =  info.getContents().remove(0);
+                        newIcon = mLauncher.getItemInflater().inflateItem(
+                                finalItem, mLauncher.getModelWriter(), cellLayout);
                         mLauncher.getModelWriter().addOrMoveItemInDatabase(finalItem,
                                 info.container, info.screenId, info.cellX, info.cellY);
                     }
@@ -177,8 +177,8 @@ public class LauncherDelegate {
         @Override
         ModelWriter getModelWriter() {
             if (mWriter == null) {
-                mWriter = LauncherAppState.getInstance((Context) mContext).getModel()
-                        .getWriter(false, false, CellPosMapper.DEFAULT, null);
+                mWriter = LauncherAppState.getInstance((Context) mContext).getModel().getWriter(
+                        false, mContext.getCellPosMapper(), null);
             }
             return mWriter;
         }
