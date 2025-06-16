@@ -46,6 +46,14 @@ public class Interpolators {
     public static final Interpolator EMPHASIZED = createEmphasizedInterpolator();
 
     /**
+     * Complement to {@link #EMPHASIZED}. Used when animating hero movement in two dimensions to
+     * create a smooth, emphasized, curved movement.
+     * <br>
+     * Example usage: Animate y-movement with {@link #EMPHASIZED} and x-movement with this.
+     */
+    public static final Interpolator EMPHASIZED_COMPLEMENT = createEmphasizedComplement();
+
+    /**
      * The accelerated emphasized interpolator. Used for hero / emphasized movement of content that
      * is disappearing e.g. when moving off screen.
      */
@@ -157,8 +165,6 @@ public class Interpolators {
 
     public static final Interpolator DECELERATED_EASE = new PathInterpolator(0, 0, .2f, 1f);
     public static final Interpolator ACCELERATED_EASE = new PathInterpolator(0.4f, 0, 1f, 1f);
-    public static final Interpolator PREDICTIVE_BACK_DECELERATED_EASE =
-            new PathInterpolator(0, 0, 0, 1f);
     public static final Interpolator ALPHA_IN = new PathInterpolator(0.4f, 0f, 1f, 1f);
     public static final Interpolator ALPHA_OUT = new PathInterpolator(0f, 0f, 0.8f, 1f);
     public static final Interpolator ACCELERATE = new AccelerateInterpolator();
@@ -250,6 +256,15 @@ public class Interpolators {
         }
     };
 
+    /**
+     * Use this interpolator for animating progress values coming from the back callback to get
+     * the predictive-back-typical decelerate motion.
+     *
+     * This interpolator is similar to {@link Interpolators#STANDARD_DECELERATE} but has a slight
+     * acceleration phase at the start.
+     */
+    public static final Interpolator BACK_GESTURE = new PathInterpolator(0.1f, 0.1f, 0f, 1f);
+
     private static final float FAST_FLING_PX_MS = 10;
 
     /*
@@ -308,6 +323,18 @@ public class Interpolators {
         path.moveTo(0f, 0f);
         path.cubicTo(0.05f, 0f, 0.133333f, 0.06f, 0.166666f, 0.4f);
         path.cubicTo(0.208333f, 0.82f, 0.25f, 1f, 1f, 1f);
+        return new PathInterpolator(path);
+    }
+
+    /**
+     * Creates a complement to {@link #createEmphasizedInterpolator()} for use when animating in
+     * two dimensions.
+     */
+    private static PathInterpolator createEmphasizedComplement() {
+        Path path = new Path();
+        path.moveTo(0f, 0f);
+        path.cubicTo(0.1217f, 0.0462f, 0.15f, 0.4686f, 0.1667f, 0.66f);
+        path.cubicTo(0.1834f, 0.8878f, 0.1667f, 1f, 1f, 1f);
         return new PathInterpolator(path);
     }
 
