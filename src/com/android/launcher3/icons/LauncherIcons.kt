@@ -13,87 +13,120 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.launcher3.icons
 
-package com.android.launcher3.icons;
-
-import android.content.Context;
-
-import com.android.launcher3.InvariantDeviceProfile;
-import com.android.launcher3.graphics.IconShape;
-import com.android.launcher3.graphics.LauncherPreviewRenderer;
-import com.android.launcher3.util.Themes;
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.drawable.AdaptiveIconDrawable
+import android.os.UserHandle
+import com.android.launcher3.Flags
+import com.android.launcher3.InvariantDeviceProfile
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppSingleton
+import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
+import com.android.launcher3.graphics.ThemeManager
+import com.android.launcher3.pm.UserCache
+import com.android.launcher3.util.UserIconInfo
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import java.util.concurrent.ConcurrentLinkedQueue
+import javax.inject.Inject
 
 /**
- * Wrapper class to provide access to {@link BaseIconFactory} and also to provide pool of this class
- * that are threadsafe.
+ * Wrapper class to provide access to [BaseIconFactory] and also to provide pool of this class that
+ * are threadsafe.
  */
-public class LauncherIcons extends BaseIconFactory implements AutoCloseable {
+class LauncherIcons
+@AssistedInject
+internal constructor(
+    @ApplicationContext context: Context,
+    idp: InvariantDeviceProfile,
+    private var themeManager: ThemeManager,
+    private var userCache: UserCache,
+    @Assisted private val pool: ConcurrentLinkedQueue<LauncherIcons>,
+) : BaseIconFactory(context, idp.fillResIconDpi, idp.iconBitmapSize), AutoCloseable {
 
-    private static final Object sPoolSync = new Object();
-    private static LauncherIcons sPool;
-    private static int sPoolId = 0;
+    private val iconScale = themeManager.iconState.iconScale
 
-    /**
-     * Return a new Message instance from the global pool. Allows us to
-     * avoid allocating new objects in many cases.
-     */
-    public static LauncherIcons obtain(Context context) {
-        if (context instanceof LauncherPreviewRenderer.PreviewContext) {
-            return ((LauncherPreviewRenderer.PreviewContext) context).newLauncherIcons(context);
-        }
-
-        int poolId;
-        synchronized (sPoolSync) {
-            if (sPool != null) {
-                LauncherIcons m = sPool;
-                sPool = m.next;
-                m.next = null;
-                return m;
-            }
-            poolId = sPoolId;
-        }
-
-        InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(context);
-        return new LauncherIcons(context, idp.fillResIconDpi, idp.iconBitmapSize, poolId);
+    init {
+        mThemeController = themeManager.themeController
     }
 
-    public static void clearPool() {
-        synchronized (sPoolSync) {
-            sPool = null;
-            sPoolId++;
+    /** Recycles a LauncherIcons that may be in-use. */
+    fun recycle() {
+        clear()
+        pool.add(this)
+    }
+
+    override fun getUserInfo(user: UserHandle): UserIconInfo {
+        return userCache.getUserInfo(user)
+    }
+
+    override fun getShapePath(drawable: AdaptiveIconDrawable, iconBounds: Rect): Path {
+        if (!Flags.enableLauncherIconShapes()) return super.getShapePath(drawable, iconBounds)
+        return themeManager.iconShape.getPath(iconBounds)
+    }
+
+    override fun getIconScale(): Float {
+        if (!Flags.enableLauncherIconShapes()) return super.getIconScale()
+        return themeManager.iconState.iconScale
+    }
+
+    override fun drawAdaptiveIcon(
+        canvas: Canvas,
+        drawable: AdaptiveIconDrawable,
+        overridePath: Path,
+    ) {
+        if (!Flags.enableLauncherIconShapes()) {
+            super.drawAdaptiveIcon(canvas, drawable, overridePath)
+            return
+        }
+        canvas.clipPath(overridePath)
+        canvas.drawColor(Color.BLACK)
+        canvas.save()
+        canvas.scale(iconScale, iconScale, canvas.width / 2f, canvas.height / 2f)
+        if (drawable.background != null) {
+            drawable.background.draw(canvas)
+        }
+        if (drawable.foreground != null) {
+            drawable.foreground.draw(canvas)
+        }
+        canvas.restore()
+    }
+
+    override fun close() {
+        recycle()
+    }
+
+    @AssistedFactory
+    internal interface LauncherIconsFactory {
+        fun create(pool: ConcurrentLinkedQueue<LauncherIcons>): LauncherIcons
+    }
+
+    @LauncherAppSingleton
+    class IconPool @Inject internal constructor(private val factory: LauncherIconsFactory) {
+        private var pool = ConcurrentLinkedQueue<LauncherIcons>()
+
+        fun obtain(): LauncherIcons = pool.let { it.poll() ?: factory.create(it) }
+
+        fun clear() {
+            pool = ConcurrentLinkedQueue()
         }
     }
 
-    private final int mPoolId;
+    companion object {
 
-    private LauncherIcons next;
+        /**
+         * Return a new LauncherIcons instance from the global pool. Allows us to avoid allocating
+         * new objects in many cases.
+         */
+        @JvmStatic
+        fun obtain(context: Context): LauncherIcons = context.appComponent.iconPool.obtain()
 
-    private MonochromeIconFactory mMonochromeIconFactory;
-
-    protected LauncherIcons(Context context, int fillResIconDpi, int iconBitmapSize, int poolId) {
-        super(context, fillResIconDpi, iconBitmapSize, IconShape.getShape().enableShapeDetection());
-        mMonoIconEnabled = Themes.isThemedIconEnabled(context);
-        mPoolId = poolId;
-    }
-
-    /**
-     * Recycles a LauncherIcons that may be in-use.
-     */
-    public void recycle() {
-        synchronized (sPoolSync) {
-            if (sPoolId != mPoolId) {
-                return;
-            }
-            // Clear any temporary state variables
-            clear();
-
-            next = sPool;
-            sPool = this;
-        }
-    }
-
-    @Override
-    public void close() {
-        recycle();
+        @JvmStatic fun clearPool(context: Context) = context.appComponent.iconPool.clear()
     }
 }
