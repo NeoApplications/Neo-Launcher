@@ -34,7 +34,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 29
+        minSdk = 30
         targetSdk = 33
         applicationId = "com.saggitt.omega"
 
