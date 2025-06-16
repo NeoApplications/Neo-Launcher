@@ -4,8 +4,10 @@ import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.graphics.Paint.DITHER_FLAG;
 import static android.graphics.Paint.FILTER_BITMAP_FLAG;
 import static android.graphics.drawable.AdaptiveIconDrawable.getExtraInsetFraction;
+
 import static com.android.launcher3.icons.BitmapInfo.FLAG_INSTANT;
 import static com.android.launcher3.icons.ShadowGenerator.BLUR_FACTOR;
+
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.annotation.TargetApi;
@@ -41,7 +43,6 @@ import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.UserIconInfo;
 
 import java.lang.annotation.Retention;
-import java.util.Objects;
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside
@@ -57,7 +58,6 @@ public class BaseIconFactory implements AutoCloseable {
     public static final int MODE_WITH_SHADOW = 2;
     public static final int MODE_HARDWARE = 3;
     public static final int MODE_HARDWARE_WITH_SHADOW = 4;
-    private Bitmap mUserBadgeBitmap;
 
     @Retention(SOURCE)
     @IntDef({MODE_DEFAULT, MODE_ALPHA, MODE_WITH_SHADOW, MODE_HARDWARE_WITH_SHADOW, MODE_HARDWARE})
@@ -84,10 +84,10 @@ public class BaseIconFactory implements AutoCloseable {
     @NonNull
     private final ColorExtractor mColorExtractor;
 
-    protected final int mFillResIconDpi;
+    protected final int mFullResIconDpi;
     protected final int mIconBitmapSize;
 
-    protected boolean mMonoIconEnabled;
+    protected IconThemeController mThemeController;
 
     @Nullable
     private IconNormalizer mNormalizer;
@@ -105,11 +105,11 @@ public class BaseIconFactory implements AutoCloseable {
 
     private static int PLACEHOLDER_BACKGROUND_COLOR = Color.rgb(245, 245, 245);
 
-    protected BaseIconFactory(Context context, int fillResIconDpi, int iconBitmapSize,
+    protected BaseIconFactory(Context context, int fullResIconDpi, int iconBitmapSize,
             boolean shapeDetection) {
         mContext = context.getApplicationContext();
         mShapeDetection = shapeDetection;
-        mFillResIconDpi = fillResIconDpi;
+        mFullResIconDpi = fullResIconDpi;
         mIconBitmapSize = iconBitmapSize;
 
         mPm = mContext.getPackageManager();
@@ -120,8 +120,8 @@ public class BaseIconFactory implements AutoCloseable {
         clear();
     }
 
-    public BaseIconFactory(Context context, int fillResIconDpi, int iconBitmapSize) {
-        this(context, fillResIconDpi, iconBitmapSize, false);
+    public BaseIconFactory(Context context, int fullResIconDpi, int iconBitmapSize) {
+        this(context, fullResIconDpi, iconBitmapSize, false);
     }
 
     protected void clear() {
@@ -144,21 +144,17 @@ public class BaseIconFactory implements AutoCloseable {
         return mNormalizer;
     }
 
-    public Bitmap getUserBadgeBitmap(UserHandle user) {
-        if (mUserBadgeBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap(
-                    mIconBitmapSize, mIconBitmapSize, Bitmap.Config.ARGB_8888);
-            Drawable badgedDrawable = mPm.getUserBadgedIcon(
-                    new FixedSizeBitmapDrawable(bitmap), user);
-            if (badgedDrawable instanceof BitmapDrawable) {
-                mUserBadgeBitmap = ((BitmapDrawable) badgedDrawable).getBitmap();
-            } else {
-                badgedDrawable.setBounds(0, 0, mIconBitmapSize, mIconBitmapSize);
-                mUserBadgeBitmap = BitmapRenderer.createSoftwareBitmap(
-                        mIconBitmapSize, mIconBitmapSize, badgedDrawable::draw);
-            }
-        }
-        return mUserBadgeBitmap;
+    @Nullable
+    public IconThemeController getThemeController() {
+        return mThemeController;
+    }
+
+    public int getFullResIconDpi() {
+        return mFullResIconDpi;
+    }
+
+    public int getIconBitmapSize() {
+        return mIconBitmapSize;
     }
 
     @SuppressWarnings("deprecation")
@@ -168,7 +164,7 @@ public class BaseIconFactory implements AutoCloseable {
             if (resources != null) {
                 final int id = resources.getIdentifier(iconRes.resourceName, null, null);
                 // do not stamp old legacy shortcuts as the app may have already forgotten about it
-                return createBadgedIconBitmap(resources.getDrawableForDensity(id, mFillResIconDpi));
+                return createBadgedIconBitmap(resources.getDrawableForDensity(id, mFullResIconDpi));
             }
         } catch (Exception e) {
             // Icon not found.
@@ -202,13 +198,12 @@ public class BaseIconFactory implements AutoCloseable {
      * Creates an icon from the bitmap cropped to the current device icon shape
      */
     @NonNull
-    public BitmapInfo createShapedIconBitmap(Bitmap icon, IconOptions options) {
-        Drawable d = new FixedSizeBitmapDrawable(icon);
+    public AdaptiveIconDrawable createShapedAdaptiveIcon(Bitmap iconBitmap) {
+        Drawable drawable = new FixedSizeBitmapDrawable(iconBitmap);
         float inset = getExtraInsetFraction();
         inset = inset / (1 + 2 * inset);
-        d = new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
-                new InsetDrawable(d, inset, inset, inset, inset));
-        return createBadgedIconBitmap(d, options);
+        return new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK),
+                new InsetDrawable(drawable, inset, inset, inset, inset));
     }
 
     @NonNull
@@ -221,14 +216,23 @@ public class BaseIconFactory implements AutoCloseable {
      * The bitmap is visually normalized with other icons and has enough spacing to add shadow.
      *
      * @param icon source of the icon
-     * @return a bitmap suitable for disaplaying as an icon at various system UIs.
+     * @return a bitmap suitable for displaying as an icon at various system UIs.
      */
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
     @NonNull
     public BitmapInfo createBadgedIconBitmap(@NonNull Drawable icon,
             @Nullable IconOptions options) {
         float[] scale = new float[1];
-        AdaptiveIconDrawable adaptiveIcon = normalizeAndWrapToAdaptiveIcon(icon, null, scale);
+        Drawable tempIcon = icon;
+        if (options != null
+                && options.mIsArchived
+                && icon instanceof BitmapDrawable bitmapDrawable) {
+            // b/358123888
+            // Pre-archived apps can have BitmapDrawables without insets.
+            // Need to convert to Adaptive Icon with insets to avoid cropping.
+            tempIcon = createShapedAdaptiveIcon(bitmapDrawable.getBitmap());
+        }
+        AdaptiveIconDrawable adaptiveIcon = normalizeAndWrapToAdaptiveIcon(tempIcon, null, scale);
         Bitmap bitmap = createIconBitmap(adaptiveIcon, scale[0],
                 options == null ? MODE_WITH_SHADOW : options.mGenerationMode);
 
@@ -238,28 +242,11 @@ public class BaseIconFactory implements AutoCloseable {
 
         if (adaptiveIcon instanceof BitmapInfo.Extender extender) {
             info = extender.getExtendedInfo(bitmap, color, this, scale[0]);
-        } else if (IconProvider.ATLEAST_T && mMonoIconEnabled) {
-            Drawable mono = getMonochromeDrawable(adaptiveIcon);
-            if (mono != null) {
-                info.setMonoIcon(createIconBitmap(mono, scale[0], MODE_ALPHA), this);
-            }
+        } else if (IconProvider.ATLEAST_T && mThemeController != null && adaptiveIcon != null) {
+            info.setThemedBitmap(mThemeController.createThemedBitmap(adaptiveIcon, info, this));
         }
         info = info.withFlags(getBitmapFlagOp(options));
         return info;
-    }
-
-    /**
-     * Returns a monochromatic version of the given drawable or null, if it is not supported
-     *
-     * @param base the original icon
-     */
-    @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    protected Drawable getMonochromeDrawable(AdaptiveIconDrawable base) {
-        Drawable mono = base.getMonochrome();
-        if (mono != null) {
-            return new ClippedMonoDrawable(mono);
-        }
-        return null;
     }
 
     @NonNull
@@ -327,7 +314,7 @@ public class BaseIconFactory implements AutoCloseable {
 
     @Nullable
     protected AdaptiveIconDrawable normalizeAndWrapToAdaptiveIcon(@Nullable Drawable icon,
-                                                                  @Nullable final RectF outIconBounds, @NonNull final float[] outScale) {
+            @Nullable final RectF outIconBounds, @NonNull final float[] outScale) {
         if (icon == null) {
             return null;
         }
@@ -362,7 +349,7 @@ public class BaseIconFactory implements AutoCloseable {
      * Wraps the provided icon in an adaptive icon drawable
      */
     public AdaptiveIconDrawable wrapToAdaptiveIcon(@NonNull Drawable icon,
-                                                   @Nullable final RectF outIconBounds) {
+            @Nullable final RectF outIconBounds) {
         if (icon instanceof AdaptiveIconDrawable aid) {
             return aid;
         } else {
@@ -382,12 +369,12 @@ public class BaseIconFactory implements AutoCloseable {
     }
 
     @NonNull
-    protected Bitmap createIconBitmap(@Nullable final Drawable icon, final float scale) {
+    public Bitmap createIconBitmap(@Nullable final Drawable icon, final float scale) {
         return createIconBitmap(icon, scale, MODE_DEFAULT);
     }
 
     @NonNull
-    protected Bitmap createIconBitmap(@Nullable final Drawable icon, final float scale,
+    public Bitmap createIconBitmap(@Nullable final Drawable icon, final float scale,
             @BitmapGenerationMode int bitmapGenerationMode) {
         final int size = mIconBitmapSize;
         final Bitmap bitmap;
@@ -492,14 +479,8 @@ public class BaseIconFactory implements AutoCloseable {
     }
 
     @NonNull
-    public BitmapInfo makeDefaultIcon() {
-        return createBadgedIconBitmap(getFullResDefaultActivityIcon(mFillResIconDpi));
-    }
-
-    @NonNull
-    public static Drawable getFullResDefaultActivityIcon(final int iconDpi) {
-        return Objects.requireNonNull(Resources.getSystem().getDrawableForDensity(
-                android.R.drawable.sym_def_app_icon, iconDpi));
+    public BitmapInfo makeDefaultIcon(IconProvider iconProvider) {
+        return createBadgedIconBitmap(iconProvider.getFullResDefaultActivityIcon(mFullResIconDpi));
     }
 
     /**
@@ -512,6 +493,8 @@ public class BaseIconFactory implements AutoCloseable {
     public static class IconOptions {
 
         boolean mIsInstantApp;
+
+        boolean mIsArchived;
 
         @BitmapGenerationMode
         int mGenerationMode = MODE_WITH_SHADOW;
@@ -550,6 +533,14 @@ public class BaseIconFactory implements AutoCloseable {
         @NonNull
         public IconOptions setInstantApp(final boolean instantApp) {
             mIsInstantApp = instantApp;
+            return this;
+        }
+
+        /**
+         * If the icon represents an archived app
+         */
+        public IconOptions setIsArchived(boolean isArchived) {
+            mIsArchived = isArchived;
             return this;
         }
 
@@ -604,26 +595,6 @@ public class BaseIconFactory implements AutoCloseable {
         @Override
         public int getIntrinsicWidth() {
             return 1;
-        }
-    }
-
-    protected static class ClippedMonoDrawable extends InsetDrawable {
-
-        @NonNull
-        private final AdaptiveIconDrawable mCrop;
-
-        public ClippedMonoDrawable(@Nullable final Drawable base) {
-            super(base, -getExtraInsetFraction());
-            mCrop = new AdaptiveIconDrawable(new ColorDrawable(Color.BLACK), null);
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            mCrop.setBounds(getBounds());
-            int saveCount = canvas.save();
-            canvas.clipPath(mCrop.getIconMask());
-            super.draw(canvas);
-            canvas.restoreToCount(saveCount);
         }
     }
 

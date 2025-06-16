@@ -73,10 +73,9 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
     @VisibleForTesting protected boolean mIsPressed;
     @VisibleForTesting protected boolean mIsHovered;
     protected boolean mIsDisabled;
-    float mDisabledAlpha = 1f;
+    protected float mDisabledAlpha = 1f;
 
-    @DrawableCreationFlags
-    int mCreationFlags = 0;
+    @DrawableCreationFlags int mCreationFlags = 0;
 
     // Animator and properties for the fast bitmap drawable's scale
     @VisibleForTesting protected static final FloatProperty<FastBitmapDrawable> SCALE
@@ -415,7 +414,7 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         sFlagHoverEnabled = isFlagHoverEnabled;
     }
 
-    protected static class FastBitmapConstantState extends ConstantState {
+    public static class FastBitmapConstantState extends ConstantState {
         protected final Bitmap mBitmap;
         protected final int mIconColor;
 
@@ -424,8 +423,7 @@ public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
         protected boolean mIsDisabled;
         private ConstantState mBadgeConstantState;
 
-        @DrawableCreationFlags
-        int mCreationFlags = 0;
+        @DrawableCreationFlags int mCreationFlags = 0;
 
         public FastBitmapConstantState(Bitmap bitmap, int color) {
             mBitmap = bitmap;

@@ -38,8 +38,7 @@ public class UserIconInfo {
     public static final int TYPE_PRIVATE = 3;
 
     @IntDef({TYPE_MAIN, TYPE_WORK, TYPE_CLONED, TYPE_PRIVATE})
-    public @interface UserType {
-    }
+    public @interface UserType { }
 
     public final UserHandle user;
     @UserType

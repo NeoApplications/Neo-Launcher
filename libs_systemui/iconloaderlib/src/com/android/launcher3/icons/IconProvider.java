@@ -28,12 +28,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.content.pm.LauncherActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.ComponentInfo;
+import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
+import android.content.res.TypedArray;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
@@ -44,25 +46,16 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.text.TextUtils;
-import android.util.ArrayMap;
 import android.util.Log;
 
-import androidx.annotation.ArrayRes;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
 
 import com.android.launcher3.util.SafeCloseable;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 /**
  * Class to handle icon loading from different packages
@@ -70,7 +63,7 @@ import java.util.function.Supplier;
 public class IconProvider {
 
     private final String ACTION_OVERLAY_CHANGED = "android.intent.action.OVERLAY_CHANGED";
-    public static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
+    static final int CONFIG_ICON_MASK_RES_ID = Resources.getSystem().getIdentifier(
             "config_icon_mask", "string", "android");
 
     private static final String TAG = "IconProvider";
@@ -81,210 +74,131 @@ public class IconProvider {
 
     private static final String SYSTEM_STATE_SEPARATOR = " ";
 
-    protected static final String TAG_ICON = "icon";
-    protected static final String ATTR_PACKAGE = "package";
-    protected static final String ATTR_COMPONENT = "component";
-    protected static final String ATTR_DRAWABLE = "drawable";
-
     protected final Context mContext;
-    public final ComponentName mCalendar;
-    public final ComponentName mClock;
+    private final ComponentName mCalendar;
+    private final ComponentName mClock;
 
-    protected static final int ICON_TYPE_DEFAULT = 0;
-    protected static final int ICON_TYPE_CALENDAR = 1;
-    protected static final int ICON_TYPE_CLOCK = 2;
-
-    protected static final String THEMED_ICON_MAP_FILE = "grayscale_icon_map";
-
-    public static final Map<String, ThemedIconDrawable.ThemeData> DISABLED_MAP = Collections.emptyMap();
-
-    private Map<String, ThemedIconDrawable.ThemeData> mThemedIconMap;
-    protected final List<ComponentName> dynamicCalendars = new ArrayList<>();
+    @NonNull
+    private String mSystemState = "";
 
     public IconProvider(Context context) {
-        this(context, false);
-    }
-
-    public IconProvider(Context context, boolean supportsIconTheme) {
         mContext = context;
         mCalendar = parseComponentOrNull(context, R.string.calendar_component_name);
         mClock = parseComponentOrNull(context, R.string.clock_component_name);
-        dynamicCalendars.addAll(parseComponents(context, R.array.dynamic_calendar_components_name));
-        if (!supportsIconTheme) {
-            // Initialize an empty map if theming is not supported
-            mThemedIconMap = DISABLED_MAP;
-        }
-    }
-
-    public void setIconThemeSupported(boolean isSupported) {
-        mThemedIconMap = isSupported ? null : DISABLED_MAP;
-    }
-
-    private static List<ComponentName> parseComponents(Context context, @ArrayRes int resId) {
-        final String[] componentResources = context.getResources().getStringArray(resId);
-        final List<ComponentName> compList = new ArrayList<>();
-        for (String component : componentResources) {
-            compList.add(new ComponentName(component, ""));
-        }
-        return compList;
     }
 
     /**
-     * Adds any modification to the provided systemState for dynamic icons. This system state
-     * is used by caches to check for icon invalidation.
+     * Returns a string representing the current state of the app icon. It can be used as a
+     * identifier to invalidate any resources loaded from the app.
+     * It also incorporated ay system state, that can affect the loaded resource
+     *
+     * @see #updateSystemState()
      */
-    public String getSystemStateForPackage(String systemState, String packageName) {
-        if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
-            return systemState + SYSTEM_STATE_SEPARATOR + getDay();
+    public String getStateForApp(@Nullable ApplicationInfo appInfo) {
+        if (appInfo == null) {
+            return mSystemState;
+        }
+
+        if (mCalendar != null && mCalendar.getPackageName().equals(appInfo.packageName)) {
+            return mSystemState + SYSTEM_STATE_SEPARATOR + getDay() + SYSTEM_STATE_SEPARATOR
+                    + getApplicationInfoHash(appInfo);
         } else {
-            return systemState;
+            return mSystemState + SYSTEM_STATE_SEPARATOR + getApplicationInfoHash(appInfo);
         }
     }
-
-    protected boolean isThemeEnabled() {
-        return mThemedIconMap != DISABLED_MAP;
-    }
-
-    protected ThemedIconDrawable.ThemeData getDynamicIconsFromMap(Context context, Map<ComponentName, ThemedIconDrawable.ThemeData> themeMap, ComponentName componentName) {
-        if (dynamicCalendars.stream().anyMatch(s -> s.getPackageName().equalsIgnoreCase(componentName.getPackageName()))) {
-            final int resId = getDynamicCalendarResource(context);
-            return new ThemedIconDrawable.ThemeData(context.getResources(), componentName.getPackageName(), resId);
-        }
-        return null;
-    }
-
-    protected void updateMapWithDynamicIcons(Context context, Map<ComponentName, ThemedIconDrawable.ThemeData> map) {
-        final int resId = getDynamicCalendarResource(context);
-        dynamicCalendars.forEach(dCal -> {
-            ComponentName pkg = new ComponentName(dCal.getPackageName(), "");
-            if (map.get(pkg) == null) {
-                map.put(pkg, new ThemedIconDrawable.ThemeData(context.getResources(), dCal.getPackageName(), resId));
-            }
-        });
-    }
-
-    @DrawableRes
-    public int getDynamicCalendarResource(Context context) {
-        return context.getResources().getIdentifier("themed_icon_calendar_" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH), "drawable", context.getPackageName());
-    }
-
 
     /**
-     * Loads the icon for the provided LauncherActivityInfo
+     * Returns a hash to uniquely identify a particular version of appInfo
      */
-    public Drawable getIcon(LauncherActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.getApplicationInfo().packageName, info.getName(), info.getUser(), iconDpi,
-                () -> info.getIcon(iconDpi));
+    protected String getApplicationInfoHash(@NonNull ApplicationInfo appInfo) {
+        // The hashString in source dir changes with every install
+        return appInfo.sourceDir;
     }
 
     /**
      * Loads the icon for the provided activity info
      */
-    public Drawable getIcon(ActivityInfo info) {
+    public Drawable getIcon(ComponentInfo info) {
         return getIcon(info, mContext.getResources().getConfiguration().densityDpi);
     }
 
     /**
-     * Loads the icon for the provided activity info
+     * Loads the icon for the provided component info
      */
-    public Drawable getIcon(ActivityInfo info, int iconDpi) {
-        return getIconWithOverrides(info.applicationInfo.packageName, info.applicationInfo.packageName, Process.myUserHandle(), iconDpi,
-                () -> loadActivityInfoIcon(info, iconDpi));
+    public Drawable getIcon(ComponentInfo info, int iconDpi) {
+        return getIcon(info, info.applicationInfo, iconDpi);
     }
 
-    @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    public Drawable getIconWithOverrides(String packageName, String component, UserHandle user, int iconDpi,
-                                         Supplier<Drawable> fallback) {
+    /**
+     * Loads the icon for the provided application info
+     */
+    public Drawable getIcon(ApplicationInfo info) {
+        return getIcon(info, mContext.getResources().getConfiguration().densityDpi);
+    }
+
+    /**
+     * Loads the icon for the provided application info
+     */
+    public Drawable getIcon(ApplicationInfo info, int iconDpi) {
+        return getIcon(info, info, iconDpi);
+    }
+
+    private Drawable getIcon(PackageItemInfo info, ApplicationInfo appInfo, int iconDpi) {
+        String packageName = info.packageName;
+        ThemeData td = getThemeDataForPackage(packageName);
+
         Drawable icon = null;
-        int iconType = ICON_TYPE_DEFAULT;
         if (mCalendar != null && mCalendar.getPackageName().equals(packageName)) {
-            icon = loadCalendarDrawable(iconDpi);
-            iconType = ICON_TYPE_CALENDAR;
-        } else if (mClock != null
-                && mClock.getPackageName().equals(packageName)
-                && Process.myUserHandle().equals(user)) {
-            icon = loadClockDrawable(iconDpi);
-            iconType = ICON_TYPE_CLOCK;
+            icon = loadCalendarDrawable(iconDpi, td);
+        } else if (mClock != null && mClock.getPackageName().equals(packageName)) {
+            icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi);
         }
         if (icon == null) {
-            icon = fallback.get();
-            iconType = ICON_TYPE_DEFAULT;
+            icon = loadPackageIcon(info, appInfo, iconDpi);
+            if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
+                AdaptiveIconDrawable aid = (AdaptiveIconDrawable) icon;
+                if  (aid.getMonochrome() == null) {
+                    icon = new AdaptiveIconDrawable(aid.getBackground(),
+                            aid.getForeground(), td.loadPaddedDrawable());
+                }
+            }
         }
-        ThemedIconDrawable.ThemeData td = getThemeData(packageName, component);
-        return td != null ? td.wrapDrawable(icon, iconType) : icon;
+        return icon;
     }
 
     protected ThemeData getThemeDataForPackage(String packageName) {
         return null;
     }
 
-    private Drawable loadActivityInfoIcon(ActivityInfo ai, int density) {
-        final int iconRes = ai.getIconResource();
+    private Drawable loadPackageIcon(PackageItemInfo info, ApplicationInfo appInfo, int density) {
         Drawable icon = null;
-        // Get the preferred density icon from the app's resources
-        if (density != 0 && iconRes != 0) {
+        if (BuildCompat.isAtLeastV() && info.isArchived) {
+            // Icons for archived apps com from system service, let the default impl handle that
+            icon = info.loadIcon(mContext.getPackageManager());
+        }
+        if (icon == null && density != 0 && (info.icon != 0 || appInfo.icon != 0)) {
             try {
                 final Resources resources = mContext.getPackageManager()
-                        .getResourcesForApplication(ai.applicationInfo);
-                icon = resources.getDrawableForDensity(iconRes, density);
+                        .getResourcesForApplication(appInfo);
+                // Try to load the package item icon first
+                if (info.icon != 0) {
+                    try {
+                        icon = resources.getDrawableForDensity(info.icon, density);
+                    } catch (Resources.NotFoundException exc) { }
+                }
+                if (icon == null && appInfo.icon != 0) {
+                    // Load the fallback app icon
+                    try {
+                        icon = resources.getDrawableForDensity(appInfo.icon, density);
+                    } catch (Resources.NotFoundException exc) { }
+                }
             } catch (NameNotFoundException | Resources.NotFoundException exc) { }
         }
-        // Get the default density icon
-        if (icon == null) {
-            icon = ai.loadIcon(mContext.getPackageManager());
-        }
-        return icon;
+        return icon != null ? icon : getFullResDefaultActivityIcon(density);
     }
 
-    @Nullable
-    protected final ThemedIconDrawable.ThemeData getThemeData(@NonNull String packageName, @NonNull String component) {
-        return getThemeData(new ComponentName(packageName, component));
-    }
-
-    @Nullable
-    protected ThemedIconDrawable.ThemeData getThemeData(@NonNull ComponentName componentName) {
-        return getThemedIconMap().get(componentName.getPackageName());
-    }
-
-    private Map<String, ThemedIconDrawable.ThemeData> getThemedIconMap() {
-        if (mThemedIconMap != null) {
-            return mThemedIconMap;
-        }
-        ArrayMap<String, ThemedIconDrawable.ThemeData> map = new ArrayMap<>();
-        try {
-            Resources res = mContext.getResources();
-            int resID = res.getIdentifier(THEMED_ICON_MAP_FILE, "xml", mContext.getPackageName());
-            if (resID != 0) {
-                XmlResourceParser parser = res.getXml(resID);
-                final int depth = parser.getDepth();
-
-                int type;
-
-                while ((type = parser.next()) != XmlPullParser.START_TAG
-                        && type != XmlPullParser.END_DOCUMENT) ;
-
-                while (((type = parser.next()) != XmlPullParser.END_TAG ||
-                        parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
-                    if (type != XmlPullParser.START_TAG) {
-                        continue;
-                    }
-                    if (TAG_ICON.equals(parser.getName())) {
-                        String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
-                        int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
-                        if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                            map.put(pkg, new ThemedIconDrawable.ThemeData(res, mContext.getPackageName(), iconId));
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Unable to parse icon map", e);
-        }
-        mThemedIconMap = map;
-        return mThemedIconMap;
-    }
-
-    private Drawable loadCalendarDrawable(int iconDpi) {
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
+    private Drawable loadCalendarDrawable(int iconDpi, @Nullable ThemeData td) {
         PackageManager pm = mContext.getPackageManager();
         try {
             final Bundle metadata = pm.getActivityInfo(
@@ -295,7 +209,22 @@ public class IconProvider {
             final int id = getDynamicIconId(metadata, resources);
             if (id != ID_NULL) {
                 if (DEBUG) Log.d(TAG, "Got icon #" + id);
-                return resources.getDrawableForDensity(id, iconDpi, null /* theme */);
+                Drawable drawable = resources.getDrawableForDensity(id, iconDpi, null /* theme */);
+                if (ATLEAST_T && drawable instanceof AdaptiveIconDrawable && td != null) {
+                    AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
+                    if  (aid.getMonochrome() != null) {
+                        return drawable;
+                    }
+                    if ("array".equals(td.mResources.getResourceTypeName(td.mResID))) {
+                        TypedArray ta = td.mResources.obtainTypedArray(td.mResID);
+                        int monoId = ta.getResourceId(IconProvider.getDay(), ID_NULL);
+                        ta.recycle();
+                        return monoId == ID_NULL ? drawable
+                                : new AdaptiveIconDrawable(aid.getBackground(), aid.getForeground(),
+                                        new ThemeData(td.mResources, monoId).loadPaddedDrawable());
+                    }
+                }
+                return drawable;
             }
         } catch (PackageManager.NameNotFoundException e) {
             if (DEBUG) {
@@ -306,11 +235,14 @@ public class IconProvider {
         return null;
     }
 
-    private Drawable loadClockDrawable(int iconDpi) {
-        ThemedIconDrawable.ThemeData td = getThemeData(mClock);
-        return ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi, td);
+    /**
+     * Returns the default activity icon
+     */
+    @NonNull
+    public Drawable getFullResDefaultActivityIcon(final int iconDpi) {
+        return Objects.requireNonNull(Resources.getSystem().getDrawableForDensity(
+                android.R.drawable.sym_def_app_icon, iconDpi));
     }
-
 
     /**
      * @param metadata metadata of the default activity of Calendar
@@ -337,9 +269,19 @@ public class IconProvider {
     }
 
     /**
+     * Refreshes the system state definition used to check the validity of an app icon. It
+     * incorporates all the properties that can affect the app icon like the list of enabled locale
+     * and system-version.
+     */
+    public void updateSystemState() {
+        mSystemState = mContext.getResources().getConfiguration().getLocales().toLanguageTags()
+                + "," + Build.VERSION.SDK_INT;
+    }
+
+    /**
      * @return Today's day of the month, zero-indexed.
      */
-    public static int getDay() {
+    private static int getDay() {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1;
     }
 
