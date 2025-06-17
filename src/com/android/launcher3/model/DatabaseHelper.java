@@ -16,6 +16,7 @@
 package com.android.launcher3.model;
 
 import static com.android.launcher3.LauncherSettings.Favorites.addTableToDb;
+import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
 import static com.android.launcher3.provider.LauncherDbUtils.dropTable;
 
 import android.content.ContentValues;
@@ -55,6 +56,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
@@ -78,15 +80,15 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
     private final Context mContext;
     private final ToLongFunction<UserHandle> mUserSerialProvider;
     private final Runnable mOnEmptyDbCreateCallback;
+    private final AtomicInteger mMaxItemId = new AtomicInteger(-1);
 
-    private int mMaxItemId = -1;
     public boolean mHotseatRestoreTableExists;
 
     /**
      * Constructor used in tests and for restore.
      */
     public DatabaseHelper(Context context, String dbName,
-            ToLongFunction<UserHandle> userSerialProvider, Runnable onEmptyDbCreateCallback) {
+                          ToLongFunction<UserHandle> userSerialProvider, Runnable onEmptyDbCreateCallback) {
         super(context, dbName, SCHEMA_VERSION);
         mContext = context;
         mUserSerialProvider = userSerialProvider;
@@ -96,21 +98,19 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
     protected void initIds() {
         // In the case where neither onCreate nor onUpgrade gets called, we read the maxId from
         // the DB here
-        if (mMaxItemId == -1) {
-            mMaxItemId = initializeMaxItemId(getWritableDatabase());
-        }
+        mMaxItemId.compareAndSet(-1, initializeMaxItemId(getWritableDatabase()));
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         if (LOGD) Log.d(TAG, "creating new launcher database");
 
-        mMaxItemId = 1;
+        mMaxItemId.set(1);
 
         addTableToDb(db, getDefaultUserSerial(), false /* optional */);
 
         // Fresh and clean launcher DB.
-        mMaxItemId = initializeMaxItemId(db);
+        mMaxItemId.set(initializeMaxItemId(db));
         mOnEmptyDbCreateCallback.run();
     }
 
@@ -257,7 +257,8 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
                         Favorites.SCREEN, IntArray.wrap(-777, -778)), null);
             }
             case 30: {
-                if (FeatureFlags.QSbOnFirstScreen()) {
+                if (FeatureFlags.QSbOnFirstScreen()
+                        && !SHOULD_SHOW_FIRST_PAGE_WIDGET) {
                     // Clean up first row in screen 0 as it might contain junk data.
                     Log.d(TAG, "Cleaning up first row");
                     db.delete(Favorites.TABLE_NAME,
@@ -267,7 +268,6 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
                                     Favorites.CONTAINER, Favorites.CONTAINER_DESKTOP,
                                     Favorites.CELLY, 0), null);
                 }
-                return;
             }
             case 31: {
                 LauncherDbUtils.migrateLegacyShortcuts(mContext, db);
@@ -332,7 +332,7 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
             for (int widgetId : allWidgets) {
                 if (!validWidgets.contains(widgetId)) {
                     try {
-                        FileLog.d(TAG, "Deleting invalid widget " + widgetId);
+                        FileLog.d(TAG, "Deleting widget not found in db: appWidgetId=" + widgetId);
                         holder.deleteAppWidgetId(widgetId);
                         isAnyWidgetRemoved = true;
                     } catch (RuntimeException e) {
@@ -341,15 +341,17 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
                 }
             }
             if (isAnyWidgetRemoved) {
-                final String allWidgetsIds = Arrays.stream(allWidgets).mapToObj(String::valueOf)
+                final String allLauncherHostWidgetIds = Arrays.stream(allWidgets)
+                        .mapToObj(String::valueOf)
                         .collect(Collectors.joining(",", "[", "]"));
-                final String validWidgetsIds = Arrays.stream(
+                final String allValidLauncherDbWidgetIds = Arrays.stream(
                                 validWidgets.getArray().toArray()).mapToObj(String::valueOf)
                         .collect(Collectors.joining(",", "[", "]"));
                 FileLog.d(TAG,
-                        "One or more widgets was removed. db_path=" + db.getPath()
-                                + " allWidgetsIds=" + allWidgetsIds
-                                + ", validWidgetsIds=" + validWidgetsIds);
+                        "One or more widgets was removed: "
+                                + " allLauncherHostWidgetIds=" + allLauncherHostWidgetIds
+                                + ", allValidLauncherDbWidgetIds=" + allValidLauncherDbWidgetIds
+                );
             }
         } finally {
             holder.destroy();
@@ -448,11 +450,10 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
     // after that point
     @Override
     public int generateNewItemId() {
-        if (mMaxItemId < 0) {
+        if (mMaxItemId.get() < 0) {
             throw new RuntimeException("Error: max item id was not initialized");
         }
-        mMaxItemId += 1;
-        return mMaxItemId;
+        return mMaxItemId.incrementAndGet();
     }
 
     /**
@@ -481,7 +482,7 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
 
     public void checkId(ContentValues values) {
         int id = values.getAsInteger(Favorites._ID);
-        mMaxItemId = Math.max(id, mMaxItemId);
+        mMaxItemId.accumulateAndGet(id, Math::max);
     }
 
     private int initializeMaxItemId(SQLiteDatabase db) {
@@ -502,10 +503,10 @@ public class DatabaseHelper extends NoLocaleSQLiteHelper implements
 
     public int loadFavorites(SQLiteDatabase db, AutoInstallsLayout loader) {
         // TODO: Use multiple loaders with fall-back and transaction.
-        int count = loader.loadLayout(db, new IntArray());
+        int count = loader.loadLayout(db);
 
         // Ensure that the max ids are initialized
-        mMaxItemId = initializeMaxItemId(db);
+        mMaxItemId.set(initializeMaxItemId(db));
         return count;
     }
 

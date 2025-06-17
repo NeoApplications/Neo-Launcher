@@ -16,6 +16,7 @@
 
 package com.android.launcher3.model;
 
+import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
 import static com.android.launcher3.model.data.AppInfo.COMPONENT_KEY_COMPARATOR;
 import static com.android.launcher3.model.data.AppInfo.EMPTY_ARRAY;
 
@@ -32,11 +33,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.compat.AlphabeticIndexCompat;
+import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.pm.PackageInstallInfo;
+import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.util.ApiWrapper;
+import com.android.launcher3.util.ApplicationInfoWrapper;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.SafeCloseable;
@@ -49,15 +54,18 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import javax.inject.Inject;
+
 
 /**
  * Stores the list of all applications for the all apps view.
  */
+@LauncherAppSingleton
 public class AllAppsList {
 
     private static final String TAG = "AllAppsList";
     private static final Consumer<AppInfo> NO_OP_CONSUMER = a -> { };
-
+    private static final boolean DEBUG = true;
 
     public static final int DEFAULT_APPLICATIONS_NUMBER = 42;
 
@@ -65,10 +73,11 @@ public class AllAppsList {
     public final ArrayList<AppInfo> data = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
 
     @NonNull
-    private IconCache mIconCache;
+    private final IconCache mIconCache;
 
+    // Edited
     @NonNull
-    private CustomAppFilter mAppFilter;
+    private final CustomAppFilter mAppFilter;
 
     private boolean mDataChanged = false;
     private Consumer<AppInfo> mRemoveListener = NO_OP_CONSUMER;
@@ -79,12 +88,15 @@ public class AllAppsList {
      * @see Callbacks#FLAG_HAS_SHORTCUT_PERMISSION
      * @see Callbacks#FLAG_QUIET_MODE_ENABLED
      * @see Callbacks#FLAG_QUIET_MODE_CHANGE_PERMISSION
+     * @see Callbacks#FLAG_WORK_PROFILE_QUIET_MODE_ENABLED
+     * @see Callbacks#FLAG_PRIVATE_PROFILE_QUIET_MODE_ENABLED
      */
     private int mFlags;
 
     /**
      * Boring constructor.
      */
+    @Inject
     public AllAppsList(IconCache iconCache, CustomAppFilter appFilter) {
         mIconCache = iconCache;
         mAppFilter = appFilter;
@@ -137,6 +149,7 @@ public class AllAppsList {
         add(info, activityInfo, true);
     }
 
+    // Edited
     public void add(AppInfo info, LauncherActivityInfo activityInfo, boolean loadIcon) {
         if (!mAppFilter.shouldShowApp(info.componentName, info.user)) {
             return;
@@ -145,7 +158,7 @@ public class AllAppsList {
             return;
         }
         if (loadIcon) {
-            mIconCache.getTitleAndIcon(info, activityInfo, false /* useLowResIcon */);
+            mIconCache.getTitleAndIcon(info, activityInfo, DEFAULT_LOOKUP_FLAG);
             info.sectionName = mIndex.computeSectionName(info.title);
         } else {
             info.title = "";
@@ -164,14 +177,14 @@ public class AllAppsList {
     public AppInfo addPromiseApp(
             Context context, PackageInstallInfo installInfo, boolean loadIcon) {
         // only if not yet installed
-        if (new PackageManagerHelper(context)
-                .isAppInstalled(installInfo.packageName, installInfo.user)) {
+        if (new ApplicationInfoWrapper(context, installInfo.packageName, installInfo.user)
+                .isInstalled()) {
             return null;
         }
         AppInfo promiseAppInfo = new AppInfo(installInfo);
 
         if (loadIcon) {
-            mIconCache.getTitleAndIcon(promiseAppInfo, promiseAppInfo.usingLowResIcon());
+            mIconCache.getTitleAndIcon(promiseAppInfo, promiseAppInfo.getMatchingLookupFlag());
             promiseAppInfo.sectionName = mIndex.computeSectionName(promiseAppInfo.title);
         } else {
             promiseAppInfo.title = "";
@@ -198,9 +211,16 @@ public class AllAppsList {
             if (tgtComp != null && tgtComp.getPackageName().equals(installInfo.packageName)
                     && appInfo.user.equals(user)) {
                 if (installInfo.state == PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING
-                        || installInfo.state == PackageInstallInfo.STATUS_INSTALLING) {
+                        || installInfo.state == PackageInstallInfo.STATUS_INSTALLING
+                        // In case unarchival fails, we would want to keep the icon and update
+                        // back the progress to 0 for the all apps view without removing the
+                        // icon, which is contrary to what happens during normal app installation
+                        // flow.
+                        || (installInfo.state == PackageInstallInfo.STATUS_FAILED
+                        && appInfo.isArchived())) {
                     if (appInfo.isAppStartable()
-                            && installInfo.state == PackageInstallInfo.STATUS_INSTALLING) {
+                            && installInfo.state == PackageInstallInfo.STATUS_INSTALLING
+                            && !appInfo.isArchived()) {
                         continue;
                     }
                     appInfo.setProgressLevel(installInfo);
@@ -208,6 +228,12 @@ public class AllAppsList {
                     updatedAppInfos.add(appInfo);
                 } else if (installInfo.state == PackageInstallInfo.STATUS_FAILED
                         && !appInfo.isAppStartable()) {
+                    if (DEBUG) {
+                        Log.w(TAG, "updatePromiseInstallInfo: removing app due to install"
+                                + " failure and appInfo not startable."
+                                + " package=" + appInfo.getTargetPackage()
+                                + ", user=" + user);
+                    }
                     removeApp(i);
                 }
             }
@@ -287,6 +313,9 @@ public class AllAppsList {
      */
     public List<LauncherActivityInfo> updatePackage(
             Context context, String packageName, UserHandle user) {
+        final ApiWrapper apiWrapper = ApiWrapper.INSTANCE.get(context);
+        final UserCache userCache = UserCache.getInstance(context);
+        final PackageManagerHelper pmHelper = PackageManagerHelper.INSTANCE.get(context);
         final List<LauncherActivityInfo> matches = context.getSystemService(LauncherApps.class)
                 .getActivityList(packageName, user);
         if (matches.size() > 0) {
@@ -297,7 +326,11 @@ public class AllAppsList {
                 if (user.equals(applicationInfo.user)
                         && packageName.equals(applicationInfo.componentName.getPackageName())) {
                     if (!findActivity(matches, applicationInfo.componentName)) {
-                        Log.w(TAG, "Changing shortcut target due to app component name change.");
+                        if (DEBUG) {
+                            Log.w(TAG, "Changing shortcut target due to app component name change."
+                                    + " component=" + applicationInfo.componentName
+                                    + ", user=" + user);
+                        }
                         removeApp(i);
                     }
                 }
@@ -312,18 +345,21 @@ public class AllAppsList {
                 } else {
                     Intent launchIntent = AppInfo.makeLaunchIntent(info);
 
-                    mIconCache.getTitleAndIcon(applicationInfo, info, false /* useLowResIcon */);
+                    mIconCache.getTitleAndIcon(applicationInfo, info, DEFAULT_LOOKUP_FLAG);
                     applicationInfo.sectionName = mIndex.computeSectionName(applicationInfo.title);
-                    applicationInfo.setProgressLevel(
-                            PackageManagerHelper.getLoadingProgress(info),
-                            PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
                     applicationInfo.intent = launchIntent;
-
+                    AppInfo.updateRuntimeFlagsForActivityTarget(applicationInfo, info,
+                            userCache.getUserInfo(user), apiWrapper, pmHelper);
                     mDataChanged = true;
                 }
             }
         } else {
             // Remove all data for this package.
+            if (DEBUG) {
+                Log.w(TAG, "updatePackage: no Activities matched updated package,"
+                        + " removing any AppInfo with package=" + packageName
+                        + ", user=" + user);
+            }
             for (int i = data.size() - 1; i >= 0; i--) {
                 final AppInfo applicationInfo = data.get(i);
                 if (user.equals(applicationInfo.user)
