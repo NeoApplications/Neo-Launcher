@@ -23,6 +23,7 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.slice.SliceItem;
 
@@ -52,13 +53,19 @@ public class StatsLogManager implements ResourceBasedOverride {
     public static final int LAUNCHER_STATE_OVERVIEW = 3;
     public static final int LAUNCHER_STATE_ALLAPPS = 4;
     public static final int LAUNCHER_STATE_UNCHANGED = 5;
-    public static final int LAUNCHER_STATE_OPTIONS = 6;
 
+    @NonNull
+    protected final Context mContext;
+    @Nullable
+    protected final ActivityContext mActivityContext;
+
+    private KeyboardStateManager mKeyboardStateManager;
     private InstanceId mInstanceId;
 
-    protected @Nullable ActivityContext mActivityContext = null;
-    protected @Nullable Context mContext = null;
-    private KeyboardStateManager mKeyboardStateManager;
+    public StatsLogManager(@NonNull Context context) {
+        mContext = context;
+        mActivityContext = ActivityContext.lookupContextNoThrow(context);
+    }
 
     /**
      * Returns event enum based on the two state transition information when swipe
@@ -118,6 +125,9 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "Task launched from overview using SWIPE DOWN")
         LAUNCHER_TASK_LAUNCH_SWIPE_DOWN(340),
 
+        @UiEvent(doc = "App launched by dragging and dropping, probably from taskbar")
+        LAUNCHER_APP_LAUNCH_DRAGDROP(1552),
+
         @UiEvent(doc = "TASK dismissed from overview using SWIPE UP")
         LAUNCHER_TASK_DISMISS_SWIPE_UP(341),
 
@@ -156,6 +166,9 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User tapped or long pressed on settings icon inside launcher settings.")
         LAUNCHER_SETTINGS_BUTTON_TAP_OR_LONGPRESS(463),
 
+        @UiEvent(doc = "User tapped or long pressed on apps icon inside launcher settings.")
+        LAUNCHER_ALL_APPS_TAP_OR_LONGPRESS(2204),
+
         @UiEvent(doc = "User tapped or long pressed on widget tray icon inside launcher settings.")
         LAUNCHER_WIDGETSTRAY_BUTTON_TAP_OR_LONGPRESS(464),
 
@@ -164,6 +177,10 @@ public class StatsLogManager implements ResourceBasedOverride {
 
         @UiEvent(doc = "User searched for a widget in the widget picker.")
         LAUNCHER_WIDGETSTRAY_SEARCHED(819),
+
+        @UiEvent(doc = "User clicked on view all button to expand the displayed list in the "
+                + "widget picker.")
+        LAUNCHER_WIDGETSTRAY_EXPAND_PRESS(1978),
 
         @UiEvent(doc = "A dragged item is dropped on 'Remove' button in the target bar")
         LAUNCHER_ITEM_DROPPED_ON_REMOVE(465),
@@ -197,17 +214,34 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User tapped on app info system shortcut.")
         LAUNCHER_SYSTEM_SHORTCUT_APP_INFO_TAP(515),
 
+        /**
+         * @deprecated Use {@link #LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP} or
+         *             {@link #LAUNCHER_APP_ICON_MENU_SPLIT_RIGHT_BOTTOM}
+         */
+        @Deprecated
         @UiEvent(doc = "User tapped on split screen icon on a task menu.")
         LAUNCHER_SYSTEM_SHORTCUT_SPLIT_SCREEN_TAP(518),
 
         @UiEvent(doc = "User tapped on free form icon on a task menu.")
         LAUNCHER_SYSTEM_SHORTCUT_FREE_FORM_TAP(519),
 
+        @UiEvent(doc = "User tapped on desktop icon on a task menu.")
+        LAUNCHER_SYSTEM_SHORTCUT_DESKTOP_TAP(1706),
+
+        @UiEvent(doc = "User tapped on external display icon on a task menu,")
+        LAUNCHER_SYSTEM_SHORTCUT_EXTERNAL_DISPLAY_TAP(1957),
+
+        @UiEvent(doc = "User tapped on close app on a task menu,")
+        LAUNCHER_SYSTEM_SHORTCUT_CLOSE_APP_TAP(2081),
+
         @UiEvent(doc = "User tapped on pause app system shortcut.")
         LAUNCHER_SYSTEM_SHORTCUT_PAUSE_TAP(521),
 
         @UiEvent(doc = "User tapped on pin system shortcut.")
         LAUNCHER_SYSTEM_SHORTCUT_PIN_TAP(522),
+
+        @UiEvent(doc = "User tapped on don't suggest app system shortcut.")
+        LAUNCHER_SYSTEM_SHORTCUT_DONT_SUGGEST_APP_TAP(1603),
 
         @UiEvent(doc = "User is shown All Apps education view.")
         LAUNCHER_ALL_APPS_EDU_SHOWN(523),
@@ -273,8 +307,26 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User swipes or fling in RIGHT direction on the bottom bazel area.")
         LAUNCHER_QUICKSWITCH_RIGHT(572),
 
+        @UiEvent(doc = "User swipes or fling on the bottom bazel area to enter Desktop mode.")
+        LAUNCHER_QUICKSWITCH_ENTER_DESKTOP_MODE(2025),
+
+        @UiEvent(doc = "User swipes or fling on the bottom bazel area to exit Desktop mode.")
+        LAUNCHER_QUICKSWITCH_EXIT_DESKTOP_MODE(2026),
+
         @UiEvent(doc = "User swipes or fling in DOWN direction on the bottom bazel area.")
         LAUNCHER_SWIPEDOWN_NAVBAR(573),
+
+        @UiEvent(doc = "User deep presses on the bottom bezel area.")
+        LAUNCHER_DEEP_PRESS_NAVBAR(1543),
+
+        @UiEvent(doc = "User long presses on the bottom bezel area.")
+        LAUNCHER_LONG_PRESS_NAVBAR(1544),
+
+        @UiEvent(doc = "User deep presses on the stashed taskbar")
+        LAUNCHER_DEEP_PRESS_STASHED_TASKBAR(1602),
+
+        @UiEvent(doc = "User long presses on the stashed taskbar")
+        LAUNCHER_LONG_PRESS_STASHED_TASKBAR(1592),
 
         @UiEvent(doc = "User swipes or fling in UP direction from bottom bazel area.")
         LAUNCHER_HOME_GESTURE(574),
@@ -342,6 +394,12 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User tapped on image content in Overview Select mode.")
         LAUNCHER_SELECT_MODE_IMAGE(627),
 
+        @UiEvent(doc = "User tapped on barcode content in Overview Select mode.")
+        LAUNCHER_SELECT_MODE_BARCODE(1531),
+
+        @UiEvent(doc = "Highlight gleams for barcode content in Overview Select mode.")
+        LAUNCHER_SELECT_MODE_SHOW_BARCODE_REGIONS(1532),
+
         @UiEvent(doc = "Activity to add external item was started")
         LAUNCHER_ADD_EXTERNAL_ITEM_START(641),
 
@@ -378,20 +436,29 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "Notification dismissed by swiping right.")
         LAUNCHER_NOTIFICATION_DISMISSED(652),
 
-        @UiEvent(doc = "Current grid size is changed to 6.")
-        LAUNCHER_GRID_SIZE_6(930),
+        @UiEvent(doc = "Current grid size is changed to 2x2")
+        LAUNCHER_GRID_SIZE_2_BY_2(2181),
 
-        @UiEvent(doc = "Current grid size is changed to 5.")
-        LAUNCHER_GRID_SIZE_5(662),
+        @UiEvent(doc = "Current grid size is changed to 3x3")
+        LAUNCHER_GRID_SIZE_3_BY_3(2182),
 
-        @UiEvent(doc = "Current grid size is changed to 4.")
-        LAUNCHER_GRID_SIZE_4(663),
+        @UiEvent(doc = "Current grid size is changed to 4x4")
+        LAUNCHER_GRID_SIZE_4_BY_4(2183),
 
-        @UiEvent(doc = "Current grid size is changed to 3.")
-        LAUNCHER_GRID_SIZE_3(664),
+        @UiEvent(doc = "Current grid size is changed to 4x5")
+        LAUNCHER_GRID_SIZE_4_BY_5(2184),
 
-        @UiEvent(doc = "Current grid size is changed to 2.")
-        LAUNCHER_GRID_SIZE_2(665),
+        @UiEvent(doc = "Current grid size is changed to 4x6")
+        LAUNCHER_GRID_SIZE_4_BY_6(2185),
+
+        @UiEvent(doc = "Current grid size is changed to 5x5")
+        LAUNCHER_GRID_SIZE_5_BY_5(2186),
+
+        @UiEvent(doc = "Current grid size is changed to 5x6")
+        LAUNCHER_GRID_SIZE_5_BY_6(2187),
+
+        @UiEvent(doc = "Current grid size is changed to 6x5")
+        LAUNCHER_GRID_SIZE_6_BY_5(2188),
 
         @UiEvent(doc = "Launcher entered into AllApps state.")
         LAUNCHER_ALLAPPS_ENTRY(692),
@@ -499,6 +566,21 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User taps the More button to share an image")
         LAUNCHER_OVERVIEW_SHARING_TAP_MORE_TO_SHARE_IMAGE(778),
 
+        @UiEvent(doc = "Show Barode indicator for overview sharing")
+        LAUNCHER_OVERVIEW_SHARING_SHOW_BARCODE_INDICATOR(1533),
+
+        @UiEvent(doc = "User taps barcode indicator in overview")
+        LAUNCHER_OVERVIEW_SHARING_BARCODE_INDICATOR_TAP(1534),
+
+        @UiEvent(doc = "Configure barcode region for long_press action for overview sharing")
+        LAUNCHER_OVERVIEW_SHARING_CONFIGURE_BARCODE_REGION_LONG_PRESS(1535),
+
+        @UiEvent(doc = "User long presses a barcode region in overview")
+        LAUNCHER_OVERVIEW_SHARING_BARCODE_REGION_LONG_PRESS(1536),
+
+        @UiEvent(doc = "User drags a barcode region in overview")
+        LAUNCHER_OVERVIEW_SHARING_BARCODE_REGION_DRAG(1537),
+
         @UiEvent(doc = "User started resizing a widget on their home screen.")
         LAUNCHER_WIDGET_RESIZE_STARTED(820),
 
@@ -522,12 +604,6 @@ public class StatsLogManager implements ResourceBasedOverride {
 
         @UiEvent(doc = "Launcher item drop failed since there was not enough room on the screen.")
         LAUNCHER_ITEM_DROP_FAILED_INSUFFICIENT_SPACE(872),
-
-        @UiEvent(doc = "User long pressed on the taskbar background to hide the taskbar")
-        LAUNCHER_TASKBAR_LONGPRESS_HIDE(896),
-
-        @UiEvent(doc = "User long pressed on the taskbar gesture handle to show the taskbar")
-        LAUNCHER_TASKBAR_LONGPRESS_SHOW(897),
 
         @UiEvent(doc = "User clicks on the search icon on header to launch search in app.")
         LAUNCHER_ALLAPPS_SEARCHINAPP_LAUNCH(913),
@@ -604,6 +680,9 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User tapped taskbar All Apps button.")
         LAUNCHER_TASKBAR_ALLAPPS_BUTTON_TAP(1057),
 
+        @UiEvent(doc = "User long pressed taskbar All Apps button.")
+        LAUNCHER_TASKBAR_ALLAPPS_BUTTON_LONG_PRESS(1607),
+
         @UiEvent(doc = "User tapped on Share app system shortcut.")
         LAUNCHER_SYSTEM_SHORTCUT_APP_SHARE_TAP(1075),
 
@@ -655,7 +734,170 @@ public class StatsLogManager implements ResourceBasedOverride {
         LAUNCHER_APP_PAIR_SAVE(1456),
 
         @UiEvent(doc = "App launched through pending intent")
-        LAUNCHER_APP_LAUNCH_PENDING_INTENT(1394)
+        LAUNCHER_APP_LAUNCH_PENDING_INTENT(1394),
+
+        @UiEvent(doc = "User long pressed on taskbar divider icon to open popup menu")
+        LAUNCHER_TASKBAR_DIVIDER_MENU_OPEN(1488),
+
+        @UiEvent(doc = "User long pressed on taskbar divider icon to close popup menu")
+        LAUNCHER_TASKBAR_DIVIDER_MENU_CLOSE(1489),
+
+        @UiEvent(doc = "User has pinned taskbar using taskbar divider menu")
+        LAUNCHER_TASKBAR_PINNED(1490),
+
+        @UiEvent(doc = "User has unpinned taskbar using taskbar divider menu")
+        LAUNCHER_TASKBAR_UNPINNED(1491),
+
+        @UiEvent(doc = "User tapped private space lock button")
+        LAUNCHER_PRIVATE_SPACE_LOCK_TAP(1548),
+
+        @UiEvent(doc = "User tapped private space unlock button")
+        LAUNCHER_PRIVATE_SPACE_UNLOCK_TAP(1549),
+
+        @UiEvent(doc = "User tapped private space settings button")
+        LAUNCHER_PRIVATE_SPACE_SETTINGS_TAP(1550),
+
+        @UiEvent(doc = "User tapped on install to private space system shortcut.")
+        LAUNCHER_PRIVATE_SPACE_INSTALL_SYSTEM_SHORTCUT_TAP(1565),
+
+        @UiEvent(doc = "User tapped private space install app button.")
+        LAUNCHER_PRIVATE_SPACE_INSTALL_APP_BUTTON_TAP(1605),
+
+        @UiEvent(doc = "User attempted to create split screen with a widget")
+        LAUNCHER_SPLIT_WIDGET_ATTEMPT(1604),
+
+        @UiEvent(doc = "User tapped on private space uninstall system shortcut.")
+        LAUNCHER_PRIVATE_SPACE_UNINSTALL_SYSTEM_SHORTCUT_TAP(1608),
+
+        @UiEvent(doc = "User initiated split selection")
+        LAUNCHER_SPLIT_SELECTION_INITIATED(1618),
+
+        @UiEvent(doc = "User finished a split selection session")
+        LAUNCHER_SPLIT_SELECTION_COMPLETE(1619),
+
+        @UiEvent(doc = "User selected both apps for split screen")
+        LAUNCHER_SPLIT_SELECTED_SECOND_APP(1609),
+
+        @UiEvent(doc = "User exited split selection by going home via swipe, button, or state "
+                + "transition")
+        LAUNCHER_SPLIT_SELECTION_EXIT_HOME(1610),
+
+        @UiEvent(doc = "User exited split selection by tapping cancel in split instructions view")
+        LAUNCHER_SPLIT_SELECTION_EXIT_CANCEL_BUTTON(1611),
+
+        @UiEvent(doc = "User exited split selection when another activity/app came to foreground"
+                + " after first app had been selected OR if user long-pressed on home. Default exit"
+                + " metric.")
+        LAUNCHER_SPLIT_SELECTION_EXIT_INTERRUPTED(1612),
+
+        @UiEvent(doc = "User tapped add widget button in widget sheet.")
+        LAUNCHER_WIDGET_ADD_BUTTON_TAP(1622),
+
+        @UiEvent(doc = "Number of user installed Private profile apps, shown above separator line")
+        LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT(1672),
+
+        @UiEvent(doc = "Number of preinstalled Private profile apps, shown under separator line")
+        LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT(1673),
+
+        @UiEvent(doc = "Private space lock animation started")
+        LAUNCHER_PRIVATE_SPACE_LOCK_ANIMATION_BEGIN(1725),
+
+        @UiEvent(doc = "Private space lock animation finished")
+        LAUNCHER_PRIVATE_SPACE_LOCK_ANIMATION_END(1726),
+
+        @UiEvent(doc = "Private space unlock animation started")
+        LAUNCHER_PRIVATE_SPACE_UNLOCK_ANIMATION_BEGIN(1727),
+
+        @UiEvent(doc = "Private space unlock animation finished")
+        LAUNCHER_PRIVATE_SPACE_UNLOCK_ANIMATION_END(1728),
+
+        @UiEvent(doc = "User rotates whilst in Overview / RecentsView")
+        LAUNCHER_OVERVIEW_ORIENTATION_CHANGED(1762),
+
+        @UiEvent(doc = "User launches Overview from 3 button navigation")
+        LAUNCHER_OVERVIEW_SHOW_OVERVIEW_FROM_3_BUTTON(1763),
+
+        @UiEvent(doc = "User launches Overview from alt+tab keyboard quick switch")
+        LAUNCHER_OVERVIEW_SHOW_OVERVIEW_FROM_KEYBOARD_QUICK_SWITCH(1764),
+
+        @UiEvent(doc = "User launches Overview from meta+tab keyboard shortcut")
+        LAUNCHER_OVERVIEW_SHOW_OVERVIEW_FROM_KEYBOARD_SHORTCUT(1765),
+
+        @UiEvent(doc = "User long pressed on the taskbar IME switcher button")
+        LAUNCHER_TASKBAR_IME_SWITCHER_BUTTON_LONGPRESS(1798),
+
+        @UiEvent(doc = "Failed to launch assistant due to Google assistant not available")
+        LAUNCHER_LAUNCH_ASSISTANT_FAILED_NOT_AVAILABLE(1465),
+
+        @UiEvent(doc = "Failed to launch assistant due to service error")
+        LAUNCHER_LAUNCH_ASSISTANT_FAILED_SERVICE_ERROR(1466),
+
+        @UiEvent(doc = "User launched assistant by long-pressing nav handle")
+        LAUNCHER_LAUNCH_ASSISTANT_SUCCESSFUL_NAV_HANDLE(1467),
+
+        @UiEvent(doc = "Failed to launch due to Contextual Search not available")
+        LAUNCHER_LAUNCH_OMNI_FAILED_NOT_AVAILABLE(1471),
+
+        @UiEvent(doc = "Failed to launch due to Contextual Search setting disabled")
+        LAUNCHER_LAUNCH_OMNI_FAILED_SETTING_DISABLED(1632),
+
+        @UiEvent(doc = "User launched Contextual Search by long-pressing home in 3-button mode")
+        LAUNCHER_LAUNCH_OMNI_SUCCESSFUL_HOME(1481),
+
+        @UiEvent(doc = "User launched Contextual Search by using accessibility System Action")
+        LAUNCHER_LAUNCH_OMNI_SUCCESSFUL_SYSTEM_ACTION(1492),
+
+        @UiEvent(doc = "User launched Contextual Search by long pressing the meta key")
+        LAUNCHER_LAUNCH_OMNI_SUCCESSFUL_META(1606),
+
+        @UiEvent(doc = "Contextual Search invocation was attempted over the notification shade")
+        LAUNCHER_LAUNCH_OMNI_ATTEMPTED_OVER_NOTIFICATION_SHADE(1485),
+
+        @UiEvent(doc = "The Contextual Search all entrypoints toggle value in Settings")
+        LAUNCHER_SETTINGS_OMNI_ALL_ENTRYPOINTS_TOGGLE_VALUE(1633),
+
+        @UiEvent(doc = "Contextual Search invocation was attempted over the keyguard")
+        LAUNCHER_LAUNCH_OMNI_ATTEMPTED_OVER_KEYGUARD(1501),
+
+        @UiEvent(doc = "Contextual Search invocation was attempted while splitscreen is active")
+        LAUNCHER_LAUNCH_OMNI_ATTEMPTED_SPLITSCREEN(1505),
+
+        @UiEvent(doc = "User long press nav handle and a long press runnable was created.")
+        LAUNCHER_OMNI_GET_LONG_PRESS_RUNNABLE(1545),
+
+        @UiEvent(doc = "User tapped on \"change aspect ratio\" system shortcut.")
+        LAUNCHER_ASPECT_RATIO_SETTINGS_SYSTEM_SHORTCUT_TAP(2219),
+
+        // One Grid Flags
+        @UiEvent(doc = "User sets the device in Fixed Landscape")
+        FIXED_LANDSCAPE_TOGGLE_ENABLE(2014),
+
+        @UiEvent(doc = "User sets the device in Fixed Landscape")
+        FIXED_LANDSCAPE_TOGGLE_DISABLED(2020),
+
+        @UiEvent(doc = "Work utility view expand animation started")
+        LAUNCHER_WORK_UTILITY_VIEW_EXPAND_ANIMATION_BEGIN(2075),
+
+        @UiEvent(doc = "Work utility view expand animation ended")
+        LAUNCHER_WORK_UTILITY_VIEW_EXPAND_ANIMATION_END(2076),
+
+        @UiEvent(doc = "Work utility view shrink animation started")
+        LAUNCHER_WORK_UTILITY_VIEW_SHRINK_ANIMATION_BEGIN(2077),
+
+        @UiEvent(doc = "Work utility view shrink animation ended")
+        LAUNCHER_WORK_UTILITY_VIEW_SHRINK_ANIMATION_END(2078),
+
+        @UiEvent(doc = "Standard grid migration occurred")
+        LAUNCHER_STANDARD_GRID_MIGRATION(2200),
+
+        @UiEvent(doc = "Row shift grid migration occurred")
+        LAUNCHER_ROW_SHIFT_GRID_MIGRATION(2201),
+
+        @UiEvent(doc = "Do standard migration when upgrading to one grid")
+        LAUNCHER_STANDARD_ONE_GRID_MIGRATION(2205),
+
+        @UiEvent(doc = "Do row shift migration when upgrading to one grid")
+        LAUNCHER_ROW_SHIFT_ONE_GRID_MIGRATION(2206),
 
         // ADD MORE
         ;
@@ -685,11 +927,16 @@ public class StatsLogManager implements ResourceBasedOverride {
                 "The duration to inflate launcher root view in launcher activity's onCreate().")
         LAUNCHER_LATENCY_STARTUP_VIEW_INFLATION(1364),
 
-        @UiEvent(doc = "The duration of synchronous loading workspace")
-        LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC(1366),
-
         @UiEvent(doc = "The duration of asynchronous loading workspace")
         LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC(1367),
+
+        @UiEvent(doc = "Time passed between Contextual Search runnable creation and execution. This"
+                + " ensures that Recent animations have finished before Contextual Search starts.")
+        LAUNCHER_LATENCY_OMNI_RUNNABLE(1546),
+
+        @UiEvent(doc = "Time passed between nav handle touch down and cancellation without "
+                + "triggering Contextual Search")
+        LAUNCHER_LATENCY_CONTEXTUAL_SEARCH_LPNH_ABANDON(2171),
         ;
 
         private final int mId;
@@ -820,6 +1067,20 @@ public class StatsLogManager implements ResourceBasedOverride {
          * Sets the input type of the log message.
          */
         default StatsLogger withInputType(int inputType) {
+            return this;
+        }
+
+        /**
+         * Set the features of the log message.
+         */
+        default StatsLogger withFeatures(int feature) {
+            return this;
+        }
+
+        /**
+         * Set the package name of the log message.
+         */
+        default StatsLogger withPackageName(@Nullable String packageName) {
             return this;
         }
 
@@ -1080,10 +1341,7 @@ public class StatsLogManager implements ResourceBasedOverride {
      * Creates a new instance of {@link StatsLogManager} based on provided context.
      */
     public static StatsLogManager newInstance(Context context) {
-        StatsLogManager manager = Overrides.getObject(StatsLogManager.class,
-                context.getApplicationContext(), R.string.stats_log_manager_class);
-        manager.mActivityContext = ActivityContext.lookupContextNoThrow(context);
-        manager.mContext = context;
-        return manager;
+        return Overrides.getObject(
+                StatsLogManager.class, context, R.string.stats_log_manager_class);
     }
 }
