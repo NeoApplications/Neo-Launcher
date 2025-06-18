@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.pageindicators;
 
+import java.util.function.Consumer;
+
 /**
  * Base class for a page indicator.
  */
@@ -27,10 +29,20 @@ public interface PageIndicator {
     void setMarkersCount(int numMarkers);
 
     /**
-     * Sets flag to indicate when the screens are in the process of binding so that we don't animate
-     * during that period.
+     * This is only going to be used by the FolderPagedView's PageIndicator. A refactor is planned
+     * to separate the two purposes of this class, but in the meantime, this indicator will serve to
+     * let the folder snap to the page of its click, and also tell the PageIndicator not to draw
+     * arrows if the click listener is null (at least until after this is refactored).
      */
-    default void setAreScreensBinding(boolean areScreensBinding) {
+    void setArrowClickListener(Consumer<Direction> listener);
+
+    /**
+     * Sets a flag indicating whether to pause scroll.
+     * <p>Should be set to {@code true} while the screen is binding or new data is being applied,
+     * and to {@code false} once done. This prevents animation conflicts due to scrolling during
+     * those periods.</p>
+     */
+    default void setPauseScroll(boolean pause, boolean isTwoPanels) {
         // No-op by default
     }
 
