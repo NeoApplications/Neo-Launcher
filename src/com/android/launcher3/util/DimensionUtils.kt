@@ -31,7 +31,8 @@ object DimensionUtils {
     fun getTaskbarPhoneDimensions(
             deviceProfile: DeviceProfile,
             res: Resources,
-            isPhoneMode: Boolean
+            isPhoneMode: Boolean,
+            isGestureNav: Boolean,
     ): Point {
         val p = Point()
         // Taskbar for large screen
@@ -42,7 +43,7 @@ object DimensionUtils {
         }
 
         // Taskbar on phone using gesture nav, it will always be stashed
-        if (deviceProfile.isGestureMode) {
+        if (isGestureNav) {
             p.x = ViewGroup.LayoutParams.MATCH_PARENT
             p.y = res.getDimensionPixelSize(R.dimen.taskbar_stashed_size)
             return p
@@ -51,12 +52,12 @@ object DimensionUtils {
         // Taskbar on phone, portrait
         if (!deviceProfile.isLandscape) {
             p.x = ViewGroup.LayoutParams.MATCH_PARENT
-            p.y = res.getDimensionPixelSize(R.dimen.taskbar_size)
+            p.y = res.getDimensionPixelSize(R.dimen.taskbar_phone_size)
             return p
         }
 
         // Taskbar on phone, landscape
-        p.x = res.getDimensionPixelSize(R.dimen.taskbar_size)
+        p.x = res.getDimensionPixelSize(R.dimen.taskbar_phone_size)
         p.y = ViewGroup.LayoutParams.MATCH_PARENT
         return p
     }

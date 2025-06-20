@@ -16,6 +16,7 @@
 package com.android.launcher3.util;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.widget.EdgeEffect;
 
 import com.android.launcher3.Utilities;
@@ -29,18 +30,19 @@ public class EdgeEffectCompat extends EdgeEffect {
         super(context);
     }
 
-    @Override
-    public float getDistance() {
-        return Utilities.ATLEAST_S ? super.getDistance() : 0;
-    }
-
-    @Override
-    public float onPullDistance(float deltaDistance, float displacement) {
+    // Edited
+    public float onPullDistance(float deltaDistance, float displacement, MotionEvent ev) {
         if (Utilities.ATLEAST_S) {
-            return super.onPullDistance(deltaDistance, displacement);
+            return onPullDistance(deltaDistance, displacement);
         } else {
             onPull(deltaDistance, displacement);
             return deltaDistance;
         }
+    }
+
+    public void onFlingVelocity(int velocity) { }
+
+    public void onRelease(MotionEvent ev) {
+        onRelease();
     }
 }

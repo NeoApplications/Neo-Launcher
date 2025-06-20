@@ -13,100 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.util;
 
-import android.graphics.drawable.Drawable;
-import android.view.View;
+package com.android.launcher3.util
 
-import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.folder.Folder;
-import com.android.launcher3.folder.FolderIcon;
-import com.android.launcher3.graphics.PreloadIconDrawable;
-import com.android.launcher3.model.data.FolderInfo;
-import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.model.data.LauncherAppWidgetInfo;
-import com.android.launcher3.model.data.WorkspaceItemInfo;
-import com.android.launcher3.views.ActivityContext;
-import com.android.launcher3.widget.PendingAppWidgetHostView;
+import android.view.View
+import com.android.launcher3.BubbleTextView
+import com.android.launcher3.apppairs.AppPairIcon
+import com.android.launcher3.folder.Folder
+import com.android.launcher3.folder.FolderIcon
+import com.android.launcher3.model.data.AppPairInfo
+import com.android.launcher3.model.data.FolderInfo
+import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
+import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator
+import com.android.launcher3.views.ActivityContext
+import com.android.launcher3.widget.PendingAppWidgetHostView
+import java.util.function.Predicate
 
-import java.util.HashSet;
-import java.util.List;
-
-/**
- * Interface representing a container which can bind Launcher items with some utility methods
- */
-public interface LauncherBindableItemsContainer {
+/** Interface representing a container which can bind Launcher items with some utility methods */
+interface LauncherBindableItemsContainer {
 
     /**
-     * Called to update workspace items as a result of
-     * {@link com.android.launcher3.model.BgDataModel.Callbacks#bindWorkspaceItemsChanged(List)}
+     * Called to update workspace items as a result of {@link
+     * com.android.launcher3.model.BgDataModel.Callbacks#bindItemsUpdated(Set)}
      */
-    default void updateWorkspaceItems(List<WorkspaceItemInfo> shortcuts, ActivityContext context) {
-        final HashSet<WorkspaceItemInfo> updates = new HashSet<>(shortcuts);
-        ItemOperator op = (info, v) -> {
-            if (v instanceof BubbleTextView && updates.contains(info)) {
-                WorkspaceItemInfo si = (WorkspaceItemInfo) info;
-                BubbleTextView shortcut = (BubbleTextView) v;
-                Drawable oldIcon = shortcut.getIcon();
-                boolean oldPromiseState = (oldIcon instanceof PreloadIconDrawable)
-                        && ((PreloadIconDrawable) oldIcon).hasNotCompleted();
-                shortcut.applyFromWorkspaceItem(
-                        si,
-                        si.isPromise() != oldPromiseState
-                                && oldIcon instanceof PreloadIconDrawable
-                                ? (PreloadIconDrawable) oldIcon
-                                : null);
-            } else if (info instanceof FolderInfo && v instanceof FolderIcon) {
-                ((FolderIcon) v).updatePreviewItems(updates::contains);
-                ((FolderInfo) info).itemsChanged(false);
+    fun updateContainerItems(updates: Set<ItemInfo>, context: ActivityContext) {
+        val op = ItemOperator { info, v ->
+            when {
+                v is BubbleTextView && info is WorkspaceItemInfo && updates.contains(info) ->
+                    v.applyFromWorkspaceItem(info)
+                v is FolderIcon && info is FolderInfo -> v.updatePreviewItems(updates::contains)
+                v is AppPairIcon && info is AppPairInfo ->
+                    v.maybeRedrawForWorkspaceUpdate(updates::contains)
+                v is PendingAppWidgetHostView && updates.contains(info) -> {
+                    v.applyState()
+                    v.postProviderAvailabilityCheck()
+                }
             }
 
             // Iterate all items
-            return false;
-        };
-
-        mapOverItems(op);
-        Folder openFolder = Folder.getOpen(context);
-        if (openFolder != null) {
-            openFolder.iterateOverItems(op);
+            false
         }
+
+        mapOverItems(op)
+        Folder.getOpen(context)?.mapOverItems(op)
     }
 
-    /**
-     * Called to update restored items as a result of
-     * {@link com.android.launcher3.model.BgDataModel.Callbacks#bindRestoreItemsChange(HashSet)}}
-     */
-    default void updateRestoreItems(final HashSet<ItemInfo> updates, ActivityContext context) {
-        ItemOperator op = (info, v) -> {
-            if (info instanceof WorkspaceItemInfo && v instanceof BubbleTextView
-                    && updates.contains(info)) {
-                ((BubbleTextView) v).applyLoadingState(null);
-            } else if (v instanceof PendingAppWidgetHostView
-                    && info instanceof LauncherAppWidgetInfo
-                    && updates.contains(info)) {
-                ((PendingAppWidgetHostView) v).applyState();
-            } else if (v instanceof FolderIcon && info instanceof FolderInfo) {
-                ((FolderIcon) v).updatePreviewItems(updates::contains);
-            }
-            // process all the shortcuts
-            return false;
-        };
+    /** Returns the first view, matching the [op] */
+    @Deprecated("Use mapOverItems instead", ReplaceWith("mapOverItems(op)"))
+    fun getFirstMatch(op: ItemOperator): View? = mapOverItems(op)
 
-        mapOverItems(op);
-        Folder folder = Folder.getOpen(context);
-        if (folder != null) {
-            folder.iterateOverItems(op);
-        }
-    }
+    /** Finds the first icon to match one of the given matchers, from highest to lowest priority. */
+    fun getFirstMatch(vararg matchers: Predicate<ItemInfo>): View? =
+        matchers.firstNotNullOfOrNull { mapOverItems { info, _ -> info != null && it.test(info) } }
+
+    fun getViewByItemId(id: Int): View? = mapOverItems { info, _ -> info != null && info.id == id }
 
     /**
-     * Map the operator over the shortcuts and widgets.
-     *
-     * @param op the operator to map over the shortcuts
+     * Map the [op] over the shortcuts and widgets. Once we found the first view which matches, we
+     * will stop the iteration and return that view.
      */
-    void mapOverItems(ItemOperator op);
+    fun mapOverItems(op: ItemOperator): View?
 
-    interface ItemOperator {
+    fun interface ItemOperator {
+
         /**
          * Process the next itemInfo, possibly with side-effect on the next item.
          *
@@ -114,6 +84,6 @@ public interface LauncherBindableItemsContainer {
          * @param view view for the shortcut
          * @return true if done, false to continue the map
          */
-        boolean evaluate(ItemInfo info, View view);
+        fun evaluate(info: ItemInfo?, view: View): Boolean
     }
 }

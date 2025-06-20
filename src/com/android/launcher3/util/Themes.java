@@ -42,8 +42,6 @@ import com.saggitt.omega.preferences.NeoPrefs;
 @SuppressWarnings("NewApi")
 public class Themes {
 
-    public static final String KEY_THEMED_ICONS = "themed_icons";
-
     /** Gets the WallpaperColorHints and then uses those to get the correct activity theme res. */
     public static int getActivityThemeRes(Context context) {
         return getActivityThemeRes(context, WallpaperColorHints.get(context).getHints());
@@ -64,6 +62,7 @@ public class Themes {
         }
     }
 
+    // Edited
     /**
      * Returns true if workspace icon theming is enabled
      */

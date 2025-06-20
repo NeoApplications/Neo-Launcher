@@ -13,106 +13,106 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-package com.android.launcher3.util;
+package com.android.launcher3.util
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Process;
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
+import android.os.Process
+import android.os.Process.THREAD_PRIORITY_FOREGROUND
+import androidx.annotation.IntDef
+import java.util.concurrent.AbstractExecutorService
+import java.util.concurrent.TimeUnit
+import kotlin.annotation.AnnotationRetention.SOURCE
 
-import java.util.List;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.TimeUnit;
+/** Extension of [AbstractExecutorService] which executed on a provided looper. */
+class LooperExecutor(looper: Looper, private val defaultPriority: Int) : AbstractExecutorService() {
+    val handler: Handler = Handler(looper)
 
-/**
- * Extension of {@link AbstractExecutorService} which executed on a provided looper.
- */
-public class LooperExecutor extends AbstractExecutorService {
+    @JvmOverloads
+    constructor(
+        name: String,
+        defaultPriority: Int = Process.THREAD_PRIORITY_DEFAULT,
+    ) : this(createAndStartNewLooper(name, defaultPriority), defaultPriority)
 
-    private final Handler mHandler;
+    /** Returns the thread for this executor */
+    val thread: Thread
+        get() = handler.looper.thread
 
-    public LooperExecutor(Looper looper) {
-        mHandler = new Handler(looper);
-    }
+    /** Returns the looper for this executor */
+    val looper: Looper
+        get() = handler.looper
 
-    public Handler getHandler() {
-        return mHandler;
-    }
+    @ElevationCaller private var elevationFlags: Int = 0
 
-    @Override
-    public void execute(Runnable runnable) {
-        if (getHandler().getLooper() == Looper.myLooper()) {
-            runnable.run();
+    override fun execute(runnable: Runnable) {
+        if (handler.looper == Looper.myLooper()) {
+            runnable.run()
         } else {
-            getHandler().post(runnable);
+            handler.post(runnable)
         }
     }
 
-    /**
-     * Same as execute, but never runs the action inline.
-     */
-    public void post(Runnable runnable) {
-        getHandler().post(runnable);
+    /** Same as execute, but never runs the action inline. */
+    fun post(runnable: Runnable) {
+        handler.post(runnable)
+    }
+
+    @Deprecated("Not supported and throws an exception when used")
+    override fun shutdown() {
+        throw UnsupportedOperationException()
+    }
+
+    @Deprecated("Not supported and throws an exception when used.")
+    override fun shutdownNow(): List<Runnable> {
+        throw UnsupportedOperationException()
+    }
+
+    override fun isShutdown() = false
+
+    override fun isTerminated() = false
+
+    @Deprecated("Not supported and throws an exception when used.")
+    override fun awaitTermination(l: Long, timeUnit: TimeUnit): Boolean {
+        throw UnsupportedOperationException()
     }
 
     /**
-     * Not supported and throws an exception when used.
+     * Increases the priority of the thread for the [caller]. Multiple calls with same caller are
+     * ignored. The priority is reset once wall callers have restored priority
      */
-    @Override
-    @Deprecated
-    public void shutdown() {
-        throw new UnsupportedOperationException();
+    fun elevatePriority(@ElevationCaller caller: Int) {
+        val wasElevated = elevationFlags != 0
+        elevationFlags = elevationFlags.or(caller)
+        if (elevationFlags != 0 && !wasElevated)
+            Process.setThreadPriority(
+                (thread as HandlerThread).threadId,
+                THREAD_PRIORITY_FOREGROUND,
+            )
     }
 
-    /**
-     * Not supported and throws an exception when used.
-     */
-    @Override
-    @Deprecated
-    public List<Runnable> shutdownNow() {
-        throw new UnsupportedOperationException();
+    /** Restores to default priority if it was previously elevated */
+    fun restorePriority(@ElevationCaller caller: Int) {
+        val wasElevated = elevationFlags != 0
+        elevationFlags = elevationFlags.and(caller.inv())
+        if (elevationFlags == 0 && wasElevated)
+            Process.setThreadPriority((thread as HandlerThread).threadId, defaultPriority)
     }
 
-    @Override
-    public boolean isShutdown() {
-        return false;
-    }
+    @Retention(SOURCE)
+    @IntDef(value = [CALLER_LOADER_TASK, CALLER_ICON_CACHE], flag = true)
+    annotation class ElevationCaller
 
-    @Override
-    public boolean isTerminated() {
-        return false;
-    }
+    companion object {
+        /** Utility method to get a started handler thread statically with the provided priority */
+        @JvmOverloads
+        @JvmStatic
+        fun createAndStartNewLooper(
+            name: String,
+            priority: Int = Process.THREAD_PRIORITY_DEFAULT,
+        ): Looper = HandlerThread(name, priority).apply { start() }.looper
 
-    /**
-     * Not supported and throws an exception when used.
-     */
-    @Override
-    @Deprecated
-    public boolean awaitTermination(long l, TimeUnit timeUnit) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the thread for this executor
-     */
-    public Thread getThread() {
-        return getHandler().getLooper().getThread();
-    }
-
-    /**
-     * Returns the looper for this executor
-     */
-    public Looper getLooper() {
-        return getHandler().getLooper();
-    }
-
-    /**
-     * Set the priority of a thread, based on Linux priorities.
-     * @param priority Linux priority level, from -20 for highest scheduling priority
-     *                to 19 for lowest scheduling priority.
-     * @see Process#setThreadPriority(int, int)
-     */
-    public void setThreadPriority(int priority) {
-        Process.setThreadPriority(((HandlerThread) getThread()).getThreadId(), priority);
+        const val CALLER_LOADER_TASK = 1 shl 0
+        const val CALLER_ICON_CACHE = 1 shl 1
     }
 }

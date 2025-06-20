@@ -73,14 +73,29 @@ public final class SplitConfigurationOptions {
      */
     public static final int STAGE_TYPE_SIDE = 1;
 
-    @IntDef({STAGE_TYPE_UNDEFINED, STAGE_TYPE_MAIN, STAGE_TYPE_SIDE})
+    /**
+     * Position independent stage identifier for a given Stage
+     */
+    public static final int STAGE_TYPE_A = 2;
+    /**
+     * Position independent stage identifier for a given Stage
+     */
+    public static final int STAGE_TYPE_B = 3;
+    /**
+     * Position independent stage identifier for a given Stage
+     */
+    public static final int STAGE_TYPE_C = 4;
+
+    @IntDef({
+            STAGE_TYPE_UNDEFINED,
+            STAGE_TYPE_MAIN,
+            STAGE_TYPE_SIDE,
+            STAGE_TYPE_A,
+            STAGE_TYPE_B,
+            STAGE_TYPE_C
+    })
     public @interface StageType {}
     ///////////////////////////////////
-
-    /**
-     * Default split ratio for launching app pair from overview.
-     */
-    public static final float DEFAULT_SPLIT_RATIO = 0.5f;
 
     public static class SplitPositionOption {
         public final int iconResId;
@@ -112,10 +127,12 @@ public final class SplitConfigurationOptions {
         /** This rect represents the actual gap between the two apps */
         public final Rect visualDividerBounds;
         // This class is orientation-agnostic, so we compute both for later use
-        public final float topTaskPercent;
-        public final float leftTaskPercent;
-        public final float dividerWidthPercent;
-        public final float dividerHeightPercent;
+        private final float topTaskPercent;
+        private final float leftTaskPercent;
+        private final float dividerWidthPercent;
+        private final float dividerHeightPercent;
+        public final int snapPosition;
+
         /**
          * If {@code true}, that means at the time of creation of this object, the
          * split-screened apps were vertically stacked. This is useful in scenarios like
@@ -135,11 +152,12 @@ public final class SplitConfigurationOptions {
         public final int rightBottomTaskId;
 
         public SplitBounds(Rect leftTopBounds, Rect rightBottomBounds, int leftTopTaskId,
-                int rightBottomTaskId) {
+                           int rightBottomTaskId, int snapPosition) {
             this.leftTopBounds = leftTopBounds;
             this.rightBottomBounds = rightBottomBounds;
             this.leftTopTaskId = leftTopTaskId;
             this.rightBottomTaskId = rightBottomTaskId;
+            this.snapPosition = snapPosition;
 
             if (rightBottomBounds.top > leftTopBounds.top) {
                 // vertical apps, horizontal divider
@@ -170,6 +188,48 @@ public final class SplitConfigurationOptions {
             topTaskPercent = leftTopBounds.height() / totalHeight;
             dividerWidthPercent = visualDividerBounds.width() / totalWidth;
             dividerHeightPercent = visualDividerBounds.height() / totalHeight;
+        }
+
+        /**
+         * Returns the percentage size of the left/top task (compared to the full width/height of
+         * the split pair). E.g. if the left task is 4 units wide, the divider is 2 units, and the
+         * right task is 4 units, this method will return 0.4f.
+         */
+        public float getLeftTopTaskPercent() {
+            // topTaskPercent and leftTaskPercent are defined at creation time, and are not updated
+            // on device rotate, so we have to check appsStackedVertically to return the right
+            // creation-time measurements.
+            return appsStackedVertically ? topTaskPercent : leftTaskPercent;
+        }
+
+        /**
+         * Returns the percentage size of the divider's thickness (compared to the full width/height
+         * of the split pair). E.g. if the left task is 4 units wide, the divider is 2 units, and
+         * the right task is 4 units, this method will return 0.2f.
+         */
+        public float getDividerPercent() {
+            // dividerHeightPercent and dividerWidthPercent are defined at creation time, and are
+            // not updated on device rotate, so we have to check appsStackedVertically to return
+            // the right creation-time measurements.
+            return appsStackedVertically ? dividerHeightPercent : dividerWidthPercent;
+        }
+
+        /**
+         * Returns the percentage size of the right/bottom task (compared to the full width/height
+         * of the split pair). E.g. if the left task is 4 units wide, the divider is 2 units, and
+         * the right task is 4 units, this method will return 0.4f.
+         */
+        public float getRightBottomTaskPercent() {
+            return 1 - (getLeftTopTaskPercent() + getDividerPercent());
+        }
+
+        @Override
+        public String toString() {
+            return "LeftTop: " + leftTopBounds + ", taskId: " + leftTopTaskId + "\n"
+                    + "RightBottom: " + rightBottomBounds + ", taskId: " + rightBottomTaskId +  "\n"
+                    + "Divider: " + visualDividerBounds + "\n"
+                    + "AppsVertical? " + appsStackedVertically + "\n"
+                    + "snapPosition: " + snapPosition;
         }
     }
 
@@ -204,7 +264,7 @@ public final class SplitConfigurationOptions {
         private Drawable drawable;
         public final Intent intent;
         public final SplitPositionOption position;
-        public final ItemInfo itemInfo;
+        private ItemInfo itemInfo;
         public final StatsLogManager.EventEnum splitEvent;
         /** Represents the taskId of the first app to start in split screen */
         public int alreadyRunningTaskId = INVALID_TASK_ID;
@@ -215,8 +275,8 @@ public final class SplitConfigurationOptions {
         public boolean animateCurrentTaskDismissal;
 
         public SplitSelectSource(View view, Drawable drawable, Intent intent,
-                SplitPositionOption position, ItemInfo itemInfo,
-                StatsLogManager.EventEnum splitEvent) {
+                                 SplitPositionOption position, ItemInfo itemInfo,
+                                 StatsLogManager.EventEnum splitEvent) {
             this.view = view;
             this.drawable = drawable;
             this.intent = intent;
@@ -231,6 +291,10 @@ public final class SplitConfigurationOptions {
 
         public View getView() {
             return view;
+        }
+
+        public ItemInfo getItemInfo() {
+            return itemInfo;
         }
     }
 }
