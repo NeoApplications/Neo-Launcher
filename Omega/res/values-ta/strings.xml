@@ -180,14 +180,14 @@
         <item quantity="other">%1$d பயன்பாடுகள்</item>
     </plurals>
     <plurals name="hidden_apps_count">
-        <item quantity="one">% 1 $ டி மறைக்க</item>
-        <item quantity="other">% 1 $ டி மறைக்க</item>
+        <item quantity="one">%1$d மறை</item>
+        <item quantity="other">%1$d மறைக்க</item>
     </plurals>
     <string name="protected_apps">பாதுகாக்கப்பட்ட பயன்பாடுகள்</string>
-    <string name="protected_app_selected">பாதுகாக்கப்பட்ட பயன்பாடுகள் (%1 $ D)</string>
-    <string name="hide_app_selected">மறைக்கப்பட்ட பயன்பாடுகள் (%1 $ D)</string>
+    <string name="protected_app_selected">பாதுகாக்கப்பட்ட பயன்பாடுகள் (%1$d)</string>
+    <string name="hide_app_selected">மறைக்கப்பட்ட பயன்பாடுகள் (%1$d)</string>
     <string name="hide_app_reset">மறைக்கப்பட்ட பயன்பாடுகளை மீட்டமைக்கவும்</string>
-    <string name="selected_apps">தேர்ந்தெடுக்கப்பட்ட பயன்பாடுகள் (%1 $ D)</string>
+    <string name="selected_apps">தேர்ந்தெடுக்கப்பட்ட பயன்பாடுகள் (%1$d)</string>
     <string name="app_reset">தேர்வை மீட்டமை</string>
     <string name="protected_app_reset">பாதுகாக்கப்பட்ட பயன்பாடுகளை மீட்டமைக்கவும்</string>
     <string name="needs_usage_access">பயன்பாட்டு அணுகல் தேவை</string>
@@ -302,7 +302,7 @@
     <string name="battery_low">பேட்டரி குறைவாக</string>
     <string name="battery_charging_percentage_charging_time">%1$d %% -%2$s இல் நிரம்பியுள்ளது</string>
     <string name="n_percent">%1$d %%</string>
-    <string name="event_provider_missing_notification_access">&lt;Xliff: g example = \"எனது பயன்பாடு\" ஐடி = \"பெயர்\"&gt; பயன்படுத்த &lt;/xliff: g&gt; &lt;xliff: g எடுத்துக்காட்டு = \"எனது வழங்குநர்\" ஐடி = \"ப்ராவிடர்ன் பெயர்\"&gt; “%1$s”. &lt;/Xliff: g&gt;</string>
+    <string name="event_provider_missing_notification_access"><xliff:g example="My App" id="name"> இடமிருந்து அறிவிப்புகளை இயக்கு “%2$s” பயன்படுத்த </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="event_provider_missing_notification_dots">&lt;Xliff: g எடுத்துக்காட்டு = \"எனது வழங்குநர்\" ஐடி = \"ப்ராவிடர்ன்மேம்\"&gt; “%1$s” &lt;/xliff: g&gt; ஐப் பயன்படுத்த அறிவிப்பு புள்ளிகளை இயக்கவும்.</string>
     <string name="permission_iplocate">தோராயமான இடம்</string>
     <string name="permission_iplocate_twilight_explanation">உங்கள் தோராயமான இருப்பிடத்தை அணுக அனுமதிக்கவா? இது மிகவும் துல்லியமான பகல் கணக்கீட்டை செயல்படுத்துகிறது.</string>
