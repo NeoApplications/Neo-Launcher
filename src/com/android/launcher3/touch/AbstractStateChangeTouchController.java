@@ -16,12 +16,14 @@
 package com.android.launcher3.touch;
 
 import static com.android.app.animation.Interpolators.scrollInterpolatorForVelocity;
+import static com.android.launcher3.Flags.enableMouseInteractionChanges;
 import static com.android.launcher3.LauncherAnimUtils.SUCCESS_TRANSITION_PROGRESS;
 import static com.android.launcher3.LauncherAnimUtils.TABLET_BOTTOM_SHEET_SUCCESS_TRANSITION_PROGRESS;
 import static com.android.launcher3.LauncherAnimUtils.newCancelListener;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.MotionEventsUtils.isTrackpadScroll;
 import static com.android.launcher3.anim.AnimatorListeners.forEndCallback;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_ALLAPPS;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_HOME;
@@ -32,6 +34,7 @@ import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFram
 
 import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 
 import com.android.launcher3.Launcher;
@@ -56,7 +59,7 @@ public abstract class AbstractStateChangeTouchController
     protected final SingleAxisSwipeDetector.Direction mSwipeDirection;
 
     protected final AnimatorListener mClearStateOnCancelListener =
-            newCancelListener(this::clearState);
+            newCancelListener(this::clearState, /* isSingleUse = */ false);
     private final FlingBlockCheck mFlingBlockCheck = new FlingBlockCheck();
 
     protected int mStartContainerType;
@@ -68,6 +71,7 @@ public abstract class AbstractStateChangeTouchController
     protected boolean mGoingBetweenStates = true;
     // Ratio of transition process [0, 1] to drag displacement (px)
     protected float mProgressMultiplier;
+    protected boolean mIsTrackpadReverseScroll;
 
     private boolean mNoIntercept;
     private boolean mIsLogContainerSet;
@@ -92,6 +96,9 @@ public abstract class AbstractStateChangeTouchController
                 return false;
             }
 
+            mIsTrackpadReverseScroll = !mLauncher.isNaturalScrollingEnabled()
+                    && isTrackpadScroll(ev);
+
             // Now figure out which direction scroll events the controller will start
             // calling the callbacks.
             final int directionsToDetectScroll;
@@ -102,7 +109,9 @@ public abstract class AbstractStateChangeTouchController
                 ignoreSlopWhenSettling = true;
             } else {
                 directionsToDetectScroll = getSwipeDirection();
-                if (directionsToDetectScroll == 0) {
+                boolean ignoreMouseScroll = ev.getSource() == InputDevice.SOURCE_MOUSE
+                        && enableMouseInteractionChanges();
+                if (directionsToDetectScroll == 0 || ignoreMouseScroll) {
                     mNoIntercept = true;
                     return false;
                 }
@@ -248,6 +257,11 @@ public abstract class AbstractStateChangeTouchController
             }
             mIsLogContainerSet = true;
         }
+        // Only reverse the gesture to open all apps (not close) when trackpad reverse scrolling is
+        // on.
+        if (mIsTrackpadReverseScroll && mStartState == NORMAL) {
+            displacement = -displacement;
+        }
         return onDrag(displacement);
     }
 
@@ -274,6 +288,11 @@ public abstract class AbstractStateChangeTouchController
             return;
         }
 
+        // Only reverse the gesture to open all apps (not close) when trackpad reverse scrolling is
+        // on.
+        if (mIsTrackpadReverseScroll && mStartState == NORMAL) {
+            velocity = -velocity;
+        }
         boolean fling = mDetector.isFling(velocity);
 
         boolean blockedFling = fling && mFlingBlockCheck.isBlocked();
@@ -359,7 +378,7 @@ public abstract class AbstractStateChangeTouchController
     }
 
     protected void updateSwipeCompleteAnimation(ValueAnimator animator, long expectedDuration,
-            LauncherState targetState, float velocity, boolean isFling) {
+                                                LauncherState targetState, float velocity, boolean isFling) {
         animator.setDuration(expectedDuration)
                 .setInterpolator(scrollInterpolatorForVelocity(velocity));
     }
@@ -396,15 +415,27 @@ public abstract class AbstractStateChangeTouchController
         mLauncher.getStatsLogManager().logger()
                 .withSrcState(mStartState.statsLogOrdinal)
                 .withDstState(targetState.statsLogOrdinal)
-                .withContainerInfo(LauncherAtom.ContainerInfo.newBuilder()
-                        .setWorkspace(
-                                LauncherAtom.WorkspaceContainer.newBuilder()
-                                        .setPageIndex(mLauncher.getWorkspace().getCurrentPage()))
-                        .build())
+                .withContainerInfo(getContainerInfo(targetState))
                 .log(StatsLogManager.getLauncherAtomEvent(mStartState.statsLogOrdinal,
                             targetState.statsLogOrdinal, mToState.ordinal > mFromState.ordinal
                                     ? LAUNCHER_UNKNOWN_SWIPEUP
                                     : LAUNCHER_UNKNOWN_SWIPEDOWN));
+    }
+
+    private LauncherAtom.ContainerInfo getContainerInfo(LauncherState targetState) {
+        if (targetState.isRecentsViewVisible) {
+            return LauncherAtom.ContainerInfo.newBuilder()
+                    .setTaskSwitcherContainer(
+                            LauncherAtom.TaskSwitcherContainer.getDefaultInstance()
+                    )
+                    .build();
+        }
+
+        return LauncherAtom.ContainerInfo.newBuilder()
+                .setWorkspace(
+                        LauncherAtom.WorkspaceContainer.newBuilder()
+                                .setPageIndex(mLauncher.getWorkspace().getCurrentPage()))
+                .build();
     }
 
     protected void clearState() {
@@ -412,9 +443,15 @@ public abstract class AbstractStateChangeTouchController
         mGoingBetweenStates = true;
         mDetector.finishedScrolling();
         mDetector.setDetectableScrollConditions(0, false);
+        mIsTrackpadReverseScroll = false;
     }
 
     private void cancelAnimationControllers() {
         mCurrentAnimation = null;
+    }
+
+    protected boolean shouldOpenAllApps(boolean isDragTowardPositive) {
+        return (isDragTowardPositive && !mIsTrackpadReverseScroll)
+                || (!isDragTowardPositive && mIsTrackpadReverseScroll);
     }
 }
