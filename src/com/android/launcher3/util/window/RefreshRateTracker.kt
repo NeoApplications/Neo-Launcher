@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,71 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.util.window;
 
-import static android.view.Display.DEFAULT_DISPLAY;
+package com.android.launcher3.util.window
 
-import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
+import android.content.Context
+import android.hardware.display.DisplayManager
+import android.hardware.display.DisplayManager.DisplayListener
+import android.view.Display.DEFAULT_DISPLAY
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppSingleton
+import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
+import com.android.launcher3.util.DaggerSingletonTracker
+import com.android.launcher3.util.Executors
+import javax.inject.Inject
 
-import android.content.Context;
-import android.hardware.display.DisplayManager;
-import android.hardware.display.DisplayManager.DisplayListener;
-import android.view.Display;
+/** Utility class to track refresh rate of the current device */
+interface RefreshRateTracker {
 
-import androidx.annotation.WorkerThread;
+    val singleFrameMs: Int
 
-import com.android.launcher3.util.MainThreadInitializedObject;
-import com.android.launcher3.util.SafeCloseable;
+    @LauncherAppSingleton
+    class RefreshRateTrackerImpl
+    @Inject
+    constructor(@ApplicationContext ctx: Context, tracker: DaggerSingletonTracker) :
+        RefreshRateTracker, DisplayListener {
 
-/**
- * Utility class to track refresh rate of the current device
- */
-public class RefreshRateTracker implements DisplayListener, SafeCloseable {
+        private val displayManager: DisplayManager =
+            ctx.getSystemService(DisplayManager::class.java)!!.also {
+                it.registerDisplayListener(this, Executors.UI_HELPER_EXECUTOR.handler)
+                tracker.addCloseable { it.unregisterDisplayListener(this) }
+            }
 
-    private static final MainThreadInitializedObject<RefreshRateTracker> INSTANCE =
-            new MainThreadInitializedObject<>(RefreshRateTracker::new);
+        override var singleFrameMs: Int = updateSingleFrameMs()
 
-    private int mSingleFrameMs = 1;
-
-    private final DisplayManager mDM;
-
-    private RefreshRateTracker(Context context) {
-        mDM = context.getSystemService(DisplayManager.class);
-        updateSingleFrameMs();
-        mDM.registerDisplayListener(this, UI_HELPER_EXECUTOR.getHandler());
-    }
-
-    /**
-     * Returns the single frame time in ms
-     */
-    public static int getSingleFrameMs(Context context) {
-        return INSTANCE.get(context).mSingleFrameMs;
-    }
-
-    @Override
-    public final void onDisplayAdded(int displayId) { }
-
-    @Override
-    public final void onDisplayRemoved(int displayId) { }
-
-    @WorkerThread
-    @Override
-    public final void onDisplayChanged(int displayId) {
-        if (displayId == DEFAULT_DISPLAY) {
-            updateSingleFrameMs();
+        private fun updateSingleFrameMs(): Int {
+            val refreshRate = displayManager.getDisplay(DEFAULT_DISPLAY)?.refreshRate
+            return if (refreshRate != null && refreshRate > 0) (1000 / refreshRate).toInt() else 16
         }
-    }
 
-    private void updateSingleFrameMs() {
-        Display display = mDM.getDisplay(DEFAULT_DISPLAY);
-        if (display != null) {
-            float refreshRate = display.getRefreshRate();
-            mSingleFrameMs = refreshRate > 0 ? (int) (1000 / refreshRate) : 16;
+        override fun onDisplayChanged(displayId: Int) {
+            if (displayId == DEFAULT_DISPLAY) {
+                singleFrameMs = updateSingleFrameMs()
+            }
         }
+
+        override fun onDisplayAdded(displayId: Int) {}
+
+        override fun onDisplayRemoved(displayId: Int) {}
     }
 
-    @Override
-    public void close() {
-        mDM.unregisterDisplayListener(this);
+    companion object {
+
+        /** Returns the single frame time in ms */
+        @JvmStatic fun Context.getSingleFrameMs() = appComponent.frameRateProvider.singleFrameMs
     }
 }
