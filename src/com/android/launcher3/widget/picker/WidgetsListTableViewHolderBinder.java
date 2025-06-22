@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.widget.picker;
 
+import static com.android.launcher3.widget.picker.WidgetsListItemAnimator.WIDGET_LIST_ITEM_APPEARANCE_START_DELAY;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -26,7 +28,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
@@ -36,6 +37,7 @@ import com.android.launcher3.model.WidgetItem;
 import com.android.launcher3.recyclerview.ViewHolderBinder;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.widget.WidgetCell;
+import com.android.launcher3.widget.WidgetTableRow;
 import com.android.launcher3.widget.model.WidgetsListContentEntry;
 import com.android.launcher3.widget.util.WidgetsTableUtils;
 
@@ -78,12 +80,12 @@ public final class WidgetsListTableViewHolderBinder
         }
 
         return new WidgetsRowViewHolder(mLayoutInflater.inflate(
-                        R.layout.widgets_table_container, parent, false));
+                R.layout.widgets_table_container, parent, false));
     }
 
     @Override
     public void bindViewHolder(WidgetsRowViewHolder holder, WidgetsListContentEntry entry,
-            @ListPosition int position, List<Object> payloads) {
+                               @ListPosition int position, List<Object> payloads) {
         for (Object payload : payloads) {
             Pair<WidgetItem, Bitmap> pair = (Pair) payload;
             holder.previewCache.put(pair.first, pair.second);
@@ -110,20 +112,46 @@ public final class WidgetsListTableViewHolderBinder
         // Bind the widget items.
         for (int i = 0; i < widgetItemsTable.size(); i++) {
             List<WidgetItem> widgetItemsPerRow = widgetItemsTable.get(i);
-            for (int j = 0; j < widgetItemsPerRow.size(); j++) {
-                TableRow row = (TableRow) table.getChildAt(i);
-                row.setVisibility(View.VISIBLE);
-                WidgetCell widget = (WidgetCell) row.getChildAt(j);
-                widget.clear();
-                WidgetItem widgetItem = widgetItemsPerRow.get(j);
-                widget.setVisibility(View.VISIBLE);
+            WidgetTableRow row = (WidgetTableRow) table.getChildAt(i);
 
-                // When preview loads, notify adapter to rebind the item and possibly animate
-                widget.applyFromCellItem(widgetItem, 1f,
-                        bitmap -> holder.onPreviewLoaded(Pair.create(widgetItem, bitmap)),
-                        holder.previewCache.get(widgetItem));
+            if (areRowItemsUnchanged(row, widgetItemsPerRow)) {  // Just show widgets in row as is
+                row.setVisibility(View.VISIBLE);
+                for (int j = 0; j < widgetItemsPerRow.size(); j++) {
+                    WidgetCell widget = (WidgetCell) row.getChildAt(j);
+                    widget.setVisibility(View.VISIBLE);
+                }
+            } else {
+                for (int j = 0; j < widgetItemsPerRow.size(); j++) {
+                    row.setVisibility(View.VISIBLE);
+                    WidgetCell widget = (WidgetCell) row.getChildAt(j);
+                    widget.clear();
+                    WidgetItem widgetItem = widgetItemsPerRow.get(j);
+                    widget.addPreviewReadyListener(row);
+                    widget.setVisibility(View.VISIBLE);
+
+                    widget.applyFromCellItem(widgetItem);
+                    widget.requestLayout();
+                }
             }
         }
+    }
+
+    private boolean areRowItemsUnchanged(WidgetTableRow row, List<WidgetItem> widgetItemsPerRow) {
+        // NOTE: on rotation or fold / unfold, we bind different view holders
+        // so, we don't any special handling for that case.
+        if (row.getChildCount() != widgetItemsPerRow.size()) { // Items not equal
+            return false;
+        }
+
+        for (int j = 0; j < widgetItemsPerRow.size(); j++) {
+            WidgetCell widgetCell = (WidgetCell) row.getChildAt(j);
+            WidgetItem widgetItem = widgetItemsPerRow.get(j);
+            if (widgetCell.getWidgetItem() == null
+                    || !widgetCell.getWidgetItem().equals(widgetItem)) {
+                return false; // Items at given position in row aren't same.
+            }
+        }
+        return true;
     }
 
     /**
@@ -134,7 +162,7 @@ public final class WidgetsListTableViewHolderBinder
      * existing UI elements. Instead of deleting excessive elements, it hides them.
      */
     private void recycleTableBeforeBinding(TableLayout table,
-            List<ArrayList<WidgetItem>> widgetItemsTable) {
+                                           List<ArrayList<WidgetItem>> widgetItemsTable) {
         // Hide extra table rows.
         for (int i = widgetItemsTable.size(); i < table.getChildCount(); i++) {
             table.getChildAt(i).setVisibility(View.GONE);
@@ -142,28 +170,39 @@ public final class WidgetsListTableViewHolderBinder
 
         for (int i = 0; i < widgetItemsTable.size(); i++) {
             List<WidgetItem> widgetItems = widgetItemsTable.get(i);
-            TableRow tableRow;
+            WidgetTableRow tableRow;
             if (i < table.getChildCount()) {
-                tableRow = (TableRow) table.getChildAt(i);
+                tableRow = (WidgetTableRow) table.getChildAt(i);
             } else {
-                tableRow = new TableRow(table.getContext());
+                tableRow = new WidgetTableRow(table.getContext());
                 tableRow.setGravity(Gravity.TOP);
                 table.addView(tableRow);
             }
-            if (tableRow.getChildCount() > widgetItems.size()) {
-                for (int j = widgetItems.size(); j < tableRow.getChildCount(); j++) {
-                    tableRow.getChildAt(j).setVisibility(View.GONE);
-                }
-            } else {
-                for (int j = tableRow.getChildCount(); j < widgetItems.size(); j++) {
-                    WidgetCell widget = (WidgetCell) mLayoutInflater.inflate(
-                            R.layout.widget_cell, tableRow, false);
-                    // set up touch.
-                    View preview = widget.findViewById(R.id.widget_preview_container);
-                    preview.setOnClickListener(mIconClickListener);
-                    preview.setOnLongClickListener(mIconLongClickListener);
-                    widget.setAnimatePreview(false);
-                    tableRow.addView(widget);
+
+            // If the row items are unchanged, we don't need to re-setup the row or the items;
+            // we can just show the row as is.
+            if (!areRowItemsUnchanged(tableRow, widgetItems)) {
+                // Pass resize delay to let the "move" and "change" animations run before resizing
+                // the row.
+                tableRow.setupRow(widgetItems.size(),
+                        /*resizeDelayMs=*/ WIDGET_LIST_ITEM_APPEARANCE_START_DELAY);
+                if (tableRow.getChildCount() > widgetItems.size()) {
+                    for (int j = widgetItems.size(); j < tableRow.getChildCount(); j++) {
+                        tableRow.getChildAt(j).setVisibility(View.GONE);
+                    }
+                } else {
+                    for (int j = tableRow.getChildCount(); j < widgetItems.size(); j++) {
+                        WidgetCell widget = (WidgetCell) mLayoutInflater.inflate(
+                                R.layout.widget_cell, tableRow, false);
+                        // set up touch.
+                        widget.setOnClickListener(mIconClickListener);
+                        widget.addPreviewReadyListener(tableRow);
+                        View preview = widget.findViewById(R.id.widget_preview_container);
+                        preview.setOnClickListener(mIconClickListener);
+                        preview.setOnLongClickListener(mIconLongClickListener);
+                        widget.setAnimatePreview(false);
+                        tableRow.addView(widget);
+                    }
                 }
             }
         }
@@ -174,7 +213,7 @@ public final class WidgetsListTableViewHolderBinder
         int numOfRows = holder.tableContainer.getChildCount();
         holder.previewCache.clear();
         for (int i = 0; i < numOfRows; i++) {
-            TableRow tableRow = (TableRow) holder.tableContainer.getChildAt(i);
+            WidgetTableRow tableRow = (WidgetTableRow) holder.tableContainer.getChildAt(i);
             int numOfCols = tableRow.getChildCount();
             for (int j = 0; j < numOfCols; j++) {
                 WidgetCell widget = (WidgetCell) tableRow.getChildAt(j);

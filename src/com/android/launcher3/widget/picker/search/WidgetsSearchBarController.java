@@ -38,8 +38,7 @@ import java.util.List;
  * Controller for a search bar with an edit text and a cancel button.
  */
 public class WidgetsSearchBarController implements TextWatcher,
-        SearchCallback<WidgetsListBaseEntry>,  ExtendedEditText.OnBackKeyListener,
-        View.OnKeyListener {
+        SearchCallback<WidgetsListBaseEntry>, View.OnKeyListener {
     private static final String TAG = "WidgetsSearchBarController";
     private static final boolean DEBUG = false;
 
@@ -55,7 +54,6 @@ public class WidgetsSearchBarController implements TextWatcher,
         mSearchAlgorithm = algo;
         mInput = editText;
         mInput.addTextChangedListener(this);
-        mInput.setOnBackKeyListener(this);
         mInput.setOnKeyListener(this);
         mCancelButton = cancelButton;
         mCancelButton.setOnClickListener(v -> clearSearchResult());
@@ -71,7 +69,7 @@ public class WidgetsSearchBarController implements TextWatcher,
             mCancelButton.setVisibility(GONE);
         } else {
             mSearchAlgorithm.cancel(/* interruptActiveRequests= */ false);
-            mSearchModeListener.enterSearchMode();
+            mSearchModeListener.enterSearchMode(true);
             mSearchAlgorithm.doSearch(mQuery, this);
             mCancelButton.setVisibility(VISIBLE);
         }
@@ -87,13 +85,13 @@ public class WidgetsSearchBarController implements TextWatcher,
         // Do nothing.
     }
 
+    // Edited
     @Override
     public void onSearchResult(String query, ArrayList<WidgetsListBaseEntry> items, List<String> suggestions) {
         if (DEBUG) {
             Log.d(TAG, "onSearchResult query: " + query + " items: " + items);
         }
         mSearchModeListener.onSearchResults(items);
-
     }
 
     @Override
@@ -102,6 +100,7 @@ public class WidgetsSearchBarController implements TextWatcher,
         mInput.setText("");
     }
 
+    // Edited
     @Override
     public boolean onSubmitSearch(String query) {
         return false;
@@ -112,12 +111,6 @@ public class WidgetsSearchBarController implements TextWatcher,
      */
     public void onDestroy() {
         mSearchAlgorithm.destroy();
-    }
-
-    @Override
-    public boolean onBackKey() {
-        clearFocus();
-        return true;
     }
 
     @Override
