@@ -17,7 +17,11 @@
 package com.android.launcher3.views;
 
 import static android.view.HapticFeedbackConstants.CLOCK_TICK;
+
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
+
+import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.ALL_APPS_SCROLLER;
+import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.WIDGET_SCROLLER;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -29,7 +33,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Property;
@@ -39,12 +43,15 @@ import android.view.ViewConfiguration;
 import android.view.WindowInsets;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.FastScrollRecyclerView;
+import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.LetterListTextView;
 import com.android.launcher3.graphics.FastScrollThumbDrawable;
 import com.android.launcher3.util.Themes;
 
@@ -55,6 +62,19 @@ import java.util.List;
  * The track and scrollbar that shows when you scroll the list.
  */
 public class RecyclerViewFastScroller extends View {
+
+    /** FastScrollerLocation describes what RecyclerView the fast scroller is dedicated to. */
+    public enum FastScrollerLocation {
+        UNKNOWN_SCROLLER(0),
+        ALL_APPS_SCROLLER(1),
+        WIDGET_SCROLLER(2);
+
+        public final int location;
+
+        FastScrollerLocation(int location) {
+            this.location = location;
+        }
+    }
     private static final String TAG = "RecyclerViewFastScroller";
     private static final boolean DEBUG = false;
     private static final int FASTSCROLL_THRESHOLD_MILLIS = 40;
@@ -106,9 +126,18 @@ public class RecyclerViewFastScroller extends View {
     private final Point mThumbDrawOffset = new Point();
 
     private final Paint mTrackPaint;
+    private final int mThumbColor;
+    private final int mThumbLetterScrollerColor;
 
     private float mLastTouchY;
     private boolean mIsDragging;
+    /**
+     * Tracks whether a keyboard hide request has been sent due to downward scrolling.
+     * <p>
+     * Set to true when scrolling down and reset when scrolling up to prevents redundant hide
+     * requests during continuous downward scrolls.
+     */
+    private boolean mRequestedHideKeyboard;
     private boolean mIsThumbDetached;
     private final boolean mCanThumbDetach;
     private boolean mIgnoreDragGesture;
@@ -122,15 +151,17 @@ public class RecyclerViewFastScroller extends View {
     // Fast scroller popup
     private TextView mPopupView;
     private boolean mPopupVisible;
-    private String mPopupSectionName;
+    private CharSequence mPopupSectionName;
     private Insets mSystemGestureInsets;
 
     protected FastScrollRecyclerView mRv;
     private RecyclerView.OnScrollListener mOnScrollListener;
+    private final ActivityContext mActivityContext;
 
     private int mDownX;
     private int mDownY;
     private int mLastY;
+    private FastScrollerLocation mFastScrollerLocation;
 
     public RecyclerViewFastScroller(Context context) {
         this(context, null);
@@ -143,13 +174,16 @@ public class RecyclerViewFastScroller extends View {
     public RecyclerViewFastScroller(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        mFastScrollerLocation = FastScrollerLocation.UNKNOWN_SCROLLER;
         mTrackPaint = new Paint();
         mTrackPaint.setColor(Themes.getAttrColor(context, android.R.attr.textColorPrimary));
         mTrackPaint.setAlpha(MAX_TRACK_ALPHA);
 
+        mThumbColor = Themes.getColorAccent(context);
+        mThumbLetterScrollerColor = context.getColor(R.color.materialColorSurfaceBright);
         mThumbPaint = new Paint();
         mThumbPaint.setAntiAlias(true);
-        mThumbPaint.setColor(Themes.getColorAccent(context));
+        mThumbPaint.setColor(mThumbColor);
         mThumbPaint.setStyle(Paint.Style.FILL);
 
         Resources res = getResources();
@@ -163,7 +197,7 @@ public class RecyclerViewFastScroller extends View {
         mDeltaThreshold = res.getDisplayMetrics().density * SCROLL_DELTA_THRESHOLD_DP;
         mScrollbarLeftOffsetTouchDelegate = res.getDisplayMetrics().density
                 * SCROLLBAR_LEFT_OFFSET_TOUCH_DELEGATE_DP;
-
+        mActivityContext = ActivityContext.lookupContext(context);
         TypedArray ta =
                 context.obtainStyledAttributes(attrs, R.styleable.RecyclerViewFastScroller, defStyleAttr, 0);
         mCanThumbDetach = ta.getBoolean(R.styleable.RecyclerViewFastScroller_canThumbDetach, false);
@@ -248,6 +282,7 @@ public class RecyclerViewFastScroller extends View {
                 mDownX = x;
                 mDownY = mLastY = y;
                 mDownTimeStampMillis = ev.getDownTime();
+                mRequestedHideKeyboard = false;
 
                 if ((Math.abs(mDy) < mDeltaThreshold &&
                         mRv.getScrollState() != SCROLL_STATE_IDLE)) {
@@ -260,6 +295,7 @@ public class RecyclerViewFastScroller extends View {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
+                boolean isScrollingDown = y > mLastY;
                 mLastY = y;
                 int absDeltaY = Math.abs(y - mDownY);
                 int absDeltaX = Math.abs(x - mDownX);
@@ -270,11 +306,19 @@ public class RecyclerViewFastScroller extends View {
 
                 if (!mIsDragging && !mIgnoreDragGesture && mRv.supportsFastScrolling()) {
                     if ((isNearThumb(mDownX, mLastY) && ev.getEventTime() - mDownTimeStampMillis
-                                    > FASTSCROLL_THRESHOLD_MILLIS)) {
+                            > FASTSCROLL_THRESHOLD_MILLIS)) {
                         calcTouchOffsetAndPrepToFastScroll(mDownY, mLastY);
                     }
                 }
                 if (mIsDragging) {
+                    if (isScrollingDown) {
+                        if (!mRequestedHideKeyboard) {
+                            mActivityContext.hideKeyboard();
+                        }
+                        mRequestedHideKeyboard = true;
+                    } else {
+                        mRequestedHideKeyboard = false;
+                    }
                     updateFastScrollSectionNameAndThumbOffset(y);
                 }
                 break;
@@ -294,7 +338,6 @@ public class RecyclerViewFastScroller extends View {
     }
 
     private void calcTouchOffsetAndPrepToFastScroll(int downY, int lastY) {
-        ActivityContext.lookupContext(getContext()).hideKeyboard();
         mIsDragging = true;
         if (mCanThumbDetach) {
             mIsThumbDetached = true;
@@ -308,15 +351,30 @@ public class RecyclerViewFastScroller extends View {
         // Update the fastscroller section name at this touch position
         int bottom = mRv.getScrollbarTrackHeight() - mThumbHeight;
         float boundedY = (float) Math.max(0, Math.min(bottom, y - mTouchOffsetY));
-        String sectionName = mRv.scrollToPositionAtProgress(boundedY / bottom);
+        CharSequence sectionName = mRv.scrollToPositionAtProgress(boundedY / bottom);
         if (!sectionName.equals(mPopupSectionName)) {
             mPopupSectionName = sectionName;
             mPopupView.setText(sectionName);
-            performHapticFeedback(CLOCK_TICK);
+            // AllApps haptics are taken care of by AllAppsFastScrollHelper.
+            if (mFastScrollerLocation != ALL_APPS_SCROLLER) {
+                performHapticFeedback(CLOCK_TICK);
+            }
         }
-        animatePopupVisibility(!sectionName.isEmpty());
+        animatePopupVisibility(!TextUtils.isEmpty(sectionName));
         mLastTouchY = boundedY;
         setThumbOffsetY((int) mLastTouchY);
+        updateFastScrollerLetterList(y);
+    }
+
+    private void updateFastScrollerLetterList(int y) {
+        if (!shouldUseLetterFastScroller()) {
+            return;
+        }
+        ConstraintLayout mLetterList = mRv.getLetterList();
+        for (int i = 0; i < mLetterList.getChildCount(); i++) {
+            LetterListTextView currentLetter = (LetterListTextView) mLetterList.getChildAt(i);
+            currentLetter.animateBasedOnYPosition(y + mTouchOffsetY);
+        }
     }
 
     /** End any active fast scrolling touch handling, if applicable. */
@@ -342,35 +400,55 @@ public class RecyclerViewFastScroller extends View {
         mThumbDrawOffset.set(getWidth() / 2, mRv.getScrollBarTop());
         // Draw the track
         float halfW = mWidth / 2;
-        canvas.drawRoundRect(-halfW, 0, halfW, mRv.getScrollbarTrackHeight(),
-                mWidth, mWidth, mTrackPaint);
-
-        canvas.translate(0, mThumbOffsetY);
+        boolean useLetterFastScroller = shouldUseLetterFastScroller();
+        if (useLetterFastScroller) {
+            float translateX;
+            if (mIsDragging) {
+                // halfW * 3 is half circle.
+                translateX = halfW * 3;
+            } else {
+                translateX = halfW * 5;
+            }
+            canvas.translate(translateX, mThumbOffsetY);
+        } else {
+            canvas.drawRoundRect(-halfW, 0, halfW, mRv.getScrollbarTrackHeight(),
+                    mWidth, mWidth, mTrackPaint);
+            canvas.translate(0, mThumbOffsetY);
+        }
         mThumbDrawOffset.y += mThumbOffsetY;
+
+        /* Draw half circle */
         halfW += mThumbPadding;
         float r = getScrollThumbRadius();
-        mThumbBounds.set(-halfW, 0, halfW, mThumbHeight);
-        canvas.drawRoundRect(mThumbBounds, r, r, mThumbPaint);
-        if (Utilities.ATLEAST_Q) {
-            mThumbBounds.roundOut(SYSTEM_GESTURE_EXCLUSION_RECT.get(0));
-            // swiping very close to the thumb area (not just within it's bound)
-            // will also prevent back gesture
-            SYSTEM_GESTURE_EXCLUSION_RECT.get(0).offset(mThumbDrawOffset.x, mThumbDrawOffset.y);
-            if (Utilities.ATLEAST_Q && mSystemGestureInsets != null) {
-                SYSTEM_GESTURE_EXCLUSION_RECT.get(0).left =
-                        SYSTEM_GESTURE_EXCLUSION_RECT.get(0).right - mSystemGestureInsets.right;
-            }
-            setSystemGestureExclusionRects(SYSTEM_GESTURE_EXCLUSION_RECT);
+        if (useLetterFastScroller) {
+            mThumbPaint.setColor(mThumbLetterScrollerColor);
+            mThumbBounds.set(0, 0, 0, mThumbHeight);
+            canvas.drawCircle(-halfW, halfW, r * 2, mThumbPaint);
+        } else {
+            mThumbPaint.setColor(mThumbColor);
+            mThumbBounds.set(-halfW, 0, halfW, mThumbHeight);
+            canvas.drawRoundRect(mThumbBounds, r, r, mThumbPaint);
         }
+        mThumbBounds.roundOut(SYSTEM_GESTURE_EXCLUSION_RECT.get(0));
+        // swiping very close to the thumb area (not just within it's bound)
+        // will also prevent back gesture
+        SYSTEM_GESTURE_EXCLUSION_RECT.get(0).offset(mThumbDrawOffset.x, mThumbDrawOffset.y);
+        if (mSystemGestureInsets != null) {
+            SYSTEM_GESTURE_EXCLUSION_RECT.get(0).left =
+                    SYSTEM_GESTURE_EXCLUSION_RECT.get(0).right - mSystemGestureInsets.right;
+        }
+        setSystemGestureExclusionRects(SYSTEM_GESTURE_EXCLUSION_RECT);
         canvas.restoreToCount(saveCount);
     }
 
+    boolean shouldUseLetterFastScroller() {
+        return Flags.letterFastScroller()
+                && getScrollerLocation() == FastScrollerLocation.ALL_APPS_SCROLLER;
+    }
+
     @Override
-    @RequiresApi(Build.VERSION_CODES.Q)
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        if (Utilities.ATLEAST_Q) {
-            mSystemGestureInsets = insets.getSystemGestureInsets();
-        }
+        mSystemGestureInsets = insets.getSystemGestureInsets();
         return super.onApplyWindowInsets(insets);
     }
 
@@ -409,19 +487,25 @@ public class RecyclerViewFastScroller extends View {
         return isNearThumb(x, y);
     }
 
-    /**
-     * Returns whether the specified x position is near the scroll bar.
-     */
-    public boolean isNearScrollBar(int x) {
-        return x >= (getWidth() - mMaxWidth) / 2 - mScrollbarLeftOffsetTouchDelegate
-                && x <= (getWidth() + mMaxWidth) / 2;
+    public FastScrollerLocation getScrollerLocation() {
+        return mFastScrollerLocation;
+    }
+
+    public void setFastScrollerLocation(@NonNull FastScrollerLocation location) {
+        mFastScrollerLocation = location;
     }
 
     private void animatePopupVisibility(boolean visible) {
         if (mPopupVisible != visible) {
             mPopupVisible = visible;
-            mPopupView.animate().cancel();
-            mPopupView.animate().alpha(visible ? 1f : 0f).setDuration(visible ? 200 : 150).start();
+            if (shouldUseLetterFastScroller()) {
+                mRv.getLetterList().animate().alpha(visible ? 1f : 0f)
+                        .setDuration(visible ? 200 : 150).start();
+            } else {
+                mPopupView.animate().cancel();
+                mPopupView.animate().alpha(visible ? 1f : 0f)
+                        .setDuration(visible ? 200 : 150).start();
+            }
         }
     }
 

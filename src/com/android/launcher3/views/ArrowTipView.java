@@ -54,7 +54,7 @@ import com.android.launcher3.graphics.TriangleShape;
  */
 public class ArrowTipView extends AbstractFloatingView {
 
-    private static final String TAG = ArrowTipView.class.getSimpleName();
+    private static final String TAG = "ArrowTipView";
     private static final long AUTO_CLOSE_TIMEOUT_MILLIS = 10 * 1000;
     private static final long SHOW_DELAY_MS = 200;
     private static final long SHOW_DURATION_MS = 300;
@@ -73,7 +73,7 @@ public class ArrowTipView extends AbstractFloatingView {
                 }
             };
 
-    private final ActivityContext mActivityContext;
+    protected final ActivityContext mActivityContext;
     private final Handler mHandler = new Handler();
     private boolean mIsPointingUp;
     private Runnable mOnClosed;
@@ -103,16 +103,26 @@ public class ArrowTipView extends AbstractFloatingView {
                 R.dimen.arrow_toast_arrow_width);
         mArrowMinOffset = context.getResources().getDimensionPixelSize(
                 R.dimen.dynamic_grid_cell_border_spacing);
-        TypedArray ta = context.obtainStyledAttributes(R.styleable.ArrowTipView);
+        Context localContext = context;
+        TypedArray ta = localContext.obtainStyledAttributes(R.styleable.ArrowTipView);
         // Set style to default to avoid inflation issues with missing attributes.
         if (!ta.hasValue(R.styleable.ArrowTipView_arrowTipBackground)
                 || !ta.hasValue(R.styleable.ArrowTipView_arrowTipTextColor)) {
-            context = new ContextThemeWrapper(context, R.style.ArrowTipStyle);
+            localContext = new ContextThemeWrapper(localContext, R.style.ArrowTipStyle);
         }
-        mArrowViewPaintColor = ta.getColor(R.styleable.ArrowTipView_arrowTipBackground,
+        mArrowViewPaintColor = applyArrowPaintColor(ta, localContext);
+        init(localContext, layoutId);
+    }
+
+    protected int applyArrowPaintColor(TypedArray typedArray, Context context) {
+        int arrowPaintColor = typedArray.getColor(R.styleable.ArrowTipView_arrowTipBackground,
                 context.getColor(R.color.arrow_tip_view_bg));
-        ta.recycle();
-        init(context, layoutId);
+        typedArray.recycle();
+        return arrowPaintColor;
+    }
+
+    protected int getArrowId() {
+        return R.id.arrow;
     }
 
     @Override
@@ -154,8 +164,8 @@ public class ArrowTipView extends AbstractFloatingView {
         inflate(context, layoutId, this);
         setOrientation(LinearLayout.VERTICAL);
 
-        mArrowView = findViewById(R.id.arrow);
-        updateArrowTipInView();
+        mArrowView = findViewById(getArrowId());
+        updateArrowTipInView(mIsPointingUp);
         setAlpha(0);
 
         // Create default open animator.
@@ -259,11 +269,11 @@ public class ArrowTipView extends AbstractFloatingView {
      */
     @Nullable public ArrowTipView showAtLocation(String text, @Px int arrowXCoord, @Px int yCoord) {
         return showAtLocation(
-            text,
-            arrowXCoord,
-            /* yCoordDownPointingTip= */ yCoord,
-            /* yCoordUpPointingTip= */ yCoord,
-            /* shouldAutoClose= */ true);
+                text,
+                arrowXCoord,
+                /* yCoordDownPointingTip= */ yCoord,
+                /* yCoordUpPointingTip= */ yCoord,
+                /* shouldAutoClose= */ true);
     }
 
     /**
@@ -323,7 +333,7 @@ public class ArrowTipView extends AbstractFloatingView {
      * @return The tool tip view. {@code null} if the tip can not be shown.
      */
     @Nullable private ArrowTipView showAtLocation(String text, @Px int arrowXCoord,
-            @Px int yCoordDownPointingTip, @Px int yCoordUpPointingTip, boolean shouldAutoClose) {
+                                                  @Px int yCoordDownPointingTip, @Px int yCoordUpPointingTip, boolean shouldAutoClose) {
         ViewGroup parent = mActivityContext.getDragLayer();
         @Px int parentViewWidth = parent.getWidth();
         @Px int parentViewHeight = parent.getHeight();
@@ -343,6 +353,34 @@ public class ArrowTipView extends AbstractFloatingView {
             parent.addView(this);
             requestLayout();
         }
+        return showAtLocation(arrowXCoord, yCoordDownPointingTip, yCoordUpPointingTip,
+                minViewMargin, parentViewWidth, parentViewHeight, shouldAutoClose);
+    }
+
+    /**
+     * Show the ArrowTipView (tooltip) custom aligned. The tooltip is vertically flipped if it
+     * cannot fit on screen in the requested orientation.
+     *
+     * @param arrowXCoord The X coordinate for the arrow on the tooltip. The arrow is usually in the
+     *                    center of tooltip unless the tooltip goes beyond screen margin.
+     * @param yCoordDownPointingTip The Y coordinate of the pointed tip end of the tooltip when the
+     *                              tooltip is placed pointing downwards.
+     * @param yCoordUpPointingTip The Y coordinate of the pointed tip end of the tooltip when the
+     *                            tooltip is placed pointing upwards.
+     * @param minViewMargin The view margin in pixels from the tip end to the y coordinate.
+     * @param parentViewWidth The width in pixels of the parent view.
+     * @param parentViewHeight The height in pixels of the parent view.
+     * @param shouldAutoClose If Tooltip should be auto close.
+     * @return The tool tip view. {@code null} if the tip can not be shown.
+     */
+    protected ArrowTipView showAtLocation(
+            @Px int arrowXCoord,
+            @Px int yCoordDownPointingTip,
+            @Px int yCoordUpPointingTip,
+            @Px int minViewMargin,
+            @Px int parentViewWidth,
+            @Px int parentViewHeight,
+            boolean shouldAutoClose) {
 
         post(() -> {
             // Adjust the tooltip horizontally.
@@ -364,17 +402,18 @@ public class ArrowTipView extends AbstractFloatingView {
 
             // Adjust the tooltip vertically.
             @Px int viewHeight = getHeight();
+            boolean isPointingUp = mIsPointingUp;
             if (mIsPointingUp
                     ? (yCoordUpPointingTip + viewHeight > parentViewHeight)
                     : (yCoordDownPointingTip - viewHeight < 0)) {
                 // Flip the view if it exceeds the vertical bounds of screen.
-                mIsPointingUp = !mIsPointingUp;
-                updateArrowTipInView();
+                isPointingUp = !mIsPointingUp;
             }
+            updateArrowTipInView(isPointingUp);
             // Place the tooltip such that its top is at yCoordUpPointingTip if arrow is displayed
             // pointing upwards, otherwise place it such that its bottom is at
             // yCoordDownPointingTip.
-            setY(mIsPointingUp ? yCoordUpPointingTip : yCoordDownPointingTip - viewHeight);
+            setY(isPointingUp ? yCoordUpPointingTip : yCoordDownPointingTip - viewHeight);
 
             // Adjust the arrow's relative position on tooltip to make sure the actual position of
             // arrow's pointed tip is always at arrowXCoord.
@@ -391,10 +430,10 @@ public class ArrowTipView extends AbstractFloatingView {
         return this;
     }
 
-    private void updateArrowTipInView() {
+    private void updateArrowTipInView(boolean isPointingUp) {
         ViewGroup.LayoutParams arrowLp = mArrowView.getLayoutParams();
         ShapeDrawable arrowDrawable = new ShapeDrawable(TriangleShape.create(
-                arrowLp.width, arrowLp.height, mIsPointingUp));
+                arrowLp.width, arrowLp.height, isPointingUp));
         Paint arrowPaint = arrowDrawable.getPaint();
         @Px int arrowTipRadius = getContext().getResources()
                 .getDimensionPixelSize(R.dimen.arrow_toast_corner_radius);
@@ -403,7 +442,7 @@ public class ArrowTipView extends AbstractFloatingView {
         mArrowView.setBackground(arrowDrawable);
         // Add negative margin so that the rounded corners on base of arrow are not visible.
         removeView(mArrowView);
-        if (mIsPointingUp) {
+        if (isPointingUp) {
             addView(mArrowView, 0);
             ((ViewGroup.MarginLayoutParams) arrowLp).setMargins(0, 0, 0, -1 * arrowTipRadius);
         } else {

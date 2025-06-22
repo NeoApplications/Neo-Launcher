@@ -41,6 +41,7 @@ import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.InsettableFrameLayout;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.MultiPropertyFactory.MultiProperty;
 import com.android.launcher3.util.MultiValueAlpha;
 import com.android.launcher3.util.TouchController;
@@ -103,10 +104,10 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
     protected final Rect mHitRect = new Rect();
 
     @ViewDebug.ExportedProperty(category = "launcher")
-    private final RectF mSystemGestureRegion = new RectF();
+    protected final RectF mSystemGestureRegion = new RectF();
     private int mTouchDispatchState = 0;
 
-    protected final T mActivity;
+    protected final T mContainer;
     private final MultiValueAlpha mMultiValueAlpha;
 
     // All the touch controllers for the view
@@ -120,7 +121,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     public BaseDragLayer(Context context, AttributeSet attrs, int alphaChannelCount) {
         super(context, attrs);
-        mActivity = ActivityContext.lookupContext(context);
+        mContainer = ActivityContext.lookupContext(context);
         mMultiValueAlpha = new MultiValueAlpha(this, alphaChannelCount);
     }
 
@@ -158,12 +159,12 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
             }
             mTouchCompleteListener = null;
         } else if (action == MotionEvent.ACTION_DOWN) {
-            mActivity.finishAutoCancelActionMode();
+            mContainer.finishAutoCancelActionMode();
         }
         return findActiveController(ev);
     }
 
-    private boolean isEventInLauncher(MotionEvent ev) {
+    protected boolean isEventWithinSystemGestureRegion(MotionEvent ev) {
         final float x = ev.getX();
         final float y = ev.getY();
 
@@ -172,9 +173,10 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
     }
 
     private TouchController findControllerToHandleTouch(MotionEvent ev) {
-        AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(mActivity);
+        AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(mContainer);
         if (topView != null
-                && (isEventInLauncher(ev) || topView.canInterceptEventsInSystemGestureRegion())
+                && (isEventWithinSystemGestureRegion(ev)
+                || topView.canInterceptEventsInSystemGestureRegion())
                 && topView.onControllerInterceptTouchEvent(ev)) {
             return topView;
         }
@@ -205,7 +207,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
     @Override
     public boolean onRequestSendAccessibilityEvent(View child, AccessibilityEvent event) {
         // Shortcuts can appear above folder
-        View topView = AbstractFloatingView.getTopOpenViewWithType(mActivity,
+        View topView = AbstractFloatingView.getTopOpenViewWithType(mContainer,
                 AbstractFloatingView.TYPE_ACCESSIBLE);
         if (topView != null) {
             if (child == topView) {
@@ -220,7 +222,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     @Override
     public void addChildrenForAccessibility(ArrayList<View> childrenForAccessibility) {
-        View topView = AbstractFloatingView.getTopOpenViewWithType(mActivity,
+        View topView = AbstractFloatingView.getTopOpenViewWithType(mContainer,
                 AbstractFloatingView.TYPE_ACCESSIBLE);
         if (topView != null) {
             // Only add the top view as a child for accessibility when it is open
@@ -286,7 +288,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
                 mTouchDispatchState |= TOUCH_DISPATCHING_FROM_VIEW
                         | TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS;
 
-                if (isEventInLauncher(ev)) {
+                if (isEventWithinSystemGestureRegion(ev)) {
                     mTouchDispatchState &= ~TOUCH_DISPATCHING_FROM_VIEW_GESTURE_REGION;
                 } else {
                     mTouchDispatchState |= TOUCH_DISPATCHING_FROM_VIEW_GESTURE_REGION;
@@ -318,7 +320,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
         // dispatching at anytime, but not vice-versa.
         allowViewDispatch = allowViewDispatch && !isViewDispatching
                 && (actionMasked == ACTION_DOWN
-                    || ((mTouchDispatchState & TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS) != 0));
+                || ((mTouchDispatchState & TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS) != 0));
 
         if (allowViewDispatch) {
             mTouchDispatchState |= TOUCH_DISPATCHING_TO_VIEW_IN_PROGRESS;
@@ -407,7 +409,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
      *         assumption fails, we will need to return a pair of scale factors.
      */
     public float getDescendantCoordRelativeToSelf(View descendant, float[] coord,
-            boolean includeRootScroll) {
+                                                  boolean includeRootScroll) {
         return Utilities.getDescendantCoordRelativeToAncestor(descendant, this,
                 coord, includeRootScroll);
     }
@@ -456,7 +458,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
-        View topView = AbstractFloatingView.getTopOpenView(mActivity);
+        View topView = AbstractFloatingView.getTopOpenView(mContainer);
         if (topView != null) {
             return topView.requestFocus(direction, previouslyFocusedRect);
         } else {
@@ -466,7 +468,7 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     @Override
     public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
-        View topView = AbstractFloatingView.getTopOpenView(mActivity);
+        View topView = AbstractFloatingView.getTopOpenView(mContainer);
         if (topView != null) {
             topView.addFocusables(views, direction);
         } else {
@@ -550,24 +552,21 @@ public abstract class BaseDragLayer<T extends Context & ActivityContext>
 
     @Override
     public WindowInsets dispatchApplyWindowInsets(WindowInsets insets) {
-        if (Utilities.ATLEAST_Q) {
-            Insets gestureInsets = insets.getMandatorySystemGestureInsets();
-            int gestureInsetBottom = gestureInsets.bottom;
-            Insets imeInset = Utilities.ATLEAST_R
-                    ? insets.getInsets(WindowInsets.Type.ime())
-                    : Insets.NONE;
-            DeviceProfile dp = mActivity.getDeviceProfile();
-            if (dp.isTaskbarPresent) {
-                // Ignore taskbar gesture insets to avoid interfering with TouchControllers.
-                gestureInsetBottom = Math.max(0, gestureInsetBottom - dp.taskbarHeight);
-            }
-            mSystemGestureRegion.set(
-                    Math.max(gestureInsets.left, imeInset.left),
-                    Math.max(gestureInsets.top, imeInset.top),
-                    Math.max(gestureInsets.right, imeInset.right),
-                    Math.max(gestureInsetBottom, imeInset.bottom)
-            );
+        Insets gestureInsets = insets.getMandatorySystemGestureInsets();
+        int gestureInsetBottom = gestureInsets.bottom;
+        Insets imeInset = insets.getInsets(WindowInsets.Type.ime());
+        DeviceProfile dp = mContainer.getDeviceProfile();
+        if (dp.isTaskbarPresent) {
+            // Ignore taskbar gesture insets to avoid interfering with TouchControllers.
+            gestureInsetBottom = ResourceUtils.getNavbarSize(
+                    ResourceUtils.NAVBAR_BOTTOM_GESTURE_SIZE, getResources());
         }
+        mSystemGestureRegion.set(
+                Math.max(gestureInsets.left, imeInset.left),
+                Math.max(gestureInsets.top, imeInset.top),
+                Math.max(gestureInsets.right, imeInset.right),
+                Math.max(gestureInsetBottom, imeInset.bottom)
+        );
         return super.dispatchApplyWindowInsets(insets);
     }
 }
