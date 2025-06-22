@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,21 @@ import com.android.launcher3.model.data.PackageItemInfo;
 import java.util.Collections;
 
 /**
- * Entry representing the top empty space
+ * Binds the section to be displayed at the bottom of the widgets list that enables user to expand
+ * and view all the widget apps including non-default. Bound when
+ * {@link WidgetsListExpandActionEntry} exists in the list on adapter.
  */
-public class WidgetListSpaceEntry extends WidgetsListBaseEntry {
+public class WidgetsListExpandActionEntry extends WidgetsListBaseEntry {
 
-    public WidgetListSpaceEntry() {
-        super(new PackageItemInfo(/* packageName= */ "", Process.myUserHandle()),
-                /* titleSectionName= */ "",
-                Collections.EMPTY_LIST);
+    public WidgetsListExpandActionEntry() {
+        super(/*pkgItem=*/ new PackageItemInfo(/* packageName= */ "", Process.myUserHandle()),
+                /*titleSectionName=*/ "",
+                /*items=*/ Collections.EMPTY_LIST);
         mPkgItem.title = "";
     }
 
     @Override
     public WidgetsListBaseEntry copy() {
-        return new WidgetListSpaceEntry();
+        return new WidgetsListExpandActionEntry();
     }
 }
