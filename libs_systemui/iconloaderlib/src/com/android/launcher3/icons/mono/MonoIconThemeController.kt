@@ -25,6 +25,8 @@ import android.graphics.BlendMode.SRC_IN
 import android.graphics.BlendModeColorFilter
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
@@ -33,33 +35,42 @@ import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import com.android.launcher3.Flags
 import com.android.launcher3.icons.BaseIconFactory
+import com.android.launcher3.icons.BaseIconFactory.MODE_ALPHA
 import com.android.launcher3.icons.BitmapInfo
+import com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR
 import com.android.launcher3.icons.IconThemeController
 import com.android.launcher3.icons.MonochromeIconFactory
+import com.android.launcher3.icons.SourceHint
 import com.android.launcher3.icons.ThemedBitmap
-import com.android.launcher3.icons.mono.ThemedIconDrawable.Companion.getColors
 import java.nio.ByteBuffer
 
 @TargetApi(Build.VERSION_CODES.TIRAMISU)
-class MonoIconThemeController : IconThemeController {
+class MonoIconThemeController(
+    private val colorProvider: (Context) -> IntArray = ThemedIconDrawable.Companion::getColors
+) : IconThemeController {
+
+    override val themeID = "with-theme"
 
     override fun createThemedBitmap(
         icon: AdaptiveIconDrawable,
         info: BitmapInfo,
         factory: BaseIconFactory,
+        sourceHint: SourceHint?,
     ): ThemedBitmap? {
-        val mono = getMonochromeDrawable(icon, info)
+        val mono =
+            getMonochromeDrawable(
+                icon,
+                info,
+                factory.getShapePath(icon, Rect(0, 0, info.icon.width, info.icon.height)),
+                factory.iconScale,
+                sourceHint?.isFileDrawable ?: false,
+                factory.shouldForceThemeIcon(),
+            )
         if (mono != null) {
-            val scale =
-                factory.normalizer.getScale(
-                    AdaptiveIconDrawable(ColorDrawable(Color.BLACK), null),
-                    null,
-                    null,
-                    null,
-                )
             return MonoThemedBitmap(
-                factory.createIconBitmap(mono, scale, BaseIconFactory.MODE_ALPHA),
+                factory.createIconBitmap(mono, ICON_VISIBLE_AREA_FACTOR, MODE_ALPHA),
                 factory.whiteShadowLayer,
+                colorProvider,
             )
         }
         return null
@@ -70,13 +81,20 @@ class MonoIconThemeController : IconThemeController {
      *
      * @param base the original icon
      */
-    private fun getMonochromeDrawable(base: AdaptiveIconDrawable, info: BitmapInfo): Drawable? {
+    private fun getMonochromeDrawable(
+        base: AdaptiveIconDrawable,
+        info: BitmapInfo,
+        shapePath: Path,
+        iconScale: Float,
+        isFileDrawable: Boolean,
+        shouldForceThemeIcon: Boolean,
+    ): Drawable? {
         val mono = base.monochrome
         if (mono != null) {
-            return ClippedMonoDrawable(mono)
+            return ClippedMonoDrawable(mono, shapePath, iconScale)
         }
-        if (Flags.forceMonochromeAppIcons()) {
-            return MonochromeIconFactory(info.icon.width).wrap(base)
+        if (Flags.forceMonochromeAppIcons() && shouldForceThemeIcon && !isFileDrawable) {
+            return MonochromeIconFactory(info.icon.width).wrap(base, shapePath, iconScale)
         }
         return null
     }
@@ -85,6 +103,7 @@ class MonoIconThemeController : IconThemeController {
         data: ByteArray,
         info: BitmapInfo,
         factory: BaseIconFactory,
+        sourceHint: SourceHint,
     ): ThemedBitmap? {
         val icon = info.icon
         if (data.size != icon.height * icon.width) return null
@@ -97,7 +116,7 @@ class MonoIconThemeController : IconThemeController {
             monoBitmap.recycle()
             monoBitmap = hwMonoBitmap
         }
-        return MonoThemedBitmap(monoBitmap, factory.whiteShadowLayer)
+        return MonoThemedBitmap(monoBitmap, factory.whiteShadowLayer, colorProvider)
     }
 
     override fun createThemedAdaptiveIcon(
@@ -105,7 +124,7 @@ class MonoIconThemeController : IconThemeController {
         originalIcon: AdaptiveIconDrawable,
         info: BitmapInfo?,
     ): AdaptiveIconDrawable? {
-        val colors = getColors(context)
+        val colors = colorProvider(context)
         originalIcon.mutate()
         var monoDrawable = originalIcon.monochrome?.apply { setTint(colors[1]) }
 
@@ -130,14 +149,23 @@ class MonoIconThemeController : IconThemeController {
         return monoDrawable?.let { AdaptiveIconDrawable(ColorDrawable(colors[0]), it) }
     }
 
-    class ClippedMonoDrawable(base: Drawable?) :
-        InsetDrawable(base, -AdaptiveIconDrawable.getExtraInsetFraction()) {
+    class ClippedMonoDrawable(
+        base: Drawable?,
+        private val shapePath: Path,
+        private val iconScale: Float,
+    ) : InsetDrawable(base, -AdaptiveIconDrawable.getExtraInsetFraction()) {
+        // TODO(b/399666950): remove this after launcher icon shapes is fully enabled
         private val mCrop = AdaptiveIconDrawable(ColorDrawable(Color.BLACK), null)
 
         override fun draw(canvas: Canvas) {
             mCrop.bounds = bounds
             val saveCount = canvas.save()
-            canvas.clipPath(mCrop.iconMask)
+            if (Flags.enableLauncherIconShapes()) {
+                canvas.clipPath(shapePath)
+                canvas.scale(iconScale, iconScale, bounds.width() / 2f, bounds.height() / 2f)
+            } else {
+                canvas.clipPath(mCrop.iconMask)
+            }
             super.draw(canvas)
             canvas.restoreToCount(saveCount)
         }

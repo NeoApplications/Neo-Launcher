@@ -23,7 +23,6 @@ import android.os.SystemClock
 import android.os.UserHandle
 import android.util.ArrayMap
 import android.util.Log
-import com.android.launcher3.icons.cache.BaseIconCache.IconDB
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SQLiteCacheHelper
 import java.util.ArrayDeque
@@ -107,19 +106,19 @@ class IconCacheUpdateHandler(
             cacheDb
                 .query(
                     arrayOf(
-                        IconDB.COLUMN_ROWID,
-                        IconDB.COLUMN_COMPONENT,
-                        IconDB.COLUMN_FRESHNESS_ID,
+                        BaseIconCache.COLUMN_ROWID,
+                        BaseIconCache.COLUMN_COMPONENT,
+                        BaseIconCache.COLUMN_FRESHNESS_ID,
                     ),
-                    "${IconDB.COLUMN_USER} = ? ",
+                    "${BaseIconCache.COLUMN_USER} = ? ",
                     arrayOf(userSerial.toString()),
                 )
                 .use { c ->
                     var ignorePackages = packagesToIgnore[user] ?: emptySet()
 
-                    val indexComponent = c.getColumnIndex(IconDB.COLUMN_COMPONENT)
-                    val indexFreshnessId = c.getColumnIndex(IconDB.COLUMN_FRESHNESS_ID)
-                    val rowIndex = c.getColumnIndex(IconDB.COLUMN_ROWID)
+                    val indexComponent = c.getColumnIndex(BaseIconCache.COLUMN_COMPONENT)
+                    val indexFreshnessId = c.getColumnIndex(BaseIconCache.COLUMN_FRESHNESS_ID)
+                    val rowIndex = c.getColumnIndex(BaseIconCache.COLUMN_ROWID)
 
                     while (c.moveToNext()) {
                         val rowId = c.getInt(rowIndex)
@@ -232,7 +231,7 @@ class IconCacheUpdateHandler(
         // Commit all deletes
         if (itemsToDelete.isNotEmpty()) {
             val r = itemsToDelete.joinToString { it.rowId.toString() }
-            cacheDb.delete("${IconDB.COLUMN_ROWID} IN ($r)", null)
+            cacheDb.delete("${BaseIconCache.COLUMN_ROWID} IN ($r)", null)
             Log.d(TAG, "Deleting obsolete entries, count=" + itemsToDelete.size)
         }
     }

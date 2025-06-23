@@ -18,6 +18,8 @@ package com.android.launcher3.icons
 
 import android.content.Context
 import android.graphics.drawable.AdaptiveIconDrawable
+import com.android.launcher3.icons.cache.CachingLogic
+import com.android.launcher3.util.ComponentKey
 
 /** Represents a themed version of a BitmapInfo */
 interface ThemedBitmap {
@@ -30,13 +32,21 @@ interface ThemedBitmap {
 
 interface IconThemeController {
 
+    val themeID: String
+
     fun createThemedBitmap(
         icon: AdaptiveIconDrawable,
         info: BitmapInfo,
         factory: BaseIconFactory,
+        sourceHint: SourceHint? = null,
     ): ThemedBitmap?
 
-    fun decode(data: ByteArray, info: BitmapInfo, factory: BaseIconFactory): ThemedBitmap?
+    fun decode(
+        data: ByteArray,
+        info: BitmapInfo,
+        factory: BaseIconFactory,
+        sourceHint: SourceHint,
+    ): ThemedBitmap?
 
     fun createThemedAdaptiveIcon(
         context: Context,
@@ -44,3 +54,10 @@ interface IconThemeController {
         info: BitmapInfo?,
     ): AdaptiveIconDrawable?
 }
+
+data class SourceHint(
+    val key: ComponentKey,
+    val logic: CachingLogic<*>,
+    val freshnessId: String? = null,
+    val isFileDrawable: Boolean = false,
+)

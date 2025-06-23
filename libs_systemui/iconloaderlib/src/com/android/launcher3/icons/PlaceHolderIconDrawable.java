@@ -25,6 +25,8 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.graphics.ColorUtils;
@@ -39,10 +41,20 @@ public class PlaceHolderIconDrawable extends FastBitmapDrawable {
 
     public PlaceHolderIconDrawable(BitmapInfo info, Context context) {
         super(info);
-
-        mProgressPath = GraphicsUtils.getShapePath(context, 100);
+        mProgressPath = getDefaultPath();
         mPaint.setColor(ColorUtils.compositeColors(
                 GraphicsUtils.getAttrColor(context, R.attr.loadingIconColor), info.color));
+    }
+
+    /**
+     * Gets the current default icon mask {@link Path}.
+     * @return Shaped {@link Path} scaled to [0, 0, 100, 100] bounds
+     */
+    private Path getDefaultPath() {
+        AdaptiveIconDrawable drawable = new AdaptiveIconDrawable(
+                new ColorDrawable(Color.BLACK), new ColorDrawable(Color.BLACK));
+        drawable.setBounds(0, 0, 100, 100);
+        return new Path(drawable.getIconMask());
     }
 
     @Override

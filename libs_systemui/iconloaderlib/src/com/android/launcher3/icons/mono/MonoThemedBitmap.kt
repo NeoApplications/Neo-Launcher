@@ -24,10 +24,14 @@ import com.android.launcher3.icons.ThemedBitmap
 import com.android.launcher3.icons.mono.ThemedIconDrawable.ThemedConstantState
 import java.nio.ByteBuffer
 
-class MonoThemedBitmap(val mono: Bitmap, private val whiteShadowLayer: Bitmap) : ThemedBitmap {
+class MonoThemedBitmap(
+    val mono: Bitmap,
+    private val whiteShadowLayer: Bitmap,
+    private val colorProvider: (Context) -> IntArray = ThemedIconDrawable.Companion::getColors,
+) : ThemedBitmap {
 
     override fun newDrawable(info: BitmapInfo, context: Context): FastBitmapDrawable {
-        val colors = ThemedIconDrawable.getColors(context)
+        val colors = colorProvider(context)
         return ThemedConstantState(info, mono, whiteShadowLayer, colors[0], colors[1]).newDrawable()
     }
 

@@ -35,7 +35,10 @@ object CachedObjectCachingLogic : CachingLogic<CachedObject> {
     override fun loadIcon(context: Context, cache: BaseIconCache, info: CachedObject): BitmapInfo {
         val d = info.getFullResIcon(cache) ?: return BitmapInfo.LOW_RES_INFO
         cache.iconFactory.use { li ->
-            return li.createBadgedIconBitmap(d, IconOptions().setUser(info.user))
+            return li.createBadgedIconBitmap(
+                d,
+                IconOptions().setUser(info.user).setSourceHint(getSourceHint(info, cache)),
+            )
         }
     }
 

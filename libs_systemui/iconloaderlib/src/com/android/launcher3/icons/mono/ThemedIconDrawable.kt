@@ -28,8 +28,7 @@ import com.android.launcher3.icons.R
 
 /** Class to handle monochrome themed app icons */
 class ThemedIconDrawable(constantState: ThemedConstantState) :
-    FastBitmapDrawable(constantState.getBitmap(), constantState.colorFg) {
-    val bitmapInfo = constantState.bitmapInfo
+    FastBitmapDrawable(constantState.getBitmapInfo()) {
     private val colorFg = constantState.colorFg
     private val colorBg = constantState.colorBg
 
@@ -66,21 +65,21 @@ class ThemedIconDrawable(constantState: ThemedConstantState) :
     override fun isThemed() = true
 
     override fun newConstantState() =
-        ThemedConstantState(bitmapInfo, monoIcon, bgBitmap, colorBg, colorFg)
+        ThemedConstantState(mBitmapInfo, monoIcon, bgBitmap, colorBg, colorFg)
 
     override fun getIconColor() = colorFg
 
     class ThemedConstantState(
-        val bitmapInfo: BitmapInfo,
+        bitmapInfo: BitmapInfo,
         val mono: Bitmap,
         val whiteShadowLayer: Bitmap,
         val colorBg: Int,
         val colorFg: Int,
-    ) : FastBitmapConstantState(bitmapInfo.icon, bitmapInfo.color) {
+    ) : FastBitmapConstantState(bitmapInfo) {
 
         public override fun createDrawable() = ThemedIconDrawable(this)
 
-        fun getBitmap(): Bitmap = mBitmap
+        fun getBitmapInfo(): BitmapInfo = mBitmapInfo
     }
 
     companion object {

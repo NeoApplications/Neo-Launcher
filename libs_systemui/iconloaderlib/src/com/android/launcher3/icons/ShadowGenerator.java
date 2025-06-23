@@ -45,6 +45,11 @@ public class ShadowGenerator {
     private static final float HALF_DISTANCE = 0.5f;
     private static final int AMBIENT_SHADOW_ALPHA = 25;
 
+    // Amount by which an icon should be scaled down to make room for shadows.
+    // We are ignoring KEY_SHADOW_DISTANCE because regular icons also ignore this: b/298203449
+    public static final float ICON_SCALE_FOR_SHADOWS =
+            (HALF_DISTANCE - BLUR_FACTOR) / HALF_DISTANCE;
+
     private final int mIconSize;
 
     private final Paint mBlurPaint;
@@ -93,30 +98,6 @@ public class ShadowGenerator {
 
             mDrawPaint.setMaskFilter(null);
         }
-    }
-
-    /**
-     * Returns the minimum amount by which an icon with {@param bounds} should be scaled
-     * so that the shadows do not get clipped.
-     */
-    public static float getScaleForBounds(RectF bounds) {
-        float scale = 1;
-
-        if (ENABLE_SHADOWS) {
-            // For top, left & right, we need same space.
-            float minSide = Math.min(Math.min(bounds.left, bounds.right), bounds.top);
-            if (minSide < BLUR_FACTOR) {
-                scale = (HALF_DISTANCE - BLUR_FACTOR) / (HALF_DISTANCE - minSide);
-            }
-
-            // We are ignoring KEY_SHADOW_DISTANCE because regular icons ignore this at the moment b/298203449
-            float bottomSpace = BLUR_FACTOR;
-            if (bounds.bottom < bottomSpace) {
-                scale = Math.min(scale,
-                        (HALF_DISTANCE - bottomSpace) / (HALF_DISTANCE - bounds.bottom));
-            }
-        }
-        return scale;
     }
 
     public static class Builder {

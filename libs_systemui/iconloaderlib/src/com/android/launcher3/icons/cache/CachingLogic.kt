@@ -13,48 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.icons.cache;
+package com.android.launcher3.icons.cache
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.UserHandle;
+import android.content.ComponentName
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.os.UserHandle
+import com.android.launcher3.icons.BitmapInfo
+import com.android.launcher3.icons.IconProvider
+import com.android.launcher3.icons.SourceHint
+import com.android.launcher3.util.ComponentKey
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+interface CachingLogic<T> {
+    /** Returns the source hint for this object that can be sued by theme controllers */
+    fun getSourceHint(item: T, cache: BaseIconCache): SourceHint {
+        return SourceHint(
+            key = ComponentKey(getComponent(item), getUser(item)),
+            logic = this,
+            freshnessId = getFreshnessIdentifier(item, cache.iconProvider),
+        )
+    }
 
-import com.android.launcher3.icons.BitmapInfo;
-import com.android.launcher3.icons.IconProvider;
+    fun getComponent(item: T): ComponentName
 
-public interface CachingLogic<T> {
+    fun getUser(item: T): UserHandle
 
-    @NonNull
-    ComponentName getComponent(@NonNull final T object);
-
-    @NonNull
-    UserHandle getUser(@NonNull final T object);
-
-    /**
-     * Loads the user visible label for the object
-     */
-    @Nullable
-    CharSequence getLabel(@NonNull final T object);
+    /** Loads the user visible label for the object */
+    fun getLabel(item: T): CharSequence?
 
     /**
      * Returns the application info associated with the object. This is used to maintain the
      * "freshness" of the disk cache. If null, the item will not be persisted to the disk
      */
-    @Nullable
-    ApplicationInfo getApplicationInfo(@NonNull T object);
+    fun getApplicationInfo(item: T): ApplicationInfo?
 
-    @NonNull
-    BitmapInfo loadIcon(@NonNull Context context, @NonNull BaseIconCache cache, @NonNull T object);
+    fun loadIcon(context: Context, cache: BaseIconCache, item: T): BitmapInfo
 
     /**
      * Returns a persistable string that can be used to indicate indicate the correctness of the
      * cache for the provided item
      */
-    @Nullable
-    String getFreshnessIdentifier(@NonNull T item, @NonNull IconProvider iconProvider);
-
+    fun getFreshnessIdentifier(item: T, iconProvider: IconProvider): String?
 }

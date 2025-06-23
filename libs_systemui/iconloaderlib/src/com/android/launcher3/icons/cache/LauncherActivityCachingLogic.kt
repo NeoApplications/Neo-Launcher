@@ -45,9 +45,13 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
     ): BitmapInfo {
         cache.iconFactory.use { li ->
             val iconOptions: IconOptions = IconOptions().setUser(info.user)
-            iconOptions.setIsArchived(
-                useNewIconForArchivedApps() && VERSION.SDK_INT >= 35 && info.activityInfo.isArchived
-            )
+            iconOptions
+                .setIsArchived(
+                    useNewIconForArchivedApps() &&
+                        VERSION.SDK_INT >= 35 &&
+                        info.activityInfo.isArchived
+                )
+                .setSourceHint(getSourceHint(info, cache))
             val iconDrawable = cache.iconProvider.getIcon(info.activityInfo, li.fullResIconDpi)
             if (context.packageManager.isDefaultApplicationIcon(iconDrawable)) {
                 Log.w(
