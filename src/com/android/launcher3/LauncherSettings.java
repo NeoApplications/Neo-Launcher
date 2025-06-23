@@ -16,10 +16,22 @@
 
 package com.android.launcher3;
 
+import static android.util.Base64.NO_PADDING;
+import static android.util.Base64.NO_WRAP;
+
+import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Base64;
 
+import androidx.annotation.NonNull;
+
+import com.android.launcher3.icons.cache.CacheLookupFlag;
 import com.android.launcher3.model.data.ItemInfo;
+
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Settings related utilities.
@@ -134,6 +146,11 @@ public class LauncherSettings {
         public static final int ITEM_TYPE_SEARCH_ACTION = 9;
 
         /**
+         * Private space install app button.
+         */
+        public static final int ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON = 11;
+
+        /**
          * The custom icon bitmap.
          * <P>Type: BLOB</P>
          */
@@ -173,6 +190,7 @@ public class LauncherSettings {
         public static final int CONTAINER_SHORTCUTS = -107;
         public static final int CONTAINER_SETTINGS = -108;
         public static final int CONTAINER_TASKSWITCHER = -109;
+        public static final int CONTAINER_PRIVATESPACE = -110;
 
         // Represents any of the extended containers implemented in non-AOSP variants.
         public static final int EXTENDED_CONTAINERS = -200;
@@ -201,6 +219,8 @@ public class LauncherSettings {
                 case ITEM_TYPE_TASK: return "TASK";
                 case ITEM_TYPE_QSB: return "QSB";
                 case ITEM_TYPE_APP_PAIR: return "APP_PAIR";
+                case ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON:
+                    return "PRIVATE_SPACE_INSTALL_APP_BUTTON";
                 default: return String.valueOf(type);
             }
         }
@@ -289,37 +309,74 @@ public class LauncherSettings {
 
         public static void addTableToDb(SQLiteDatabase db, long myProfileId, boolean optional,
                 String tableName) {
-            String ifNotExists = optional ? " IF NOT EXISTS " : "";
-            db.execSQL("CREATE TABLE " + ifNotExists + tableName + " (" +
-                    "_id INTEGER PRIMARY KEY," +
-                    "title TEXT," +
-                    "intent TEXT," +
-                    "container INTEGER," +
-                    "screen INTEGER," +
-                    "cellX INTEGER," +
-                    "cellY INTEGER," +
-                    "spanX INTEGER," +
-                    "spanY INTEGER," +
-                    "itemType INTEGER," +
-                    "appWidgetId INTEGER NOT NULL DEFAULT -1," +
-                    "icon BLOB," +
-                    "appWidgetProvider TEXT," +
-                    "modified INTEGER NOT NULL DEFAULT 0," +
-                    "restored INTEGER NOT NULL DEFAULT 0," +
-                    "profileId INTEGER DEFAULT " + myProfileId + "," +
-                    "rank INTEGER NOT NULL DEFAULT 0," +
-                    "options INTEGER NOT NULL DEFAULT 0," +
-                    APPWIDGET_SOURCE + " INTEGER NOT NULL DEFAULT " + CONTAINER_UNKNOWN +
-                    ");");
+            db.execSQL("CREATE TABLE " + (optional ? " IF NOT EXISTS " : "") + tableName + " ("
+                    + getJoinedColumnsToTypes(myProfileId) + ");");
         }
+
+        // LinkedHashMap maintains Order of Insertion
+        @NonNull
+        private static LinkedHashMap<String, String> getColumnsToTypes(long profileId) {
+            final LinkedHashMap<String, String> columnsToTypes = new LinkedHashMap<>();
+            columnsToTypes.put(_ID, "INTEGER PRIMARY KEY");
+            columnsToTypes.put(TITLE, "TEXT");
+            columnsToTypes.put(INTENT, "TEXT");
+            columnsToTypes.put(CONTAINER, "INTEGER");
+            columnsToTypes.put(SCREEN, "INTEGER");
+            columnsToTypes.put(CELLX, "INTEGER");
+            columnsToTypes.put(CELLY, "INTEGER");
+            columnsToTypes.put(SPANX, "INTEGER");
+            columnsToTypes.put(SPANY, "INTEGER");
+            columnsToTypes.put(ITEM_TYPE, "INTEGER");
+            columnsToTypes.put(APPWIDGET_ID, "INTEGER NOT NULL DEFAULT -1");
+            columnsToTypes.put(ICON, "BLOB");
+            columnsToTypes.put(APPWIDGET_PROVIDER, "TEXT");
+            columnsToTypes.put(MODIFIED, "INTEGER NOT NULL DEFAULT 0");
+            columnsToTypes.put(RESTORED, "INTEGER NOT NULL DEFAULT 0");
+            columnsToTypes.put(PROFILE_ID, "INTEGER DEFAULT " + profileId);
+            columnsToTypes.put(RANK, "INTEGER NOT NULL DEFAULT 0");
+            columnsToTypes.put(OPTIONS, "INTEGER NOT NULL DEFAULT 0");
+            columnsToTypes.put(APPWIDGET_SOURCE, "INTEGER NOT NULL DEFAULT -1");
+            return columnsToTypes;
+        }
+
+        private static String getJoinedColumnsToTypes(long profileId) {
+            return getColumnsToTypes(profileId)
+                    .entrySet()
+                    .stream()
+                    .map(it -> it.getKey() + " " + it.getValue())
+                    .collect(Collectors.joining(", "));
+        }
+
+        /**
+         * Returns an ordered list of columns in the Favorites table as one string, ready to use in
+         * an SQL statement.
+         */
+        @NonNull
+        public static String getColumns(long profileId) {
+            return String.join(", ", getColumnsToTypes(profileId).keySet());
+        }
+
+        /**
+         * Lookup flag to be used for items which are visible on the home screen
+         */
+        public static final CacheLookupFlag DESKTOP_ICON_FLAG = DEFAULT_LOOKUP_FLAG;
     }
 
     /**
      * Launcher settings
      */
     public static final class Settings {
-        public static final String LAYOUT_DIGEST_KEY = "launcher3.layout.provider.blob";
+        public static final String LAYOUT_PROVIDER_KEY = "launcher3.layout.provider";
         public static final String LAYOUT_DIGEST_LABEL = "launcher-layout";
         public static final String LAYOUT_DIGEST_TAG = "ignore";
+        public static final String BLOB_KEY_PREFIX = "blob://";
+
+        /**
+         * Creates a key to be used for {@link #LAYOUT_PROVIDER_KEY}
+         * @param digest byte[] representing the message digest for the blob handle
+         */
+        public static String createBlobProviderKey(byte[] digest) {
+            return BLOB_KEY_PREFIX + Base64.encodeToString(digest, NO_WRAP | NO_PADDING);
+        }
     }
 }

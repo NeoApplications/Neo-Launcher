@@ -19,6 +19,8 @@ package com.android.launcher3;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
 import static com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME;
 import static com.android.launcher3.provider.LauncherDbUtils.itemIdMatch;
+import static com.android.launcher3.util.UserIconInfo.TYPE_CLONED;
+import static com.android.launcher3.util.UserIconInfo.TYPE_WORK;
 
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -34,6 +36,7 @@ import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Process;
+import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
@@ -52,10 +55,11 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.qsb.QsbContainerView;
 import com.android.launcher3.shortcuts.ShortcutKey;
-import com.android.launcher3.uioverrides.ApiWrapper;
+import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.Partner;
 import com.android.launcher3.util.Thunk;
+import com.android.launcher3.util.UserIconInfo;
 import com.android.launcher3.widget.LauncherWidgetHolder;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -63,6 +67,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -86,7 +91,7 @@ public class AutoInstallsLayout {
     private static final String LAYOUT_RES = "default_layout";
 
     public static AutoInstallsLayout get(Context context, LauncherWidgetHolder appWidgetHolder,
-            LayoutParserCallback callback) {
+                                         LayoutParserCallback callback) {
         Partner partner = Partner.get(context.getPackageManager(), ACTION_LAUNCHER_CUSTOMIZATION);
         if (partner == null) {
             return null;
@@ -125,33 +130,37 @@ public class AutoInstallsLayout {
     private static final String TAG_INCLUDE = "include";
     public static final String TAG_WORKSPACE = "workspace";
     private static final String TAG_APP_ICON = "appicon";
-    private static final String TAG_AUTO_INSTALL = "autoinstall";
-    private static final String TAG_FOLDER = "folder";
-    private static final String TAG_APPWIDGET = "appwidget";
+    public static final String TAG_AUTO_INSTALL = "autoinstall";
+    public static final String TAG_FOLDER = "folder";
+    public static final String TAG_APPWIDGET = "appwidget";
     protected static final String TAG_SEARCH_WIDGET = "searchwidget";
-    private static final String TAG_SHORTCUT = "shortcut";
+    public static final String TAG_SHORTCUT = "shortcut";
     private static final String TAG_EXTRA = "extra";
 
-    private static final String ATTR_CONTAINER = "container";
-    private static final String ATTR_RANK = "rank";
+    public static final String ATTR_CONTAINER = "container";
+    public static final String ATTR_RANK = "rank";
 
-    private static final String ATTR_PACKAGE_NAME = "packageName";
-    private static final String ATTR_CLASS_NAME = "className";
-    private static final String ATTR_TITLE = "title";
-    private static final String ATTR_TITLE_TEXT = "titleText";
-    private static final String ATTR_SCREEN = "screen";
-    private static final String ATTR_SHORTCUT_ID = "shortcutId";
+    public static final String ATTR_PACKAGE_NAME = "packageName";
+    public static final String ATTR_CLASS_NAME = "className";
+    public static final String ATTR_TITLE = "title";
+    public static final String ATTR_TITLE_TEXT = "titleText";
+    public static final String ATTR_SCREEN = "screen";
+    public static final String ATTR_SHORTCUT_ID = "shortcutId";
 
     // x and y can be specified as negative integers, in which case -1 represents the
     // last row / column, -2 represents the second last, and so on.
-    private static final String ATTR_X = "x";
-    private static final String ATTR_Y = "y";
+    public static final String ATTR_X = "x";
+    public static final String ATTR_Y = "y";
 
-    private static final String ATTR_SPAN_X = "spanX";
-    private static final String ATTR_SPAN_Y = "spanY";
+    public static final String ATTR_SPAN_X = "spanX";
+    public static final String ATTR_SPAN_Y = "spanY";
 
     // Attrs for "Include"
     private static final String ATTR_WORKSPACE = "workspace";
+
+    public static final String ATTR_USER_TYPE = "userType";
+    public static final String USER_TYPE_WORK = "work";
+    public static final String USER_TYPE_CLONED = "cloned";
 
     // Style attrs -- "Extra"
     private static final String ATTR_KEY = "key";
@@ -168,6 +177,8 @@ public class AutoInstallsLayout {
     protected final SourceResources mSourceRes;
     protected final Supplier<XmlPullParser> mInitialLayoutSupplier;
 
+    private final Map<String, Long> mUserTypeToSerial;
+
     private final InvariantDeviceProfile mIdp;
     private final int mRowCount;
     private final int mColumnCount;
@@ -180,15 +191,15 @@ public class AutoInstallsLayout {
     protected SQLiteDatabase mDb;
 
     public AutoInstallsLayout(Context context, LauncherWidgetHolder appWidgetHolder,
-            LayoutParserCallback callback, Resources res,
-            int layoutId, String rootTag) {
+                              LayoutParserCallback callback, Resources res,
+                              int layoutId, String rootTag) {
         this(context, appWidgetHolder, callback, SourceResources.wrap(res),
                 () -> res.getXml(layoutId), rootTag);
     }
 
     public AutoInstallsLayout(Context context, LauncherWidgetHolder appWidgetHolder,
-            LayoutParserCallback callback, SourceResources res,
-            Supplier<XmlPullParser> initialLayoutSupplier, String rootTag) {
+                              LayoutParserCallback callback, SourceResources res,
+                              Supplier<XmlPullParser> initialLayoutSupplier, String rootTag) {
         mContext = context;
         mAppWidgetHolder = appWidgetHolder;
         mCallback = callback;
@@ -203,16 +214,26 @@ public class AutoInstallsLayout {
         mIdp = LauncherAppState.getIDP(context);
         mRowCount = mIdp.numRows;
         mColumnCount = mIdp.numColumns;
-        mActivityOverride = ApiWrapper.getActivityOverrides(context);
+        mActivityOverride = ApiWrapper.INSTANCE.get(context).getActivityOverrides();
+
+        mUserTypeToSerial = new HashMap<>();
+        UserCache cache = UserCache.getInstance(context);
+        for (UserHandle user : cache.getUserProfiles()) {
+            UserIconInfo uii = cache.getUserInfo(user);
+            switch (uii.type) {
+                case TYPE_WORK -> mUserTypeToSerial.put(USER_TYPE_WORK, uii.userSerial);
+                case TYPE_CLONED -> mUserTypeToSerial.put(USER_TYPE_CLONED, uii.userSerial);
+            }
+        }
     }
 
     /**
      * Loads the layout in the db and returns the number of entries added on the desktop.
      */
-    public int loadLayout(SQLiteDatabase db, IntArray screenIds) {
+    public int loadLayout(SQLiteDatabase db) {
         mDb = db;
         try {
-            return parseLayout(mInitialLayoutSupplier.get(), screenIds);
+            return parseLayout(mInitialLayoutSupplier.get());
         } catch (Exception e) {
             Log.e(TAG, "Error parsing layout: ", e);
             return -1;
@@ -222,7 +243,7 @@ public class AutoInstallsLayout {
     /**
      * Parses the layout and returns the number of elements added on the homescreen.
      */
-    protected int parseLayout(XmlPullParser parser, IntArray screenIds)
+    protected int parseLayout(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         beginDocument(parser, mRootTag);
         final int depth = parser.getDepth();
@@ -235,9 +256,16 @@ public class AutoInstallsLayout {
             if (type != XmlPullParser.START_TAG) {
                 continue;
             }
-            count += parseAndAddNode(parser, tagParserMap, screenIds);
+            count += parseAndAddNode(parser, tagParserMap);
         }
         return count;
+    }
+
+    private void addProfileId(XmlPullParser parser) {
+        Long profileId = mUserTypeToSerial.get(getAttributeValue(parser, ATTR_USER_TYPE));
+        if (profileId != null) {
+            mValues.put(Favorites.PROFILE_ID, profileId);
+        }
     }
 
     /**
@@ -259,14 +287,14 @@ public class AutoInstallsLayout {
      * Parses the current node and returns the number of elements added.
      */
     protected int parseAndAddNode(
-            XmlPullParser parser, ArrayMap<String, TagParser> tagParserMap, IntArray screenIds)
+            XmlPullParser parser, ArrayMap<String, TagParser> tagParserMap)
             throws XmlPullParserException, IOException {
 
         if (TAG_INCLUDE.equals(parser.getName())) {
             final int resId = getAttributeResourceValue(parser, ATTR_WORKSPACE, 0);
             if (resId != 0) {
                 // recursively load some more favorites, why not?
-                return parseLayout(mSourceRes.getXml(resId), screenIds);
+                return parseLayout(mSourceRes.getXml(resId));
             } else {
                 return 0;
             }
@@ -290,16 +318,7 @@ public class AutoInstallsLayout {
             if (LOGD) Log.d(TAG, "Ignoring unknown element tag: " + parser.getName());
             return 0;
         }
-        int newElementId = tagParser.parseAndAdd(parser);
-        if (newElementId >= 0) {
-            // Keep track of the set of screens which need to be added to the db.
-            if (!screenIds.contains(screenId) &&
-                    container == Favorites.CONTAINER_DESKTOP) {
-                screenIds.add(screenId);
-            }
-            return 1;
-        }
-        return 0;
+        return tagParser.parseAndAdd(parser) >= 0 ? 1 : 0;
     }
 
     protected int addShortcut(String title, Intent intent, int type) {
@@ -311,10 +330,11 @@ public class AutoInstallsLayout {
         mValues.put(Favorites.SPANY, 1);
         mValues.put(Favorites._ID, id);
 
-        if (type == ITEM_TYPE_APPLICATION) {
-            ComponentName cn = intent.getComponent();
-            if (cn != null && mActivityOverride.containsKey(cn.getPackageName())) {
-                LauncherActivityInfo replacementInfo = mActivityOverride.get(cn.getPackageName());
+        ComponentName cn = intent.getComponent();
+        if (cn != null && type == ITEM_TYPE_APPLICATION
+                && !mValues.containsKey(Favorites.PROFILE_ID)) {
+            LauncherActivityInfo replacementInfo = mActivityOverride.get(cn.getPackageName());
+            if (replacementInfo != null) {
                 mValues.put(Favorites.PROFILE_ID, UserCache.INSTANCE.get(mContext)
                         .getSerialNumberForUser(replacementInfo.getUser()));
                 mValues.put(Favorites.INTENT, AppInfo.makeLaunchIntent(replacementInfo).toUri(0));
@@ -365,7 +385,7 @@ public class AutoInstallsLayout {
         public int parseAndAdd(XmlPullParser parser) {
             final String packageName = getAttributeValue(parser, ATTR_PACKAGE_NAME);
             final String className = getAttributeValue(parser, ATTR_CLASS_NAME);
-
+            addProfileId(parser);
             if (!TextUtils.isEmpty(packageName) && !TextUtils.isEmpty(className)) {
                 ActivityInfo info;
                 try {
@@ -414,17 +434,14 @@ public class AutoInstallsLayout {
         public int parseAndAdd(XmlPullParser parser) {
             final String packageName = getAttributeValue(parser, ATTR_PACKAGE_NAME);
             final String className = getAttributeValue(parser, ATTR_CLASS_NAME);
+            addProfileId(parser);
             if (TextUtils.isEmpty(packageName) || TextUtils.isEmpty(className)) {
                 if (LOGD) Log.d(TAG, "Skipping invalid <favorite> with no component");
                 return -1;
             }
 
             mValues.put(Favorites.RESTORED, WorkspaceItemInfo.FLAG_AUTOINSTALL_ICON);
-            final Intent intent = new Intent(Intent.ACTION_MAIN, null)
-                    .addCategory(Intent.CATEGORY_LAUNCHER)
-                    .setComponent(new ComponentName(packageName, className))
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            Intent intent = AppInfo.makeLaunchIntent(new ComponentName(packageName, className));
             return addShortcut(mContext.getString(R.string.package_state_unknown), intent,
                     ITEM_TYPE_APPLICATION);
         }
@@ -439,7 +456,7 @@ public class AutoInstallsLayout {
         public int parseAndAdd(XmlPullParser parser) {
             final String packageName = getAttributeValue(parser, ATTR_PACKAGE_NAME);
             final String shortcutId = getAttributeValue(parser, ATTR_SHORTCUT_ID);
-
+            addProfileId(parser);
             try {
                 LauncherApps launcherApps = mContext.getSystemService(LauncherApps.class);
                 launcherApps.pinShortcuts(packageName, Collections.singletonList(shortcutId),
@@ -469,12 +486,12 @@ public class AutoInstallsLayout {
         public ComponentName getComponentName(XmlPullParser parser) {
             final String packageName = getAttributeValue(parser, ATTR_PACKAGE_NAME);
             final String className = getAttributeValue(parser, ATTR_CLASS_NAME);
+            addProfileId(parser);
             if (TextUtils.isEmpty(packageName) || TextUtils.isEmpty(className)) {
                 return null;
             }
             return new ComponentName(packageName, className);
         }
-
 
         @Override
         public int parseAndAdd(XmlPullParser parser)
@@ -684,7 +701,7 @@ public class AutoInstallsLayout {
      * first before falling back to anonymous attribute.
      */
     protected static int getAttributeResourceValue(XmlPullParser parser, String attribute,
-            int defaultValue) {
+                                                   int defaultValue) {
         AttributeSet attrs = Xml.asAttributeSet(parser);
         int value = attrs.getAttributeResourceValue(
                 "http://schemas.android.com/apk/res-auto/com.android.launcher3", attribute,

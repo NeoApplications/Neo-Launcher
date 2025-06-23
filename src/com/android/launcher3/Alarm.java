@@ -17,7 +17,10 @@
 package com.android.launcher3;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
+
+import androidx.annotation.VisibleForTesting;
 
 public class Alarm implements Runnable{
     // if we reach this time and the alarm hasn't been cancelled, call the listener
@@ -33,7 +36,11 @@ public class Alarm implements Runnable{
     private long mLastSetTimeout;
 
     public Alarm() {
-        mHandler = new Handler();
+        this(Looper.myLooper());
+    }
+
+    public Alarm(Looper looper) {
+        mHandler = new Handler(looper);
     }
 
     public void setOnAlarmListener(OnAlarmListener alarmListener) {
@@ -90,5 +97,14 @@ public class Alarm implements Runnable{
     /** Returns the last value passed to {@link #setAlarm(long)} */
     public long getLastSetTimeout() {
         return mLastSetTimeout;
+    }
+
+    /** Simulates the alarm firing for tests. */
+    @VisibleForTesting
+    public void finishAlarm() {
+        if (!mAlarmPending) return;
+        mAlarmPending = false;
+        mHandler.removeCallbacks(this);
+        mAlarmListener.onAlarm(this);
     }
 }
