@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 
 fun PackageManager.isAppEnabled(packageName: String?, flags: Int): Boolean {
     return try {
@@ -27,10 +26,7 @@ fun PackageManager.isPackageInstalled(packageName: String) =
 fun PackageManager.getPackageVersionCode(packageName: String) =
     try {
         val info = getPackageInfo(packageName, 0)
-        when {
-            Utilities.ATLEAST_P -> info.longVersionCode
-            else                -> info.versionCode.toLong()
-        }
+        info.longVersionCode
     } catch (e: PackageManager.NameNotFoundException) {
         -1L
     }

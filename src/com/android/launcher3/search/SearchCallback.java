@@ -31,6 +31,7 @@ public interface SearchCallback<T> {
     int INTERMEDIATE = 1;
     int FINAL = 2;
 
+    // Edited
     /**
      * Called when the search from primary source is complete.
      *
@@ -39,6 +40,7 @@ public interface SearchCallback<T> {
     //void onSearchResult(String query, ArrayList<T> items);
     void onSearchResult(String query, ArrayList<T> items, List<String> suggestions);
 
+    // Edited
     /**
      * Called when the search from primary source is complete.
      *

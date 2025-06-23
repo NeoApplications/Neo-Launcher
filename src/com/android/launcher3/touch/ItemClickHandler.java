@@ -466,7 +466,7 @@ public class ItemClickHandler {
                     ((AppInfo) item).toComponentKey()) &&
                     Utilities.getNeoPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().getValue();
         }
-        if (isProtected && Utilities.ATLEAST_R) {
+        if (isProtected) {
             launcher.startActivitySafelyAuth(v, intent, item);
         } else {
             launcher.startActivitySafely(v, intent, item);

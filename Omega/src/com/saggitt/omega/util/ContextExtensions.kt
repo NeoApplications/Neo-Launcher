@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.saggitt.omega.preferences.NeoPrefs
-import java.util.*
+import java.util.Locale
 
 fun Context.getLauncherOrNull(): Launcher? {
     return try {

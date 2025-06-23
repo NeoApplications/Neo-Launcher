@@ -38,7 +38,7 @@ fun ProtectedAppsPage() {
 
     LaunchedEffect(showView.value) {
         if (!showView.value) {
-            if (prefs.drawerEnableProtectedApps.getValue() && Utilities.ATLEAST_R) {
+            if (prefs.drawerEnableProtectedApps.getValue()) {
                 Config.showLockScreen(
                     context,
                     context.resources.getString(R.string.trust_apps_manager_name)

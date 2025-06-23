@@ -91,10 +91,7 @@ fun isDarkTheme(): Boolean {
 }
 
 @Composable
-fun isAutoThemeDark() = when {
-    Utilities.ATLEAST_P -> isSystemInDarkTheme()
-    else                -> wallpaperSupportsDarkTheme()
-}
+fun isAutoThemeDark() = isSystemInDarkTheme()
 
 @Composable
 fun wallpaperSupportsDarkTheme(): Boolean {

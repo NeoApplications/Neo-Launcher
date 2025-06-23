@@ -86,7 +86,6 @@ class BatteryStatusProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun computeChargeTimeRemaining(): Long {
-        if (!Utilities.ATLEAST_P) return -1
         return try {
             batteryManager?.computeChargeTimeRemaining() ?: -1
         } catch (t: Throwable) {

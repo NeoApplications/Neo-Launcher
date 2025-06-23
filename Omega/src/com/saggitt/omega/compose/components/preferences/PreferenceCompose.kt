@@ -128,7 +128,6 @@ fun BasePreference(
                         alpha(0.3f)
                     }
             ) {
-
                 if (summaryId != -1 || summary != null) {
                     Text(
                         text = summary ?: stringResource(id = summaryId),

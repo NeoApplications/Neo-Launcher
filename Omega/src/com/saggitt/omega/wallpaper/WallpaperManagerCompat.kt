@@ -53,8 +53,7 @@ sealed class WallpaperManagerCompat(val context: Context) {
         val INSTANCE = MainThreadInitializedObject { context ->
             when {
                 Utilities.ATLEAST_S -> WallpaperManagerCompatVS(context)
-                Utilities.ATLEAST_OREO_MR1 -> WallpaperManagerCompatVOMR1(context)
-                else -> WallpaperManagerCompatVO(context)
+                else -> WallpaperManagerCompatVOMR1(context)
             }
         }
     }

@@ -41,6 +41,7 @@ import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.runOnMainThread
 import kotlin.math.roundToInt
 
+// TODO remove
 class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context, attrs),
                                                               BlurWallpaperProvider.Listener {
     private val prefs = NeoPrefs.getInstance()

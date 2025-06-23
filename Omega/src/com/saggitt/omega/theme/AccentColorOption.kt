@@ -43,7 +43,7 @@ sealed class AccentColorOption {
     }
 
     object WallpaperPrimary : AccentColorOption() {
-        override val isSupported = Utilities.ATLEAST_OREO_MR1
+        override val isSupported = true
         override val displayName = R.string.theme_auto
         override val accentColor: Int
             get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
@@ -53,7 +53,7 @@ sealed class AccentColorOption {
     }
 
     object WallpaperSecondary : AccentColorOption() {
-        override val isSupported = Utilities.ATLEAST_OREO_MR1
+        override val isSupported = true
         override val displayName = R.string.color_wallpaper_secondary
         override val accentColor: Int
             get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
@@ -63,7 +63,7 @@ sealed class AccentColorOption {
     }
 
     object WallpaperTertiary : AccentColorOption() {
-        override val isSupported = Utilities.ATLEAST_OREO_MR1
+        override val isSupported = true
         override val displayName = R.string.color_wallpaper_tertiary
         override val accentColor: Int
             get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
@@ -95,12 +95,12 @@ sealed class AccentColorOption {
 
     companion object {
         fun fromString(stringValue: String) = when (stringValue) {
-            "system_accent" -> SystemAccent
-            "wallpaper_primary" -> WallpaperPrimary
+            "system_accent"       -> SystemAccent
+            "wallpaper_primary"   -> WallpaperPrimary
             "wallpaper_secondary" -> WallpaperSecondary
-            "wallpaper_tertiary" -> WallpaperTertiary
-            "default" -> LauncherDefault
-            else -> instantiateCustomColor(stringValue)
+            "wallpaper_tertiary"  -> WallpaperTertiary
+            "default"             -> LauncherDefault
+            else                  -> instantiateCustomColor(stringValue)
         }
 
         private fun instantiateCustomColor(stringValue: String): AccentColorOption {
@@ -113,8 +113,7 @@ sealed class AccentColorOption {
             }
             return when {
                 Utilities.ATLEAST_S -> SystemAccent
-                Utilities.ATLEAST_OREO_MR1 -> WallpaperPrimary
-                else -> LauncherDefault
+                else                -> WallpaperPrimary
             }
         }
     }

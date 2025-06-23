@@ -331,6 +331,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
         return false;
     }
 
+    // Edited
     public void setScrollbarColor(int color) {
         mScrollbar.setColor(color, Color.WHITE);
     }

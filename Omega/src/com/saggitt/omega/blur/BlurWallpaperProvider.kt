@@ -46,6 +46,7 @@ import com.saggitt.omega.util.runOnMainThread
 import com.saggitt.omega.util.safeForEach
 import com.saggitt.omega.util.useApplicationContext
 
+// TODO remove as legacy
 class BlurWallpaperProvider(val context: Context) {
 
     private val prefs by lazy { context.prefs }

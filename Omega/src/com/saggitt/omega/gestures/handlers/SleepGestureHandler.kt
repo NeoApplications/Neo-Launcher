@@ -18,20 +18,17 @@
 package com.saggitt.omega.gestures.handlers
 
 import android.accessibilityservice.AccessibilityService
-import android.annotation.TargetApi
 import android.app.admin.DeviceAdminReceiver
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.view.View
 import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
 import com.saggitt.omega.neoApp
@@ -64,9 +61,8 @@ class SleepGestureHandler(context: Context, config: JSONObject?) : GestureHandle
 }
 
 class SleepMethodPieAccessibility(context: Context) : SleepGestureHandler.SleepMethod(context) {
-    override val supported = Utilities.ATLEAST_P
+    override val supported = true
 
-    @TargetApi(Build.VERSION_CODES.P)
     override fun sleep(controller: GestureController?) {
         context.neoApp.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
     }

@@ -201,6 +201,7 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadModel() }
     )
 
+    // TODO Remove the legacy blur
     var profileBlurEnable = BooleanPref(
         titleId = R.string.title__theme_blur,
         summaryId = R.string.summary__theme_blur,

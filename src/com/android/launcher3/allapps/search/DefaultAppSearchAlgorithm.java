@@ -68,7 +68,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
             if (mAddNoResultsMessage && result.isEmpty()) {
                 result.add(getEmptyMessageAdapterItem(query));
             }
-            mResultHandler.post(() -> callback.onSearchResult(query, result));
+            mResultHandler.post(() -> callback.onSearchResult(query, result, new ArrayList<>()));
         });
     }
 

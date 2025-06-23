@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -74,23 +75,21 @@ fun PreferenceGroup(
 fun PreferenceGroupHeading(
     heading: String? = null,
     textAlignment: Alignment.Horizontal = Alignment.Start
-) {
-    if (heading != null) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .height(48.dp)
-                .padding(horizontal = 32.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = textAlignment
-        ) {
-            Text(
-                text = heading,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+) = if (heading != null) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .height(48.dp)
+            .padding(horizontal = 32.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = textAlignment
+    ) {
+        Text(
+            text = heading,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
-}
+} else Spacer(modifier = Modifier.requiredHeight(8.dp))
 
 @Composable
 fun PreferenceGroupDescription(description: String? = null, showDescription: Boolean = true) {
