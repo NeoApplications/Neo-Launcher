@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":flags"))
     implementation(libs.androidx.core)
     implementation(libs.androidx.palette)
     implementation(libs.kotlin.stdlib)

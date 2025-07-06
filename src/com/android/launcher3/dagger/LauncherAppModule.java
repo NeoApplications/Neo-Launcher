@@ -17,8 +17,9 @@
 package com.android.launcher3.dagger;
 
 import dagger.Module;
-
+        /*
 @Module(includes = {
+
         WindowManagerProxyModule.class,
         ApiWrapperModule.class,
         PluginManagerWrapperModule.class,
@@ -28,3 +29,4 @@ import dagger.Module;
 })
 public class LauncherAppModule {
 }
+*/

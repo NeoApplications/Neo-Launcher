@@ -250,8 +250,8 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-14.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-14.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-15.jar"))
+    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-15.jar"))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
