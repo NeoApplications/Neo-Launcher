@@ -19,6 +19,9 @@ project(":iconloaderlib").projectDir = File(rootDir, "libs_systemui/iconloaderli
 include(":animationlib")
 project(":animationlib").projectDir = File(rootDir, "libs_systemui/animationlib")
 
+include(":flags")
+project(":flags").projectDir = File(rootDir, "flags")
+
 include(":smartspace")
 project(":smartspace").projectDir = File(rootDir, "libs_systemui/smartspace")
 rootProject.name = "Neo Launcher"
