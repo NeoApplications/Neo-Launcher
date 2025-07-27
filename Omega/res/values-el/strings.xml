@@ -19,4 +19,6 @@
     <string name="title__general_profile">Προφίλ</string>
     <string name="title__general_gestures_dash">Χειρονομίες &amp; Ταμπλό</string>
     <string name="icu_abbrev_date">d MMMM</string>
+    <string name="summary__general_drawer">Παραμετροποίηση του συρταριού</string>
+    <string name="summary__general_theme">Άλλαξε χρώματα, πακέτα εικονιδίων, σχήμα εικονιδίων</string>
 </resources>
