@@ -119,6 +119,7 @@ abstract class NeoLauncherDb : RoomDatabase() {
             }
         }
 
+        @OptIn(DelicateCoroutinesApi::class)
         fun onPostMigrate(from: Int, to: Int) {
             val preRepos = mutableListOf<SearchProvider>()
             if (from == 5) preRepos.addAll(addedProvidersV6)

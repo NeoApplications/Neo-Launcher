@@ -23,7 +23,6 @@ import static android.view.View.VISIBLE;
 import static com.android.launcher3.BubbleTextView.DISPLAY_TASKBAR;
 import static com.android.launcher3.BubbleTextView.DISPLAY_WORKSPACE;
 import static com.android.launcher3.DeviceProfile.DEFAULT_SCALE;
-import static com.android.launcher3.Flags.extendibleThemeManager;
 import static com.android.launcher3.Hotseat.ALPHA_CHANNEL_PREVIEW_RENDERER;
 import static com.android.launcher3.LauncherPrefs.GRID_NAME;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
@@ -118,7 +117,6 @@ import com.android.launcher3.widget.LauncherWidgetHolder;
 import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactory;
 import com.android.launcher3.widget.LocalColorExtractor;
 import com.android.launcher3.widget.util.WidgetSizes;
-import com.android.systemui.shared.Flags;
 
 import java.io.File;
 import java.util.Arrays;
@@ -576,7 +574,7 @@ public class LauncherPreviewRenderer extends BaseContext
                                         .stream()
                                         .filter(entry -> entry.getValue().widgetInfo != null)
                                         .collect(Collectors.toMap(
-                                                Entry::getKey,
+                                                Map.Entry::getKey,
                                                 entry -> entry.getValue().widgetInfo
                                         ));
                             }

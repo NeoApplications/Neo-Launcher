@@ -29,8 +29,6 @@ import static com.android.launcher3.AbstractFloatingView.TYPE_REBIND_SAFE;
 import static com.android.launcher3.AbstractFloatingView.getTopOpenViewWithType;
 import static com.android.launcher3.Flags.enableAddAppWidgetViaConfigActivityV2;
 import static com.android.launcher3.Flags.enableSmartspaceRemovalToggle;
-import static com.android.launcher3.Flags.enableStrictMode;
-import static com.android.launcher3.Flags.enableWorkspaceInflation;
 import static com.android.launcher3.LauncherAnimUtils.HOTSEAT_SCALE_PROPERTY_FACTORY;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_INDEX_WIDGET_TRANSITION;
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
@@ -274,7 +272,6 @@ import com.android.systemui.plugins.LauncherOverlayPlugin;
 import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
-import com.android.window.flags.Flags;
 import com.saggitt.omega.NeoLauncher;
 import com.saggitt.omega.util.Config;
 
@@ -522,7 +519,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         setWallpaperDependentTheme(this);
 
         LauncherAppState app = LauncherAppState.getInstance(this);
-        app.setLauncher(this);
+        //app.setLauncher(this);
         mModel = app.getModel();
 
         mRotationHelper = new RotationHelper(this);
@@ -624,7 +621,7 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     /**
-     * We only log startup latency in {@link COLD_DEVICE_REBOOTING} type. For other latency types,
+     * We only log startup latency in {@link } type. For other latency types,
      * create a no op implementation.
      */
     private StartupLatencyLogger createStartupLatencyLogger(
@@ -2404,12 +2401,6 @@ public class Launcher extends StatefulActivity<LauncherState>
         return info;
     }
 
-    public void clearPendingExecutor(ViewOnDrawExecutor executor) {
-        if (mPendingExecutor == executor) {
-            mPendingExecutor = null;
-        }
-    }
-
     /**
      * Call back when ModelCallbacks finish binding the Launcher data.
      */
@@ -2877,7 +2868,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Returns {@code true} if there are visible tasks with windowing mode set to
-     * {@link android.app.WindowConfiguration#WINDOWING_MODE_FREEFORM}
+     * {@link android.app}
      */
     public boolean areDesktopTasksVisible() {
         return false; // Base launcher does not track desktop tasks
@@ -3076,7 +3067,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     /**
      * Handles an app pair launch; overridden in
-     * {@link com.android.launcher3.uioverrides.QuickstepLauncher}
+     * {@link com.android.launcher3.uioverrides}
      */
     public void launchAppPair(AppPairIcon appPairIcon) {
         // Overridden

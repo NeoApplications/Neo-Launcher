@@ -25,6 +25,9 @@ project(":flags").projectDir = File(rootDir, "flags")
 include(":hidden-api")
 project(":hidden-api").projectDir = File(rootDir, "hidden-api")
 
+include(":shared")
+project(":shared").projectDir = File(rootDir, "shared")
+
 include(":smartspace")
 project(":smartspace").projectDir = File(rootDir, "libs_systemui/smartspace")
 rootProject.name = "Neo Launcher"

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.neoapps.hiddenapi'
+    namespace 'com.neoapps.shared'
     compileSdk 35
     buildFeatures {
         aidl true
@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.annotation:annotation:1.2.0"
+    annotationProcessor 'dev.rikka.tools.refine:annotation-processor:4.4.0'
+    compileOnly 'dev.rikka.tools.refine:annotation:4.4.0'
     compileOnly fileTree(dir: 'libs', include: ['framework-15.jar'])
 }

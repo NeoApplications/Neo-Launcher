@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.launcher3.uioverrides;
 
-package com.android.launcher3.dagger;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import dagger.Module;
-import dagger.hilt.InstallIn;
+import com.android.launcher3.model.data.WorkspaceItemInfo;
 
-/*
-@Module(includes = {
-        WindowManagerProxyModule.class,
-        ApiWrapperModule.class,
-        PluginManagerWrapperModule.class,
-        StaticObjectModule.class,
-        WidgetModule.class,
-        AppModule.class
-})
-public class LauncherAppModule {
-}*/
+/** A util class that inflates a predicted app icon */
+public class PredictedAppIconInflater {
+    public static View inflate(LayoutInflater inflater, ViewGroup parent, WorkspaceItemInfo info) {
+        return null;
+    }
+}

@@ -22,7 +22,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.TextView
-import com.android.launcher3.views.DoubleShadowBubbleTextView.ShadowInfo
+import com.android.launcher3.views.ShadowInfo
 import kotlin.math.max
 
 open class DoubleShadowTextView @JvmOverloads constructor(
@@ -34,7 +34,7 @@ open class DoubleShadowTextView @JvmOverloads constructor(
     private val mShadowInfo: ShadowInfo
 
     init {
-        mShadowInfo = ShadowInfo(context, attrs, defStyleAttr)
+        mShadowInfo = ShadowInfo.fromContext(context, attrs, defStyleAttr)
         setShadowLayer(
             max(
                 mShadowInfo.keyShadowBlur + mShadowInfo.keyShadowOffsetX,
@@ -44,10 +44,6 @@ open class DoubleShadowTextView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (mShadowInfo.skipDoubleShadow(this)) {
-            super.onDraw(canvas)
-            return
-        }
         paint.setShadowLayer(
             mShadowInfo.ambientShadowBlur,
             0.0f,

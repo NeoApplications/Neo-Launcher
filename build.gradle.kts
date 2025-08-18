@@ -138,18 +138,14 @@ android {
     sourceSets {
         named("main") {
             res.srcDirs(listOf("res"))
-            java.srcDirs(listOf("src", "src_plugins", "src_ui_overrides"))
+            java.srcDirs(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
             assets.srcDirs(listOf("assets"))
             manifest.srcFile("AndroidManifest-common.xml")
         }
 
-        named("aosp") {
-            java.srcDirs(listOf("src_flags", "src_shortcuts_overrides"))
-        }
-
         named("omega") {
             res.srcDirs(listOf("Omega/res"))
-            java.srcDirs(listOf("Omega/src", "Omega/src_overrides"))
+            java.srcDirs(listOf("Omega/src"))
             aidl.srcDirs(listOf("Omega/aidl"))
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
@@ -181,7 +177,9 @@ android {
 dependencies {
     implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
+    implementation(project(":flags"))
     implementation(project(":smartspace"))
+    implementation(project(":shared"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.ksp)
     implementation(libs.collections.immutable)
