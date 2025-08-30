@@ -35,7 +35,7 @@
     <string name="theme_dark_dark_text">Donker met donkere tekst</string>
     <string name="icon_shape_override_progress">Aangepaste pictogramvorm toepassen</string>
     <string name="icon_shape_system_default">Systeem</string>
-    <string name="icon_shape_circle">Rond</string>
+    <string name="icon_shape_circle">Circel</string>
     <string name="icon_shape_cylinder">Cilinder</string>
     <string name="icon_shape_top_left">Linker bovenkant</string>
     <string name="icon_shape_top_right">Rechter bovenkant</string>
