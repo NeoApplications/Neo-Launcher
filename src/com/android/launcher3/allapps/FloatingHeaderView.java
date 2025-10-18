@@ -44,6 +44,7 @@ import com.android.systemui.plugins.PluginListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class FloatingHeaderView extends LinearLayout implements
