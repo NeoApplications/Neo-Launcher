@@ -15,10 +15,14 @@
  */
 package com.android.launcher3.allapps;
 
+import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_BOTTOM_VIEW_TO_SCROLL_TO;
+import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_LEFT;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_RIGHT;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_NOTHING;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_NO_BADGE;
+import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT;
+import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT;
 import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
@@ -31,7 +35,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.Flags;
+import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
@@ -124,7 +129,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private Predicate<ItemInfo> mItemFilter;
 
     private final NeoPrefs prefs;
-    private final BaseDraggingActivity mLauncher;
+    private final Launcher mLauncher;
 
     public AlphabeticalAppsList(Context context, @Nullable AllAppsStore<T> appsStore,
                                 WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
@@ -148,7 +153,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
 
         prefs = Utilities.getNeoPrefs(context);
         mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
-        mLauncher = BaseDraggingActivity.fromContext(context);
+        mLauncher = Launcher.fromContext(context);
     }
 
     /** Set the number of apps per row when device profile changes. */
@@ -405,7 +410,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private List<DrawerFolderInfo> getFolderInfos() {
         LauncherAppState app = LauncherAppState.getInstance(mLauncher);
         LauncherModel model = app.getModel();
-        ModelWriter modelWriter = model.getWriter(false, true, CellPosMapper.DEFAULT, null);
+        ModelWriter modelWriter = model.getWriter(false, CellPosMapper.DEFAULT, null);
         return Utilities.getNeoPrefs(mLauncher)
                 .getDrawerFolders()
                 .getFolderInfos(this, modelWriter);
