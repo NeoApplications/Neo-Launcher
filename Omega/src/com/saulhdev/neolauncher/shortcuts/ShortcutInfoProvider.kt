@@ -57,7 +57,7 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     else info.title.toString()
 
     override fun setTitle(info: WorkspaceItemInfo, title: String?, modelWriter: ModelWriter) {
-        info.setTitle(title ?: "", modelWriter)
+        info.setTitle(context, title ?: "")
     }
 
     override fun setIcon(info: WorkspaceItemInfo, iconEntry: IconEntry) {
