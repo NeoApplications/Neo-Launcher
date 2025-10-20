@@ -198,7 +198,6 @@ class WorkspaceItemProcessor(
         }
 
         val isPreArchivedShortcut =
-            Flags.restoreArchivedShortcuts() &&
                 appInfoWrapper.isArchived() &&
                 c.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT &&
                 c.restoreFlag != 0

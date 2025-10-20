@@ -58,7 +58,6 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
-import com.android.launcher3.pageindicators.WorkspacePageIndicator
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
@@ -153,21 +152,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         )
     }
 
-    override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
-    ): View? {
-        if (prefs.dockDotsPageIndicator.getValue() && WorkspacePageIndicator::class.java.name == name) {
-            return LayoutInflater.from(context).inflate(
-                R.layout.page_indicator_dots,
-                parent as ViewGroup, false
-            )
-        }
-        return super.onCreateView(parent, name, context, attrs)
-    }
-
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
     override val activityResultRegistry: ActivityResultRegistry
@@ -260,7 +244,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                     .getActivityList(null, user)) {
                     val key = ComponentKey(info.componentName, info.user)
                     if (hiddenAppsSet.contains(key.toString())) {
-                        val appInfo = AppInfo(info, info.user, false)
+                        val appInfo = AppInfo(mContext, info, info.user)
                         appInfo.title = info.label
                         hiddenApps.add(appInfo)
                     }
