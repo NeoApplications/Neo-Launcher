@@ -73,6 +73,10 @@ public class IconProvider {
     private final ComponentName mCalendar;
     private final ComponentName mClock;
 
+    protected static final int ICON_TYPE_DEFAULT = 0;
+    protected static final int ICON_TYPE_CALENDAR = 1;
+    protected static final int ICON_TYPE_CLOCK = 2;
+
     @NonNull
     protected String mSystemState = "";
 
