@@ -48,6 +48,7 @@ android {
         buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
         buildConfigField("boolean", "WIDGETS_ENABLED", "true")
         buildConfigField("boolean", "NOTIFICATION_DOTS_ENABLED", "true")
+        buildConfigField("boolean", "WIDGET_ON_FIRST_SCREEN", "true")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
