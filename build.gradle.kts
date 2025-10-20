@@ -19,15 +19,16 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.ksp)
+    //alias(libs.plugins.ksp)
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.protobuf)
 }
 
+/*
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
-}
+}*/
 
 android {
     namespace = "com.android.launcher3"
@@ -35,7 +36,7 @@ android {
 
     defaultConfig {
         minSdk = 30
-        targetSdk = 33
+        targetSdk = 36
         applicationId = "com.saggitt.omega"
 
         versionName = "1.0.0-alpha04hf"
@@ -45,6 +46,8 @@ android {
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
         buildConfigField("boolean", "IS_DEBUG_DEVICE", "false")
         buildConfigField("boolean", "IS_STUDIO_BUILD", "false")
+        buildConfigField("boolean", "WIDGETS_ENABLED", "true")
+        buildConfigField("boolean", "NOTIFICATION_DOTS_ENABLED", "true")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -210,9 +213,9 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.workmanager)
     implementation(libs.koin.annotations)
-    ksp(libs.koin.compiler)
+    //ksp(libs.koin.compiler)
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    //ksp(libs.hilt.compiler)
     implementation(libs.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.persian.date)
@@ -245,7 +248,7 @@ dependencies {
     //Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
+    //ksp(libs.room.compiler)
 
     // Jars
     implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-15.jar"))
