@@ -4,6 +4,7 @@ agp = "8.10.1"
 alwan = "1.0.1"
 androidx-animation = "1.0.0"
 androidx-core = "1.16.0"
+androidx-shapes = "1.1.0-rc01"
 biometric = "1.2.0-alpha05"
 coil = "2.7.0"
 compose-bom = "2025.06.00"
@@ -68,6 +69,7 @@ androidx-animation = { group = "androidx.core", name = "core-animation", version
 androidx-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint-layout" }
 androidx-coordinator-layout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinator-layout" }
 androidx-dynamic-animation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamic-animation" }
+androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "androidx-shapes" }
 androidx-palette = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recycler-view" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }

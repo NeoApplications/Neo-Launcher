@@ -193,6 +193,7 @@ dependencies {
     implementation(libs.androidx.constraint.layout)
     implementation(libs.androidx.coordinator.layout)
     implementation(libs.androidx.dynamic.animation)
+    implementation(libs.androidx.graphics.shapes)
     implementation(libs.androidx.palette)
     implementation(libs.androidx.recyclerview)
     implementation(libs.preference)
