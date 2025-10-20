@@ -33,12 +33,12 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.Utilities.makeComponentKey
+import com.android.launcher3.graphics.ThemeManager.Companion.KEY_THEMED_ICONS
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
-import com.android.launcher3.util.Themes.KEY_THEMED_ICONS
 import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash

@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package SmartspaceProtoLite;
+
+option java_package = "com.android.systemui.smartspace";
+option java_outer_classname = "SmartspaceProtoLite";
+
+message SmartSpaceCardMetadata {
+  optional int32 instance_id = 1;
+  optional int32 card_type_id = 2;
+}
+
+message SmartSpaceSubcards {
+  repeated SmartSpaceCardMetadata subcards = 1;
+  optional int32 clicked_subcard_index = 2;
+}

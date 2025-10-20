@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
+import com.android.launcher3.Utilities.drawableToBitmap
 import com.saggitt.omega.compose.components.preferences.PreferenceGroupDescription
 import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.iconpack.IconPack
@@ -140,7 +141,7 @@ fun IconPreview(
             .padding(8.dp),
     ) {
         Image(
-            bitmap = drawableToBitmap(drawable ?: LocalContext.current.getIcon()).asImageBitmap(),
+            bitmap = drawableToBitmap(drawable ?: LocalContext.current.getIcon())!!.asImageBitmap(),
             contentDescription = iconItem.drawableName,
             modifier = Modifier.aspectRatio(1f),
         )

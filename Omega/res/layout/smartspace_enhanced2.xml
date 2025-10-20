@@ -3,7 +3,7 @@
     android:id="@+id/bc_smartspace_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <com.google.android.systemui.smartspace.InterceptingViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:layout_gravity="center"
         android:id="@+id/smartspace_card_pager"
         android:layout_width="match_parent"

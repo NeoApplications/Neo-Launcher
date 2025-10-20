@@ -43,6 +43,7 @@ import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,6 +70,7 @@ import com.saggitt.omega.util.blockBorder
 import com.saggitt.omega.util.dynamicColors
 import com.saggitt.omega.util.prefs
 import com.saggitt.omega.util.staticColors
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -86,6 +88,7 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     val currentAccentColor = remember { mutableStateOf(pref.getValue()) }
     val dynamicColors = dynamicColors
     val presetColors = staticColors
+    val coroutineScope = rememberCoroutineScope()
 
     val tabs = listOf(
         TabItem(title = R.string.color_presets, icon = R.drawable.ic_setting) {
@@ -129,7 +132,12 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
                     containerColor = MaterialTheme.colorScheme.background
                 ) {
                     DialogNegativeButton(
-                        onClick = { paneNavigator.navigateBack(BackNavigationBehavior.PopLatest) }
+                        onClick = {
+                            coroutineScope.launch {
+                                paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
+
+                            }
+                        }
                     )
                     Button(
                         modifier = Modifier
@@ -138,7 +146,9 @@ fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
                             .fillMaxWidth(),
                         onClick = {
                             pref.setValue(currentAccentColor.value)
-                            paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
+                            coroutineScope.launch {
+                                paneNavigator.navigateBack(BackNavigationBehavior.PopLatest)
+                            }
                         }
                     ) {
                         Text(

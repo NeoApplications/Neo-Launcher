@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.systemui.smartspace.BcSmartspaceCard xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.google.android.systemui.smartspace.uitemplate.BaseTemplateCard xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/enhanced_smartspace_card_height"
     android:baselineAligned="false">
@@ -20,4 +20,4 @@
         app:layout_constraintStart_toEndOf="@+id/secondary_card_group"
         app:layout_constraintTop_toTopOf="parent"
         layout="@layout/smartspace_title_subtitle_pane"/>
-</com.google.android.systemui.smartspace.BcSmartspaceCard>
+</com.google.android.systemui.smartspace.uitemplate.BaseTemplateCard>

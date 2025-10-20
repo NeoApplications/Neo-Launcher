@@ -83,7 +83,8 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
     // Mid point where the alpha changes
     private var mMidAlpha = 0
     private var mMidProgress = 0f
-    override fun updateSysUiColors() {
+
+    fun updateSysUiColors() {
         val threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD
         val forceChange = visibility == VISIBLE &&
                 alpha > threshold && Color.alpha(backgroundColor) / (255f * drawerOpacity) > threshold
@@ -208,7 +209,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
         postReInitUi()
     }
 
-    override fun onDrawRoundRect(
+    fun onDrawRoundRect(
         canvas: Canvas,
         left: Float,
         top: Float,
@@ -222,7 +223,6 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
             setBlurBounds(left, top, right, bottom)
             draw(canvas)
         }
-        super.onDrawRoundRect(canvas, left, top, right, bottom, rx, ry, paint)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {

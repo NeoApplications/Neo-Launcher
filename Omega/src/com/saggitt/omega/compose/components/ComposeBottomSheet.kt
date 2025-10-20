@@ -93,7 +93,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
 
     private fun setupNavBarColor() {
         val isSheetDark = Themes.getAttrBoolean(mLauncher, R.attr.isMainColorDark)
-        mLauncher.systemUiController.updateUiState(
+        mLauncher.systemUiController!!.updateUiState(
             SystemUiController.UI_STATE_WIDGET_BOTTOM_SHEET,
             if (isSheetDark) SystemUiController.FLAG_DARK_NAV else SystemUiController.FLAG_LIGHT_NAV
         )

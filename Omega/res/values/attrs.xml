@@ -22,4 +22,6 @@
     <attr name="settingsBackground" format="color" />
     <attr name="bottomSheetNavBarColor" format="color" />
     <attr name="qsbEdgeRadius" format="dimension" />
+    <attr name="smartspaceTitleTextSize" format="dimension" />
+    <attr name="smartspaceSubtitleTextSize" format="dimension" />
 </resources>

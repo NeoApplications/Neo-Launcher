@@ -210,6 +210,11 @@
         <item name="android:shadowColor">#33000000</item>
     </style>
 
+    <style name="DateWeatherText" parent="@style/EnhancedSmartspaceTextTitle">
+        <item name="android:textSize">?attr/smartspaceSubtitleTextSize</item>
+        <item name="android:fontFamily">google-sans-text</item>
+    </style>
+
     <style name="SmartspaceTextTitle" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textColor">?attr/workspaceTextColor</item>
         <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
@@ -245,8 +250,8 @@
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
     </style>
 
-    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/TextAppearance.Material.Headline">
-        <item name="android:textSize">20sp</item>
+    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/Theme.DeviceDefault.DayNight">
+        <item name="android:textSize">?attr/smartspaceTitleTextSize</item>
         <item name="android:letterSpacing">0</item>
         <item name="lineHeight">26sp</item>
         <item name="android:lineHeight" tools:targetApi="p">26sp</item>
@@ -261,5 +266,6 @@
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
     </style>
+
 </resources>
 
