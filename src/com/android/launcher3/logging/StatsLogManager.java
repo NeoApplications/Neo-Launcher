@@ -53,6 +53,7 @@ public class StatsLogManager implements ResourceBasedOverride {
     public static final int LAUNCHER_STATE_OVERVIEW = 3;
     public static final int LAUNCHER_STATE_ALLAPPS = 4;
     public static final int LAUNCHER_STATE_UNCHANGED = 5;
+    public static final int LAUNCHER_STATE_OPTIONS = 6;
 
     @NonNull
     protected final Context mContext;
