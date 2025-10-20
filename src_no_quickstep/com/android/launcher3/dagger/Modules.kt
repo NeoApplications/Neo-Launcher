@@ -22,25 +22,37 @@ import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactory
 import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactoryImpl
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 private object Modules {}
 
-@Module abstract class WindowManagerProxyModule {}
-
-@Module abstract class ApiWrapperModule {}
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class WindowManagerProxyModule {}
 
 @Module
+@InstallIn(SingletonComponent::class)
+abstract class ApiWrapperModule {}
+
+@Module
+@InstallIn(SingletonComponent::class)
 abstract class WidgetModule {
     @Binds
     abstract fun bindWidgetHolderFactory(factor: WidgetHolderFactoryImpl): WidgetHolderFactory
 }
 
-@Module abstract class PluginManagerWrapperModule {}
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class PluginManagerWrapperModule {}
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class StaticObjectModule {
     @Binds abstract fun bindRefreshRateTracker(tracker: RefreshRateTrackerImpl): RefreshRateTracker
 }
 
 // Module containing bindings for the final derivative app
-@Module abstract class AppModule {}
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class AppModule {}
