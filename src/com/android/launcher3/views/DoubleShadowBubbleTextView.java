@@ -42,7 +42,7 @@ import com.android.launcher3.R;
  */
 public class DoubleShadowBubbleTextView extends BubbleTextView {
 
-    private final ShadowInfo mShadowInfo;
+    public final ShadowInfo shadowInfo;
 
     public DoubleShadowBubbleTextView(Context context) {
         this(context, null);
@@ -54,12 +54,12 @@ public class DoubleShadowBubbleTextView extends BubbleTextView {
 
     public DoubleShadowBubbleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mShadowInfo = ShadowInfo.Companion.fromContext(context, attrs, defStyle);
+        shadowInfo = ShadowInfo.Companion.fromContext(context, attrs, defStyle);
         setShadowLayer(
-                mShadowInfo.getAmbientShadowBlur(),
+                shadowInfo.getAmbientShadowBlur(),
                 0,
                 0,
-                mShadowInfo.getAmbientShadowColor()
+                shadowInfo.getAmbientShadowColor()
         );
     }
 
@@ -94,7 +94,7 @@ public class DoubleShadowBubbleTextView extends BubbleTextView {
         int iconInsetSize = getContext().getResources()
                 .getDimensionPixelSize(R.dimen.app_title_icon_shadow_inset);
         return new DoubleShadowIconDrawable(
-                mShadowInfo,
+                shadowInfo,
                 drawable,
                 textSize,
                 iconInsetSize
@@ -114,8 +114,8 @@ public class DoubleShadowBubbleTextView extends BubbleTextView {
         int alpha = Color.alpha(getCurrentTextColor());
 
         // We enhance the shadow by drawing the shadow twice
-        getPaint().setShadowLayer(mShadowInfo.getAmbientShadowBlur(), 0, 0,
-                getTextShadowColor(mShadowInfo.getAmbientShadowColor(), alpha));
+        getPaint().setShadowLayer(shadowInfo.getAmbientShadowBlur(), 0, 0,
+                getTextShadowColor(shadowInfo.getAmbientShadowColor(), alpha));
 
         drawWithoutDot(canvas);
         canvas.save();
@@ -124,10 +124,10 @@ public class DoubleShadowBubbleTextView extends BubbleTextView {
                 getScrollY() + getHeight());
 
         getPaint().setShadowLayer(
-                mShadowInfo.getKeyShadowBlur(),
-                mShadowInfo.getKeyShadowOffsetX(),
-                mShadowInfo.getKeyShadowOffsetY(),
-                getTextShadowColor(mShadowInfo.getKeyShadowColor(), alpha));
+                shadowInfo.getKeyShadowBlur(),
+                shadowInfo.getKeyShadowOffsetX(),
+                shadowInfo.getKeyShadowOffsetY(),
+                getTextShadowColor(shadowInfo.getKeyShadowColor(), alpha));
         drawWithoutDot(canvas);
         canvas.restore();
 
@@ -137,21 +137,21 @@ public class DoubleShadowBubbleTextView extends BubbleTextView {
 
     private boolean skipDoubleShadow() {
         int textAlpha = Color.alpha(getCurrentTextColor());
-        int keyShadowAlpha = Color.alpha(mShadowInfo.getKeyShadowColor());
-        int ambientShadowAlpha = Color.alpha(mShadowInfo.getAmbientShadowColor());
+        int keyShadowAlpha = Color.alpha(shadowInfo.getKeyShadowColor());
+        int ambientShadowAlpha = Color.alpha(shadowInfo.getAmbientShadowColor());
         if (textAlpha == 0 || (keyShadowAlpha == 0 && ambientShadowAlpha == 0)) {
             getPaint().clearShadowLayer();
             return true;
         } else if (ambientShadowAlpha > 0 && keyShadowAlpha == 0) {
-            getPaint().setShadowLayer(mShadowInfo.getAmbientShadowBlur(), 0, 0,
-                    getTextShadowColor(mShadowInfo.getAmbientShadowColor(), textAlpha));
+            getPaint().setShadowLayer(shadowInfo.getAmbientShadowBlur(), 0, 0,
+                    getTextShadowColor(shadowInfo.getAmbientShadowColor(), textAlpha));
             return true;
         } else if (keyShadowAlpha > 0 && ambientShadowAlpha == 0) {
             getPaint().setShadowLayer(
-                    mShadowInfo.getKeyShadowBlur(),
-                    mShadowInfo.getKeyShadowOffsetX(),
-                    mShadowInfo.getKeyShadowOffsetY(),
-                    getTextShadowColor(mShadowInfo.getKeyShadowColor(), textAlpha));
+                    shadowInfo.getKeyShadowBlur(),
+                    shadowInfo.getKeyShadowOffsetX(),
+                    shadowInfo.getKeyShadowOffsetY(),
+                    getTextShadowColor(shadowInfo.getKeyShadowColor(), textAlpha));
             return true;
         } else {
             return false;
