@@ -175,6 +175,7 @@ fun NavigationPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
+    val scope = rememberCoroutineScope()
     val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
@@ -183,7 +184,11 @@ fun NavigationPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) }
+        onClick = {
+            scope.launch {
+                paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute)
+            }
+        }
     )
 }
 
@@ -200,6 +205,7 @@ fun ColorIntPreference(
     val currentColor by remember(pref) {
         mutableIntStateOf(AccentColorOption.fromString(pref.getValue()).accentColor)
     }
+    val scope = rememberCoroutineScope()
 
     BasePreference(
         modifier = modifier,
@@ -208,7 +214,11 @@ fun ColorIntPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) },
+        onClick = {
+            scope.launch {
+                paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute)
+            }
+        },
         endWidget = {
             Canvas(
                 modifier = Modifier
@@ -300,6 +310,7 @@ fun StringSetPreference(
     groupSize: Int = 1,
     isEnabled: Boolean = true,
 ) {
+    val scope = rememberCoroutineScope()
     val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
@@ -308,7 +319,11 @@ fun StringSetPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
-        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute) },
+        onClick = {
+            scope.launch {
+                paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute)
+            }
+        }
     )
 }
 
@@ -547,6 +562,7 @@ fun PagePreference(
     index: Int = 1,
     groupSize: Int = 1,
 ) {
+    val scope = rememberCoroutineScope()
     val paneNavigator = LocalPaneNavigator.current
     BasePreference(
         modifier = modifier,
@@ -556,7 +572,11 @@ fun PagePreference(
         },
         index = index,
         groupSize = groupSize,
-        onClick = { paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, route) }
+        onClick = {
+            scope.launch {
+                paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, route)
+            }
+        }
     )
 }
 
