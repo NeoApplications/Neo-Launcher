@@ -276,7 +276,7 @@
     <string name="category__behavior_weather">天気</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
-    <string name="icu_abbrev_date">dd MMMM</string>
+    <string name="icu_abbrev_date">日、月、年</string>
     <string name="weather_city">都市</string>
     <string name="default_city">Tokyo, JP</string>
     <string name="pref_category__dash">ダッシュボード</string>
@@ -290,7 +290,7 @@
     <string name="backup_name">バックアップ名</string>
     <string name="backup_create_new">新しいバックアップの作成</string>
     <string name="backup_share_text">Neo Launcherのバックアップファイル</string>
-    <string name="failed">エラーの発生</string>
+    <string name="failed">エラーの発生。</string>
     <string name="read_external_storage_required">バックアップを作成するためにストレージへのアクセスを許可してください。</string>
     <string name="permission_denied">アクセスが拒否されました！</string>
     <string name="change_default_home">ホームアプリに設定</string>
