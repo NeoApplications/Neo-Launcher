@@ -25,11 +25,8 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableWrapper;
 
@@ -60,24 +57,13 @@ public class UserBadgeDrawable extends DrawableWrapper {
     private final int mBaseColor;
     private final int mBgColor;
     private boolean mShouldDrawBackground = true;
-    @Nullable private Path mShape;
-
-    private Matrix mShapeMatrix = new Matrix();
 
     @VisibleForTesting
     public final boolean mIsThemed;
 
-    public UserBadgeDrawable(Context context, int badgeRes, int colorRes, boolean isThemed,
-            @Nullable Path shape) {
+    public UserBadgeDrawable(Context context, int badgeRes, int colorRes, boolean isThemed) {
         super(context.getDrawable(badgeRes));
-        mShape = shape;
-        mShapeMatrix = new Matrix();
-        if (mShape != null) {
-            mShapeMatrix.setRectToRect(new RectF(0f, 0f, 100f, 100f),
-                    new RectF(0f, 0f, CENTER * 2, CENTER * 2),
-                    Matrix.ScaleToFit.CENTER);
-            mShape.transform(mShapeMatrix);
-        }
+
         mIsThemed = isThemed;
         if (isThemed) {
             mutate();
@@ -108,17 +94,11 @@ public class UserBadgeDrawable extends DrawableWrapper {
             canvas.scale(b.width() / VIEWPORT_SIZE, b.height() / VIEWPORT_SIZE);
 
             mPaint.setColor(blendDrawableAlpha(SHADOW_COLOR));
-            if (mShape != null) {
-                canvas.drawPath(mShape, mPaint);
-            } else {
-                canvas.drawCircle(CENTER, CENTER + SHADOW_OFFSET_Y, SHADOW_RADIUS, mPaint);
-            }
+            canvas.drawCircle(CENTER, CENTER + SHADOW_OFFSET_Y, SHADOW_RADIUS, mPaint);
+
             mPaint.setColor(blendDrawableAlpha(mBgColor));
-            if (mShape != null) {
-                canvas.drawPath(mShape, mPaint);
-            } else {
-                canvas.drawCircle(CENTER, CENTER, BG_RADIUS, mPaint);
-            }
+            canvas.drawCircle(CENTER, CENTER, BG_RADIUS, mPaint);
+
             canvas.restoreToCount(saveCount);
         }
         super.draw(canvas);

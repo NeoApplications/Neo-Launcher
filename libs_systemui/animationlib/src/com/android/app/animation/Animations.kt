@@ -18,7 +18,7 @@ package com.android.app.animation
 
 import android.animation.Animator
 import android.view.View
-import com.android.launcher3.animation.R
+import com.android.systemui.animationlib.R
 
 /** A static class for general animation-related utilities. */
 class Animations {

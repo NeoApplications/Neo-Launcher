@@ -15,20 +15,16 @@
  */
 package com.android.launcher3.icons;
 
-import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.icons.cache.CacheLookupFlag;
 import com.android.launcher3.util.FlagOp;
 
 public class BitmapInfo {
@@ -60,7 +56,6 @@ public class BitmapInfo {
 
     public static final String TAG = "BitmapInfo";
 
-    @NonNull
     public final Bitmap icon;
     public final int color;
 
@@ -68,13 +63,9 @@ public class BitmapInfo {
     private ThemedBitmap mThemedBitmap;
 
     public @BitmapInfoFlags int flags;
-
-    // b/377618519: These are saved to debug why work badges sometimes don't show up on work apps
-    public @DrawableCreationFlags int creationFlags;
-
     private BitmapInfo badgeInfo;
 
-    public BitmapInfo(@NonNull Bitmap icon, int color) {
+    public BitmapInfo(Bitmap icon, int color) {
         this.icon = icon;
         this.color = color;
     }
@@ -130,13 +121,6 @@ public class BitmapInfo {
     }
 
     /**
-     * Returns the lookup flag to match this current state of this info
-     */
-    public CacheLookupFlag getMatchingLookupFlag() {
-        return DEFAULT_LOOKUP_FLAG.withUseLowRes(isLowRes());
-    }
-
-    /**
      * BitmapInfo can be stored on disk or other persistent storage
      */
     public boolean canPersist() {
@@ -154,19 +138,6 @@ public class BitmapInfo {
      * Creates a drawable for the provided BitmapInfo
      */
     public FastBitmapDrawable newIcon(Context context, @DrawableCreationFlags int creationFlags) {
-        return newIcon(context, creationFlags, null);
-    }
-
-    /**
-     * Creates a drawable for the provided BitmapInfo
-     *
-     * @param context Context
-     * @param creationFlags Flags for creating the FastBitmapDrawable
-     * @param badgeShape Optional Path for masking icon badges to a shape. Should be 100x100.
-     * @return FastBitmapDrawable
-     */
-    public FastBitmapDrawable newIcon(Context context, @DrawableCreationFlags int creationFlags,
-            @Nullable Path badgeShape) {
         FastBitmapDrawable drawable;
         if (isLowRes()) {
             drawable = new PlaceHolderIconDrawable(this, context);
@@ -175,68 +146,53 @@ public class BitmapInfo {
         } else {
             drawable = new FastBitmapDrawable(this);
         }
-        applyFlags(context, drawable, creationFlags, badgeShape);
+        applyFlags(context, drawable, creationFlags);
         return drawable;
     }
 
     protected void applyFlags(Context context, FastBitmapDrawable drawable,
-            @DrawableCreationFlags int creationFlags, @Nullable Path badgeShape) {
-        this.creationFlags = creationFlags;
+            @DrawableCreationFlags int creationFlags) {
         drawable.mDisabledAlpha = GraphicsUtils.getFloat(context, R.attr.disabledIconAlpha, 1f);
         drawable.mCreationFlags = creationFlags;
         if ((creationFlags & FLAG_NO_BADGE) == 0) {
             Drawable badge = getBadgeDrawable(context, (creationFlags & FLAG_THEMED) != 0,
-                    (creationFlags & FLAG_SKIP_USER_BADGE) != 0, badgeShape);
+                    (creationFlags & FLAG_SKIP_USER_BADGE) != 0);
             if (badge != null) {
                 drawable.setBadge(badge);
             }
         }
     }
 
-    /**
-     * Gets Badge drawable based on current flags
-     * @param context Context
-     * @param isThemed If Drawable is themed.
-     * @param badgeShape Optional Path to mask badges to a shape. Should be 100x100.
-     * @return Drawable for the badge.
-     */
-    public Drawable getBadgeDrawable(Context context, boolean isThemed, @Nullable Path badgeShape) {
-        return getBadgeDrawable(context, isThemed, false, badgeShape);
+    public Drawable getBadgeDrawable(Context context, boolean isThemed) {
+        return getBadgeDrawable(context, isThemed, false);
     }
 
-
     /**
-     * Creates a Drawable for an icon badge for this BitmapInfo
-     * @param context Context
-     * @param isThemed If the drawable is themed.
-     * @param skipUserBadge If should skip User Profile badging.
-     * @param badgeShape Optional Path to mask badge Drawable to a shape. Should be 100x100.
-     * @return Drawable for an icon Badge.
+     * Returns a drawable representing the badge for this info
      */
     @Nullable
-    private Drawable getBadgeDrawable(Context context, boolean isThemed, boolean skipUserBadge,
-            @Nullable Path badgeShape) {
+    private Drawable getBadgeDrawable(Context context, boolean isThemed, boolean skipUserBadge) {
         if (badgeInfo != null) {
             int creationFlag = isThemed ? FLAG_THEMED : 0;
             if (skipUserBadge) {
                 creationFlag |= FLAG_SKIP_USER_BADGE;
             }
-            return badgeInfo.newIcon(context, creationFlag, badgeShape);
+            return badgeInfo.newIcon(context, creationFlag);
         }
         if (skipUserBadge) {
             return null;
         } else if ((flags & FLAG_INSTANT) != 0) {
             return new UserBadgeDrawable(context, R.drawable.ic_instant_app_badge,
-                    R.color.badge_tint_instant, isThemed, badgeShape);
+                    R.color.badge_tint_instant, isThemed);
         } else if ((flags & FLAG_WORK) != 0) {
             return new UserBadgeDrawable(context, R.drawable.ic_work_app_badge,
-                    R.color.badge_tint_work, isThemed, badgeShape);
+                    R.color.badge_tint_work, isThemed);
         } else if ((flags & FLAG_CLONE) != 0) {
             return new UserBadgeDrawable(context, R.drawable.ic_clone_app_badge,
-                    R.color.badge_tint_clone, isThemed, badgeShape);
+                    R.color.badge_tint_clone, isThemed);
         } else if ((flags & FLAG_PRIVATE) != 0) {
             return new UserBadgeDrawable(context, R.drawable.ic_private_profile_app_badge,
-                    R.color.badge_tint_private, isThemed, badgeShape);
+                    R.color.badge_tint_private, isThemed);
         }
         return null;
     }

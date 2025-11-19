@@ -27,7 +27,6 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.AdaptiveIconDrawable;
@@ -83,6 +82,7 @@ public class MonochromeIconFactory extends Drawable {
         // Crate a color matrix which converts the icon to grayscale and then uses the average
         // of RGB components as the alpha component.
         ColorMatrix satMatrix = new ColorMatrix();
+        satMatrix.setSaturation(0);
         float[] vals = satMatrix.getArray();
         vals[15] = vals[16] = vals[17] = .3333f;
         vals[18] = vals[19] = 0;
@@ -100,12 +100,12 @@ public class MonochromeIconFactory extends Drawable {
      * Creates a monochrome version of the provided drawable
      */
     @WorkerThread
-    public Drawable wrap(AdaptiveIconDrawable icon, Path shapePath, Float iconScale) {
+    public Drawable wrap(AdaptiveIconDrawable icon) {
         mFlatCanvas.drawColor(Color.BLACK);
         drawDrawable(icon.getBackground());
         drawDrawable(icon.getForeground());
         generateMono();
-        return new ClippedMonoDrawable(this, shapePath, iconScale);
+        return new ClippedMonoDrawable(this);
     }
 
     @WorkerThread
@@ -145,29 +145,6 @@ public class MonochromeIconFactory extends Drawable {
                 int p2 = Math.round((p - min) * 0xFF / range);
                 mPixels[i] = flipColor ? (byte) (255 - p2) : (byte) (p2);
             }
-
-            // Second phase of processing, aimed on increasing the contrast
-            for (int i = 0; i < mPixels.length; i++) {
-                int p = mPixels[i] & 0xFF;
-                int p2;
-                double coefficient;
-                if (p > 128) {
-                    coefficient = (1 - (double) (p - 128) / 128);
-                    p2 = 255 - (int) (coefficient * (255 - p));
-                } else {
-                    coefficient = (1 - (double) (128 - p) / 128);
-                    p2 = (int) (coefficient * p);
-                }
-
-                if (p2 > 255) {
-                    p2 = 255;
-                } else if (p2 < 0) {
-                    p2 = 0;
-                }
-
-                mPixels[i] = (byte) p2;
-            }
-
             buffer.rewind();
             mAlphaBitmap.copyPixelsFromBuffer(buffer);
         }

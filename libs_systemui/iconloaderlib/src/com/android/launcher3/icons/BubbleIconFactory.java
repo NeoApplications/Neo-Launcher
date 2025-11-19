@@ -77,7 +77,9 @@ public class BubbleIconFactory extends BaseIconFactory {
         if (outScale == null) {
             outScale = new float[1];
         }
-        icon = normalizeAndWrapToAdaptiveIcon(icon, outScale);
+        icon = normalizeAndWrapToAdaptiveIcon(icon,
+                null /* outscale */,
+                outScale);
         return createIconBitmap(icon, outScale[0], MODE_WITH_SHADOW);
     }
 

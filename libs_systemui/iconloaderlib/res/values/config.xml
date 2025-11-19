@@ -27,7 +27,4 @@
     <string name="calendar_component_name" translatable="false"></string>
     <string name="clock_component_name" translatable="false"></string>
 
-    <!-- Configures whether to enable forced theme icon, disabled by default -->
-    <bool name="enable_forced_themed_icon">false</bool>
-
 </resources>

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -20,6 +19,7 @@ android {
     sourceSets {
         named("main") {
             java.srcDirs(listOf("src"))
+            kotlin.srcDirs(listOf("src"))
             manifest.srcFile("AndroidManifest.xml")
             res.srcDirs(listOf("res"))
         }
@@ -40,8 +40,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.palette)
+    implementation(libs.core.ktx)
+    implementation(libs.palette.ktx)
     implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.annotation)
+    implementation(libs.annotation)
 }
