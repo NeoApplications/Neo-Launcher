@@ -1,7 +1,11 @@
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
+
+import com.android.build.gradle.api.AndroidBasePlugin
 
 buildscript {
     dependencies {
@@ -10,25 +14,55 @@ buildscript {
 }
 
 val vProtobuf = "3.25.3"
-val prebuiltsDir: String = "prebuilts/"
+
+val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"
+val addFrameworkJar = { name: String ->
+    val frameworkJar = File(FRAMEWORK_PREBUILTS_DIR, name)
+    if (!frameworkJar.exists()) {
+        throw IllegalArgumentException("Framework jar path ${frameworkJar.path} doesn't exist")
+    }
+    gradle.projectsEvaluated {
+        tasks.withType<JavaCompile>().configureEach {
+            classpath = files(frameworkJar, classpath)
+        }
+        tasks.withType<KotlinCompile>().configureEach {
+            libraries.setFrom(files(frameworkJar, libraries))
+        }
+    }
+    dependencies {
+        compileOnly(files(frameworkJar))
+    }
+}
+addFrameworkJar("framework-15.jar")
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.parcelize)
-    //alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt) apply false
     alias(libs.plugins.protobuf)
 }
+allprojects {
+    plugins.withType<AndroidBasePlugin>().configureEach {
+        extensions.configure<BaseExtension> {
+            buildToolsVersion = "36.1.0"
 
-/*
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.incremental", "true")
-}*/
+            defaultConfig {
+                minSdk = 26
+                targetSdk = 36
+                vectorDrawables.useSupportLibrary = true
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.toVersion(21)
+                targetCompatibility = JavaVersion.toVersion(21)
+            }
+        }
+        dependencies {
+            add("implementation", libs.core.ktx)
+            add("implementation", platform(libs.compose.bom))
+        }
+    }
+}
 
 android {
     namespace = "com.android.launcher3"
@@ -39,9 +73,8 @@ android {
         targetSdk = 36
         applicationId = "com.saggitt.omega"
 
-        versionName = "1.0.0-alpha04hf"
-        versionCode = 1005
-
+        versionName = "1.0.1"
+        versionCode = 1006
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
         buildConfigField("boolean", "IS_DEBUG_DEVICE", "false")
@@ -106,13 +139,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs = listOf("-Xjvm-default=all-compatibility")
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     packaging {
@@ -141,18 +169,19 @@ android {
 
     sourceSets {
         named("main") {
-            res.srcDirs(listOf("res"))
-            java.srcDirs(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
-            assets.srcDirs(listOf("assets"))
+            res.directories.add("res")
+            java.directories.addAll(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
+            kotlin.directories.addAll(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
+            assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
         }
-
+        /*
         named("omega") {
             res.srcDirs(listOf("Omega/res"))
             java.srcDirs(listOf("Omega/src"))
             aidl.srcDirs(listOf("Omega/aidl"))
             manifest.srcFile("Omega/AndroidManifest.xml")
-        }
+        }*/
 
         protobuf {
             // Configure the protoc executable
@@ -179,101 +208,81 @@ android {
 }
 
 dependencies {
+
     implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
     implementation(project(":flags"))
-    implementation(project(":smartspace"))
-    implementation(project(":shared"))
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.ksp)
+    implementation(project(":plugincore"))
+    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-15.jar"))
+    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-15.jar"))
+
+    implementation(libs.annotation)
+    implementation(libs.coil.compose)
     implementation(libs.collections.immutable)
-
-    //UI
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.constraint.layout)
-    implementation(libs.androidx.coordinator.layout)
-    implementation(libs.androidx.dynamic.animation)
-    implementation(libs.androidx.graphics.shapes)
-    implementation(libs.androidx.palette)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.preference)
-
-    implementation(libs.material)
-
-    implementation(libs.datastore.preferences)
-    implementation(libs.lifecycle.runtime)
-    implementation(libs.lifecycle.common)
-    implementation(libs.lifecycle.livedata)
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.extensions)
-    implementation(libs.slice)
-
-    //Libs
-    implementation(libs.protobuf.javalite)
-    implementation(libs.restriction.bypass)
-    implementation(libs.coroutines.android)
-    implementation(libs.koin.android)
-    implementation(libs.koin.workmanager)
-    implementation(libs.koin.annotations)
-    //ksp(libs.koin.compiler)
-    implementation(libs.hilt.android)
-    //ksp(libs.hilt.compiler)
-    implementation(libs.serialization.json)
-    implementation(libs.okhttp)
-    implementation(libs.persian.date)
-    implementation(libs.owm) {
-        exclude("com.android.support", "support-compat")
-        exclude("com.android.support", "appcompat-v7")
-    }
-    implementation(libs.alwan)
-    implementation(libs.hoko.blur)
-    implementation(libs.fuzzywuzzy)
-
-    //Compose
-    implementation(libs.activity.compose)
-    api(platform(libs.compose.bom))
+    implementation(libs.compose.activity)
+    implementation(libs.compose.adaptive)
+    implementation(libs.compose.adaptive.layout)
+    implementation(libs.compose.adaptive.navigation)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.navigation)
+    implementation(libs.compose.reorderable)
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.navigation)
-    implementation(libs.compose.adaptive)
-    implementation(libs.compose.adaptive.layout)
-    implementation(libs.compose.adaptive.navigation)
-    implementation(libs.coil.compose)
-    implementation(libs.accompanist.drawablepainter)
-    implementation(libs.compose.reorderable)
+    implementation(libs.constraint.layout)
+    implementation(libs.coordinator.layout)
+    implementation(libs.core.ktx)
+    implementation(libs.coroutines.android)
+    implementation(libs.datastore.preferences)
+    implementation(libs.dynamic.animation)
+    implementation(libs.graphics.shapes)
+    implementation(libs.hilt.android)
+    implementation(libs.koin.android)
+    implementation(libs.koin.workmanager)
+    implementation(libs.koin.annotations)
+    implementation(libs.kotlin.stdlib) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
+    }
+    implementation(libs.jakarta.inject)
+    implementation(libs.java.inject)
+    implementation(libs.lifecycle.common)
+    implementation(libs.lifecycle.extensions)
+    implementation(libs.lifecycle.livedata)
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.material)
     implementation(libs.material.kolor)
-
-    //Room
+    implementation(libs.okhttp)
+    implementation(libs.palette.ktx)
+    implementation(libs.preference.ktx)
+    implementation(libs.protobuf.javalite)
+    implementation(libs.recyclerview)
+    implementation(libs.restriction.bypass)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    //ksp(libs.room.compiler)
+    implementation(libs.serialization.json)
 
-    // Jars
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("SystemUI-statsd-15.jar"))
-    implementation(fileTree(baseDir = "${prebuiltsDir}/libs").include("WindowManager-Shell-15.jar"))
+    api(platform(libs.compose.bom))
 
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
 
-    //Test
     testImplementation(libs.junit)
-    androidTestImplementation(libs.junit5)
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.mockito)
-    androidTestImplementation(libs.dexmaker.lib)
     androidTestImplementation(libs.dexmaker.mockito)
-    androidTestImplementation(libs.androidx.annotation)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.junit.jupiter)
+    androidTestImplementation(libs.mockito.core)
+    androidTestImplementation(libs.rules)
+    androidTestImplementation(libs.runner)
+    androidTestImplementation(libs.test.junit)
+    androidTestImplementation(libs.test.rules)
+    androidTestImplementation(libs.test.runner)
+    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.uiautomator)
-    androidTestImplementation(libs.support.runner)
-    androidTestImplementation(libs.support.rules)
-    androidTestImplementation(libs.support.uiautomator)
+    androidTestImplementation(libs.uiautomator.v18)
+
+    androidTestImplementation(libs.dexmaker.lib)
 }
 
 // using a task as a preBuild dependency instead of a function that takes some time insures that it runs

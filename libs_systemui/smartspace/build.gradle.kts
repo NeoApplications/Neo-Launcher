@@ -18,10 +18,10 @@ android {
 
     sourceSets {
         named("main") {
-            java.srcDirs(listOf("src"))
-            kotlin.srcDirs(listOf("src"))
+            java.directories.add("src")
+            kotlin.directories.add("src")
             manifest.srcFile("AndroidManifest.xml")
-            res.srcDirs(listOf("res"))
+            res.directories.add("res")
         }
     }
 
