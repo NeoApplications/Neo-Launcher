@@ -170,8 +170,8 @@ android {
     sourceSets {
         named("main") {
             res.directories.add("res")
-            java.directories.addAll(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
-            kotlin.directories.addAll(listOf("src", "src_plugins","src_ui_overrides", "src_no_quickstep"))
+            java.directories.addAll(listOf("src", "src_plugins", "src_build_config","src_ui_overrides", "src_no_quickstep"))
+            kotlin.directories.addAll(listOf("src", "src_plugins","src_build_config", "src_ui_overrides", "src_no_quickstep"))
             assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
         }
