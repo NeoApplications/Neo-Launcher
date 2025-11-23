@@ -170,18 +170,18 @@ android {
     sourceSets {
         named("main") {
             res.directories.add("res")
-            java.directories.addAll(listOf("src", "src_plugins", "src_build_config","src_ui_overrides", "src_no_quickstep"))
-            kotlin.directories.addAll(listOf("src", "src_plugins","src_build_config", "src_ui_overrides", "src_no_quickstep"))
+            java.directories.addAll(listOf("src", "src_plugins", "src_build_config", "src_no_quickstep"))
+            kotlin.directories.addAll(listOf("src", "src_plugins","src_build_config", "src_no_quickstep"))
             assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
         }
-        /*
+
         named("omega") {
             res.srcDirs(listOf("Omega/res"))
             java.srcDirs(listOf("Omega/src"))
             aidl.srcDirs(listOf("Omega/aidl"))
             manifest.srcFile("Omega/AndroidManifest.xml")
-        }*/
+        }
 
         protobuf {
             // Configure the protoc executable
@@ -212,6 +212,7 @@ dependencies {
     implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
     implementation(project(":flags"))
+    implementation(project(":shared"))
     implementation(project(":plugincore"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-15.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-15.jar"))

@@ -38,4 +38,6 @@ project(":common").projectDir = File(rootDir, "libs_systemui/common")
 
 include(":utils")
 project(":utils").projectDir = File(rootDir, "libs_systemui/utils")
+include(":shared")
+project(":shared").projectDir = File(rootDir, "shared")
 rootProject.name = "Neo Launcher"

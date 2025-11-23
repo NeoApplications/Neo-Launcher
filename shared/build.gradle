@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.neoapps.shared'
-    compileSdk 35
+    compileSdk 36
     buildFeatures {
         aidl true
     }
