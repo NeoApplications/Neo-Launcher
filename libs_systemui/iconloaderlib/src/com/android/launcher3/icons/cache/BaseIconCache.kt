@@ -13,228 +13,113 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.icons.cache;
-
-import static android.content.pm.PackageManager.MATCH_UNINSTALLED_PACKAGES;
-import static android.graphics.BitmapFactory.decodeByteArray;
-
-import static com.android.launcher3.Flags.forceMonochromeAppIcons;
-import static com.android.launcher3.icons.BitmapInfo.LOW_RES_ICON;
-import static com.android.launcher3.icons.GraphicsUtils.flattenBitmap;
-import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
-
-import static java.util.Objects.requireNonNull;
-
-import android.content.ComponentName;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.LauncherApps;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteReadOnlyDatabaseException;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Trace;
-import android.os.UserHandle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.util.SparseArray;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.annotation.WorkerThread;
-
-import com.android.launcher3.icons.BaseIconFactory;
-import com.android.launcher3.icons.BaseIconFactory.IconOptions;
-import com.android.launcher3.icons.BitmapInfo;
-import com.android.launcher3.icons.IconProvider;
-import com.android.launcher3.icons.IconThemeController;
-import com.android.launcher3.icons.ThemedBitmap;
-import com.android.launcher3.util.ComponentKey;
-import com.android.launcher3.util.FlagOp;
-import com.android.launcher3.util.SQLiteCacheHelper;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
-public abstract class BaseIconCache {
-
-    private static final String TAG = "BaseIconCache";
-    private static final boolean DEBUG = false;
-
-    private static final int INITIAL_ICON_CACHE_CAPACITY = 50;
-    // A format string which returns the original string as is.
-    private static final String IDENTITY_FORMAT_STRING = "%1$s";
-
-    // Empty class name is used for storing package default entry.
-    public static final String EMPTY_CLASS_NAME = ".";
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = {
-            LookupFlag.DEFAULT,
-            LookupFlag.USE_LOW_RES,
-            LookupFlag.USE_PACKAGE_ICON,
-            LookupFlag.SKIP_ADD_TO_MEM_CACHE
-    }, flag = true)
-    /** Various options to control cache lookup */
-    public @interface LookupFlag {
-        /**
-         * Default behavior of cache lookup is to load high-res icon with no fallback
-         */
-        int DEFAULT = 0;
-
-        /**
-         * When specified, the cache tries to load the low res version of the entry unless a
-         * high-res is already in memory
-         */
-        int USE_LOW_RES = 1 << 0;
-        /**
-         * When specified, the cache tries to lookup the package entry for the item, if the object
-         * entry fails
-         */
-        int USE_PACKAGE_ICON = 1 << 1;
-        /**
-         * When specified, the entry will not be added to the memory cache if it was not already
-         * added by a previous lookup
-         */
-        int SKIP_ADD_TO_MEM_CACHE = 1 << 2;
+package com.android.launcher3.icons.cache
+import android.content.ComponentName
+import android.content.ContentValues
+import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
+import android.content.pm.LauncherApps
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
+import android.database.sqlite.SQLiteReadOnlyDatabaseException
+import android.graphics.Bitmap
+import android.graphics.Bitmap.Config.HARDWARE
+import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.Options
+import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
+import android.os.Trace
+import android.os.UserHandle
+import android.text.TextUtils
+import android.util.Log
+import android.util.SparseArray
+import androidx.annotation.VisibleForTesting
+import androidx.annotation.WorkerThread
+import com.android.launcher3.Flags
+import com.android.systemui.shared.Flags.extendibleThemeManager
+import com.android.launcher3.icons.BaseIconFactory
+import com.android.launcher3.icons.BaseIconFactory.IconOptions
+import com.android.launcher3.icons.BitmapInfo
+import com.android.launcher3.icons.BitmapInfo.Companion.LOW_RES_ICON
+import com.android.launcher3.icons.GraphicsUtils
+import com.android.launcher3.icons.IconProvider
+import com.android.launcher3.icons.SourceHint
+import com.android.launcher3.icons.ThemedBitmap
+import com.android.launcher3.icons.cache.CacheLookupFlag.Companion.DEFAULT_LOOKUP_FLAG
+import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.FlagOp
+import com.android.launcher3.util.SQLiteCacheHelper
+import java.util.function.Supplier
+import kotlin.collections.MutableMap.MutableEntry
+abstract class BaseIconCache
+@JvmOverloads
+constructor(
+    @JvmField protected val context: Context,
+    private val dbFileName: String?,
+    private val bgLooper: Looper,
+    private var iconDpi: Int,
+    iconPixelSize: Int,
+    inMemoryCache: Boolean,
+    val iconProvider: IconProvider = IconProvider(context),
+) {
+    class CacheEntry {
+        @JvmField var bitmap: BitmapInfo = BitmapInfo.LOW_RES_INFO
+        @JvmField var title: CharSequence = ""
+        @JvmField var contentDescription: CharSequence = ""
     }
-
-    public static class CacheEntry {
-
-        @NonNull
-        public BitmapInfo bitmap = BitmapInfo.LOW_RES_INFO;
-        @NonNull
-        public CharSequence title = "";
-        @NonNull
-        public CharSequence contentDescription = "";
-    }
-
-    @NonNull
-    protected final Context mContext;
-
-    @NonNull
-    protected final PackageManager mPackageManager;
-
-    @NonNull
-    protected final IconProvider mIconProvider;
-
-    @NonNull
-    private final Map<ComponentKey, CacheEntry> mCache;
-
-    public final Object iconUpdateToken = new Object();
-
-    @NonNull
-    public final Handler workerHandler;
-
-    protected int mIconDpi;
-
-    @NonNull
-    protected IconDB mIconDb;
-
-    @Nullable
-    private BitmapInfo mDefaultIcon;
-
-    @NonNull
-    private final SparseArray<FlagOp> mUserFlagOpMap = new SparseArray<>();
-
-    private final SparseArray<String> mUserFormatString = new SparseArray<>();
-
-    @Nullable
-    private final String mDbFileName;
-
-    @NonNull
-    private final Looper mBgLooper;
-
-    public BaseIconCache(@NonNull final Context context, @Nullable final String dbFileName,
-            @NonNull final Looper bgLooper, final int iconDpi, final int iconPixelSize,
-            final boolean inMemoryCache) {
-        this(context, dbFileName, bgLooper, iconDpi, iconPixelSize, inMemoryCache,
-                new IconProvider(context));
-    }
-
-    public BaseIconCache(@NonNull final Context context, @Nullable final String dbFileName,
-            @NonNull final Looper bgLooper, final int iconDpi, final int iconPixelSize,
-            final boolean inMemoryCache, @NonNull IconProvider iconProvider) {
-        mContext = context;
-        mDbFileName = dbFileName;
-        mIconProvider = iconProvider;
-        mPackageManager = context.getPackageManager();
-        mBgLooper = bgLooper;
-        workerHandler = new Handler(mBgLooper);
-
+    private val packageManager: PackageManager = context.packageManager
+    private val cache: MutableMap<ComponentKey, CacheEntry?> =
         if (inMemoryCache) {
-            mCache = new HashMap<>(INITIAL_ICON_CACHE_CAPACITY);
+            HashMap(INITIAL_ICON_CACHE_CAPACITY)
         } else {
-            // Use a dummy cache
-            mCache = new AbstractMap<>() {
-                @Override
-                public Set<Entry<ComponentKey, CacheEntry>> entrySet() {
-                    return Collections.emptySet();
-                }
-
-                @Override
-                public CacheEntry put(ComponentKey key, CacheEntry value) {
-                    return value;
-                }
-            };
+            object : AbstractMutableMap<ComponentKey, CacheEntry?>() {
+                override fun put(key: ComponentKey, value: CacheEntry?): CacheEntry? = value
+                override val entries: MutableSet<MutableEntry<ComponentKey, CacheEntry?>> =
+                    mutableSetOf()
+            }
         }
-
-        updateSystemState();
-        mIconDpi = iconDpi;
-        mIconDb = new IconDB(context, dbFileName, iconPixelSize);
+    val iconUpdateToken = Any()
+    @JvmField val workerHandler = Handler(bgLooper)
+    @JvmField protected var iconDb = IconDB(context, dbFileName, iconPixelSize)
+    private var defaultIcon: BitmapInfo? = null
+    private val userFlagOpMap = SparseArray<FlagOp>()
+    private val userFormatString = SparseArray<String?>()
+    private val appInfoCachingLogic =
+        AppInfoCachingLogic(
+            pm = context.packageManager,
+            instantAppResolver = this::isInstantApp,
+            errorLogger = this::logPersistently,
+        )
+    init {
+        updateSystemState()
     }
-
     /**
      * Returns the persistable serial number for {@param user}. Subclass should implement proper
      * caching strategy to avoid making binder call every time.
      */
-    protected abstract long getSerialNumberForUser(@NonNull final UserHandle user);
-
-    /**
-     * Return true if the given app is an instant app and should be badged appropriately.
-     */
-    protected abstract boolean isInstantApp(@NonNull final ApplicationInfo info);
-
-    /**
-     * Opens and returns an icon factory. The factory is recycled by the caller.
-     */
-    @NonNull
-    public abstract BaseIconFactory getIconFactory();
-
-    public void updateIconParams(final int iconDpi, final int iconPixelSize) {
-        workerHandler.post(() -> updateIconParamsBg(iconDpi, iconPixelSize));
-    }
-
-    private synchronized void updateIconParamsBg(final int iconDpi, final int iconPixelSize) {
+    abstract fun getSerialNumberForUser(user: UserHandle): Long
+    /** Return true if the given app is an instant app and should be badged appropriately. */
+    protected abstract fun isInstantApp(info: ApplicationInfo): Boolean
+    /** Opens and returns an icon factory. The factory is recycled by the caller. */
+    abstract val iconFactory: BaseIconFactory
+    fun updateIconParams(iconDpi: Int, iconPixelSize: Int) =
+        workerHandler.post { updateIconParamsBg(iconDpi, iconPixelSize) }
+    @Synchronized
+    private fun updateIconParamsBg(iconDpi: Int, iconPixelSize: Int) {
         try {
-            mIconDpi = iconDpi;
-            mDefaultIcon = null;
-            mUserFlagOpMap.clear();
-            mIconDb.clear();
-            mIconDb.close();
-            mIconDb = new IconDB(mContext, mDbFileName, iconPixelSize);
-            mCache.clear();
-        } catch (SQLiteReadOnlyDatabaseException e) {
+            this.iconDpi = iconDpi
+            defaultIcon = null
+            userFlagOpMap.clear()
+            iconDb.clear()
+            iconDb.close()
+            iconDb = IconDB(context, dbFileName, iconPixelSize)
+            cache.clear()
+        } catch (e: SQLiteReadOnlyDatabaseException) {
             // This is known to happen during repeated backup and restores, if the Launcher is in
             // restricted mode. When the launcher is loading and the backup restore is being cleared
             // there can be a conflict where one DB is trying to delete the DB file, and the other
@@ -242,575 +127,513 @@ public abstract class BaseIconCache {
             // restore process fails, then the user's home screen icons fail to restore. Adding this
             // try / catch will stop the crash, and LoaderTask will sanitize any residual icon data,
             // leading to a completed backup / restore and a better experience for our customers.
-            Log.e(TAG, "failed to clear the launcher's icon db or cache.", e);
+            Log.e(TAG, "failed to clear the launcher's icon db or cache.", e)
         }
     }
-
-    @Nullable
-    public Drawable getFullResIcon(@NonNull final ActivityInfo info) {
-        return mIconProvider.getIcon(info, mIconDpi);
+    fun getFullResIcon(info: ActivityInfo): Drawable? = iconProvider.getIcon(info, iconDpi)
+    /** Remove any records for the supplied ComponentName. */
+    @Synchronized
+    fun remove(componentName: ComponentName, user: UserHandle) =
+        cache.remove(ComponentKey(componentName, user))
+    /** Remove any records for the supplied package name from memory. */
+    private fun removeFromMemCacheLocked(packageName: String, user: UserHandle) =
+        cache.keys.removeIf { it.componentName.packageName == packageName && it.user == user }
+    /** Removes the entries related to the given package in memory and persistent DB. */
+    @Synchronized
+    fun removeIconsForPkg(packageName: String, user: UserHandle) {
+        removeFromMemCacheLocked(packageName, user)
+        iconDb.delete(
+            "$COLUMN_COMPONENT LIKE ? AND $COLUMN_USER = ?",
+            arrayOf("$packageName/%", getSerialNumberForUser(user).toString()),
+        )
     }
-
-    /**
-     * Remove any records for the supplied ComponentName.
-     */
-    public synchronized void remove(@NonNull final ComponentName componentName,
-            @NonNull final UserHandle user) {
-        mCache.remove(new ComponentKey(componentName, user));
-    }
-
-    /**
-     * Remove any records for the supplied package name from memory.
-     */
-    private void removeFromMemCacheLocked(@Nullable final String packageName,
-            @Nullable final UserHandle user) {
-        HashSet<ComponentKey> forDeletion = new HashSet<>();
-        for (ComponentKey key : mCache.keySet()) {
-            if (key.componentName.getPackageName().equals(packageName)
-                    && key.user.equals(user)) {
-                forDeletion.add(key);
-            }
-        }
-        for (ComponentKey condemned : forDeletion) {
-            mCache.remove(condemned);
-        }
-    }
-
-    /**
-     * Removes the entries related to the given package in memory and persistent DB.
-     */
-    public synchronized void removeIconsForPkg(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
-        removeFromMemCacheLocked(packageName, user);
-        long userSerial = getSerialNumberForUser(user);
-        mIconDb.delete(
-                IconDB.COLUMN_COMPONENT + " LIKE ? AND " + IconDB.COLUMN_USER + " = ?",
-                new String[]{packageName + "/%", Long.toString(userSerial)});
-    }
-
-    @NonNull
-    public IconCacheUpdateHandler getUpdateHandler() {
-        updateSystemState();
-
+    fun getUpdateHandler(): IconCacheUpdateHandler {
+        updateSystemState()
         // Remove all active icon update tasks.
-        workerHandler.removeCallbacksAndMessages(iconUpdateToken);
-
-        return new IconCacheUpdateHandler(this, mIconDb, workerHandler);
+        workerHandler.removeCallbacksAndMessages(iconUpdateToken)
+        return IconCacheUpdateHandler(this, iconDb, workerHandler)
     }
-
     /**
      * Refreshes the system state definition used to check the validity of the cache. It
-     * incorporates all the properties that can affect the cache like the list of enabled locale
-     * and system-version.
+     * incorporates all the properties that can affect the cache like the list of enabled locale and
+     * system-version.
      */
-    private void updateSystemState() {
-        mIconProvider.updateSystemState();
-        mUserFormatString.clear();
+    private fun updateSystemState() {
+        iconProvider.updateSystemState()
+        userFormatString.clear()
     }
-
-    public IconProvider getIconProvider() {
-        return mIconProvider;
-    }
-
-    public CharSequence getUserBadgedLabel(CharSequence label, UserHandle user) {
-        int key = user.hashCode();
-        int index = mUserFormatString.indexOfKey(key);
-        String format;
+    fun getUserBadgedLabel(label: CharSequence, user: UserHandle): CharSequence {
+        val key = user.hashCode()
+        val index = userFormatString.indexOfKey(key)
+        var format: String?
         if (index < 0) {
-            format = mPackageManager.getUserBadgedLabel(IDENTITY_FORMAT_STRING, user).toString();
+            format = packageManager.getUserBadgedLabel(IDENTITY_FORMAT_STRING, user).toString()
             if (TextUtils.equals(IDENTITY_FORMAT_STRING, format)) {
-                format = null;
+                format = null
             }
-            mUserFormatString.put(key, format);
+            userFormatString.put(key, format)
         } else {
-            format = mUserFormatString.valueAt(index);
+            format = userFormatString.valueAt(index)
         }
-        return format == null ? label : String.format(format, label);
+        return if (format == null) label else String.format(format, label)
     }
-
     /**
-     * Adds/updates an entry into the DB and the in-memory cache. The update is skipped if the
-     * entry fails to load
+     * Adds/updates an entry into the DB and the in-memory cache. The update is skipped if the entry
+     * fails to load
      */
-    protected synchronized <T> void addIconToDBAndMemCache(@NonNull final T object,
-            @NonNull final CachingLogic<T> cachingLogic, final long userSerial) {
-        UserHandle user = cachingLogic.getUser(object);
-        ComponentName componentName = cachingLogic.getComponent(object);
-        final ComponentKey key = new ComponentKey(componentName, user);
-
-        BitmapInfo bitmapInfo = cachingLogic.loadIcon(mContext, this, object);
-
+    @Synchronized
+    fun <T : Any> addIconToDBAndMemCache(obj: T, cachingLogic: CachingLogic<T>, userSerial: Long) {
+        val user = cachingLogic.getUser(obj)
+        val componentName = cachingLogic.getComponent(obj)
+        val key = ComponentKey(componentName, user)
+        val bitmapInfo = cachingLogic.loadIcon(context, this, obj)
         // Icon can't be loaded from cachingLogic, which implies alternative icon was loaded
         // (e.g. fallback icon, default icon). So we drop here since there's no point in caching
         // an empty entry.
-        if (bitmapInfo.isNullOrLowRes() || isDefaultIcon(bitmapInfo, user)) {
-            return;
+        if (bitmapInfo.isNullOrLowRes || isDefaultIcon(bitmapInfo, user)) {
+            return
         }
-
-        CharSequence entryTitle = cachingLogic.getLabel(object);
-        if (TextUtils.isEmpty(entryTitle)) {
-            entryTitle = componentName.getPackageName();
-        }
-
+        val entryTitle =
+            cachingLogic.getLabel(obj).let {
+                if (it.isNullOrEmpty()) componentName.packageName else it
+            }
         // Only add an entry in memory, if there was already something previously
-        if (mCache.get(key) != null) {
-            CacheEntry entry = new CacheEntry();
-            entry.bitmap = bitmapInfo;
-            entry.title = entryTitle;
-            entry.contentDescription = getUserBadgedLabel(entryTitle, user);
-            mCache.put(key, entry);
+        val existingEntry = cache[key]
+        if (existingEntry != null) {
+            val entry = CacheEntry()
+            entry.bitmap =
+                bitmapInfo.downSampleToLookupFlag(existingEntry.bitmap.matchingLookupFlag)
+            entry.title = entryTitle
+            entry.contentDescription = getUserBadgedLabel(entryTitle, user)
+            cache[key] = entry
         }
-
-        String freshnessId = cachingLogic.getFreshnessIdentifier(object, mIconProvider);
+        val freshnessId = cachingLogic.getFreshnessIdentifier(obj, iconProvider)
         if (freshnessId != null) {
-            addOrUpdateCacheDbEntry(bitmapInfo, entryTitle, componentName, userSerial, freshnessId);
+            addOrUpdateCacheDbEntry(bitmapInfo, entryTitle, componentName, userSerial, freshnessId)
         }
     }
-
-    @NonNull
-    public synchronized BitmapInfo getDefaultIcon(@NonNull final UserHandle user) {
-        if (mDefaultIcon == null) {
-            try (BaseIconFactory li = getIconFactory()) {
-                mDefaultIcon = li.makeDefaultIcon(mIconProvider);
-            }
+    @Synchronized
+    fun getDefaultIcon(user: UserHandle): BitmapInfo {
+        if (defaultIcon == null) {
+            iconFactory.use { li -> defaultIcon = li.makeDefaultIcon(iconProvider) }
         }
-        return mDefaultIcon.withFlags(getUserFlagOpLocked(user));
+        return defaultIcon!!.withFlags(getUserFlagOpLocked(user))
     }
-
-    @NonNull
-    protected FlagOp getUserFlagOpLocked(@NonNull final UserHandle user) {
-        int key = user.hashCode();
-        int index;
-        if ((index = mUserFlagOpMap.indexOfKey(key)) >= 0) {
-            return mUserFlagOpMap.valueAt(index);
+    protected fun getUserFlagOpLocked(user: UserHandle): FlagOp {
+        val key = user.hashCode()
+        val index = userFlagOpMap.indexOfKey(key)
+        if (index >= 0) {
+            return userFlagOpMap.valueAt(index)
         } else {
-            try (BaseIconFactory li = getIconFactory()) {
-                FlagOp op = li.getBitmapFlagOp(new IconOptions().setUser(user));
-                mUserFlagOpMap.put(key, op);
-                return op;
+            iconFactory.use { li ->
+                val op = li.getBitmapFlagOp(IconOptions().setUser(user))
+                userFlagOpMap.put(key, op)
+                return op
             }
         }
     }
-
-    public boolean isDefaultIcon(@NonNull final BitmapInfo icon, @NonNull final UserHandle user) {
-        return getDefaultIcon(user).icon == icon.icon;
-    }
-
+    fun isDefaultIcon(icon: BitmapInfo, user: UserHandle) = getDefaultIcon(user).icon == icon.icon
     /**
-     * Retrieves the entry from the cache. If the entry is not present, it creates a new entry.
-     * This method is not thread safe, it must be called from a synchronized method.
+     * Retrieves the entry from the cache. If the entry is not present, it creates a new entry. This
+     * method is not thread safe, it must be called from a synchronized method.
      */
-    @NonNull
-    protected <T> CacheEntry cacheLocked(
-            @NonNull final ComponentName componentName, @NonNull final UserHandle user,
-            @NonNull final Supplier<T> infoProvider, @NonNull final CachingLogic<T> cachingLogic,
-            @LookupFlag int lookupFlags) {
-        return cacheLocked(
-                componentName,
-                user,
-                infoProvider,
-                cachingLogic,
-                lookupFlags,
-                null);
-    }
-
-    @NonNull
-    protected <T> CacheEntry cacheLocked(
-            @NonNull final ComponentName componentName, @NonNull final UserHandle user,
-            @NonNull final Supplier<T> infoProvider, @NonNull final CachingLogic<T> cachingLogic,
-            @LookupFlag int lookupFlags, @Nullable final Cursor cursor) {
-        assertWorkerThread();
-        ComponentKey cacheKey = new ComponentKey(componentName, user);
-        CacheEntry entry = mCache.get(cacheKey);
-        final boolean useLowResIcon = (lookupFlags & LookupFlag.USE_LOW_RES) != 0;
-        if (entry == null || (entry.bitmap.isLowRes() && !useLowResIcon)) {
-            boolean addToMemCache = entry != null
-                    || (lookupFlags & LookupFlag.SKIP_ADD_TO_MEM_CACHE) == 0;
-            entry = new CacheEntry();
-            if (addToMemCache) {
-                mCache.put(cacheKey, entry);
-            }
-
+    @JvmOverloads
+    protected fun <T : Any> cacheLocked(
+        componentName: ComponentName,
+        user: UserHandle,
+        infoProvider: Supplier<T?>,
+        cachingLogic: CachingLogic<T>,
+        lookupFlags: CacheLookupFlag,
+        cursor: Cursor? = null,
+    ): CacheEntry {
+        assertWorkerThread()
+        val cacheKey = ComponentKey(componentName, user)
+        var entry = cache[cacheKey]
+        if (entry == null || entry.bitmap.matchingLookupFlag.isVisuallyLessThan(lookupFlags)) {
+            val addToMemCache = entry != null || !lookupFlags.skipAddToMemCache()
+            entry = CacheEntry()
+            if (addToMemCache) cache[cacheKey] = entry
             // Check the DB first.
-            T object = null;
-            boolean providerFetchedOnce = false;
-            boolean cacheEntryUpdated = cursor == null
-                    ? getEntryFromDBLocked(cacheKey, entry, useLowResIcon)
-                    : updateTitleAndIconLocked(cacheKey, entry, cursor, useLowResIcon);
+            val cacheEntryUpdated =
+                if (cursor == null) getEntryFromDBLocked(cacheKey, entry, lookupFlags, cachingLogic)
+                else updateTitleAndIconLocked(cacheKey, entry, cursor, lookupFlags, cachingLogic)
+            val obj: T? by lazy { infoProvider.get() }
             if (!cacheEntryUpdated) {
-                object = infoProvider.get();
-                providerFetchedOnce = true;
-
                 loadFallbackIcon(
-                        object,
-                        entry,
-                        cachingLogic,
-                        (lookupFlags & LookupFlag.USE_PACKAGE_ICON) != 0,
-                        /* usePackageTitle= */ true,
-                        componentName,
-                        user);
+                    obj,
+                    entry,
+                    cachingLogic,
+                    lookupFlags,
+                    /* usePackageTitle= */ true,
+                    componentName,
+                    user,
+                )
             }
-
             if (TextUtils.isEmpty(entry.title)) {
-                if (object == null && !providerFetchedOnce) {
-                    object = infoProvider.get();
-                    providerFetchedOnce = true;
-                }
-                if (object != null) {
-                    loadFallbackTitle(object, entry, cachingLogic, user);
-                }
+                obj?.let { loadFallbackTitle(it, entry, cachingLogic, user) }
             }
         }
-        return entry;
+        return entry
     }
-
-    /**
-     * Fallback method for loading an icon bitmap.
-     */
-    protected <T> void loadFallbackIcon(@Nullable final T object, @NonNull final CacheEntry entry,
-            @NonNull final CachingLogic<T> cachingLogic, final boolean usePackageIcon,
-            final boolean usePackageTitle, @NonNull final ComponentName componentName,
-            @NonNull final UserHandle user) {
-        if (object != null) {
-            entry.bitmap = cachingLogic.loadIcon(mContext, this, object);
+    /** Fallback method for loading an icon bitmap. */
+    protected fun <T : Any> loadFallbackIcon(
+        obj: T?,
+        entry: CacheEntry,
+        cachingLogic: CachingLogic<T>,
+        lookupFlag: CacheLookupFlag,
+        usePackageTitle: Boolean,
+        componentName: ComponentName,
+        user: UserHandle,
+    ) {
+        if (obj != null) {
+            entry.bitmap = cachingLogic.loadIcon(context, this, obj)
         } else {
-            if (usePackageIcon) {
-                CacheEntry packageEntry = getEntryForPackageLocked(
-                        componentName.getPackageName(), user, false);
+            if (lookupFlag.usePackageIcon()) {
+                val packageEntry =
+                    getEntryForPackageLocked(componentName.packageName, user, lookupFlag)
                 if (DEBUG) {
-                    Log.d(TAG, "using package default icon for "
-                            + componentName.toShortString());
+                    Log.d(TAG, "using package default icon for " + componentName.toShortString())
                 }
-                entry.bitmap = packageEntry.bitmap;
-                entry.contentDescription = packageEntry.contentDescription;
-
+                entry.bitmap = packageEntry.bitmap
+                entry.contentDescription = packageEntry.contentDescription
                 if (usePackageTitle) {
-                    entry.title = packageEntry.title;
+                    entry.title = packageEntry.title
                 }
             }
-            if (entry.bitmap == null) {
-                // TODO: entry.bitmap can never be null, so this should not happen at all.
-                Log.wtf(TAG, "using default icon for " + componentName.toShortString());
-                entry.bitmap = getDefaultIcon(user);
+            entry.bitmap = entry.bitmap.downSampleToLookupFlag(lookupFlag)
+        }
+    }
+    /** Fallback method for loading an app title. */
+    protected fun <T : Any> loadFallbackTitle(
+        obj: T,
+        entry: CacheEntry,
+        cachingLogic: CachingLogic<T>,
+        user: UserHandle,
+    ) {
+        entry.title =
+            cachingLogic.getLabel(obj).let {
+                if (it.isNullOrEmpty()) cachingLogic.getComponent(obj).packageName else it
             }
-        }
+        entry.contentDescription = getUserBadgedLabel(entry.title, user)
     }
-
-    /**
-     * Fallback method for loading an app title.
-     */
-    protected <T> void loadFallbackTitle(
-            @NonNull final T object, @NonNull final CacheEntry entry,
-            @NonNull final CachingLogic<T> cachingLogic, @NonNull final UserHandle user) {
-        entry.title = cachingLogic.getLabel(object);
-        if (TextUtils.isEmpty(entry.title)) {
-            entry.title = cachingLogic.getComponent(object).getPackageName();
-        }
-        entry.contentDescription = getUserBadgedLabel(entry.title, user);
+    @Synchronized
+    fun clearMemoryCache() {
+        assertWorkerThread()
+        cache.clear()
     }
-
-    public synchronized void clearMemoryCache() {
-        assertWorkerThread();
-        mCache.clear();
-    }
-
     /**
      * Adds a default package entry in the cache. This entry is not persisted and will be removed
      * when the cache is flushed.
      */
-    protected synchronized void cachePackageInstallInfo(@NonNull final String packageName,
-            @NonNull final UserHandle user, @Nullable final Bitmap icon,
-            @Nullable final CharSequence title) {
-        removeFromMemCacheLocked(packageName, user);
-
-        ComponentKey cacheKey = getPackageKey(packageName, user);
-        CacheEntry entry = mCache.get(cacheKey);
-
+    @Synchronized
+    protected fun cachePackageInstallInfo(
+        packageName: String,
+        user: UserHandle,
+        icon: Bitmap?,
+        title: CharSequence?,
+    ) {
+        removeFromMemCacheLocked(packageName, user)
+        val cacheKey = getPackageKey(packageName, user)
         // For icon caching, do not go through DB. Just update the in-memory entry.
-        if (entry == null) {
-            entry = new CacheEntry();
-        }
-        if (!TextUtils.isEmpty(title)) {
-            entry.title = title;
+        val entry = cache[cacheKey] ?: CacheEntry()
+        if (!title.isNullOrEmpty()) {
+            entry.title = title
         }
         if (icon != null) {
-            BaseIconFactory li = getIconFactory();
-            entry.bitmap = li.createBadgedIconBitmap(
-                    li.createShapedAdaptiveIcon(icon),
-                    new IconOptions().setUser(user)
-            );
-            li.close();
+            iconFactory.use { li ->
+                entry.bitmap =
+                    li.createBadgedIconBitmap(
+                        li.createShapedAdaptiveIcon(icon),
+                        IconOptions().setUser(user),
+                    )
+            }
         }
         if (!TextUtils.isEmpty(title) && entry.bitmap.icon != null) {
-            mCache.put(cacheKey, entry);
+            cache[cacheKey] = entry
         }
     }
-
-    @NonNull
-    public static ComponentKey getPackageKey(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
-        ComponentName cn = new ComponentName(packageName, packageName + EMPTY_CLASS_NAME);
-        return new ComponentKey(cn, user);
-    }
-
-    /**
-     * Returns the package entry if it has already been cached in memory, null otherwise
-     */
-    @Nullable
-    protected CacheEntry getInMemoryPackageEntryLocked(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
-        return getInMemoryEntryLocked(getPackageKey(packageName, user));
-    }
-
+    /** Returns the package entry if it has already been cached in memory, null otherwise */
+    protected fun getInMemoryPackageEntryLocked(
+        packageName: String,
+        user: UserHandle,
+    ): CacheEntry? = getInMemoryEntryLocked(getPackageKey(packageName, user))
     @VisibleForTesting
-    public CacheEntry getInMemoryEntryLocked(ComponentKey key) {
-        assertWorkerThread();
-        return mCache.get(key);
+    fun getInMemoryEntryLocked(key: ComponentKey): CacheEntry? {
+        assertWorkerThread()
+        return cache[key]
     }
-
     /**
      * Gets an entry for the package, which can be used as a fallback entry for various components.
      * This method is not thread safe, it must be called from a synchronized method.
      */
     @WorkerThread
-    @NonNull
-    @SuppressWarnings("NewApi")
-    protected CacheEntry getEntryForPackageLocked(@NonNull final String packageName,
-            @NonNull final UserHandle user, final boolean useLowResIcon) {
-        assertWorkerThread();
-        ComponentKey cacheKey = getPackageKey(packageName, user);
-        CacheEntry entry = mCache.get(cacheKey);
-
-        if (entry == null || (entry.bitmap.isLowRes() && !useLowResIcon)) {
-            entry = new CacheEntry();
-            boolean entryUpdated = true;
-
+    protected fun getEntryForPackageLocked(
+        packageName: String,
+        user: UserHandle,
+        lookupFlags: CacheLookupFlag = DEFAULT_LOOKUP_FLAG,
+    ): CacheEntry {
+        assertWorkerThread()
+        val cacheKey = getPackageKey(packageName, user)
+        var entry = cache[cacheKey]
+        if (entry == null || entry.bitmap.matchingLookupFlag.isVisuallyLessThan(lookupFlags)) {
+            entry = CacheEntry()
+            var entryUpdated = true
             // Check the DB first.
-            if (!getEntryFromDBLocked(cacheKey, entry, useLowResIcon)) {
+            if (!getEntryFromDBLocked(cacheKey, entry, lookupFlags, appInfoCachingLogic)) {
                 try {
-                    ApplicationInfo appInfo = mContext.getSystemService(LauncherApps.class)
-                            .getApplicationInfo(packageName, MATCH_UNINSTALLED_PACKAGES, user);
+                    val appInfo =
+                        context
+                            .getSystemService(LauncherApps::class.java)!!
+                            .getApplicationInfo(
+                                packageName,
+                                PackageManager.MATCH_UNINSTALLED_PACKAGES,
+                                user,
+                            )
                     if (appInfo == null) {
-                        NameNotFoundException e =
-                                new NameNotFoundException("ApplicationInfo is null");
-                        logdPersistently(TAG,
-                                String.format("ApplicationInfo is null for %s", packageName), e);
-                        throw e;
+                        throw NameNotFoundException("ApplicationInfo is null").also {
+                            logPersistently(
+                                String.format("ApplicationInfo is null for %s", packageName),
+                                it,
+                            )
+                        }
                     }
-
-                    BaseIconFactory li = getIconFactory();
                     // Load the full res icon for the application, but if useLowResIcon is set, then
                     // only keep the low resolution icon instead of the larger full-sized icon
-                    Drawable appIcon = mIconProvider.getIcon(appInfo);
-                    if (mPackageManager.isDefaultApplicationIcon(appIcon)) {
-                        logdPersistently(TAG,
-                                String.format("Default icon returned for %s", appInfo.packageName),
-                                null);
-                    }
-                    BitmapInfo iconInfo = li.createBadgedIconBitmap(appIcon,
-                            new IconOptions().setUser(user).setInstantApp(isInstantApp(appInfo)));
-                    li.close();
-
-                    entry.title = appInfo.loadLabel(mPackageManager);
-                    entry.contentDescription = getUserBadgedLabel(entry.title, user);
-                    entry.bitmap = useLowResIcon
-                            ? BitmapInfo.of(LOW_RES_ICON, iconInfo.color)
-                            : iconInfo;
-
+                    val iconInfo = appInfoCachingLogic.loadIcon(context, this, appInfo)
+                    entry.bitmap =
+                        if (lookupFlags.useLowRes()) BitmapInfo.of(LOW_RES_ICON, iconInfo.color)
+                        else iconInfo
+                    loadFallbackTitle(appInfo, entry, appInfoCachingLogic, user)
                     // Add the icon in the DB here, since these do not get written during
                     // package updates.
-                    String freshnessId = mIconProvider.getStateForApp(appInfo);
-                    if (freshnessId != null) {
+                    appInfoCachingLogic.getFreshnessIdentifier(appInfo, iconProvider)?.let {
+                            freshnessId ->
                         addOrUpdateCacheDbEntry(
-                                iconInfo, entry.title, cacheKey.componentName,
-                                getSerialNumberForUser(user), freshnessId);
+                            iconInfo,
+                            entry.title,
+                            cacheKey.componentName,
+                            getSerialNumberForUser(user),
+                            freshnessId,
+                        )
                     }
-                } catch (NameNotFoundException e) {
-                    if (DEBUG) Log.d(TAG, "Application not installed " + packageName);
-                    entryUpdated = false;
+                } catch (e: NameNotFoundException) {
+                    if (DEBUG) Log.d(TAG, "Application not installed $packageName")
+                    entryUpdated = false
                 }
             }
-
+            val shouldAddToCache =
+                !(lookupFlags.skipAddToMemCache() && Flags.restoreArchivedAppIconsFromDb())
             // Only add a filled-out entry to the cache
-            if (entryUpdated) {
-                mCache.put(cacheKey, entry);
+            if (entryUpdated && shouldAddToCache) {
+                cache[cacheKey] = entry
             }
         }
-        return entry;
+        return entry
     }
-
-    protected boolean getEntryFromDBLocked(@NonNull final ComponentKey cacheKey,
-            @NonNull final CacheEntry entry, final boolean lowRes) {
-        Cursor c = null;
-        Trace.beginSection("loadIconIndividually");
+    protected fun getEntryFromDBLocked(
+        cacheKey: ComponentKey,
+        entry: CacheEntry,
+        lookupFlags: CacheLookupFlag,
+        cachingLogic: CachingLogic<*>,
+    ): Boolean {
+        var c: Cursor? = null
+        Trace.beginSection("loadIconIndividually")
         try {
-            c = mIconDb.query(
-                    lowRes ? IconDB.COLUMNS_LOW_RES : IconDB.COLUMNS_HIGH_RES,
-                    IconDB.COLUMN_COMPONENT + " = ? AND " + IconDB.COLUMN_USER + " = ?",
-                    new String[]{
-                            cacheKey.componentName.flattenToString(),
-                            Long.toString(getSerialNumberForUser(cacheKey.user))});
+            c =
+                iconDb.query(
+                    lookupFlags.toLookupColumns(),
+                    "$COLUMN_COMPONENT = ? AND $COLUMN_USER = ?",
+                    arrayOf(
+                        cacheKey.componentName.flattenToString(),
+                        getSerialNumberForUser(cacheKey.user).toString(),
+                    ),
+                )
             if (c.moveToNext()) {
-                return updateTitleAndIconLocked(cacheKey, entry, c, lowRes);
+                return updateTitleAndIconLocked(cacheKey, entry, c, lookupFlags, cachingLogic)
             }
-        } catch (SQLiteException e) {
-            Log.d(TAG, "Error reading icon cache", e);
+        } catch (e: SQLiteException) {
+            Log.d(TAG, "Error reading icon cache", e)
         } finally {
-            if (c != null) {
-                c.close();
-            }
-            Trace.endSection();
+            c?.close()
+            Trace.endSection()
         }
-        return false;
+        return false
     }
-
-    private boolean updateTitleAndIconLocked(
-            @NonNull final ComponentKey cacheKey, @NonNull final CacheEntry entry,
-            @NonNull final Cursor c, final boolean lowRes) {
+    private fun updateTitleAndIconLocked(
+        cacheKey: ComponentKey,
+        entry: CacheEntry,
+        c: Cursor,
+        lookupFlags: CacheLookupFlag,
+        logic: CachingLogic<*>,
+    ): Boolean {
         // Set the alpha to be 255, so that we never have a wrong color
-        entry.bitmap = BitmapInfo.of(LOW_RES_ICON,
-                setColorAlphaBound(c.getInt(IconDB.INDEX_COLOR), 255));
-        entry.title = c.getString(IconDB.INDEX_TITLE);
-        if (entry.title == null) {
-            entry.title = "";
-            entry.contentDescription = "";
-        } else {
-            entry.contentDescription = getUserBadgedLabel(entry.title, cacheKey.user);
+        entry.bitmap =
+            BitmapInfo.of(
+                LOW_RES_ICON,
+                GraphicsUtils.setColorAlphaBound(c.getInt(INDEX_COLOR), 255),
+            )
+        c.getString(INDEX_TITLE).let {
+            if (it.isNullOrEmpty()) {
+                entry.title = ""
+                entry.contentDescription = ""
+            } else {
+                entry.title = it
+                entry.contentDescription = getUserBadgedLabel(it, cacheKey.user)
+            }
         }
-
-        if (!lowRes) {
-            byte[] data = c.getBlob(IconDB.INDEX_ICON);
-            if (data == null) {
-                return false;
-            }
+        if (!lookupFlags.useLowRes()) {
             try {
-                BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
-                decodeOptions.inPreferredConfig = Config.HARDWARE;
-                entry.bitmap = BitmapInfo.of(
-                        requireNonNull(decodeByteArray(data, 0, data.length, decodeOptions)),
-                        entry.bitmap.color);
-            } catch (Exception e) {
-                return false;
+                val data: ByteArray = c.getBlob(INDEX_ICON) ?: return false
+                entry.bitmap =
+                    BitmapInfo.of(
+                        BitmapFactory.decodeByteArray(
+                            data,
+                            0,
+                            data.size,
+                            Options().apply { inPreferredConfig = HARDWARE },
+                        )!!,
+                        entry.bitmap.color,
+                    )
+            } catch (e: Exception) {
+                return false
             }
-
-            // Decode theme bitmap
-            try (BaseIconFactory factory = getIconFactory()) {
-                IconThemeController themeController = factory.getThemeController();
-                data = c.getBlob(IconDB.INDEX_MONO_ICON);
-                if (themeController != null && data != null) {
-                    entry.bitmap.setThemedBitmap(
-                            themeController.decode(data, entry.bitmap, factory));
+            if (!extendibleThemeManager() || lookupFlags.hasThemeIcon()) {
+                // Always set a non-null theme bitmap if theming was requested
+                entry.bitmap.themedBitmap = ThemedBitmap.NOT_SUPPORTED
+                iconFactory.use { factory ->
+                    val themeController = factory.themeController
+                    val monoIconData = c.getBlob(INDEX_MONO_ICON)
+                    if (themeController != null && monoIconData != null) {
+                        entry.bitmap.themedBitmap =
+                            themeController.decode(
+                                data = monoIconData,
+                                info = entry.bitmap,
+                                factory = factory,
+                                sourceHint =
+                                    SourceHint(cacheKey, logic, c.getString(INDEX_FRESHNESS_ID)),
+                            )
+                    }
                 }
             }
         }
-        entry.bitmap.flags = c.getInt(IconDB.INDEX_FLAGS);
-        entry.bitmap = entry.bitmap.withFlags(getUserFlagOpLocked(cacheKey.user));
-        return entry.bitmap != null;
+        entry.bitmap.flags = c.getInt(INDEX_FLAGS)
+        entry.bitmap = entry.bitmap.withFlags(getUserFlagOpLocked(cacheKey.user))
+        iconProvider.notifyIconLoaded(entry.bitmap, cacheKey, logic)
+        return true
     }
-
-    /**
-     * Returns a cursor for an arbitrary query to the cache db
-     */
-    public synchronized Cursor queryCacheDb(String[] columns, String selection,
-            String[] selectionArgs) {
-        return mIconDb.query(columns, selection, selectionArgs);
-    }
-
-    /**
-     * Cache class to store the actual entries on disk
-     */
-    public static final class IconDB extends SQLiteCacheHelper {
-        // Ensures archived app icons are invalidated after flag is flipped.
-        // TODO: Remove conditional with FLAG_USE_NEW_ICON_FOR_ARCHIVED_APPS
-        private static final int RELEASE_VERSION = forceMonochromeAppIcons() ? 3 : 2;
-
-        public static final String TABLE_NAME = "icons";
-        public static final String COLUMN_ROWID = "rowid";
-        public static final String COLUMN_COMPONENT = "componentName";
-        public static final String COLUMN_USER = "profileId";
-        public static final String COLUMN_FRESHNESS_ID = "freshnessId";
-        public static final String COLUMN_ICON = "icon";
-        public static final String COLUMN_ICON_COLOR = "icon_color";
-        public static final String COLUMN_MONO_ICON = "mono_icon";
-        public static final String COLUMN_FLAGS = "flags";
-        public static final String COLUMN_LABEL = "label";
-
-        public static final String[] COLUMNS_LOW_RES = new String[]{
-                COLUMN_COMPONENT,
-                COLUMN_LABEL,
-                COLUMN_ICON_COLOR,
-                COLUMN_FLAGS};
-        public static final String[] COLUMNS_HIGH_RES = Arrays.copyOf(COLUMNS_LOW_RES,
-                COLUMNS_LOW_RES.length + 2, String[].class);
-
-        static {
-            COLUMNS_HIGH_RES[COLUMNS_LOW_RES.length] = COLUMN_ICON;
-            COLUMNS_HIGH_RES[COLUMNS_LOW_RES.length + 1] = COLUMN_MONO_ICON;
-        }
-
-        private static final int INDEX_TITLE = Arrays.asList(COLUMNS_LOW_RES).indexOf(COLUMN_LABEL);
-        private static final int INDEX_COLOR = Arrays.asList(COLUMNS_LOW_RES)
-                .indexOf(COLUMN_ICON_COLOR);
-        private static final int INDEX_FLAGS = Arrays.asList(COLUMNS_LOW_RES).indexOf(COLUMN_FLAGS);
-        private static final int INDEX_ICON = COLUMNS_LOW_RES.length;
-        private static final int INDEX_MONO_ICON = INDEX_ICON + 1;
-
-        public IconDB(Context context, String dbFileName, int iconPixelSize) {
-            super(context, dbFileName, (RELEASE_VERSION << 16) + iconPixelSize, TABLE_NAME);
-        }
-
-        @Override
-        protected void onCreateTable(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                    + COLUMN_COMPONENT + " TEXT NOT NULL, "
-                    + COLUMN_USER + " INTEGER NOT NULL, "
-                    + COLUMN_FRESHNESS_ID + " TEXT, "
-                    + COLUMN_ICON + " BLOB, "
-                    + COLUMN_MONO_ICON + " BLOB, "
-                    + COLUMN_ICON_COLOR + " INTEGER NOT NULL DEFAULT 0, "
-                    + COLUMN_FLAGS + " INTEGER NOT NULL DEFAULT 0, "
-                    + COLUMN_LABEL + " TEXT, "
-                    + "PRIMARY KEY (" + COLUMN_COMPONENT + ", " + COLUMN_USER + ") "
-                    + ");");
-        }
-    }
-
-    @NonNull
-    private void addOrUpdateCacheDbEntry(
-            @NonNull final BitmapInfo bitmapInfo,
-            @NonNull final CharSequence label,
-            @NonNull final ComponentName key,
-            final long userSerial,
-            @NonNull final String freshnessId) {
-        ContentValues values = new ContentValues();
+    private fun addOrUpdateCacheDbEntry(
+        bitmapInfo: BitmapInfo,
+        label: CharSequence,
+        key: ComponentName,
+        userSerial: Long,
+        freshnessId: String,
+    ) {
+        val values = ContentValues()
         if (bitmapInfo.canPersist()) {
-            values.put(IconDB.COLUMN_ICON, flattenBitmap(bitmapInfo.icon));
-
-            ThemedBitmap themedBitmap = bitmapInfo.getThemedBitmap();
-            values.put(IconDB.COLUMN_MONO_ICON,
-                    themedBitmap != null ? themedBitmap.serialize() : null);
+            values.put(COLUMN_ICON, GraphicsUtils.flattenBitmap(bitmapInfo.icon))
+            values.put(COLUMN_MONO_ICON, bitmapInfo.themedBitmap?.serialize())
         } else {
-            values.put(IconDB.COLUMN_ICON, (byte[]) null);
-            values.put(IconDB.COLUMN_MONO_ICON, (byte[]) null);
+            values.put(COLUMN_ICON, null as ByteArray?)
+            values.put(COLUMN_MONO_ICON, null as ByteArray?)
         }
-        values.put(IconDB.COLUMN_ICON_COLOR, bitmapInfo.color);
-        values.put(IconDB.COLUMN_FLAGS, bitmapInfo.flags);
-        values.put(IconDB.COLUMN_LABEL, label.toString());
-
-        values.put(IconDB.COLUMN_COMPONENT, key.flattenToString());
-        values.put(IconDB.COLUMN_USER, userSerial);
-        values.put(IconDB.COLUMN_FRESHNESS_ID, freshnessId);
-        mIconDb.insertOrReplace(values);
+        values.put(COLUMN_ICON_COLOR, bitmapInfo.color)
+        values.put(COLUMN_FLAGS, bitmapInfo.flags)
+        values.put(COLUMN_LABEL, label.toString())
+        values.put(COLUMN_COMPONENT, key.flattenToString())
+        values.put(COLUMN_USER, userSerial)
+        values.put(COLUMN_FRESHNESS_ID, freshnessId)
+        iconDb.insertOrReplace(values)
     }
-
-    private void assertWorkerThread() {
-        if (Looper.myLooper() != mBgLooper) {
-            throw new IllegalStateException("Cache accessed on wrong thread " + Looper.myLooper());
+    private fun assertWorkerThread() {
+        check(Looper.myLooper() == bgLooper) {
+            "Cache accessed on wrong thread " + Looper.myLooper()
         }
     }
-
     /** Log to Log.d. Subclasses can override this method to log persistently for debugging. */
-    protected void logdPersistently(String tag, String message, @Nullable Exception e) {
-        Log.d(tag, message, e);
+    protected open fun logPersistently(message: String, e: Exception?) {
+        Log.d(TAG, message, e)
+    }
+    /** Cache class to store the actual entries on disk */
+    class IconDB(context: Context, dbFileName: String?, iconPixelSize: Int) :
+        SQLiteCacheHelper(
+            context,
+            dbFileName,
+            (RELEASE_VERSION shl 16) + iconPixelSize,
+            TABLE_NAME,
+        ) {
+        override fun onCreateTable(db: SQLiteDatabase) {
+            db.execSQL(
+                ("CREATE TABLE IF NOT EXISTS $TABLE_NAME (" +
+                        "$COLUMN_COMPONENT TEXT NOT NULL, " +
+                        "$COLUMN_USER INTEGER NOT NULL, " +
+                        "$COLUMN_FRESHNESS_ID TEXT, " +
+                        "$COLUMN_ICON BLOB, " +
+                        "$COLUMN_MONO_ICON BLOB, " +
+                        "$COLUMN_ICON_COLOR INTEGER NOT NULL DEFAULT 0, " +
+                        "$COLUMN_FLAGS INTEGER NOT NULL DEFAULT 0, " +
+                        "$COLUMN_LABEL TEXT, " +
+                        "PRIMARY KEY ($COLUMN_COMPONENT, $COLUMN_USER) " +
+                        ");")
+            )
+        }
+    }
+    companion object {
+        protected const val TAG = "BaseIconCache"
+        private const val DEBUG = false
+        private const val INITIAL_ICON_CACHE_CAPACITY = 50
+        // A format string which returns the original string as is.
+        private const val IDENTITY_FORMAT_STRING = "%1\$s"
+        // Empty class name is used for storing package default entry.
+        const val EMPTY_CLASS_NAME: String = "."
+        fun getPackageKey(packageName: String, user: UserHandle) =
+            ComponentKey(ComponentName(packageName, packageName + EMPTY_CLASS_NAME), user)
+        // Ensures themed bitmaps in the icon cache are invalidated
+        @JvmField val RELEASE_VERSION = if (Flags.enableLauncherIconShapes()) 11 else 10
+        @JvmField val TABLE_NAME = "icons"
+        @JvmField val COLUMN_ROWID = "rowid"
+        @JvmField val COLUMN_COMPONENT = "componentName"
+        @JvmField val COLUMN_USER = "profileId"
+        @JvmField val COLUMN_FRESHNESS_ID = "freshnessId"
+        @JvmField val COLUMN_ICON = "icon"
+        @JvmField val COLUMN_ICON_COLOR = "icon_color"
+        @JvmField val COLUMN_MONO_ICON = "mono_icon"
+        @JvmField val COLUMN_FLAGS = "flags"
+        @JvmField val COLUMN_LABEL = "label"
+        @JvmField
+        val COLUMNS_LOW_RES =
+            arrayOf(COLUMN_COMPONENT, COLUMN_LABEL, COLUMN_ICON_COLOR, COLUMN_FLAGS)
+        @JvmField
+        val COLUMNS_HIGH_RES_NO_THEME =
+            COLUMNS_LOW_RES.copyOf(COLUMNS_LOW_RES.size + 2).apply {
+                this[size - 1] = COLUMN_ICON
+                this[size - 2] = COLUMN_FRESHNESS_ID
+            }
+        @JvmField
+        val COLUMNS_HIGH_RES =
+            COLUMNS_HIGH_RES_NO_THEME.copyOf(COLUMNS_HIGH_RES_NO_THEME.size + 1).apply {
+                this[size - 1] = COLUMN_MONO_ICON
+            }
+        @JvmField val INDEX_TITLE = COLUMNS_HIGH_RES.indexOf(COLUMN_LABEL)
+        @JvmField val INDEX_COLOR = COLUMNS_HIGH_RES.indexOf(COLUMN_ICON_COLOR)
+        @JvmField val INDEX_FLAGS = COLUMNS_HIGH_RES.indexOf(COLUMN_FLAGS)
+        @JvmField val INDEX_ICON = COLUMNS_HIGH_RES.indexOf(COLUMN_ICON)
+        @JvmField val INDEX_MONO_ICON = COLUMNS_HIGH_RES.indexOf(COLUMN_MONO_ICON)
+        @JvmField val INDEX_FRESHNESS_ID = COLUMNS_HIGH_RES.indexOf(COLUMN_FRESHNESS_ID)
+        @JvmStatic
+        fun CacheLookupFlag.toLookupColumns() =
+            when {
+                useLowRes() -> COLUMNS_LOW_RES
+                extendibleThemeManager() && !hasThemeIcon() -> COLUMNS_HIGH_RES_NO_THEME
+                else -> COLUMNS_HIGH_RES
+            }
+        @JvmStatic
+        protected fun BitmapInfo.downSampleToLookupFlag(flag: CacheLookupFlag) =
+            when {
+                !extendibleThemeManager() -> this
+                flag.useLowRes() -> BitmapInfo.of(LOW_RES_ICON, color)
+                !flag.hasThemeIcon() && themedBitmap != null ->
+                    clone().apply { themedBitmap = null }
+                else -> this
+            }
     }
 }

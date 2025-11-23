@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.launcher3.icons.mono
-
 import android.content.Context
 import android.graphics.Bitmap
 import com.android.launcher3.icons.BitmapInfo
@@ -23,14 +21,15 @@ import com.android.launcher3.icons.FastBitmapDrawable
 import com.android.launcher3.icons.ThemedBitmap
 import com.android.launcher3.icons.mono.ThemedIconDrawable.ThemedConstantState
 import java.nio.ByteBuffer
-
-class MonoThemedBitmap(val mono: Bitmap, private val whiteShadowLayer: Bitmap) : ThemedBitmap {
-
+class MonoThemedBitmap(
+    val mono: Bitmap,
+    private val whiteShadowLayer: Bitmap,
+    private val colorProvider: (Context) -> IntArray = ThemedIconDrawable.Companion::getColors,
+) : ThemedBitmap {
     override fun newDrawable(info: BitmapInfo, context: Context): FastBitmapDrawable {
-        val colors = ThemedIconDrawable.getColors(context)
+        val colors = colorProvider(context)
         return ThemedConstantState(info, mono, whiteShadowLayer, colors[0], colors[1]).newDrawable()
     }
-
     override fun serialize() =
         ByteArray(mono.width * mono.height).apply { mono.copyPixelsToBuffer(ByteBuffer.wrap(this)) }
 }

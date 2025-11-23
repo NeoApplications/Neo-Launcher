@@ -13,441 +13,296 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.android.launcher3.icons;
-
-import static com.android.launcher3.icons.BaseIconFactory.getBadgeSizeForIconSize;
-import static com.android.launcher3.icons.BitmapInfo.FLAG_NO_BADGE;
-import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
-import static com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound;
-
-import android.animation.ObjectAnimator;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.util.FloatProperty;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
-import android.view.animation.PathInterpolator;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.ColorUtils;
-
-import com.android.launcher3.icons.BitmapInfo.DrawableCreationFlags;
-
-public class FastBitmapDrawable extends Drawable implements Drawable.Callback {
-
-    private static final Interpolator ACCEL = new AccelerateInterpolator();
-    private static final Interpolator DEACCEL = new DecelerateInterpolator();
-    private static final Interpolator HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR =
-            new PathInterpolator(0.05f, 0.7f, 0.1f, 1.0f);
-
-    @VisibleForTesting protected static final float PRESSED_SCALE = 1.1f;
-    @VisibleForTesting protected static final float HOVERED_SCALE = 1.1f;
-    public static final int WHITE_SCRIM_ALPHA = 138;
-
-    private static final float DISABLED_DESATURATION = 1f;
-    private static final float DISABLED_BRIGHTNESS = 0.5f;
-    protected static final int FULLY_OPAQUE = 255;
-
-    public static final int CLICK_FEEDBACK_DURATION = 200;
-    public static final int HOVER_FEEDBACK_DURATION = 300;
-
-    private static boolean sFlagHoverEnabled = false;
-
-    protected final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
-    protected final Bitmap mBitmap;
-    protected final int mIconColor;
-
-    @Nullable private ColorFilter mColorFilter;
-
-    @VisibleForTesting protected boolean mIsPressed;
-    @VisibleForTesting protected boolean mIsHovered;
-    protected boolean mIsDisabled;
-    protected float mDisabledAlpha = 1f;
-
-    @DrawableCreationFlags int mCreationFlags = 0;
-
-    // Animator and properties for the fast bitmap drawable's scale
-    @VisibleForTesting protected static final FloatProperty<FastBitmapDrawable> SCALE
-            = new FloatProperty<FastBitmapDrawable>("scale") {
-        @Override
-        public Float get(FastBitmapDrawable fastBitmapDrawable) {
-            return fastBitmapDrawable.mScale;
-        }
-
-        @Override
-        public void setValue(FastBitmapDrawable fastBitmapDrawable, float value) {
-            fastBitmapDrawable.mScale = value;
-            fastBitmapDrawable.invalidateSelf();
-        }
-    };
-    @VisibleForTesting protected ObjectAnimator mScaleAnimation;
-    private float mScale = 1;
-    private int mAlpha = 255;
-
-    private Drawable mBadge;
-
-    public FastBitmapDrawable(Bitmap b) {
-        this(b, Color.TRANSPARENT);
-    }
-
-    public FastBitmapDrawable(BitmapInfo info) {
-        this(info.icon, info.color);
-    }
-
-    protected FastBitmapDrawable(Bitmap b, int iconColor) {
-        mBitmap = b;
-        mIconColor = iconColor;
-        setFilterBitmap(true);
-    }
-
-    @Override
-    protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
-        updateBadgeBounds(bounds);
-    }
-
-    private void updateBadgeBounds(Rect bounds) {
-        if (mBadge != null) {
-            setBadgeBounds(mBadge, bounds);
-        }
-    }
-
-    @Override
-    public final void draw(Canvas canvas) {
-        if (mScale != 1f) {
-            int count = canvas.save();
-            Rect bounds = getBounds();
-            canvas.scale(mScale, mScale, bounds.exactCenterX(), bounds.exactCenterY());
-            drawInternal(canvas, bounds);
-            if (mBadge != null) {
-                mBadge.draw(canvas);
+package com.android.launcher3.icons
+import android.R
+import android.animation.ObjectAnimator
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
+import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.graphics.Paint.FILTER_BITMAP_FLAG
+import android.graphics.PixelFormat
+import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.Drawable.Callback
+import android.util.FloatProperty
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
+import android.view.animation.PathInterpolator
+import androidx.annotation.VisibleForTesting
+import androidx.core.graphics.ColorUtils
+import com.android.launcher3.icons.BitmapInfo.DrawableCreationFlags
+import kotlin.math.min
+open class FastBitmapDrawable(info: BitmapInfo?) : Drawable(), Callback {
+    @JvmOverloads constructor(b: Bitmap, iconColor: Int = 0) : this(BitmapInfo.of(b, iconColor))
+    @JvmField val bitmapInfo: BitmapInfo = info ?: BitmapInfo.LOW_RES_INFO
+    var isAnimationEnabled: Boolean = true
+    @JvmField protected val paint: Paint = Paint(FILTER_BITMAP_FLAG or ANTI_ALIAS_FLAG)
+    @JvmField @VisibleForTesting var isPressed: Boolean = false
+    @JvmField @VisibleForTesting var isHovered: Boolean = false
+    @JvmField var disabledAlpha: Float = 1f
+    var isDisabled: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                badge.let { if (it is FastBitmapDrawable) it.isDisabled = value }
+                updateFilter()
             }
-            canvas.restoreToCount(count);
+        }
+    @JvmField @DrawableCreationFlags var creationFlags: Int = 0
+    @JvmField @VisibleForTesting var scaleAnimation: ObjectAnimator? = null
+    var hoverScaleEnabledForDisplay = true
+    private var scale = 1f
+    private var paintAlpha = 255
+    private var paintFilter: ColorFilter? = null
+    init {
+        isFilterBitmap = true
+    }
+    var badge: Drawable? = null
+        set(value) {
+            field?.callback = null
+            field = value
+            field?.let {
+                it.callback = this
+                it.setBadgeBounds(bounds)
+            }
+            updateFilter()
+        }
+    /** Returns true if the drawable points to the same bitmap icon object */
+    fun isSameInfo(info: BitmapInfo): Boolean = bitmapInfo === info
+    override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+        badge?.setBadgeBounds(bounds)
+    }
+    override fun draw(canvas: Canvas) {
+        if (scale != 1f) {
+            val count = canvas.save()
+            val bounds = bounds
+            canvas.scale(scale, scale, bounds.exactCenterX(), bounds.exactCenterY())
+            drawInternal(canvas, bounds)
+            badge?.draw(canvas)
+            canvas.restoreToCount(count)
         } else {
-            drawInternal(canvas, getBounds());
-            if (mBadge != null) {
-                mBadge.draw(canvas);
-            }
+            drawInternal(canvas, bounds)
+            badge?.draw(canvas)
         }
     }
-
-    protected void drawInternal(Canvas canvas, Rect bounds) {
-        canvas.drawBitmap(mBitmap, null, bounds, mPaint);
+    protected open fun drawInternal(canvas: Canvas, bounds: Rect) {
+        canvas.drawBitmap(bitmapInfo.icon, null, bounds, paint)
     }
-
+    /** Returns the primary icon color, slightly tinted white */
+    open fun getIconColor(): Int =
+        ColorUtils.compositeColors(
+            GraphicsUtils.setColorAlphaBound(Color.WHITE, WHITE_SCRIM_ALPHA),
+            bitmapInfo.color,
+        )
+    /** Returns if this represents a themed icon */
+    open fun isThemed(): Boolean = false
     /**
-     * Returns the primary icon color, slightly tinted white
+     * Returns true if the drawable was created with theme, even if it doesn't support theming
+     * itself.
      */
-    public int getIconColor() {
-        int whiteScrim = setColorAlphaBound(Color.WHITE, WHITE_SCRIM_ALPHA);
-        return ColorUtils.compositeColors(whiteScrim, mIconColor);
+    fun isCreatedForTheme(): Boolean = isThemed() || (creationFlags and BitmapInfo.FLAG_THEMED) != 0
+    override fun setColorFilter(cf: ColorFilter?) {
+        paintFilter = cf
+        updateFilter()
     }
-
-    /**
-     * Returns if this represents a themed icon
-     */
-    public boolean isThemed() {
-        return false;
-    }
-
-    /**
-     * Returns true if the drawable was created with theme, even if it doesn't
-     * support theming itself.
-     */
-    public boolean isCreatedForTheme() {
-        return isThemed() || (mCreationFlags & FLAG_THEMED) != 0;
-    }
-
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-        mColorFilter = cf;
-        updateFilter();
-    }
-
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSLUCENT;
-    }
-
-    @Override
-    public void setAlpha(int alpha) {
-        if (mAlpha != alpha) {
-            mAlpha = alpha;
-            mPaint.setAlpha(alpha);
-            invalidateSelf();
-            if (mBadge != null) {
-                mBadge.setAlpha(alpha);
-            }
+    override fun getColorFilter(): ColorFilter? = paint.colorFilter
+    @Deprecated("This method is no longer used in graphics optimizations")
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+    override fun setAlpha(alpha: Int) {
+        if (paintAlpha != alpha) {
+            paintAlpha = alpha
+            paint.alpha = alpha
+            invalidateSelf()
+            badge?.alpha = alpha
         }
     }
-
-    @Override
-    public void setFilterBitmap(boolean filterBitmap) {
-        mPaint.setFilterBitmap(filterBitmap);
-        mPaint.setAntiAlias(filterBitmap);
+    override fun getAlpha(): Int = paintAlpha
+    override fun setFilterBitmap(filterBitmap: Boolean) {
+        paint.isFilterBitmap = filterBitmap
+        paint.isAntiAlias = filterBitmap
     }
-
-    @Override
-    public int getAlpha() {
-        return mAlpha;
+    fun resetScale() {
+        scaleAnimation?.cancel()
+        scaleAnimation = null
+        scale = 1f
+        invalidateSelf()
     }
-
-    public void resetScale() {
-        if (mScaleAnimation != null) {
-            mScaleAnimation.cancel();
-            mScaleAnimation = null;
+    fun getAnimatedScale(): Float = if (scaleAnimation == null) 1f else scale
+    override fun getIntrinsicWidth(): Int = bitmapInfo.icon.width
+    override fun getIntrinsicHeight(): Int = bitmapInfo.icon.height
+    override fun getMinimumWidth(): Int = bounds.width()
+    override fun getMinimumHeight(): Int = bounds.height()
+    override fun isStateful(): Boolean = true
+    public override fun onStateChange(state: IntArray): Boolean {
+        if (!isAnimationEnabled) {
+            return false
         }
-        mScale = 1;
-        invalidateSelf();
-    }
-
-    public float getAnimatedScale() {
-        return mScaleAnimation == null ? 1 : mScale;
-    }
-
-    @Override
-    public int getIntrinsicWidth() {
-        return mBitmap.getWidth();
-    }
-
-    @Override
-    public int getIntrinsicHeight() {
-        return mBitmap.getHeight();
-    }
-
-    @Override
-    public int getMinimumWidth() {
-        return getBounds().width();
-    }
-
-    @Override
-    public int getMinimumHeight() {
-        return getBounds().height();
-    }
-
-    @Override
-    public boolean isStateful() {
-        return true;
-    }
-
-    @Override
-    public ColorFilter getColorFilter() {
-        return mPaint.getColorFilter();
-    }
-
-    @Override
-    protected boolean onStateChange(int[] state) {
-        boolean isPressed = false;
-        boolean isHovered = false;
-        for (int s : state) {
-            if (s == android.R.attr.state_pressed) {
-                isPressed = true;
-                break;
-            } else if (sFlagHoverEnabled && s == android.R.attr.state_hovered) {
-                isHovered = true;
+        var isPressed = false
+        var isHovered = false
+        for (s in state) {
+            if (s == R.attr.state_pressed) {
+                isPressed = true
+                break
+            } else if (s == R.attr.state_hovered && hoverScaleEnabledForDisplay) {
+                isHovered = true
                 // Do not break on hovered state, as pressed state should take precedence.
             }
         }
-        if (mIsPressed != isPressed || mIsHovered != isHovered) {
-            if (mScaleAnimation != null) {
-                mScaleAnimation.cancel();
-            }
-
-            float endScale = isPressed ? PRESSED_SCALE : (isHovered ? HOVERED_SCALE : 1f);
-            if (mScale != endScale) {
-                if (isVisible()) {
-                    Interpolator interpolator =
-                            isPressed != mIsPressed ? (isPressed ? ACCEL : DEACCEL)
-                                    : HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR;
-                    int duration =
-                            isPressed != mIsPressed ? CLICK_FEEDBACK_DURATION
-                                    : HOVER_FEEDBACK_DURATION;
-                    mScaleAnimation = ObjectAnimator.ofFloat(this, SCALE, endScale);
-                    mScaleAnimation.setDuration(duration);
-                    mScaleAnimation.setInterpolator(interpolator);
-                    mScaleAnimation.start();
+        if (this.isPressed != isPressed || this.isHovered != isHovered) {
+            scaleAnimation?.cancel()
+            val endScale =
+                when {
+                    isPressed -> PRESSED_SCALE
+                    isHovered -> HOVERED_SCALE
+                    else -> 1f
+                }
+            if (scale != endScale) {
+                if (isVisible) {
+                    scaleAnimation =
+                        ObjectAnimator.ofFloat(this, SCALE, endScale).apply {
+                            duration =
+                                if (isPressed != this@FastBitmapDrawable.isPressed)
+                                    CLICK_FEEDBACK_DURATION.toLong()
+                                else HOVER_FEEDBACK_DURATION.toLong()
+                            interpolator =
+                                if (isPressed != this@FastBitmapDrawable.isPressed)
+                                    (if (isPressed) ACCEL else DEACCEL)
+                                else HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR
+                        }
+                    scaleAnimation?.start()
                 } else {
-                    mScale = endScale;
-                    invalidateSelf();
+                    scale = endScale
+                    invalidateSelf()
                 }
             }
-            mIsPressed = isPressed;
-            mIsHovered = isHovered;
-            return true;
+            this.isPressed = isPressed
+            this.isHovered = isHovered
+            return true
         }
-        return false;
+        return false
     }
-
-    public void setIsDisabled(boolean isDisabled) {
-        if (mIsDisabled != isDisabled) {
-            mIsDisabled = isDisabled;
-            updateFilter();
-        }
+    /** Updates the paint to reflect the current brightness and saturation. */
+    protected open fun updateFilter() {
+        paint.setColorFilter(if (isDisabled) getDisabledColorFilter(disabledAlpha) else paintFilter)
+        badge?.colorFilter = colorFilter
+        invalidateSelf()
     }
-
-    protected boolean isDisabled() {
-        return mIsDisabled;
+    protected open fun newConstantState(): FastBitmapConstantState {
+        return FastBitmapConstantState(bitmapInfo)
     }
-
-    public void setBadge(Drawable badge) {
-        if (mBadge != null) {
-            mBadge.setCallback(null);
-        }
-        mBadge = badge;
-        if (mBadge != null) {
-            mBadge.setCallback(this);
-        }
-        updateBadgeBounds(getBounds());
-        updateFilter();
+    override fun getConstantState(): ConstantState {
+        val cs = newConstantState()
+        cs.mIsDisabled = isDisabled
+        cs.mBadgeConstantState = badge?.constantState
+        cs.mCreationFlags = creationFlags
+        return cs
     }
-
-    @VisibleForTesting
-    public Drawable getBadge() {
-        return mBadge;
-    }
-
-    /**
-     * Updates the paint to reflect the current brightness and saturation.
-     */
-    protected void updateFilter() {
-        mPaint.setColorFilter(mIsDisabled ? getDisabledColorFilter(mDisabledAlpha) : mColorFilter);
-        if (mBadge != null) {
-            mBadge.setColorFilter(getColorFilter());
-        }
-        invalidateSelf();
-    }
-
-    protected FastBitmapConstantState newConstantState() {
-        return new FastBitmapConstantState(mBitmap, mIconColor);
-    }
-
-    @Override
-    public final ConstantState getConstantState() {
-        FastBitmapConstantState cs = newConstantState();
-        cs.mIsDisabled = mIsDisabled;
-        if (mBadge != null) {
-            cs.mBadgeConstantState = mBadge.getConstantState();
-        }
-        cs.mCreationFlags = mCreationFlags;
-        return cs;
-    }
-
-    public static ColorFilter getDisabledColorFilter() {
-        return getDisabledColorFilter(1);
-    }
-
     // Returns if the FastBitmapDrawable contains a badge.
-    public boolean hasBadge() {
-        return (mCreationFlags & FLAG_NO_BADGE) == 0;
-    }
-
-    private static ColorFilter getDisabledColorFilter(float disabledAlpha) {
-        ColorMatrix tempBrightnessMatrix = new ColorMatrix();
-        ColorMatrix tempFilterMatrix = new ColorMatrix();
-
-        tempFilterMatrix.setSaturation(1f - DISABLED_DESATURATION);
-        float scale = 1 - DISABLED_BRIGHTNESS;
-        int brightnessI =   (int) (255 * DISABLED_BRIGHTNESS);
-        float[] mat = tempBrightnessMatrix.getArray();
-        mat[0] = scale;
-        mat[6] = scale;
-        mat[12] = scale;
-        mat[4] = brightnessI;
-        mat[9] = brightnessI;
-        mat[14] = brightnessI;
-        mat[18] = disabledAlpha;
-        tempFilterMatrix.preConcat(tempBrightnessMatrix);
-        return new ColorMatrixColorFilter(tempFilterMatrix);
-    }
-
-    protected static final int getDisabledColor(int color) {
-        int component = (Color.red(color) + Color.green(color) + Color.blue(color)) / 3;
-        float scale = 1 - DISABLED_BRIGHTNESS;
-        int brightnessI = (int) (255 * DISABLED_BRIGHTNESS);
-        component = Math.min(Math.round(scale * component + brightnessI), FULLY_OPAQUE);
-        return Color.rgb(component, component, component);
-    }
-
-    /**
-     * Sets the bounds for the badge drawable based on the main icon bounds
-     */
-    public static void setBadgeBounds(Drawable badge, Rect iconBounds) {
-        int size = getBadgeSizeForIconSize(iconBounds.width());
-        badge.setBounds(iconBounds.right - size, iconBounds.bottom - size,
-                iconBounds.right, iconBounds.bottom);
-    }
-
-    @Override
-    public void invalidateDrawable(Drawable who) {
-        if (who == mBadge) {
-            invalidateSelf();
+    fun hasBadge(): Boolean = (creationFlags and BitmapInfo.FLAG_NO_BADGE) == 0
+    override fun invalidateDrawable(who: Drawable) {
+        if (who === badge) {
+            invalidateSelf()
         }
     }
-
-    @Override
-    public void scheduleDrawable(Drawable who, Runnable what, long when) {
-        if (who == mBadge) {
-            scheduleSelf(what, when);
+    override fun scheduleDrawable(who: Drawable, what: Runnable, time: Long) {
+        if (who === badge) {
+            scheduleSelf(what, time)
         }
     }
-
-    @Override
-    public void unscheduleDrawable(Drawable who, Runnable what) {
-        unscheduleSelf(what);
+    override fun unscheduleDrawable(who: Drawable, what: Runnable) {
+        unscheduleSelf(what)
     }
-
-    /**
-     * Sets whether hover state functionality is enabled.
-     */
-    public static void setFlagHoverEnabled(boolean isFlagHoverEnabled) {
-        sFlagHoverEnabled = isFlagHoverEnabled;
-    }
-
-    public static class FastBitmapConstantState extends ConstantState {
-        protected final Bitmap mBitmap;
-        protected final int mIconColor;
-
+    open class FastBitmapConstantState(val bitmapInfo: BitmapInfo) : ConstantState() {
         // These are initialized later so that subclasses don't need to
         // pass everything in constructor
-        protected boolean mIsDisabled;
-        private ConstantState mBadgeConstantState;
-
-        @DrawableCreationFlags int mCreationFlags = 0;
-
-        public FastBitmapConstantState(Bitmap bitmap, int color) {
-            mBitmap = bitmap;
-            mIconColor = color;
+        var mIsDisabled: Boolean = false
+        var mBadgeConstantState: ConstantState? = null
+        @DrawableCreationFlags var mCreationFlags: Int = 0
+        constructor(bitmap: Bitmap, color: Int) : this(BitmapInfo.of(bitmap, color))
+        protected open fun createDrawable(): FastBitmapDrawable {
+            return FastBitmapDrawable(bitmapInfo)
         }
-
-        protected FastBitmapDrawable createDrawable() {
-            return new FastBitmapDrawable(mBitmap, mIconColor);
-        }
-
-        @Override
-        public final FastBitmapDrawable newDrawable() {
-            FastBitmapDrawable drawable = createDrawable();
-            drawable.setIsDisabled(mIsDisabled);
+        override fun newDrawable(): FastBitmapDrawable {
+            val drawable = createDrawable()
+            drawable.isDisabled = mIsDisabled
             if (mBadgeConstantState != null) {
-                drawable.setBadge(mBadgeConstantState.newDrawable());
+                drawable.badge = mBadgeConstantState!!.newDrawable()
             }
-            drawable.mCreationFlags = mCreationFlags;
-            return drawable;
+            drawable.creationFlags = mCreationFlags
+            return drawable
         }
-
-        @Override
-        public int getChangingConfigurations() {
-            return 0;
+        override fun getChangingConfigurations(): Int = 0
+    }
+    companion object {
+        private val ACCEL: Interpolator = AccelerateInterpolator()
+        private val DEACCEL: Interpolator = DecelerateInterpolator()
+        private val HOVER_EMPHASIZED_DECELERATE_INTERPOLATOR: Interpolator =
+            PathInterpolator(0.05f, 0.7f, 0.1f, 1.0f)
+        @VisibleForTesting const val PRESSED_SCALE: Float = 1.1f
+        @VisibleForTesting const val HOVERED_SCALE: Float = 1.1f
+        const val WHITE_SCRIM_ALPHA: Int = 138
+        private const val DISABLED_DESATURATION = 1f
+        private const val DISABLED_BRIGHTNESS = 0.5f
+        const val FULLY_OPAQUE: Int = 255
+        const val CLICK_FEEDBACK_DURATION: Int = 200
+        const val HOVER_FEEDBACK_DURATION: Int = 300
+        // Animator and properties for the fast bitmap drawable's scale
+        @VisibleForTesting
+        @JvmField
+        val SCALE: FloatProperty<FastBitmapDrawable> =
+            object : FloatProperty<FastBitmapDrawable>("scale") {
+                override fun get(fastBitmapDrawable: FastBitmapDrawable): Float {
+                    return fastBitmapDrawable.scale
+                }
+                override fun setValue(fastBitmapDrawable: FastBitmapDrawable, value: Float) {
+                    fastBitmapDrawable.scale = value
+                    fastBitmapDrawable.invalidateSelf()
+                }
+            }
+        @JvmStatic
+        @JvmOverloads
+        fun getDisabledColorFilter(disabledAlpha: Float = 1f): ColorFilter {
+            val tempBrightnessMatrix = ColorMatrix()
+            val tempFilterMatrix = ColorMatrix()
+            tempFilterMatrix.setSaturation(1f - DISABLED_DESATURATION)
+            val scale = 1 - DISABLED_BRIGHTNESS
+            val brightnessI = (255 * DISABLED_BRIGHTNESS).toInt()
+            val mat = tempBrightnessMatrix.array
+            mat[0] = scale
+            mat[6] = scale
+            mat[12] = scale
+            mat[4] = brightnessI.toFloat()
+            mat[9] = brightnessI.toFloat()
+            mat[14] = brightnessI.toFloat()
+            mat[18] = disabledAlpha
+            tempFilterMatrix.preConcat(tempBrightnessMatrix)
+            return ColorMatrixColorFilter(tempFilterMatrix)
+        }
+        @JvmStatic
+        fun getDisabledColor(color: Int): Int {
+            val avgComponent = (Color.red(color) + Color.green(color) + Color.blue(color)) / 3
+            val scale = 1 - DISABLED_BRIGHTNESS
+            val brightnessI = (255 * DISABLED_BRIGHTNESS).toInt()
+            val component = min(Math.round(scale * avgComponent + brightnessI), FULLY_OPAQUE)
+            return Color.rgb(component, component, component)
+        }
+        /** Sets the bounds for the badge drawable based on the main icon bounds */
+        @JvmStatic
+        fun Drawable.setBadgeBounds(iconBounds: Rect) {
+            val size = BaseIconFactory.getBadgeSizeForIconSize(iconBounds.width())
+            setBounds(
+                iconBounds.right - size,
+                iconBounds.bottom - size,
+                iconBounds.right,
+                iconBounds.bottom,
+            )
         }
     }
 }

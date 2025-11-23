@@ -13,126 +13,87 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.icons;
-
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.util.SparseArray;
-
-import androidx.annotation.NonNull;
-
-import java.util.Arrays;
-
+package com.android.launcher3.icons
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.util.SparseArray
+import kotlin.math.sqrt
+/** Utility class for extracting colors from a bitmap. */
+object ColorExtractor {
+private const val NUM_SAMPLES = 20
 /**
- * Utility class for extracting colors from a bitmap.
+ * This picks a dominant color, looking for high-saturation, high-value, repeated hues.
+ *
+ * @param bitmap The bitmap to scan
  */
-public class ColorExtractor {
-
-    private final int NUM_SAMPLES = 20;
-
-    @NonNull
-    private final float[] mTmpHsv = new float[3];
-
-    @NonNull
-    private final float[] mTmpHueScoreHistogram = new float[360];
-
-    @NonNull
-    private final int[] mTmpPixels = new int[NUM_SAMPLES];
-
-    @NonNull
-    private final SparseArray<Float> mTmpRgbScores = new SparseArray<>();
-
-    /**
-     * This picks a dominant color, looking for high-saturation, high-value, repeated hues.
-     * @param bitmap The bitmap to scan
-     */
-    public int findDominantColorByHue(@NonNull final Bitmap bitmap) {
-        return findDominantColorByHue(bitmap, NUM_SAMPLES);
-    }
-
-    /**
-     * This picks a dominant color, looking for high-saturation, high-value, repeated hues.
-     * @param bitmap The bitmap to scan
-     */
-    protected int findDominantColorByHue(@NonNull final Bitmap bitmap, final int samples) {
-        final int height = bitmap.getHeight();
-        final int width = bitmap.getWidth();
-        int sampleStride = (int) Math.sqrt((height * width) / samples);
-        if (sampleStride < 1) {
-            sampleStride = 1;
-        }
-
-        // This is an out-param, for getting the hsv values for an rgb
-        float[] hsv = mTmpHsv;
-        Arrays.fill(hsv, 0);
-
-        // First get the best hue, by creating a histogram over 360 hue buckets,
-        // where each pixel contributes a score weighted by saturation, value, and alpha.
-        float[] hueScoreHistogram = mTmpHueScoreHistogram;
-        Arrays.fill(hueScoreHistogram, 0);
-        float highScore = -1;
-        int bestHue = -1;
-
-        int[] pixels = mTmpPixels;
-        Arrays.fill(pixels, 0);
-        int pixelCount = 0;
-
-        for (int y = 0; y < height; y += sampleStride) {
-            for (int x = 0; x < width; x += sampleStride) {
-                int argb = bitmap.getPixel(x, y);
-                int alpha = 0xFF & (argb >> 24);
-                if (alpha < 0x80) {
-                    // Drop mostly-transparent pixels.
-                    continue;
-                }
-                // Remove the alpha channel.
-                int rgb = argb | 0xFF000000;
-                Color.colorToHSV(rgb, hsv);
-                // Bucket colors by the 360 integer hues.
-                int hue = (int) hsv[0];
-                if (hue < 0 || hue >= hueScoreHistogram.length) {
-                    // Defensively avoid array bounds violations.
-                    continue;
-                }
-                if (pixelCount < samples) {
-                    pixels[pixelCount++] = rgb;
-                }
-                float score = hsv[1] * hsv[2];
-                hueScoreHistogram[hue] += score;
-                if (hueScoreHistogram[hue] > highScore) {
-                    highScore = hueScoreHistogram[hue];
-                    bestHue = hue;
-                }
+@JvmStatic
+fun findDominantColorByHue(bitmap: Bitmap): Int {
+    val height = bitmap.height
+    val width = bitmap.width
+    val sampleStride = sqrt((height * width) / NUM_SAMPLES.toDouble()).toInt().coerceAtLeast(1)
+    // This is an out-param, for getting the hsv values for an rgb
+    val hsv = FloatArray(3)
+    // First get the best hue, by creating a histogram over 360 hue buckets,
+    // where each pixel contributes a score weighted by saturation, value, and alpha.
+    val hueScoreHistogram = FloatArray(360)
+    var highScore = -1f
+    var bestHue = -1
+    val pixels = IntArray(NUM_SAMPLES)
+    var pixelCount = 0
+    for (y in 0..<height step sampleStride) {
+        for (x in 0..<width step sampleStride) {
+            val argb = bitmap.getPixel(x, y)
+            val alpha = 0xFF and (argb shr 24)
+            if (alpha < 0x80) {
+                // Drop mostly-transparent pixels.
+                continue
+            }
+            // Remove the alpha channel.
+            val rgb = argb or -0x1000000
+            Color.colorToHSV(rgb, hsv)
+            // Bucket colors by the 360 integer hues.
+            val hue = hsv[0].toInt()
+            if (hue < 0 || hue >= hueScoreHistogram.size) {
+                // Defensively avoid array bounds violations.
+                continue
+            }
+            if (pixelCount < NUM_SAMPLES) {
+                pixels[pixelCount++] = rgb
+            }
+            val score = hsv[1] * hsv[2]
+            hueScoreHistogram[hue] += score
+            if (hueScoreHistogram[hue] > highScore) {
+                highScore = hueScoreHistogram[hue]
+                bestHue = hue
             }
         }
-
-        SparseArray<Float> rgbScores = mTmpRgbScores;
-        rgbScores.clear();
-        int bestColor = 0xff000000;
-        highScore = -1;
-        // Go back over the RGB colors that match the winning hue,
-        // creating a histogram of weighted s*v scores, for up to 100*100 [s,v] buckets.
-        // The highest-scoring RGB color wins.
-        for (int i = 0; i < pixelCount; i++) {
-            int rgb = pixels[i];
-            Color.colorToHSV(rgb, hsv);
-            int hue = (int) hsv[0];
-            if (hue == bestHue) {
-                float s = hsv[1];
-                float v = hsv[2];
-                int bucket = (int) (s * 100) + (int) (v * 10000);
-                // Score by cumulative saturation * value.
-                float score = s * v;
-                Float oldTotal = rgbScores.get(bucket);
-                float newTotal = oldTotal == null ? score : oldTotal + score;
-                rgbScores.put(bucket, newTotal);
-                if (newTotal > highScore) {
-                    highScore = newTotal;
-                    // All the colors in the winning bucket are very similar. Last in wins.
-                    bestColor = rgb;
-                }
+    }
+    val rgbScores = SparseArray<Float>()
+    var bestColor = -0x1000000
+    highScore = -1f
+    // Go back over the RGB colors that match the winning hue,
+    // creating a histogram of weighted s*v scores, for up to 100*100 [s,v] buckets.
+    // The highest-scoring RGB color wins.
+    for (i in 0..<pixelCount) {
+        val rgb = pixels[i]
+        Color.colorToHSV(rgb, hsv)
+        val hue = hsv[0].toInt()
+        if (hue == bestHue) {
+            val s = hsv[1]
+            val v = hsv[2]
+            val bucket = (s * 100).toInt() + (v * 10000).toInt()
+            // Score by cumulative saturation * value.
+            val score = s * v
+            val oldTotal = rgbScores[bucket]
+            val newTotal = if (oldTotal == null) score else oldTotal + score
+            rgbScores.put(bucket, newTotal)
+            if (newTotal > highScore) {
+                highScore = newTotal
+                // All the colors in the winning bucket are very similar. Last in wins.
+                bestColor = rgb
             }
         }
-        return bestColor;
     }
+    return bestColor
+}
 }
