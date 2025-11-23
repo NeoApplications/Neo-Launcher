@@ -202,6 +202,17 @@ public final class Flags {
      */
     public static final String FLAG_USE_ACTIVITY_OVERLAY = "com.android.launcher3.use_activity_overlay";
 
+    /*Customized Neo Launcher*/
+    public static boolean restoreArchivedShortcuts() {
+        return false;
+    }
+
+    public static boolean oneGridSpecs() {
+        return true;
+    }
+
+    /*End Customized Neo Launcher*/
+
     public static boolean enableLauncherIconShapes() {
         return true;
     }

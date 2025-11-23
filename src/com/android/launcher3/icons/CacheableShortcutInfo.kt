@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.launcher3.icons
-
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
@@ -34,18 +32,14 @@ import com.android.launcher3.util.ApiWrapper
 import com.android.launcher3.util.ApplicationInfoWrapper
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
-
 /** Wrapper over ShortcutInfo to provide extra information related to ShortcutInfo */
 class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: ApplicationInfoWrapper) {
-
     constructor(
         info: ShortcutInfo,
         ctx: Context,
     ) : this(info, ApplicationInfoWrapper(ctx, info.getPackage(), info.userHandle))
-
     companion object {
         private const val TAG = "CacheableShortcutInfo"
-
         /**
          * Similar to [LauncherApps.getShortcutIconDrawable] with additional Launcher specific
          * checks
@@ -57,14 +51,13 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
             }
             try {
                 return context
-                    .getSystemService(LauncherApps::class.java)
+                    .getSystemService(LauncherApps::class.java)!!
                     .getShortcutIconDrawable(shortcutInfo, density)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to get shortcut icon", e)
                 return null
             }
         }
-
         /**
          * Converts the provided list of Shortcuts to CacheableShortcuts by using the application
          * info from the provided list of apps
@@ -80,7 +73,6 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
                     { PackageUserKey(it.componentName.packageName, it.user) },
                     { it.applicationInfo },
                 )
-
             return shortcuts.map {
                 CacheableShortcutInfo(
                     it,
@@ -90,26 +82,20 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
         }
     }
 }
-
 /** Caching logic for CacheableShortcutInfo. */
 object CacheableShortcutCachingLogic : CachingLogic<CacheableShortcutInfo> {
-
     override fun getComponent(info: CacheableShortcutInfo): ComponentName =
         ShortcutKey.fromInfo(info.shortcutInfo).componentName
-
     override fun getUser(info: CacheableShortcutInfo): UserHandle = info.shortcutInfo.userHandle
-
     override fun getLabel(info: CacheableShortcutInfo): CharSequence? = info.shortcutInfo.shortLabel
-
     override fun getApplicationInfo(info: CacheableShortcutInfo) = info.appInfo.getInfo()
-
     override fun loadIcon(context: Context, cache: BaseIconCache, info: CacheableShortcutInfo) =
         LauncherIcons.obtain(context).use { li ->
             CacheableShortcutInfo.getIcon(
-                    context,
-                    info.shortcutInfo,
-                    LauncherAppState.getIDP(context).fillResIconDpi,
-                )
+                context,
+                info.shortcutInfo,
+                LauncherAppState.getIDP(context).fillResIconDpi,
+            )
                 ?.let { d ->
                     li.createBadgedIconBitmap(
                         d,
@@ -127,15 +113,14 @@ object CacheableShortcutCachingLogic : CachingLogic<CacheableShortcutInfo> {
                     )
                 } ?: BitmapInfo.LOW_RES_INFO
         }
-
     override fun getFreshnessIdentifier(
         item: CacheableShortcutInfo,
         provider: IconProvider,
     ): String? =
-        // Manifest shortcuts get updated on every reboot. Don't include their change timestamp as
+    // Manifest shortcuts get updated on every reboot. Don't include their change timestamp as
         // it gets covered by the app's version
         (if (item.shortcutInfo.isDeclaredInManifest) ""
         else item.shortcutInfo.lastChangedTimestamp.toString()) +
-            "-" +
-            provider.getStateForApp(getApplicationInfo(item))
+                "-" +
+                provider.getStateForApp(getApplicationInfo(item))
 }

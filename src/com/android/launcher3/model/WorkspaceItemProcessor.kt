@@ -25,9 +25,11 @@ import android.content.pm.LauncherApps.ShortcutQuery
 import android.content.pm.PackageInstaller
 import android.content.pm.ShortcutInfo
 import android.graphics.Point
+import android.os.Build
 import android.text.TextUtils
 import android.util.Log
 import android.util.LongSparseArray
+import androidx.annotation.RequiresApi
 import com.android.launcher3.Flags
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherSettings.Favorites
@@ -601,6 +603,7 @@ class WorkspaceItemProcessor(
     companion object {
         private const val TAG = "WorkspaceItemProcessor"
 
+        @RequiresApi(Build.VERSION_CODES.S)
         private fun logWidgetInfo(
             idp: InvariantDeviceProfile,
             widgetProviderInfo: LauncherAppWidgetProviderInfo,

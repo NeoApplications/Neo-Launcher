@@ -15,7 +15,6 @@
  */
 package com.android.launcher3.widget.picker;
 
-import static com.android.launcher3.Flags.enableTieredWidgetsByDefaultInPicker;
 import static com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.SEARCH;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WIDGETSTRAY_EXPAND_PRESS;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WIDGETSTRAY_SEARCHED;
@@ -119,7 +118,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     protected final SparseArray<AdapterHolder> mAdapters = new SparseArray();
 
     // Helps with removing focus from searchbar by analyzing motion events.
-    private final SearchClearFocusHelper mSearchClearFocusHelper = new SearchClearFocusHelper();
+    private final AdapterHolder.SearchClearFocusHelper mSearchClearFocusHelper = new AdapterHolder.SearchClearFocusHelper();
     private final float mTouchSlop; // initialized in constructor
 
     private final OnAttachStateChangeListener mBindScrollbarInSearchMode =
