@@ -123,6 +123,16 @@ open class FastBitmapDrawable(info: BitmapInfo?) : Drawable(), Callback {
             badge?.alpha = alpha
         }
     }
+
+    fun setIsDisabled(isDisabled: Boolean) {
+        if (this.isDisabled != isDisabled) {
+            this.isDisabled = isDisabled
+            if (badge is FastBitmapDrawable) {
+                (badge as FastBitmapDrawable).setIsDisabled(isDisabled)
+            }
+            updateFilter()
+        }
+    }
     override fun getAlpha(): Int = paintAlpha
     override fun setFilterBitmap(filterBitmap: Boolean) {
         paint.isFilterBitmap = filterBitmap

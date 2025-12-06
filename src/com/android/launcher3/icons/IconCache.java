@@ -162,8 +162,9 @@ public class IconCache extends BaseIconCache {
     /**
      * Updates the entries related to the given package in memory and persistent DB.
      */
+    @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public synchronized void updateIconsForPkg(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
+                                               @NonNull final UserHandle user) {
         List<LauncherActivityInfo> apps = mLauncherApps.getActivityList(packageName, user);
         if (Flags.restoreArchivedAppIconsFromDb()
                 && apps.stream().anyMatch(app -> app.getApplicationInfo().isArchived)) {

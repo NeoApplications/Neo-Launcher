@@ -26,9 +26,9 @@ class AppUsageComparator(private val mApps: List<AppTracker>) : Comparator<AppIn
         var item1 = 0
         var item2 = 0
         for (i in mApps.indices) {
-            if (mApps[i].packageName == app1.componentName.packageName)
+            if (mApps[i].packageName == app1.componentName!!.packageName)
                 item1 = mApps[i].count
-            if (mApps[i].packageName == app2.componentName.packageName)
+            if (mApps[i].packageName == app2.componentName!!.packageName)
                 item2 = mApps[i].count
         }
         return when {

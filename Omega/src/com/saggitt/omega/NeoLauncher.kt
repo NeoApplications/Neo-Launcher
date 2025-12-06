@@ -240,7 +240,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         CoroutineScope(Dispatchers.IO).launch {
             for (user in UserCache.INSTANCE[mContext].userProfiles) {
                 val duplicatePreventionCache: MutableList<ComponentName> = ArrayList()
-                for (info in getSystemService(LauncherApps::class.java)
+                for (info in getSystemService(LauncherApps::class.java)!!
                     .getActivityList(null, user)) {
                     val key = ComponentKey(info.componentName, info.user)
                     if (hiddenAppsSet.contains(key.toString())) {

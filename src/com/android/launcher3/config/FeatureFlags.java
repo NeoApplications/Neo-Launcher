@@ -198,10 +198,6 @@ public final class FeatureFlags {
             "ENABLE_ALL_APPS_BUTTON_IN_HOTSEAT", DISABLED,
             "Enables displaying the all apps button in the hotseat.");
 
-    public static boolean enableAllAppsButtonInHotseat() {
-        return ENABLE_ALL_APPS_BUTTON_IN_HOTSEAT.get() || Flags.enableAllAppsButtonInHotseat();
-    }
-
     // TODO(Block 30): Clean up flags
     public static final BooleanFlag USE_SEARCH_REQUEST_TIMEOUT_OVERRIDES = getDebugFlag(270395010,
             "USE_SEARCH_REQUEST_TIMEOUT_OVERRIDES", DISABLED,

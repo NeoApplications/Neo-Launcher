@@ -37,8 +37,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import saman.zamani.persiandate.PersianDate
-import saman.zamani.persiandate.PersianDateFormat
 import java.util.Locale
 
 typealias FormatterFunction = (Long) -> String
@@ -112,35 +110,11 @@ class IcuDateTextView @JvmOverloads constructor(
         if (formatterFunction != null && !updateFormatter) {
             return formatterFunction!!
         }
-        val formatter = when (calendar) {
-            SmartspaceCalendar.Persian -> createPersianFormatter()
-            else -> createGregorianFormatter()
-        }
+        val formatter =  createGregorianFormatter()
         formatterFunction = formatter
         return formatter
     }
 
-    private fun createPersianFormatter(): FormatterFunction {
-        var format: String
-        if (dateTimeOptions.showTime) {
-            format = context.getString(
-                when {
-                    dateTimeOptions.timeFormat is SmartspaceTimeFormat.TwelveHourFormat -> R.string.smartspace_icu_date_pattern_persian_time_12h
-                    dateTimeOptions.timeFormat is SmartspaceTimeFormat.TwentyFourHourFormat -> R.string.smartspace_icu_date_pattern_persian_time
-                    is24HourFormat(context) -> R.string.smartspace_icu_date_pattern_persian_time
-                    else -> R.string.smartspace_icu_date_pattern_persian_time_12h
-                }
-            )
-            if (dateTimeOptions.showDate) format =
-                context.getString(R.string.smartspace_icu_date_pattern_persian_date) + format
-        } else {
-            format =
-                context.getString(R.string.smartspace_icu_date_pattern_persian_wday_month_day_no_year)
-        }
-        val formatter =
-            PersianDateFormat(format, PersianDateFormat.PersianDateNumberCharacter.FARSI)
-        return { formatter.format(PersianDate(it)) }
-    }
 
     private fun createGregorianFormatter(): FormatterFunction {
         var format: String
