@@ -40,10 +40,10 @@ import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.saggitt.omega.dash.DashSheet
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.nLauncher
+import com.neoapps.neolauncher.nLauncher
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getIcon
-import com.saulhdev.neolauncher.search.SearchProviderController
+import com.neoapps.neolauncher.search.SearchProviderController
 import org.json.JSONObject
 
 @Keep

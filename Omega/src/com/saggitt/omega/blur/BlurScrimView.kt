@@ -36,7 +36,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
-import com.saggitt.omega.nLauncher
+import com.neoapps.neolauncher.nLauncher
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.runOnMainThread
 import kotlin.math.roundToInt

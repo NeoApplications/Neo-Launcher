@@ -74,14 +74,14 @@ import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Nut
 import com.saggitt.omega.compose.icons.phosphor.X
 import com.saggitt.omega.compose.navigation.Routes
-import com.saggitt.omega.nLauncher
+import com.neoapps.neolauncher.nLauncher
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.search.NeoAppSearchAlgorithm
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
-import com.saulhdev.neolauncher.search.SearchProviderController
+import com.neoapps.neolauncher.search.SearchProviderController
 
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
@@ -133,12 +133,12 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         .focusRequester(textFieldFocusRequester)
                         .onFocusChanged {
                             when {
-                                !it.isFocused && query.value.isEmpty()   -> {
+                                !it.isFocused && query.value.isEmpty() -> {
                                     mAppsView?.animateToSearchState(false, 0)
                                     keyboardController?.hide()
                                 }
 
-                                !it.isFocused                            -> {
+                                !it.isFocused -> {
                                     keyboardController?.hide()
                                 }
 

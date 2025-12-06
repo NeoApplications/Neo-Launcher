@@ -59,7 +59,7 @@ import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.OptionsPopupView
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.allapps.AppColorComparator
 import com.saggitt.omega.allapps.AppUsageComparator
 import com.saggitt.omega.allapps.InstallTimeComparator

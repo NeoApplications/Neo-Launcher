@@ -44,7 +44,7 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <application
-        android:name="com.saggitt.omega.NeoApp"
+        android:name="com.neoapps.neolauncher.NeoApp"
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
         android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
@@ -68,7 +68,7 @@
             attributes and intent filters the same
             -->
         <activity
-            android:name="com.saggitt.omega.NeoLauncher"
+            android:name="com.neoapps.neolauncher.NeoLauncher"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize|density"
             android:enabled="true"
@@ -120,7 +120,7 @@
             android:theme="@style/Theme.Transparent" />
 
         <activity
-            android:name="com.saggitt.omega.FakeLauncher"
+            android:name="com.neoapps.neolauncher.FakeLauncher"
             android:enabled="false"
             android:exported="true">
             <intent-filter>
@@ -164,7 +164,7 @@
         </receiver>
 
         <service
-            android:name="com.saggitt.omega.OmegaAccessibilityService"
+            android:name="com.neoapps.neolauncher.OmegaAccessibilityService"
             android:exported="true"
             android:label="@string/derived_app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

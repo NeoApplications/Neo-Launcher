@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.saulhdev.smartspace"
+    namespace = "android.app.smartspace"
     compileSdk = 36
 
     defaultConfig {

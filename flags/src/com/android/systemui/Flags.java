@@ -564,8 +564,6 @@ public final class Flags {
     /** @hide */
     public static final String FLAG_VOLUME_REDESIGN = "com.android.systemui.volume_redesign";
 
-
-
     public static boolean activityTransitionUseLargestWindow() {
         
         return FEATURE_FLAGS.activityTransitionUseLargestWindow();

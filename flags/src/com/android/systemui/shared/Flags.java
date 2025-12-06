@@ -53,8 +53,9 @@ public final class Flags {
     /** @hide */
     public static final String FLAG_USE_PREFERRED_IMAGE_EDITOR = "com.android.systemui.shared.use_preferred_image_editor";
 
-
-
+    public static boolean extendibleThemeManager() {
+        return false;
+    }
     public static boolean ambientAod() {
         
         return FEATURE_FLAGS.ambientAod();

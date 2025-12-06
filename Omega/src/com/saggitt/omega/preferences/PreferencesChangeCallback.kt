@@ -20,7 +20,7 @@ package com.saggitt.omega.preferences
 
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
 
 class PreferencesChangeCallback(val launcher: NeoLauncher) {

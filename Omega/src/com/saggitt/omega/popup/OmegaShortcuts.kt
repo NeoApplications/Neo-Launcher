@@ -41,7 +41,7 @@ import com.android.launcher3.model.data.LauncherAppWidgetInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.icons.CustomizeIconPage
 import com.saggitt.omega.preferences.NeoPrefs

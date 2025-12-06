@@ -24,7 +24,7 @@ import com.android.launcher3.LauncherState
 import com.android.launcher3.touch.SingleAxisSwipeDetector
 import com.android.launcher3.util.TouchController
 import com.saggitt.omega.gestures.handlers.VerticalSwipeGestureHandler
-import com.saggitt.omega.nLauncher
+import com.neoapps.neolauncher.nLauncher
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 

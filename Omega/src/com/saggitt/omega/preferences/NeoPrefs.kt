@@ -68,8 +68,8 @@ import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
-import com.saulhdev.neolauncher.search.SearchProviderController
-import com.saulhdev.neolauncher.util.CustomPreferencesMigration
+import com.neoapps.neolauncher.search.SearchProviderController
+import com.neoapps.neolauncher.util.CustomPreferencesMigration
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,9 +1,9 @@
 package com.saggitt.omega.smartspace.provider
 
 import android.app.Activity
+import android.app.smartspace.SmartspaceTarget
 import android.content.Context
 import com.saggitt.omega.util.prefs
-import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

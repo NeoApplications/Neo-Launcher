@@ -25,7 +25,7 @@ import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.saggitt.omega.iconpack.IconEntry
-import com.saulhdev.neolauncher.shortcuts.ShortcutInfoProvider
+import com.neoapps.neolauncher.shortcuts.ShortcutInfoProvider
 
 abstract class CustomInfoProvider<in T : ItemInfo>(val context: Context) {
 

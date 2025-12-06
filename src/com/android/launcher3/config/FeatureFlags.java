@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Flags;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Defines a set of flags used to control various launcher behaviors.
@@ -50,11 +49,8 @@ public final class FeatureFlags {
      * and should be modified at a project level.
      * Use {@link BuildConfig#} directly
      */
-    //
-    //public static final boolean QSB_ON_FIRST_SCREEN = false;
-    public static boolean QSbOnFirstScreen() {
-        return NeoPrefs.getInstance().getSmartspaceEnable().getValue();
-    }
+
+    public static final boolean QSB_ON_FIRST_SCREEN = true;
 
     /**
      * Feature flag to handle define config changes dynamically instead of killing the process.

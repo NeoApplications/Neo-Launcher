@@ -12,9 +12,9 @@ import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchCallback
 import com.android.launcher3.search.StringMatcherUtility
-import com.saggitt.omega.nLauncher
+import com.neoapps.neolauncher.nLauncher
 import com.saggitt.omega.util.prefs
-import com.saulhdev.neolauncher.search.SearchProviderController
+import com.neoapps.neolauncher.search.SearchProviderController
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
 import java.util.Locale

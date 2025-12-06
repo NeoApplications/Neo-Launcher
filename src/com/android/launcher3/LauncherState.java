@@ -49,8 +49,8 @@ import com.android.launcher3.states.SpringLoadedState;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.NeoLauncher;
-import com.saggitt.omega.OptionsState;
+import com.neoapps.neolauncher.NeoLauncher;
+import com.neoapps.neolauncher.OptionsState;
 
 import java.util.Arrays;
 

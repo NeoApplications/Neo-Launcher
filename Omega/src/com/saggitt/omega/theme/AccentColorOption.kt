@@ -22,7 +22,7 @@ import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.NeoApp
+import com.neoapps.neolauncher.NeoApp
 import com.saggitt.omega.util.getColorAttr
 import com.saggitt.omega.util.getSystemAccent
 import com.saggitt.omega.wallpaper.WallpaperManagerCompat

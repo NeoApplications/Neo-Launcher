@@ -6,6 +6,7 @@ import java.util.Date
 import java.util.TimeZone
 
 import com.android.build.gradle.api.AndroidBasePlugin
+import com.android.build.gradle.internal.packaging.defaultExcludes
 
 buildscript {
     dependencies {
@@ -33,7 +34,7 @@ val addFrameworkJar = { name: String ->
         compileOnly(files(frameworkJar))
     }
 }
-addFrameworkJar("framework-15.jar")
+addFrameworkJar("framework-16.jar")
 
 plugins {
     alias(libs.plugins.android.application)
@@ -213,13 +214,15 @@ android {
 
 dependencies {
 
-    implementation(project(":iconloaderlib"))
     implementation(project(":animationlib"))
+    implementation(project(":iconloaderlib"))
     implementation(project(":flags"))
-    implementation(project(":shared"))
+    implementation(project(":msdllib"))
     implementation(project(":plugincore"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-15.jar"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-15.jar"))
+    implementation(project(":shared"))
+    implementation(project(":smartspace"))
+    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
+    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))
 
     implementation(libs.annotation)
     implementation(libs.coil.compose)
@@ -230,6 +233,7 @@ dependencies {
     implementation(libs.compose.adaptive.navigation)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons)
     implementation(libs.compose.navigation)
     implementation(libs.compose.reorderable)
     implementation(libs.compose.runtime)
@@ -260,6 +264,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.material.kolor)
     implementation(libs.okhttp)
+    implementation(libs.owm)
     implementation(libs.palette.ktx)
     implementation(libs.preference.ktx)
     implementation(libs.protobuf.javalite)

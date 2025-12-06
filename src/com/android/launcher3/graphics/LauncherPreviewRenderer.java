@@ -31,6 +31,7 @@ import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
 import static com.android.launcher3.graphics.ThemeManager.PREF_ICON_SHAPE;
 import static com.android.launcher3.model.ModelUtils.currentScreenContentFilter;
 import static com.android.launcher3.widget.LauncherWidgetHolder.APPWIDGET_HOST_ID;
+import static com.android.systemui.shared.Flags.extendibleThemeManager;
 
 import android.app.Fragment;
 import android.app.WallpaperColors;

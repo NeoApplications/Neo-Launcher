@@ -27,7 +27,7 @@ import androidx.core.content.ContextCompat
 import com.android.launcher3.R
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
-import com.saggitt.omega.neoApp
+import com.neoapps.neolauncher.neoApp
 import org.json.JSONObject
 @Keep
 @TargetApi(Build.VERSION_CODES.P)

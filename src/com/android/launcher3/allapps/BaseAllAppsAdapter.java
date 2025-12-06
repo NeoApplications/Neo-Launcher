@@ -46,7 +46,7 @@ import com.android.launcher3.allapps.search.SearchAdapterProvider;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.NeoLauncher;
+import com.neoapps.neolauncher.NeoLauncher;
 import com.saggitt.omega.groups.DrawerFolderItem;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
 

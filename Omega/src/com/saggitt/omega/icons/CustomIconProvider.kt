@@ -49,7 +49,6 @@ import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.icons.IconProvider
-import com.android.launcher3.icons.ThemedIconDrawable
 import com.android.launcher3.icons.mono.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
@@ -63,8 +62,8 @@ import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
 import com.saggitt.omega.util.overrideSdk
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
-import com.saulhdev.neolauncher.util.getPackageVersionCode
-import com.saulhdev.neolauncher.util.isPackageInstalled
+import com.neoapps.neolauncher.util.getPackageVersionCode
+import com.neoapps.neolauncher.util.isPackageInstalled
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException

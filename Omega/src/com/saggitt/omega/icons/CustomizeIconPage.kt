@@ -76,7 +76,7 @@ import com.saggitt.omega.groups.ui.AppTabDialog
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addIfNotNull
-import com.saulhdev.neolauncher.util.getPackageVersion
+import com.neoapps.neolauncher.util.getPackageVersion
 import kotlinx.coroutines.launch
 
 @Composable

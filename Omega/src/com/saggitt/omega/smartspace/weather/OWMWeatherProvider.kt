@@ -19,8 +19,6 @@
 package com.saggitt.omega.smartspace.weather
 
 import android.annotation.SuppressLint
-import android.app.smartspace.SmartspaceAction
-import android.app.smartspace.SmartspaceTarget
 import android.content.Context
 import android.graphics.drawable.Icon
 import android.location.Criteria
@@ -33,7 +31,7 @@ import com.android.launcher3.Utilities
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
-import com.saggitt.omega.neoApp
+import com.neoapps.neolauncher.neoApp
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource

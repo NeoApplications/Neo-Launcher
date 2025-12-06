@@ -4,7 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import com.android.launcher3.dagger.ApplicationContext;
-import com.saggitt.omega.NeoLauncher;
+import com.neoapps.neolauncher.NeoLauncher;
 
 import java.util.Arrays;
 import java.util.Set;

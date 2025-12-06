@@ -3,7 +3,7 @@ package com.saggitt.omega.gestures
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import org.koin.android.ext.android.inject
 
 class AssistantGestureReceiver : AppCompatActivity() {

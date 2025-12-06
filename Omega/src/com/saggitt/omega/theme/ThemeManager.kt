@@ -21,7 +21,7 @@ package com.saggitt.omega.theme
 import android.content.Context
 import android.content.res.Configuration
 import com.android.launcher3.R
-import com.saggitt.omega.neoApp
+import com.neoapps.neolauncher.neoApp
 import com.saggitt.omega.preferences.THEME_DARK
 import com.saggitt.omega.preferences.THEME_SYSTEM
 import com.saggitt.omega.preferences.THEME_USE_BLACK

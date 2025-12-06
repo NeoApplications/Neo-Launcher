@@ -76,7 +76,6 @@ import com.android.launcher3.util.SimpleBroadcastReceiver;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.CachedDisplayInfo;
 import com.android.launcher3.util.window.WindowManagerProxy;
-import com.saggitt.omega.DeviceProfileOverrides;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -128,10 +127,10 @@ public class InvariantDeviceProfile {
     // Used for arrays to specify different sizes (e.g. border spaces, width/height) in different
     // constraints
     static final int COUNT_SIZES = 4;
-    public static final int INDEX_DEFAULT = 0;
-    public static final int INDEX_LANDSCAPE = 1;
-    public static final int INDEX_TWO_PANEL_PORTRAIT = 2;
-    public static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
+    static final int INDEX_DEFAULT = 0;
+    static final int INDEX_LANDSCAPE = 1;
+    static final int INDEX_TWO_PANEL_PORTRAIT = 2;
+    static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
 
     /** These resources are used to override the device profile */
     private static final String RES_GRID_NUM_ROWS = "grid_num_rows";
@@ -147,15 +146,7 @@ public class InvariantDeviceProfile {
      * Number of icons per row and column in the workspace.
      */
     public int numRows;
-    public int numRowsOriginal;
     public int numColumns;
-    public int numColumnsOriginal;
-    /**
-     * Number of icons inside the hotseat area.
-     */
-    public int numHotseatIcons;
-    public int numHotseatIconsOriginal;
-
     public int numSearchContainerColumns;
 
     /**
@@ -212,8 +203,6 @@ public class InvariantDeviceProfile {
     public int numAllAppsRowsForCellHeightCalculation;
     public int numDatabaseAllAppsColumns;
     public @StyleRes int allAppsStyle;
-    // Edited
-    public int numAllAppsColumnsOriginal;
 
     /**
      * Do not query directly. see {@link DeviceProfile#isScalableGrid}.
@@ -323,8 +312,7 @@ public class InvariantDeviceProfile {
         lifeCycle.addCloseable(() -> localeReceiver.unregisterReceiverSafely());
     }
 
-    // Edited
-    private String initGrid(Context context, String gridName, DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+    private String initGrid(Context context, String gridName) {
         Info displayInfo = mDisplayController.getInfo();
         List<DisplayOption> allOptions = getPredefinedDeviceProfiles(
                 context,
@@ -374,33 +362,18 @@ public class InvariantDeviceProfile {
         initGrid(context, mPrefs.get(GRID_NAME));
     }
 
-    // Edited
-    private String initGrid(Context context, String gridName) {
-        DeviceProfileOverrides dpo = DeviceProfileOverrides.INSTANCE.get(context);
-        return initGrid(context, dpo.getCurrentGridName(), dpo.getGridInfo());
-    }
-
-    // Edited
-    // TODO review & clean up handling of overrides (dbGridInfo vs. overrideOptions vs. closestProfile)
-    private void initGrid(Context context, Info displayInfo, DisplayOption displayOption,
-            DeviceProfileOverrides.DBGridInfo dbGridInfo) {
+    private void initGrid(Context context, Info displayInfo, DisplayOption displayOption) {
         enableTwoLinesInAllApps = Flags.enableTwolineToggle()
                 && Utilities.isEnglishLanguage(context)
                 && mPrefs.get(ENABLE_TWOLINE_ALLAPPS_TOGGLE);
         mLocale = context.getResources().getConfiguration().locale.toString();
 
-        DeviceProfileOverrides.Options overrideOptions = DeviceProfileOverrides.INSTANCE.get(context)
-                .getOverrides(displayOption.grid);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         GridOption closestProfile = displayOption.grid;
-        numRows = dbGridInfo.getNumRows();
-        numRowsOriginal = numRows;
-        numColumns = dbGridInfo.getNumColumns();
-        numColumnsOriginal = numColumns;
-        numSearchContainerColumns = dbGridInfo.getNumColumns();
-        numHotseatIcons = dbGridInfo.getNumHotseatIcons();
-        numHotseatIconsOriginal = numHotseatIcons;
-        dbFile = dbGridInfo.getDbFile();
+        numRows = closestProfile.numRows;
+        numColumns = closestProfile.numColumns;
+        numSearchContainerColumns = closestProfile.numSearchContainerColumns;
+        dbFile = closestProfile.dbFile;
         gridType = closestProfile.gridType;
         defaultLayoutId = closestProfile.defaultLayoutId;
         demoModeLayoutId = closestProfile.demoModeLayoutId;
@@ -449,16 +422,15 @@ public class InvariantDeviceProfile {
 
         horizontalMargin = displayOption.horizontalMargin;
 
-        numShownHotseatIcons = dbGridInfo.getNumHotseatIcons();
+        numShownHotseatIcons = closestProfile.numHotseatIcons;
         numDatabaseHotseatIcons = deviceType == TYPE_MULTI_DISPLAY
-                ? closestProfile.numDatabaseHotseatIcons : numShownHotseatIcons;
+                ? closestProfile.numDatabaseHotseatIcons : closestProfile.numHotseatIcons;
         hotseatBarBottomSpace = displayOption.hotseatBarBottomSpace;
         hotseatQsbSpace = displayOption.hotseatQsbSpace;
 
         allAppsStyle = closestProfile.allAppsStyle;
 
         numAllAppsColumns = closestProfile.numAllAppsColumns;
-        numAllAppsColumnsOriginal = numAllAppsColumns;
 
         numDatabaseAllAppsColumns = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseAllAppsColumns : closestProfile.numAllAppsColumns;
@@ -480,8 +452,6 @@ public class InvariantDeviceProfile {
         // If the partner customization apk contains any grid overrides, apply them
         // Supported overrides: numRows, numColumns, iconSize
         applyPartnerDeviceProfileOverrides(context, metrics);
-
-        overrideOptions.applyUi(this);
 
         final List<DeviceProfile> localSupportedProfiles = new ArrayList<>();
         defaultWallpaperSize = new Point(displayInfo.currentSize);
@@ -538,8 +508,6 @@ public class InvariantDeviceProfile {
         mChangeListeners.remove(listener);
     }
 
-
-    // Edited
     /**
      * Updates the current grid, this triggers a new IDP, reloads the database and triggers a grid
      * migration.
@@ -547,7 +515,6 @@ public class InvariantDeviceProfile {
     @VisibleForTesting
     public void setCurrentGrid(Context context, String newGridName) {
         mPrefs.put(GRID_NAME, newGridName);
-        DeviceProfileOverrides.INSTANCE.get(context).setCurrentGrid(newGridName);
         MAIN_EXECUTOR.execute(() -> {
             Trace.beginSection("InvariantDeviceProfile#setCurrentGrid");
             onConfigChanged(context.getApplicationContext());
@@ -561,20 +528,13 @@ public class InvariantDeviceProfile {
                 iconBitmapSize, fillResIconDpi, numDatabaseAllAppsColumns, dbFile, mLocale};
     }
 
-    // Edited
-    public void onPreferencesChanged(Context context) {
-        Context appContext = context.getApplicationContext();
-        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
-    }
-
-    // Edited
     /** Updates IDP using the provided context. Notifies listeners of change. */
     @VisibleForTesting
     public void onConfigChanged(Context context) {
         Object[] oldState = toModelState();
 
         // Re-init grid
-        initGrid(context, "");
+        initGrid(context, mPrefs.get(GRID_NAME));
 
         boolean modelPropsChanged = !Arrays.equals(oldState, toModelState());
         for (OnIDPChangeListener listener : mChangeListeners) {
@@ -1007,11 +967,10 @@ public class InvariantDeviceProfile {
         private final @StyleRes int cellStyle;
 
         private final @StyleRes int allAppsStyle;
-        public final int numAllAppsColumns;
+        private final int numAllAppsColumns;
         private final int mNumAllAppsRowsForCellHeightCalculation;
         private final int numDatabaseAllAppsColumns;
-        public final int numHotseatIcons;
-        public final int numHotseatRows;
+        private final int numHotseatIcons;
         private final int numDatabaseHotseatIcons;
 
         private final boolean[] inlineQsb = new boolean[COUNT_SIZES];
@@ -1082,8 +1041,6 @@ public class InvariantDeviceProfile {
 
             numHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numHotseatIcons, numColumns);
-            numHotseatRows = a.getInt(
-                    R.styleable.GridDisplayOption_numHotseatRows, 1);
             numDatabaseHotseatIcons = a.getInt(
                     R.styleable.GridDisplayOption_numExtendedHotseatIcons, 2 * numHotseatIcons);
 
@@ -1145,17 +1102,17 @@ public class InvariantDeviceProfile {
                         R.styleable.GridDisplayOption_allAppsSpecsId, INVALID_RESOURCE_HANDLE);
                 mAllAppsSpecsTwoPanelId = a.getResourceId(
                         R.styleable.GridDisplayOption_allAppsSpecsTwoPanelId,
-                        mWorkspaceSpecsId);
+                        mAllAppsSpecsId);
                 mFolderSpecsId = a.getResourceId(
                         R.styleable.GridDisplayOption_folderSpecsId, INVALID_RESOURCE_HANDLE);
                 mFolderSpecsTwoPanelId = a.getResourceId(
                         R.styleable.GridDisplayOption_folderSpecsTwoPanelId,
-                        mWorkspaceSpecsId);
+                        mFolderSpecsId);
                 mHotseatSpecsId = a.getResourceId(
                         R.styleable.GridDisplayOption_hotseatSpecsId, INVALID_RESOURCE_HANDLE);
                 mHotseatSpecsTwoPanelId = a.getResourceId(
                         R.styleable.GridDisplayOption_hotseatSpecsTwoPanelId,
-                        mWorkspaceSpecsId);
+                        mHotseatSpecsId);
                 mWorkspaceCellSpecsId = a.getResourceId(
                         R.styleable.GridDisplayOption_workspaceCellSpecsId,
                         INVALID_RESOURCE_HANDLE);

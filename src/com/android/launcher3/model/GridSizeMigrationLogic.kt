@@ -505,7 +505,7 @@ class GridSizeMigrationLogic {
         val next: Point =
             if (
                 screenId == 0 &&
-                    (FeatureFlags.QSbOnFirstScreen() &&
+                (FeatureFlags.QSB_ON_FIRST_SCREEN &&
                         (!Flags.enableSmartspaceRemovalToggle() ||
                             getPrefs(context)
                                 .getBoolean(LoaderTask.SMARTSPACE_ON_HOME_SCREEN, true)) &&

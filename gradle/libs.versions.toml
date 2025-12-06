@@ -31,6 +31,7 @@ material-icons = "1.7.8"
 material-kolor = "4.0.3"
 navigation = "2.9.6"
 okhttp = "5.3.0"
+owm = "2.1.0"
 palette = "1.0.0"
 preference = "1.2.1"
 protobuf-plugin = "0.9.5"
@@ -102,6 +103,7 @@ lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", v
 material = { module = "com.google.android.material:material", version.ref = "material" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+owm = { module = "com.github.KwabenBerko:OpenWeatherMap-Android-Library", version.ref = "owm" }
 palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-lib" }

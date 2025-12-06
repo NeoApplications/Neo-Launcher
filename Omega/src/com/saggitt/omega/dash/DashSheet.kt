@@ -18,7 +18,7 @@
 package com.saggitt.omega.dash
 
 import android.content.Context
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.theme.OmegaAppTheme
 

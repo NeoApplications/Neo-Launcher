@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.saggitt.omega.changeDefaultHome
+import com.neoapps.neolauncher.changeDefaultHome
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.plus

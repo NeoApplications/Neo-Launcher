@@ -50,7 +50,7 @@ import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.TouchUtil;
-import com.saggitt.omega.NeoLauncher;
+import com.neoapps.neolauncher.NeoLauncher;
 import com.saggitt.omega.gestures.GestureController;
 
 /**

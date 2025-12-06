@@ -24,7 +24,7 @@ import android.view.MotionEvent
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.util.VibratorWrapper
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.gestures.gestures.DoubleTapGesture
 import com.saggitt.omega.gestures.gestures.LaunchAssistantGesture
 import com.saggitt.omega.gestures.gestures.LongPressGesture

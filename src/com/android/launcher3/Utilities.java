@@ -23,7 +23,6 @@ import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
-import static com.saggitt.omega.util.Config.REQUEST_PERMISSION_STORAGE_ACCESS;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -112,8 +111,6 @@ import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.Config;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -1134,40 +1131,4 @@ public final class Utilities {
         System.exit(0);
     }
 
-    // Edited
-    public static boolean hasPermission(Context context, String permission) {
-        return ContextCompat.checkSelfPermission(context, permission)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    // Edited
-    public static void requestStoragePermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_STORAGE_ACCESS);
-    }
-
-    // Edited
-    public static void requestLocationPermission(Activity activity) {
-        ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                Config.REQUEST_PERMISSION_LOCATION_ACCESS);
-    }
-
-    // Edited
-    public static SharedPreferences getPrefs(Context context) {
-        // Use application context for shared preferences, so that we use a single cached instance
-        return context.getApplicationContext().getSharedPreferences(
-                LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
-    }
-
-    // Edited
-    public static SharedPreferences getDevicePrefs(Context context) {
-        // Use application context for shared preferences, so that we use a single cached instance
-        return context.getApplicationContext().getSharedPreferences(
-                LauncherFiles.DEVICE_PREFERENCES_KEY, Context.MODE_PRIVATE);
-    }
-
-    // Edited
-    public static NeoPrefs getNeoPrefs(Context context) {
-        return NeoPrefs.getInstance();
-    }
 }
