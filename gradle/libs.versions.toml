@@ -15,6 +15,7 @@ dynamic-animation = "1.1.0"
 
 error-prone-annotations = "2.44.0"
 graphics-shapes = "1.1.0"
+hoko-blur = "1.5.3"
 immutables = "0.4.0"
 inject = "1"
 jakarta-inject = "2.0.1"
@@ -86,6 +87,7 @@ error-prone-annotations = { module = "com.google.errorprone:error_prone_annotati
 graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
+hoko-blur = { module = "io.github.hokofly:hoko-blur", version.ref = "hoko-blur" }
 jakarta-inject = { group = "jakarta.inject", name = "jakarta.inject-api", version.ref = "jakarta-inject" }
 java-inject = { group = "javax.inject", name = "javax.inject", version.ref = "inject" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

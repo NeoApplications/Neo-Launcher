@@ -40,7 +40,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.protobuf)
 }
 allprojects {
@@ -62,6 +62,12 @@ allprojects {
             add("implementation", libs.core.ktx)
             add("implementation", platform(libs.compose.bom))
         }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
     }
 }
 
@@ -248,6 +254,7 @@ dependencies {
     implementation(libs.dynamic.animation)
     implementation(libs.graphics.shapes)
     implementation(libs.hilt.android)
+    implementation(libs.hoko.blur)
     implementation(libs.koin.android)
     implementation(libs.koin.workmanager)
     implementation(libs.koin.annotations)
@@ -275,7 +282,6 @@ dependencies {
     implementation(libs.serialization.json)
 
     api(platform(libs.compose.bom))
-
     protobuf(files("protos/"))
     protobuf(files("protos_overrides/"))
 
