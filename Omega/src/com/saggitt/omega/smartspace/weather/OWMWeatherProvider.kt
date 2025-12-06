@@ -19,6 +19,8 @@
 package com.saggitt.omega.smartspace.weather
 
 import android.annotation.SuppressLint
+import android.app.smartspace.SmartspaceAction
+import android.app.smartspace.SmartspaceTarget
 import android.content.Context
 import android.graphics.drawable.Icon
 import android.location.Criteria
@@ -39,8 +41,6 @@ import com.saggitt.omega.smartspace.weather.GoogleWeatherProvider.Companion.dumm
 import com.saggitt.omega.smartspace.weather.icons.WeatherIconProvider
 import com.saggitt.omega.util.checkLocationAccess
 import com.saggitt.omega.widget.Temperature
-import com.saulhdev.smartspace.SmartspaceAction
-import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

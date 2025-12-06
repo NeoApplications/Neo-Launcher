@@ -23,9 +23,9 @@ import com.android.launcher3.model.data.AppInfo
 class InstallTimeComparator(private val mPackageManager: PackageManager) : Comparator<AppInfo> {
     override fun compare(app1: AppInfo, app2: AppInfo): Int = try {
         val app1InstallTime =
-            mPackageManager.getPackageInfo(app1.componentName.packageName, 0).firstInstallTime
+            mPackageManager.getPackageInfo(app1.componentName!!.packageName, 0).firstInstallTime
         val app2InstallTime =
-            mPackageManager.getPackageInfo(app2.componentName.packageName, 0).firstInstallTime
+            mPackageManager.getPackageInfo(app2.componentName!!.packageName, 0).firstInstallTime
         when {
             app1InstallTime < app2InstallTime -> 1
             app2InstallTime < app1InstallTime -> -1

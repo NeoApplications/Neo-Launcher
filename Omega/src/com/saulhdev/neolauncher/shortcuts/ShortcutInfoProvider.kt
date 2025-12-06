@@ -99,7 +99,7 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     }
 
     private fun getLauncherActivityInfo(info: WorkspaceItemInfo): LauncherActivityInfo? {
-        return launcherApps.resolveActivity(info.getIntent(), info.user)
+        return launcherApps!!.resolveActivity(info.getIntent(), info.user)
     }
 
     companion object :

@@ -37,7 +37,7 @@ class FlowerpotApps(private val context: Context, private val pot: Flowerpot) :
 
     init {
         filterApps()
-        context.getSystemService(LauncherApps::class.java).registerCallback(this)
+        context.getSystemService(LauncherApps::class.java)!!.registerCallback(this)
     }
 
     private fun filterApps() {
@@ -50,7 +50,7 @@ class FlowerpotApps(private val context: Context, private val pot: Flowerpot) :
     }
 
     private fun addFromPackage(packageName: String?, user: UserHandle) {
-        launcherApps.getActivityList(packageName, user).forEach {
+        launcherApps!!.getActivityList(packageName, user).forEach {
             if (intentMatches.contains(it.componentName.packageName)
                 || pot.rules.contains(Rule.Package(it.componentName.packageName))
             ) {

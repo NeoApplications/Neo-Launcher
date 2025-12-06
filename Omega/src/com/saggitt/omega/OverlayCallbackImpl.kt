@@ -19,12 +19,14 @@
 package com.saggitt.omega
 
 import android.app.Activity
+import android.view.MotionEvent
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks
+import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saulhdev.launcherclient.IScrollCallback
 import com.saulhdev.launcherclient.LauncherClient
@@ -32,7 +34,7 @@ import com.saulhdev.launcherclient.LauncherClientCallbacks
 import com.saulhdev.launcherclient.StaticInteger
 import kotlinx.coroutines.launch
 
-class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.LauncherOverlay,
+class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     LauncherClientCallbacks, LauncherOverlayManager,
     IScrollCallback {
 
@@ -71,26 +73,6 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.Launc
         mClient?.onDetachedFromWindow()
     }
 
-    override fun onActivityStarted(activity: Activity) {
-        mClient!!.onStart()
-    }
-
-    override fun onActivityResumed(activity: Activity) {
-        mClient!!.onResume()
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        mClient!!.onPause()
-    }
-
-    override fun onActivityStopped(activity: Activity) {
-        mClient!!.onStop()
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        mClient!!.onDestroy()
-        mClient!!.mDestroyed = true
-    }
 
     override fun openOverlay() {
         mClient!!.showOverlay(true)
@@ -104,16 +86,13 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayManager.Launc
         mClient!!.hideOverlay(duration)
     }
 
-    override fun onScrollInteractionBegin() {
-        mClient!!.startScroll()
+
+    override fun onFlingVelocity(velocity: Float) {
+        TODO("Not yet implemented")
     }
 
-    override fun onScrollInteractionEnd() {
-        mClient!!.endScroll()
-    }
-
-    override fun onScrollChange(progress: Float, rtl: Boolean) {
-        mClient!!.setScroll(progress)
+    override fun onOverlayMotionEvent(ev: MotionEvent?, scrollProgress: Float) {
+        TODO("Not yet implemented")
     }
 
     override fun setOverlayCallbacks(callbacks: LauncherOverlayCallbacks) {

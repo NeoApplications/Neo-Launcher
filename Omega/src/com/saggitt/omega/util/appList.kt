@@ -48,7 +48,7 @@ fun appsState(
         Utilities.postAsyncCallback(Handler(MODEL_EXECUTOR.looper)) {
             val launcherApps = context.getSystemService(LauncherApps::class.java)
             val appsList = UserCache.INSTANCE.get(context).userProfiles.asSequence()
-                    .flatMap { launcherApps.getActivityList(null, it) }
+                    .flatMap { launcherApps!!.getActivityList(null, it) }
                     .map { App(context, it) }
                     .sortedWith(comparator)
                     .toList()

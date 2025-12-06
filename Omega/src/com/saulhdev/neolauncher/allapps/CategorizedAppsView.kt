@@ -52,7 +52,7 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        findViewById<ComposeView>(R.id.categories_bar).apply {
+        findViewById<ComposeView>(R.id.categories_bar)!!.apply {
             setContent {
                 OmegaAppTheme {
                     AllAppsCategories(

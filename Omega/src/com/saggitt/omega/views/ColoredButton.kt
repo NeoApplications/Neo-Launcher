@@ -27,8 +27,8 @@ import com.saggitt.omega.util.getColorAttr
 class ColoredButton(context: Context, attrs: AttributeSet) : MaterialButton(context, attrs) {
     var color: Int = 0
 
-    private val defaultColor = context.getColorAttr(R.attr.colorOnSurface)
-    private val selectedColor = context.getColorAttr(R.attr.colorSurface)
+    private val defaultColor = context.getColorAttr(com.google.android.material.R.attr.colorOnSurface)
+    private val selectedColor = context.getColorAttr(com.google.android.material.R.attr.colorSurface)
     private val defaultBackgroundColor = context.getColorAttr(R.attr.popupColorPrimary)
 
     fun refreshColor() {

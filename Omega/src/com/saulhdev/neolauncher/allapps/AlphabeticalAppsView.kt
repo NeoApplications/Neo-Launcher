@@ -29,7 +29,7 @@ class AlphabeticalAppsView(context: Context, attrs: AttributeSet) :
     FastScrollRecyclerView(context, attrs) {
     init {
         LayoutInflater.from(context).inflate(R.layout.all_apps_alphabetical, this, true)
-        findViewById<ComposeView>(R.id.categories_bar).setContent {
+        findViewById<ComposeView>(R.id.categories_bar)!!.setContent {
             OmegaAppTheme {
                 //AllAppsCategories()
             }
