@@ -210,6 +210,9 @@ public final class Flags {
     public static boolean oneGridSpecs() {
         return true;
     }
+    public static boolean enableAllAppsButtonInHotseat() {
+        return true;
+    }
 
     /*End Customized Neo Launcher*/
 
