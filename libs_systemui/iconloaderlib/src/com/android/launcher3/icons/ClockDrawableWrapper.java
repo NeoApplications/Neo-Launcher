@@ -38,8 +38,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.core.util.Supplier;
+
 import com.android.launcher3.icons.cache.CacheLookupFlag;
 import com.android.launcher3.icons.mono.ThemedIconDrawable;
+import com.neoapps.neolauncher.icons.ClockMetadata;
+
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntFunction;
@@ -115,20 +121,48 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
         if (drawableId == 0) {
             return null;
         }
-        Drawable drawable = drawableProvider.apply(drawableId).mutate();
+
+        int hourLayerIndex = metadata.getInt(HOUR_INDEX_METADATA_KEY, INVALID_VALUE);
+        int minuteLayerIndex = metadata.getInt(MINUTE_INDEX_METADATA_KEY, INVALID_VALUE);
+        int secondLayerIndex = metadata.getInt(SECOND_INDEX_METADATA_KEY, INVALID_VALUE);
+
+        int defaultHour = metadata.getInt(DEFAULT_HOUR_METADATA_KEY, 0);
+        int defaultMinute = metadata.getInt(DEFAULT_MINUTE_METADATA_KEY, 0);
+        int defaultSecond = metadata.getInt(DEFAULT_SECOND_METADATA_KEY, 0);
+
+        ClockMetadata clockMetadata = new ClockMetadata(
+                hourLayerIndex,
+                minuteLayerIndex,
+                secondLayerIndex,
+                defaultHour,
+                defaultMinute,
+                defaultSecond
+        );
+
+        return forMeta(0, clockMetadata, () -> drawableProvider.apply(drawableId));
+    }
+
+    public static ClockDrawableWrapper forMeta(
+            @Deprecated(since = "Not used, kept for compatibility reason.") int targetSdkVersion,
+            @NonNull ClockMetadata metadata, Supplier<Drawable> drawableProvider) {
+        Drawable drawable = drawableProvider.get().mutate();
         if (!(drawable instanceof AdaptiveIconDrawable)) {
             return null;
         }
         AdaptiveIconDrawable aid = (AdaptiveIconDrawable) drawable;
+
         ClockDrawableWrapper wrapper = new ClockDrawableWrapper(aid);
         AnimationInfo info = wrapper.mAnimationInfo;
+
         info.baseDrawableState = drawable.getConstantState();
-        info.hourLayerIndex = metadata.getInt(HOUR_INDEX_METADATA_KEY, INVALID_VALUE);
-        info.minuteLayerIndex = metadata.getInt(MINUTE_INDEX_METADATA_KEY, INVALID_VALUE);
-        info.secondLayerIndex = metadata.getInt(SECOND_INDEX_METADATA_KEY, INVALID_VALUE);
-        info.defaultHour = metadata.getInt(DEFAULT_HOUR_METADATA_KEY, 0);
-        info.defaultMinute = metadata.getInt(DEFAULT_MINUTE_METADATA_KEY, 0);
-        info.defaultSecond = metadata.getInt(DEFAULT_SECOND_METADATA_KEY, 0);
+        info.hourLayerIndex = metadata.getHourLayerIndex();
+        info.minuteLayerIndex = metadata.getMinuteLayerIndex();
+        info.secondLayerIndex = metadata.getSecondLayerIndex();
+
+        info.defaultHour = metadata.getDefaultHour();
+        info.defaultMinute = metadata.getDefaultMinute();
+        info.defaultSecond = metadata.getDefaultSecond();
+
         LayerDrawable foreground = (LayerDrawable) wrapper.getForeground();
         int layerCount = foreground.getNumberOfLayers();
         if (info.hourLayerIndex < 0 || info.hourLayerIndex >= layerCount) {
@@ -143,6 +177,7 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
             foreground.setDrawable(info.secondLayerIndex, null);
             info.secondLayerIndex = INVALID_VALUE;
         }
+
         if (ATLEAST_T && aid.getMonochrome() instanceof LayerDrawable) {
             wrapper.mThemeInfo = info.copyForIcon(new AdaptiveIconDrawable(
                     new ColorDrawable(Color.WHITE), aid.getMonochrome().mutate()));
@@ -150,6 +185,7 @@ public class ClockDrawableWrapper extends AdaptiveIconDrawable implements Bitmap
         info.applyTime(Calendar.getInstance(), foreground);
         return wrapper;
     }
+
     @Override
     public ClockBitmapInfo getExtendedInfo(Bitmap bitmap, int color,
                                            BaseIconFactory iconFactory, float normalizationScale) {

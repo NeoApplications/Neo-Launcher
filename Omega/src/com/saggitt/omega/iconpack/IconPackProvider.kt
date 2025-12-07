@@ -129,17 +129,17 @@ class IconPackProvider(private val context: Context) {
         val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
         val bg: Drawable = ColorDrawable(themedColors[0])
         val td = IconProvider.ThemeData(res, resId)
-        return if (drawable is AdaptiveIconDrawable) {
-            if (iconPrefs.shouldTransparentBGIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
-                drawable.monochrome?.apply { setTint(themedColors[1]) }
-            } else {
-                val foregroundDr = drawable.foreground.apply { setTint(themedColors[1]) }
-                CustomAdaptiveIconDrawable(bg, foregroundDr)
-            }
-        } else {
-            val iconFromPack = InsetDrawable(drawable, .3f).apply { setTint(themedColors[1]) }
-            td.wrapDrawable(CustomAdaptiveIconDrawable(bg, iconFromPack), 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            drawable is AdaptiveIconDrawable &&
+            drawable.monochrome == null
+        ) {
+            return AdaptiveIconDrawable(
+                drawable.background,
+                drawable.foreground,
+                td.loadPaddedDrawable(),
+            )
         }
+        return drawable
     }
 
     companion object {

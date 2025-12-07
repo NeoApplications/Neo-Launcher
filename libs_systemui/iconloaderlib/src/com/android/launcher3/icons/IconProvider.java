@@ -178,7 +178,7 @@ public class IconProvider {
         return null;
     }
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    private Drawable loadCalendarDrawable(int iconDpi, @Nullable ThemeData td) {
+    public Drawable loadCalendarDrawable(int iconDpi, @Nullable ThemeData td) {
         PackageManager pm = mContext.getPackageManager();
         try {
             final Bundle metadata = pm.getActivityInfo(
@@ -227,7 +227,7 @@ public class IconProvider {
      * @param resources from the Calendar package
      * @return the resource id for today's Calendar icon; 0 if resources cannot be found.
      */
-    private int getDynamicIconId(Bundle metadata, Resources resources) {
+    public int getDynamicIconId(Bundle metadata, Resources resources) {
         if (metadata == null) {
             return ID_NULL;
         }
@@ -282,7 +282,8 @@ public class IconProvider {
             mResources = resources;
             mResID = resID;
         }
-        Drawable loadPaddedDrawable() {
+
+        public Drawable loadPaddedDrawable() {
             if (!"drawable".equals(mResources.getResourceTypeName(mResID))) {
                 return null;
             }

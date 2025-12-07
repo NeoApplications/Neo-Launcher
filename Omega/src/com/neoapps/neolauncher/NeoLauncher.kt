@@ -423,7 +423,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         fun getLauncher(context: Context): NeoLauncher {
             return context as? NeoLauncher
                 ?: (context as ContextWrapper).baseContext as? NeoLauncher
-                ?: LauncherAppState.getInstance(context).launcher as NeoLauncher
+                ?: Launcher.getLauncher(context) as NeoLauncher
         }
 
         private const val FLAG_RECREATE = 1 shl 0

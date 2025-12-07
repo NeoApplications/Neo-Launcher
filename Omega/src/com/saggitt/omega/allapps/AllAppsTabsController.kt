@@ -2,7 +2,7 @@ package com.saggitt.omega.allapps
 
 import android.view.View
 import android.view.ViewGroup
-import com.android.launcher3.BaseDraggingActivity
+import com.android.launcher3.BaseActivity
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
 import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.MAIN
 import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK
@@ -14,7 +14,7 @@ import com.saggitt.omega.util.forEachChildIndexed
 
 typealias AdapterHolders = List<ActivityAllAppsContainerView<*>.AdapterHolder>
 
-class AllAppsTabsController<T : BaseDraggingActivity>(
+class AllAppsTabsController<T : BaseActivity>(
     val tabs: AllAppsTabs,
     private val container: ActivityAllAppsContainerView<*>,
 ) {
