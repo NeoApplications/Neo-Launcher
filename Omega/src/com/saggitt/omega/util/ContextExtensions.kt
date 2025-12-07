@@ -30,6 +30,7 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
+import com.neoapps.neolauncher.util.Permissions
 import com.saggitt.omega.preferences.NeoPrefs
 import java.util.Locale
 
@@ -72,8 +73,8 @@ fun Context.checkPackagePermission(packageName: String, permissionName: String):
 }
 
 fun Context.checkLocationAccess(): Boolean {
-    return Utilities.hasPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
-            Utilities.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+    return Permissions.hasPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
+            Permissions.hasPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 }
 
 @ColorInt
