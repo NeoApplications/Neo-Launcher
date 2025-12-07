@@ -532,6 +532,11 @@ public class InvariantDeviceProfile {
                 iconBitmapSize, fillResIconDpi, numDatabaseAllAppsColumns, dbFile, mLocale};
     }
 
+    public void onPreferencesChanged(Context context) {
+        Context appContext = context.getApplicationContext();
+        MAIN_EXECUTOR.execute(() -> onConfigChanged(appContext));
+    }
+
     /** Updates IDP using the provided context. Notifies listeners of change. */
     @VisibleForTesting
     public void onConfigChanged(Context context) {
@@ -970,7 +975,7 @@ public class InvariantDeviceProfile {
         private final @StyleRes int cellStyle;
 
         private final @StyleRes int allAppsStyle;
-        private final int numAllAppsColumns;
+        public final int numAllAppsColumns;
         private final int mNumAllAppsRowsForCellHeightCalculation;
         private final int numDatabaseAllAppsColumns;
         public final int numHotseatIcons;
