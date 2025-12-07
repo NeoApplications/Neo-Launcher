@@ -717,7 +717,6 @@ public class InvariantDeviceProfile {
                 .filter(go -> go.filterByFlag(deviceType, isFixedLandscape))
                 .collect(Collectors.toList());
     }
-
     /**
      * @return all the grid options that can be shown on the device
      */
@@ -971,6 +970,7 @@ public class InvariantDeviceProfile {
         private final int mNumAllAppsRowsForCellHeightCalculation;
         private final int numDatabaseAllAppsColumns;
         public final int numHotseatIcons;
+        public final int numHotseatRows = 1;
         private final int numDatabaseHotseatIcons;
 
         private final boolean[] inlineQsb = new boolean[COUNT_SIZES];

@@ -13,7 +13,8 @@ import org.koin.java.KoinJavaComponent.inject
 class DeviceProfileOverrides(context: Context) {
     private val prefs: NeoPrefs by inject(NeoPrefs::class.java)
 
-    private val predefinedGrids = InvariantDeviceProfile.parseAllDefinedGridOptions(context)
+    private val predefinedGrids =
+        InvariantDeviceProfile.INSTANCE.get(context).parseAllGridOptions(context)
         .map { option ->
             val gridInfo = DBGridInfo(
                 numHotseatIcons = option.numHotseatIcons,
@@ -99,8 +100,8 @@ class DeviceProfileOverrides(context: Context) {
             // apply grid size
             idp.numAllAppsColumns = numAllAppsColumns
             idp.numDatabaseAllAppsColumns = numAllAppsColumns
-            idp.numFolderRows = numFolderRows
-            idp.numFolderColumns = numFolderColumns
+            idp.numFolderRows[INDEX_DEFAULT] = numFolderRows
+            idp.numFolderColumns[INDEX_DEFAULT] = numFolderColumns
 
             // apply icon and text size
             idp.iconSize[INDEX_DEFAULT] *= iconSizeFactor
