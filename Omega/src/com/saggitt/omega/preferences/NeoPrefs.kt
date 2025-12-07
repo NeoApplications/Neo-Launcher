@@ -39,6 +39,7 @@ import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
+import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.dash.actionprovider.DeviceSettings
 import com.saggitt.omega.dash.actionprovider.EditDash
@@ -69,6 +70,7 @@ import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
 import com.neoapps.neolauncher.search.SearchProviderController
 import com.neoapps.neolauncher.util.CustomPreferencesMigration
+import com.saggitt.omega.icons.IconShapeManager
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +87,6 @@ import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.getKoin
 import kotlin.math.roundToInt
 import kotlin.random.Random
-import com.android.launcher3.graphics.IconShape as L3IconShape
 
 class NeoPrefs private constructor(val context: Context) {
     private val scope = MainScope()
@@ -475,7 +476,12 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.folder_stroke_color,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
-        defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
+        defaultValue = "custom|#${
+            Themes.getAttrColor(
+                context,
+                com.google.android.material.R.attr.colorSurface
+            )
+        }",
         navRoute = NavRoute.Desktop.FolderStroke(),
         onChange = { reloadGrid() },
     )
@@ -1276,8 +1282,8 @@ class NeoPrefs private constructor(val context: Context) {
             .distinctUntilChanged()
             .onEach { shape ->
                 initializeIconShape(IconShape.fromString(context, shape))
-                L3IconShape.init(context)
-                LauncherAppState.getInstance(context).refreshAndReloadLauncher()
+                IconShapeManager.getSystemIconShape(context)
+                //TODO: Refresh when icon shaped is changed
             }
             .launchIn(scope)
     }
