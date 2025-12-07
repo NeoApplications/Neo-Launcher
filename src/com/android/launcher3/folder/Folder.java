@@ -288,7 +288,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         // click).
         setFocusableInTouchMode(true);
 
-        prefs = NeoPrefs.getInstance()
+        prefs = NeoPrefs.getInstance();
         mLauncher = Launcher.getLauncher(context);
 
         mBackground = (GradientDrawable) Objects.requireNonNull(
@@ -1551,7 +1551,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     }
 
     @Override
-    public void onAdd(WorkspaceItemInfo item, int rank) {
+    public void onAdd(ItemInfo item, int rank) {
         int maxCountX = mActivityContext.getDeviceProfile().inv.numFolderColumns[INDEX_DEFAULT];
         int maxCountY = mActivityContext.getDeviceProfile().inv.numFolderRows[INDEX_DEFAULT];
 
@@ -1568,7 +1568,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     }
 
     @Override
-    public void onRemove(List<WorkspaceItemInfo> items) {
+    public void onRemove(List<ItemInfo> items) {
         mItemsInvalidated = true;
         items.stream().map(this::getViewForInfo).forEach(mContent::removeItem);
         if (mState == STATE_ANIMATING) {

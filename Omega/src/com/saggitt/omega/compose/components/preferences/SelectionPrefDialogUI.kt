@@ -375,6 +375,7 @@ fun ResetCustomIconsDialog(
         radius = prefs.profileWindowCornerRadius.getValue().dp
     }
     val cornerRadius by remember { mutableStateOf(radius) }
+    val context = LocalContext.current
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,

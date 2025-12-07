@@ -59,7 +59,7 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,7 +166,7 @@ public class PackageUpdatedTask implements LauncherModel.ModelUpdateTask {
                 for (int i = 0; i < packageCount; i++) {
                     FileLog.d(TAG, "Removing app icon" + packages[i]);
                     iconCache.removeIconsForPkg(packages[i], mUser);
-                    NeoPrefs prefs = Utilities.getNeoPrefs(context);
+                    NeoPrefs prefs = NeoPrefs.getInstance();
                     if (packages[i].equals(prefs.getProfileIconPack().getValue())) {
                         prefs.getProfileIconPack().setValue("");
                     }

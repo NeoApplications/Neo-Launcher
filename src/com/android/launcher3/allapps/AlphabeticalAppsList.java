@@ -50,7 +50,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -151,7 +151,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                         R.drawable.ic_private_profile_divider_badge, ImageSpan.ALIGN_CENTER),
                 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        prefs = Utilities.getNeoPrefs(context);
+        prefs = NeoPrefs.getInstance();
         mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
         mLauncher = Launcher.fromContext(context);
     }

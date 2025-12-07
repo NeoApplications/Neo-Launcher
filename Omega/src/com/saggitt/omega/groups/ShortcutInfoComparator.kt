@@ -19,17 +19,18 @@ package com.saggitt.omega.groups
 
 import android.content.Context
 import android.os.Process
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.LabelComparator
 
-class ShortcutInfoComparator(context: Context) : Comparator<WorkspaceItemInfo> {
+class ShortcutInfoComparator(context: Context) : Comparator<ItemInfo> {
 
     private val userCache = UserCache.INSTANCE.get(context)
     private val myUser = Process.myUserHandle()
     private val labelComparator = LabelComparator()
 
-    override fun compare(a: WorkspaceItemInfo, b: WorkspaceItemInfo): Int {
+    override fun compare(a: ItemInfo, b: ItemInfo): Int {
         // Order by the title in the current locale
         val result = labelComparator.compare(a.title.toString(), b.title.toString())
         if (result != 0) {

@@ -171,7 +171,7 @@ constructor(
         @JvmField val PREF_ICON_SHAPE = backedUpItem(KEY_ICON_SHAPE, "", EncryptionType.ENCRYPTED)
 
         private const val ACTION_OVERLAY_CHANGED = "android.intent.action.OVERLAY_CHANGED"
-        private val CONFIG_ICON_MASK_RES_ID: Int =
+        val CONFIG_ICON_MASK_RES_ID: Int =
             Resources.getSystem().getIdentifier("config_icon_mask", "string", "android")
 
         // Use a constant to allow equality check in verifyIconState

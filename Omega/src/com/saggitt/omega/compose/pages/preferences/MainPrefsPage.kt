@@ -183,7 +183,7 @@ fun MainPrefsPage() {
         },
         detailPane = {
             pageData.value = paneNavigator.currentDestination
-                ?.takeIf { it.pane == this.role }?.content
+                ?.takeIf { it.pane == this.paneRole }?.contentKey
                 ?.let { it as? NavRoute }
 
             pageData.value?.let {

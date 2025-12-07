@@ -129,7 +129,7 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
 
 import com.google.android.msdl.data.model.MSDLToken;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Iterator;

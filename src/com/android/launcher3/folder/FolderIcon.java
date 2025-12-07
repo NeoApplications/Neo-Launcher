@@ -96,7 +96,7 @@ import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;
@@ -652,7 +652,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
     public void drawDot(Canvas canvas) {
         if (!mForceHideDot && ((mDotInfo != null && mDotInfo.hasDot()) || mDotScale > 0)) {
-            NeoPrefs prefs = Utilities.getNeoPrefs(getContext());
+            NeoPrefs prefs = NeoPrefs.getInstance();
             Rect iconBounds = mDotParams.iconBounds;
             // FolderIcon draws the icon to be top-aligned (with padding) & horizontally-centered
             int iconSize = mActivity.getDeviceProfile().iconSizePx;

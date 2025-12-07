@@ -40,9 +40,11 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.Item;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
 import com.android.launcher3.icons.BitmapRenderer;
@@ -59,6 +61,7 @@ import com.saggitt.omega.data.models.GestureItemInfo;
 import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
@@ -108,7 +111,7 @@ public class FolderInfo extends CollectionInfo {
     /**
      * The apps and shortcuts
      */
-    private final ArrayList<ItemInfo> contents = new ArrayList<>();
+    public final ArrayList<ItemInfo> contents = new ArrayList<>();
 
     public String swipeUpAction;
     private ArrayList<FolderListener> mListeners = new ArrayList<>();
@@ -126,9 +129,40 @@ public class FolderInfo extends CollectionInfo {
         if (!willAcceptItemType(item.itemType)) {
             throw new RuntimeException("tried to add an illegal type into a folder");
         }
-        getContents().add(item);
+        add(item, contents.size(), true);
     }
 
+    public void add(ItemInfo item, int rank, boolean animate) {
+        rank = Utilities.boundToRange(rank, 0, contents.size());
+        contents.add(rank, item);
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onAdd(item, rank);
+        }
+        itemsChanged(animate);
+    }
+
+    /**
+     * Remove an app or shortcut. Does not change the DB.
+     *
+     * @param item
+     */
+    public void remove(ItemInfo item, boolean animate) {
+        removeAll(Collections.singletonList(item), animate);
+    }
+
+    public void removeAll(List<ItemInfo> items, boolean animate) {
+        contents.removeAll(items);
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onRemove(items);
+        }
+        itemsChanged(animate);
+    }
+
+    public void itemsChanged(boolean animate) {
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onItemsChanged(animate);
+        }
+    }
     /**
      * Returns the folder's contents as an unsorted ArrayList of {@link ItemInfo}. Includes
      * {@link WorkspaceItemInfo} and {@link AppPairInfo}s.
@@ -172,9 +206,9 @@ public class FolderInfo extends CollectionInfo {
     }
 
     public interface FolderListener {
-        void onAdd(WorkspaceItemInfo item, int rank);
+        void onAdd(ItemInfo item, int rank);
 
-        void onRemove(List<WorkspaceItemInfo> item);
+        void onRemove(List<ItemInfo> item);
 
         void onItemsChanged(boolean animate);
 

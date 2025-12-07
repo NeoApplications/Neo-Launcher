@@ -17,6 +17,7 @@
 package com.android.launcher3.allapps;
 
 import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.util.OnboardingPrefs.HOME_BOUNCE_SEEN;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
@@ -32,7 +33,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.AnimatorListeners;
 import com.android.launcher3.statemanager.StateManager.StateListener;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Abstract base class of floating view responsible for showing discovery bounce animation
@@ -124,7 +125,7 @@ public class DiscoveryBounce extends AbstractFloatingView {
     private static void showForHomeIfNeeded(Launcher launcher, boolean withDelay) {
         NeoPrefs neoPrefs = NeoPrefs.getInstance();
         if (!launcher.isInState(NORMAL)
-                //|| HOME_BOUNCE_SEEN.get(launcher)
+                || HOME_BOUNCE_SEEN.get(launcher)
                 || neoPrefs.getOnboardingBounceSeen().getValue()
                 || AbstractFloatingView.getTopOpenView(launcher) != null
                 || launcher.getSystemService(UserManager.class).isDemoUser()

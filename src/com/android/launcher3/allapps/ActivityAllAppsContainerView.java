@@ -23,6 +23,12 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE;
 import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.ALL_APPS_SCROLLER;
+import static com.android.window.flags2.Flags.predictiveBackThreeButtonNav;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_CATEGORIZED;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_CUSTOM_CATEGORIES;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_VERTICAL;
+import static com.saggitt.omega.preferences.ConstantsKt.LAYOUT_VERTICAL_ALPHABETICAL;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -62,7 +68,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.BaseActivity;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.DragSource;
@@ -222,7 +228,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         AllAppsStore.OnUpdateListener onAppsUpdated = this::onAppsUpdated;
         mAllAppsStore.addUpdateListener(onAppsUpdated);
         AllAppsTabs allAppsTabs = new AllAppsTabs(context);
-        mTabsController = new AllAppsTabsController<BaseDraggingActivity>(allAppsTabs, this);
+        mTabsController = new AllAppsTabsController<BaseActivity>(allAppsTabs, this);
 
         // This is a focus listener that proxies focus from a view into the list view.  This is to
         // work around the search box from getting first focus and showing the cursor.

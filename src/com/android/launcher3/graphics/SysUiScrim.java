@@ -39,7 +39,7 @@ import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * View scrim which draws behind hotseat and workspace
@@ -100,7 +100,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
-        NeoPrefs prefs = NeoPrefs.Companion.getInstance();
+        NeoPrefs prefs = NeoPrefs.getInstance();
         mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,

@@ -31,6 +31,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
+import android.os.UserHandle
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -344,6 +345,21 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
             mPendingActivityRequestCode = -1
         } else {
             super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    fun startShortcut(
+        packageName: String, id: String, sourceBounds: Rect,
+        startActivityOptions: Bundle, user: UserHandle
+    ) {
+        try {
+            this@NeoLauncher.getSystemService(LauncherApps::class.java)
+                .startShortcut(
+                    packageName, id,
+                    sourceBounds, startActivityOptions, user
+                )
+        } catch (e: SecurityException) {
+            e.printStackTrace()
         }
     }
 

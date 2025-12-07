@@ -22,6 +22,7 @@ import android.content.Context
 import android.graphics.Path
 import android.graphics.Region
 import android.graphics.drawable.AdaptiveIconDrawable
+import com.android.launcher3.graphics.ThemeManager
 import com.android.launcher3.icons.GraphicsUtils
 import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.util.MainThreadInitializedObject
@@ -41,7 +42,7 @@ class IconShapeManager(private val context: Context) {
             override fun toString() = "system"
 
             override fun getHashString(): String {
-                val resId = IconProvider.CONFIG_ICON_MASK_RES_ID
+                val resId = ThemeManager.CONFIG_ICON_MASK_RES_ID
                 if (resId == 0) {
                     return "system-path"
                 }

@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +100,7 @@ public class RoundedCornerEnforcement {
      * in the given context.
      */
     public static float computeEnforcedRadius(@NonNull Context context) {
-        NeoPrefs prefs = Utilities.getNeoPrefs(context);
+        NeoPrefs prefs = NeoPrefs.getInstance();
         if (prefs.getDesktopWidgetCornerRadius().getValue() >= 0) {
             return prefs.getDesktopWidgetCornerRadius().getValue();
         } else {

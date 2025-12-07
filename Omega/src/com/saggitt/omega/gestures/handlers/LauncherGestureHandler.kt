@@ -21,6 +21,7 @@ package com.saggitt.omega.gestures.handlers
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
 import android.os.UserManager
@@ -170,7 +171,7 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             appName = config.getString("appName")
             type = if (config.has("type")) config.getString("type") else "app"
             if (type == "app") {
-                Log.d("GestureController", "Class " + target.toString())
+                Log.d("GestureController", "Class $target")
                 target = Utilities.makeComponentKey(context, config.getString("target"))
             } else {
                 intent = Intent.parseUri(config.getString("intent"), 0)
@@ -255,7 +256,16 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             }
 
             "shortcut" -> {
-                Launcher.getLauncher(context).startShortcut(packageName, id, null, opts, user)
+                target?.let {
+                    try {
+                        context.getSystemService(LauncherApps::class.java)
+                            .startShortcut(packageName!!, id!!, null, opts, user!!)
+                    } catch (e: SecurityException) {
+                        showErrorToast()
+                    }
+                } ?: run {
+                    showErrorToast()
+                }
             }
         }
     }

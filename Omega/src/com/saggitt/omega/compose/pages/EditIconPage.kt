@@ -206,7 +206,7 @@ fun EditIconPage(
                 },
                 detailPane = {
                     iconPackName.value = paneNavigator.currentDestination
-                        ?.takeIf { it.pane == this.role }?.content.toString()
+                        ?.takeIf { it.pane == this.paneRole }?.contentKey.toString()
 
                     if (showIconPack) {
                         LaunchedEffect(iconPack) {

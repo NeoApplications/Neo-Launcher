@@ -134,7 +134,7 @@ class DrawerFolders(val manager: AppGroupsManager) :
             modelWriter: ModelWriter,
         ) = super
             .toFolderInfo(getAppInfo, modelWriter).apply {
-                this@CustomFolder.contents.value?.mapNotNullTo(contents) { key ->
+                this@CustomFolder.contents.value?.mapNotNullTo(getContents()) { key ->
                     getAppInfo(key)?.makeWorkspaceItem(context)
                 }?.sortWith(comparator)
             }

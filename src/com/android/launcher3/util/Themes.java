@@ -34,7 +34,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.neoapps.NeoPrefs;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Various utility methods associated with theming.
@@ -67,7 +67,7 @@ public class Themes {
      * Returns true if workspace icon theming is enabled
      */
     public static boolean isThemedIconEnabled(Context context) {
-        return NeoPrefs.Companion.getInstance().getProfileThemedIcons().getValue();
+        return NeoPrefs.getInstance().getProfileThemedIcons().getValue();
     }
 
     public static String getDefaultBodyFont(Context context) {
