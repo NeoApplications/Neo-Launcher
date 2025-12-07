@@ -22,6 +22,7 @@ import android.view.MotionEvent
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Launcher
+import com.android.launcher3.LauncherPrefs
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy
@@ -31,6 +32,7 @@ import com.neoapps.launcherclient.LauncherClientCallbacks
 import com.neoapps.launcherclient.StaticInteger
 import com.saggitt.omega.preferences.NeoPrefs
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     LauncherClientCallbacks, LauncherOverlayManager,
@@ -115,12 +117,11 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     }
 
     override fun setPersistentFlags(myFlags: Int) {
-        var flags = myFlags
-        flags = flags and (8 or 16)
-        if (flags != mFlags) {
+        val newFlags = myFlags and (8 or 16)
+        if (newFlags != mFlags) {
             mFlagsChanged = true
-            mFlags = flags
-            LauncherPref.getDevicePrefs(launcher).edit().putInt(PREF_PERSIST_FLAGS, flags).apply()
+            mFlags = newFlags
+            LauncherPrefs.getDevicePrefs(launcher).edit { putInt(PREF_PERSIST_FLAGS, newFlags) }
         }
     }
 
