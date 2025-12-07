@@ -3,10 +3,12 @@ package com.saggitt.omega.search
 import android.content.Context
 import androidx.lifecycle.asLiveData
 import com.android.launcher3.LauncherAppState
+import com.android.launcher3.LauncherModel
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.model.AllAppsList
 import com.android.launcher3.model.BgDataModel
+import com.android.launcher3.model.ModelTaskController
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchCallback
 import com.android.launcher3.search.StringMatcherUtility
@@ -37,54 +39,52 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     override fun doSearch(query: String, callback: SearchCallback<AdapterItem>?) {
-        mAppState.model.enqueueModelUpdateTask(object : BaseModelUpdateTask() {
-            override fun execute(app: LauncherAppState, dataModel: BgDataModel, apps: AllAppsList) {
-                val result = getSearchResult(apps.data, query)
-                var suggestions = emptyList<String>()
+        mAppState.model.enqueueModelUpdateTask { app, dataModel, apps ->
+            val result = getSearchResult(apps.data, query)
+            var suggestions = emptyList<String>()
 
-                /*if (prefs.searchContacts.onGetValue()) { TODO
-                    val repository = PeopleRepository.INSTANCE.get(app.context)
-                    val contacts = repository.findPeople(query)
-                    val total = result.size
-                    var position = total + 1
-                    if (contacts.isNotEmpty()) {
-                        result.add(AdapterItem.asAllAppsDivider(position))
-                        position++
-                        result.add(
-                            AdapterItem.asSectionHeader(
-                                position,
-                                context.getString(R.string.section_contacts)
-                            )
-                        )
-                        position++
-                        contacts.forEach {
-                            result.add(AdapterItem.asContact(position, it))
+            /*if (prefs.searchContacts.onGetValue()) { TODO
+                        val repository = PeopleRepository.INSTANCE.get(app.context)
+                        val contacts = repository.findPeople(query)
+                        val total = result.size
+                        var position = total + 1
+                        if (contacts.isNotEmpty()) {
+                            result.add(AdapterItem.asAllAppsDivider(position))
                             position++
+                            result.add(
+                                AdapterItem.asSectionHeader(
+                                    position,
+                                    context.getString(R.string.section_contacts)
+                                )
+                            )
+                            position++
+                            contacts.forEach {
+                                result.add(AdapterItem.asContact(position, it))
+                                position++
+                            }
                         }
-                    }
-                }*/
+                    }*/
 
-                mResultHandler.post {
-                    callback?.onSearchResult(
-                        query,
-                        result,
-                        suggestions
-                    )
-                }
-
-                /*if (callback!!.showWebResult()) { TODO
-                    suggestions = getSuggestions(query)
-                    callback.setShowWebResult(false)
-                }
-                mResultHandler.post {
-                    callback.onSearchResult(
-                        query,
-                        result,
-                        suggestions
-                    )
-                }*/
+            mResultHandler.post {
+                callback?.onSearchResult(
+                    query,
+                    result,
+                    suggestions
+                )
             }
-        })
+
+            /*if (callback!!.showWebResult()) { TODO
+                        suggestions = getSuggestions(query)
+                        callback.setShowWebResult(false)
+                    }
+                    mResultHandler.post {
+                        callback.onSearchResult(
+                            query,
+                            result,
+                            suggestions
+                        )
+                    }*/
+        }
     }
 
     private fun getSearchResult(apps: MutableList<AppInfo>, query: String): ArrayList<AdapterItem> {
