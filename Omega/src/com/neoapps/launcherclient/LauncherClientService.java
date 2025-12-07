@@ -1,10 +1,12 @@
-package com.saulhdev.launcherclient;
+package com.neoapps.launcherclient;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.IBinder;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
+import com.neoapps.launcherclient.BaseClientService;
+import com.neoapps.launcherclient.LauncherClient;
 
 import java.lang.ref.WeakReference;
 

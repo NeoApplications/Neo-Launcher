@@ -75,13 +75,13 @@ import com.saggitt.omega.compose.icons.phosphor.Nut
 import com.saggitt.omega.compose.icons.phosphor.X
 import com.saggitt.omega.compose.navigation.Routes
 import com.neoapps.neolauncher.nLauncher
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.search.NeoAppSearchAlgorithm
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.util.openURLInBrowser
 import com.saggitt.omega.util.prefs
 import com.neoapps.neolauncher.search.SearchProviderController
+import com.saggitt.omega.preferences.NeoPrefs
 
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,

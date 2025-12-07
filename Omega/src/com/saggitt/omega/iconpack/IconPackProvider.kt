@@ -13,8 +13,8 @@ import android.os.UserHandle
 import androidx.core.content.ContextCompat
 import com.android.launcher3.R
 import com.android.launcher3.icons.ClockDrawableWrapper
-import com.android.launcher3.icons.ThemedIconDrawable
-import com.android.launcher3.icons.ThemedIconDrawable.ThemeData
+import com.android.launcher3.icons.IconProvider
+import com.android.launcher3.icons.mono.ThemedIconDrawable
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
@@ -128,7 +128,7 @@ class IconPackProvider(private val context: Context) {
         @SuppressLint("DiscouragedApi")
         val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
         val bg: Drawable = ColorDrawable(themedColors[0])
-        val td = ThemeData(res, iconEntry.packPackageName, resId)
+        val td = IconProvider.ThemeData(res, resId)
         return if (drawable is AdaptiveIconDrawable) {
             if (iconPrefs.shouldTransparentBGIcons() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && drawable.monochrome != null) {
                 drawable.monochrome?.apply { setTint(themedColors[1]) }

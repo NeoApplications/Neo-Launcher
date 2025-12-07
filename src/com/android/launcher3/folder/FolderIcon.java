@@ -96,7 +96,7 @@ import com.saggitt.omega.gestures.GestureHandler;
 import com.saggitt.omega.gestures.RunnableGestureHandler;
 import com.saggitt.omega.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 import com.saggitt.omega.util.ContextExtensionsKt;
 
 import java.util.ArrayList;

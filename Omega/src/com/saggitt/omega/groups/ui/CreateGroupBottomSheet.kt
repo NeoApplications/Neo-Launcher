@@ -70,7 +70,6 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import kotlinx.coroutines.launch

@@ -69,6 +69,7 @@ import com.saggitt.omega.groups.category.DrawerFolders
 import com.saggitt.omega.groups.category.DrawerTabs
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.KEY_FLOWERPOT
 import com.saggitt.omega.groups.category.FlowerpotTabs.Companion.TYPE_FLOWERPOT
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.AccentColorOption
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
@@ -80,7 +81,7 @@ fun EditGroupBottomSheet(
     onClose: (Int) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
     val config = group.customizations
     val keyboardController = LocalSoftwareKeyboardController.current

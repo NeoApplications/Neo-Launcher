@@ -26,14 +26,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.prefs
 
 @Composable
 fun ProtectedAppsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val showView = remember { mutableStateOf(false) }
 
     LaunchedEffect(showView.value) {

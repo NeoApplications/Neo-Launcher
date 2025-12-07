@@ -1,9 +1,11 @@
-package com.saulhdev.launcherclient;
+package com.neoapps.launcherclient;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+
+import com.neoapps.launcherclient.BaseClientService;
 
 import amirz.aidlbridge.IBridge;
 import amirz.aidlbridge.IBridgeCallback;

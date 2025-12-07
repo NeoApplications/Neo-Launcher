@@ -24,10 +24,10 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.ColorUtils
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NeoPrefs
 
 fun AlertDialog.applyAccent() {
-    val color = Utilities.getNeoPrefs(context).profileAccentColor.getColor()
+    val color = NeoPrefs.getInstance().profileAccentColor.getColor()
     val buttons = listOf(
         getButton(DialogInterface.BUTTON_NEGATIVE),
         getButton(DialogInterface.BUTTON_NEUTRAL),
@@ -44,7 +44,7 @@ val Int.luminance get() = ColorUtils.calculateLuminance(this)
 val Int.isDark get() = luminance < 0.5f
 
 fun getWindowCornerRadius(context: Context): Float {
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     if (prefs.profileWindowCornerRadius.getValue() > -1) {
         return prefs.profileWindowCornerRadius.getValue()
     }

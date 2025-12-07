@@ -230,6 +230,8 @@ dependencies {
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))
 
+    implementation(libs.accompanist.drawablepainter)
+    implementation(libs.alwan)
     implementation(libs.annotation)
     implementation(libs.coil.compose)
     implementation(libs.collections.immutable)
@@ -252,6 +254,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.datastore.preferences)
     implementation(libs.dynamic.animation)
+    implementation(libs.fuzzywuzzy)
     implementation(libs.graphics.shapes)
     implementation(libs.hilt.android)
     implementation(libs.hoko.blur)

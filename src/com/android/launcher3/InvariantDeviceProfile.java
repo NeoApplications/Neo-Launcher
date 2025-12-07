@@ -127,10 +127,10 @@ public class InvariantDeviceProfile {
     // Used for arrays to specify different sizes (e.g. border spaces, width/height) in different
     // constraints
     static final int COUNT_SIZES = 4;
-    static final int INDEX_DEFAULT = 0;
-    static final int INDEX_LANDSCAPE = 1;
-    static final int INDEX_TWO_PANEL_PORTRAIT = 2;
-    static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
+    public static final int INDEX_DEFAULT = 0;
+    public static final int INDEX_LANDSCAPE = 1;
+    public static final int INDEX_TWO_PANEL_PORTRAIT = 2;
+    public static final int INDEX_TWO_PANEL_LANDSCAPE = 3;
 
     /** These resources are used to override the device profile */
     private static final String RES_GRID_NUM_ROWS = "grid_num_rows";
@@ -970,7 +970,7 @@ public class InvariantDeviceProfile {
         private final int numAllAppsColumns;
         private final int mNumAllAppsRowsForCellHeightCalculation;
         private final int numDatabaseAllAppsColumns;
-        private final int numHotseatIcons;
+        public final int numHotseatIcons;
         private final int numDatabaseHotseatIcons;
 
         private final boolean[] inlineQsb = new boolean[COUNT_SIZES];

@@ -61,9 +61,10 @@ import com.saggitt.omega.util.ApkAssets
 import com.saggitt.omega.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.saggitt.omega.util.MultiSafeCloseable
 import com.saggitt.omega.util.overrideSdk
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.util.getPackageVersionCode
 import com.neoapps.neolauncher.util.isPackageInstalled
+import com.saggitt.omega.preferences.NeoPrefs
+import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -74,7 +75,7 @@ class CustomIconProvider @JvmOverloads constructor(
     supportsIconTheme: Boolean = false,
 ) : IconProvider(context) {
 
-    private val prefs = Utilities.getNeoPrefs(context)
+    private val prefs = NeoPrefs.getInstance()
     private val iconPackPref = prefs.profileIconPack
     private val drawerThemedIcons = prefs.profileThemedIcons.getValue()
     private var isOlderLawnIconsInstalled =
@@ -84,11 +85,11 @@ class CustomIconProvider @JvmOverloads constructor(
     private val iconPack get() = iconPackProvider.getIconPackOrSystem(iconPackPref.getValue())
     private var iconPackVersion = 0L
     private var themeMapName: String = ""
-    private var _themeMap: Map<ComponentName, ThemedIconDrawable.ThemeData>? = null
+    private var _themeMap: Map<ComponentName, ThemeData>? = null
     private val themedIconPack
         get() = iconPackProvider.getIconPack(context.getString(R.string.icon_packs_intent_name))
             ?.apply { loadBlocking() }
-    private val themeMap: Map<ComponentName, ThemedIconDrawable.ThemeData>
+    private val themeMap: Map<ComponentName, ThemeData>
         get() {
             if (drawerThemedIcons && !(isOlderLawnIconsInstalled)) {
                 _themeMap = DISABLED_MAP
@@ -145,7 +146,7 @@ class CustomIconProvider @JvmOverloads constructor(
         val iconEntry = resolveIconEntry(componentName, user)
         var resolvedEntry = iconEntry
         var iconType = ICON_TYPE_DEFAULT
-        var themeData: ThemedIconDrawable.ThemeData? = null
+        var themeData: ThemeData? = null
         if (iconEntry != null) {
             val clock = iconPackProvider.getClockMetadata(iconEntry)
             when {
@@ -230,7 +231,7 @@ class CustomIconProvider @JvmOverloads constructor(
         return _themeMap != DISABLED_MAP
     }
 
-    override fun getThemeData(componentName: ComponentName): ThemedIconDrawable.ThemeData? {
+    override fun getThemeData(componentName: ComponentName): ThemeData? {
         val td = getDynamicIconsFromMap(context, themeMap, componentName)
         if (td != null) {
             return td

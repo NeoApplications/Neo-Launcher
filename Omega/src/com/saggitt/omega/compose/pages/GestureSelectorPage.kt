@@ -72,6 +72,7 @@ import com.saggitt.omega.data.AppItemWithShortcuts
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.handlers.StartAppGestureHandler
 import com.saggitt.omega.preferences.NavigationPref
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.GroupItemShape
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.appsState
@@ -396,7 +397,6 @@ fun ShortcutsScreen(
 @Composable
 @Preview
 fun GestureSelectorPreview() {
-    val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     GestureSelectorPage(prefs.gestureDoubleTap)
 }

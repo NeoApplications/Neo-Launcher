@@ -83,7 +83,6 @@ import com.android.launcher3.celllayout.CellPosMapper;
 import com.android.launcher3.celllayout.CellPosMapper.CellPos;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.debug.TestEventEmitter;
-import com.android.launcher3.debug.TestEventEmitter.TestEvent;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
@@ -108,7 +107,6 @@ import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicator;
 import com.android.launcher3.statemanager.StateManager;
 import com.android.launcher3.statemanager.StateManager.StateHandler;
-import com.android.launcher3.statemanager.StateManager.StateListener;
 import com.android.launcher3.states.StateAnimationConfig;
 import com.android.launcher3.touch.WorkspaceTouchListener;
 import com.android.launcher3.util.EdgeEffectCompat;
@@ -129,10 +127,9 @@ import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.util.WidgetSizes;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
-import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
 
 import com.google.android.msdl.data.model.MSDLToken;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -39,7 +39,7 @@ import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 /**
  * View scrim which draws behind hotseat and workspace

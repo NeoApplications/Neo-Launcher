@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -62,16 +63,19 @@ import com.saggitt.omega.compose.pages.HiddenAppsPage
 import com.saggitt.omega.compose.pages.IconShapePage
 import com.saggitt.omega.compose.pages.ProtectedAppsPage
 import com.saggitt.omega.compose.pages.ProtectedAppsView
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun MainPrefsPage() {
     val context = LocalContext.current
     val paneNavigator = LocalPaneNavigator.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val showDev by prefs.developerOptionsEnabled.get().collectAsState(false)
+    val scope = rememberCoroutineScope()
 
     val uiPrefs = persistentListOf(
         PageItem.PrefsProfile,
@@ -141,11 +145,13 @@ fun MainPrefsPage() {
                         )
                         DropdownMenuItem(
                             onClick = {
-                                paneNavigator.navigateTo(
-                                    ListDetailPaneScaffoldRole.Detail,
-                                    NavRoute.Dev()
-                                )
-                                hideMenu()
+                                scope.launch {
+                                    paneNavigator.navigateTo(
+                                        ListDetailPaneScaffoldRole.Detail,
+                                        NavRoute.Dev()
+                                    )
+                                    hideMenu()
+                                }
                             },
                             text = { Text(text = stringResource(id = R.string.developer_options_title)) }
                         )

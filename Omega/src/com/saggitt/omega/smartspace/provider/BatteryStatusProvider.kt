@@ -25,7 +25,6 @@ import android.graphics.drawable.Icon
 import android.os.BatteryManager
 import androidx.core.content.getSystemService
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.util.broadcastReceiverFlow
 import com.saggitt.omega.util.formatShortElapsedTimeRoundingUpToMinutes

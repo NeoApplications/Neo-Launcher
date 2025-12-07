@@ -85,6 +85,7 @@ import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.util.blockBorder
 import com.saulhdev.neolauncher.icons.drawableToBitmap
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -280,7 +281,7 @@ fun AppPacksIconsBar(
 ) {
     val scrollState = rememberScrollState()
     val isFolder = componentKey.componentName.packageName.contains("com.saulhdev.omega.folder")
-    val iconDpi = LocalContext.current.resources.configuration.densityDpi
+    val iconDpi = LocalConfiguration.current.densityDpi
 
     Row(
         modifier = Modifier

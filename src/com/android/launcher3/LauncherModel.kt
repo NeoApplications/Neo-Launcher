@@ -21,6 +21,7 @@ import android.content.pm.ShortcutInfo
 import android.os.UserHandle
 import android.text.TextUtils
 import android.util.Pair
+import androidx.annotation.NonNull
 import androidx.annotation.WorkerThread
 import com.android.launcher3.celllayout.CellPosMapper
 import com.android.launcher3.dagger.ApplicationContext
@@ -137,6 +138,11 @@ constructor(
     fun addAndBindAddedWorkspaceItems(itemList: List<Pair<ItemInfo?, Any?>?>) {
         callbacks.forEach { it.preAddApps() }
         enqueueModelUpdateTask(AddWorkspaceItemsTask(itemList, spaceFinderFactory.get()))
+    }
+
+    public fun onPackageChanged(@NonNull packageName: String, @NonNull user: UserHandle) {
+        val op = PackageUpdatedTask.OP_UPDATE
+        enqueueModelUpdateTask(PackageUpdatedTask(op, user, packageName))
     }
 
     fun getWriter(

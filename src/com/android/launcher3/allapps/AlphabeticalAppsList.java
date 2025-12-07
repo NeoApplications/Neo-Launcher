@@ -50,7 +50,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

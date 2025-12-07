@@ -263,7 +263,6 @@ public class DeviceProfile {
     public int allAppsLeftRightMargin;
     public final int numShownAllAppsColumns;
     public float allAppsIconTextSizePx;
-    // Edited
     private float allAppsCellHeightMultiplier;
 
     // Overview
@@ -295,19 +294,15 @@ public class DeviceProfile {
     public int dropTargetVerticalPaddingPx;
     public int dropTargetGapPx;
     public int dropTargetButtonWorkspaceEdgeGapPx;
-
-    // Insets
     private final Rect mInsets = new Rect();
     public final Rect workspacePadding = new Rect();
     // Additional padding added to the widget inside its cellSpace. It is applied outside
     // the widgetView, such that the actual view size is same as the widget size.
     public final Rect widgetPadding = new Rect();
 
-    // Notification dots
     public final DotRenderer mDotRendererWorkSpace;
     public final DotRenderer mDotRendererAllApps;
 
-    // Taskbar
     public boolean isTaskbarPresent;
     // Whether Taskbar will inset the bottom of apps by taskbarSize.
     public boolean isTaskbarPresentInApps;
@@ -319,11 +314,8 @@ public class DeviceProfile {
     // If true, used to layout taskbar in 3 button navigation mode.
     public final boolean startAlignTaskbar;
     public final boolean isTransientTaskbar;
-    // DragController
     public int flingToDeleteThresholdVelocity;
-    // Edited
     private final NeoPrefs prefs;
-    // Edited
     private final DeviceProfileOverrides.TextFactors mTextFactors;
 
     /** Used only as an alternative to mocking when null values cannot be used. */
@@ -408,7 +400,7 @@ public class DeviceProfile {
             @NonNull final Consumer<DeviceProfile> dimensionOverrideProvider,
             boolean isTransientTaskbar) {
 
-        prefs = Utilities.getNeoPrefs(context);
+        prefs = NeoPrefs.getInstance();
         boolean fullWidthWidgets = prefs.getDesktopAllowFullWidthWidgets().getValue();
         allAppsCellHeightMultiplier = prefs.getDrawerCellHeightMultiplier().getValue();
         mTextFactors = DeviceProfileOverrides.INSTANCE.get(context).getTextFactors();
@@ -852,7 +844,7 @@ public class DeviceProfile {
 
             hotseatBarBottomSpacePx += extraSpace * ((float) dockBottomSpace / dockVerticalSpace);
 
-            updateAvailableDimensions(res);
+            updateAvailableDimensions(context);
         }
 
         updateWorkspacePadding();
@@ -919,7 +911,7 @@ public class DeviceProfile {
 
         // This is done last, after iconSizePx is calculated above.
         float dotSize = 0.228f;
-        NeoPrefs prefs = Utilities.getNeoPrefs(context);
+        NeoPrefs prefs = NeoPrefs.getInstance();
         if (prefs.getNotificationCount().getValue()) {
             dotSize = 0.38f;
         }

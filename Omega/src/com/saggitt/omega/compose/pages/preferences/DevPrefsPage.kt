@@ -41,11 +41,12 @@ import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.LAYOUT_CUSTOM_CATEGORIES
+import com.saggitt.omega.preferences.NeoPrefs
 
 @Composable
 fun DevPrefsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
     val onPrefDialog = { pref: Any ->

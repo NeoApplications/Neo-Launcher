@@ -50,6 +50,7 @@ import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.MultiSelectionListItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.groups.category.DrawerTabs
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addOrRemove
 import com.saggitt.omega.util.blockShadow
@@ -76,7 +77,7 @@ fun AppTabDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

@@ -15,6 +15,7 @@ import com.android.launcher3.search.StringMatcherUtility
 import com.neoapps.neolauncher.nLauncher
 import com.saggitt.omega.util.prefs
 import com.neoapps.neolauncher.search.SearchProviderController
+import com.saggitt.omega.preferences.NeoPrefs
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
 import java.util.Locale
@@ -162,7 +163,7 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     private fun getSuggestions(query: String): List<String?> {
-        if (!Utilities.getNeoPrefs(context).searchGlobal.getValue()) {
+        if (!NeoPrefs.getInstance().searchGlobal.getValue()) {
             return emptyList<String>()
         }
         val provider = SearchProviderController

@@ -67,7 +67,6 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.getFeedProviders
 import com.saggitt.omega.util.languageOptions
 import com.saggitt.omega.widget.Temperature
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.search.SearchProviderController
 import com.neoapps.neolauncher.util.CustomPreferencesMigration
 import kotlinx.coroutines.CoroutineName
@@ -116,7 +115,6 @@ class NeoPrefs private constructor(val context: Context) {
         return { getOnChangeCallback()?.let { callback(it) } }
     }
 
-    // Onboarding
     var onboardingBounceSeen = BooleanPref(
         titleId = R.string.onboarding_swipe_up,
         dataStore = dataStore,
@@ -124,7 +122,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    // Profile
     var profileLanguage = StringSelectionPref(
         dataStore = dataStore,
         key = PrefKey.PROFILE_GLOBAL_LANGUAGE,
@@ -456,7 +453,12 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = "custom|#${Themes.getAttrColor(context, R.attr.colorSurface)}",
+        defaultValue = "custom|#${
+            Themes.getAttrColor(
+                context,
+                com.android.internal.R.attr.colorSurface
+            )
+        }",
         navRoute = NavRoute.Desktop.FolderBG(),
         onChange = { reloadGrid() },
     )

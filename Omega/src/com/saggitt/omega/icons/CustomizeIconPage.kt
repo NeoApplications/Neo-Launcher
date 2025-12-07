@@ -73,10 +73,10 @@ import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.groups.ui.AppTabDialog
-import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferenceActivity
 import com.saggitt.omega.util.addIfNotNull
 import com.neoapps.neolauncher.util.getPackageVersion
+import com.saggitt.omega.preferences.NeoPrefs
 import kotlinx.coroutines.launch
 
 @Composable

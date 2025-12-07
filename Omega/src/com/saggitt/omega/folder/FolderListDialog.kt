@@ -51,6 +51,7 @@ import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.SingleSelectionListItem
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.GestureHandler
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.blockShadow
 
 @Composable
@@ -81,7 +82,7 @@ fun FolderListDialogUI(
     onClose: (GestureHandler) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

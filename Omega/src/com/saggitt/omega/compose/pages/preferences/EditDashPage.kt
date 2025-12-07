@@ -54,6 +54,7 @@ import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.move
 import com.saggitt.omega.dash.dashProviderOptions
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.iconIds
 import com.saggitt.omega.theme.GroupItemShape
 import sh.calvin.reorderable.ReorderableItem
@@ -63,7 +64,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun EditDashPage() {
     val context = LocalContext.current
-    val dashProvidersItems = Utilities.getNeoPrefs(context).dashProvidersItems
+    val dashProvidersItems = NeoPrefs.getInstance().dashProvidersItems
     val iconList = iconIds
 
     val allItems = dashProviderOptions

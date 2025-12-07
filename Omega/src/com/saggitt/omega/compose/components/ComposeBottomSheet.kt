@@ -34,6 +34,7 @@ import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.AbstractSlideInView
 import com.android.launcher3.views.BaseDragLayer
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.OmegaAppTheme
 import com.saggitt.omega.views.BaseBottomSheet
 
@@ -127,7 +128,7 @@ class ComposeBottomSheet(context: Context, attrs: AttributeSet? = null) :
     }
 
     private fun updateContentShift() {
-        if (!Utilities.getNeoPrefs(context).showDebugInfo.getValue()) {
+        if (!NeoPrefs.getInstance().showDebugInfo.getValue()) {
             mContent.translationY = mTranslationShift * mContent.height + imeShift
         }
     }

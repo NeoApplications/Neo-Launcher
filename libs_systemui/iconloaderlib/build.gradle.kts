@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.core.animation)
     implementation(libs.koin.android)
+    implementation(libs.palette.ktx)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.rules)
 }

@@ -62,6 +62,7 @@ import com.saggitt.omega.compose.components.move
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Plus
 import com.saggitt.omega.data.SearchProviderRepository
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.theme.GroupItemShape
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
@@ -76,7 +77,7 @@ fun SearchProvidersPage() {
     val lazyListState = rememberLazyListState()
 
     val searchProviderRepository: SearchProviderRepository = getKoin().get()
-    val searchProviders = Utilities.getNeoPrefs(context).searchProviders
+    val searchProviders = NeoPrefs.getInstance().searchProviders
     val openDialog = remember { mutableStateOf(false) }
     var selectedProvider by remember {
         mutableLongStateOf(0L)

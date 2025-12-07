@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.App
 import com.saggitt.omega.util.appComparator
 import com.saggitt.omega.util.comparing
@@ -33,7 +34,7 @@ import com.saggitt.omega.util.comparing
 @Composable
 fun HiddenAppsPage() {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val hiddenApps by remember { mutableStateOf(prefs.drawerHiddenAppSet.getValue()) }
     val title = if (hiddenApps.isEmpty()) stringResource(id = R.string.title__drawer_hide_apps)
     else stringResource(id = R.string.hide_app_selected, hiddenApps.size)

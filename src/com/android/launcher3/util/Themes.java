@@ -34,7 +34,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 /**
  * Various utility methods associated with theming.

@@ -34,6 +34,7 @@ import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.data.SearchProviderRepository
 import com.saggitt.omega.data.models.SearchProvider
+import com.saggitt.omega.preferences.NeoPrefs
 import org.koin.java.KoinJavaComponent.getKoin
 
 @Composable
@@ -44,7 +45,7 @@ fun SearchProviderDialogUI(
     onSave: (SearchProvider?) -> Unit,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val providerState = getKoin().get<SearchProviderRepository>().getFlow(repositoryId)
         .collectAsState(initial = null)
     val provider by remember {

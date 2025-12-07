@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.List;

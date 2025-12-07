@@ -23,11 +23,6 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE;
 import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.ALL_APPS_SCROLLER;
-import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_CATEGORIZED;
-import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_CUSTOM_CATEGORIES;
-import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
-import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_VERTICAL;
-import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_VERTICAL_ALPHABETICAL;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

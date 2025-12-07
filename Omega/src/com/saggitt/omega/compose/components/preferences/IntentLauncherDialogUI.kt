@@ -23,6 +23,7 @@ import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.preferences.IntentLauncherPref
+import com.saggitt.omega.preferences.NeoPrefs
 
 @Composable
 fun IntentLauncherDialogUI(
@@ -30,7 +31,7 @@ fun IntentLauncherDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

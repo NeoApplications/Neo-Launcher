@@ -46,11 +46,14 @@ import com.saggitt.omega.icons.IconShape
 import com.saggitt.omega.icons.IconShapeItem
 import com.saggitt.omega.icons.IconShapeManager
 import com.saggitt.omega.icons.ShapeModel
+import com.saggitt.omega.preferences.NeoPrefs
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.getValue
 
 @Composable
 fun IconShapePage() {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
     val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
         val systemShape = IconShapeManager.getSystemIconShape(context)

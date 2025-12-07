@@ -39,7 +39,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.android.launcher3.Flags;
-import com.android.launcher3.LauncherModel.ModelUpdateTask;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.R;
@@ -60,7 +59,7 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SafeCloseable;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;

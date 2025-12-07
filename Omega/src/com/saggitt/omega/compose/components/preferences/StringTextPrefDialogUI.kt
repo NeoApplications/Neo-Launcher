@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.StringTextPref
 
 @Composable
@@ -50,7 +51,7 @@ fun StringTextPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     var itemText by remember { mutableStateOf(pref.getValue()) }
 
     var radius = 16.dp

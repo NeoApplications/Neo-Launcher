@@ -18,6 +18,7 @@
 
 package com.saggitt.omega.theme
 
+import android.R.attr.colorAccent
 import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.android.launcher3.R
@@ -89,7 +90,7 @@ sealed class AccentColorOption {
 
         override val displayName = -1
         override val accentColor: Int
-            get() = NeoApp.instance?.applicationContext!!.getColorAttr(R.attr.colorAccent)
+            get() = NeoApp.instance?.applicationContext!!.getColorAttr(colorAccent)
 
     }
 

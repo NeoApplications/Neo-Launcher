@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saulhdev.launcherclient;
+package com.neoapps.launcherclient;
 
 import static android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 

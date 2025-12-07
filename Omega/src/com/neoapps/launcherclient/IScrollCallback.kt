@@ -1,4 +1,4 @@
-package com.saulhdev.launcherclient
+package com.neoapps.launcherclient
 
 interface IScrollCallback {
     fun onOverlayScrollChanged(progress: Float)

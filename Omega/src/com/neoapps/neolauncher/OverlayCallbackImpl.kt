@@ -22,15 +22,14 @@ import android.view.MotionEvent
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Launcher
-import com.android.launcher3.Utilities
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy
+import com.neoapps.launcherclient.IScrollCallback
+import com.neoapps.launcherclient.LauncherClient
+import com.neoapps.launcherclient.LauncherClientCallbacks
+import com.neoapps.launcherclient.StaticInteger
 import com.saggitt.omega.preferences.NeoPrefs
-import com.saulhdev.launcherclient.IScrollCallback
-import com.saulhdev.launcherclient.LauncherClient
-import com.saulhdev.launcherclient.LauncherClientCallbacks
-import com.saulhdev.launcherclient.StaticInteger
 import kotlinx.coroutines.launch
 
 class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
@@ -121,7 +120,7 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
         if (flags != mFlags) {
             mFlagsChanged = true
             mFlags = flags
-            Utilities.getDevicePrefs(launcher).edit().putInt(PREF_PERSIST_FLAGS, flags).apply()
+            LauncherPref.getDevicePrefs(launcher).edit().putInt(PREF_PERSIST_FLAGS, flags).apply()
         }
     }
 

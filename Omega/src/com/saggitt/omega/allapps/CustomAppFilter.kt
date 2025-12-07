@@ -24,6 +24,7 @@ import android.os.UserHandle
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
+import com.saggitt.omega.preferences.NeoPrefs
 
 class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
     fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
@@ -48,11 +49,11 @@ class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
         }
 
         private fun getHiddenApps(context: Context): MutableSet<String> {
-            return HashSet(Utilities.getNeoPrefs(context).drawerHiddenAppSet.getValue())
+            return HashSet(NeoPrefs.getInstance().drawerHiddenAppSet.getValue())
         }
 
         private fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
-            Utilities.getNeoPrefs(context).drawerHiddenAppSet.setValue(hiddenApps!!)
+            NeoPrefs.getInstance().drawerHiddenAppSet.setValue(hiddenApps!!)
         }
     }
 }

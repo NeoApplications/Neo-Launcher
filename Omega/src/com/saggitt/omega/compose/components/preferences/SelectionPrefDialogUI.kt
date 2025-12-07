@@ -58,6 +58,7 @@ import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.preferences.DialogPref
 import com.saggitt.omega.preferences.IntSelectionPref
 import com.saggitt.omega.preferences.LongSelectionPref
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.StringMultiSelectionPref
 import com.saggitt.omega.preferences.StringSelectionPref
 import com.saggitt.omega.util.blockShadow
@@ -71,7 +72,7 @@ fun IntSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val entryPairs = pref.entries.toList()
     val coroutineScope = rememberCoroutineScope()
     var selected by remember { mutableIntStateOf(-1) }
@@ -154,7 +155,7 @@ fun LongSelectionPrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     val entryPairs = pref.entries().toList()
     val coroutineScope = rememberCoroutineScope()
     var selected by remember { mutableLongStateOf(-1L) }
@@ -229,8 +230,7 @@ fun StringSelectionPrefDialogUI(
     pref: StringSelectionPref,
     openDialogCustom: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
@@ -297,8 +297,7 @@ fun StringMultiSelectionPrefDialogUI(
     pref: StringMultiSelectionPref,
     openDialogCustom: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     var selected by remember { mutableStateOf(pref.getValue()) }
     val entryPairs = pref.entries.toList()
 
@@ -369,8 +368,7 @@ fun ResetCustomIconsDialog(
     pref: DialogPref,
     openDialogCustom: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
 
     var radius = 16.dp
     if (prefs.profileWindowCornerRadius.getValue() > -1) {

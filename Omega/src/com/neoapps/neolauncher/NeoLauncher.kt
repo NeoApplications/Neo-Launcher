@@ -87,7 +87,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
-    val prefs: NeoPrefs by lazy { Utilities.getNeoPrefs(this) }
+    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }

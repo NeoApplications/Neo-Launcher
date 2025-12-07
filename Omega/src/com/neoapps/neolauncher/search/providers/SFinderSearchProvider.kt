@@ -23,9 +23,9 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.Keep
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
-import com.saggitt.omega.preferences.NeoPrefs
 import com.neoapps.neolauncher.search.AbstractSearchProvider
 import com.neoapps.neolauncher.util.isAppEnabled
+import com.saggitt.omega.preferences.NeoPrefs
 
 @Keep
 class SFinderSearchProvider(context: Context) : AbstractSearchProvider(context) {

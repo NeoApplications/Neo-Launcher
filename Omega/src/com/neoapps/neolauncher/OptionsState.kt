@@ -27,10 +27,10 @@ import kotlin.math.max
 
 class OptionsState(id: Int) :
     LauncherState(id, LAUNCHER_STATE_OPTIONS, STATE_FLAGS) {
-    override fun <DEVICE_PROFILE_CONTEXT> getTransitionDuration(
-        context: DEVICE_PROFILE_CONTEXT,
+    override fun getTransitionDuration(
+        context: ActivityContext,
         isToState: Boolean
-    ): Int where DEVICE_PROFILE_CONTEXT : Context?, DEVICE_PROFILE_CONTEXT : ActivityContext? {
+    ): Int {
         return LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY
     }
 

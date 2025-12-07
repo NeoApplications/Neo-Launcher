@@ -109,7 +109,7 @@ import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.saggitt.omega.folder.FolderShortcut;
 import com.saggitt.omega.groups.category.DrawerFolderInfo;
 import com.saggitt.omega.icons.IconShape;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.neoapps.NeoPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

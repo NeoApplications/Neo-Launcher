@@ -58,6 +58,7 @@ import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.preferences.GridSize
 import com.saggitt.omega.preferences.GridSize2D
+import com.saggitt.omega.preferences.NeoPrefs
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -66,7 +67,7 @@ fun GridSizePrefDialogUI(
     openDialogCustom: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
-    val prefs = Utilities.getNeoPrefs(context)
+    val prefs = NeoPrefs.getInstance()
     var numColumns by remember { mutableIntStateOf(pref.numColumnsPref.getValue()) }
     var numRows by remember { mutableIntStateOf(if (pref is GridSize2D) pref.numRowsPref.getValue() else 0) }
 

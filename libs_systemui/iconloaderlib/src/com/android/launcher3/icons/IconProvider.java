@@ -257,7 +257,7 @@ public class IconProvider {
     /**
      * @return Today's day of the month, zero-indexed.
      */
-    private static int getDay() {
+    public static int getDay() {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1;
     }
     private static ComponentName parseComponentOrNull(Context context, int resId) {
