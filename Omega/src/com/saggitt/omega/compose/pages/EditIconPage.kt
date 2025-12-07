@@ -83,7 +83,7 @@ import com.saggitt.omega.iconpack.CustomIconPack
 import com.saggitt.omega.iconpack.IconPackInfo
 import com.saggitt.omega.iconpack.IconPackProvider
 import com.saggitt.omega.util.blockBorder
-import com.saulhdev.neolauncher.icons.drawableToBitmap
+import com.neoapps.neolauncher.icons.drawableToBitmap
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalConfiguration
 

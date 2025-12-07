@@ -12,8 +12,8 @@ import android.util.Xml
 import com.android.launcher3.R
 import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.util.prefs
-import com.saulhdev.neolauncher.icons.ClockMetadata
-import com.saulhdev.neolauncher.icons.ExtendedBitmapDrawable
+import com.neoapps.neolauncher.icons.ClockMetadata
+import com.neoapps.neolauncher.icons.ExtendedBitmapDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

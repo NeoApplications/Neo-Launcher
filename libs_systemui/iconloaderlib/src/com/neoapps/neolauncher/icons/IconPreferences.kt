@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.saulhdev.neolauncher.icons
+package com.neoapps.neolauncher.icons
 
 import android.content.Context
 import android.content.SharedPreferences

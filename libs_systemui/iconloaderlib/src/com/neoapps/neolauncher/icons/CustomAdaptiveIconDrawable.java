@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.saulhdev.neolauncher.icons;
+package com.neoapps.neolauncher.icons;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;

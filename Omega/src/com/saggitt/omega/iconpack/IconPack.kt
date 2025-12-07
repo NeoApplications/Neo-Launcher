@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import com.android.launcher3.compat.AlphabeticIndexCompat
 import com.saggitt.omega.data.models.IconPickerItem
 import com.neoapps.neolauncher.icons.ClockMetadata
-import com.saulhdev.neolauncher.icons.ClockMetadata
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred

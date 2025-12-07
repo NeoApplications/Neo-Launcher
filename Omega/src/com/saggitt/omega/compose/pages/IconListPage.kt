@@ -53,7 +53,7 @@ import com.saggitt.omega.data.models.IconPickerItem
 import com.saggitt.omega.iconpack.IconPack
 import com.saggitt.omega.iconpack.filter
 import com.saggitt.omega.util.getIcon
-import com.saulhdev.neolauncher.icons.drawableToBitmap
+import com.neoapps.neolauncher.icons.drawableToBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.saulhdev.neolauncher.icons
+package com.neoapps.neolauncher.icons
 
 data class ClockMetadata(
     val hourLayerIndex: Int,

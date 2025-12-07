@@ -20,9 +20,9 @@ import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.prefs
-import com.saulhdev.neolauncher.icons.ClockMetadata
+import com.neoapps.neolauncher.icons.ClockMetadata
 import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
-import com.saulhdev.neolauncher.icons.IconPreferences
+import com.neoapps.neolauncher.icons.IconPreferences
 
 class IconPackProvider(private val context: Context) {
     private val iconPacks = mutableMapOf<String, IconPack?>()

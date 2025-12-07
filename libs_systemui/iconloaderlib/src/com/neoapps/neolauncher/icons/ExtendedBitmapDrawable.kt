@@ -1,4 +1,4 @@
-package com.saulhdev.neolauncher.icons
+package com.neoapps.neolauncher.icons
 
 import android.content.res.Resources
 import android.graphics.Bitmap
