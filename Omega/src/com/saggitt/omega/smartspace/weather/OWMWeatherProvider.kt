@@ -27,11 +27,12 @@ import android.util.Log
 import android.widget.Toast
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
 import com.neoapps.neolauncher.neoApp
+import com.neoapps.neolauncher.util.Permissions
+import com.neoapps.neolauncher.util.Permissions.REQUEST_PERMISSION_LOCATION_ACCESS
 import com.saggitt.omega.smartspace.model.SmartspaceScores
 import com.saggitt.omega.smartspace.model.WeatherData
 import com.saggitt.omega.smartspace.provider.SmartspaceDataSource
@@ -101,7 +102,11 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     fun updateData() {
         if (prefs.smartspaceWeatherCity.getValue() == "##Auto") {
             if (!locationAccess) {
-                Utilities.requestLocationPermission(context.neoApp.activityHandler.foregroundActivity)
+                Permissions.requestPermission(
+                    context.neoApp.activityHandler.foregroundActivity!!,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                    REQUEST_PERMISSION_LOCATION_ACCESS
+                )
                 return
             } else {
                 val locationProvider = locationManager?.getBestProvider(Criteria(), true)

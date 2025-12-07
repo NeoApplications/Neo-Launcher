@@ -1,5 +1,6 @@
 package com.neoapps.neolauncher.util
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
@@ -10,11 +11,14 @@ import androidx.core.content.ContextCompat
 object Permissions {
     const val READ_EXTERNAL_STORAGE = "android.Manifest.permission.READ_EXTERNAL_STORAGE"
 
-    fun requestStoragePermission(activity: Activity) {
+    const val REQUEST_PERMISSION_STORAGE_ACCESS = 666
+    const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
+    const val REQUEST_PERMISSION_READ_CONTACTS = 668
+
+    fun requestPermission(activity: Activity, permission: String, requestCode: Int) {
         ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(READ_EXTERNAL_STORAGE),
-            666
+            activity, arrayOf(permission),
+            requestCode
         )
     }
 
