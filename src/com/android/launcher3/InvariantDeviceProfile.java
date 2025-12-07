@@ -147,6 +147,7 @@ public class InvariantDeviceProfile {
      */
     public int numRows;
     public int numColumns;
+    public int numColumnsOriginal;
     public int numSearchContainerColumns;
 
     /**
@@ -200,6 +201,7 @@ public class InvariantDeviceProfile {
      * Number of columns in the all apps list.
      */
     public int numAllAppsColumns;
+    public int numAllAppsColumnsOriginal;
     public int numAllAppsRowsForCellHeightCalculation;
     public int numDatabaseAllAppsColumns;
     public @StyleRes int allAppsStyle;
@@ -372,6 +374,7 @@ public class InvariantDeviceProfile {
         GridOption closestProfile = displayOption.grid;
         numRows = closestProfile.numRows;
         numColumns = closestProfile.numColumns;
+        numColumnsOriginal = closestProfile.numColumns;
         numSearchContainerColumns = closestProfile.numSearchContainerColumns;
         dbFile = closestProfile.dbFile;
         gridType = closestProfile.gridType;
@@ -431,6 +434,7 @@ public class InvariantDeviceProfile {
         allAppsStyle = closestProfile.allAppsStyle;
 
         numAllAppsColumns = closestProfile.numAllAppsColumns;
+        numAllAppsColumnsOriginal = numAllAppsColumns;
 
         numDatabaseAllAppsColumns = deviceType == TYPE_MULTI_DISPLAY
                 ? closestProfile.numDatabaseAllAppsColumns : closestProfile.numAllAppsColumns;

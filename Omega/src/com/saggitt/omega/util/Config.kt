@@ -40,6 +40,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.saggitt.omega.allapps.CustomAppFilter
 import com.saggitt.omega.flowerpot.Flowerpot
+import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PrefKey
 import com.saggitt.omega.smartspace.provider.AlarmEventProvider
 import com.saggitt.omega.smartspace.provider.BatteryStatusProvider
@@ -260,7 +261,7 @@ class Config(val context: Context) {
         fun isAppProtected(context: Context, componentKey: ComponentKey): Boolean {
             var result = false
             val protectedApps = ArrayList(
-                Utilities.getNeoPrefs(context).drawerProtectedAppsSet.getValue()
+                NeoPrefs.getInstance().drawerProtectedAppsSet.getValue()
                     .map { Utilities.makeComponentKey(context, it) })
 
             if (protectedApps.contains(componentKey)) {
