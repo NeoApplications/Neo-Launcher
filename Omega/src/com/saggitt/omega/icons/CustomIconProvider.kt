@@ -52,6 +52,7 @@ import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.mono.ThemedIconDrawable
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
+import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.saggitt.omega.data.IconOverrideRepository
 import com.saggitt.omega.iconpack.IconEntry
 import com.saggitt.omega.iconpack.IconPack
@@ -64,7 +65,6 @@ import com.saggitt.omega.util.overrideSdk
 import com.neoapps.neolauncher.util.getPackageVersionCode
 import com.neoapps.neolauncher.util.isPackageInstalled
 import com.saggitt.omega.preferences.NeoPrefs
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -113,7 +113,7 @@ class CustomIconProvider @JvmOverloads constructor(
         setIconThemeSupported(supportsIconTheme)
     }
 
-    override fun setIconThemeSupported(isSupported: Boolean) {
+    fun setIconThemeSupported(isSupported: Boolean) {
         _themeMap = if (isSupported && isOlderLawnIconsInstalled) null else DISABLED_MAP
     }
 
@@ -152,7 +152,7 @@ class CustomIconProvider @JvmOverloads constructor(
             when {
                 iconEntry.type == IconType.Calendar -> {
                     resolvedEntry = iconEntry.resolveDynamicCalendar(getDay())
-                    themeData = getThemeData(mCalendar.packageName, "")
+                    themeData = getThemeData(mCalendar)
                     iconType = ICON_TYPE_CALENDAR
                 }
                 !supportsIconTheme -> {
@@ -160,20 +160,19 @@ class CustomIconProvider @JvmOverloads constructor(
                 }
                 clock != null -> {
                     // the icon supports dynamic clock, use dynamic themed clock
-                    themeData = getThemeData(mClock.packageName, "")
+                    themeData = getThemeData(mClock)
                     iconType = ICON_TYPE_CLOCK
                 }
                 packageName == mClock.packageName -> {
                     // is clock app but icon might not be adaptive, fallback to static themed clock
-                    themeData = ThemedIconDrawable.ThemeData(
+                    themeData = ThemeData(
                         context.resources,
-                        BuildConfig.APPLICATION_ID,
-                        R.drawable.themed_icon_static_clock
+                        BuildConfig.APPLICATION_ID
                     )
                 }
                 packageName == mCalendar.packageName -> {
                     // calendar app, apply the dynamic calendar icon
-                    themeData = getThemeData(mCalendar.packageName, "")
+                    themeData = getThemeData(mCalendar)
                     iconType = ICON_TYPE_CALENDAR
                 }
                 else -> {
@@ -385,7 +384,7 @@ class CustomIconProvider @JvmOverloads constructor(
         }
 
         private var iconState = systemIconState
-        private val prefs = Utilities.getNeoPrefs(context)
+        private val prefs = NeoPrefs.getInstance()
         private val iconPackPref = prefs.profileIconPack
 
         init {
@@ -477,8 +476,8 @@ class CustomIconProvider @JvmOverloads constructor(
         }
     }
 
-    private fun createThemedIconMap(): MutableMap<ComponentName, ThemedIconDrawable.ThemeData> {
-        val map = ArrayMap<ComponentName, ThemedIconDrawable.ThemeData>()
+    private fun createThemedIconMap(): MutableMap<ComponentName, ThemeData> {
+        val map = ArrayMap<ComponentName, ThemeData>()
 
         fun updateMapFromResources(resources: Resources, packageName: String) {
             try {
@@ -530,7 +529,7 @@ class CustomIconProvider @JvmOverloads constructor(
     companion object {
         const val TAG = "CustomIconProvider"
 
-        val DISABLED_MAP = emptyMap<ComponentName, ThemedIconDrawable.ThemeData>()
+        val DISABLED_MAP = emptyMap<ComponentName, ThemeData>()
         const val MANIFEST_XML = "AndroidManifest.xml"
     }
 }

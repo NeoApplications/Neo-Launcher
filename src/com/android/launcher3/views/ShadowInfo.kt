@@ -17,8 +17,13 @@
 package com.android.launcher3.views
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
+import android.widget.TextView
 import com.android.launcher3.R
+import com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound
+import kotlin.math.roundToInt
+
 
 /**
  * Launcher data holder for classes such as [DoubleShadowBubbleTextView] to model shadows for
@@ -32,6 +37,39 @@ data class ShadowInfo(
     val keyShadowOffsetY: Float,
     val keyShadowColor: Int
 ) {
+
+    fun skipDoubleShadow(textView: TextView): Boolean {
+        val textAlpha: Int = Color.alpha(textView.currentTextColor)
+        val keyShadowAlpha: Int = Color.alpha(keyShadowColor)
+        val ambientShadowAlpha: Int = Color.alpha(ambientShadowColor)
+        if (textAlpha == 0 || (keyShadowAlpha == 0 && ambientShadowAlpha == 0)) {
+            textView.getPaint().clearShadowLayer()
+            return true
+        } else if (ambientShadowAlpha > 0 && keyShadowAlpha == 0) {
+            textView.getPaint().setShadowLayer(
+                ambientShadowBlur, 0f, 0f,
+                getTextShadowColor(ambientShadowColor, textAlpha)
+            )
+            return true
+        } else if (keyShadowAlpha > 0 && ambientShadowAlpha == 0) {
+            textView.getPaint().setShadowLayer(
+                keyShadowBlur,
+                keyShadowOffsetX,
+                keyShadowOffsetY,
+                getTextShadowColor(keyShadowColor, textAlpha)
+            )
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private fun getTextShadowColor(shadowColor: Int, textAlpha: Int): Int {
+        return setColorAlphaBound(
+            shadowColor,
+            (Color.alpha(shadowColor) * textAlpha / 255f).roundToInt()
+        )
+    }
 
     companion object {
         /** Constructs instance of ShadowInfo from Context and given attribute set. */

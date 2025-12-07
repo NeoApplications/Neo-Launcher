@@ -59,6 +59,7 @@ import com.saggitt.omega.data.models.GestureItemInfo;
 import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
@@ -109,16 +110,13 @@ public class FolderInfo extends CollectionInfo {
      */
     private final ArrayList<ItemInfo> contents = new ArrayList<>();
 
-    // Edited
     public String swipeUpAction;
-    // Edited
+    private ArrayList<FolderListener> mListeners = new ArrayList<>();
     public FirstItemProvider firstItemProvider = new FirstItemProvider(this);
 
-    // Edited
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
-        // TODO consider re-adding it
-        // user = Process.myUserHandle();
+        user = Process.myUserHandle();
 
         swipeUpAction = "";
     }
@@ -165,6 +163,28 @@ public class FolderInfo extends CollectionInfo {
         writer.put(LauncherSettings.Favorites.OPTIONS, options);
     }
 
+    public void addListener(FolderListener listener) {
+        mListeners.add(listener);
+    }
+
+    public void removeListener(FolderListener listener) {
+        mListeners.remove(listener);
+    }
+
+    public interface FolderListener {
+        void onAdd(WorkspaceItemInfo item, int rank);
+
+        void onRemove(List<WorkspaceItemInfo> item);
+
+        void onItemsChanged(boolean animate);
+
+        void onTitleChanged(CharSequence title);
+
+        default void onIconChanged() {
+            // do nothing
+        }
+    }
+
     public boolean hasOption(int optionFlag) {
         return (options & optionFlag) != 0;
     }
@@ -186,28 +206,23 @@ public class FolderInfo extends CollectionInfo {
         }
     }
 
-    // Edited
     public boolean isCoverMode() {
         return hasOption(FLAG_COVER_MODE);
     }
 
-    // Edited
     public boolean isInDrawer() {
         return container == ItemInfo.NO_ID;
     }
 
-    // Edited
     public void setCoverMode(boolean enable, ModelWriter modelWriter) {
         setOption(FLAG_COVER_MODE, enable, modelWriter);
         onIconChanged();
     }
 
-    // Edited
     public WorkspaceItemInfo getCoverInfo() {
         return firstItemProvider.getFirstItem();
     }
 
-    // Edited
     public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
         swipeUpAction = action;
         GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
@@ -221,7 +236,6 @@ public class FolderInfo extends CollectionInfo {
         }
     }
 
-    // Edited
     public CharSequence getIconTitle(Folder folder) {
         if (!isCoverMode()) {
             if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
@@ -238,17 +252,14 @@ public class FolderInfo extends CollectionInfo {
         }
     }
 
-    // Edited
     public ComponentKey toComponentKey() {
-        return new ComponentKey(new ComponentName("com.saulhdev.neolauncher.folder", String.valueOf(id)), Process.myUserHandle());
+        return new ComponentKey(new ComponentName("com.neoapps.neolauncher.folder", String.valueOf(id)), Process.myUserHandle());
     }
 
-    // Edited
-    // TODO consider new implementation
     public void onIconChanged() {
-        //for (FolderListener listener : mListeners) {
-        //    listener.onIconChanged();
-        //}
+        for (FolderListener listener : mListeners) {
+            listener.onIconChanged();
+        }
     }
 
     @Override
@@ -272,13 +283,11 @@ public class FolderInfo extends CollectionInfo {
                 .build();
     }
 
-    // Edited
-    // TODO consider new implementation
     public void setTitle(CharSequence title) {
         this.title = title;
-        //for (int i = 0; i < mListeners.size(); i++) {
-        //    mListeners.get(i).onTitleChanged(title);
-        //}
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onTitleChanged(title);
+        }
     }
 
     public void setTitle(@Nullable CharSequence title, ModelWriter modelWriter) {
@@ -426,24 +435,20 @@ public class FolderInfo extends CollectionInfo {
                 || itemType == ITEM_TYPE_APP_PAIR;
     }
 
-    // Edited
     public boolean useIconMode(Context context) {
         return isCoverMode();
     }
 
-    // Edited
     public boolean usingCustomIcon(Context context) {
         return !isCoverMode();
     }
 
-    // Edited
     public Drawable getIcon(Context context) {
         Launcher launcher = Launcher.getLauncher(context);
         if (isCoverMode()) return getCoverInfo().newIcon(context);
         return getFolderIcon(launcher);
     }
 
-    // Edited
     public Drawable getFolderIcon(Launcher launcher) {
         int iconSize = launcher.getDeviceProfile().iconSizePx;
         LinearLayout dummy = new LinearLayout(launcher, null);

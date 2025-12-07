@@ -181,10 +181,12 @@ fun EditIconPage(
                                     ListItemWithIcon(
                                         modifier = Modifier
                                             .clickable {
-                                                paneNavigator.navigateTo(
-                                                    ListDetailPaneScaffoldRole.Detail,
-                                                    iconPack.packageName
-                                                )
+                                                scope.launch {
+                                                    paneNavigator.navigateTo(
+                                                        ListDetailPaneScaffoldRole.Detail,
+                                                        iconPack.packageName
+                                                    )
+                                                }
                                             },
                                         title = iconPack.name,
                                         startIcon = {
@@ -246,7 +248,9 @@ fun EditIconPage(
                                             }
                                         },
                                         onBack = {
-                                            paneNavigator.navigateTo(ListDetailPaneScaffoldRole.List)
+                                            scope.launch {
+                                                paneNavigator.navigateTo(ListDetailPaneScaffoldRole.List)
+                                            }
                                         }
                                     )
                                     Column(

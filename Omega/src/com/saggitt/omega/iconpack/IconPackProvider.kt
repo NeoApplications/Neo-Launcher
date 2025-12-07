@@ -21,7 +21,7 @@ import com.saggitt.omega.util.Config
 import com.saggitt.omega.util.minSDK
 import com.saggitt.omega.util.prefs
 import com.neoapps.neolauncher.icons.ClockMetadata
-import com.saulhdev.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.icons.IconPreferences
 
 class IconPackProvider(private val context: Context) {

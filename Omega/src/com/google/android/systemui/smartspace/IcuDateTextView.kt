@@ -110,11 +110,10 @@ class IcuDateTextView @JvmOverloads constructor(
         if (formatterFunction != null && !updateFormatter) {
             return formatterFunction!!
         }
-        val formatter =  createGregorianFormatter()
+        val formatter = createGregorianFormatter()
         formatterFunction = formatter
         return formatter
     }
-
 
     private fun createGregorianFormatter(): FormatterFunction {
         var format: String

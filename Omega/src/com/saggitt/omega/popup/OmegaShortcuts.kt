@@ -42,6 +42,7 @@ import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.NeoLauncher
+import com.neoapps.neolauncher.util.DrawableUtils
 import com.saggitt.omega.compose.components.ComposeBottomSheet
 import com.saggitt.omega.icons.CustomizeIconPage
 import com.saggitt.omega.preferences.NeoPrefs
@@ -65,7 +66,7 @@ class OmegaShortcuts {
         val prefs: NeoPrefs = NeoPrefs.getInstance()
         override fun onClick(v: View?) {
             val outObj = Array<Any?>(1) { null }
-            var icon = Utilities.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
+            var icon = DrawableUtils.loadFullDrawableWithoutTheme(launcher, appInfo, 0, 0, outObj)
             if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
                 icon = icon.getThemedDrawable(launcher)
             }
@@ -112,7 +113,7 @@ class OmegaShortcuts {
     ) {
 
         override fun onClick(v: View?) {
-            dismissTaskMenuView(mTarget)
+            dismissTaskMenuView()
             launcher.removeItem(v, mItemInfo, true)
             launcher.workspace.stripEmptyScreens()
             launcher.model.forceReload()

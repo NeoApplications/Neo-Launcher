@@ -61,8 +61,8 @@ public class IconProvider {
     private static final String ICON_METADATA_KEY_PREFIX = ".dynamic_icons";
     private static final String SYSTEM_STATE_SEPARATOR = " ";
     protected final Context mContext;
-    private final ComponentName mCalendar;
-    private final ComponentName mClock;
+    public final ComponentName mCalendar;
+    public final ComponentName mClock;
     @NonNull
     protected String mSystemState = "";
     public IconProvider(Context context) {

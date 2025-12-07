@@ -3,11 +3,9 @@ package com.saggitt.omega.search
 import android.content.Context
 import androidx.lifecycle.asLiveData
 import com.android.launcher3.LauncherAppState
-import com.android.launcher3.Utilities
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.model.AllAppsList
-import com.android.launcher3.model.BaseModelUpdateTask
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchCallback

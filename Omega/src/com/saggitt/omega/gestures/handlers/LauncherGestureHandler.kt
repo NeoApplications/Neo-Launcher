@@ -232,7 +232,9 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) :
             return
         }
 
-        val opts = view.let { controller.launcher.getActivityLaunchOptionsAsBundle(it) }
+        val opts = view.let {
+            controller.launcher.getActivityLaunchOptions(it, null).toBundle()
+        }
 
         fun showErrorToast() {
             Toast.makeText(context, R.string.failed, Toast.LENGTH_LONG).show()

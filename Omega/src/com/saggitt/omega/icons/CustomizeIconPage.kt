@@ -68,6 +68,7 @@ import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.neoapps.neolauncher.util.DrawableUtils
 import com.saggitt.omega.compose.components.ComposeSwitchView
 import com.saggitt.omega.compose.components.preferences.PreferenceItem
 import com.saggitt.omega.compose.navigation.Routes
@@ -126,7 +127,8 @@ fun CustomizeIconPage(
 
 fun getAppIcon(context: Context, appInfo: AppInfo): Drawable {
     val outObj = Array<Any?>(1) { null }
-    var icon: Drawable = Utilities.loadFullDrawableWithoutTheme(context, appInfo, 0, 0, outObj)
+    var icon: Drawable =
+        DrawableUtils.loadFullDrawableWithoutTheme(context, appInfo, 0, 0, outObj)!!
     if (appInfo.screenId != SystemShortcut.NO_ID && icon is BitmapInfo.Extender) {
         icon = icon.getThemedDrawable(context)
     }

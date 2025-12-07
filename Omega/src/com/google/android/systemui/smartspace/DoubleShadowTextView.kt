@@ -44,6 +44,10 @@ open class DoubleShadowTextView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
+        if (mShadowInfo.skipDoubleShadow(this)) {
+            super.onDraw(canvas)
+            return
+        }
         paint.setShadowLayer(
             mShadowInfo.ambientShadowBlur,
             0.0f,
