@@ -62,6 +62,7 @@ import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
+import com.neoapps.neolauncher.util.Permissions
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
 import com.saggitt.omega.popup.OmegaShortcuts
@@ -109,7 +110,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
     override fun onCreate(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
             && !this.hasStoragePermission
-        ) Utilities.requestStoragePermission(this)
+        ) Permissions.requestStoragePermission(this)
 
         savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
