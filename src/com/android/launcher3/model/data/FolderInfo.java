@@ -253,7 +253,7 @@ public class FolderInfo extends CollectionInfo {
         onIconChanged();
     }
 
-    public WorkspaceItemInfo getCoverInfo() {
+    public ItemInfo getCoverInfo() {
         return firstItemProvider.getFirstItem();
     }
 

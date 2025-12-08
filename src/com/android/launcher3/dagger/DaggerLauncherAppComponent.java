@@ -1,34 +1,43 @@
 package com.android.launcher3.dagger;
 
 import android.content.Context;
+
+import androidx.annotation.Nullable;
+
+import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.RemoveAnimationSettingsTracker;
 import com.android.launcher3.contextualeducation.ContextualEduStatsManager;
 import com.android.launcher3.contextualeducation.ContextualEduStatsManager_Factory;
-import com.android.launcher3.graphics.IconShape;
-import com.android.launcher3.graphics.IconShape_Factory;
+import com.android.launcher3.graphics.GridCustomizationsProxy;
+import com.android.launcher3.graphics.ThemeManager;
+import com.android.launcher3.icons.LauncherIcons;
+import com.android.launcher3.model.LoaderCursor;
+import com.android.launcher3.model.WidgetsFilterDataProvider;
+import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.util.DisplayController;
+import com.android.launcher3.util.LockedUserState;
+import com.android.launcher3.util.WallpaperColorHints;
+import com.android.launcher3.util.window.WindowManagerProxy;
+import com.android.launcher3.widget.LauncherWidgetHolder;
+import com.saggitt.omega.icons.IconShape;
 import com.android.launcher3.model.ItemInstallQueue;
-import com.android.launcher3.model.ItemInstallQueue_Factory;
 import com.android.launcher3.pm.InstallSessionHelper;
-import com.android.launcher3.pm.InstallSessionHelper_Factory;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.ApiWrapper_Factory;
 import com.android.launcher3.util.DaggerSingletonTracker;
 import com.android.launcher3.util.DaggerSingletonTracker_Factory;
 import com.android.launcher3.util.DynamicResource;
-import com.android.launcher3.util.DynamicResource_Factory;
 import com.android.launcher3.util.MSDLPlayerWrapper;
-import com.android.launcher3.util.MSDLPlayerWrapper_Factory;
 import com.android.launcher3.util.PackageManagerHelper;
-import com.android.launcher3.util.PackageManagerHelper_Factory;
 import com.android.launcher3.util.PluginManagerWrapper;
 import com.android.launcher3.util.PluginManagerWrapper_Factory;
 import com.android.launcher3.util.ScreenOnTracker;
-import com.android.launcher3.util.ScreenOnTracker_Factory;
 import com.android.launcher3.util.SettingsCache;
 import com.android.launcher3.util.SettingsCache_Factory;
 import com.android.launcher3.util.VibratorWrapper;
-import com.android.launcher3.util.VibratorWrapper_Factory;
 import com.android.launcher3.util.window.RefreshRateTracker;
-import com.android.launcher3.util.window.RefreshRateTracker_Factory;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.android.launcher3.widget.custom.CustomWidgetManager_Factory;
 import dagger.internal.DaggerGenerated;
@@ -67,6 +76,16 @@ public final class DaggerLauncherAppComponent {
         public Builder appContext(Context context) {
             this.appContext = Preconditions.checkNotNull(context);
             return this;
+        }
+
+        @Override
+        public LauncherBaseAppComponent.Builder iconsDbName(@Nullable String dbFileName) {
+            return null;
+        }
+
+        @Override
+        public LauncherBaseAppComponent.Builder setSafeModeEnabled(boolean safeModeEnabled) {
+            return null;
         }
 
         @Override
@@ -125,7 +144,7 @@ public final class DaggerLauncherAppComponent {
             this.contextualEduStatsManagerProvider = DoubleCheck.provider(ContextualEduStatsManager_Factory.create());
             this.pluginManagerWrapperProvider = DoubleCheck.provider(PluginManagerWrapper_Factory.create());
             this.customWidgetManagerProvider = DoubleCheck.provider(CustomWidgetManager_Factory.create(appContextProvider, pluginManagerWrapperProvider, daggerSingletonTrackerProvider));
-            this.dynamicResourceProvider = DoubleCheck.provider(DynamicResource_Factory.create(appContextProvider, pluginManagerWrapperProvider, daggerSingletonTrackerProvider));
+            /*this.dynamicResourceProvider = DoubleCheck.provider(DynamicResource_Factory.create(appContextProvider, pluginManagerWrapperProvider, daggerSingletonTrackerProvider));
             this.iconShapeProvider = DoubleCheck.provider(IconShape_Factory.create(appContextProvider));
             this.installSessionHelperProvider = DoubleCheck.provider(InstallSessionHelper_Factory.create(appContextProvider));
             this.itemInstallQueueProvider = DoubleCheck.provider(ItemInstallQueue_Factory.create(appContextProvider));
@@ -134,7 +153,7 @@ public final class DaggerLauncherAppComponent {
             this.settingsCacheProvider = DoubleCheck.provider(SettingsCache_Factory.create(appContextProvider, daggerSingletonTrackerProvider));
             this.packageManagerHelperProvider = DoubleCheck.provider(PackageManagerHelper_Factory.create(appContextProvider));
             this.vibratorWrapperProvider = DoubleCheck.provider(VibratorWrapper_Factory.create(appContextProvider, settingsCacheProvider, daggerSingletonTrackerProvider));
-            this.mSDLPlayerWrapperProvider = DoubleCheck.provider(MSDLPlayerWrapper_Factory.create(appContextProvider));
+            this.mSDLPlayerWrapperProvider = DoubleCheck.provider(MSDLPlayerWrapper_Factory.create(appContextProvider));*/
         }
 
         @Override
@@ -153,6 +172,16 @@ public final class DaggerLauncherAppComponent {
         }
 
         @Override
+        public LauncherWidgetHolder.WidgetHolderFactory getWidgetHolderFactory() {
+            return null;
+        }
+
+        @Override
+        public RefreshRateTracker getFrameRateProvider() {
+            return null;
+        }
+
+        @Override
         public CustomWidgetManager getCustomWidgetManager() {
             return customWidgetManagerProvider.get();
         }
@@ -162,7 +191,6 @@ public final class DaggerLauncherAppComponent {
             return dynamicResourceProvider.get();
         }
 
-        @Override
         public IconShape getIconShape() {
             return iconShapeProvider.get();
         }
@@ -210,6 +238,76 @@ public final class DaggerLauncherAppComponent {
         @Override
         public MSDLPlayerWrapper getMSDLPlayerWrapper() {
             return mSDLPlayerWrapperProvider.get();
+        }
+
+        @Override
+        public WindowManagerProxy getWmProxy() {
+            return null;
+        }
+
+        @Override
+        public LauncherPrefs getLauncherPrefs() {
+            return null;
+        }
+
+        @Override
+        public ThemeManager getThemeManager() {
+            return null;
+        }
+
+        @Override
+        public UserCache getUserCache() {
+            return null;
+        }
+
+        @Override
+        public DisplayController getDisplayController() {
+            return null;
+        }
+
+        @Override
+        public WallpaperColorHints getWallpaperColorHints() {
+            return null;
+        }
+
+        @Override
+        public LockedUserState getLockedUserState() {
+            return null;
+        }
+
+        @Override
+        public InvariantDeviceProfile getIDP() {
+            return null;
+        }
+
+        @Override
+        public LauncherIcons.IconPool getIconPool() {
+            return null;
+        }
+
+        @Override
+        public RemoveAnimationSettingsTracker getRemoveAnimationSettingsTracker() {
+            return null;
+        }
+
+        @Override
+        public LauncherAppState getLauncherAppState() {
+            return null;
+        }
+
+        @Override
+        public GridCustomizationsProxy getGridCustomizationsProxy() {
+            return null;
+        }
+
+        @Override
+        public WidgetsFilterDataProvider getWidgetsFilterDataProvider() {
+            return null;
+        }
+
+        @Override
+        public LoaderCursor.LoaderCursorFactory getLoaderCursorFactory() {
+            return null;
         }
     }
 }

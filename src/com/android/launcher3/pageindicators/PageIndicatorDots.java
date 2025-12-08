@@ -52,6 +52,7 @@ import com.android.launcher3.Insettable;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.Themes;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.util.function.Consumer;
 
@@ -473,7 +474,7 @@ public class PageIndicatorDots extends View implements Insettable, PageIndicator
         float circleGap = mCircleGap;
         float x = ((float) getWidth() / 2) - (mCircleGap * ((float) mNumPages - 1) / 2);
         float y = getHeight() / 2;
-        boolean show = Utilities.getNeoPrefs(getContext()).getDockShowPageIndicator().getValue();
+        boolean show = NeoPrefs.getInstance().getDockShowPageIndicator().getValue();
 
         if (!show) {
         } else if (mEntryAnimationRadiusFactors != null) {

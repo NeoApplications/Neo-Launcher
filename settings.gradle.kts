@@ -20,6 +20,9 @@ include(":animationlib")
 project(":animationlib").projectDir = File(rootDir, "libs_systemui/animationlib")
 include(":msdllib")
 project(":msdllib").projectDir = File(rootDir, "libs_systemui/msdllib")
+include(":contextualeducationlib")
+project(":contextualeducationlib").projectDir =
+    File(rootDir, "libs_systemui/contextualeducationlib")
 include(":flags")
 project(":flags").projectDir = File(rootDir, "flags")
 

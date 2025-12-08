@@ -314,7 +314,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
         mDisplay = a.getInteger(R.styleable.BubbleTextView_iconDisplay, DISPLAY_WORKSPACE);
         final int defaultIconSize;
-        prefs = Utilities.getNeoPrefs(context);
+        prefs = NeoPrefs.getInstance();
         if (mDisplay == DISPLAY_WORKSPACE) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, mDeviceProfile.iconTextSizePx);
             setCompoundDrawablePadding(mDeviceProfile.iconDrawablePaddingPx);

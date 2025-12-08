@@ -362,7 +362,7 @@ public class PreloadIconDrawable extends FastBitmapDrawable {
     @Override
     public FastBitmapConstantState newConstantState() {
         return new PreloadIconConstantState(
-                mBitmapInfo,
+                bitmapInfo,
                 mItem,
                 mIndicatorColor,
                 new int[] {mSystemAccentColor, mSystemBackgroundColor},

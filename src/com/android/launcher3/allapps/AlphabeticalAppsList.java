@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.allapps;
 
+import static android.multiuser.Flags.enableMovingContentIntoPrivateSpace;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_BOTTOM_VIEW_TO_SCROLL_TO;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_LEFT;
@@ -411,13 +412,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         LauncherAppState app = LauncherAppState.getInstance(mLauncher);
         LauncherModel model = app.getModel();
         ModelWriter modelWriter = model.getWriter(false, CellPosMapper.DEFAULT, null);
-        return Utilities.getNeoPrefs(mLauncher)
+        return NeoPrefs.getInstance()
                 .getDrawerFolders()
                 .getFolderInfos(this, modelWriter);
     }
 
     private Set<ComponentKey> getFolderFilteredApps() {
-        return Utilities.getNeoPrefs(mLauncher)
+        return NeoPrefs.getInstance()
                 .getDrawerFolders()
                 .getHiddenComponents();
     }

@@ -127,7 +127,7 @@ public class BgDataModel {
      * Load id for which the callbacks were successfully bound
      */
     public int lastLoadId = -1;
-    public boolean isFirstPagePinnedItemEnabled = FeatureFlags.QSbOnFirstScreen()
+    public boolean isFirstPagePinnedItemEnabled = FeatureFlags.QSB_ON_FIRST_SCREEN
             && !enableSmartspaceRemovalToggle();
 
     @Inject
@@ -154,7 +154,7 @@ public class BgDataModel {
                 screenSet.add(item.screenId);
             }
         }
-        if ((FeatureFlags.QSbOnFirstScreen()
+        if ((FeatureFlags.QSB_ON_FIRST_SCREEN
                 && !SHOULD_SHOW_FIRST_PAGE_WIDGET)
                 || screenSet.isEmpty()) {
             screenSet.add(Workspace.FIRST_SCREEN_ID);

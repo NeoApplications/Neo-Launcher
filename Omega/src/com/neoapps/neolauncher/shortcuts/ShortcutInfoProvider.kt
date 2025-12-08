@@ -18,6 +18,7 @@
 package com.neoapps.neolauncher.shortcuts
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import com.android.launcher3.LauncherAppState
@@ -64,7 +65,7 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
         if (iconEntry != null) {
             val launcherActivityInfo = getLauncherActivityInfo(info)
             val iconCache = LauncherAppState.getInstance(context).iconCache
-            val drawable = iconCache.getFullResIcon(launcherActivityInfo, info, false)
+            val drawable = iconCache.getFullResIcon(launcherActivityInfo as ActivityInfo)!!
             val bitmap = LauncherIcons.obtain(context)
                 .createBadgedIconBitmap(drawable)
             val repository = IconOverrideRepository(context)

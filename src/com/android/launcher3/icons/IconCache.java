@@ -185,7 +185,7 @@ public class IconCache extends BaseIconCache {
         // This will clear all pending updates
         getUpdateHandler();
 
-        mIconDb.close();
+        iconDb.close();
     }
 
     /**
@@ -265,7 +265,7 @@ public class IconCache extends BaseIconCache {
      * Fill in {@code info} with the icon for {@code si}
      */
     public void getShortcutIcon(ItemInfoWithIcon info, ShortcutInfo si) {
-        getShortcutIcon(info, new CacheableShortcutInfo(si, mContext));
+        getShortcutIcon(info, new CacheableShortcutInfo(si, context));
     }
 
     /**
@@ -397,7 +397,7 @@ public class IconCache extends BaseIconCache {
         String componentNameQuery = TextUtils.join(
                 ",", Collections.nCopies(queryParams.length - 1, "?"));
 
-        return mIconDb.query(
+        return iconDb.query(
                 toLookupColumns(lookupFlag),
                 COLUMN_COMPONENT
                         + " IN ( " + componentNameQuery + " )"
@@ -559,9 +559,9 @@ public class IconCache extends BaseIconCache {
             return;
         }
 
-        WidgetSection widgetSection = WidgetSections.getWidgetSections(mContext)
+        WidgetSection widgetSection = WidgetSections.getWidgetSections(context)
                 .get(infoInOut.widgetCategory);
-        infoInOut.title = mContext.getString(widgetSection.mSectionTitle);
+        infoInOut.title = context.getString(widgetSection.mSectionTitle);
         infoInOut.contentDescription = getUserBadgedLabel(infoInOut.title, infoInOut.user);
         final BitmapInfo cachedBitmap = mWidgetCategoryBitmapInfos.get(infoInOut.widgetCategory);
         if (cachedBitmap != null) {
@@ -571,7 +571,7 @@ public class IconCache extends BaseIconCache {
 
         try (LauncherIcons li = mIconPool.obtain()) {
             final BitmapInfo tempBitmap = li.createBadgedIconBitmap(
-                    mContext.getDrawable(widgetSection.mSectionDrawable),
+                    context.getDrawable(widgetSection.mSectionDrawable),
                     new BaseIconFactory.IconOptions());
             mWidgetCategoryBitmapInfos.put(infoInOut.widgetCategory, tempBitmap);
             infoInOut.bitmap = getBadgedIcon(tempBitmap, infoInOut.user);
@@ -620,18 +620,6 @@ public class IconCache extends BaseIconCache {
         info.bitmap = packageEntry.bitmap;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Drawable getFullResIcon(LauncherActivityInfo info, boolean flattenDrawable) {
-        return mIconProvider.getIcon(info, mIconDpi);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Drawable getFullResIcon(LauncherActivityInfo info, ItemInfo itemInfo, boolean flattenDrawable) {
-        if (mIconProvider instanceof CustomIconProvider)
-            return ((CustomIconProvider) mIconProvider).getIcon(info, mIconDpi);
-        return getFullResIcon(info, flattenDrawable);
-    }
-
     public void updateSessionCache(PackageUserKey key, PackageInstaller.SessionInfo info) {
         cachePackageInstallInfo(key.mPackageName, key.mUser, info.getAppIcon(),
                 info.getAppLabel());
@@ -651,10 +639,11 @@ public class IconCache extends BaseIconCache {
         void reapplyItemInfo(ItemInfoWithIcon info);
     }
 
-    // Edited
-    /* Log persistently to FileLog.d for debugging. */
-    /*@Override
+    /**
+     * Log persistently to FileLog.d for debugging.
+     */
+    @Override
     protected void logPersistently(@NonNull String message, @Nullable Exception e) {
         FileLog.d(BaseIconCache.TAG, message, e);
-    }*/
+    }
 }

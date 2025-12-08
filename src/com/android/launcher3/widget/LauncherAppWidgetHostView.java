@@ -48,6 +48,7 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.views.BaseDragLayer.TouchCompleteListener;
 import com.android.launcher3.widget.custom.CustomAppWidgetProviderInfo;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * {@inheritDoc}
@@ -129,7 +130,7 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     @Override
     public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
         super.setAppWidget(appWidgetId, info);
-        if (info != null && Utilities.getNeoPrefs(getContext()).getDesktopAllowFullWidthWidgets().getValue()) {
+        if (info != null && NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets().getValue()) {
             setPadding(0, 0, 0, 0);
         } else if (info instanceof CustomAppWidgetProviderInfo) {
             if (((CustomAppWidgetProviderInfo) info).noPadding) {

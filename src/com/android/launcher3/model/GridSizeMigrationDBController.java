@@ -402,7 +402,7 @@ public class GridSizeMigrationDBController {
         final GridOccupancy occupied = new GridOccupancy(trgX, trgY);
         final Point trg = new Point(trgX, trgY);
         final Point next = new Point(0, screenId == 0
-                && (FeatureFlags.QSbOnFirstScreen()
+                && (FeatureFlags.QSB_ON_FIRST_SCREEN
                 && (!enableSmartspaceRemovalToggle() || LauncherPrefs.getPrefs(destReader.mContext)
                 .getBoolean(SMARTSPACE_ON_HOME_SCREEN, true))
                 && !SHOULD_SHOW_FIRST_PAGE_WIDGET)

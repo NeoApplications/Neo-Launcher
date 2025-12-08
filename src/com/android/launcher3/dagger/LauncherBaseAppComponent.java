@@ -24,6 +24,7 @@ import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.RemoveAnimationSettingsTracker;
+import com.android.launcher3.contextualeducation.ContextualEduStatsManager;
 import com.android.launcher3.graphics.GridCustomizationsProxy;
 import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.icons.LauncherIcons.IconPool;
@@ -90,6 +91,8 @@ public interface LauncherBaseAppComponent {
     WidgetsFilterDataProvider getWidgetsFilterDataProvider();
 
     LoaderCursorFactory getLoaderCursorFactory();
+
+    ContextualEduStatsManager getContextualEduStatsManager();
     WidgetHolderFactory getWidgetHolderFactory();
     RefreshRateTracker getFrameRateProvider();
 

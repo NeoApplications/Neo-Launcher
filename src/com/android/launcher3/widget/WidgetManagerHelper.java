@@ -16,6 +16,8 @@
 
 package com.android.launcher3.widget;
 
+import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
+
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;

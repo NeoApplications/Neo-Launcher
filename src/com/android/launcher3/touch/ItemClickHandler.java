@@ -444,7 +444,7 @@ public class ItemClickHandler {
 
             isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
                     new ComponentKey(si.getTargetComponent(), si.user)) &&
-                    Utilities.getNeoPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().getValue();
+                    NeoPrefs.getInstance().getDrawerEnableProtectedApps().getValue();
 
             if ((si.options & WorkspaceItemInfo.FLAG_START_FOR_RESULT) != 0) {
                 launcher.startActivityForResult(item.getIntent(), 0);
@@ -464,7 +464,7 @@ public class ItemClickHandler {
 
             isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
                     ((AppInfo) item).toComponentKey()) &&
-                    Utilities.getNeoPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().getValue();
+                    NeoPrefs.getInstance().getDrawerEnableProtectedApps().getValue();
         }
         if (isProtected) {
             launcher.startActivitySafelyAuth(v, intent, item);

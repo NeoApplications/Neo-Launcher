@@ -17,35 +17,25 @@
 package com.android.launcher3.uioverrides;
 
 import android.app.ActivityOptions;
-import android.app.Person;
 import android.content.Context;
-import android.content.pm.LauncherActivityInfo;
-import android.content.pm.ShortcutInfo;
-
-import com.android.launcher3.Utilities;
-
-import java.util.Collections;
-import java.util.Map;
+import android.window.RemoteTransition;
 
 /**
  * A wrapper for the hidden API calls
  */
 public class ApiWrapper {
 
-    public static final boolean TASKBAR_DRAWN_IN_PROCESS = false;
-
-    public static Person[] getPersons(ShortcutInfo si) {
-        return Utilities.EMPTY_PERSON_ARRAY;
-    }
-
-    public static Map<String, LauncherActivityInfo> getActivityOverrides(Context context) {
-        return Collections.emptyMap();
-    }
-
     /**
      * Creates an ActivityOptions to play fade-out animation on closing targets
      */
     public static ActivityOptions createFadeOutAnimOptions(Context context) {
-        return ActivityOptions.makeCustomAnimation(context, 0, android.R.anim.fade_out);
+        try {
+            ActivityOptions options = ActivityOptions.makeBasic();
+            //options.setRemoteTransition(new RemoteTransition(new FadeOutRemoteTransition()));
+            return options;
+        } catch (Throwable t) {
+            // TODO Create our own custom closing animation
+            return ActivityOptions.makeCustomAnimation(context, 0, android.R.anim.fade_out);
+        }
     }
 }

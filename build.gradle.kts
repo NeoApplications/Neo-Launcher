@@ -192,9 +192,9 @@ android {
 
     sourceSets {
         named("main") {
-            res.directories.add("res")
             java.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep"))
             kotlin.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep"))
+            res.directories.add("res")
             assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
         }
@@ -203,9 +203,9 @@ android {
             kotlin.directories.addAll(listOf("src_flags"))
         }
         named("omega") {
-            res.directories.add("Omega/res")
             java.directories.add("Omega/src")
             kotlin.directories.add("Omega/src")
+            res.directories.add("Omega/res")
             aidl.directories.add("Omega/aidl")
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
@@ -237,12 +237,14 @@ android {
 dependencies {
 
     implementation(project(":animationlib"))
+    implementation(project(":contextualeducationlib"))
     implementation(project(":iconloaderlib"))
     implementation(project(":flags"))
     implementation(project(":msdllib"))
     implementation(project(":plugincore"))
     implementation(project(":shared"))
     implementation(project(":smartspace"))
+    implementation(project(":wmshell"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))
 
@@ -299,6 +301,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.serialization.json)
+    implementation(libs.slice.core)
 
     api(platform(libs.compose.bom))
     protobuf(files("protos/"))

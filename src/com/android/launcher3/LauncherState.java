@@ -47,6 +47,7 @@ import com.android.launcher3.states.EditModeState;
 import com.android.launcher3.states.HintState;
 import com.android.launcher3.states.SpringLoadedState;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.android.launcher3.uioverrides.states.AllAppsState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.views.ActivityContext;
 import com.neoapps.neolauncher.NeoLauncher;
