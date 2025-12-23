@@ -30,6 +30,16 @@ public class CustomFeatureFlags implements FeatureFlags {
     }
 
     @Override
+    public boolean forceMonochromeAppIconsAdaptColors() {
+        return false;
+    }
+
+    @Override
+    public boolean injectableModelItems() {
+        return false;
+    }
+
+    @Override
 
     public boolean allAppsSheetForHandheld() {
         return getValue(Flags.FLAG_ALL_APPS_SHEET_FOR_HANDHELD,
@@ -146,6 +156,11 @@ public class CustomFeatureFlags implements FeatureFlags {
     public boolean enableExpandingPauseWorkButton() {
         return getValue(Flags.FLAG_ENABLE_EXPANDING_PAUSE_WORK_BUTTON,
             FeatureFlags::enableExpandingPauseWorkButton);
+    }
+
+    @Override
+    public boolean modelRepository() {
+        return false;
     }
 
     @Override

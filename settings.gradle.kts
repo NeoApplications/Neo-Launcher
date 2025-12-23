@@ -45,6 +45,12 @@ project(":utils").projectDir = File(rootDir, "libs_systemui/utils")
 include(":shared")
 project(":shared").projectDir = File(rootDir, "shared")
 
+include(":concurrent")
+project(":concurrent").projectDir = File(rootDir, "modules/concurrent")
+
+include(":dagger")
+project(":dagger").projectDir = File(rootDir, "dagger")
+
 include (":wmshell")
 include (":compatLib")
 include (":compatLib:compatLibVQ")

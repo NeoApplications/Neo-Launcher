@@ -15,21 +15,17 @@
  */
 package com.android.launcher3.icons.mono
 import android.content.Context
-import android.content.res.Configuration.UI_MODE_NIGHT_MASK
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Bitmap
 import android.graphics.BlendMode.SRC_IN
 import android.graphics.BlendModeColorFilter
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import androidx.annotation.ColorInt
-import androidx.core.graphics.ColorUtils
 import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.FastBitmapDrawable
+import com.android.launcher3.icons.FastBitmapDrawableDelegate
+import com.android.launcher3.icons.IconShape
 import com.android.launcher3.icons.R
-import com.neoapps.neolauncher.icons.IconPreferences
-
 /** Class to handle monochrome themed app icons */
 class ThemedIconDrawable(constantState: ThemedConstantState) :
     FastBitmapDrawable(constantState.bitmapInfo) {
@@ -50,7 +46,7 @@ class ThemedIconDrawable(constantState: ThemedConstantState) :
     }
     override fun updateFilter() {
         super.updateFilter()
-        val alpha = if (isDisabled) (disabledAlpha * FULLY_OPAQUE).toInt() else FULLY_OPAQUE
+        val alpha: Int = if (isDisabled) (disabledAlpha * FULLY_OPAQUE).toInt() else FULLY_OPAQUE
         mBgPaint.alpha = alpha
         mBgPaint.setColorFilter(
             if (isDisabled) BlendModeColorFilter(getDisabledColor(colorBg), SRC_IN) else bgFilter
@@ -61,7 +57,7 @@ class ThemedIconDrawable(constantState: ThemedConstantState) :
         )
     }
     override fun isThemed() = true
-    override fun newConstantState() =
+    fun newConstantState() =
         ThemedConstantState(bitmapInfo, monoIcon, bgBitmap, colorBg, colorFg)
     override fun getIconColor() = colorFg
     class ThemedConstantState(
@@ -70,29 +66,24 @@ class ThemedIconDrawable(constantState: ThemedConstantState) :
         val whiteShadowLayer: Bitmap,
         val colorBg: Int,
         val colorFg: Int,
-    ) : FastBitmapConstantState(bitmapInfo) {
-        public override fun createDrawable() = ThemedIconDrawable(this)
+    ) : FastBitmapConstantState(
+        bitmapInfo = bitmapInfo,
+        isDisabled = false,
+        badgeConstantState = null,
+        iconShape = IconShape.EMPTY,
+        creationFlags = 0,
+        disabledAlpha = 1f,
+        delegateFactory = FastBitmapDrawableDelegate.SimpleDelegateFactory,
+        level = 0,
+    ) {
+        fun createDrawable() = ThemedIconDrawable(this)
     }
     companion object {
         const val TAG: String = "ThemedIconDrawable"
-
-        @ColorInt
-        fun getThemedColors(context: Context): IntArray {
-            val result = getColors(context)
-            if (!IconPreferences(context).shouldTransparentBGIcons()) {
-                return result
-            }
-            if ((context.resources.configuration.uiMode and UI_MODE_NIGHT_MASK) != UI_MODE_NIGHT_YES) {
-                //Get Composite color for light mode or non dark mode
-                result[1] = ColorUtils.compositeColors(
-                    context.resources.getColor(android.R.color.black), result[1],
-                )
-            }
-            result[0] = 0
-            return result
-        }
-
         /** Get an int array representing background and foreground colors for themed icons */
+
+        const val FULLY_OPAQUE = 1
+
         @JvmStatic
         fun getColors(context: Context): IntArray {
             val res = context.resources

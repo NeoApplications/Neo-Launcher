@@ -31,6 +31,11 @@ public class CustomFeatureFlags implements FeatureFlags {
     }
 
     @Override
+    public boolean notificationDotContrastBorder() {
+        return false;
+    }
+
+    @Override
 
     public boolean clockReactiveSmartspaceLayout() {
         return getValue(Flags.FLAG_CLOCK_REACTIVE_SMARTSPACE_LAYOUT,

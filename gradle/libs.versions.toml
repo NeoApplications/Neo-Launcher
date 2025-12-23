@@ -1,6 +1,6 @@
 [versions]
 activity = "1.11.0"
-agp = "9.0.0-beta03"
+agp = "9.1.0-alpha01"
 alwan = "1.0.1"
 annotation = "1.2.0"
 coil = "2.7.0"
@@ -17,6 +17,7 @@ dynamic-animation = "1.1.0"
 fuzzywuzzy = "1.4.0"
 error-prone-annotations = "2.44.0"
 graphics-shapes = "1.1.0"
+guava = "33.5.0-android"
 hoko-blur = "1.5.3"
 immutables = "0.4.0"
 inject = "1"
@@ -91,6 +92,7 @@ dynamic-animation = { group = "androidx.dynamicanimation", name = "dynamicanimat
 error-prone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "error-prone-annotations" }
 fuzzywuzzy = { module = "me.xdrop:fuzzywuzzy", version.ref = "fuzzywuzzy" }
 graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
 hoko-blur = { module = "io.github.hokofly:hoko-blur", version.ref = "hoko-blur" }

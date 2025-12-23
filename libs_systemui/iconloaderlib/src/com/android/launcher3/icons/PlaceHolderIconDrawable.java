@@ -51,7 +51,7 @@ public class PlaceHolderIconDrawable extends FastBitmapDrawable {
         return new Path(drawable.getIconMask());
     }
     @Override
-    protected void drawInternal(Canvas canvas, Rect bounds) {
+    public void drawInternal(Canvas canvas, Rect bounds) {
         int saveCount = canvas.save();
         canvas.translate(bounds.left, bounds.top);
         canvas.scale(bounds.width() / 100f, bounds.height() / 100f);

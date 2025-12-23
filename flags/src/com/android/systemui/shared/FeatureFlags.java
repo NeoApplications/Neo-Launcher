@@ -13,7 +13,7 @@ public interface FeatureFlags {
 
     boolean bouncerAreaExclusion();
 
-
+    boolean notificationDotContrastBorder();
 
     boolean clockReactiveSmartspaceLayout();
 

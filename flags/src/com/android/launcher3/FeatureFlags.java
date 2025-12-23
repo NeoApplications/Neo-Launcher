@@ -10,6 +10,10 @@ public interface FeatureFlags {
 
     boolean allAppsBlur();
 
+    boolean forceMonochromeAppIconsAdaptColors();
+
+    boolean injectableModelItems();
+
 
     boolean allAppsSheetForHandheld();
 
@@ -60,6 +64,8 @@ public interface FeatureFlags {
 
 
     boolean enableExpandingPauseWorkButton();
+
+    boolean modelRepository();
 
 
     boolean enableExpressiveDismissTaskMotion();

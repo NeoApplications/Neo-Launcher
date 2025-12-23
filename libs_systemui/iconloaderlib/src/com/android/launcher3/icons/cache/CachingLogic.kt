@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.android.launcher3.icons.cache
+
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -22,6 +23,7 @@ import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.IconProvider
 import com.android.launcher3.icons.SourceHint
 import com.android.launcher3.util.ComponentKey
+
 interface CachingLogic<T> {
     /** Returns the source hint for this object that can be sued by theme controllers */
     fun getSourceHint(item: T, cache: BaseIconCache): SourceHint {
@@ -31,16 +33,22 @@ interface CachingLogic<T> {
             freshnessId = getFreshnessIdentifier(item, cache.iconProvider),
         )
     }
+
     fun getComponent(item: T): ComponentName
+
     fun getUser(item: T): UserHandle
+
     /** Loads the user visible label for the object */
     fun getLabel(item: T): CharSequence?
+
     /**
      * Returns the application info associated with the object. This is used to maintain the
      * "freshness" of the disk cache. If null, the item will not be persisted to the disk
      */
     fun getApplicationInfo(item: T): ApplicationInfo?
+
     fun loadIcon(context: Context, cache: BaseIconCache, item: T): BitmapInfo
+
     /**
      * Returns a persistable string that can be used to indicate indicate the correctness of the
      * cache for the provided item

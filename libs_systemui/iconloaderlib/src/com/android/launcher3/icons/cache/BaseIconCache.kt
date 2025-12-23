@@ -30,6 +30,7 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.HARDWARE
 import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.Options
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
@@ -190,7 +191,7 @@ constructor(
         // Icon can't be loaded from cachingLogic, which implies alternative icon was loaded
         // (e.g. fallback icon, default icon). So we drop here since there's no point in caching
         // an empty entry.
-        if (bitmapInfo.isNullOrLowRes || isDefaultIcon(bitmapInfo, user)) {
+        if (bitmapInfo.isLowRes || isDefaultIcon(bitmapInfo, user)) {
             return
         }
         val entryTitle =
@@ -343,7 +344,7 @@ constructor(
             iconFactory.use { li ->
                 entry.bitmap =
                     li.createBadgedIconBitmap(
-                        li.createShapedAdaptiveIcon(icon),
+                        BitmapDrawable(context.resources, icon),
                         IconOptions().setUser(user),
                     )
             }
@@ -506,7 +507,7 @@ constructor(
                     if (themeController != null && monoIconData != null) {
                         entry.bitmap.themedBitmap =
                             themeController.decode(
-                                data = monoIconData,
+                                bytes = monoIconData,
                                 info = entry.bitmap,
                                 factory = factory,
                                 sourceHint =
@@ -631,8 +632,9 @@ constructor(
             when {
                 !extendibleThemeManager() -> this
                 flag.useLowRes() -> BitmapInfo.of(LOW_RES_ICON, color)
-                !flag.hasThemeIcon() && themedBitmap != null ->
-                    clone().apply { themedBitmap = null }
+                !flag.hasThemeIcon() && themedBitmap != null -> clone().apply {
+                    themedBitmap = null
+                }
                 else -> this
             }
     }

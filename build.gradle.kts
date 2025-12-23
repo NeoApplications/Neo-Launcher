@@ -238,6 +238,7 @@ dependencies {
 
     implementation(project(":animationlib"))
     implementation(project(":contextualeducationlib"))
+    implementation(project(":concurrent"))
     implementation(project(":iconloaderlib"))
     implementation(project(":flags"))
     implementation(project(":msdllib"))
@@ -274,6 +275,7 @@ dependencies {
     implementation(libs.dynamic.animation)
     implementation(libs.fuzzywuzzy)
     implementation(libs.graphics.shapes)
+    implementation(libs.guava)
     implementation(libs.hilt.android)
     implementation(libs.hoko.blur)
     implementation(libs.koin.android)

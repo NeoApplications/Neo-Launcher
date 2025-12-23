@@ -13,40 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.launcher3.icons
+
 import android.content.Context
 import android.graphics.drawable.AdaptiveIconDrawable
+import com.android.launcher3.icons.FastBitmapDrawableDelegate.DelegateFactory
 import com.android.launcher3.icons.cache.CachingLogic
 import com.android.launcher3.util.ComponentKey
+
 /** Represents a themed version of a BitmapInfo */
 interface ThemedBitmap {
-    /** Creates a new Drawable */
-    fun newDrawable(info: BitmapInfo, context: Context): FastBitmapDrawable
+
+    /** Creates a new [DelegateFactory] based on the [context] */
+    fun newDelegateFactory(info: BitmapInfo, context: Context): DelegateFactory
+
     fun serialize(): ByteArray
+
     companion object {
+
         @JvmField
                 /** ThemedBitmap to be used when theming is not supported for a particular bitmap */
         val NOT_SUPPORTED =
             object : ThemedBitmap {
-                override fun newDrawable(info: BitmapInfo, context: Context) = info.newIcon(context)
+                override fun newDelegateFactory(info: BitmapInfo, context: Context) =
+                    info.delegateFactory
+
                 override fun serialize() = ByteArray(0)
             }
     }
 }
+
 interface IconThemeController {
+
     val themeID: String
+
     fun createThemedBitmap(
         icon: AdaptiveIconDrawable,
         info: BitmapInfo,
         factory: BaseIconFactory,
         sourceHint: SourceHint? = null,
-    ): ThemedBitmap?
+    ): ThemedBitmap
+
     fun decode(
-        data: ByteArray,
+        bytes: ByteArray,
         info: BitmapInfo,
         factory: BaseIconFactory,
         sourceHint: SourceHint,
     ): ThemedBitmap
+
     /**
      * Creates an adaptive icon representation of the themed bitmap for various surface effects. The
      * controller can return the [originalIcon] for using an un-themed icon for these effects or
@@ -59,6 +74,7 @@ interface IconThemeController {
         info: BitmapInfo?,
     ): AdaptiveIconDrawable?
 }
+
 data class SourceHint(
     val key: ComponentKey,
     val logic: CachingLogic<*>,

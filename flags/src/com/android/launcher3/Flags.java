@@ -244,6 +244,16 @@ public final class Flags {
         return FEATURE_FLAGS.allAppsBlur();
     }
 
+    public static boolean forceMonochromeAppIconsAdaptColors() {
+
+        return FEATURE_FLAGS.forceMonochromeAppIconsAdaptColors();
+    }
+
+    public static boolean injectableModelItems() {
+
+        return FEATURE_FLAGS.injectableModelItems();
+    }
+
 
     public static boolean allAppsSheetForHandheld() {
         
@@ -344,6 +354,11 @@ public final class Flags {
     public static boolean enableExpandingPauseWorkButton() {
         
         return FEATURE_FLAGS.enableExpandingPauseWorkButton();
+    }
+
+    public static boolean modelRepository() {
+
+        return FEATURE_FLAGS.modelRepository();
     }
 
 

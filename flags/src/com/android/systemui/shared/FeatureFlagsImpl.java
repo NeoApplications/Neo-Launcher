@@ -18,6 +18,11 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
+    public boolean notificationDotContrastBorder() {
+        return false;
+    }
+
+    @Override
 
 
     public boolean clockReactiveSmartspaceLayout() {

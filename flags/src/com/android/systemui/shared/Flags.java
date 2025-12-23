@@ -61,7 +61,10 @@ public final class Flags {
         return FEATURE_FLAGS.ambientAod();
     }
 
+    public static boolean notificationDotContrastBorder() {
 
+        return FEATURE_FLAGS.notificationDotContrastBorder();
+    }
 
     public static boolean bouncerAreaExclusion() {
         

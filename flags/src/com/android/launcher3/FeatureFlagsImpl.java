@@ -17,6 +17,16 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
+    public boolean forceMonochromeAppIconsAdaptColors() {
+        return false;
+    }
+
+    @Override
+    public boolean injectableModelItems() {
+        return false;
+    }
+
+    @Override
 
 
     public boolean allAppsSheetForHandheld() {
@@ -133,6 +143,11 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
     public boolean enableExpandingPauseWorkButton() {
         return true;
+    }
+
+    @Override
+    public boolean modelRepository() {
+        return false;
     }
 
     @Override
