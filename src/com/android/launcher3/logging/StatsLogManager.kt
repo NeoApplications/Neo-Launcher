@@ -13,104 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.logging;
+package com.android.launcher3.logging
 
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_CLOSE_DOWN;
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_OPEN_UP;
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_HOME_GESTURE;
-import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_OVERVIEW_GESTURE;
-
-import android.content.Context;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.slice.SliceItem;
-
-import com.android.launcher3.R;
-import com.android.launcher3.logger.LauncherAtom;
-import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
-import com.android.launcher3.logger.LauncherAtom.FromState;
-import com.android.launcher3.logger.LauncherAtom.ToState;
-import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.util.ResourceBasedOverride;
-import com.android.launcher3.views.ActivityContext;
+import android.content.Context
+import android.view.View
+import androidx.slice.SliceItem
+import com.android.launcher3.R
+import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
+import com.android.launcher3.logger.LauncherAtom
+import com.android.launcher3.logger.LauncherAtom.ContainerInfo
+import com.android.launcher3.logger.LauncherAtom.FromState
+import com.android.launcher3.logger.LauncherAtom.Slice
+import com.android.launcher3.logger.LauncherAtom.ToState
+import com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_CLOSE_DOWN
+import com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_ALLAPPS_OPEN_UP
+import com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_HOME_GESTURE
+import com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_OVERVIEW_GESTURE
+import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.views.ActivityContext
+import javax.inject.Inject
 
 /**
  * Handles the user event logging in R+.
- *
  * <pre>
  * All of the event ids are defined here.
  * Most of the methods are placeholder methods for Launcher3
  * Actual call happens only for Launcher variant that implements QuickStep.
- * </pre>
+ * </pre> *
  */
-public class StatsLogManager implements ResourceBasedOverride {
+open class StatsLogManager protected constructor(@JvmField protected val mContext: Context) {
+    @JvmField
+    protected val mActivityContext: ActivityContext? =
+        ActivityContext.lookupContextNoThrow(mContext)
 
-    public static final int LAUNCHER_STATE_UNSPECIFIED = 0;
-    public static final int LAUNCHER_STATE_BACKGROUND = 1;
-    public static final int LAUNCHER_STATE_HOME = 2;
-    public static final int LAUNCHER_STATE_OVERVIEW = 3;
-    public static final int LAUNCHER_STATE_ALLAPPS = 4;
-    public static final int LAUNCHER_STATE_UNCHANGED = 5;
-    public static final int LAUNCHER_STATE_OPTIONS = 6;
-
-    @NonNull
-    protected final Context mContext;
-    @Nullable
-    protected final ActivityContext mActivityContext;
-
-    private KeyboardStateManager mKeyboardStateManager;
-    private InstanceId mInstanceId;
-
-    public StatsLogManager(@NonNull Context context) {
-        mContext = context;
-        mActivityContext = ActivityContext.lookupContextNoThrow(context);
-    }
+    private var mKeyboardStateManager: KeyboardStateManager? = null
+    private var mInstanceId: InstanceId? = null
 
     /**
-     * Returns event enum based on the two state transition information when swipe
-     * gesture happens(to be removed during UserEventDispatcher cleanup).
+     * This class is purely used to support dagger bindings to be overridden in launcher variants.
+     * Very similar to [dagger.assisted.AssistedFactory]. But [dagger.assisted.AssistedFactory]
+     * cannot be overridden and this makes dagger binding difficult.
      */
-    public static EventEnum getLauncherAtomEvent(int startState,
-            int targetState, EventEnum fallbackEvent) {
-        if (startState == LAUNCHER_STATE_HOME
-                && targetState == LAUNCHER_STATE_HOME) {
-            return LAUNCHER_HOME_GESTURE;
-        } else if (startState != LAUNCHER_STATE_OVERVIEW
-                && targetState == LAUNCHER_STATE_OVERVIEW) {
-            return LAUNCHER_OVERVIEW_GESTURE;
-        } else if (startState != LAUNCHER_STATE_ALLAPPS
-                && targetState == LAUNCHER_STATE_ALLAPPS) {
-            return LAUNCHER_ALLAPPS_OPEN_UP;
-        } else if (startState == LAUNCHER_STATE_ALLAPPS
-                && targetState != LAUNCHER_STATE_ALLAPPS) {
-            return LAUNCHER_ALLAPPS_CLOSE_DOWN;
+    open class StatsLogManagerFactory @Inject constructor() {
+
+        open fun create(context: Context): StatsLogManager {
+            return StatsLogManager(context)
         }
-        return fallbackEvent; // TODO fix
     }
 
-    public interface EventEnum {
+    interface EventEnum {
 
-        /**
-         * Tag used to request new UI Event IDs via presubmit analysis.
-         *
-         * <p>Use RESERVE_NEW_UI_EVENT_ID as the constructor parameter for a new {@link EventEnum}
-         * to signal the presubmit analyzer to reserve a new ID for the event. The new ID will be
-         * returned as a Gerrit presubmit finding.  Do not submit {@code RESERVE_NEW_UI_EVENT_ID} as
-         * the constructor parameter for any event.
-         *
-         * <pre>
-         * &#064;UiEvent(doc = "Briefly describe the interaction when this event will be logged")
-         * UNIQUE_EVENT_NAME(RESERVE_NEW_UI_EVENT_ID);
-         * </pre>
-         */
-        int RESERVE_NEW_UI_EVENT_ID = Integer.MIN_VALUE; // Negative IDs are ignored by the logger.
-
-        int getId();
+        val id: Int
     }
 
-    public enum LauncherEvent implements EventEnum {
+    enum class LauncherEvent(override val id: Int) : EventEnum {
         /* Used to prevent double logging. */
         IGNORE(-1),
 
@@ -135,15 +91,21 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User dragged a launcher item")
         LAUNCHER_ITEM_DRAG_STARTED(383),
 
-        @UiEvent(doc = "A dragged launcher item is successfully dropped onto workspace, hotseat "
-                + "open folder etc")
+        @UiEvent(
+            doc =
+                ("A dragged launcher item is successfully dropped onto workspace, hotseat " +
+                        "open folder etc")
+        )
         LAUNCHER_ITEM_DROP_COMPLETED(385),
 
         @UiEvent(doc = "A dragged launcher item is successfully dropped onto a folder icon.")
         LAUNCHER_ITEM_DROP_COMPLETED_ON_FOLDER_ICON(697),
 
-        @UiEvent(doc = "A dragged launcher item is successfully dropped on another item "
-                + "resulting in a new folder creation")
+        @UiEvent(
+            doc =
+                ("A dragged launcher item is successfully dropped on another item " +
+                        "resulting in a new folder creation")
+        )
         LAUNCHER_ITEM_DROP_FOLDER_CREATED(386),
 
         @UiEvent(doc = "Folder's label is automatically assigned.")
@@ -179,9 +141,32 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User searched for a widget in the widget picker.")
         LAUNCHER_WIDGETSTRAY_SEARCHED(819),
 
-        @UiEvent(doc = "User clicked on view all button to expand the displayed list in the "
-                + "widget picker.")
+        @UiEvent(
+            doc =
+                ("User clicked on view all button to expand the displayed list in the " +
+                        "widget picker.")
+        )
         LAUNCHER_WIDGETSTRAY_EXPAND_PRESS(1978),
+
+        @UiEvent(doc = ("Widget picker began animating to open."))
+        LAUNCHER_WIDGET_PICKER_OPEN_ANIMATION_BEGIN(1979),
+
+        @UiEvent(doc = ("Widget picker was fully opened"))
+        LAUNCHER_WIDGET_PICKER_OPEN_ANIMATION_END(1980),
+
+        @UiEvent(
+            doc =
+                ("User tapped on an app in the single pane variant of widget picker to" +
+                        " expand it.")
+        )
+        LAUNCHER_WIDGET_PICKER_APP_EXPAND_ANIMATION_BEGIN(1981),
+
+        @UiEvent(
+            doc =
+                ("An app section that user tapped on in the single pane variant of widget " +
+                        "picker was fully expanded.")
+        )
+        LAUNCHER_WIDGET_PICKER_APP_EXPAND_ANIMATION_END(1982),
 
         @UiEvent(doc = "A dragged item is dropped on 'Remove' button in the target bar")
         LAUNCHER_ITEM_DROPPED_ON_REMOVE(465),
@@ -189,38 +174,52 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "A dragged item is dropped on 'Cancel' button in the target bar")
         LAUNCHER_ITEM_DROPPED_ON_CANCEL(466),
 
-        @UiEvent(doc = "A predicted item is dragged and dropped on 'Don't suggest app'"
-                + " button in the target bar")
+        @UiEvent(
+            doc =
+                ("A predicted item is dragged and dropped on 'Don't suggest app'" +
+                        " button in the target bar")
+        )
         LAUNCHER_ITEM_DROPPED_ON_DONT_SUGGEST(467),
 
         @UiEvent(doc = "A dragged item is dropped on 'Uninstall' button in target bar")
         LAUNCHER_ITEM_DROPPED_ON_UNINSTALL(468),
 
-        @UiEvent(doc = "User completed uninstalling the package after dropping on "
-                + "the icon onto 'Uninstall' button in the target bar")
+        @UiEvent(
+            doc =
+                ("User completed uninstalling the package after dropping on " +
+                        "the icon onto 'Uninstall' button in the target bar")
+        )
         LAUNCHER_ITEM_UNINSTALL_COMPLETED(469),
 
-        @UiEvent(doc = "User cancelled uninstalling the package after dropping on "
-                + "the icon onto 'Uninstall' button in the target bar")
+        @UiEvent(
+            doc =
+                ("User cancelled uninstalling the package after dropping on " +
+                        "the icon onto 'Uninstall' button in the target bar")
+        )
         LAUNCHER_ITEM_UNINSTALL_CANCELLED(470),
 
-        @UiEvent(doc = "User tapped or long pressed on the task icon(aka package icon) "
-                + "from overview to open task menu.")
+        @UiEvent(
+            doc =
+                ("User tapped or long pressed on the task icon(aka package icon) " +
+                        "from overview to open task menu.")
+        )
         LAUNCHER_TASK_ICON_TAP_OR_LONGPRESS(517),
 
-        @UiEvent(doc = "User opened package specific widgets list by tapping on widgets system "
-                + "shortcut inside popup context menu.")
+        @UiEvent(
+            doc =
+                ("User opened package specific widgets list by tapping on widgets system " +
+                        "shortcut inside popup context menu.")
+        )
         LAUNCHER_SYSTEM_SHORTCUT_WIDGETS_TAP(514),
 
         @UiEvent(doc = "User tapped on app info system shortcut.")
         LAUNCHER_SYSTEM_SHORTCUT_APP_INFO_TAP(515),
 
-        /**
-         * @deprecated Use {@link #LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP} or
-         *             {@link #LAUNCHER_APP_ICON_MENU_SPLIT_RIGHT_BOTTOM}
-         */
-        @Deprecated
         @UiEvent(doc = "User tapped on split screen icon on a task menu.")
+        @Deprecated(
+            """Use {@link #LAUNCHER_APP_ICON_MENU_SPLIT_LEFT_TOP} or
+                      {@link #LAUNCHER_APP_ICON_MENU_SPLIT_RIGHT_BOTTOM}"""
+        )
         LAUNCHER_SYSTEM_SHORTCUT_SPLIT_SCREEN_TAP(518),
 
         @UiEvent(doc = "User tapped on free form icon on a task menu.")
@@ -262,16 +261,16 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "Hotseat education tip shown")
         LAUNCHER_HOTSEAT_EDU_ONLY_TIP(482),
 
-        /**
-         * @deprecated LauncherUiChanged.rank field is repurposed to store all apps rank, so no
-         * separate event is required.
-         */
-        @Deprecated
         @UiEvent(doc = "App launch ranking logged for all apps predictions")
+        @Deprecated(
+            """LauncherUiChanged.rank field is repurposed to store all apps rank, so no
+          separate event is required."""
+        )
         LAUNCHER_ALL_APPS_RANKED(552),
 
         @UiEvent(doc = "App launch ranking logged for hotseat predictions)")
         LAUNCHER_HOTSEAT_RANKED(553),
+
         @UiEvent(doc = "Launcher is now in background. e.g., Screen off event")
         LAUNCHER_ONSTOP(562),
 
@@ -461,6 +460,21 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "Current grid size is changed to 6x5")
         LAUNCHER_GRID_SIZE_6_BY_5(2188),
 
+        @UiEvent(doc = "App icon shape changed to Circle")
+        LAUNCHER_ICON_SHAPE_CIRCLE(2229),
+
+        @UiEvent(doc = "App icon shape changed to Square")
+        LAUNCHER_ICON_SHAPE_SQUARE(2230),
+
+        @UiEvent(doc = "App icon shape changed to 4-sided Cookie")
+        LAUNCHER_ICON_SHAPE_FOUR_SIDED_COOKIE(2231),
+
+        @UiEvent(doc = "App icon shape changed to 7-sided Cookie")
+        LAUNCHER_ICON_SHAPE_SEVEN_SIDED_COOKIE(2232),
+
+        @UiEvent(doc = "App icon shape changed to Arch")
+        LAUNCHER_ICON_SHAPE_ARCH(2233),
+
         @UiEvent(doc = "Launcher entered into AllApps state.")
         LAUNCHER_ALLAPPS_ENTRY(692),
 
@@ -476,8 +490,11 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User switched to AllApps Work tab by swiping right.")
         LAUNCHER_ALLAPPS_SWIPE_TO_WORK_TAB(696),
 
-        @UiEvent(doc = "Default event when dedicated UI event is not available for the user action"
-                + " on slice .")
+        @UiEvent(
+            doc =
+                ("Default event when dedicated UI event is not available for the user action" +
+                        " on slice .")
+        )
         LAUNCHER_SLICE_DEFAULT_ACTION(700),
 
         @UiEvent(doc = "User toggled-on a Slice item.")
@@ -630,8 +647,11 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User skips the gesture navigation tutorial.")
         LAUNCHER_GESTURE_TUTORIAL_SKIPPED(965),
 
-        @UiEvent(doc = "User scrolled on one of the all apps surfaces such as A-Z list, search "
-                + "result page etc.")
+        @UiEvent(
+            doc =
+                ("User scrolled on one of the all apps surfaces such as A-Z list, search " +
+                        "result page etc.")
+        )
         LAUNCHER_ALLAPPS_SCROLLED(985),
 
         @UiEvent(doc = "User scrolled up on the all apps personal A-Z list.")
@@ -640,9 +660,12 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User scrolled down on the all apps personal A-Z list.")
         LAUNCHER_ALLAPPS_PERSONAL_SCROLLED_DOWN(1288),
 
-        @UiEvent(doc = "User scrolled on one of the all apps surfaces such as A-Z list, search "
-                + "result page etc and we don't know the direction since user came back to "
-                + "original position from which they scrolled.")
+        @UiEvent(
+            doc =
+                ("User scrolled on one of the all apps surfaces such as A-Z list, search " +
+                        "result page etc and we don't know the direction since user came back to " +
+                        "original position from which they scrolled.")
+        )
         LAUNCHER_ALLAPPS_SCROLLED_UNKNOWN_DIRECTION(1231),
 
         @UiEvent(doc = "User tapped taskbar home button")
@@ -708,12 +731,18 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User has invoked split to left half from desktop mode.")
         LAUNCHER_DESKTOP_MODE_SPLIT_LEFT_TOP(1464),
 
-        @UiEvent(doc = "User has collapsed the work FAB button by scrolling down in the all apps"
-                + " work A-Z list.")
+        @UiEvent(
+            doc =
+                ("User has collapsed the work FAB button by scrolling down in the all apps" +
+                        " work A-Z list.")
+        )
         LAUNCHER_WORK_FAB_BUTTON_COLLAPSE(1276),
 
-        @UiEvent(doc = "User has collapsed the work FAB button by scrolling up in the all apps"
-                + " work A-Z list.")
+        @UiEvent(
+            doc =
+                ("User has collapsed the work FAB button by scrolling up in the all apps" +
+                        " work A-Z list.")
+        )
         LAUNCHER_WORK_FAB_BUTTON_EXTEND(1277),
 
         @UiEvent(doc = "User scrolled down on the search result page.")
@@ -779,16 +808,22 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "User selected both apps for split screen")
         LAUNCHER_SPLIT_SELECTED_SECOND_APP(1609),
 
-        @UiEvent(doc = "User exited split selection by going home via swipe, button, or state "
-                + "transition")
+        @UiEvent(
+            doc =
+                ("User exited split selection by going home via swipe, button, or state " +
+                        "transition")
+        )
         LAUNCHER_SPLIT_SELECTION_EXIT_HOME(1610),
 
         @UiEvent(doc = "User exited split selection by tapping cancel in split instructions view")
         LAUNCHER_SPLIT_SELECTION_EXIT_CANCEL_BUTTON(1611),
 
-        @UiEvent(doc = "User exited split selection when another activity/app came to foreground"
-                + " after first app had been selected OR if user long-pressed on home. Default exit"
-                + " metric.")
+        @UiEvent(
+            doc =
+                ("User exited split selection when another activity/app came to foreground" +
+                        " after first app had been selected OR if user long-pressed on home. Default exit" +
+                        " metric.")
+        )
         LAUNCHER_SPLIT_SELECTION_EXIT_INTERRUPTED(1612),
 
         @UiEvent(doc = "User tapped add widget button in widget sheet.")
@@ -900,22 +935,28 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "Do row shift migration when upgrading to one grid")
         LAUNCHER_ROW_SHIFT_ONE_GRID_MIGRATION(2206),
 
+        @UiEvent(doc = "User has pinned taskbar in desktop mode using taskbar divider menu")
+        LAUNCHER_DESKTOP_MODE_TASKBAR_PINNED(2241),
+
+        @UiEvent(doc = "User has unpinned taskbar in desktop mode using taskbar divider menu")
+        LAUNCHER_DESKTOP_MODE_TASKBAR_UNPINNED(2242),
+
+        @UiEvent(doc = "Launcher window insets controller reportedly null")
+        LAUNCHER_WINDOW_INSETS_CONTROLLER_NULL(2400),
+
+        @UiEvent(doc = "Widget settings tapped on QSB in launcher")
+        LAUNCHER_QSB_WIDGET_SETTINGS_TAP(2415),
+
+        @UiEvent(doc = "User tapped to add an icon to home screen from all apps")
+        LAUNCHER_TAP_TO_ADD_TO_HOME_SCREEN_FROM_ALL_APPS(2445),
+
+        @UiEvent(doc = "User tapped to add a deep shortcut from the long press menu")
+        LAUNCHER_TAP_TO_ADD_DEEP_SHORTCUT(2446),
         // ADD MORE
-        ;
-
-        private final int mId;
-
-        LauncherEvent(int id) {
-            mId = id;
-        }
-
-        public int getId() {
-            return mId;
-        }
     }
 
     /** Launcher's latency events. */
-    public enum LauncherLatencyEvent implements EventEnum {
+    enum class LauncherLatencyEvent(override val id: Int) : EventEnum {
         // Details of below 6 events with prefix of "LAUNCHER_LATENCY_STARTUP_" are discussed in
         // go/launcher-startup-latency
         @UiEvent(doc = "The total duration of launcher startup latency.")
@@ -924,192 +965,105 @@ public class StatsLogManager implements ResourceBasedOverride {
         @UiEvent(doc = "The duration of launcher activity's onCreate().")
         LAUNCHER_LATENCY_STARTUP_ACTIVITY_ON_CREATE(1363),
 
-        @UiEvent(doc =
-                "The duration to inflate launcher root view in launcher activity's onCreate().")
+        @UiEvent(
+            doc = "The duration to inflate launcher root view in launcher activity's onCreate()."
+        )
         LAUNCHER_LATENCY_STARTUP_VIEW_INFLATION(1364),
 
         @UiEvent(doc = "The duration of asynchronous loading workspace")
         LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC(1367),
 
-        @UiEvent(doc = "Time passed between Contextual Search runnable creation and execution. This"
-                + " ensures that Recent animations have finished before Contextual Search starts.")
+        @UiEvent(
+            doc =
+                ("Time passed between Contextual Search runnable creation and execution. This" +
+                        " ensures that Recent animations have finished before Contextual Search starts.")
+        )
         LAUNCHER_LATENCY_OMNI_RUNNABLE(1546),
 
-        @UiEvent(doc = "Time passed between nav handle touch down and cancellation without "
-                + "triggering Contextual Search")
+        @UiEvent(
+            doc =
+                ("Time passed between nav handle touch down and cancellation without " +
+                        "triggering Contextual Search")
+        )
         LAUNCHER_LATENCY_CONTEXTUAL_SEARCH_LPNH_ABANDON(2171),
-        ;
-
-        private final int mId;
-
-        LauncherLatencyEvent(int id) {
-            mId = id;
-        }
-
-        @Override
-        public int getId() {
-            return mId;
-        }
     }
 
-    /**
-     * Launcher specific ranking related events.
-     */
-    public enum LauncherRankingEvent implements EventEnum {
-
-        UNKNOWN(0);
-        // ADD MORE
-
-        private final int mId;
-
-        LauncherRankingEvent(int id) {
-            mId = id;
-        }
-
-        public int getId() {
-            return mId;
-        }
+    /** Launcher specific ranking related events. */
+    enum class LauncherRankingEvent(override val id: Int) : EventEnum {
+        UNKNOWN(0) // ADD MORE
     }
 
-    /**
-     * Helps to construct and log launcher event.
-     */
-    public interface StatsLogger {
+    /** Helps to construct and log launcher event. */
+    interface StatsLogger {
+        /** Sets log fields from provided [ItemInfo]. */
+        fun withItemInfo(itemInfo: ItemInfo?) = this
 
-        /**
-         * Sets log fields from provided {@link ItemInfo}.
-         */
-        default StatsLogger withItemInfo(ItemInfo itemInfo) {
-            return this;
-        }
+        /** Sets [InstanceId] of log message. */
+        fun withInstanceId(instanceId: InstanceId?) = this
 
+        /** Sets rank field of log message. */
+        fun withRank(rank: Int) = this
 
-        /**
-         * Sets {@link InstanceId} of log message.
-         */
-        default StatsLogger withInstanceId(InstanceId instanceId) {
-            return this;
-        }
+        /** Sets source launcher state field of log message. */
+        fun withSrcState(srcState: Int) = this
 
-        /**
-         * Sets rank field of log message.
-         */
-        default StatsLogger withRank(int rank) {
-            return this;
-        }
+        /** Sets destination launcher state field of log message. */
+        fun withDstState(dstState: Int) = this
 
-        /**
-         * Sets source launcher state field of log message.
-         */
-        default StatsLogger withSrcState(int srcState) {
-            return this;
-        }
+        /** Sets FromState field of log message. */
+        fun withFromState(fromState: FromState?) = this
 
-        /**
-         * Sets destination launcher state field of log message.
-         */
-        default StatsLogger withDstState(int dstState) {
-            return this;
-        }
+        /** Sets ToState field of log message. */
+        fun withToState(toState: ToState?) = this
 
-        /**
-         * Sets FromState field of log message.
-         */
-        default StatsLogger withFromState(FromState fromState) {
-            return this;
-        }
-
-        /**
-         * Sets ToState field of log message.
-         */
-        default StatsLogger withToState(ToState toState) {
-            return this;
-        }
-
-        /**
-         * Sets editText field of log message.
-         */
-        default StatsLogger withEditText(String editText) {
-            return this;
-        }
+        /** Sets editText field of log message. */
+        fun withEditText(editText: String?) = this
 
         /**
          * Sets the final value for container related fields of log message.
          *
-         * By default container related fields are derived from {@link ItemInfo}, this method would
+         * By default container related fields are derived from [ItemInfo], this method would
          * override those values.
          */
-        default StatsLogger withContainerInfo(ContainerInfo containerInfo) {
-            return this;
-        }
+        fun withContainerInfo(containerInfo: ContainerInfo?) = this
+
+        /** Sets logging fields from provided [SliceItem]. */
+        fun withSliceItem(sliceItem: SliceItem) = this
+
+        /** Sets logging fields from provided [LauncherAtom.Slice]. */
+        fun withSlice(slice: Slice) = this
+
+        /** Sets cardinality of log message. */
+        fun withCardinality(cardinality: Int) = this
+
+        /** Sets the input type of the log message. */
+        fun withInputType(inputType: Int) = this
+
+        /** Set the features of the log message. */
+        fun withFeatures(feature: Int) = this
+
+        /** Set the package name of the log message. */
+        fun withPackageName(packageName: String?) = this
+
+        /** Builds the final message and logs it as [EventEnum]. */
+        fun log(event: EventEnum) {}
 
         /**
-         * Sets logging fields from provided {@link SliceItem}.
+         * Builds the final message and logs it to two different atoms, one for event tracking and
+         * the other for jank tracking.
          */
-        default StatsLogger withSliceItem(SliceItem sliceItem) {
-            return this;
-        }
-
-        /**
-         * Sets logging fields from provided {@link LauncherAtom.Slice}.
-         */
-        default StatsLogger withSlice(LauncherAtom.Slice slice) {
-            return this;
-        }
-
-        /**
-         * Sets cardinality of log message.
-         */
-        default StatsLogger withCardinality(int cardinality) {
-            return this;
-        }
-
-        /**
-         * Sets the input type of the log message.
-         */
-        default StatsLogger withInputType(int inputType) {
-            return this;
-        }
-
-        /**
-         * Set the features of the log message.
-         */
-        default StatsLogger withFeatures(int feature) {
-            return this;
-        }
-
-        /**
-         * Set the package name of the log message.
-         */
-        default StatsLogger withPackageName(@Nullable String packageName) {
-            return this;
-        }
-
-        /**
-         * Builds the final message and logs it as {@link EventEnum}.
-         */
-        default void log(EventEnum event) {
-        }
-
-        /**
-         * Builds the final message and logs it to two different atoms, one for
-         * event tracking and the other for jank tracking.
-         */
-        default void sendToInteractionJankMonitor(EventEnum event, View v) {
-        }
+        fun sendToInteractionJankMonitor(event: EventEnum?, v: View?) {}
     }
 
-    /**
-     * Helps to construct and log latency event.
-     */
-    public interface StatsLatencyLogger {
-
+    /** Helps to construct and log latency event. */
+    interface StatsLatencyLogger {
         /**
          * Should be in sync with:
          * google3/wireless/android/sysui/aster/asterstats/launcher_event_processed.proto
          */
-        enum LatencyType {
+        enum class LatencyType(val id: Int) {
             UNKNOWN(0),
+
             // example: launcher restart that happens via daily backup and restore
             COLD(1),
             HOT(2),
@@ -1119,230 +1073,181 @@ public class StatsLogManager implements ResourceBasedOverride {
             ATOMIC(6),
             CONTROLLED(7),
             CACHED(8),
+
             // example: device is rebooting via power key or shell command `adb reboot`
             COLD_DEVICE_REBOOTING(9),
+
             // Tracking warm startup latency:
             // https://developer.android.com/topic/performance/vitals/launch-time#warm
-            WARM(10);
-            private final int mId;
-
-            LatencyType(int id) {
-                this.mId = id;
-            }
-
-            public int getId() {
-                return mId;
-            }
+            WARM(10),
         }
 
-        /**
-         * Sets {@link InstanceId} of log message.
-         */
-        default StatsLatencyLogger withInstanceId(InstanceId instanceId) {
-            return this;
-        }
+        /** Sets [InstanceId] of log message. */
+        fun withInstanceId(instanceId: InstanceId?) = this
 
+        /** Sets latency of the event. */
+        fun withLatency(latencyInMillis: Long) = this
 
-        /**
-         * Sets latency of the event.
-         */
-        default StatsLatencyLogger withLatency(long latencyInMillis) {
-            return this;
-        }
+        /** Sets [LatencyType] of log message. */
+        fun withType(type: LatencyType?) = this
 
-        /**
-         * Sets {@link LatencyType} of log message.
-         */
-        default StatsLatencyLogger withType(LatencyType type) {
-            return this;
-        }
+        /** Sets query length of the event. */
+        fun withQueryLength(queryLength: Int) = this
 
-        /**
-         * Sets query length of the event.
-         */
-        default StatsLatencyLogger withQueryLength(int queryLength) {
-            return this;
-        }
-
-        /**
-         * Sets sub event type.
-         */
-        default StatsLatencyLogger withSubEventType(int type) {
-            return this;
-        }
-
+        /** Sets sub event type. */
+        fun withSubEventType(type: Int) = this
 
         /** Sets cardinality of the event. */
-        default StatsLatencyLogger withCardinality(int cardinality) {
-            return this;
-        }
+        fun withCardinality(cardinality: Int) = this
 
-        /**
-         * Sets packageId of log message.
-         */
-        default StatsLatencyLogger withPackageId(int packageId) {
-            return this;
-        }
+        /** Sets packageId of log message. */
+        fun withPackageId(packageId: Int) = this
 
-        /**
-         * Builds the final message and logs it as {@link EventEnum}.
-         */
-        default void log(EventEnum event) {
+        /** Builds the final message and logs it as [EventEnum]. */
+        fun log(event: EventEnum) {}
+
+        companion object {
+            /** Package Id for Launcher */
+            const val LAUNCHER_LATENCY_PACKAGE_ID: Int = 3
         }
     }
 
-    /**
-     * Helps to construct and log impression event.
-     */
-    public interface StatsImpressionLogger {
+    /** Helps to construct and log impression event. */
+    interface StatsImpressionLogger {
 
-        enum State {
+        enum class State(val launcherState: Int) {
             UNKNOWN(0),
             ALLAPPS(1),
-            SEARCHBOX_WIDGET(2);
-            private final int mLauncherState;
-
-            State(int id) {
-                this.mLauncherState = id;
-            }
-
-            public int getLauncherState() {
-                return mLauncherState;
-            }
+            SEARCHBOX_WIDGET(2),
         }
+
+        /** Sets [InstanceId] of log message. */
+        fun withInstanceId(instanceId: InstanceId?) = this
+
+        /** Sets [State] of impression event. */
+        fun withState(state: State?) = this
+
+        /** Sets query length of the event. */
+        fun withQueryLength(queryLength: Int) = this
+
+        /** Sets [com.android.app.search.ResultType] for the impression event. */
+        fun withResultType(resultType: Int) = this
 
         /**
-         * Sets {@link InstanceId} of log message.
+         * Sets boolean for each of [com.android.app.search.ResultType] that indicates if this
+         * result is above keyboard or not for the impression event.
          */
-        default StatsImpressionLogger withInstanceId(InstanceId instanceId) {
-            return this;
-        }
+        fun withAboveKeyboard(aboveKeyboard: Boolean) = this
 
         /**
-         * Sets {@link State} of impression event.
+         * Sets uid for each of [com.android.app.search.ResultType] that indicates package name for
+         * the impression event.
          */
-        default StatsImpressionLogger withState(State state) {
-            return this;
-        }
+        fun withUid(uid: Int) = this
 
-        /**
-         * Sets query length of the event.
-         */
-        default StatsImpressionLogger withQueryLength(int queryLength) {
-            return this;
-        }
+        /** Sets result source that indicates the origin of the result for the impression event. */
+        fun withResultSource(resultSource: Int) = this
 
-        /**
-         * Sets {@link com.android.app.search.ResultType} for the impression event.
-         */
-        default StatsImpressionLogger withResultType(int resultType) {
-            return this;
-        }
-
-        /**
-         * Sets boolean for each of {@link com.android.app.search.ResultType} that indicates
-         * if this result is above keyboard or not for the impression event.
-         */
-        default StatsImpressionLogger withAboveKeyboard(boolean aboveKeyboard) {
-            return this;
-        }
-
-        /**
-         * Sets uid for each of {@link com.android.app.search.ResultType} that indicates
-         * package name for the impression event.
-         */
-        default StatsImpressionLogger withUid(int uid) {
-            return this;
-        }
-
-        /**
-         * Sets result source that indicates the origin of the result for the impression event.
-         */
-        default StatsImpressionLogger withResultSource(int resultSource) {
-            return this;
-        }
-
-        /**
-         * Builds the final message and logs it as {@link EventEnum}.
-         */
-        default void log(EventEnum event) {
-        }
+        /** Builds the final message and logs it as [EventEnum]. */
+        fun log(event: EventEnum) {}
     }
 
-    /**
-     * Returns new logger object.
-     */
-    public StatsLogger logger() {
-        StatsLogger logger = createLogger();
+    /** Returns new logger object. */
+    fun logger(): StatsLogger {
+        val logger = createLogger()
         if (mInstanceId != null) {
-            logger.withInstanceId(mInstanceId);
+            logger.withInstanceId(mInstanceId)
         }
-        return logger;
+        return logger
     }
 
-    /**
-     * Returns new latency logger object.
-     */
-    public StatsLatencyLogger latencyLogger() {
-        StatsLatencyLogger logger = createLatencyLogger();
+    /** Returns new latency logger object. */
+    fun latencyLogger(): StatsLatencyLogger {
+        val logger = createLatencyLogger()
         if (mInstanceId != null) {
-            logger.withInstanceId(mInstanceId);
+            logger.withInstanceId(mInstanceId)
         }
-        return logger;
+        return logger
     }
 
-    /**
-     * Returns new impression logger object.
-     */
-    public StatsImpressionLogger impressionLogger() {
-        StatsImpressionLogger logger = createImpressionLogger();
+    /** Returns new impression logger object. */
+    fun impressionLogger(): StatsImpressionLogger {
+        val logger = createImpressionLogger()
         if (mInstanceId != null) {
-            logger.withInstanceId(mInstanceId);
+            logger.withInstanceId(mInstanceId)
         }
-        return logger;
+        return logger
     }
 
-    /**
-     * Returns a singleton KeyboardStateManager.
-     */
-    public KeyboardStateManager keyboardStateManager() {
+    /** Returns a singleton KeyboardStateManager. */
+    fun keyboardStateManager(): KeyboardStateManager {
         if (mKeyboardStateManager == null) {
-            mKeyboardStateManager = new KeyboardStateManager(
-                    mContext != null ? mContext.getResources().getDimensionPixelSize(
-                            R.dimen.default_ime_height) : 0);
+            mKeyboardStateManager =
+                KeyboardStateManager(
+                    mContext.resources?.getDimensionPixelSize(R.dimen.default_ime_height) ?: 0
+                )
         }
-        return mKeyboardStateManager;
+        return mKeyboardStateManager!!
     }
 
-    protected StatsLogger createLogger() {
-        return new StatsLogger() {
-        };
+    protected open fun createLogger(): StatsLogger {
+        return object : StatsLogger {}
     }
 
-    protected StatsLatencyLogger createLatencyLogger() {
-        return new StatsLatencyLogger() {
-        };
+    protected open fun createLatencyLogger(): StatsLatencyLogger {
+        return object : StatsLatencyLogger {}
     }
 
-    protected StatsImpressionLogger createImpressionLogger() {
-        return new StatsImpressionLogger() {
-        };
+    protected open fun createImpressionLogger(): StatsImpressionLogger {
+        return object : StatsImpressionLogger {}
     }
 
-    /**
-     * Sets InstanceId to every new {@link StatsLogger} object returned by {@link #logger()} when
-     * not-null.
-     */
-    public StatsLogManager withDefaultInstanceId(@Nullable InstanceId instanceId) {
-        this.mInstanceId = instanceId;
-        return this;
+    /** Sets InstanceId to every new [StatsLogger] object returned by [.logger] when not-null. */
+    fun withDefaultInstanceId(instanceId: InstanceId?): StatsLogManager {
+        this.mInstanceId = instanceId
+        return this
     }
 
-    /**
-     * Creates a new instance of {@link StatsLogManager} based on provided context.
-     */
-    public static StatsLogManager newInstance(Context context) {
-        return Overrides.getObject(
-                StatsLogManager.class, context, R.string.stats_log_manager_class);
+    companion object {
+        const val LAUNCHER_STATE_UNSPECIFIED: Int = 0
+        const val LAUNCHER_STATE_BACKGROUND: Int = 1
+        const val LAUNCHER_STATE_HOME: Int = 2
+        const val LAUNCHER_STATE_OVERVIEW: Int = 3
+        const val LAUNCHER_STATE_ALLAPPS: Int = 4
+        const val LAUNCHER_STATE_UNCHANGED: Int = 5
+        const val LAUNCHER_STATE_OPTIONS: Int = 6
+
+        /**
+         * Returns event enum based on the two state transition information when swipe gesture
+         * happens(to be removed during UserEventDispatcher cleanup).
+         */
+        @JvmStatic
+        fun getLauncherAtomEvent(
+            startState: Int,
+            targetState: Int,
+            fallbackEvent: EventEnum,
+        ): EventEnum {
+            return when {
+                startState == LAUNCHER_STATE_HOME && targetState == LAUNCHER_STATE_HOME ->
+                    LAUNCHER_HOME_GESTURE
+
+                startState != LAUNCHER_STATE_OVERVIEW && targetState == LAUNCHER_STATE_OVERVIEW ->
+                    LAUNCHER_OVERVIEW_GESTURE
+
+                startState != LAUNCHER_STATE_ALLAPPS && targetState == LAUNCHER_STATE_ALLAPPS ->
+                    LAUNCHER_ALLAPPS_OPEN_UP
+
+                startState == LAUNCHER_STATE_ALLAPPS && targetState != LAUNCHER_STATE_ALLAPPS ->
+                    LAUNCHER_ALLAPPS_CLOSE_DOWN
+
+                else -> fallbackEvent // TODO fix
+            }
+        }
+
+        /** Creates a new instance of [StatsLogManager] based on provided context. */
+        @JvmStatic
+        fun newInstance(context: Context): StatsLogManager {
+            return context.appComponent.statsLogManagerFactory.create(context)
+        }
     }
 }

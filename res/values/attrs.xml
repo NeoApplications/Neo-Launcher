@@ -46,8 +46,8 @@
     <attr name="focusOutlineColor" format="color" />
     <attr name="focusInnerOutlineColor" format="color" />
 
-
     <attr name="pageIndicatorDotColor" format="color" />
+    <attr name="pageIndicatorArrowBgColor" format="color" />
     <attr name="folderPreviewColor" format="color" />
     <attr name="folderBackgroundColor" format="color" />
     <attr name="folderIconRadius" format="float" />
@@ -353,6 +353,8 @@
     <declare-styleable name="CellSpec">
         <attr name="dimensionType" />
         <attr name="maxAvailableSize" />
+        <attr name="maxLineCount" format="integer" />
+        <attr name="maxLineCountMatchesWorkspace" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="SizeSpec">

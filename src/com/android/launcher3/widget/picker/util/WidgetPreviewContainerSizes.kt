@@ -25,12 +25,63 @@ val HANDHELD_WIDGET_PREVIEW_SIZES: List<WidgetPreviewContainerSize> =
     listOf(
         WidgetPreviewContainerSize(spanX = 4, spanY = 3),
         WidgetPreviewContainerSize(spanX = 4, spanY = 2),
+        WidgetPreviewContainerSize(spanX = 3, spanY = 2),
         WidgetPreviewContainerSize(spanX = 2, spanY = 3),
         WidgetPreviewContainerSize(spanX = 2, spanY = 2),
         WidgetPreviewContainerSize(spanX = 4, spanY = 1),
         WidgetPreviewContainerSize(spanX = 3, spanY = 1),
         WidgetPreviewContainerSize(spanX = 2, spanY = 1),
         WidgetPreviewContainerSize(spanX = 1, spanY = 1),
+    )
+
+/**
+ * List of templates that can be used for selecting container sizes to show for featured widgets in
+ * the widget picker for the handheld.
+ */
+val HANDHELD_FEATURED_CONTAINER_SIZES: List<List<WidgetPreviewContainerSize>> =
+    listOf(
+        listOf(
+            WidgetPreviewContainerSize(1, 1),
+            WidgetPreviewContainerSize(1, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 1),
+            WidgetPreviewContainerSize(4, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 1),
+            WidgetPreviewContainerSize(2, 1),
+            WidgetPreviewContainerSize(4, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(4, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 1),
+            WidgetPreviewContainerSize(4, 3),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 2),
+            WidgetPreviewContainerSize(4, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(4, 2),
+            WidgetPreviewContainerSize(4, 3),
+        ),
     )
 
 /**
@@ -50,4 +101,54 @@ val TABLET_WIDGET_PREVIEW_SIZES: List<WidgetPreviewContainerSize> =
         WidgetPreviewContainerSize(spanX = 3, spanY = 1),
         WidgetPreviewContainerSize(spanX = 2, spanY = 1),
         WidgetPreviewContainerSize(spanX = 1, spanY = 1),
+    )
+
+/**
+ * List of templates that can be used for selecting container sizes to show for featured widgets in
+ * the widget picker for tablets.
+ */
+val TABLET_FEATURED_CONTAINER_SIZES: List<List<WidgetPreviewContainerSize>> =
+    listOf(
+        listOf(
+            WidgetPreviewContainerSize(1, 1),
+            WidgetPreviewContainerSize(1, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 1),
+            WidgetPreviewContainerSize(3, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 1),
+            WidgetPreviewContainerSize(2, 1),
+            WidgetPreviewContainerSize(3, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(3, 1),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 1),
+            WidgetPreviewContainerSize(3, 3),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 2),
+            WidgetPreviewContainerSize(3, 2),
+        ),
+        listOf(
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(2, 2),
+            WidgetPreviewContainerSize(3, 2),
+            WidgetPreviewContainerSize(3, 3),
+        ),
     )

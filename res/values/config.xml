@@ -226,4 +226,5 @@
 
     <!-- Used to differentiate between desktop and non-desktop devices. -->
     <bool name="desktop_form_factor">false</bool>
+    <string-array name="supported_overlay_apps" translatable="false" />
 </resources>

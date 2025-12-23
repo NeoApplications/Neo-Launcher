@@ -1,7 +1,9 @@
 package com.saggitt.omega.folder
 
+import com.android.launcher3.model.data.CollectionInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.model.data.WorkspaceItemInfo
 
 class FirstItemProvider(private val info: FolderInfo) : FolderInfo.FolderListener {
 

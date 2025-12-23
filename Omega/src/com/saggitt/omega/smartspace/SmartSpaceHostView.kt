@@ -127,9 +127,12 @@ open class SmartSpaceHostView(context: Context) : QsbWidgetHostView(context), On
 }
 
 enum class NexusLauncherEnum(private val mId: Int) : EventEnum {
-    SMARTSPACE_TAP_OR_LONGPRESS(520);
+    SMARTSPACE_TAP_OR_LONGPRESS(520) {
+        override val id: Int
+            get() = 520
+    };
 
-    override fun getId(): Int {
+    fun getId(): Int {
         return mId
     }
 }

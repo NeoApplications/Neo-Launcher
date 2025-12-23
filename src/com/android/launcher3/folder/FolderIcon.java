@@ -230,7 +230,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
         if (folderInfo instanceof DrawerFolderInfo) {
             lp.topMargin = grid.allAppsIconSizePx + grid.allAppsIconDrawablePaddingPx;
-            icon.mBackground = new PreviewBackground();
+            icon.mBackground = new PreviewBackground(activity.asContext());
             ((DrawerFolderInfo) folderInfo).getAppsStore().registerFolderIcon(icon);
         } else {
             lp.topMargin = grid.iconSizePx + grid.iconDrawablePaddingPx;
@@ -256,7 +256,6 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
     public void unbind() {
         if (mInfo != null) {
-            mInfo.removeListener(this);
             mInfo.removeListener(mFolder);
             mInfo = null;
         }
@@ -667,9 +666,9 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             // If we are animating to the accepting state, animate the dot out.
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getAcceptScaleProgress());
             mDotParams.dotColor = mBackground.getDotColor();
-            mDotParams.count = mDotInfo.getNotificationCount();
+            //mDotParams.count = mDotInfo.getNotificationCount();
             if (prefs.getNotificationCount().getValue())
-                mDotParams.showCount = true;
+                //    mDotParams.showCount = true;
             mDotRenderer.draw(canvas, mDotParams);
         }
     }
@@ -753,7 +752,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             }
             isCustomIcon = true;
             if (mInfo.isCoverMode()) {
-                ItemInfoWithIcon coverInfo = mInfo.getCoverInfo();
+                ItemInfoWithIcon coverInfo = (ItemInfoWithIcon) mInfo.getCoverInfo();
                 mFolderName.setTag(coverInfo);
                 mFolderName.applyIcon(coverInfo);
                 applyCoverDotState(coverInfo, false);
@@ -921,7 +920,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
     }
 
     public WorkspaceItemInfo getCoverInfo() {
-        return mInfo.getCoverInfo();
+        return (WorkspaceItemInfo) mInfo.getCoverInfo();
     }
 
     public void applyCoverDotState(ItemInfo itemInfo, boolean animate) {
@@ -930,10 +929,9 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
     public void updateIconDots(Predicate<PackageUserKey> updatedBadges, PackageUserKey tmpKey) {
         FolderDotInfo folderDotInfo = new FolderDotInfo();
-        for (WorkspaceItemInfo si : mInfo.contents) {
+        for (ItemInfo si : mInfo.contents) {
             folderDotInfo.addDotInfo(mActivity.getDotInfoForItem(si));
         }
-        setDotInfo(folderDotInfo);
 
         if (mInfo.isCoverMode()) {
             WorkspaceItemInfo coverInfo = getCoverInfo();

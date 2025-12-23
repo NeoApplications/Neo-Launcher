@@ -18,11 +18,15 @@ package com.android.launcher3;
 
 import static com.android.launcher3.BuildConfig.WIDGET_ON_FIRST_SCREEN;
 import static com.android.launcher3.Flags.enableSmartspaceAsAWidget;
+import static com.android.launcher3.Flags.injectableModelItems;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ICON_OVERLAP_FACTOR;
 import static com.android.launcher3.graphics.ShapeDelegate.DEFAULT_PATH_SIZE;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
+import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_BOTTOM_OR_RIGHT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_POSITION_TOP_OR_LEFT;
 import static com.android.launcher3.util.SplitConfigurationOptions.STAGE_TYPE_MAIN;
+import static com.android.window.flags2.Flags.enableNonDefaultDisplaySplit;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -88,6 +92,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
+import com.android.launcher3.deviceprofile.DeviceProperties;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.graphics.TintedDrawableSpan;
@@ -161,6 +166,9 @@ public final class Utilities {
     @Deprecated
     public static final boolean IS_DEBUG_DEVICE = BuildConfig.IS_DEBUG_DEVICE;
 
+    public static boolean qsbOnFirstScreen() {
+        return !injectableModelItems() && WIDGET_ON_FIRST_SCREEN;
+    }
     public static final int TRANSLATE_UP = 0;
     public static final int TRANSLATE_DOWN = 1;
     public static final int TRANSLATE_LEFT = 2;
@@ -462,6 +470,25 @@ public final class Utilities {
     }
 
     /**
+     * TODO(b/235886078): workaround needed because of this bug
+     * Icons are 10% larger on XML than their visual size, so remove that extra space to get
+     * some dimensions correct.
+     * <p>
+     * When this bug is resolved this method will no longer be needed and we would be able to
+     * replace all instances where this method is called with iconSizePx.
+     */
+    public static int getIconVisibleSizePx(int iconSizePx) {
+        return Math.round(ICON_VISIBLE_AREA_FACTOR * iconSizePx);
+    }
+
+    public static int getNormalizedIconDrawablePadding(int iconSizePx, int iconDrawablePadding) {
+        return Math.max(
+                0,
+                iconDrawablePadding - ((iconSizePx - getIconVisibleSizePx(iconSizePx)) / 2)
+        );
+    }
+
+    /**
      * Bounds t between a lower and upper bound and maps the result to a range.
      */
     public static float mapBoundToRange(float t, float lowerBound, float upperBound,
@@ -538,6 +565,10 @@ public final class Utilities {
     public static int pxFromSp(float size, DisplayMetrics metrics, float scale) {
         float value = scale * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, metrics);
         return ResourceUtils.roundPxValueFromFloat(value);
+    }
+
+    public static int getIconSizeWithOverlap(int iconSize) {
+        return (int) Math.ceil(iconSize * ICON_OVERLAP_FACTOR);
     }
 
     public static String createDbSelectionQuery(String columnName, IntArray values) {
@@ -684,7 +715,7 @@ public final class Utilities {
             if (activityInfo == null) {
                 return null;
             }
-            mainIcon = appState.getIconCache().getFullResIcon(activityInfo, info, false);
+            mainIcon = appState.getIconCache().getFullResIcon(activityInfo.getActivityInfo());
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             List<ShortcutInfo> siList = ShortcutKey.fromItemInfo(info)
                     .buildRequest(context)
@@ -708,10 +739,10 @@ public final class Utilities {
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             FolderInfo folderInfo = (FolderInfo) info;
             if (folderInfo.isCoverMode()) {
-                WorkspaceItemInfo coverInfo = folderInfo.getCoverInfo();
+                WorkspaceItemInfo coverInfo = (WorkspaceItemInfo) folderInfo.getCoverInfo();
                 LauncherActivityInfo activityInfo = context.getSystemService(LauncherApps.class)
                         .resolveActivity(coverInfo.getIntent(), coverInfo.user);
-                mainIcon = appState.getIconCache().getFullResIcon(activityInfo, coverInfo, false);
+                mainIcon = appState.getIconCache().getFullResIcon(activityInfo.getActivityInfo());
                 badge = coverInfo.bitmap.getBadgeDrawable(context, useTheme, getIconShapeOrNull(context));
             } else {
                 FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
@@ -1017,19 +1048,39 @@ public final class Utilities {
         }
     }
 
-    // Edited
+    /**
+     * Determines whether the split should be left/right split layout and returns a boolean.
+     * The split orientation depends on the device's properties (tablet vs. phone, landscape vs.
+     * portrait), if current display is external display, and flags.
+     *
+     * @return {@code true} if the split should be a left/right split, {@code false} if it should
+     * be a top/bottom split.
+     */
+    public static boolean calculateIsLeftRightSplit(boolean allowLeftRightSplitInPortrait,
+                                                    DeviceProperties deviceProperties, boolean isExternalDisplay) {
+        if (allowLeftRightSplitInPortrait && deviceProperties.isTablet()) {
+            if (!isExternalDisplay || !enableNonDefaultDisplaySplit()) {
+                return !deviceProperties.isLandscape();
+            } else {
+                // If split is started in external display and the non_default_display_split
+                // is enabled, set isLeftRightSplit to true in landscape mode.
+                return deviceProperties.isLandscape();
+            }
+        } else {
+            return deviceProperties.isLandscape();
+        }
+    }
+
     @Nullable
     public static Bitmap drawableToBitmap(Drawable drawable) {
         return drawableToBitmap(drawable, true, 0);
     }
 
-    // Edited
     // TODO remove
     public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
         return drawableToBitmap(drawable, forceCreate, 0);
     }
 
-    // Edited
     public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
         if (!forceCreate && drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
@@ -1054,7 +1105,6 @@ public final class Utilities {
         return bitmap;
     }
 
-    // Edited
     public static int parseResourceIdentifier(Resources res, String identifier, String packageName) {
         try {
             return Integer.parseInt(identifier.substring(1));
@@ -1063,7 +1113,6 @@ public final class Utilities {
         }
     }
 
-    // Edited
     /**
      * Creates a new component key from an encoded component key string in the form of
      * [flattenedComponentString#userId].  If the userId is not present, then it defaults
@@ -1091,12 +1140,10 @@ public final class Utilities {
         }
     }
 
-    // Edited
     public static <T> T notNullOrDefault(T value, T defValue) {
         return (value == null) ? defValue : value;
     }
 
-    // Edited
     public static void restartLauncher(Context context) {
         PackageManager pm = context.getPackageManager();
 
@@ -1112,7 +1159,6 @@ public final class Utilities {
         restartLauncher(context, intent);
     }
 
-    // Edited
     public static void restartLauncher(Context context, Intent intent) {
         context.startActivity(intent);
 
@@ -1126,7 +1172,6 @@ public final class Utilities {
         killLauncher();
     }
 
-    // Edited
     public static void killLauncher() {
         System.exit(0);
     }

@@ -22,6 +22,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
@@ -80,6 +81,30 @@ public class PackageManagerHelper {
         mContext = context;
         mPm = context.getPackageManager();
         mLauncherApps = Objects.requireNonNull(context.getSystemService(LauncherApps.class));
+    }
+
+    /**
+     * Returns whether the target app is installed for a given user
+     */
+    public boolean isAppInstalled(@NonNull final String packageName,
+                                  @NonNull final UserHandle user) {
+        final ApplicationInfo info = getApplicationInfo(packageName, user, 0);
+        return info != null;
+    }
+
+    /**
+     * Returns the application info for the provided package or null
+     */
+    @Nullable
+    public ApplicationInfo getApplicationInfo(@NonNull final String packageName,
+                                              @NonNull final UserHandle user, final int flags) {
+        try {
+            ApplicationInfo info = mLauncherApps.getApplicationInfo(packageName, flags, user);
+            return (info.flags & ApplicationInfo.FLAG_INSTALLED) == 0 || !info.enabled
+                    ? null : info;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     /**

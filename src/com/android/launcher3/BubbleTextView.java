@@ -295,11 +295,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         this(context, attrs, 0);
     }
 
-    // Edited
     public BubbleTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mActivity = ActivityContext.lookupContext(context);
-        FastBitmapDrawable.setFlagHoverEnabled(enableCursorHoverStates());
         mMinimizedStateDescription = getContext().getString(
                 R.string.app_minimized_state_description);
         mRunningStateDescription = getContext().getString(R.string.app_running_state_description);
@@ -1235,6 +1233,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         }
         float currentWordWidth, runningWidth = 0;
         CharSequence currentWord;
+        StringBuilder newString = new StringBuilder();
         paint.setLetterSpacing(MIN_LETTER_SPACING);
         int stringPtr = 0;
         for (int i = 0; i < breakPoints.size() + 1; i++) {
@@ -1249,7 +1248,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             if (runningWidth <= limitedWidth) {
                 newString.append(currentWord);
             } else {
-                // there is no more space
                 if (i != 0) {
                     // If putting word onto a new line, make sure there is no space or new line
                     // character in the beginning of the current word and just put in the rest of

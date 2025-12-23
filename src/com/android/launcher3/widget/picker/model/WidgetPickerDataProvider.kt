@@ -16,11 +16,7 @@
 
 package com.android.launcher3.widget.picker.model
 
-import android.content.Context
-import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.android.launcher3.model.WidgetItem
-import com.android.launcher3.model.WidgetsFilterDataProvider
-import com.android.launcher3.model.WidgetsFilterDataProvider.WidgetsFilterLoadedCallback
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.widget.model.WidgetsListBaseEntry
 import com.android.launcher3.widget.picker.model.data.WidgetPickerData
@@ -33,11 +29,7 @@ import java.util.function.Predicate
  * Provides [WidgetPickerData] to various views such as widget picker, app-specific widget picker,
  * widgets shortcut.
  */
-class WidgetPickerDataProvider(private val filterProvider: WidgetsFilterDataProvider) :
-    WidgetsFilterLoadedCallback {
-
-    constructor(context: Context) : this(context.appComponent.widgetsFilterDataProvider)
-
+class WidgetPickerDataProvider {
     /** All the widgets data provided for the views */
     private var mWidgetPickerData: WidgetPickerData = WidgetPickerData()
 
@@ -52,17 +44,9 @@ class WidgetPickerDataProvider(private val filterProvider: WidgetsFilterDataProv
         this.changeListener = changeListener
     }
 
-    init {
-        filterProvider.addFilterChangeCallback(this)
-    }
-
     /** Returns the current snapshot of [WidgetPickerData]. */
     fun get(): WidgetPickerData {
         return mWidgetPickerData
-    }
-
-    override fun onWidgetsFilterLoaded() {
-        setWidgets(allWidgets)
     }
 
     /**
@@ -73,19 +57,11 @@ class WidgetPickerDataProvider(private val filterProvider: WidgetsFilterDataProv
     fun setWidgets(allWidgets: List<WidgetsListBaseEntry>) {
         this.allWidgets = allWidgets
 
-        val currentFilter = filterProvider.defaultWidgetsFilter
-        val finalFilter =
-            when {
-                currentFilter != null && hostSpecifiedDefaultWidgetsFilter != null ->
-                    currentFilter.and(hostSpecifiedDefaultWidgetsFilter)
-                hostSpecifiedDefaultWidgetsFilter != null -> hostSpecifiedDefaultWidgetsFilter
-                else -> currentFilter
-            }
-
+        val defaultWidgetsFilter = hostSpecifiedDefaultWidgetsFilter
         val defaultWidgets =
-            if (finalFilter != null)
+            if (defaultWidgetsFilter != null)
                 allWidgets
-                    .map { it.copy().apply { mWidgets.removeIf(finalFilter) } }
+                    .map { it.copy().apply { mWidgets.removeIf(defaultWidgetsFilter.negate()) } }
                     .filter { it.mWidgets.isNotEmpty() }
             else emptyList()
 
@@ -111,7 +87,7 @@ class WidgetPickerDataProvider(private val filterProvider: WidgetsFilterDataProv
     }
 
     fun destroy() {
-        filterProvider.removeFilterChangeCallback(this)
+        changeListener = null
     }
 
     interface WidgetPickerDataChangeListener {

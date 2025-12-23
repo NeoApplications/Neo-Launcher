@@ -18,12 +18,14 @@ package com.android.launcher3.model;
 
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
+import static com.android.launcher3.LauncherSettings.Favorites.DESKTOP_ICON_FLAG;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
-import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
+import static com.android.launcher3.Utilities.qsbOnFirstScreen;
 import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ARCHIVED;
+import static com.android.launcher3.model.data.WorkspaceItemInfo.FLAG_RESTORED_FULL_BLEED;
 
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -37,7 +39,6 @@ import android.os.UserHandle;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.LongSparseArray;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -51,7 +52,6 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger.RestoreError;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.logging.FileLog;
@@ -62,6 +62,7 @@ import com.android.launcher3.model.data.IconRequestInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.pm.UserManagerState;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.ContentWriter;
@@ -85,7 +86,7 @@ public class LoaderCursor extends CursorWrapper {
 
     private static final String TAG = "LoaderCursor";
 
-    private final LongSparseArray<UserHandle> allUsers;
+    private final UserManagerState mUserManagerState;
 
     private final Context mContext;
     private final LauncherModel mModel;
@@ -152,7 +153,7 @@ public class LoaderCursor extends CursorWrapper {
         mModel = model;
         mPmHelper = pmHelper;
 
-        allUsers = userManagerState.allUsers;
+        mUserManagerState = userManagerState;
         mRestoreEventLogger = restoreEventLogger;
 
         // Init column indices
@@ -189,7 +190,7 @@ public class LoaderCursor extends CursorWrapper {
             container = getInt(mContainerIndex);
             id = getInt(mIdIndex);
             serialNumber = getInt(mProfileIdIndex);
-            user = allUsers.get(serialNumber);
+            user = mUserManagerState.getUser(serialNumber);
             restoreFlag = getInt(mRestoredIndex);
         }
         return result;
@@ -236,7 +237,9 @@ public class LoaderCursor extends CursorWrapper {
         byte[] iconBlob = itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT || restoreFlag != 0
                 || (wai.isInactiveArchive() && Flags.restoreArchivedAppIconsFromDb())
                 ? getIconBlob() : null;
-        return new IconRequestInfo<>(wai, mActivityInfo, iconBlob, useLowResIcon);
+        return new IconRequestInfo<>(wai, mActivityInfo, iconBlob,
+                wai.hasStatusFlag(FLAG_RESTORED_FULL_BLEED),
+                DESKTOP_ICON_FLAG.withUseLowRes(useLowResIcon));
     }
 
     /**
@@ -358,11 +361,13 @@ public class LoaderCursor extends CursorWrapper {
     /**
      * Make an WorkspaceItemInfo object for a shortcut that is an application.
      */
+    @Nullable
     public WorkspaceItemInfo getAppShortcutInfo(
             Intent intent, boolean allowMissingTarget, boolean useLowResIcon) {
         return getAppShortcutInfo(intent, allowMissingTarget, useLowResIcon, true);
     }
 
+    @Nullable
     public WorkspaceItemInfo getAppShortcutInfo(
             Intent intent, boolean allowMissingTarget, boolean useLowResIcon, boolean loadIcon) {
         if (user == null) {
@@ -529,9 +534,9 @@ public class LoaderCursor extends CursorWrapper {
      * Return an existing FolderInfo object if we have encountered this ID previously,
      * or make a new one.
      */
-    public CollectionInfo findOrMakeFolder(int id, BgDataModel dataModel) {
+    public CollectionInfo findOrMakeFolder(int id, IntSparseArrayMap<ItemInfo> loadedItems) {
         // See if a placeholder was created for us already
-        ItemInfo info = dataModel.itemsIdMap.get(id);
+        ItemInfo info = loadedItems.get(id);
         if (info instanceof CollectionInfo c) return c;
 
         CollectionInfo pending = mPendingCollectionInfo.get(id);
@@ -552,13 +557,13 @@ public class LoaderCursor extends CursorWrapper {
      * otherwise marks it for deletion.
      */
     public void checkAndAddItem(
-            ItemInfo info, BgDataModel dataModel, LoaderMemoryLogger logger) {
+            ItemInfo info, IntSparseArrayMap<ItemInfo> loadedItems, LoaderMemoryLogger logger) {
         if (info.itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             // Ensure that it is a valid intent. An exception here will
             // cause the item loading to get skipped
             ShortcutKey.fromItemInfo(info);
         }
-        if (checkItemPlacement(info, dataModel.isFirstPagePinnedItemEnabled)) {
+        if (checkItemPlacement(info)) {
             if (logger != null) {
                 logger.addLog(
                         Log.DEBUG,
@@ -566,13 +571,13 @@ public class LoaderCursor extends CursorWrapper {
                         String.format("Adding item to ID map: %s", info),
                         /* stackTrace= */ null);
             }
-            dataModel.addItem(mContext, info, false);
+            loadedItems.put(info.id, info);
             if ((info.itemType == ITEM_TYPE_APP_PAIR
                     || info.itemType == ITEM_TYPE_DEEP_SHORTCUT
                     || info.itemType == ITEM_TYPE_APPLICATION)
                     && info.container != CONTAINER_DESKTOP
                     && info.container != CONTAINER_HOTSEAT) {
-                findOrMakeFolder(info.container, dataModel).add(info);
+                findOrMakeFolder(info.container, loadedItems).add(info);
             }
             if (mRestoreEventLogger != null) {
                 mRestoreEventLogger.logSingleFavoritesItemRestored(itemType);
@@ -585,7 +590,7 @@ public class LoaderCursor extends CursorWrapper {
     /**
      * check & update map of what's occupied; used to discard overlapping/invalid items
      */
-    protected boolean checkItemPlacement(ItemInfo item, boolean isFirstPagePinnedItemEnabled) {
+    protected boolean checkItemPlacement(ItemInfo item) {
         int containerIndex = item.screenId;
         if (item.container == Favorites.CONTAINER_HOTSEAT) {
             final GridOccupancy hotseatOccupancy =
@@ -633,9 +638,7 @@ public class LoaderCursor extends CursorWrapper {
 
         if (!mOccupied.containsKey(item.screenId)) {
             GridOccupancy screen = new GridOccupancy(countX + 1, countY + 1);
-            if (item.screenId == Workspace.FIRST_SCREEN_ID && (FeatureFlags.QSB_ON_FIRST_SCREEN
-                    && !SHOULD_SHOW_FIRST_PAGE_WIDGET
-                    && isFirstPagePinnedItemEnabled)) {
+            if (qsbOnFirstScreen() && item.screenId == Workspace.FIRST_SCREEN_ID) {
                 // Mark the first X columns (X is width of the search container) in the first row as
                 // occupied (if the feature is enabled) in order to account for the search
                 // container.

@@ -24,7 +24,7 @@ import com.android.launcher3.LauncherConstants.SavedInstanceKeys.RUNTIME_STATE_R
 import com.android.launcher3.R
 
 /** Utility class to manage activity's theme in case it is wallpaper dependent */
-class WallpaperThemeManager private constructor(private val activity: Activity) :
+class WallpaperThemeManager(private val activity: Activity) :
     OnColorHintListener, ActivityLifecycleCallbacksAdapter, ComponentCallbacks {
 
     private var themeRes: Int = R.style.AppTheme
@@ -58,9 +58,13 @@ class WallpaperThemeManager private constructor(private val activity: Activity) 
 
     private fun updateTheme() {
         if (themeRes != Themes.getActivityThemeRes(activity)) {
-            recreateToUpdateTheme = true
-            activity.recreate()
+            recreateToUpdateTheme()
         }
+    }
+
+    fun recreateToUpdateTheme() {
+        recreateToUpdateTheme = true
+        activity.recreate()
     }
 
     companion object {

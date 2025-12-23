@@ -20,7 +20,7 @@ import android.content.Context
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAnimUtils
 import com.android.launcher3.LauncherState
-import com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_OPTIONS
+import com.android.launcher3.logging.StatsLogManager.Companion.LAUNCHER_STATE_OPTIONS
 import com.android.launcher3.views.ActivityContext
 import kotlin.math.max
 
@@ -60,7 +60,7 @@ class OptionsState(id: Int) :
         val insets = launcher.dragLayer.insets
 
         val scaledHeight = scale * ws.normalChildHeight
-        val shrunkTop = (insets.top + grid.dropTargetBarSizePx).toFloat()
+        val shrunkTop = (insets.top + grid.dropTargetProfile.barSizePx).toFloat()
         val shrunkBottom = (ws.measuredHeight - insets.bottom
                 - grid.workspacePadding.bottom).toFloat()
         val totalShrunkSpace = shrunkBottom - shrunkTop

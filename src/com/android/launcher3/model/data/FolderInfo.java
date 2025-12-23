@@ -278,7 +278,7 @@ public class FolderInfo extends CollectionInfo {
                 return folder.getDefaultFolderName();
             }
         } else {
-            WorkspaceItemInfo info = getCoverInfo();
+            WorkspaceItemInfo info = (WorkspaceItemInfo) getCoverInfo();
             if (info.customTitle != null) {
                 return info.customTitle;
             }

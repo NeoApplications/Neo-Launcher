@@ -236,6 +236,8 @@
     <string name="pin_prediction">Pin Prediction</string>
     <!-- Label for bubbling a launcher item. [CHAR_LIMIT=20] -->
     <string name="bubble">Bubble</string>
+    <!-- Label for widget settings shows in the long press menu for widgets. [CHAR_LIMIT=20] -->
+    <string name="widget_settings">Settings</string>
 
     <!-- Permissions: -->
     <skip />
@@ -549,4 +551,16 @@
     <!-- Content description for install app icon -->
     <string name="ps_add_button_content_description">Install apps to Private Space</string>
     <string name="ps_app_content_description">Add files and more to Private Space</string>
+    <!-- Strings for icon shapes -->
+    <!-- label for circle shape option in customization picker -->
+    <string name="circle_shape_title">Circle</string>
+    <!-- label for square shape option in customization picker -->
+    <string name="square_shape_title">Square</string>
+    <!-- label for 4-sided cookie option shape in customization picker -->
+    <string name="four_sided_cookie_shape_title">4-sided cookie</string>
+    <!-- label for 7-sided cookie option shape in customization picker -->
+    <string name="seven_sided_cookie_shape_title">7-sided cookie</string>
+    <!-- label for arch shape option in customization picker -->
+    <string name="arch_shape_title">Arch</string>
+
 </resources>

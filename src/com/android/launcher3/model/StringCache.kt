@@ -13,268 +13,187 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.launcher3.model
 
-package com.android.launcher3.model;
+import android.annotation.SuppressLint
+import android.app.admin.DevicePolicyManager
+import android.app.admin.ManagedSubscriptionsPolicy
+import android.content.Context
+import com.android.launcher3.R
+import com.android.launcher3.Utilities
+import java.util.function.Supplier
 
-import android.annotation.SuppressLint;
-import android.app.admin.DevicePolicyManager;
-import android.app.admin.ManagedSubscriptionsPolicy;
-import android.content.Context;
-import android.os.Build;
+/** Cache for the device policy strings used in Launcher. */
+data class StringCache
+private constructor(
+    /** User on-boarding title for work profile apps. */
+    @JvmField val workProfileEdu: String? = null,
 
-import androidx.annotation.RequiresApi;
+    /** Title shown when user opens work apps tab while work profile is paused. */
+    @JvmField val workProfilePausedTitle: String? = null,
 
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
+    /** Description shown when user opens work apps tab while work profile is paused. */
+    @JvmField val workProfilePausedDescription: String? = null,
 
-import java.util.function.Supplier;
+    /** Shown on the button to pause work profile. */
+    @JvmField val workProfilePauseButton: String? = null,
 
-/**
- *
- * Cache for the device policy strings used in Launcher.
- */
-public class StringCache {
+    /** Shown on the button to enable work profile. */
+    @JvmField val workProfileEnableButton: String? = null,
 
-    private static final String PREFIX = "Launcher.";
+    /** Label on launcher tab to indicate work apps. */
+    @JvmField val allAppsWorkTab: String? = null,
 
-    /**
-     * Work folder name.
-     */
-    public static final String WORK_FOLDER_NAME = PREFIX + "WORK_FOLDER_NAME";
+    /** Label on launcher tab to indicate personal apps. */
+    @JvmField val allAppsPersonalTab: String? = null,
 
-    /**
-     * User on-boarding title for work profile apps.
-     */
-    private static final String WORK_PROFILE_EDU = PREFIX + "WORK_PROFILE_EDU";
+    /** Accessibility description for launcher tab to indicate work apps. */
+    @JvmField val allAppsWorkTabAccessibility: String? = null,
 
-    /**
-     * Action label to finish work profile edu.
-     */
-    private static final String WORK_PROFILE_EDU_ACCEPT = PREFIX + "WORK_PROFILE_EDU_ACCEPT";
+    /** Accessibility description for launcher tab to indicate personal apps. */
+    @JvmField val allAppsPersonalTabAccessibility: String? = null,
 
-    /**
-     * Title shown when user opens work apps tab while work profile is paused.
-     */
-    private static final String WORK_PROFILE_PAUSED_TITLE =
-            PREFIX + "WORK_PROFILE_PAUSED_TITLE";
+    /** Label on widget tab to indicate work app widgets. */
+    @JvmField val widgetsWorkTab: String? = null,
 
-    /**
-     * Description shown when user opens work apps tab while work profile is paused.
-     */
-    private static final String WORK_PROFILE_PAUSED_DESCRIPTION =
-            PREFIX + "WORK_PROFILE_PAUSED_DESCRIPTION";
+    /** Label on widget tab to indicate personal app widgets. */
+    @JvmField val widgetsPersonalTab: String? = null,
 
-    /**
-     * Shown on the button to pause work profile.
-     */
-    private static final String WORK_PROFILE_PAUSE_BUTTON =
-            PREFIX + "WORK_PROFILE_PAUSE_BUTTON";
+    /** Message shown when a feature is disabled by the admin (e.g. changing wallpaper). */
+    @JvmField val disabledByAdminMessage: String? = null,
+) {
 
-    /**
-     * Shown on the button to enable work profile.
-     */
-    private static final String WORK_PROFILE_ENABLE_BUTTON =
-            PREFIX + "WORK_PROFILE_ENABLE_BUTTON";
+    companion object {
 
-    /**
-     * Label on launcher tab to indicate work apps.
-     */
-    private static final String ALL_APPS_WORK_TAB = PREFIX + "ALL_APPS_WORK_TAB";
+        @JvmField
+        val EMPTY = StringCache()
 
-    /**
-     * Label on launcher tab to indicate personal apps.
-     */
-    private static final String ALL_APPS_PERSONAL_TAB = PREFIX + "ALL_APPS_PERSONAL_TAB";
+        @JvmStatic
+                /** Loads the String cache with system defined default values */
+        fun fromContext(context: Context) =
+            StringCache(
+                workProfileEdu =
+                    context.getEnterpriseString(
+                        WORK_PROFILE_EDU,
+                        R.string.work_profile_edu_work_apps,
+                    ),
+                workProfilePausedTitle =
+                    context.getEnterpriseString(
+                        WORK_PROFILE_PAUSED_TITLE,
+                        R.string.work_apps_paused_title,
+                    ),
+                workProfilePausedDescription =
+                    context.getEnterpriseString(WORK_PROFILE_PAUSED_DESCRIPTION) {
+                        context.getString(
+                            when {
+                                !Utilities.ATLEAST_U -> R.string.work_apps_paused_body
+                                context.dm().managedSubscriptionsPolicy.policyType ==
+                                        ManagedSubscriptionsPolicy.TYPE_ALL_MANAGED_SUBSCRIPTIONS ->
+                                    R.string.work_apps_paused_telephony_unavailable_body
 
-    /**
-     * Accessibility description for launcher tab to indicate work apps.
-     */
-    private static final String ALL_APPS_WORK_TAB_ACCESSIBILITY =
-            PREFIX + "ALL_APPS_WORK_TAB_ACCESSIBILITY";
+                                else -> R.string.work_apps_paused_info_body
+                            }
+                        )
+                    },
+                workProfilePauseButton =
+                    context.getEnterpriseString(
+                        WORK_PROFILE_PAUSE_BUTTON,
+                        R.string.work_apps_pause_btn_text,
+                    ),
+                workProfileEnableButton =
+                    context.getEnterpriseString(
+                        WORK_PROFILE_ENABLE_BUTTON,
+                        R.string.work_apps_enable_btn_text,
+                    ),
+                allAppsWorkTab =
+                    context.getEnterpriseString(ALL_APPS_WORK_TAB, R.string.all_apps_work_tab),
+                allAppsPersonalTab =
+                    context.getEnterpriseString(
+                        ALL_APPS_PERSONAL_TAB,
+                        R.string.all_apps_personal_tab,
+                    ),
+                allAppsWorkTabAccessibility =
+                    context.getEnterpriseString(
+                        ALL_APPS_WORK_TAB_ACCESSIBILITY,
+                        R.string.all_apps_button_work_label,
+                    ),
+                allAppsPersonalTabAccessibility =
+                    context.getEnterpriseString(
+                        ALL_APPS_PERSONAL_TAB_ACCESSIBILITY,
+                        R.string.all_apps_button_personal_label,
+                    ),
+                widgetsWorkTab =
+                    context.getEnterpriseString(
+                        WIDGETS_WORK_TAB,
+                        R.string.widgets_full_sheet_work_tab,
+                    ),
+                widgetsPersonalTab =
+                    context.getEnterpriseString(
+                        WIDGETS_PERSONAL_TAB,
+                        R.string.widgets_full_sheet_personal_tab,
+                    ),
+                disabledByAdminMessage =
+                    context.getEnterpriseString(
+                        DISABLED_BY_ADMIN_MESSAGE,
+                        R.string.msg_disabled_by_admin,
+                    ),
+            )
 
-    /**
-     * Accessibility description for launcher tab to indicate personal apps.
-     */
-    private static final String ALL_APPS_PERSONAL_TAB_ACCESSIBILITY =
-            PREFIX + "ALL_APPS_PERSONAL_TAB_ACCESSIBILITY";
+        @SuppressLint("NewApi")
+        private fun Context.getEnterpriseString(updatableStringId: String, defaultStringId: Int) =
+            getEnterpriseString(updatableStringId) { getString(defaultStringId) }
 
-    /**
-     * Label on widget tab to indicate work app widgets.
-     */
-    private static final String WIDGETS_WORK_TAB = PREFIX + "WIDGETS_WORK_TAB";
+        private fun Context.getEnterpriseString(
+            updatableStringId: String,
+            defaultSupplier: Supplier<String>,
+        ) =
+            if (Utilities.ATLEAST_T) dm().resources.getString(updatableStringId, defaultSupplier)
+            else defaultSupplier.get()
 
-    /**
-     * Label on widget tab to indicate personal app widgets.
-     */
-    private static final String WIDGETS_PERSONAL_TAB = PREFIX + "WIDGETS_PERSONAL_TAB";
+        private fun Context.dm() = getSystemService(DevicePolicyManager::class.java)!!
 
-    /**
-     * Message shown when a feature is disabled by the admin (e.g. changing wallpaper).
-     */
-    private static final String DISABLED_BY_ADMIN_MESSAGE =
-            PREFIX + "DISABLED_BY_ADMIN_MESSAGE";
+        private const val PREFIX = "Launcher."
 
-    /**
-     * User on-boarding title for work profile apps.
-     */
-    public String workProfileEdu;
+        /** Work folder name. */
+        const val WORK_FOLDER_NAME: String = PREFIX + "WORK_FOLDER_NAME"
 
-    /**
-     * Action label to finish work profile edu.
-     */
-    public String workProfileEduAccept;
+        /** User on-boarding title for work profile apps. */
+        private const val WORK_PROFILE_EDU = PREFIX + "WORK_PROFILE_EDU"
 
-    /**
-     * Title shown when user opens work apps tab while work profile is paused.
-     */
-    public String workProfilePausedTitle;
+        /** Title shown when user opens work apps tab while work profile is paused. */
+        private const val WORK_PROFILE_PAUSED_TITLE = PREFIX + "WORK_PROFILE_PAUSED_TITLE"
 
-    /**
-     * Description shown when user opens work apps tab while work profile is paused.
-     */
-    public String workProfilePausedDescription;
+        /** Description shown when user opens work apps tab while work profile is paused. */
+        private const val WORK_PROFILE_PAUSED_DESCRIPTION =
+            PREFIX + "WORK_PROFILE_PAUSED_DESCRIPTION"
 
-    /**
-     * Shown on the button to pause work profile.
-     */
-    public String workProfilePauseButton;
+        /** Shown on the button to pause work profile. */
+        private const val WORK_PROFILE_PAUSE_BUTTON = PREFIX + "WORK_PROFILE_PAUSE_BUTTON"
 
-    /**
-     * Shown on the button to enable work profile.
-     */
-    public String workProfileEnableButton;
+        /** Shown on the button to enable work profile. */
+        private const val WORK_PROFILE_ENABLE_BUTTON = PREFIX + "WORK_PROFILE_ENABLE_BUTTON"
 
-    /**
-     * Label on launcher tab to indicate work apps.
-     */
-    public String allAppsWorkTab;
+        /** Label on launcher tab to indicate work apps. */
+        private const val ALL_APPS_WORK_TAB = PREFIX + "ALL_APPS_WORK_TAB"
 
-    /**
-     * Label on launcher tab to indicate personal apps.
-     */
-    public String allAppsPersonalTab;
+        /** Label on launcher tab to indicate personal apps. */
+        private const val ALL_APPS_PERSONAL_TAB = PREFIX + "ALL_APPS_PERSONAL_TAB"
 
-    /**
-     * Accessibility description for launcher tab to indicate work apps.
-     */
-    public String allAppsWorkTabAccessibility;
+        /** Accessibility description for launcher tab to indicate work apps. */
+        private const val ALL_APPS_WORK_TAB_ACCESSIBILITY =
+            PREFIX + "ALL_APPS_WORK_TAB_ACCESSIBILITY"
 
-    /**
-     * Accessibility description for launcher tab to indicate personal apps.
-     */
-    public String allAppsPersonalTabAccessibility;
+        /** Accessibility description for launcher tab to indicate personal apps. */
+        private const val ALL_APPS_PERSONAL_TAB_ACCESSIBILITY =
+            PREFIX + "ALL_APPS_PERSONAL_TAB_ACCESSIBILITY"
 
-    /**
-     * Work folder name.
-     */
-    public String workFolderName;
+        /** Label on widget tab to indicate work app widgets. */
+        private const val WIDGETS_WORK_TAB = PREFIX + "WIDGETS_WORK_TAB"
 
-    /**
-     * Label on widget tab to indicate work app widgets.
-     */
-    public String widgetsWorkTab;
+        /** Label on widget tab to indicate personal app widgets. */
+        private const val WIDGETS_PERSONAL_TAB = PREFIX + "WIDGETS_PERSONAL_TAB"
 
-    /**
-     * Label on widget tab to indicate personal app widgets.
-     */
-    public String widgetsPersonalTab;
-
-    /**
-     * Message shown when a feature is disabled by the admin (e.g. changing wallpaper).
-     */
-    public String disabledByAdminMessage;
-
-    /**
-     * Sets the default values for the strings.
-     */
-    public void loadStrings(Context context) {
-        workProfileEdu = getEnterpriseString(
-                context, WORK_PROFILE_EDU, R.string.work_profile_edu_work_apps);
-        workProfileEduAccept = getEnterpriseString(
-                context, WORK_PROFILE_EDU_ACCEPT, R.string.work_profile_edu_accept);
-        workProfilePausedTitle = getEnterpriseString(
-                context, WORK_PROFILE_PAUSED_TITLE, R.string.work_apps_paused_title);
-        workProfilePausedDescription = getEnterpriseString(
-                context,
-                WORK_PROFILE_PAUSED_DESCRIPTION,
-                () -> getDefaultWorkProfilePausedDescriptionString(context));
-        workProfilePauseButton = getEnterpriseString(
-                context, WORK_PROFILE_PAUSE_BUTTON, R.string.work_apps_pause_btn_text);
-        workProfileEnableButton = getEnterpriseString(
-                context, WORK_PROFILE_ENABLE_BUTTON, R.string.work_apps_enable_btn_text);
-        allAppsWorkTab = getEnterpriseString(
-                context, ALL_APPS_WORK_TAB, R.string.all_apps_work_tab);
-        allAppsPersonalTab = getEnterpriseString(
-                context, ALL_APPS_PERSONAL_TAB, R.string.all_apps_personal_tab);
-        allAppsWorkTabAccessibility = getEnterpriseString(
-                context, ALL_APPS_WORK_TAB_ACCESSIBILITY, R.string.all_apps_button_work_label);
-        allAppsPersonalTabAccessibility = getEnterpriseString(
-                context, ALL_APPS_PERSONAL_TAB_ACCESSIBILITY,
-                R.string.all_apps_button_personal_label);
-        workFolderName = getEnterpriseString(
-                context, WORK_FOLDER_NAME, R.string.work_folder_name);
-        widgetsWorkTab = getEnterpriseString(
-                context, WIDGETS_WORK_TAB, R.string.widgets_full_sheet_work_tab);
-        widgetsPersonalTab = getEnterpriseString(
-                context, WIDGETS_PERSONAL_TAB, R.string.widgets_full_sheet_personal_tab);
-        disabledByAdminMessage = getEnterpriseString(
-                context, DISABLED_BY_ADMIN_MESSAGE, R.string.msg_disabled_by_admin);
-    }
-
-    private String getDefaultWorkProfilePausedDescriptionString(Context context) {
-        if (Utilities.ATLEAST_U) {
-            DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
-            boolean telephonyIsUnavailable =
-                    dpm.getManagedSubscriptionsPolicy().getPolicyType()
-                            == ManagedSubscriptionsPolicy.TYPE_ALL_MANAGED_SUBSCRIPTIONS;
-            return telephonyIsUnavailable
-                    ? context.getString(R.string.work_apps_paused_telephony_unavailable_body)
-                    : context.getString(R.string.work_apps_paused_info_body);
-        }
-        return context.getString(R.string.work_apps_paused_body);
-    }
-
-    @SuppressLint("NewApi")
-    private String getEnterpriseString(
-            Context context, String updatableStringId, int defaultStringId) {
-        return getEnterpriseString(
-                context,
-                updatableStringId,
-                () -> context.getString(defaultStringId));
-    }
-
-    @SuppressLint("NewApi")
-    private String getEnterpriseString(
-            Context context, String updateableStringId, Supplier<String> defaultStringSupplier) {
-        return Utilities.ATLEAST_T
-                ? getUpdatableEnterpriseString(context, updateableStringId, defaultStringSupplier)
-                : defaultStringSupplier.get();
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private String getUpdatableEnterpriseString(
-            Context context, String updatableStringId, Supplier<String> defaultStringSupplier) {
-        DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
-        return dpm.getResources().getString(updatableStringId, defaultStringSupplier);
-    }
-
-    @Override
-    public StringCache clone() {
-        StringCache clone = new StringCache();
-        clone.workProfileEdu = this.workProfileEdu;
-        clone.workProfileEduAccept = this.workProfileEduAccept;
-        clone.workProfilePausedTitle = this.workProfilePausedTitle;
-        clone.workProfilePausedDescription = this.workProfilePausedDescription;
-        clone.workProfilePauseButton = this.workProfilePauseButton;
-        clone.workProfileEnableButton = this.workProfileEnableButton;
-        clone.allAppsWorkTab = this.allAppsWorkTab;
-        clone.allAppsPersonalTab = this.allAppsPersonalTab;
-        clone.allAppsWorkTabAccessibility = this.allAppsWorkTabAccessibility;
-        clone.allAppsPersonalTabAccessibility = this.allAppsPersonalTabAccessibility;
-        clone.workFolderName = this.workFolderName;
-        clone.widgetsWorkTab = this.widgetsWorkTab;
-        clone.widgetsPersonalTab = this.widgetsPersonalTab;
-        clone.disabledByAdminMessage = this.disabledByAdminMessage;
-        return clone;
+        /** Message shown when a feature is disabled by the admin (e.g. changing wallpaper). */
+        private const val DISABLED_BY_ADMIN_MESSAGE = PREFIX + "DISABLED_BY_ADMIN_MESSAGE"
     }
 }

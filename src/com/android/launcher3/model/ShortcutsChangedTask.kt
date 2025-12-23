@@ -26,6 +26,7 @@ import com.android.launcher3.shortcuts.ShortcutKey
 import com.android.launcher3.shortcuts.ShortcutRequest
 import com.android.launcher3.util.ApplicationInfoWrapper
 import com.android.launcher3.util.ItemInfoMatcher
+import kotlinx.coroutines.internal.synchronized
 
 /** Handles changes due to shortcut manager updates (deep shortcut changes) */
 class ShortcutsChangedTask(

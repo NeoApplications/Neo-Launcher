@@ -97,7 +97,7 @@ public class FolderNameProvider implements ResourceBasedOverride {
                 new FolderNameWorker());
     }
 
-    private void load(List<AppInfo> appInfos, IntSparseArrayMap<CollectionInfo> folderInfos) {
+    public void load(List<AppInfo> appInfos, IntSparseArrayMap<CollectionInfo> folderInfos) {
         mAppInfos = appInfos;
         mCollectionInfos = folderInfos;
     }

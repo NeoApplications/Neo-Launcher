@@ -60,6 +60,7 @@
         <item name="workspaceKeyShadowColor">#89000000</item>
         <item name="widgetsTheme">@style/WidgetContainerTheme</item>
         <item name="pageIndicatorDotColor">@color/page_indicator_dot_color_light</item>
+        <item name="pageIndicatorArrowBgColor">@color/page_indicator_arrow_bg_light</item>
         <item name="focusOutlineColor">@color/materialColorSecondaryFixed</item>
         <item name="focusInnerOutlineColor">@color/materialColorOnSecondaryFixedVariant</item>
         <item name="folderPreviewColor">@color/folder_preview_light</item>
@@ -130,6 +131,7 @@
         <item name="notificationDotColor">@color/notification_dot_color_dark</item>
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="pageIndicatorDotColor">@color/page_indicator_dot_color_dark</item>
+        <item name="pageIndicatorArrowBgColor">@color/page_indicator_arrow_bg_dark</item>
         <item name="folderPreviewColor">@color/folder_preview_dark</item>
         <item name="folderBackgroundColor">@color/folder_background_dark</item>
         <item name="folderIconBorderColor">?android:attr/colorPrimary</item>
@@ -170,6 +172,10 @@
     <style name="AppTheme.Dark" parent="@style/LauncherTheme.Dark" />
     <style name="AppTheme.Dark.DarkMainColor" parent="@style/LauncherTheme.Dark.DarkMainColor" />
     <style name="AppTheme.Dark.DarkText" parent="@style/LauncherTheme.Dark.DarkText" />
+    <!-- Theme overrides in All Apps when blur is enabled. -->
+    <style name="AllAppsBlurStyle" />
+    <!-- Theme overrides in All Apps when blur is available but currently disabled. -->
+    <style name="AllAppsBlurFallbackStyle" />
 
     <style name="HomeSettings.Theme" parent="@android:style/Theme.DeviceDefault.Settings">
         <item name="android:navigationBarColor">?android:colorPrimaryDark</item>

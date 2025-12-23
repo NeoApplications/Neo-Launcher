@@ -29,7 +29,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
         get() = InvariantDeviceProfile.INSTANCE.get(launcher)
 
     fun reloadGrid() {
-        idp.onPreferencesChanged(launcher)
+        //idp.onPreferencesChanged(launcher)
     }
 
     fun reloadModel() {

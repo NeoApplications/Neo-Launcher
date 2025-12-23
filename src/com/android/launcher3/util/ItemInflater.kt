@@ -33,6 +33,7 @@ import com.android.launcher3.model.ModelWriter
 import com.android.launcher3.model.data.AppPairInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.model.data.ItemViewProvider
 import com.android.launcher3.model.data.LauncherAppWidgetInfo
 import com.android.launcher3.model.data.WorkspaceItemFactory
 import com.android.launcher3.model.data.WorkspaceItemInfo
@@ -54,42 +55,52 @@ class ItemInflater<T>(
         WidgetInflater(context, LauncherAppState.getInstance(context).isSafeModeEnabled)
 
     @JvmOverloads
-    fun inflateItem(item: ItemInfo, writer: ModelWriter, nullableParent: ViewGroup? = null): View? {
+    fun inflateItem(
+        item: ItemInfo,
+        nullableParent: ViewGroup? = null,
+        container: Int = item.container,
+    ): View? {
         val parent = nullableParent ?: defaultParent
-        when (item.itemType) {
+        if (item is ItemViewProvider) return item.inflateView(context, parent)
+        return when (item.itemType) {
             Favorites.ITEM_TYPE_APPLICATION,
             Favorites.ITEM_TYPE_DEEP_SHORTCUT,
-            Favorites.ITEM_TYPE_SEARCH_ACTION -> {
-                var info =
-                    if (item is WorkspaceItemFactory) {
-                        (item as WorkspaceItemFactory).makeWorkspaceItem(context)
-                    } else {
-                        item as WorkspaceItemInfo
-                    }
-                if (info.container == Favorites.CONTAINER_PREDICTION) {
-                    // Came from all apps prediction row -- make a copy
-                    info = WorkspaceItemInfo(info)
-                }
-                return createShortcut(info, parent)
-            }
+            Favorites.ITEM_TYPE_SEARCH_ACTION,
+            Favorites.ITEM_TYPE_FILE_SYSTEM_FILE,
+            Favorites.ITEM_TYPE_FILE_SYSTEM_FOLDER ->
+                createShortcut(
+                    info =
+                        when (item) {
+                            is WorkspaceItemFactory -> item.makeWorkspaceItem(context)
+                            is WorkspaceItemInfo -> item
+                            else -> return null
+                        },
+                    parent = parent,
+                    container = container,
+                )
+
             Favorites.ITEM_TYPE_FOLDER ->
-                return FolderIcon.inflateFolderAndIcon(
+                FolderIcon.inflateFolderAndIcon(
                     R.layout.folder_icon,
                     context,
                     parent,
                     item as FolderInfo,
                 )
+                    .apply { onFocusChangeListener = focusListener }
+
             Favorites.ITEM_TYPE_APP_PAIR ->
-                return AppPairIcon.inflateIcon(
+                AppPairIcon.inflateIcon(
                     R.layout.app_pair_icon,
                     context,
                     parent,
                     item as AppPairInfo,
                     BubbleTextView.DISPLAY_WORKSPACE,
                 )
+
             Favorites.ITEM_TYPE_APPWIDGET,
             Favorites.ITEM_TYPE_CUSTOM_APPWIDGET ->
-                return inflateAppWidget(item as LauncherAppWidgetInfo, writer)
+                inflateAppWidget(item as LauncherAppWidgetInfo, context.modelWriter)
+
             else -> throw RuntimeException("Invalid Item Type")
         }
     }
@@ -102,13 +113,22 @@ class ItemInflater<T>(
      * @param info The data structure describing the shortcut.
      * @return A View inflated from layoutResId.
      */
-    private fun createShortcut(info: WorkspaceItemInfo, parent: ViewGroup): View {
+    private fun createShortcut(info: WorkspaceItemInfo, parent: ViewGroup, container: Int): View {
+        val layout =
+            if (container == Favorites.CONTAINER_HOTSEAT_PREDICTION) R.layout.predicted_app_icon
+            else R.layout.app_icon
         val favorite =
-            LayoutInflater.from(parent.context).inflate(R.layout.app_icon, parent, false)
-                as BubbleTextView
+            LayoutInflater.from(parent.context).inflate(layout, parent, false) as BubbleTextView
         favorite.applyFromWorkspaceItem(info)
         favorite.setOnClickListener(clickListener)
         favorite.onFocusChangeListener = focusListener
+
+        // If the icon is directly being added on homescreen, verify the high resolution icon
+        when (container) {
+            Favorites.CONTAINER_HOTSEAT_PREDICTION -> favorite.verifyHighRes()
+            Favorites.CONTAINER_DESKTOP -> favorite.verifyHighRes()
+            Favorites.CONTAINER_HOTSEAT -> favorite.verifyHighRes()
+        }
         return favorite
     }
 

@@ -46,7 +46,7 @@ internal constructor(
     @Assisted private val pool: ConcurrentLinkedQueue<LauncherIcons>,
 ) : BaseIconFactory(context, idp.fillResIconDpi, idp.iconBitmapSize), AutoCloseable {
     init {
-        mThemeController = themeManager.themeController
+        themeController = themeManager.themeController
     }
     /** Recycles a LauncherIcons that may be in-use. */
     fun recycle() {
@@ -56,7 +56,7 @@ internal constructor(
     override fun getUserInfo(user: UserHandle): UserIconInfo {
         return userCache.getUserInfo(user)
     }
-    override fun getShapePath(drawable: AdaptiveIconDrawable, iconBounds: Rect): Path {
+    fun getShapePath(drawable: AdaptiveIconDrawable, iconBounds: Rect): Path {
         if (!Flags.enableLauncherIconShapes()) return super.getShapePath(drawable, iconBounds)
         return themeManager.iconShape.getPath(iconBounds)
     }

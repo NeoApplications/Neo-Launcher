@@ -155,7 +155,7 @@ public class ItemClickHandler {
 
         Object tag = v.getTag();
         if (tag instanceof FolderInfo) {
-            onClickAppShortcut(v, ((FolderInfo) tag).getCoverInfo(), launcher);
+            //onClickAppShortcut(v, (WorkspaceItemInfo).getCoverInfo(), launcher);
         }
     }
 

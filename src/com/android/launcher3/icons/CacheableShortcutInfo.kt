@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.android.launcher3.icons
+
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
@@ -32,14 +34,30 @@ import com.android.launcher3.util.ApiWrapper
 import com.android.launcher3.util.ApplicationInfoWrapper
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.Themes
+
 /** Wrapper over ShortcutInfo to provide extra information related to ShortcutInfo */
-class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: ApplicationInfoWrapper) {
+class CacheableShortcutInfo
+@JvmOverloads
+constructor(
+    val shortcutInfo: ShortcutInfo,
+    val appInfo: ApplicationInfoWrapper,
+    val fallbackIconProvider: (BaseIconFactory) -> BitmapInfo? = { null },
+) {
+
+    @JvmOverloads
     constructor(
         info: ShortcutInfo,
         ctx: Context,
-    ) : this(info, ApplicationInfoWrapper(ctx, info.getPackage(), info.userHandle))
+        fallbackIconProvider: (BaseIconFactory) -> BitmapInfo? = { null },
+    ) : this(
+        info,
+        ApplicationInfoWrapper(ctx, info.getPackage(), info.userHandle),
+        fallbackIconProvider,
+    )
+
     companion object {
         private const val TAG = "CacheableShortcutInfo"
+
         /**
          * Similar to [LauncherApps.getShortcutIconDrawable] with additional Launcher specific
          * checks
@@ -51,13 +69,14 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
             }
             try {
                 return context
-                    .getSystemService(LauncherApps::class.java)!!
+                    .getSystemService(LauncherApps::class.java)
                     .getShortcutIconDrawable(shortcutInfo, density)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to get shortcut icon", e)
                 return null
             }
         }
+
         /**
          * Converts the provided list of Shortcuts to CacheableShortcuts by using the application
          * info from the provided list of apps
@@ -73,6 +92,7 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
                     { PackageUserKey(it.componentName.packageName, it.user) },
                     { it.applicationInfo },
                 )
+
             return shortcuts.map {
                 CacheableShortcutInfo(
                     it,
@@ -82,13 +102,19 @@ class CacheableShortcutInfo(val shortcutInfo: ShortcutInfo, val appInfo: Applica
         }
     }
 }
+
 /** Caching logic for CacheableShortcutInfo. */
 object CacheableShortcutCachingLogic : CachingLogic<CacheableShortcutInfo> {
+
     override fun getComponent(info: CacheableShortcutInfo): ComponentName =
         ShortcutKey.fromInfo(info.shortcutInfo).componentName
+
     override fun getUser(info: CacheableShortcutInfo): UserHandle = info.shortcutInfo.userHandle
+
     override fun getLabel(info: CacheableShortcutInfo): CharSequence? = info.shortcutInfo.shortLabel
+
     override fun getApplicationInfo(info: CacheableShortcutInfo) = info.appInfo.getInfo()
+
     override fun loadIcon(context: Context, cache: BaseIconCache, info: CacheableShortcutInfo) =
         LauncherIcons.obtain(context).use { li ->
             CacheableShortcutInfo.getIcon(
@@ -111,8 +137,9 @@ object CacheableShortcutCachingLogic : CachingLogic<CacheableShortcutInfo> {
                                     )
                             ),
                     )
-                } ?: BitmapInfo.LOW_RES_INFO
+                } ?: info.fallbackIconProvider.invoke(li) ?: BitmapInfo.LOW_RES_INFO
         }
+
     override fun getFreshnessIdentifier(
         item: CacheableShortcutInfo,
         provider: IconProvider,

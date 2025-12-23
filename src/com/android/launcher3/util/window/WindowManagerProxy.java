@@ -447,7 +447,7 @@ public class WindowManagerProxy {
      * Returns the display associated with the context, or DEFAULT_DISPLAY if the context isn't
      * associated with a display.
      */
-    protected Display getDisplay(Context displayInfoContext) {
+    public Display getDisplay(Context displayInfoContext) {
         try {
             return displayInfoContext.getDisplay();
         } catch (UnsupportedOperationException e) {

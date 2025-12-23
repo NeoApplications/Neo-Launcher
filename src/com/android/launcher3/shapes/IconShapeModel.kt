@@ -16,10 +16,17 @@
 
 package com.android.launcher3.shapes
 
+import androidx.annotation.StringRes
+
 data class IconShapeModel(
     val key: String,
-    val title: String,
+    @StringRes val titleId: Int,
     val pathString: String,
-    val folderPathString: String = pathString,
-    val iconScale: Float = 1f,
-)
+    val folderRadiusRatio: Float = 1f,
+    val shapeRadius: Float = DEFAULT_ICON_RADIUS,
+) {
+    companion object {
+        /** Default icon radius in dp to use for transient taskbar rounding. */
+        const val DEFAULT_ICON_RADIUS = 26f
+    }
+}

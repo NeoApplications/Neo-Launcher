@@ -17,6 +17,7 @@
 package com.android.launcher3.model.data;
 
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_ALL_APPS;
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_ALL_APPS_PREDICTION;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT_PREDICTION;
@@ -331,7 +332,7 @@ public class ItemInfo {
      * Returns if an Item is a predicted item
      */
     public boolean isPredictedItem() {
-        return container == CONTAINER_HOTSEAT_PREDICTION || container == CONTAINER_PREDICTION;
+        return container == CONTAINER_HOTSEAT_PREDICTION || container == CONTAINER_ALL_APPS_PREDICTION;
     }
 
     /**
@@ -339,6 +340,13 @@ public class ItemInfo {
      */
     public boolean isInHotseat() {
         return container == CONTAINER_HOTSEAT || container == CONTAINER_HOTSEAT_PREDICTION;
+    }
+
+    /**
+     * Returns if an Item is in the All Apps container.
+     */
+    public boolean isInAllApps() {
+        return container == CONTAINER_ALL_APPS || container == CONTAINER_ALL_APPS_PREDICTION;
     }
 
     /**
@@ -476,7 +484,7 @@ public class ItemInfo {
                         .setWidgetsContainer(
                                 LauncherAtom.WidgetsContainer.getDefaultInstance())
                         .build();
-            case CONTAINER_PREDICTION:
+            case CONTAINER_ALL_APPS_PREDICTION:
                 return ContainerInfo.newBuilder()
                         .setPredictionContainer(PredictionContainer.getDefaultInstance())
                         .build();

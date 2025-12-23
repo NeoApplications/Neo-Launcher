@@ -151,6 +151,28 @@ public class LauncherSettings {
         public static final int ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON = 11;
 
         /**
+         * The file item that comes from the local file system and is displayed on workspace.
+         */
+        public static final int ITEM_TYPE_FILE_SYSTEM_FILE = 12;
+
+        /**
+         * The folder item that comes from the local file system and is displayed on workspace.
+         */
+        public static final int ITEM_TYPE_FILE_SYSTEM_FOLDER = 13;
+
+        /**
+         * A custom view which typically implemented using
+         * {@link com.android.launcher3.model.data.ItemViewProvider}.
+         */
+        public static final int ITEM_TYPE_CUSTOM_VIEW = 14;
+
+        /**
+         * Type for a temporary item that exists during a system drag-and-drop sequence before being
+         * replaced with N-many items of more appropriate types during drop handling.
+         */
+        public static final int ITEM_TYPE_SYSTEM_DRAG = 15;
+
+        /**
          * The custom icon bitmap.
          * <P>Type: BLOB</P>
          */
@@ -179,7 +201,7 @@ public class LauncherSettings {
          */
         public static final int CONTAINER_DESKTOP = -100;
         public static final int CONTAINER_HOTSEAT = -101;
-        public static final int CONTAINER_PREDICTION = -102;
+        public static final int CONTAINER_ALL_APPS_PREDICTION = -102;
         public static final int CONTAINER_WIDGETS_PREDICTION = -111;
         public static final int CONTAINER_HOTSEAT_PREDICTION = -103;
         public static final int CONTAINER_ALL_APPS = -104;
@@ -201,7 +223,8 @@ public class LauncherSettings {
             switch (container) {
                 case CONTAINER_DESKTOP: return "desktop";
                 case CONTAINER_HOTSEAT: return "hotseat";
-                case CONTAINER_PREDICTION: return "prediction";
+                case CONTAINER_ALL_APPS_PREDICTION:
+                    return "prediction";
                 case CONTAINER_ALL_APPS: return "all_apps";
                 case CONTAINER_WIDGETS_TRAY: return "widgets_tray";
                 case CONTAINER_SHORTCUTS: return "shortcuts";
@@ -221,6 +244,8 @@ public class LauncherSettings {
                 case ITEM_TYPE_APP_PAIR: return "APP_PAIR";
                 case ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON:
                     return "PRIVATE_SPACE_INSTALL_APP_BUTTON";
+                case ITEM_TYPE_SYSTEM_DRAG:
+                    return "SYSTEM_DRAG";
                 default: return String.valueOf(type);
             }
         }
@@ -359,7 +384,7 @@ public class LauncherSettings {
         /**
          * Lookup flag to be used for items which are visible on the home screen
          */
-        public static final CacheLookupFlag DESKTOP_ICON_FLAG = DEFAULT_LOOKUP_FLAG;
+        public static final CacheLookupFlag DESKTOP_ICON_FLAG = DEFAULT_LOOKUP_FLAG.withThemeIcon();
     }
 
     /**

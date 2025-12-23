@@ -16,9 +16,9 @@
 package com.android.launcher3.widget;
 
 import static android.app.Activity.RESULT_CANCELED;
+import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
 import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
-import static com.android.launcher3.Flags.enableWorkspaceInflation;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.widget.LauncherAppWidgetProviderInfo.fromProviderInfo;
 import static com.android.launcher3.widget.ListenableAppWidgetHost.getWidgetHolderExecutor;
@@ -146,6 +146,14 @@ public class LauncherWidgetHolder {
         });
     }
 
+    /**
+     * Tries to start listening for widget updates from a non-primary surface. Widget host only
+     * support listener and adding another listener removes previous listener. Some implementations
+     * like QuickstepWidgetHolder support multiple listener by adding another layer of delegation
+     */
+    public void startListeningForSharedUpdate() {
+    }
+
     /** Update any views which have been deferred because the host was not listening */
     protected void updateDeferredView() {
         // Update any views which have been deferred because the host was not listening.
@@ -208,7 +216,7 @@ public class LauncherWidgetHolder {
      */
     public int allocateAppWidgetId() {
         if (!WIDGETS_ENABLED) {
-            return AppWidgetManager.INVALID_APPWIDGET_ID;
+            return INVALID_APPWIDGET_ID;
         }
 
         return mWidgetHost.allocateAppWidgetId();
@@ -235,6 +243,14 @@ public class LauncherWidgetHolder {
      */
     public void setOnViewCreationCallback(@Nullable Consumer<LauncherAppWidgetHostView> callback) {
         mOnViewCreationCallback = callback;
+    }
+
+    /**
+     * Returns a previously set view creation callback
+     */
+    @Nullable
+    public Consumer<LauncherAppWidgetHostView> getOnViewCreationCallback() {
+        return mOnViewCreationCallback;
     }
 
     /** Sets a callback for listening app widget removals */
@@ -372,7 +388,7 @@ public class LauncherWidgetHolder {
             int appWidgetId, @NonNull LauncherAppWidgetProviderInfo appWidget) {
         if (appWidget.isCustomWidget()) {
             LauncherAppWidgetHostView lahv = new LauncherAppWidgetHostView(mContext);
-            lahv.setAppWidget(0, appWidget);
+            lahv.setAppWidget(INVALID_APPWIDGET_ID, appWidget);
             CustomWidgetManager.INSTANCE.get(mContext).onViewCreated(lahv);
             return lahv;
         }
@@ -380,7 +396,7 @@ public class LauncherWidgetHolder {
         LauncherAppWidgetHostView view = createViewInternal(appWidgetId, appWidget);
         if (mOnViewCreationCallback != null) mOnViewCreationCallback.accept(view);
         // Do not update mViews on a background thread call, as the holder is not thread safe.
-        if (!enableWorkspaceInflation() || Looper.myLooper() == Looper.getMainLooper()) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             mViews.put(appWidgetId, view);
         }
         return view;
@@ -446,7 +462,7 @@ public class LauncherWidgetHolder {
             // RemoteViews from system process.
             return new PendingAppWidgetHostView(mContext, this, appWidgetId, appWidget);
         } else {
-            if (enableWorkspaceInflation() && Looper.myLooper() != Looper.getMainLooper()) {
+            if (Looper.myLooper() != Looper.getMainLooper()) {
                 // Widget is being inflated a background thread, just create and
                 // return a placeholder view
                 ListenableHostView hostView = new ListenableHostView(mContext);
@@ -522,6 +538,14 @@ public class LauncherWidgetHolder {
      */
     protected boolean shouldListen(int flags) {
         return (flags & FLAGS_SHOULD_LISTEN) == FLAGS_SHOULD_LISTEN;
+    }
+
+    /**
+     * Get the widget views, mapped by widget ID. This should only be called on the main thread.
+     */
+    @NonNull
+    public SparseArray<LauncherAppWidgetHostView> getViews() {
+        return mViews;
     }
 
     /**

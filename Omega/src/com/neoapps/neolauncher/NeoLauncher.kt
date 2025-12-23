@@ -32,9 +32,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PersistableBundle
 import android.os.UserHandle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.Window
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.IntentSenderRequest
@@ -55,6 +57,7 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.dagger.ActivityContextComponent
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.popup.SystemShortcut
@@ -267,6 +270,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
+    /*
     override fun getSupportedShortcuts(): Stream<SystemShortcut.Factory<*>> {
         return Stream.concat(
             super.getSupportedShortcuts(),
@@ -276,7 +280,7 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
                 OmegaShortcuts.APP_UNINSTALL
             )
         )
-    }
+    }*/
 
     override fun getDefaultOverlay(): LauncherOverlayManager {
         if (mOverlayManager == null) {
@@ -431,6 +435,18 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         val pos = IntArray(2)
         v.getLocationOnScreen(pos)
         return Rect(pos[0], pos[1], pos[0] + v.width, pos[1] + v.height)
+    }
+
+    override fun getActivityComponent(): ActivityContextComponent? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getWindow(): Window? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getComponentName(): ComponentName? {
+        TODO("Not yet implemented")
     }
 
     companion object {

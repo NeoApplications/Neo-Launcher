@@ -56,18 +56,24 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.savedstate.SavedStateRegistryOwner;
 
+import com.android.launcher3.BaseActivity;
 import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.DropTargetHandler;
+import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.celllayout.CellPosMapper;
+import com.android.launcher3.dagger.ActivityContextComponent;
 import com.android.launcher3.dot.DotInfo;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.folder.FolderIcon;
@@ -75,19 +81,22 @@ import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.logging.StatsLogManager;
+import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.StringCache;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
-import com.android.launcher3.popup.PopupDataProvider;
 import com.android.launcher3.util.ActivityOptionsWrapper;
 import com.android.launcher3.util.ApplicationInfoWrapper;
 import com.android.launcher3.util.LauncherBindableItemsContainer;
+import com.android.launcher3.util.PendingRequestArgs;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.RunnableList;
+import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.util.SplitConfigurationOptions;
 import com.android.launcher3.util.SystemUiController;
 import com.android.launcher3.util.ViewCache;
 import com.android.launcher3.util.WeakCleanupSet;
+import com.android.launcher3.widget.LauncherWidgetHolder;
 import com.android.launcher3.widget.picker.model.WidgetPickerDataProvider;
 
 import java.util.List;
@@ -99,6 +108,11 @@ import java.util.List;
 public interface ActivityContext extends SavedStateRegistryOwner {
 
     String TAG = "ActivityContext";
+
+    /**
+     * Returns the dagger graph for this UI context
+     */
+    ActivityContextComponent getActivityComponent();
 
     default boolean finishAutoCancelActionMode() {
         return false;
@@ -207,12 +221,45 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return null;
     }
 
+    /**
+     * @return {@code true} if all apps background blur is enabled
+     */
+    default boolean isAllAppsBackgroundBlurEnabled() {
+        return false;
+    }
+
+    /**
+     * @return {@code true} if overview background blur is enabled
+     */
+    default boolean isOverviewBackgroundBlurEnabled() {
+        return false;
+    }
+
+    /**
+     * @return the resource id of the style to apply for the current blur state in All Apps.
+     */
+    default int getAllAppsBlurStyleResId() {
+        if (!Flags.allAppsBlur()) {
+            // Don't alter the colors provided in the default Launcher themes.
+            return View.NO_ID;
+        }
+        return isAllAppsBackgroundBlurEnabled() ? R.style.AllAppsBlurStyle
+                : R.style.AllAppsBlurFallbackStyle;
+    }
+
+    /**
+     * @return the resource id of the style to apply for the current blur state in Overview.
+     */
+    default int getOverviewBlurStyleResId() {
+        return View.NO_ID;
+    }
+
     DeviceProfile getDeviceProfile();
 
     /** Registered {@link OnDeviceProfileChangeListener} instances. */
     List<OnDeviceProfileChangeListener> getOnDeviceProfileChangeListeners();
 
-    /** Notifies listeners of a {@link DeviceProfile} change. */
+    /** Notifies listeners of a {@link #getDeviceProfile} change. */
     default void dispatchDeviceProfileChanged() {
         DeviceProfile deviceProfile = getDeviceProfile();
         List<OnDeviceProfileChangeListener> listeners = getOnDeviceProfileChangeListeners();
@@ -221,12 +268,12 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         }
     }
 
-    /** Register listener for {@link DeviceProfile} changes. */
+    /** Register listener for {@link #getDeviceProfile} changes. */
     default void addOnDeviceProfileChangeListener(OnDeviceProfileChangeListener listener) {
         getOnDeviceProfileChangeListeners().add(listener);
     }
 
-    /** Unregister listener for {@link DeviceProfile} changes. */
+    /** Unregister listener for {@link #getDeviceProfile} changes. */
     default void removeOnDeviceProfileChangeListener(OnDeviceProfileChangeListener listener) {
         getOnDeviceProfileChangeListeners().remove(listener);
     }
@@ -237,6 +284,13 @@ public interface ActivityContext extends SavedStateRegistryOwner {
      * Controller for supporting item drag-and-drop
      */
     default <T extends DragController> T getDragController() {
+        return null;
+    }
+
+    /**
+     * Gets the CellLayout of the specified container at the specified screen
+     */
+    default CellLayout getCellLayout(int container, int screenId) {
         return null;
     }
 
@@ -286,13 +340,8 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return v -> false;
     }
 
-    @NonNull
-    default PopupDataProvider getPopupDataProvider() {
-        return new PopupDataProvider(this);
-    }
-
     default DotInfo getDotInfoForItem(ItemInfo info) {
-        return getPopupDataProvider().getDotInfoForItem(info);
+        return getActivityComponent().getPopupDataProvider().getDotInfoForItem(info);
     }
 
     /**
@@ -303,6 +352,36 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return null;
     }
 
+    /**
+     * Sets a field to hold {@link PendingRequestArgs} which holds extra information needed to
+     * handle a result from an external call.
+     *
+     * @param args is {@link PendingRequestArgs} which has information regarding a pending
+     *             request made by launcher.
+     */
+    default void setWaitingForResult(PendingRequestArgs args) {
+    }
+
+    /**
+     * @return the {@link LauncherWidgetHolder} wrapper which allows AppWidgetHost to run in
+     * the background. This tracks updates to widgets like removals and provider changes.
+     */
+    @Nullable
+    default LauncherWidgetHolder getAppWidgetHolder() {
+        return null;
+    }
+
+    /**
+     * Starts the configuration activity for the widget.
+     *
+     * @param activity    The activity in which to start the configuration page.
+     * @param widgetId    The ID of the widget.
+     * @param requestCode The request code.
+     */
+    default void startConfigActivity(@NonNull BaseActivity activity, int widgetId,
+            int requestCode) {}
+
+
     @Nullable
     default StringCache getStringCache() {
         return null;
@@ -312,8 +391,10 @@ public interface ActivityContext extends SavedStateRegistryOwner {
      * Hides the keyboard if it is visible
      */
     default void hideKeyboard() {
+        Log.d(TAG, "hideKeyboard");
         View root = getDragLayer();
         if (root == null) {
+            Log.d(TAG, "hideKeyboard: getDragLayer() is null, returning early");
             return;
         }
         Preconditions.assertUIThread();
@@ -325,10 +406,14 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         final WindowInsetsController wic = root.getWindowInsetsController();
         WindowInsets insets = root.getRootWindowInsets();
         boolean isImeShown = insets != null && insets.isVisible(WindowInsets.Type.ime());
-        if (wic != null) {
+        Log.d(TAG, "isImeShown: " + isImeShown);
+        if (wic == null) {
+            Log.d(TAG, "hideKeyboard: WIC IS NULL");
+        } else {
             // Only hide the keyboard if it is actually showing.
             if (isImeShown) {
                 // this method cannot be called cross threads
+                Log.d(TAG, "hideKeyboard: calling wic.hide() because isImeShown is true");
                 wic.hide(WindowInsets.Type.ime());
                 getStatsLogManager().logger().log(LAUNCHER_ALLAPPS_KEYBOARD_CLOSED);
             }
@@ -340,12 +425,17 @@ public interface ActivityContext extends SavedStateRegistryOwner {
 
         InputMethodManager imm = root.getContext().getSystemService(InputMethodManager.class);
         IBinder token = root.getWindowToken();
+        Log.d(TAG, "InputMethodManager: " + imm + " token: " + token);
         if (imm != null && token != null) {
+            Log.d(TAG, "EXECUTING BECAUSE IMM AND TOKEN IS NOT NULL");
             UI_HELPER_EXECUTOR.execute(() -> {
                 if (imm.hideSoftInputFromWindow(token, 0)) {
+                    Log.d(TAG, "imm.hideSoftInputFromWindow() is true and should be closed");
                     // log keyboard close event only when keyboard is actually closed
                     MAIN_EXECUTOR.execute(() ->
                             getStatsLogManager().logger().log(LAUNCHER_ALLAPPS_KEYBOARD_CLOSED));
+                } else {
+                    Log.d(TAG, "imm.hideSoftInputFromWindow() is false");
                 }
             });
         }
@@ -521,6 +611,14 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return new CellPosMapper(dp.isVerticalBarLayout(), dp.numShownHotseatIcons);
     }
 
+    /**
+     * Returns a writer for updating model properties
+     */
+    default ModelWriter getModelWriter() {
+        return LauncherAppState.getInstance(asContext()).getModel().getWriter(
+                false, getCellPosMapper(), null);
+    }
+
     /** Set to manage objects that can be cleaned up along with the context */
     WeakCleanupSet getOwnerCleanupSet();
 
@@ -537,6 +635,18 @@ public interface ActivityContext extends SavedStateRegistryOwner {
     /** Returns the current ActivityContext as context */
     default Context asContext() {
         return (Context) this;
+    }
+
+    /**
+     * Closes the closeable when this context is destroyed
+     */
+    default void closeOnDestroy(SafeCloseable closeable) {
+        MAIN_EXECUTOR.execute(() -> getLifecycle().addObserver(new DefaultLifecycleObserver() {
+            @Override
+            public void onDestroy(@NonNull LifecycleOwner owner) {
+                closeable.close();
+            }
+        }));
     }
 
     /**

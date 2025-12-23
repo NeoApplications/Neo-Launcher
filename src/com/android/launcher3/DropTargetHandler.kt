@@ -43,7 +43,7 @@ class DropTargetHandler(launcher: Launcher) {
 
     fun reconfigureWidget(widgetId: Int, info: ItemInfo) {
         mLauncher.setWaitingForResult(PendingRequestArgs.forWidgetInfo(widgetId, null, info))
-        mLauncher.appWidgetHolder.startConfigActivity(
+        mLauncher.appWidgetHolder!!.startConfigActivity(
             mLauncher,
             widgetId,
             ActivityCodes.REQUEST_RECONFIGURE_APPWIDGET,

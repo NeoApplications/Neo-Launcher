@@ -75,6 +75,9 @@
     <color name="pagination_indicator_dot_color_light">#0B57D0</color>
     <color name="pagination_indicator_dot_color_dark">#A8C7FA</color>
 
+    <color name="page_indicator_arrow_bg_light">#000000</color>
+    <color name="page_indicator_arrow_bg_dark">#FFFFFF</color>
+
     <color name="text_color_primary_dark">#FFFFFFFF</color>
     <color name="text_color_secondary_dark">#FFFFFFFF</color>
     <color name="text_color_tertiary_dark">#CCFFFFFF</color>
