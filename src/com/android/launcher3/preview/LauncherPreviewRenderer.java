@@ -86,10 +86,10 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Utility class for generating the preview of Launcher for a given InvariantDeviceProfile.
  * Steps:
- * 1) Create a dummy icon info with just white icon
- * 2) Inflate a strip down layout definition for Launcher
- * 3) Place appropriate elements like icons and first-page qsb
- * 4) Measure and draw the view on a canvas
+ *   1) Create a dummy icon info with just white icon
+ *   2) Inflate a strip down layout definition for Launcher
+ *   3) Place appropriate elements like icons and first-page qsb
+ *   4) Measure and draw the view on a canvas
  */
 public class LauncherPreviewRenderer extends BaseContext
         implements WorkspaceLayoutManager, LayoutInflater.Factory2,
@@ -197,6 +197,7 @@ public class LauncherPreviewRenderer extends BaseContext
     }
 
     @Nullable
+    @Override
     public LauncherWidgetHolder getAppWidgetHolder() {
         return mWidgetHolder;
     }
@@ -331,6 +332,7 @@ public class LauncherPreviewRenderer extends BaseContext
         }
     }
 
+    @Override
     public void bindCompleteModel(@NonNull WorkspaceData itemIdMap, boolean isBindingSync) {
         getAllLayouts().forEach(CellLayout::removeAllViews);
 

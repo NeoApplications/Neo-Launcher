@@ -38,7 +38,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -64,6 +63,7 @@ import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -156,6 +156,8 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
 
     protected EdgeEffectCompat mEdgeGlowLeft;
     protected EdgeEffectCompat mEdgeGlowRight;
+
+    private List<PageSwitchListener> mPageSwitchListeners = new ArrayList<>();
 
     public PagedView(Context context) {
         this(context, null);
@@ -458,6 +460,23 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
      */
     protected void notifyPageSwitchListener(int prevPage) {
         updatePageIndicator();
+        for (PageSwitchListener listener : mPageSwitchListeners) {
+            listener.onPageSwitch();
+        }
+    }
+
+    /**
+     * Add a callback that is triggered when the page is switched.
+     */
+    public void addPageSwitchListener(PageSwitchListener listener) {
+        mPageSwitchListeners.add(listener);
+    }
+
+    /**
+     * Remove a page switch callback.
+     */
+    public void removePageSwitchListener(PageSwitchListener listener) {
+        mPageSwitchListeners.remove(listener);
     }
 
     private void updatePageIndicator() {
@@ -789,13 +808,6 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
         }
 
         if (mScroller.isFinished() && pageScrollChanged) {
-            // TODO(b/246283207): Remove logging once root cause of flake detected.
-            if (Utilities.isRunningInTestHarness() && !(this instanceof Workspace)) {
-                Log.d("b/246283207", TAG + "#onLayout() -> "
-                        + "if(mScroller.isFinished() && pageScrollChanged) -> getNextPage(): "
-                        + getNextPage() + ", getScrollForPage(getNextPage()): "
-                        + getScrollForPage(getNextPage()));
-            }
             setCurrentPage(getNextPage());
         }
         onPageScrollsInitialized();
@@ -2002,15 +2014,13 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
         }
     }
 
-    // Edited
-    public void addTabs(int count) {
-        int childCount = getChildCount();
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (int i = childCount; i < count; i++) {
-            inflater.inflate(R.layout.all_apps_rv_layout, this);
-        }
-        while (getChildCount() > count) {
-            removeViewAt(0);
-        }
+    /**
+     * Callback interface for page switches.
+     */
+    public interface PageSwitchListener {
+        /**
+         * Called when the workspace page is switched.
+         */
+        void onPageSwitch();
     }
 }

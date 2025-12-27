@@ -31,6 +31,7 @@ import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.dagger.HomeScreenFilesModule
 import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
+import com.android.launcher3.dagger.LauncherBaseAppComponent
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.android.launcher3.dagger.LauncherConcurrencyModule
 import com.android.launcher3.dagger.LauncherModelModule
@@ -92,32 +93,32 @@ constructor(
             if (isTwoPanel) selectionForWorkspaceScreen(closestEvenPageId, closestEvenPageId + 1)
             else selectionForWorkspaceScreen(workspacePageId)
 
-        val builder = DaggerPreviewContext_PreviewAppComponent.builder().bindPrefs(prefs)
+        /* val builder = PreviewAppComponent.Builder.bindPrefs(prefs)
         builder.bindLoaderParams(
             LoaderParams(
                 workspaceSelection = selectionQuery,
                 sanitizeData = false,
                 loadNonWorkspaceItems = false,
             )
-        )
+        )*/
 
         // Bind the LauncherApp's single QsbAppWidgetHost to PreviewComponent. This way same
         // AppWidgetHost is shared between the Preview and Launcher.
         // If the AppWidgetHost's are different, they will compete with each other for the same
         // AppWidgetHost Id and this will cause either launcher appcomponent or preview to app
         // component to go out of sync.
-        builder.bindQsbAppWidgetHost(base.appComponent.qsbAppWidgetHost)
+        //builder.bindQsbAppWidgetHost(base.appComponent.qsbAppWidgetHost)
 
         if (layoutXml.isNullOrEmpty() || !Flags.extendibleThemeManager()) {
             mDbDir = null
-            initDaggerComponent(builder.bindWidgetsFactory(base.appComponent.widgetHolderFactory))
+            //initDaggerComponent(builder.bindWidgetsFactory(base.appComponent.widgetHolderFactory))
         } else {
             mDbDir = File(base.filesDir, randomUid)
             emptyDbDir()
             mDbDir.mkdirs()
-            initDaggerComponent(
-                builder.bindWidgetsFactory { NonPrimaryWidgetHolder(it, widgetHostId) }
-            )
+            /*initDaggerComponent(
+                builder.bindWidgetsFactory { NonPrimaryWidgetHolder(base, widgetHostId) }
+            )*/
             appComponent.layoutParserFactory.overrideXmlLayout(layoutXml)
         }
 

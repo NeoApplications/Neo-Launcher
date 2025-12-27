@@ -16,7 +16,6 @@
 package com.android.launcher3.views;
 
 import static com.android.app.animation.Interpolators.LINEAR;
-import static com.android.launcher3.Flags.enableAdditionalHomeAnimations;
 import static com.android.launcher3.Utilities.boundToRange;
 import static com.android.launcher3.Utilities.mapToRange;
 import static com.android.launcher3.anim.AnimatorListeners.forEndCallback;
@@ -49,7 +48,9 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
+import com.android.launcher3.graphics.ShapeDelegate;
 import com.android.launcher3.graphics.ThemeManager;
+import com.android.launcher3.icons.IconShape;
 
 /**
  * A view used to draw both layers of an {@link AdaptiveIconDrawable}.
@@ -65,11 +66,12 @@ public class ClipIconView extends View implements ClipPathView {
 
     private @Nullable Drawable mForeground;
     private @Nullable Drawable mBackground;
+    private ShapeDelegate mCurrentShape;
 
     private boolean mIsAdaptiveIcon = false;
+    private boolean mIsFolderIcon = false;
 
     private ValueAnimator mRevealAnimator;
-    private float mIconScale;
 
     private final Rect mStartRevealRect = new Rect();
     private final Rect mEndRevealRect = new Rect();
@@ -101,9 +103,6 @@ public class ClipIconView extends View implements ClipPathView {
      * within the clip bounds of this view.
      */
     public void setTaskViewArtist(TaskViewArtist taskViewArtist) {
-        if (!enableAdditionalHomeAnimations()) {
-            return;
-        }
         mTaskViewArtist = taskViewArtist;
         invalidate();
     }
@@ -125,7 +124,7 @@ public class ClipIconView extends View implements ClipPathView {
         MarginLayoutParams lp = (MarginLayoutParams) container.getLayoutParams();
 
         float dX = mIsRtl
-                ? rect.left - (dp.widthPx - lp.getMarginStart() - lp.width)
+                ? rect.left - (dp.getDeviceProperties().getWidthPx() - lp.getMarginStart() - lp.width)
                 : rect.left - lp.getMarginStart();
         float dY = rect.top - lp.topMargin;
         container.setTranslationX(dX);
@@ -167,7 +166,7 @@ public class ClipIconView extends View implements ClipPathView {
         float shapeRevealProgress = boundToRange(mapToRange(max(shapeProgressStart, progress),
                 shapeProgressStart, 1f, 0, toMax, LINEAR), 0, 1);
 
-        if (dp.isLandscape) {
+        if (dp.getDeviceProperties().isLandscape()) {
             mOutline.right = (int) (rect.width() / scale);
         } else {
             mOutline.bottom = (int) (rect.height() / scale);
@@ -175,14 +174,19 @@ public class ClipIconView extends View implements ClipPathView {
 
         mTaskCornerRadius = cornerRadius / scale;
         if (mIsAdaptiveIcon) {
-            final ThemeManager themeManager = ThemeManager.INSTANCE.get(getContext());
-            mIconScale = themeManager.getIconState().getIconScale();
             if ((!isOpening || Flags.enableLauncherIconShapes())
                     && progress >= shapeProgressStart) {
                 if (mRevealAnimator == null) {
-                    mRevealAnimator = themeManager.getIconShape()
-                            .createRevealAnimator(this, mStartRevealRect,
-                                    mOutline, mTaskCornerRadius, !isOpening);
+                    ShapeDelegate shape;
+                    if (Flags.enableLauncherIconShapes()) {
+                        shape = mCurrentShape;
+                    } else {
+                        final ThemeManager themeManager = ThemeManager.INSTANCE.get(getContext());
+                        shape = mIsFolderIcon ? themeManager.getFolderShape()
+                                : themeManager.getIconShape();
+                    }
+                    mRevealAnimator = shape.createRevealAnimator(this, mStartRevealRect,
+                            mOutline, mTaskCornerRadius, !isOpening);
                     mRevealAnimator.addListener(forEndCallback(() -> mRevealAnimator = null));
                     mRevealAnimator.start();
                     // We pause here so we can set the current fraction ourselves.
@@ -191,16 +195,16 @@ public class ClipIconView extends View implements ClipPathView {
                 mRevealAnimator.setCurrentFraction(shapeRevealProgress);
             }
 
-            float drawableScale = (dp.isLandscape ? mOutline.width() : mOutline.height())
+            float drawableScale = (dp.getDeviceProperties().isLandscape() ? mOutline.width() : mOutline.height())
                     / minSize;
-            setBackgroundDrawableBounds(drawableScale, dp.isLandscape);
+            setBackgroundDrawableBounds(drawableScale, dp.getDeviceProperties().isLandscape());
 
             // Center align foreground
             int height = mFinalDrawableBounds.height();
             int width = mFinalDrawableBounds.width();
-            int diffY = dp.isLandscape ? 0
+            int diffY = dp.getDeviceProperties().isLandscape() ? 0
                     : (int) (((height * drawableScale) - height) / 2);
-            int diffX = dp.isLandscape ? (int) (((width * drawableScale) - width) / 2)
+            int diffX = dp.getDeviceProperties().isLandscape() ? (int) (((width * drawableScale) - width) / 2)
                     : 0;
             sTmpRect.set(mFinalDrawableBounds);
             sTmpRect.offset(diffX, diffY);
@@ -232,10 +236,18 @@ public class ClipIconView extends View implements ClipPathView {
      * Sets the icon for this view as part of initial setup
      */
     public void setIcon(@Nullable Drawable drawable, int iconOffset, MarginLayoutParams lp,
-                        boolean isOpening, DeviceProfile dp) {
+                        boolean isOpening, boolean usingCustomShape, DeviceProfile dp) {
         mIsAdaptiveIcon = drawable instanceof AdaptiveIconDrawable;
         if (mIsAdaptiveIcon) {
-            boolean isFolderIcon = drawable instanceof FolderAdaptiveIcon;
+            mIsFolderIcon = drawable instanceof FolderAdaptiveIcon;
+            final ThemeManager themeManager = ThemeManager.INSTANCE.get(getContext());
+            if (mIsFolderIcon) {
+                mCurrentShape = themeManager.getFolderShape();
+            } else if (usingCustomShape) {
+                mCurrentShape = themeManager.getIconShape();
+            } else {
+                mCurrentShape = ThemeManager.DEFAULT_SHAPE_DELEGATE;
+            }
 
             AdaptiveIconDrawable adaptiveIcon = (AdaptiveIconDrawable) drawable;
             Drawable background = adaptiveIcon.getBackground();
@@ -255,7 +267,7 @@ public class ClipIconView extends View implements ClipPathView {
             int blurMargin = mBlurSizeOutline / 2;
             mFinalDrawableBounds.set(0, 0, originalWidth, originalHeight);
 
-            if (!isFolderIcon) {
+            if (!mIsFolderIcon) {
                 mFinalDrawableBounds.inset(iconOffset - blurMargin, iconOffset - blurMargin);
             }
             mForeground.setBounds(mFinalDrawableBounds);
@@ -263,18 +275,18 @@ public class ClipIconView extends View implements ClipPathView {
 
             mStartRevealRect.set(0, 0, originalWidth, originalHeight);
 
-            if (!isFolderIcon) {
+            if (!mIsFolderIcon) {
                 Utilities.scaleRectAboutCenter(mStartRevealRect, ICON_VISIBLE_AREA_FACTOR);
             }
 
-            if (dp.isLandscape) {
-                lp.width = (int) Math.max(lp.width, lp.height * dp.aspectRatio);
+            if (dp.getDeviceProperties().isLandscape()) {
+                lp.width = (int) Math.max(lp.width, lp.height * dp.getDeviceProperties().getAspectRatio());
             } else {
-                lp.height = (int) Math.max(lp.height, lp.width * dp.aspectRatio);
+                lp.height = (int) Math.max(lp.height, lp.width * dp.getDeviceProperties().getAspectRatio());
             }
 
             int left = mIsRtl
-                    ? dp.widthPx - lp.getMarginStart() - lp.width
+                    ? dp.getDeviceProperties().getWidthPx() - lp.getMarginStart() - lp.width
                     : lp.leftMargin;
             layout(left, lp.topMargin, left + lp.width, lp.topMargin + lp.height);
 
@@ -288,7 +300,7 @@ public class ClipIconView extends View implements ClipPathView {
                 bgDrawableStartScale = scale;
                 mOutline.set(0, 0, lp.width, lp.height);
             }
-            setBackgroundDrawableBounds(bgDrawableStartScale, dp.isLandscape);
+            setBackgroundDrawableBounds(bgDrawableStartScale, dp.getDeviceProperties().isLandscape());
             mEndRevealRect.set(0, 0, lp.width, lp.height);
             setOutlineProvider(new ViewOutlineProvider() {
                 @Override
@@ -319,11 +331,6 @@ public class ClipIconView extends View implements ClipPathView {
             canvas.clipPath(mClipPath);
         }
         int count2 = canvas.save();
-        float iconCenterX =
-                (mFinalDrawableBounds.right - mFinalDrawableBounds.left) / 2f * mIconScale;
-        float iconCenterY =
-                (mFinalDrawableBounds.bottom - mFinalDrawableBounds.top) / 2f * mIconScale;
-        canvas.scale(mIconScale, mIconScale, iconCenterX, iconCenterY);
         if (mBackground != null) {
             mBackground.draw(canvas);
         }

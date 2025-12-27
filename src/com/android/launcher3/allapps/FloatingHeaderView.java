@@ -38,13 +38,13 @@ import com.android.launcher3.R;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder;
 import com.android.launcher3.util.PluginManagerWrapper;
 import com.android.launcher3.views.ActivityContext;
+import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip;
 import com.android.systemui.plugins.AllAppsRow;
 import com.android.systemui.plugins.AllAppsRow.OnHeightUpdatedListener;
 import com.android.systemui.plugins.PluginListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class FloatingHeaderView extends LinearLayout implements
@@ -88,8 +88,9 @@ public class FloatingHeaderView extends LinearLayout implements
     private final int mTabsAdditionalPaddingTop;
     private final int mTabsAdditionalPaddingBottom;
 
-    protected ViewGroup mTabLayout;
-    private ArrayList<AllAppsRecyclerView> mRVs = new ArrayList<>();
+    protected PersonalWorkSlidingTabStrip mTabLayout;
+    private AllAppsRecyclerView mMainRV;
+    private AllAppsRecyclerView mWorkRV;
     private SearchRecyclerView mSearchRV;
     private AllAppsRecyclerView mCurrentRV;
     protected int mSnappedScrolledY;
@@ -236,7 +237,7 @@ public class FloatingHeaderView extends LinearLayout implements
         return null;
     }
 
-    void setup(List<ActivityAllAppsContainerView<?>.AdapterHolder> mAH, SearchRecyclerView searchRV,
+    void setup(AllAppsRecyclerView mainRV, AllAppsRecyclerView workRV, SearchRecyclerView searchRV,
                int activeRV, boolean tabsHidden) {
         for (FloatingHeaderRow row : mAllRows) {
             row.setup(this, mAllRows, tabsHidden);
@@ -245,32 +246,28 @@ public class FloatingHeaderView extends LinearLayout implements
         mTabsHidden = tabsHidden;
         maybeSetTabVisibility(VISIBLE);
         updateExpectedHeight();
-        for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
-            if (holder.mRecyclerView != null) {
-                AllAppsRecyclerView newHolder = holder.mRecyclerView;
-                newHolder.addOnScrollListener(mOnScrollListener);
-                mRVs.add(newHolder);
-            }
-        }
+        mMainRV = mainRV;
+        mWorkRV = workRV;
         mSearchRV = searchRV;
-        setActiveRV(activeRV, false);
+        setActiveRV(activeRV);
         reset(false);
     }
 
     /** Whether this header has been set up previously. */
     boolean isSetUp() {
-        return !mRVs.isEmpty();
+        return mMainRV != null;
     }
 
     /** Set the active AllApps RV which will adjust the alpha of the header when scrolled. */
-    void setActiveRV(int active, boolean search) {
+    void setActiveRV(int rvType) {
         if (mCurrentRV != null) {
             mCurrentRV.removeOnScrollListener(mOnScrollListener);
         }
-        if (!search || mSearchRV == null) mCurrentRV = mRVs.get(Math.min(active, mRVs.size() - 1));
-        else mCurrentRV = mSearchRV;
+        mCurrentRV =
+                rvType == AdapterHolder.MAIN ? mMainRV
+                        : rvType == AdapterHolder.WORK ? mWorkRV : mSearchRV;
         mCurrentRV.addOnScrollListener(mOnScrollListener);
-        //maybeSetTabVisibility(rvType == AdapterHolder.SEARCH ? GONE : VISIBLE);
+        maybeSetTabVisibility(rvType == AdapterHolder.SEARCH ? GONE : VISIBLE);
     }
 
     /** Update tab visibility to the given state, only if tabs are active (work profile exists). */
@@ -278,15 +275,10 @@ public class FloatingHeaderView extends LinearLayout implements
         mTabLayout.setVisibility(mTabsHidden ? GONE : visibility);
     }
 
-    /** Returns whether search bar has multi-line support, and is currently in multi-line state. */
-    private boolean isSearchBarMultiline() {
-        return Flags.multilineSearchBar() && mSearchBarOffset > 0;
-    }
-
     private void updateExpectedHeight() {
         updateFloatingRowsHeight();
         mMaxTranslation = 0;
-        boolean shouldAddSearchBarHeight = isSearchBarMultiline() && !Flags.floatingSearchBar();
+        boolean shouldAddSearchBarHeight = mSearchBarOffset > 0 && !Flags.floatingSearchBar();
         if (shouldAddSearchBarHeight) {
             mMaxTranslation += mSearchBarOffset;
         }
@@ -364,8 +356,11 @@ public class FloatingHeaderView extends LinearLayout implements
         mHeaderClip.top = clipTop;
         // clipping on a draw might cause additional redraw
         setClipBounds(mHeaderClip);
-        for (AllAppsRecyclerView rv : mRVs) {
-            rv.setClipBounds(mRVClip);
+        if (mMainRV != null) {
+            mMainRV.setClipBounds(mRVClip);
+        }
+        if (mWorkRV != null) {
+            mWorkRV.setClipBounds(mRVClip);
         }
         if (mSearchRV != null) {
             mSearchRV.setClipBounds(mRVClip);
@@ -415,7 +410,7 @@ public class FloatingHeaderView extends LinearLayout implements
         return !mTabsHidden;
     }
 
-    ViewGroup getTabLayout() {
+    PersonalWorkSlidingTabStrip getTabLayout() {
         return mTabLayout;
     }
 
@@ -442,7 +437,7 @@ public class FloatingHeaderView extends LinearLayout implements
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        calcOffset(mTempOffset); // TODO A16 consider changes
+        calcOffset(mTempOffset);
         ev.offsetLocation(mTempOffset.x, mTempOffset.y);
         mForwardToRecyclerView = mCurrentRV.onInterceptTouchEvent(ev);
         ev.offsetLocation(-mTempOffset.x, -mTempOffset.y);

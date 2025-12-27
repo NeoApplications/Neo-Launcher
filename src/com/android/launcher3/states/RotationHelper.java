@@ -138,7 +138,7 @@ public class RotationHelper implements LauncherPrefChangeListener,
 
     @Override
     public void onDeviceProfileChanged(DeviceProfile dp) {
-        onIgnoreAutoRotateChanged(dp.isTablet);
+        onIgnoreAutoRotateChanged(dp.getDeviceProperties().isTablet());
     }
 
     private void onIgnoreAutoRotateChanged(boolean ignoreAutoRotateSettings) {

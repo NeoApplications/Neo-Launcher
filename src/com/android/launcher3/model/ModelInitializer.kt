@@ -38,6 +38,8 @@ import com.android.launcher3.icons.IconCache
 import com.android.launcher3.icons.IconChangeTracker
 import com.android.launcher3.icons.LauncherIcons.IconPool
 import com.android.launcher3.logging.FileLog
+import com.android.launcher3.model.tasks.PackageUpdatedTask
+import com.android.launcher3.model.tasks.ShortcutsChangedTask
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.pm.InstallSessionHelper
 import com.android.launcher3.pm.UserCache

@@ -86,10 +86,11 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
             mAppsView?.appsStore!!.apps.filter {
                 currentApps.containsAll(currentApps)
             }
+            /*
             //recreate view to show the filtered apps only
             mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter { itemInfo: ItemInfo ->
                 currentApps.contains(ComponentKey(itemInfo.targetComponent, itemInfo.user))
-            }
+            }*/
             mAppsView?.getActiveRecyclerView()?.adapter?.notifyDataSetChanged()
         }
     }

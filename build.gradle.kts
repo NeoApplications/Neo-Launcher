@@ -203,8 +203,8 @@ android {
             kotlin.directories.addAll(listOf("src_flags"))
         }
         named("omega") {
-            java.directories.add("Omega/src")
-            kotlin.directories.add("Omega/src")
+            java.directories.addAll(listOf("Omega/src", "compose"))
+            kotlin.directories.addAll(listOf("Omega/src", "compose"))
             res.directories.add("Omega/res")
             aidl.directories.add("Omega/aidl")
             manifest.srcFile("Omega/AndroidManifest.xml")
@@ -245,6 +245,7 @@ dependencies {
     implementation(project(":plugincore"))
     implementation(project(":shared"))
     implementation(project(":smartspace"))
+    implementation(project(":widgetpicker"))
     implementation(project(":wmshell"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))

@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.Process;
 import android.os.UserHandle;
-import android.os.UserManager;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -63,9 +62,9 @@ import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.compat.AccessibilityManagerCompat;
-import com.android.launcher3.model.UserManagerState;
 import com.android.launcher3.model.WidgetItem;
 import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.pm.UserManagerState;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 import com.android.launcher3.views.SpringRelativeLayout;
 import com.android.launcher3.views.StickyHeaderLayout;
@@ -104,7 +103,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
             "widgetsFullSheet:mRecommendationsCurrentPage";
     private static final String SUPER_SAVED_STATE_KEY = "widgetsFullSheet:superHierarchyState";
     private final UserCache mUserCache;
-    private final UserManagerState mUserManagerState = new UserManagerState();
+    private final UserManagerState mUserManagerState;
     private final UserHandle mCurrentUser = Process.myUserHandle();
     private final Predicate<WidgetsListBaseEntry> mPrimaryWidgetsFilter =
             entry -> mCurrentUser.equals(entry.mPkgItem.user);
@@ -119,7 +118,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     protected final SparseArray<AdapterHolder> mAdapters = new SparseArray();
 
     // Helps with removing focus from searchbar by analyzing motion events.
-    private final AdapterHolder.SearchClearFocusHelper mSearchClearFocusHelper = new AdapterHolder.SearchClearFocusHelper();
+    private final SearchClearFocusHelper mSearchClearFocusHelper = new SearchClearFocusHelper();
     private final float mTouchSlop; // initialized in constructor
 
     private final OnAttachStateChangeListener mBindScrollbarInSearchMode =
@@ -174,6 +173,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
         mHasWorkProfile = mUserCache.getUserProfiles()
                 .stream()
                 .anyMatch(user -> mUserCache.getUserInfo(user).isWork());
+        mUserManagerState = UserCache.INSTANCE.get(context).getUserManagerState();
         mWorkWidgetsFilter = entry -> mHasWorkProfile
                 && mUserCache.getUserInfo(entry.mPkgItem.user).isWork()
                 && !mUserManagerState.isUserQuiet(entry.mPkgItem.user);
@@ -182,8 +182,6 @@ public class WidgetsFullSheet extends BaseWidgetSheet
         mAdapters.put(AdapterHolder.SEARCH, new AdapterHolder(AdapterHolder.SEARCH));
 
         Resources resources = getResources();
-        mUserManagerState.init(UserCache.INSTANCE.get(context),
-                context.getSystemService(UserManager.class));
         mTabsHeight = mHasWorkProfile
                 ? resources.getDimensionPixelSize(R.dimen.all_apps_header_pill_height)
                 : 0;
@@ -264,7 +262,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
         mSearchBarContainer = mSearchScrollView.findViewById(R.id.search_bar_container);
         mSearchBar = mSearchScrollView.findViewById(R.id.widgets_search_bar);
 
-        mSearchBar.initialize(new WidgetsSearchBar.WidgetsSearchDataProvider() {
+        mSearchBar.initialize(new WidgetsSearchDataProvider() {
             @Override
             public List<WidgetsListBaseEntry> getWidgets() {
                 if (enableTieredWidgetsByDefaultInPicker()) {
@@ -653,11 +651,12 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     protected float getMaxAvailableHeightForRecommendations() {
         // There isn't enough space to show recommendations in landscape orientation on phones with
         // a full sheet design. Tablets use a two pane picker.
-        if (mDeviceProfile.isLandscape) {
+        if (mDeviceProfile.getDeviceProperties().isLandscape()) {
             return 0f;
         }
 
-        return (mDeviceProfile.heightPx - mDeviceProfile.bottomSheetTopPadding)
+        return (mDeviceProfile.getDeviceProperties().getHeightPx()
+                - mDeviceProfile.getBottomSheetProfile().getBottomSheetTopPadding())
                 * RECOMMENDATION_TABLE_HEIGHT_RATIO;
     }
 
@@ -672,13 +671,22 @@ public class WidgetsFullSheet extends BaseWidgetSheet
             if (getPopupContainer().getInsets().bottom > 0) {
                 mContent.setAlpha(0);
             }
-            setUpOpenAnimation(mActivityContext.getDeviceProfile().bottomSheetOpenDuration);
+            setUpOpenAnimation(
+                    mActivityContext
+                            .getDeviceProfile()
+                            .getBottomSheetProfile()
+                            .getBottomSheetOpenDuration()
+            );
             Animator animator = mOpenCloseAnimation.getAnimationPlayer();
             animator.setInterpolator(AnimationUtils.loadInterpolator(
                     getContext(), android.R.interpolator.linear_out_slow_in));
             post(() -> {
-                animator.setDuration(mActivityContext.getDeviceProfile().bottomSheetOpenDuration)
-                        .start();
+                animator.setDuration(
+                        mActivityContext
+                                .getDeviceProfile()
+                                .getBottomSheetProfile()
+                                .getBottomSheetOpenDuration()
+                ).start();
                 mContent.animate().alpha(1).setDuration(FADE_IN_DURATION);
             });
         } else {
@@ -689,7 +697,13 @@ public class WidgetsFullSheet extends BaseWidgetSheet
 
     @Override
     protected void handleClose(boolean animate) {
-        handleClose(animate, mActivityContext.getDeviceProfile().bottomSheetCloseDuration);
+        handleClose(
+                animate,
+                mActivityContext
+                        .getDeviceProfile()
+                        .getBottomSheetProfile()
+                        .getBottomSheetCloseDuration()
+        );
     }
 
     @Override
@@ -775,7 +789,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     }
 
     private static int getWidgetSheetId(BaseActivity activity) {
-        boolean isTwoPane = activity.getDeviceProfile().isTablet;
+        boolean isTwoPane = activity.getDeviceProfile().getDeviceProperties().isTablet();
 
         return isTwoPane ? R.layout.widgets_two_pane_sheet : R.layout.widgets_full_sheet;
     }
@@ -922,7 +936,7 @@ public class WidgetsFullSheet extends BaseWidgetSheet
     private static boolean shouldRecreateLayout(DeviceProfile oldDp, DeviceProfile newDp) {
         // When folding/unfolding the foldables, we need to switch between the regular widget picker
         // and the two pane picker, so we rebuild the picker with the correct layout.
-        return oldDp.isTwoPanels != newDp.isTwoPanels;
+        return oldDp.getDeviceProperties().isTwoPanels() != newDp.getDeviceProperties().isTwoPanels();
     }
 
     /**
@@ -1131,54 +1145,54 @@ public class WidgetsFullSheet extends BaseWidgetSheet
             }
             mWidgetsListAdapter.setMaxHorizontalSpansPxPerRow(mMaxSpanPerRow);
         }
+    }
+
+    /**
+     * Helper to identify if searchbar's focus can be cleared when user performs an action
+     * outside search.
+     */
+    private static class SearchClearFocusHelper {
+        private float mFirstInteractionX = -1f;
+        private float mFirstInteractionY = -1f;
 
         /**
-         * Helper to identify if searchbar's focus can be cleared when user performs an action
-         * outside search.
+         * For a given [MotionEvent] indicates if we should clear focus from search (and hide IME).
          */
-        private static class SearchClearFocusHelper {
-            private float mFirstInteractionX = -1f;
-            private float mFirstInteractionY = -1f;
+        boolean shouldClearFocus(MotionEvent ev, float touchSlop) {
+            int action = ev.getAction();
+            boolean clearFocus = false;
 
-            /**
-             * For a given [MotionEvent] indicates if we should clear focus from search (and hide IME).
-             */
-            boolean shouldClearFocus(MotionEvent ev, float touchSlop) {
-                int action = ev.getAction();
-                boolean clearFocus = false;
-
-                if (action == MotionEvent.ACTION_DOWN) {
-                    mFirstInteractionX = ev.getX();
-                    mFirstInteractionY = ev.getY();
-                } else if (action == MotionEvent.ACTION_CANCEL) {
-                    // This is when user performed a gesture e.g. predictive back
-                    // We don't handle it ourselves and let IME handle the close.
-                    mFirstInteractionY = -1;
-                    mFirstInteractionX = -1;
-                } else if (action == MotionEvent.ACTION_UP) {
-                    // Its clear that user action wasn't predictive back - but press / scroll etc. that
-                    // should hide the keyboard.
-                    clearFocus = true;
-                    mFirstInteractionY = -1;
-                    mFirstInteractionX = -1;
-                } else if (action == MotionEvent.ACTION_MOVE) {
-                    // Sometimes, on move, we may not receive ACTION_UP, but if the move was within
-                    // touch slop and we didn't know if its moved or cancelled, we can clear focus.
-                    // Example case: Apps list is small and you do a little scroll on list - in such, we
-                    // want to still hide the keyboard.
-                    if (mFirstInteractionX != -1 && mFirstInteractionY != -1) {
-                        float distY = abs(mFirstInteractionY - ev.getY());
-                        float distX = abs(mFirstInteractionX - ev.getX());
-                        if (distY >= touchSlop || distX >= touchSlop) {
-                            clearFocus = true;
-                            mFirstInteractionY = -1;
-                            mFirstInteractionX = -1;
-                        }
+            if (action == MotionEvent.ACTION_DOWN) {
+                mFirstInteractionX = ev.getX();
+                mFirstInteractionY = ev.getY();
+            } else if (action == MotionEvent.ACTION_CANCEL) {
+                // This is when user performed a gesture e.g. predictive back
+                // We don't handle it ourselves and let IME handle the close.
+                mFirstInteractionY = -1;
+                mFirstInteractionX = -1;
+            } else if (action == MotionEvent.ACTION_UP) {
+                // Its clear that user action wasn't predictive back - but press / scroll etc. that
+                // should hide the keyboard.
+                clearFocus = true;
+                mFirstInteractionY = -1;
+                mFirstInteractionX = -1;
+            } else if (action == MotionEvent.ACTION_MOVE) {
+                // Sometimes, on move, we may not receive ACTION_UP, but if the move was within
+                // touch slop and we didn't know if its moved or cancelled, we can clear focus.
+                // Example case: Apps list is small and you do a little scroll on list - in such, we
+                // want to still hide the keyboard.
+                if (mFirstInteractionX != -1 && mFirstInteractionY != -1) {
+                    float distY = abs(mFirstInteractionY - ev.getY());
+                    float distX = abs(mFirstInteractionX - ev.getX());
+                    if (distY >= touchSlop || distX >= touchSlop) {
+                        clearFocus = true;
+                        mFirstInteractionY = -1;
+                        mFirstInteractionX = -1;
                     }
                 }
-
-                return clearFocus;
             }
+
+            return clearFocus;
         }
     }
 }

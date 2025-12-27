@@ -7,20 +7,43 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.MainProcessInitializer;
 import com.android.launcher3.RemoveAnimationSettingsTracker;
+import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
+import com.android.launcher3.compose.core.widgetpicker.WidgetPickerComposeWrapper;
 import com.android.launcher3.contextualeducation.ContextualEduStatsManager;
 import com.android.launcher3.contextualeducation.ContextualEduStatsManager_Factory;
+import com.android.launcher3.dragndrop.SystemDragController;
+import com.android.launcher3.folder.FolderNameSuggestionLoader;
 import com.android.launcher3.graphics.GridCustomizationsProxy;
 import com.android.launcher3.graphics.ThemeManager;
+import com.android.launcher3.graphics.theme.ThemePreference;
+import com.android.launcher3.homescreenfiles.HomeScreenFilesProvider;
+import com.android.launcher3.icons.IconChangeTracker;
 import com.android.launcher3.icons.LauncherIcons;
+import com.android.launcher3.logging.DumpManager;
+import com.android.launcher3.logging.StatsLogManager;
+import com.android.launcher3.model.GridSizeMigrationLogic;
+import com.android.launcher3.model.LayoutParserFactory;
 import com.android.launcher3.model.LoaderCursor;
+import com.android.launcher3.model.TestableModelState;
 import com.android.launcher3.model.WidgetsFilterDataProvider;
+import com.android.launcher3.notification.NotificationRepository;
 import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.popup.PopupDataRepository;
+import com.android.launcher3.qsb.OSEManager;
+import com.android.launcher3.qsb.OseWidgetManager;
+import com.android.launcher3.qsb.QsbAppWidgetHost;
+import com.android.launcher3.testing.TestInformationHandler;
 import com.android.launcher3.util.DisplayController;
+import com.android.launcher3.util.InstantAppResolver;
+import com.android.launcher3.util.LayoutImportExportHelper;
 import com.android.launcher3.util.LockedUserState;
+import com.android.launcher3.util.TaskbarModeUtil;
 import com.android.launcher3.util.WallpaperColorHints;
 import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.launcher3.widget.LauncherWidgetHolder;
+import com.android.launcher3.widget.util.WidgetSizeHandler;
 import com.saggitt.omega.icons.IconShape;
 import com.android.launcher3.model.ItemInstallQueue;
 import com.android.launcher3.pm.InstallSessionHelper;
@@ -166,7 +189,6 @@ public final class DaggerLauncherAppComponent {
             return apiWrapperProvider.get();
         }
 
-        @Override
         public ContextualEduStatsManager getContextualEduStatsManager() {
             return contextualEduStatsManagerProvider.get();
         }
@@ -178,6 +200,116 @@ public final class DaggerLauncherAppComponent {
 
         @Override
         public RefreshRateTracker getFrameRateProvider() {
+            return null;
+        }
+
+        @Override
+        public InstantAppResolver getInstantAppResolver() {
+            return null;
+        }
+
+        @Override
+        public DumpManager getDumpManager() {
+            return null;
+        }
+
+        @Override
+        public StatsLogManager.StatsLogManagerFactory getStatsLogManagerFactory() {
+            return null;
+        }
+
+        @Override
+        public ActivityContextComponent.Builder getActivityContextComponentBuilder() {
+            return null;
+        }
+
+        @Override
+        public WidgetPickerComposeWrapper getWidgetPickerComposeWrapper() {
+            return null;
+        }
+
+        @Override
+        public WidgetSizeHandler getWidgetSizeHandler() {
+            return null;
+        }
+
+        @Override
+        public MainProcessInitializer getMainProcessInitializer() {
+            return null;
+        }
+
+        @Override
+        public OseWidgetManager getOseWidgetManager() {
+            return null;
+        }
+
+        @Override
+        public OSEManager getOseManager() {
+            return null;
+        }
+
+        @Override
+        public QsbAppWidgetHost getQsbAppWidgetHost() {
+            return null;
+        }
+
+        @Override
+        public TestInformationHandler getTestInformationHandler() {
+            return null;
+        }
+
+        @Override
+        public TaskbarModeUtil getTaskbarModeUtil() {
+            return null;
+        }
+
+        @Override
+        public SystemDragController getSystemDragController() {
+            return null;
+        }
+
+        @Override
+        public LayoutImportExportHelper getLayoutImportExportHelper() {
+            return null;
+        }
+
+        @Override
+        public LayoutParserFactory getLayoutParserFactory() {
+            return null;
+        }
+
+        @Override
+        public GridSizeMigrationLogic createNewGridSizeMigrationLogic() {
+            return null;
+        }
+
+        @Override
+        public TestableModelState getTestableModelState() {
+            return null;
+        }
+
+        @Override
+        public PopupDataRepository getPopupDataRepository() {
+            return null;
+        }
+
+        @Override
+        public NotificationRepository getNotificationRepository() {
+            return null;
+        }
+
+        @Override
+        public HomeScreenFilesProvider getHomeScreenFilesProvider() {
+            return null;
+        }
+
+        @Override
+        public ThemePreference getThemePreference() {
+            return null;
+        }
+
+        @Override
+        public IconChangeTracker getIconChangeTracker() {
             return null;
         }
 
@@ -296,11 +428,20 @@ public final class DaggerLauncherAppComponent {
         }
 
         @Override
+        public LauncherRestoreEventLogger getLauncherRestoreEventLogger() {
+            return null;
+        }
+
+        @Override
         public GridCustomizationsProxy getGridCustomizationsProxy() {
             return null;
         }
 
         @Override
+        public FolderNameSuggestionLoader getFolderNameSuggestionLoader() {
+            return null;
+        }
+
         public WidgetsFilterDataProvider getWidgetsFilterDataProvider() {
             return null;
         }

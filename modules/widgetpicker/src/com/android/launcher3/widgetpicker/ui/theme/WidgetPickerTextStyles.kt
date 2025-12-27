@@ -16,7 +16,6 @@
 
 package com.android.launcher3.widgetpicker.ui.theme
 
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -110,12 +109,11 @@ val LocalWidgetPickerTextStyles =
  * Default [TextStyle]s that can either be used as-is in host theme or used a reference when
  * defining your own [LocalWidgetPickerTextStyles].
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun defaultWidgetPickerTextStyles() =
     WidgetPickerTextStyles(
         // Titled bottom sheet
-        sheetTitle = MaterialTheme.typography.headlineSmallEmphasized,
+        sheetTitle = MaterialTheme.typography.headlineSmall,
         sheetDescription = MaterialTheme.typography.bodyMedium,
 
         // Expandable list headers
@@ -126,7 +124,7 @@ fun defaultWidgetPickerTextStyles() =
 
         // Clickable List headers
         selectedListHeaderTitle =
-            MaterialTheme.typography.titleMediumEmphasized.copy(fontWeight = FontWeight.Medium),
+            MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
         unSelectedListHeaderTitle =
             MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
         selectedListHeaderSubTitle =
@@ -145,7 +143,7 @@ fun defaultWidgetPickerTextStyles() =
 
         // Floating toolbar
         toolbarUnSelectedTabLabel = MaterialTheme.typography.labelLarge,
-        toolbarSelectedTabLabel = MaterialTheme.typography.labelLargeEmphasized,
+        toolbarSelectedTabLabel = MaterialTheme.typography.labelLarge,
 
         // Search bar
         searchBarPlaceholderText =

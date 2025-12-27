@@ -18,13 +18,13 @@ package com.android.launcher3.folder;
 
 import static com.android.launcher3.BubbleTextView.DISPLAY_FOLDER;
 import static com.android.launcher3.LauncherSettings.Favorites.DESKTOP_ICON_FLAG;
+import static com.android.launcher3.Utilities.dpToPx;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ENTER_INDEX;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.EXIT_INDEX;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 import static com.android.launcher3.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
-import static com.android.launcher3.graphics.PreloadIconDrawable.newPendingIcon;
+import static com.android.launcher3.graphics.PreloadIconDelegate.newPendingIcon;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
-import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_SHOW_DOWNLOAD_PROGRESS_MASK;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -37,23 +37,19 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.FloatProperty;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.apppairs.AppPairIconDrawingParams;
 import com.android.launcher3.apppairs.AppPairIconGraphic;
-import com.android.launcher3.apppairs.AppPairIcon;
-import com.android.launcher3.apppairs.AppPairIconDrawingParams;
-import com.android.launcher3.apppairs.AppPairIconGraphic;
 import com.android.launcher3.model.data.AppPairInfo;
-import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -67,6 +63,8 @@ import java.util.function.Predicate;
  * Manages the drawing and animations of {@link PreviewItemDrawingParams} for a {@link FolderIcon}.
  */
 public class PreviewItemManager {
+
+    private static final String TAG = "PreviewItemManager";
 
     private static final FloatProperty<PreviewItemManager> CURRENT_PAGE_ITEMS_TRANS_X =
             new FloatProperty<PreviewItemManager>("currentPageItemsTransX") {
@@ -119,8 +117,8 @@ public class PreviewItemManager {
         mContext = icon.getContext();
         mIcon = icon;
         mIconSize = ActivityContext.lookupContext(
-                mContext).getDeviceProfile().folderChildIconSizePx;
-        mClipThreshold = Utilities.dpToPx(1f);
+                mContext).getDeviceProfile().getFolderProfile().getChildIconSizePx();
+        mClipThreshold = dpToPx(1f);
     }
 
     /**
@@ -162,9 +160,11 @@ public class PreviewItemManager {
 
             mIcon.mBackground.setup(mIcon.getContext(), mIcon.mActivity, mIcon, mTotalWidth,
                     mIcon.getPaddingTop());
-            mIcon.mPreviewLayoutRule.init(mIcon.mBackground.previewSize, mIntrinsicIconSize,
-                    Utilities.isRtl(mIcon.getResources()));
-
+            mIcon.mPreviewLayoutRule.init(
+                    mIcon.mBackground.previewSize, mIntrinsicIconSize,
+                    Utilities.isRtl(mIcon.getResources()),
+                    mIcon.mActivity.getDeviceProfile().getFolderProfile().getNumColumns()
+            );
             updatePreviewItems(false);
         }
     }
@@ -180,7 +180,7 @@ public class PreviewItemManager {
     }
 
     private PreviewItemDrawingParams getFinalIconParams(PreviewItemDrawingParams params) {
-        float iconSize = mIcon.mActivity.getDeviceProfile().iconSizePx;
+        float iconSize = mIcon.mActivity.getDeviceProfile().getWorkspaceIconProfile().getIconSizePx();
 
         final float scale = iconSize / mReferenceDrawable.getIntrinsicWidth();
         final float trans = (mIcon.mBackground.previewSize - iconSize) / 2;
@@ -447,9 +447,14 @@ public class PreviewItemManager {
 
     @VisibleForTesting
     public void setDrawable(PreviewItemDrawingParams p, ItemInfo item) {
+        setDrawableInternal(p, item, true /* loadHighResIcon */);
+    }
+
+    private void setDrawableInternal(
+            PreviewItemDrawingParams p, ItemInfo item, boolean loadHighResIcon) {
         if (item instanceof WorkspaceItemInfo wii) {
-            if (isActivePendingIcon(wii)) {
-                p.drawable = newPendingIcon(mContext, wii);
+            if (wii.shouldShowPendingIcon()) {
+                p.drawable = newPendingIcon(wii, mContext, FLAG_THEMED);
             } else {
                 p.drawable = wii.newIcon(mContext, FLAG_THEMED);
             }
@@ -460,8 +465,8 @@ public class PreviewItemManager {
             p.drawable = AppPairIconGraphic.composeDrawable(api, appPairParams);
             p.drawable.setBounds(0, 0, mIconSize, mIconSize);
         }
-        p.item = item;
 
+        p.item = item;
         // Set the callback to FolderIcon as it is responsible to drawing the icon. The
         // callback will be released when the folder is opened.
         p.drawable.setCallback(mIcon);
@@ -469,23 +474,18 @@ public class PreviewItemManager {
         // Verify high res
         if (item instanceof ItemInfoWithIcon info
                 && info.getMatchingLookupFlag().isVisuallyLessThan(DESKTOP_ICON_FLAG)) {
-            LauncherAppState.getInstance(mContext).getIconCache().updateIconInBackground(
-                    newInfo -> {
-                        if (p.item == newInfo) {
-                            setDrawable(p, newInfo);
-                            mIcon.invalidate();
-                        }
-                    }, info);
+            if (loadHighResIcon) {
+                LauncherAppState.getInstance(mContext).getIconCache().updateIconInBackground(
+                        newInfo -> {
+                            if (p.item == newInfo) {
+                                setDrawableInternal(p, newInfo, false /* loadHighResIcon */);
+                                mIcon.invalidate();
+                            }
+                        }, info, DESKTOP_ICON_FLAG);
+            } else {
+                Log.d(TAG, "Skipping high res icon load with flags: " + info.getMatchingLookupFlag()
+                        + " for " + info);
+            }
         }
-    }
-
-    /**
-     * Returns true if item is a Promise Icon or actively downloading, and the item is not an
-     * inactive archived app.
-     */
-    private boolean isActivePendingIcon(WorkspaceItemInfo item) {
-        return (item.hasPromiseIconUi()
-                || (item.runtimeStatusFlags & FLAG_SHOW_DOWNLOAD_PROGRESS_MASK) != 0)
-                && !(Flags.useNewIconForArchivedApps() && item.isInactiveArchive());
     }
 }

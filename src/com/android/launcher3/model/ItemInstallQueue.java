@@ -24,6 +24,7 @@ import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPWIDG
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
 import static com.android.launcher3.model.data.AppInfo.makeLaunchIntent;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ARCHIVED;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 
 import android.appwidget.AppWidgetManager;
@@ -39,8 +40,10 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Flags;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Launcher;
@@ -53,6 +56,7 @@ import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.model.tasks.AddWorkspaceItemsTask;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.shortcuts.ShortcutRequest;
 import com.android.launcher3.util.DaggerSingletonObject;
@@ -60,12 +64,13 @@ import com.android.launcher3.util.PersistedItemArray;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * Class to maintain a queue of pending items to be added to the workspace.
@@ -92,6 +97,7 @@ public class ItemInstallQueue {
     private final PersistedItemArray<PendingInstallShortcutInfo> mStorage =
             new PersistedItemArray<>(APPS_PENDING_INSTALL);
     private final Context mContext;
+    private final Provider<WorkspaceItemSpaceFinder> mSpaceFinderProvider;
 
     // Determines whether to defer installing shortcuts immediately until
     // processAllPendingInstalls() is called.
@@ -101,8 +107,10 @@ public class ItemInstallQueue {
     private List<PendingInstallShortcutInfo> mItems;
 
     @Inject
-    public ItemInstallQueue(@ApplicationContext Context context) {
+    public ItemInstallQueue(@ApplicationContext Context context,
+                            Provider<WorkspaceItemSpaceFinder> spaceFinderProvider) {
         mContext = context;
+        mSpaceFinderProvider = spaceFinderProvider;
     }
 
     @WorkerThread
@@ -137,21 +145,35 @@ public class ItemInstallQueue {
         List<Pair<ItemInfo, Object>> installQueue = mItems.stream()
                 .map(info -> info.getItemInfo(mContext))
                 .collect(Collectors.toList());
-
         // Add the items and clear queue
         if (!installQueue.isEmpty()) {
-            // add log
-            launcher.getModel().addAndBindAddedWorkspaceItems(installQueue);
+            MAIN_EXECUTOR.execute(() -> commitInstallQueue(launcher, installQueue));
         }
         mItems.clear();
         mStorage.getFile(mContext).delete();
+    }
+
+    @UiThread
+    private void commitInstallQueue(Launcher launcher, List<Pair<ItemInfo, Object>> itemList) {
+        // If there's an undo snackbar, force it to complete to ensure empty screens are
+        // removed before trying to add new items.
+        launcher.getModelWriter().commitDelete();
+        AbstractFloatingView snackbar = AbstractFloatingView.getOpenView(
+                launcher,
+                AbstractFloatingView.TYPE_SNACKBAR
+        );
+        if (snackbar != null) {
+            snackbar.close(true);
+        }
+        launcher.getModel().enqueueModelUpdateTask(
+                new AddWorkspaceItemsTask(itemList, mSpaceFinderProvider.get()));
     }
 
     /**
      * Removes previously added items from the queue.
      */
     @WorkerThread
-    public void removeFromInstallQueue(HashSet<String> packageNames, UserHandle user) {
+    public void removeFromInstallQueue(Set<String> packageNames, UserHandle user) {
         if (packageNames.isEmpty()) {
             return;
         }

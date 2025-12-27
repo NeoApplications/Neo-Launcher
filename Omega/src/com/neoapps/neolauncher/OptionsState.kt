@@ -46,7 +46,7 @@ class OptionsState(id: Int) :
             val desiredCenter = wsHeightWithoutInsets * 0.5f * scale
             val actualCenter = wsHeightWithoutInsets * 0.5f
 
-            val desiredBottom = grid.heightPx - optionsView.height
+            val desiredBottom = grid.deviceProperties.heightPx - optionsView.height
             val actualBottom = ws.height * 0.5f + (ws.height * 0.5f * scale)
 
             return ScaleAndTranslation(
@@ -62,7 +62,7 @@ class OptionsState(id: Int) :
         val scaledHeight = scale * ws.normalChildHeight
         val shrunkTop = (insets.top + grid.dropTargetProfile.barSizePx).toFloat()
         val shrunkBottom = (ws.measuredHeight - insets.bottom
-                - grid.workspacePadding.bottom).toFloat()
+                - grid.mWorkspaceProfile.workspacePadding.bottom).toFloat()
         val totalShrunkSpace = shrunkBottom - shrunkTop
 
         val desiredCellTop = shrunkTop + (totalShrunkSpace - scaledHeight) / 2
@@ -74,7 +74,7 @@ class OptionsState(id: Int) :
         return ScaleAndTranslation(scale, 0f, (desiredCellTop - actualCellTop) / scale)
     }
 
-    override fun getVisibleElements(launcher: Launcher): Int = OPTIONS_VIEW
+    //override fun getVisibleElements(launcher: Launcher): Int = OPTIONS_VIEW
 
     companion object {
         private val STATE_FLAGS: Int by lazy { FLAG_MULTI_PAGE or FLAG_DISABLE_RESTORE }

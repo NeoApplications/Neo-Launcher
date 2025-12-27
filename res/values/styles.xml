@@ -299,6 +299,19 @@
             @color/widget_cell_subtitle_color_dark</item>
     </style>
 
+    <style name="WidgetsTitle" parent="">
+        <item name="android:fontFamily">variable-headline-small-emphasized</item>
+        <item name="android:textSize">@dimen/widget_picker_title_font_size</item>
+    </style>
+
+    <style name="WidgetPickerDescription" parent="">
+        <item name="android:fontFamily">variable-body-small</item>
+        <item name="android:textSize">@dimen/widget_picker_description_font_size</item>
+    </style>
+
+    <style name="WidgetSuggestionsTitle" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-medium-emphasized</item>
+    </style>
     <style name="WidgetListHeader.Title" parent="@android:style/TextAppearance.DeviceDefault" >
         <!-- Title / Medium -->
         <item name="android:textFontWeight">@integer/widget_picker_header_app_title_font_weight</item>
@@ -327,6 +340,59 @@
         <item name="android:textFontWeight">
             @integer/widget_picker_header_selected_app_subtitle_font_weight
         </item>
+    </style>
+
+
+    <style name="WidgetLabel" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-label-large</item>
+        <item name="android:textSize">@dimen/widget_cell_title_font_size</item>
+        <item name="android:fontWeight">@integer/widget_cell_title_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_cell_title_line_height</item>
+    </style>
+
+    <style name="WidgetDims" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-medium</item>
+        <item name="android:textSize">@dimen/widget_cell_dims_font_size</item>
+        <item name="android:fontWeight">@integer/widget_cell_dims_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_cell_dims_line_height</item>
+    </style>
+
+    <style name="WidgetDescription" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-small</item>
+        <item name="android:textSize">@dimen/widget_cell_description_font_size</item>
+        <item name="android:fontWeight">@integer/widget_cell_description_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_cell_description_line_height</item>
+    </style>
+
+    <style name="WidgetAddButton" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-medium</item>
+        <item name="android:textSize">@dimen/widget_cell_add_button_font_size</item>
+        <item name="android:fontWeight">@integer/widget_cell_add_button_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_cell_add_button_line_height</item>
+    </style>
+
+    <style name="WidgetToolbarTabLabel" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-label-large</item>
+        <item name="android:textSize">@dimen/widget_picker_toolbar_tab_label_font_size</item>
+        <item name="android:fontWeight">@integer/widget_picker_toolbar_tab_label_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_picker_toolbar_tab_label_line_height</item>
+    </style>
+
+    <style name="WidgetToolbarTabLabel.Selected" parent="@style/WidgetToolbarTabLabel">
+        <item name="android:fontFamily">variable-label-large-emphasized</item>
+    </style>
+
+    <style name="WidgetSearchBarText" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-large</item>
+        <item name="android:textSize">@dimen/widget_picker_search_bar_font_size</item>
+        <item name="android:fontWeight">@integer/widget_picker_search_bar_label_font_weight</item>
+    </style>
+
+    <style name="WidgetErrorText" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:fontFamily">variable-body-large</item>
+        <item name="android:textSize">@dimen/widget_picker_error_text_font_size</item>
+        <item name="android:fontWeight">@integer/widget_picker_error_text_label_font_weight</item>
+        <item name="android:lineHeight">@dimen/widget_picker_error_text_label_line_height</item>
     </style>
 
     <style name="FastScrollerPopup" parent="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle">

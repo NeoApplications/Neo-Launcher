@@ -49,7 +49,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     }
 
     fun reloadTabs() {
-        launcher.appsView.reloadTabs()
+        //launcher.appsView.reloadTabs()
     }
 
     fun updateBlur() {

@@ -43,6 +43,8 @@ import androidx.savedstate.SavedStateRegistry;
 import androidx.savedstate.SavedStateRegistryController;
 
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
+import com.android.launcher3.dagger.ActivityContextComponent;
+import com.android.launcher3.dagger.LauncherComponentProvider;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.testing.TestLogging;
@@ -188,6 +190,8 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
 
     private ActionMode mCurrentActionMode;
 
+    private ActivityContextComponent mActivityComponent;
+
     public BaseActivity() {
         mSavedStateRegistryController.performAttach();
         registerActivityLifecycleCallbacks(
@@ -209,6 +213,18 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
         return mDPChangeListeners;
     }
 
+    @Override
+    public ActivityContextComponent getActivityComponent() {
+        if (mActivityComponent == null) {
+            // Preload all-apps when when embedded in Launcher or any other activity based UI
+            mActivityComponent = (ActivityContextComponent) LauncherComponentProvider.get(this)
+                    .getActivityContextComponentBuilder()
+                    .activityContext(this)
+                    .setAllAppsPreloaded(true)
+                    .build();
+        }
+        return mActivityComponent;
+    }
     /**
      * Returns {@link StatsLogManager} for user event logging.
      */

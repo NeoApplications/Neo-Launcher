@@ -85,8 +85,9 @@ public class DropTargetBar extends FrameLayout
     @Override
     public void setInsets(Rect insets) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
-        DeviceProfile grid = mLauncher.getDeviceProfile();
-        mIsVertical = grid.isVerticalBarLayout();
+        DeviceProfile deviceProfile = mLauncher.getDeviceProfile();
+        mIsVertical = deviceProfile.isVerticalBarLayout();
+        int widthPx = deviceProfile.getDeviceProperties().getWidthPx();
 
         lp.leftMargin = insets.left;
         lp.topMargin = insets.top;
@@ -95,33 +96,35 @@ public class DropTargetBar extends FrameLayout
         int tooltipLocation = TOOLTIP_DEFAULT;
 
         int horizontalMargin;
-        if (grid.isTablet) {
+        if (deviceProfile.getDeviceProperties().isTablet()) {
             // XXX: If the icon size changes across orientations, we will have to take
             //      that into account here too.
-            horizontalMargin = ((grid.widthPx - 2 * grid.edgeMarginPx
-                    - (grid.inv.numColumns * grid.cellWidthPx))
-                    / (2 * (grid.inv.numColumns + 1)))
-                    + grid.edgeMarginPx;
+            horizontalMargin = ((widthPx - 2 * deviceProfile.mWorkspaceProfile.getEdgeMarginPx()
+                    - (deviceProfile.inv.numColumns
+                    * deviceProfile.getWorkspaceIconProfile().getCellWidthPx()))
+                    / (2 * (deviceProfile.inv.numColumns + 1)))
+                    + deviceProfile.mWorkspaceProfile.getEdgeMarginPx();
         } else {
             horizontalMargin = getContext().getResources()
                     .getDimensionPixelSize(R.dimen.drop_target_bar_margin_horizontal);
         }
-        lp.topMargin += grid.dropTargetBarTopMarginPx;
-        lp.bottomMargin += grid.dropTargetBarBottomMarginPx;
-        lp.width = grid.availableWidthPx - 2 * horizontalMargin;
+        lp.topMargin += deviceProfile.getDropTargetProfile().getBarTopMarginPx();
+        lp.bottomMargin += deviceProfile.getDropTargetProfile().getBarBottomMarginPx();
+        lp.width = deviceProfile.getDeviceProperties().getAvailableWidthPx() - 2 * horizontalMargin;
         if (mIsVertical) {
-            lp.leftMargin = (grid.widthPx - lp.width) / 2;
-            lp.rightMargin = (grid.widthPx - lp.width) / 2;
+            lp.leftMargin = (widthPx - lp.width) / 2;
+            lp.rightMargin = (widthPx - lp.width) / 2;
         }
-        lp.height = grid.dropTargetBarSizePx;
+        lp.height = deviceProfile.getDropTargetProfile().getBarSizePx();
         lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
 
         DeviceProfile dp = mLauncher.getDeviceProfile();
-        int horizontalPadding = dp.dropTargetHorizontalPaddingPx;
-        int verticalPadding = dp.dropTargetVerticalPaddingPx;
+        int horizontalPadding = dp.getDropTargetProfile().getHorizontalPaddingPx();
+        int verticalPadding = dp.getDropTargetProfile().getVerticalPaddingPx();
         setLayoutParams(lp);
         for (ButtonDropTarget button : mDropTargets) {
-            button.setTextSize(TypedValue.COMPLEX_UNIT_PX, grid.dropTargetTextSizePx);
+            button.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    deviceProfile.getDropTargetProfile().getTextSizePx());
             button.setToolTipLocation(tooltipLocation);
             button.setPadding(horizontalPadding, verticalPadding, horizontalPadding,
                     verticalPadding);
@@ -148,18 +151,19 @@ public class DropTargetBar extends FrameLayout
 
             ButtonDropTarget firstButton = mTempTargets[0];
             firstButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    mLauncher.getDeviceProfile().dropTargetTextSizePx);
+                    mLauncher.getDeviceProfile().getDropTargetProfile().getTextSizePx());
             firstButton.setTextVisible(true);
             firstButton.setIconVisible(true);
             firstButton.measure(widthSpec, heightSpec);
             firstButton.resizeTextToFit();
         } else if (visibleCount == 2) {
             DeviceProfile dp = mLauncher.getDeviceProfile();
-            int verticalPadding = dp.dropTargetVerticalPaddingPx;
-            int horizontalPadding = dp.dropTargetHorizontalPaddingPx;
+            int verticalPadding = dp.getDropTargetProfile().getVerticalPaddingPx();
+            int horizontalPadding = dp.getDropTargetProfile().getHorizontalPaddingPx();
 
             ButtonDropTarget firstButton = mTempTargets[0];
-            firstButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, dp.dropTargetTextSizePx);
+            firstButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    dp.getDropTargetProfile().getTextSizePx());
             firstButton.setTextVisible(true);
             firstButton.setIconVisible(true);
             firstButton.setTextMultiLine(false);
@@ -168,7 +172,8 @@ public class DropTargetBar extends FrameLayout
                     verticalPadding);
 
             ButtonDropTarget secondButton = mTempTargets[1];
-            secondButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, dp.dropTargetTextSizePx);
+            secondButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    dp.getDropTargetProfile().getTextSizePx());
             secondButton.setTextVisible(true);
             secondButton.setIconVisible(true);
             secondButton.setTextMultiLine(false);
@@ -177,13 +182,15 @@ public class DropTargetBar extends FrameLayout
                     verticalPadding);
 
             int availableWidth;
-            if (dp.isTwoPanels) {
+            if (dp.getDeviceProperties().isTwoPanels()) {
                 // Each button for two panel fits to half the width of the screen excluding the
                 // center gap between the buttons.
-                availableWidth = (dp.availableWidthPx - dp.dropTargetGapPx) / 2;
+                availableWidth = (dp.getDeviceProperties().getAvailableWidthPx()
+                        - dp.getDropTargetProfile().getGapPx()) / 2;
             } else {
                 // Both buttons plus the button gap do not display past the edge of the screen.
-                availableWidth = dp.availableWidthPx - dp.dropTargetGapPx;
+                availableWidth = dp.getDeviceProperties().getAvailableWidthPx()
+                        - dp.getDropTargetProfile().getGapPx();
             }
 
             int widthSpec = MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST);
@@ -199,8 +206,9 @@ public class DropTargetBar extends FrameLayout
                 }
             }
 
-            if (!dp.isTwoPanels) {
-                availableWidth -= firstButton.getMeasuredWidth() + dp.dropTargetGapPx;
+            if (!dp.getDeviceProperties().isTwoPanels()) {
+                availableWidth -= firstButton.getMeasuredWidth()
+                        + dp.getDropTargetProfile().getGapPx();
                 widthSpec = MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST);
             }
             secondButton.measure(widthSpec, heightSpec);
@@ -239,12 +247,15 @@ public class DropTargetBar extends FrameLayout
         float scale = dp.getWorkspaceSpringLoadScale(mLauncher);
         Workspace<?> ws = mLauncher.getWorkspace();
         int barCenter;
-        if (dp.isTwoPanels) {
+        if (dp.getDeviceProperties().isTwoPanels()) {
             barCenter = (right - left) / 2;
         } else {
             int workspaceCenter = (ws.getLeft() + ws.getRight()) / 2;
-            int cellLayoutCenter = ((dp.getInsets().left + dp.workspacePadding.left) + (dp.widthPx
-                    - dp.getInsets().right - dp.workspacePadding.right)) / 2;
+            int cellLayoutCenter = ((dp.getInsets().left
+                    + dp.mWorkspaceProfile.getWorkspacePadding().left)
+                    + (dp.getDeviceProperties().getWidthPx()
+                    - dp.getInsets().right
+                    - dp.mWorkspaceProfile.getWorkspacePadding().right)) / 2;
             int cellLayoutCenterOffset = (int) ((cellLayoutCenter - workspaceCenter) * scale);
             barCenter = workspaceCenter + cellLayoutCenterOffset - left;
         }
@@ -254,11 +265,11 @@ public class DropTargetBar extends FrameLayout
             button.layout(barCenter - (button.getMeasuredWidth() / 2), 0,
                     barCenter + (button.getMeasuredWidth() / 2), button.getMeasuredHeight());
         } else if (visibleCount == 2) {
-            int buttonGap = dp.dropTargetGapPx;
+            int buttonGap = dp.getDropTargetProfile().getGapPx();
 
             ButtonDropTarget leftButton = mTempTargets[0];
             ButtonDropTarget rightButton = mTempTargets[1];
-            if (dp.isTwoPanels) {
+            if (dp.getDeviceProperties().isTwoPanels()) {
                 leftButton.layout(barCenter - leftButton.getMeasuredWidth() - (buttonGap / 2), 0,
                         barCenter - (buttonGap / 2), leftButton.getMeasuredHeight());
                 rightButton.layout(barCenter + (buttonGap / 2), 0,
@@ -342,7 +353,10 @@ public class DropTargetBar extends FrameLayout
         }
     }
 
+    /**
+     * Returns all possible drop targets (including ones that aren't visible)
+     */
     public ButtonDropTarget[] getDropTargets() {
-        return getVisibility() == View.VISIBLE ? mDropTargets : new ButtonDropTarget[0];
+        return mDropTargets;
     }
 }

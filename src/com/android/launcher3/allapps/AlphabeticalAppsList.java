@@ -16,15 +16,15 @@
 package com.android.launcher3.allapps;
 
 import static android.multiuser.Flags.enableMovingContentIntoPrivateSpace;
+
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_PRIVATESPACE;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_BOTTOM_VIEW_TO_SCROLL_TO;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_LEFT;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_RIGHT;
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_NOTHING;
-import static com.android.launcher3.icons.BitmapInfo.FLAG_NO_BADGE;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT;
-import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -37,30 +37,19 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.android.launcher3.Flags;
-import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherAppState;
-import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
-import com.android.launcher3.celllayout.CellPosMapper;
-import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.groups.category.DrawerFolderInfo;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -68,11 +57,8 @@ import java.util.stream.Stream;
 
 /**
  * The alphabetically sorted list of applications.
- *
- * @param <T> Type of context inflating this view.
  */
-public class AlphabeticalAppsList<T extends Context & ActivityContext> implements
-        AllAppsStore.OnUpdateListener {
+public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
 
     public static final String TAG = "AlphabeticalAppsList";
     public static final String PRIVATE_SPACE_PACKAGE = "com.android.privatespace";
@@ -104,13 +90,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     }
 
 
-    private final T mActivityContext;
+    private final ActivityContext mActivityContext;
 
     // The set of apps from the system
     private final List<AppInfo> mApps = new ArrayList<>();
     private final List<AppInfo> mPrivateApps = new ArrayList<>();
     @Nullable
-    private final AllAppsStore<T> mAllAppsStore;
+    private final AllAppsStore mAllAppsStore;
 
     // The number of results in current adapter
     private int mAccessibilityResultsCount = 0;
@@ -123,19 +109,19 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     private final ArrayList<AdapterItem> mSearchResults = new ArrayList<>();
     private final SpannableString mPrivateProfileAppScrollerBadge;
     private final SpannableString mPrivateProfileDividerBadge;
-    private BaseAllAppsAdapter<T> mAdapter;
-    private Comparator<AppInfo> mAppNameComparator;
+    private BaseAllAppsAdapter mAdapter;
+    private AppInfoComparator mAppNameComparator;
     private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
 
-    private final NeoPrefs prefs;
-    private final Launcher mLauncher;
-
-    public AlphabeticalAppsList(Context context, @Nullable AllAppsStore<T> appsStore,
+    public AlphabeticalAppsList(ActivityContext activityContext, @Nullable AllAppsStore appsStore,
                                 WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
         mAllAppsStore = appsStore;
-        mActivityContext = ActivityContext.lookupContext(context);
+        mActivityContext = activityContext;
+
+        Context context = activityContext.asContext();
+        mAppNameComparator = new AppInfoComparator(context);
         mWorkProviderManager = workProfileManager;
         mPrivateProviderManager = privateProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
@@ -151,10 +137,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         mPrivateProfileDividerBadge.setSpan(new ImageSpan(context,
                         R.drawable.ic_private_profile_divider_badge, ImageSpan.ALIGN_CENTER),
                 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        prefs = NeoPrefs.getInstance();
-        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
-        mLauncher = Launcher.fromContext(context);
     }
 
     /** Set the number of apps per row when device profile changes. */
@@ -170,7 +152,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
     /**
      * Sets the adapter to notify when this dataset changes.
      */
-    public void setAdapter(BaseAllAppsAdapter<T> adapter) {
+    public void setAdapter(BaseAllAppsAdapter adapter) {
         mAdapter = adapter;
     }
 
@@ -260,9 +242,10 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // Sort the list of apps
         mApps.clear();
         mPrivateApps.clear();
-        mAppNameComparator = getAllAppsComparator(mLauncher, prefs.getDrawerSortMode().getValue());
 
-        Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps());
+        // Filter against private space app that may show outside of Private Profile.
+        Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps()).filter(
+                info -> !isPrivateSpaceApp(info));
         Stream<AppInfo> privateAppStream = Stream.of(mAllAppsStore.getApps());
 
         if (!hasSearchResults() && mItemFilter != null) {
@@ -277,7 +260,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
 
         // As a special case for some languages (currently only Simplified Chinese), we may need to
         // coalesce sections
-        Locale curLocale = mActivityContext.getResources().getConfiguration().locale;
+        Locale curLocale = mActivityContext.asContext().getResources().getConfiguration().locale;
         boolean localeRequiresSectionSorting = curLocale.equals(Locale.SIMPLIFIED_CHINESE);
         if (localeRequiresSectionSorting) {
             // Compute the section headers. We use a TreeMap with the section name comparator to
@@ -305,7 +288,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
      */
     public void updateAdapterItems() {
         List<AdapterItem> oldItems = new ArrayList<>(mAdapterItems);
-        String lastSectionName = null;
         // Prepare to update the list of sections, filtered apps, etc.
         mFastScrollerSections.clear();
         Log.d(TAG, "Clearing FastScrollerSections.");
@@ -319,35 +301,15 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         } else {
             int position = 0;
             boolean addApps = true;
-
-            for (DrawerFolderInfo info : getFolderInfos()) {
-                String sectionName = "#";
-
-                // Create a new section if the section names do not match
-                if (!sectionName.equals(lastSectionName)) {
-                    lastSectionName = sectionName;
-                    mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
-                }
-                if (mAllAppsStore != null) {
-                    info.setAppsStore(mAllAppsStore);
-                }
-
-                AdapterItem folderItem = AdapterItem.asFolder(info);
-                mAdapterItems.add(folderItem);
-                position++;
-            }
-
             if (mWorkProviderManager != null) {
                 position += mWorkProviderManager.addWorkItems(mAdapterItems);
                 addApps = mWorkProviderManager.shouldShowWorkApps();
             }
-
-            Set<ComponentKey> folderFilters = getFolderFilteredApps();
             if (addApps) {
                 if (/* education card was added */ position == 1) {
                     // Add work educard section with "info icon" at 0th position.
                     mFastScrollerSections.add(new FastScrollSectionInfo(
-                            mActivityContext.getResources().getString(
+                            mActivityContext.asContext().getResources().getString(
                                     R.string.work_profile_edu_section), 0));
                     Log.d(TAG, "Adding FastScrollSection for work edu card.");
                 }
@@ -401,28 +363,6 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         }
     }
 
-    /**
-     * Returns all the apps.
-     */
-    public List<AppInfo> getApps() {
-        return mApps;
-    }
-
-    private List<DrawerFolderInfo> getFolderInfos() {
-        LauncherAppState app = LauncherAppState.getInstance(mLauncher);
-        LauncherModel model = app.getModel();
-        ModelWriter modelWriter = model.getWriter(false, CellPosMapper.DEFAULT, null);
-        return NeoPrefs.getInstance()
-                .getDrawerFolders()
-                .getFolderInfos(this, modelWriter);
-    }
-
-    private Set<ComponentKey> getFolderFilteredApps() {
-        return NeoPrefs.getInstance()
-                .getDrawerFolders()
-                .getHiddenComponents();
-    }
-
     int addPrivateSpaceItems(int position) {
         if (mPrivateProviderManager != null
                 && !mPrivateProviderManager.isPrivateSpaceHidden()
@@ -448,7 +388,7 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
 
     private int addPrivateSpaceApps(int position) {
         // Add Install Apps Button first.
-        if (Flags.privateSpaceAppInstallerButton() && !enableMovingContentIntoPrivateSpace()) {
+        if (!enableMovingContentIntoPrivateSpace()) {
             mPrivateProviderManager.addPrivateSpaceInstallAppButton(mAdapterItems);
             position++;
         }
@@ -456,7 +396,8 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
         // Split of private space apps into user-installed and system apps.
         Map<Boolean, List<AppInfo>> split = mPrivateApps.stream()
                 .collect(Collectors.partitioningBy(mPrivateProviderManager
-                        .splitIntoUserInstalledAndSystemApps(mActivityContext)));
+                        .splitIntoUserInstalledAndSystemApps(
+                                mActivityContext.asContext())));
 
         // TODO(b/329688630): switch to the pulled LayoutStaticSnapshot atom
         mActivityContext
@@ -494,12 +435,13 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
                 if (currentItem.viewType == VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER) {
                     headerIndex = i;
                 }
-                if (currentItem.itemInfo != null && Objects.equals(
-                        currentItem.itemInfo.getTargetPackage(), PRIVATE_SPACE_PACKAGE)) {
+                if (currentItem.itemInfo != null && isPrivateSpaceApp(currentItem.itemInfo)) {
+                    // TODO: Somehow do the theming bitmap change in the model layer.
                     currentItem.itemInfo.bitmap = mPrivateProviderManager.preparePSBitmapInfo();
-                    currentItem.itemInfo.bitmap.creationFlags |= FLAG_NO_BADGE;
+                    currentItem.itemInfo.title = mPrivateProviderManager.getPSAppTitleOverride();
                     currentItem.itemInfo.contentDescription =
                             mPrivateProviderManager.getPsAppContentDesc();
+                    currentItem.itemInfo.container = CONTAINER_PRIVATESPACE;
                     privateSpaceAppIndex = i;
                 }
             }
@@ -527,8 +469,9 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             // Apply decorator to private apps.
             if (hasPrivateApps) {
                 mAdapterItems.add(AdapterItem.asAppWithDecorationInfo(info,
-                        new SectionDecorationInfo(mActivityContext,
-                                getRoundRegions(i, appList.size()), true /* decorateTogether */)));
+                        new SectionDecorationInfo(mActivityContext.asContext(),
+                                getRoundRegions(i, appList.size())),
+                        isPrivateSpaceApp(info)));
             } else {
                 mAdapterItems.add(AdapterItem.asApp(info));
             }
@@ -548,6 +491,10 @@ public class AlphabeticalAppsList<T extends Context & ActivityContext> implement
             position++;
         }
         return position;
+    }
+
+    private boolean isPrivateSpaceApp(AppInfo appInfo) {
+        return appInfo != null && Objects.equals(appInfo.getTargetPackage(), PRIVATE_SPACE_PACKAGE);
     }
 
     /**

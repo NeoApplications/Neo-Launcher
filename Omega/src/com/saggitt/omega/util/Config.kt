@@ -187,9 +187,9 @@ class Config(val context: Context) {
             var originalIdp = 0
             val idp = LauncherAppState.getIDP(context)
             if (key == PrefKey.DOCK_COLUMNS) {
-                originalIdp = idp.numColumnsOriginal
+                originalIdp = idp.numColumns
             } else if (key == PrefKey.DRAWER_GRID_COLUMNS) {
-                originalIdp = idp.numAllAppsColumnsOriginal
+                originalIdp = idp.numAllAppsColumns
             }
             return originalIdp
         }

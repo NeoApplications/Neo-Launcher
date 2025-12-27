@@ -110,7 +110,7 @@ fun CustomizeIconPage(
             if (newTitle != previousTitle) {
                 prefs.customAppName[componentKey] = newTitle
                 val model = LauncherAppState.getInstance(context).model
-                model.onPackageChanged(componentKey.componentName.packageName, componentKey.user)
+                //model.onPackageChanged(componentKey.componentName.packageName, componentKey.user)
             }
         }
     }

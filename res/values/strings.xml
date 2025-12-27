@@ -274,6 +274,8 @@
 
     <!-- Default folder title -->
     <string name="folder_hint_text">Edit Name</string>
+    <string name="paginate_left">Paginate left</string>
+    <string name="paginate_right">Paginate right</string>
 
     <!-- Accessibility -->
     <!-- The format string for when an app is temporarily disabled. -->

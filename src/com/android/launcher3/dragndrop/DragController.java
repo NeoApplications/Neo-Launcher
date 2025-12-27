@@ -16,6 +16,7 @@
 
 package com.android.launcher3.dragndrop;
 
+import static com.android.launcher3.Flags.enableSystemDrag;
 import static com.android.launcher3.Flags.removeAppsRefreshOnRightClick;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_NOT_PINNABLE;
 
@@ -41,6 +42,7 @@ import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.TouchController;
 import com.android.launcher3.views.ActivityContext;
+import com.android.launcher3.views.BaseDragLayer;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -91,6 +93,12 @@ public abstract class DragController<T extends ActivityContext>
 
     protected DropTarget mLastDropTarget;
 
+    /**
+     * Who can handle system drag events.
+     */
+    private final ArrayList<SystemDragHandler> mSystemDragHandlers = new ArrayList<>();
+    private @Nullable SystemDragHandler mLastSystemDragHandler;
+
     private int mLastTouchClassification;
     protected int mDistanceSinceScroll = 0;
 
@@ -118,6 +126,20 @@ public abstract class DragController<T extends ActivityContext>
          * The drag has ended
          */
         void onDragEnd();
+    }
+
+    /**
+     * Interface to handle system drag events.
+     */
+    public interface SystemDragHandler {
+        /**
+         * Invoked to handle a system drag event. The handler will continue to receive subsequent
+         * events for the drag sequence so long as it continues to return {@code true}.
+         *
+         * @param event The drag event
+         * @return {@code true} to receive subsequent events for the drag sequence
+         */
+        boolean onDrag(DragEvent event);
     }
 
     /**
@@ -439,10 +461,48 @@ public abstract class DragController<T extends ActivityContext>
     }
 
     /**
-     * Call this from a drag source view.
+     * Call this from {@link BaseDragLayer} to handle system drag events. This method identifies at
+     * most a single registered handler for the system drag sequence and dispatches events to it.
+     * Note that potential handlers are prioritized by reverse chronological registration time.
      */
     public boolean onDragEvent(DragEvent event) {
-        return mDragDriver != null && mDragDriver.onDragEvent(event);
+        if (!enableSystemDrag()) {
+            return mDragDriver != null && mDragDriver.onDragEvent(event);
+        }
+
+        // Case: Handle system drag start.
+        if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+            for (int i = mSystemDragHandlers.size() - 1; i >= 0; i--) {
+                final SystemDragHandler handler = mSystemDragHandlers.get(i);
+                if (handler.onDrag(event)) {
+                    mLastSystemDragHandler = handler;
+                    if (mDragDriver != null) {
+                        mDragDriver.onDragEvent(event);
+                    }
+                    return true;
+                }
+            }
+            mLastSystemDragHandler = null;
+            return false;
+        }
+
+        // Case: Handle other system drag events.
+        if (mLastSystemDragHandler != null && mLastSystemDragHandler.onDrag(event)) {
+            if (mDragDriver != null) {
+                mDragDriver.onDragEvent(event);
+            }
+            return true;
+        }
+
+        // Case: Unhandled system drag event.
+        if (mLastSystemDragHandler != null) {
+            mLastSystemDragHandler = null;
+            if (isDragging()) {
+                cancelDrag();
+            }
+        }
+
+        return false;
     }
 
     protected void handleMoveEvent(int x, int y) {
@@ -553,7 +613,6 @@ public abstract class DragController<T extends ActivityContext>
     private DropTarget findDropTarget(final int x, final int y) {
         mCoordinatesTemp[0] = x;
         mCoordinatesTemp[1] = y;
-
         final Rect r = mRectTemp;
         final ArrayList<DropTarget> dropTargets = mDropTargets;
         final int count = dropTargets.size();
@@ -564,8 +623,11 @@ public abstract class DragController<T extends ActivityContext>
 
             target.getHitRectRelativeToDragLayer(r);
             if (r.contains(x, y)) {
-                mActivity.getDragLayer().mapCoordInSelfToDescendant(target.getDropView(),
-                        mCoordinatesTemp);
+                View dropTargetView = target.getDropView();
+                if (dropTargetView != null) {
+                    mActivity.getDragLayer().mapCoordInSelfToDescendant(dropTargetView,
+                            mCoordinatesTemp);
+                }
                 mDragObject.x = mCoordinatesTemp[0];
                 mDragObject.y = mCoordinatesTemp[1];
                 return target;
@@ -605,5 +667,37 @@ public abstract class DragController<T extends ActivityContext>
      */
     public void removeDropTarget(DropTarget target) {
         mDropTargets.remove(target);
+    }
+
+    /**
+     * Registers a handler for system drag events. Note that each system drag sequence can be
+     * handled by at most one handler and that potential handlers are prioritized by reverse
+     * chronological registration time.
+     *
+     * @param handler The handler to register
+     */
+    public void addSystemDragHandler(SystemDragHandler handler) {
+        if (enableSystemDrag()) {
+            mSystemDragHandlers.add(handler);
+        }
+    }
+
+    /**
+     * Unregisters a handler for system drag events. Note that this will cancel dragging if the
+     * specified handler is currently handling a system drag sequence.
+     *
+     * @param handler The handler to unregister
+     */
+    public void removeSystemDragHandler(SystemDragHandler handler) {
+        if (!enableSystemDrag()) {
+            return;
+        }
+        mSystemDragHandlers.remove(handler);
+        if (mLastSystemDragHandler == handler) {
+            mLastSystemDragHandler = null;
+            if (isDragging()) {
+                cancelDrag();
+            }
+        }
     }
 }

@@ -33,6 +33,7 @@ lifecycle-ext = "2.2.0"
 material = "1.13.0"
 material-icons = "1.7.8"
 material-kolor = "4.0.3"
+
 navigation = "2.9.6"
 okhttp = "5.3.0"
 owm = "2.1.0"
@@ -47,11 +48,13 @@ room = "2.8.3"
 rules = "1.4.0"
 serialization = "1.9.0"
 slice = "1.1.0-alpha02"
+window = "1.6.0-alpha01"
 
 junit = "4.13.2"
 junit5 = "6.0.1"
 truth = "1.4.5"
 mockito = "5.20.0"
+mockitoKotlin = "5.4.0"
 dexmaker = "1.2"
 androidx-annotation = "1.9.1"
 androidx-test = "1.3.0"
@@ -61,6 +64,7 @@ uiautomator = "2.3.0"
 support-runner = "1.0.2"
 support-rules = "1.0.2"
 support-uiautomator = "2.1.3"
+material3 = "1.4.0"
 
 [libraries]
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -75,7 +79,9 @@ compose-adaptive-navigation = { module = "androidx.compose.material3.adaptive:ad
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material3-window = { module = "androidx.compose.material3:material3-window-size-class" }
 compose-material-icons = { module = "androidx.compose.material:material-icons-core-android", version.ref = "material-icons" }
+compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
@@ -139,6 +145,18 @@ test-runner = { module = "androidx.test:runner", version.ref = "androidx-runner"
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 uiautomator-v18 = { module = "com.android.support.test.uiautomator:uiautomator-v18", version.ref = "support-uiautomator" }
+window = { module = "androidx.window:window", version.ref = "window" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+mockito-robolectric = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-robolectric-bytebuddy = "net.bytebuddy:byte-buddy:1.15.11"
+mockito-robolectric-bytebuddy-agent = "net.bytebuddy:byte-buddy-agent:1.15.11"
+kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

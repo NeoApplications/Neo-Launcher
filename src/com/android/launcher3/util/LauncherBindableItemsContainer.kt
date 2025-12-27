@@ -19,6 +19,7 @@ package com.android.launcher3.util
 import android.view.View
 import com.android.launcher3.BubbleTextView
 import com.android.launcher3.apppairs.AppPairIcon
+import com.android.launcher3.celllayout.CellInfo
 import com.android.launcher3.folder.Folder
 import com.android.launcher3.folder.FolderIcon
 import com.android.launcher3.model.data.AppPairInfo
@@ -34,15 +35,25 @@ import java.util.function.Predicate
 interface LauncherBindableItemsContainer {
 
     /**
-     * Called to update workspace items as a result of {@link
-     * com.android.launcher3.model.BgDataModel.Callbacks#bindItemsUpdated(Set)}
+     * Called to update items in a specific container as a result of
+     * [com.android.launcher3.model.BgDataModel.Callbacks.bindItemsUpdated]. Returns a set of items
+     * which were potentially moved and need to be rebound to the container.
      */
-    fun updateContainerItems(updates: Set<ItemInfo>, context: ActivityContext) {
+    fun updateContainerItems(updates: Set<ItemInfo>, context: ActivityContext): Set<ItemInfo> {
         val op = ItemOperator { info, v ->
             when {
                 v is BubbleTextView && info is WorkspaceItemInfo && updates.contains(info) ->
                     v.applyFromWorkspaceItem(info)
-                v is FolderIcon && info is FolderInfo -> v.updatePreviewItems(updates::contains)
+                v is FolderIcon && info is FolderInfo -> {
+                    v.updatePreviewItems(updates::contains)
+                    if (updates.contains(info)) {
+                        v.onItemsChanged(false)
+                        v.folder.apply {
+                            reapplyItemInfo()
+                            if (isOpen()) close(false)
+                        }
+                    }
+                }
                 v is AppPairIcon && info is AppPairInfo ->
                     v.maybeRedrawForWorkspaceUpdate(updates::contains)
                 v is PendingAppWidgetHostView && updates.contains(info) -> {
@@ -57,6 +68,20 @@ interface LauncherBindableItemsContainer {
 
         mapOverItems(op)
         Folder.getOpen(context)?.mapOverItems(op)
+
+        // Check for moved items
+        val itemsToRebind = updates.filterTo(mutableSetOf()) { isContainerSupported(it.container) }
+        mapOverItems { info, v ->
+            info?.apply {
+                if (!updates.contains(this)) return@apply
+                val uiInfo = getCellInfoForView(v) ?: return@apply
+                if (uiInfo.isSameAs(this)) itemsToRebind.remove(this) else itemsToRebind.add(this)
+            }
+
+            // Iterate all items
+            false
+        }
+        return itemsToRebind
     }
 
     /** Returns the first view, matching the [op] */
@@ -68,6 +93,16 @@ interface LauncherBindableItemsContainer {
         matchers.firstNotNullOfOrNull { mapOverItems { info, _ -> info != null && it.test(info) } }
 
     fun getViewByItemId(id: Int): View? = mapOverItems { info, _ -> info != null && info.id == id }
+
+    /**
+     * Returns the currently bound info for the [view] or null if the view is not bound. It can be
+     * used to determine if the UI needs to be updated if it is different that the info represented
+     * underlying item
+     */
+    fun getCellInfoForView(view: View): CellInfo? = null
+
+    /** Returns if the provided [container] is supported by to this container */
+    fun isContainerSupported(container: Int) = false
 
     /**
      * Map the [op] over the shortcuts and widgets. Once we found the first view which matches, we

@@ -28,7 +28,7 @@ class AllAppsTabsController<T : BaseActivity>(
     private var bottomPadding = 0
 
     fun createHolders(): AdapterHolders {
-        for (tab in tabs) {
+        /*for (tab in tabs) {
             if (tab.isWork) {
                 holders.add(container.createHolder(WORK).apply {
                     mPadding.bottom = bottomPadding
@@ -42,7 +42,7 @@ class AllAppsTabsController<T : BaseActivity>(
                     mPadding.right = horizontalPadding
                 })
             }
-        }
+        }*/
         return holders
     }
 
@@ -50,17 +50,17 @@ class AllAppsTabsController<T : BaseActivity>(
         tabs.reloadTabs()
     }
 
-    fun registerIconContainers(allAppsStore: AllAppsStore<T>) {
+    fun registerIconContainers(allAppsStore: AllAppsStore) {
         holders.forEach { allAppsStore.registerIconContainer(it.mRecyclerView) }
     }
 
-    fun unregisterIconContainers(allAppsStore: AllAppsStore<T>) {
+    fun unregisterIconContainers(allAppsStore: AllAppsStore) {
         holders.forEach { allAppsStore.unregisterIconContainer(it.mRecyclerView) }
     }
 
     fun setup(pagedView: AllAppsPagedView) {
         tabs.forEachIndexed { index, tab ->
-            holders[index].setIsWork(tab.isWork)
+            //holders[index].setIsWork(tab.isWork)
             holders[index].setup(pagedView.getChildAt(index), tab.matcher)
         }
     }

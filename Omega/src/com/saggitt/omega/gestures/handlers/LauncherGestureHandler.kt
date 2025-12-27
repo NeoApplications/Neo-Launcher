@@ -117,7 +117,7 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
                 controller.touchDownPoint.y
             )
         } else {
-            controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
+            //controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
         }
     }
 }

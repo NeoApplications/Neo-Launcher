@@ -56,8 +56,8 @@ constructor(context: Context, attrs: AttributeSet? = null) :
             // If icons are unlaunchable due to screen size, manually override disabled appearance.
             // (otherwise, leave disabled state alone; icons will naturally inherit the app's state)
             val (isApp1Launchable, isApp2Launchable) = appPairInfo.isLaunchable(p.context)
-            if (!isApp1Launchable) appIcon1.setIsDisabled(true)
-            if (!isApp2Launchable) appIcon2.setIsDisabled(true)
+            if (!isApp1Launchable) appIcon1.isDisabled = true
+            if (!isApp2Launchable) appIcon2.isDisabled = true
 
             // Create icon drawable.
             val fullIconDrawable = AppPairIconDrawable(p, appIcon1, appIcon2)

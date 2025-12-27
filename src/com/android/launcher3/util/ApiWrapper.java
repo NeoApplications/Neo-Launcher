@@ -26,12 +26,14 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.ShortcutInfo;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.ArrayMap;
+import android.view.SurfaceControlViewHost;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +44,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppComponent;
 import com.android.launcher3.dagger.LauncherAppSingleton;
+import com.android.launcher3.icons.BitmapRenderer;
 
 import java.util.Collections;
 import java.util.List;
@@ -221,6 +224,13 @@ public class ApiWrapper {
      */
     public boolean isFileDrawable(@NonNull ShortcutInfo shortcutInfo) {
         return false;
+    }
+
+    /**
+     * Captures a snapshot of the host content as a bitmap
+     */
+    public Bitmap captureSnapshot(SurfaceControlViewHost host, int width, int height) {
+        return BitmapRenderer.createHardwareBitmap(width, height, host.getView()::draw);
     }
 
     private static class NoopDrawable extends ColorDrawable {

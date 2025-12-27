@@ -60,13 +60,15 @@ class IconOverrideRepository(private val context: Context) {
 
     private fun updatePackageIcons(target: ComponentKey) {
         val model = LauncherAppState.getInstance(context).model
-        model.onPackageChanged(target.componentName.packageName, target.user)
+        //TODO: Fix this
+        //model.onPackageChanged(target.componentName.packageName, target.user)
     }
 
     private fun updatePackageIcons(target: List<IconOverride>) {
         val model = LauncherAppState.getInstance(context).model
         target.forEach {
-            model.onPackageChanged(it.target.componentName.packageName, it.target.user)
+            //TODO: Fix this
+            //model.onPackageChanged(it.target.componentName.packageName, it.target.user)
         }
     }
 

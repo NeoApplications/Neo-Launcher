@@ -1,7 +1,6 @@
 package com.android.launcher3.widget;
 
 import static com.android.launcher3.InvariantDeviceProfile.TYPE_PHONE;
-import static com.android.launcher3.Utilities.ATLEAST_S;
 
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
@@ -101,7 +100,6 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
         super(in);
     }
 
-    // Edited
     public void initSpans(Context context, InvariantDeviceProfile idp) {
         mPM = context.getApplicationContext().getPackageManager();
         int minSpanX = 0;
@@ -116,51 +114,51 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
             // On phones we no longer support regular landscape, only fixed landscape for this
             // reason we don't need to take regular landscape into account in phones
             if (Flags.oneGridSpecs() && dp.inv.deviceType == TYPE_PHONE
-                    && dp.inv.isFixedLandscape != dp.isLandscape) {
+                    && dp.inv.isFixedLandscape != dp.getDeviceProperties().isLandscape()) {
                 continue;
             }
 
-            dp.getCellSize(cellSize);
+            cellSize = dp.getWorkspaceIconProfile().getCellSize();
             Rect widgetPadding = dp.widgetPadding;
 
             minSpanX = Math.max(minSpanX,
-                    getSpanX(widgetPadding, minResizeWidth, dp.cellLayoutBorderSpacePx.x,
+                    getSpanX(widgetPadding, minResizeWidth,
+                            dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x,
                             cellSize.x));
             minSpanY = Math.max(minSpanY,
-                    getSpanY(widgetPadding, minResizeHeight, dp.cellLayoutBorderSpacePx.y,
+                    getSpanY(widgetPadding, minResizeHeight,
+                            dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y,
                             cellSize.y));
 
-            if (ATLEAST_S) {
-                if (maxResizeWidth > 0) {
-                    maxSpanX = Math.min(maxSpanX, getSpanX(widgetPadding, maxResizeWidth,
-                            dp.cellLayoutBorderSpacePx.x, cellSize.x));
-                }
-                if (maxResizeHeight > 0) {
-                    maxSpanY = Math.min(maxSpanY, getSpanY(widgetPadding, maxResizeHeight,
-                            dp.cellLayoutBorderSpacePx.y, cellSize.y));
-                }
+            if (maxResizeWidth > 0) {
+                maxSpanX = Math.min(maxSpanX, getSpanX(widgetPadding, maxResizeWidth,
+                        dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x, cellSize.x));
+            }
+            if (maxResizeHeight > 0) {
+                maxSpanY = Math.min(maxSpanY, getSpanY(widgetPadding, maxResizeHeight,
+                        dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y, cellSize.y));
             }
 
             spanX = Math.max(spanX,
-                    getSpanX(widgetPadding, minWidth, dp.cellLayoutBorderSpacePx.x,
+                    getSpanX(widgetPadding, minWidth,
+                            dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x,
                             cellSize.x));
             spanY = Math.max(spanY,
-                    getSpanY(widgetPadding, minHeight, dp.cellLayoutBorderSpacePx.y,
+                    getSpanY(widgetPadding, minHeight,
+                            dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y,
                             cellSize.y));
         }
 
-        if (ATLEAST_S) {
-            // Ensures maxSpan >= minSpan
-            maxSpanX = Math.max(maxSpanX, minSpanX);
-            maxSpanY = Math.max(maxSpanY, minSpanY);
+        // Ensures maxSpan >= minSpan
+        maxSpanX = Math.max(maxSpanX, minSpanX);
+        maxSpanY = Math.max(maxSpanY, minSpanY);
 
-            // Use targetCellWidth/Height if it is within the min/max ranges.
-            // Otherwise, use the span of minWidth/Height.
-            if (targetCellWidth >= minSpanX && targetCellWidth <= maxSpanX
-                    && targetCellHeight >= minSpanY && targetCellHeight <= maxSpanY) {
-                spanX = targetCellWidth;
-                spanY = targetCellHeight;
-            }
+        // Use targetCellWidth/Height if it is within the min/max ranges.
+        // Otherwise, use the span of minWidth/Height.
+        if (targetCellWidth >= minSpanX && targetCellWidth <= maxSpanX
+                && targetCellHeight >= minSpanY && targetCellHeight <= maxSpanY) {
+            spanX = targetCellWidth;
+            spanY = targetCellHeight;
         }
 
         // If minSpanX/Y > spanX/Y, ignore the minSpanX/Y to match the behavior described in
@@ -242,16 +240,14 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
         return getProfile();
     }
 
-    // Edited
     @Override
     public Drawable getFullResIcon(BaseIconCache cache) {
-        return ATLEAST_S ? cache.getFullResIcon(getActivityInfo()) : null;
+        return cache.getFullResIcon(getActivityInfo());
     }
 
-    // Edited
     @Nullable
     @Override
     public ApplicationInfo getApplicationInfo() {
-        return ATLEAST_S ? getActivityInfo().applicationInfo : null;
+        return getActivityInfo().applicationInfo;
     }
 }

@@ -64,12 +64,12 @@ class DropTargetHandler(launcher: Launcher) {
         mLauncher.modelWriter.prepareToUndoDelete()
     }
 
-    fun onDeleteComplete(item: ItemInfo) {
-        removeItemAndStripEmptyScreens(null /* view */, item)
+    fun onDeleteComplete(item: ItemInfo, view: View?) {
+        removeItemAndStripEmptyScreens(view, item)
         AbstractFloatingView.closeOpenViews(
             mLauncher,
             false,
-            AbstractFloatingView.TYPE_WIDGET_RESIZE_FRAME,
+            AbstractFloatingView.TYPE_WIDGET_RESIZE_FRAME or AbstractFloatingView.TYPE_FOLDER,
         )
         var pageItem: ItemInfo = item
         if (item.container >= 0) {

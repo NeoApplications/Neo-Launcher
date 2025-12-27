@@ -31,7 +31,7 @@ import com.saggitt.omega.util.prefs
 class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderInfo() {
 
     private var changed = false
-    lateinit var appsStore: AllAppsStore<*>
+    lateinit var appsStore: AllAppsStore
 
     override fun setTitle(title: CharSequence?, modelWriter: ModelWriter?) {
         super.setTitle(title, modelWriter)

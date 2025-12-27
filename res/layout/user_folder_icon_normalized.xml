@@ -53,6 +53,17 @@
             android:textColorHighlight="?android:attr/colorControlHighlight"
             android:textColorHint="?attr/folderHintTextColor"/>
 
+        <com.android.launcher3.pageindicators.PaginationArrow
+            android:id="@+id/left_indicator_arrow"
+            android:layout_width="@dimen/folder_arrow_touchbox_length"
+            android:layout_height="@dimen/folder_arrow_touchbox_length"
+            android:foreground="@drawable/ic_chevron_left_rounded_700"
+            android:layout_gravity="center_vertical"
+            android:foregroundGravity="center"
+            android:contentDescription="@string/paginate_left"
+            android:visibility="gone"
+            android:elevation="1dp" />
+
         <com.android.launcher3.pageindicators.PageIndicatorDots
             android:id="@+id/folder_page_indicator"
             android:layout_gravity="center_vertical"
@@ -60,6 +71,18 @@
             android:layout_height="wrap_content"
             android:elevation="1dp"
             />
+
+        <com.android.launcher3.pageindicators.PaginationArrow
+            android:id="@+id/right_indicator_arrow"
+            android:layout_width="@dimen/folder_arrow_touchbox_length"
+            android:layout_height="@dimen/folder_arrow_touchbox_length"
+            android:layout_gravity="center_vertical"
+            android:foreground="@drawable/ic_chevron_left_rounded_700"
+            android:rotation="180"
+            android:contentDescription="@string/paginate_right"
+            android:foregroundGravity="center"
+            android:visibility="gone"
+            android:elevation="1dp" />
 
         <ImageButton
             android:id="@+id/settings_button"

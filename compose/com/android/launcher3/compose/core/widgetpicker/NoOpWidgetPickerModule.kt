@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.android.launcher3.compose
+package com.android.launcher3.compose.core.widgetpicker
 
-import android.content.Context
-import android.view.View
-import com.android.launcher3.compose.core.BaseComposeFacade
+import dagger.Binds
+import dagger.Module
 
-object ComposeFacade : BaseComposeFacade {
-    override fun isComposeAvailable(): Boolean = false
-
-    override fun initComposeView(appContext: Context): View {
-        error(
-            "Compose is not available. Make sure to check isComposeAvailable() before calling any" +
-            " other function on ComposeFacade."
-        )
-    }
+/**
+ * A module that provides a no-op [WidgetPickerComposeWrapper] for dagger graph that doesn't
+ * involve widget picker e.g. launcher preview OR when compose is disabled via build flag.
+ */
+@Module
+interface NoOpWidgetPickerModule {
+    @Binds
+    fun bindWidgetPickerWrapper(noOp: NoOpWidgetPickerComposeWrapper): WidgetPickerComposeWrapper
 }

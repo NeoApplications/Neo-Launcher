@@ -58,7 +58,8 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     else info.title.toString()
 
     override fun setTitle(info: WorkspaceItemInfo, title: String?, modelWriter: ModelWriter) {
-        info.setTitle(context, title ?: "")
+        //TODO: Fix this
+        //info.setTitle(context, title ?: "")
     }
 
     override fun setIcon(info: WorkspaceItemInfo, iconEntry: IconEntry) {
@@ -92,12 +93,13 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
     }
 
     override fun setSwipeUpAction(info: WorkspaceItemInfo, action: String?) {
-        info.setSwipeUpAction(context, action)
+        //TODO: Fix this
+        //info.setSwipeUpAction(context, action)
     }
 
-    override fun getSwipeUpAction(info: WorkspaceItemInfo): String? {
+    /*override fun getSwipeUpAction(info: WorkspaceItemInfo): String? {
         return info.getSwipeUpAction(context)
-    }
+    }*/
 
     private fun getLauncherActivityInfo(info: WorkspaceItemInfo): LauncherActivityInfo? {
         return launcherApps!!.resolveActivity(info.getIntent(), info.user)

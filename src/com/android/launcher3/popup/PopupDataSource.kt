@@ -45,7 +45,6 @@ import com.android.launcher3.views.Snackbar
 import com.android.launcher3.widget.LauncherAppWidgetHostView
 import com.android.launcher3.widget.WidgetsBottomSheet
 import com.android.wm.shell.shared.bubbles.logging.EntryPoint
-import dagger.hilt.EntryPoint
 import javax.inject.Inject
 
 @LauncherAppSingleton

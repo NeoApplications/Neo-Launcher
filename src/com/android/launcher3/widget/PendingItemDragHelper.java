@@ -16,6 +16,8 @@
 
 package com.android.launcher3.widget;
 
+import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
+
 import static com.android.launcher3.widget.util.WidgetSizes.getWidgetSizePx;
 
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.DeviceProfile;
@@ -44,6 +47,9 @@ import com.android.launcher3.icons.BaseIconFactory;
 import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.icons.RoundDrawableWrapper;
+import com.android.launcher3.widget.DatabaseWidgetPreviewLoader.WidgetPreviewInfo;
+
+import java.util.Objects;
 
 /**
  * Extension of {@link DragPreviewProvider} with logic specific to pending widgets/shortcuts
@@ -57,6 +63,8 @@ public class PendingItemDragHelper extends DragPreviewProvider {
     private int[] mEstimatedCellSize;
 
     @Nullable private RemoteViews mRemoteViewsPreview;
+    @Nullable
+    private WidgetPreviewInfo mWidgetPreviewInfo;
     private float mRemoteViewsPreviewScale = 1f;
     @Nullable private NavigableAppWidgetHostView mAppWidgetHostViewPreview;
     private final float mEnforcedRoundedCornersForWidget;
@@ -66,6 +74,13 @@ public class PendingItemDragHelper extends DragPreviewProvider {
         mAddInfo = (PendingAddItemInfo) view.getTag();
         mEnforcedRoundedCornersForWidget = RoundedCornerEnforcement.computeEnforcedRadius(
                 view.getContext());
+    }
+
+    /**
+     * Set the necessary information about the preview, so a preview can be built for drag and drop.
+     */
+    public void setWidgetPreviewInfo(@NonNull WidgetPreviewInfo previewInfo) {
+        mWidgetPreviewInfo = previewInfo;
     }
 
     /**
@@ -115,9 +130,32 @@ public class PendingItemDragHelper extends DragPreviewProvider {
 
             int[] previewSizeBeforeScale = new int[1];
 
-            if (mRemoteViewsPreview != null) {
+            if (mWidgetPreviewInfo != null) {
+                if (mWidgetPreviewInfo.previewBitmap != null) {
+                    Drawable drawable = new FastBitmapDrawable(mWidgetPreviewInfo.previewBitmap);
+                    drawable = new RoundDrawableWrapper(drawable, mEnforcedRoundedCornersForWidget);
+                    preview = drawable;
+                    if (drawable.getIntrinsicWidth() > 0
+                            && drawable.getIntrinsicHeight() > 0) {
+                        previewSizeBeforeScale[0] = drawable.getIntrinsicWidth();
+                    }
+                } else {
+                    mAppWidgetHostViewPreview = new LauncherAppWidgetHostView(launcher);
+                    mAppWidgetHostViewPreview.setAppWidget(/* appWidgetId= */ INVALID_APPWIDGET_ID,
+                            mWidgetPreviewInfo.providerInfo);
+                    mAppWidgetHostViewPreview.setClipChildren(false);
+                    mAppWidgetHostViewPreview.setClipToPadding(false);
+                    mAppWidgetHostViewPreview.updateAppWidget(/* remoteViews= */
+                            mWidgetPreviewInfo.remoteViews);
+
+                    DeviceProfile deviceProfile = launcher.getDeviceProfile();
+                    Size widgetSizes = getWidgetSizePx(deviceProfile, mAddInfo.spanX,
+                            mAddInfo.spanY);
+                    measureAndUpdateAppWidgetHostViewScale(widgetSizes);
+                }
+            } else if (mRemoteViewsPreview != null) {
                 mAppWidgetHostViewPreview = new LauncherAppWidgetHostView(launcher);
-                mAppWidgetHostViewPreview.setAppWidget(/* appWidgetId= */ -1,
+                mAppWidgetHostViewPreview.setAppWidget(/* appWidgetId= */ INVALID_APPWIDGET_ID,
                         ((PendingAddWidgetInfo) mAddInfo).info);
                 DeviceProfile deviceProfile = launcher.getDeviceProfile();
                 mAppWidgetHostViewPreview.updateAppWidget(/* remoteViews= */ mRemoteViewsPreview);
@@ -133,9 +171,9 @@ public class PendingItemDragHelper extends DragPreviewProvider {
                 previewSizeBeforeScale[0] = mAppWidgetHostViewPreview.getMeasuredWidth();
             }
             if (preview == null && mAppWidgetHostViewPreview == null) {
-                Drawable p = new FastBitmapDrawable(new DatabaseWidgetPreviewLoader(launcher)
-                        .generateWidgetPreview(
-                                createWidgetInfo.info, maxWidth, previewSizeBeforeScale));
+                Drawable p = new FastBitmapDrawable(new DatabaseWidgetPreviewLoader(launcher,
+                        launcher.getDeviceProfile()).generateWidgetPreview(createWidgetInfo.info,
+                        maxWidth, previewSizeBeforeScale));
                 p = new RoundDrawableWrapper(p, mEnforcedRoundedCornersForWidget);
                 preview = p;
             }
@@ -179,12 +217,13 @@ public class PendingItemDragHelper extends DragPreviewProvider {
             previewWidth = preview.getIntrinsicWidth();
             previewHeight = preview.getIntrinsicHeight();
             li.recycle();
-            scale = ((float) launcher.getDeviceProfile().iconSizePx) / previewWidth;
+            scale = ((float) launcher.getDeviceProfile().getWorkspaceIconProfile().getIconSizePx())
+                    / previewWidth;
 
             // Create a preview same as the workspace cell size and draw the icon at the
             // appropriate position.
             DeviceProfile dp = launcher.getDeviceProfile();
-            int iconSize = dp.iconSizePx;
+            int iconSize = dp.getWorkspaceIconProfile().getIconSizePx();
 
             int padding = launcher.getResources()
                     .getDimensionPixelSize(R.dimen.widget_preview_shortcut_padding);
@@ -195,7 +234,8 @@ public class PendingItemDragHelper extends DragPreviewProvider {
             dragRegion.left = (mEstimatedCellSize[0] - iconSize) / 2;
             dragRegion.right = dragRegion.left + iconSize;
             dragRegion.top = (mEstimatedCellSize[1]
-                    - iconSize - dp.iconTextSizePx - dp.iconDrawablePaddingPx) / 2;
+                    - iconSize - dp.getWorkspaceIconProfile().getIconTextSizePx()
+                    - dp.getWorkspaceIconProfile().getIconDrawablePaddingPx()) / 2;
             dragRegion.bottom = dragRegion.top + iconSize;
             draggableView = DraggableView.ofType(DraggableView.DRAGGABLE_ICON);
         }
@@ -212,6 +252,38 @@ public class PendingItemDragHelper extends DragPreviewProvider {
         } else {
             launcher.getDragController().startDrag(preview, draggableView, dragLayerX, dragLayerY,
                     source, mAddInfo, dragRegion, scale, scale, options);
+        }
+    }
+
+    private void measureAndUpdateAppWidgetHostViewScale(Size widgetSizes) {
+        Objects.requireNonNull(mAppWidgetHostViewPreview).measure(
+                MeasureSpec.makeMeasureSpec(widgetSizes.getWidth(),
+                        MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(widgetSizes.getHeight(),
+                        MeasureSpec.EXACTLY));
+
+        // Scale the preview to fit the widget's size. Not all widgets fill bounds, so we need to
+        // scale them.
+        if (mAppWidgetHostViewPreview.getChildCount() == 1) {
+            View content = mAppWidgetHostViewPreview.getChildAt(0);
+            float contentWidth = content.getMeasuredWidth();
+            float contentHeight = content.getMeasuredHeight();
+            if (contentWidth > 0 && contentHeight > 0) {
+
+                // Take the content width based on the edge furthest from the center, so that when
+                // scaling the hostView, the farthest edge is still visible.
+                contentWidth = 2 * Math.max(contentWidth / 2 - content.getLeft(),
+                        content.getRight() - contentWidth / 2);
+                contentHeight = 2 * Math.max(contentHeight / 2 - content.getTop(),
+                        content.getBottom() - contentHeight / 2);
+
+                if (contentWidth > 0 && contentHeight > 0) {
+                    float pWidth = widgetSizes.getWidth();
+                    float pHeight = widgetSizes.getHeight();
+                    mAppWidgetHostViewPreview.setScaleToFit(
+                            Math.min(pWidth / contentWidth, pHeight / contentHeight));
+                }
+            }
         }
     }
 

@@ -26,11 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.Flags;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.BitmapInfo.DrawableCreationFlags;
 import com.android.launcher3.icons.FastBitmapDrawable;
+import com.android.launcher3.icons.IconShape;
 import com.android.launcher3.icons.cache.CacheLookupFlag;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.pm.PackageInstallInfo;
@@ -150,12 +150,6 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * total download progress.
      */
     private int mProgressLevel = 100;
-
-    // Edited
-    /**
-     * Dominant color in the icon.
-     */
-    public int iconColor;
 
     protected ItemInfoWithIcon() {
     }
@@ -325,29 +319,40 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
      * Returns a FastBitmapDrawable with the icon.
      */
     public FastBitmapDrawable newIcon(Context context) {
-        return bitmap.newIcon(context);
+        return newIcon(context, 0);
     }
 
-    // Edited
-    public FastBitmapDrawable newIcon(Context context, boolean applyTheme) {
-        FastBitmapDrawable drawable = applyTheme
-                ? bitmap.newIcon(context) : bitmap.newIcon(context, BitmapInfo.FLAG_NO_BADGE);
-        drawable.setIsDisabled(isDisabled());
+    public FastBitmapDrawable newIcon(Context context, @DrawableCreationFlags int creationFlags) {
+        ThemeManager themeManager = ThemeManager.INSTANCE.get(context);
+        IconShape iconShape = null;
+        if (supportsCustomShapes(creationFlags)) {
+            iconShape = themeManager.getIconShapeData().getValue();
+        }
+        if (!themeManager.isIconThemeEnabled()) {
+            creationFlags &= ~FLAG_THEMED;
+        }
+        FastBitmapDrawable drawable = bitmap.newIcon(context, creationFlags, iconShape);
+        drawable.setDisabled(isDisabled());
         return drawable;
     }
 
     /**
-     * Returns a FastBitmapDrawable with the icon and context theme applied
+     * Returns true if the current BitmapInfo can support cropping to custom icon shapes.
      */
-    public FastBitmapDrawable newIcon(Context context, @DrawableCreationFlags int creationFlags) {
-        ThemeManager themeManager = ThemeManager.INSTANCE.get(context);
-        if (!themeManager.isIconThemeEnabled()) {
-            creationFlags &= ~FLAG_THEMED;
-        }
-        FastBitmapDrawable drawable = bitmap.newIcon(
-                context, creationFlags, Utilities.getIconShapeOrNull(context));
-        drawable.setIsDisabled(isDisabled());
-        return drawable;
+    public boolean supportsCustomShapes(@DrawableCreationFlags int creationFlags) {
+        return Flags.enableLauncherIconShapes()
+                && (creationFlags & FLAG_THEMED) != 0
+                && bitmap.isFullBleed();
+    }
+
+    /**
+     * Returns true if item is a Promise Icon or actively downloading, and the item is not an
+     * inactive archived app.
+     */
+    public boolean shouldShowPendingIcon() {
+        return (((this instanceof WorkspaceItemInfo wii) && wii.hasPromiseIconUi())
+                || (runtimeStatusFlags & FLAG_SHOW_DOWNLOAD_PROGRESS_MASK) != 0)
+                && !(Flags.useNewIconForArchivedApps() && isInactiveArchive());
     }
 
     @Override

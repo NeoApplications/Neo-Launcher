@@ -33,8 +33,9 @@ enum class BcSmartspaceEvent(private val mId: Int) : StatsLogManager.EventEnum {
             get() = 823
     };
 
+    /*
     fun getId(): Int {
         return mId
-    }
+    }*/
 }
 

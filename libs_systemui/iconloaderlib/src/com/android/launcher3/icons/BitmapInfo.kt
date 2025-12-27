@@ -150,7 +150,7 @@ data class BitmapInfo(
      * @param isThemed If the drawable is themed.
      * @param skipUserBadge If should skip User Profile badging.
      */
-    private fun getBadgeDrawable(
+    fun getBadgeDrawable(
         context: Context,
         isThemed: Boolean,
         skipUserBadge: Boolean,

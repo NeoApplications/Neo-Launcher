@@ -297,6 +297,22 @@ constructor(
                 }
 
         override fun getChangingConfigurations(): Int = 0
+        fun copy(
+            isDisabled: Boolean,
+            level: Int,
+            delegateFactory: DelegateFactory,
+        ): FastBitmapConstantState {
+            return FastBitmapConstantState(
+                bitmapInfo = bitmapInfo,
+                isDisabled = isDisabled,
+                level = level,
+                badgeConstantState = badgeConstantState,
+                iconShape = iconShape,
+                creationFlags = creationFlags,
+                disabledAlpha = disabledAlpha,
+                delegateFactory = delegateFactory
+            )
+        }
     }
 
     companion object {

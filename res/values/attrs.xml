@@ -165,6 +165,12 @@
         <attr name="layout_sticky" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="AllAppsSize">
+        <attr name="minDeviceWidthDp" format="float" />
+        <attr name="alignWithWorkspaceRow" format="integer" />
+        <attr name="allAppsColumns" format="integer" />
+    </declare-styleable>
+
     <declare-styleable name="GridSize">
         <attr name="minDeviceWidthPx" format="float"/>
         <attr name="minDeviceHeightPx" format="float"/>
@@ -267,6 +273,7 @@
         Needs FeatureFlags.ENABLE_RESPONSIVE_WORKSPACE enabled -->
         <attr name="allAppsCellSpecsId" format="reference" />
         <attr name="gridSizeSpecsId" format="reference" />
+        <attr name="allAppsSizeSpecsId" format="reference" />
         <!-- defaults to allAppsCellSpecsId, if not specified -->
         <attr name="allAppsCellSpecsTwoPanelId" format="reference" />
         <!-- defaults to false, if not specified -->

@@ -74,7 +74,7 @@ class IconShapeManager(private val context: Context) {
                 shapeR.setPath(shapePath, clip)
                 shapeR.op(iconR, Region.Op.XOR)
 
-                GraphicsUtils.getArea(shapeR)
+                //GraphicsUtils.getArea(shapeR)
             }!!
     }
 

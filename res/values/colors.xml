@@ -100,53 +100,181 @@
     <color name="preload_icon_accent_color_dark">#4BB6E8</color>
     <color name="preload_icon_background_color_dark">#40484D</color>
 
+    <color name="blur_shade_panel_fg">#66D9E2FF</color>
+    <color name="blur_shade_panel_bg">#1AFFFFFF</color>
     <color name="work_turn_on_stroke">?android:attr/colorAccent</color>
 
-    <color name="widget_picker_primary_surface_color_light">#EFEDED</color>
+
+    <color name="widget_picker_focus_outline_color_light">@color/system_secondary_light</color>
+    <color name="widget_picker_primary_surface_color_light">@color/system_surface_container_light
+    </color>
     <color name="widget_picker_secondary_surface_color_light">#FAF9F8</color>
-    <color name="widget_picker_title_color_light">#1F1F1F</color>
-    <color name="widget_picker_description_color_light">#4C4D50</color>
+    <color name="widget_picker_title_color_light">@color/system_on_surface_light</color>
+    <color name="widget_picker_description_color_light">@color/system_on_surface_variant_light
+    </color>
     <color name="widget_picker_menu_options_color_light">@color/system_on_surface_variant_light</color>
-    <color name="widget_picker_header_app_title_color_light">#1F1F1F</color>
-    <color name="widget_picker_header_app_subtitle_color_light">#444746</color>
+    <color name="widget_picker_header_app_title_color_light">@color/system_on_surface_light</color>
+    <color name="widget_picker_header_app_subtitle_color_light">
+        @color/system_on_surface_variant_light
+    </color>
+    <color name="widget_picker_selected_header_app_title_color_light">
+        @color/system_on_secondary_container_light
+    </color>
+    <color name="widget_picker_selected_header_app_subtitle_color_light">
+        @color/system_on_secondary_container_light
+    </color>
     <color name="widget_picker_header_background_color_light">#C2E7FF</color>
     <color name="widget_picker_suggestions_icon_background_color_light">#FFFFFF</color>
     <color name="widget_picker_suggestions_icon_color_light">#0B57D0</color>
-    <color name="widget_picker_search_text_color_light">#444746</color>
+    <color name="widget_picker_search_bar_background_color_light">
+        @color/system_surface_bright_light
+    </color>
+    <color name="widget_picker_search_text_color_light">@color/system_on_surface_variant_light
+    </color>
+    <color name="widget_picker_search_cursor_color_light">@color/system_primary_light</color>
     <color name="widget_picker_tab_background_selected_light">#0B57D0</color>
     <color name="widget_picker_tab_background_unselected_light">#E3E3E3</color>
     <color name="widget_picker_selected_tab_text_color_light">#FFFFFF</color>
     <color name="widget_picker_unselected_tab_text_color_light">#444746</color>
-    <color name="widget_picker_collapse_handle_color_light">#747775</color>
-    <color name="widget_picker_add_button_background_color_light">#0B57D0</color>
-    <color name="widget_picker_add_button_text_color_light">#0B57D0</color>
+    <color name="widget_picker_collapse_handle_color_light">@color/system_outline_light</color>
+    <color name="widget_picker_add_button_background_color_light">@color/system_primary_light
+    </color>
+    <color name="widget_picker_add_button_text_color_light">@color/system_on_primary_light</color>
+    <color name="widget_picker_expandable_list_items_background_light">
+        @color/system_surface_bright_light
+    </color>
+    <color name="widget_picker_expand_icon_button_background_light">
+        @color/system_secondary_container_light
+    </color>
+    <color name="widget_picker_expand_icon_button_color_light">
+        @color/system_on_secondary_container_light
+    </color>
     <color name="widget_picker_expand_button_background_color_light">
         @color/widget_picker_secondary_surface_color_light
     </color>
+
+    <color name="widget_picker_clickable_list_header_background_light">
+        @color/system_secondary_container_light
+    </color>
+    <color name="widget_picker_widgets_container_background_light">
+        @color/system_surface_bright_light
+    </color>
+    <color name="widget_picker_featured_header_icon_background_light">
+        @color/system_surface_bright_light
+    </color>
+    <color name="widget_picker_featured_header_icon_color_light">
+        @color/system_primary_light
+    </color>
+    <color name="widget_picker_no_widget_error_color_light">@color/system_on_surface_light</color>
+
+    <color name="widget_picker_preview_placeholder_background_light">
+        @color/system_secondary_container_light
+    </color>
+    <color name="widget_picker_preview_placeholder_content_light">
+        @color/system_on_secondary_container_light
+    </color>
+
+    <color name="widget_picker_toolbar_background_light">
+        @color/system_surface_bright_light
+    </color>
+    <color name="widget_picker_toolbar_selected_tab_background_light">
+        @color/system_secondary_container_light
+    </color>
+    <color name="widget_picker_toolbar_unselected_tab_background_light">
+        @android:color/transparent
+    </color>
+    <color name="widget_picker_toolbar_selected_tab_content_color_light">
+        @color/system_on_secondary_container_light
+    </color>
+    <color name="widget_picker_toolbar_unselected_tab_content_color_light">
+        @color/system_on_surface_variant_light
+    </color>
+
     <color name="widget_picker_expand_button_text_color_light">
         @color/widget_picker_header_app_title_color_light
     </color>
     <color name="widget_cell_title_color_light">@color/system_on_surface_light</color>
     <color name="widget_cell_subtitle_color_light">@color/system_on_surface_variant_light</color>
 
-    <color name="widget_picker_primary_surface_color_dark">#1F2020</color>
+    <color name="widget_picker_focus_outline_color_dark">@color/system_secondary_dark</color>
+    <color name="widget_picker_primary_surface_color_dark">@color/system_surface_container_dark
+    </color>
     <color name="widget_picker_secondary_surface_color_dark">#393939</color>
-    <color name="widget_picker_title_color_dark">#E3E3E3</color>
-    <color name="widget_picker_description_color_dark">#CCCDCF</color>
+    <color name="widget_picker_title_color_dark">@color/system_on_surface_dark</color>
+    <color name="widget_picker_description_color_dark">@color/system_on_surface_variant_dark</color>
     <color name="widget_picker_menu_options_color_dark">@color/system_on_surface_variant_dark</color>
-    <color name="widget_picker_header_app_title_color_dark">#E3E3E3</color>
-    <color name="widget_picker_header_app_subtitle_color_dark">#C4C7C5</color>
+    <color name="widget_picker_header_app_title_color_dark">@color/system_on_surface_dark</color>
+    <color name="widget_picker_header_app_subtitle_color_dark">
+        @color/system_on_surface_variant_dark
+    </color>
+    <color name="widget_picker_selected_header_app_title_color_dark">
+        @color/system_on_secondary_container_dark
+    </color>
+    <color name="widget_picker_selected_header_app_subtitle_color_dark">
+        @color/system_on_secondary_container_dark
+    </color>
     <color name="widget_picker_header_background_color_dark">#004A77</color>
     <color name="widget_picker_suggestions_icon_background_color_dark">#FFFFFFFF</color>
     <color name="widget_picker_suggestions_icon_color_dark">#062E6F</color>
-    <color name="widget_picker_search_text_color_dark">#C4C7C5</color>
+    <color name="widget_picker_search_bar_background_color_dark">
+        @color/system_surface_bright_dark
+    </color>
+    <color name="widget_picker_search_text_color_dark">@color/system_on_surface_variant_dark</color>
+    <color name="widget_picker_search_cursor_color_dark">@color/system_primary_dark</color>
     <color name="widget_picker_tab_background_selected_dark">#A8C7FA</color>
     <color name="widget_picker_tab_background_unselected_dark">#343535</color>
     <color name="widget_picker_selected_tab_text_color_dark">#2D312F</color>
     <color name="widget_picker_unselected_tab_text_color_dark">#C4C7C5</color>
-    <color name="widget_picker_collapse_handle_color_dark">#8e918f</color>
-    <color name="widget_picker_add_button_background_color_dark">#062E6F</color>
-    <color name="widget_picker_add_button_text_color_dark">#FFFFFF</color>
+    <color name="widget_picker_collapse_handle_color_dark">@color/system_outline_dark</color>
+    <color name="widget_picker_add_button_background_color_dark">@color/system_primary_dark</color>
+    <color name="widget_picker_add_button_text_color_dark">@color/system_on_primary_dark</color>
+    <color name="widget_picker_expandable_list_items_background_dark">
+        @color/system_surface_bright_dark
+    </color>
+    <color name="widget_picker_expand_icon_button_background_dark">
+        @color/system_secondary_container_dark
+    </color>
+    <color name="widget_picker_expand_icon_button_color_dark">
+        @color/system_on_secondary_container_dark
+    </color>
+
+    <color name="widget_picker_clickable_list_header_background_dark">
+        @color/system_secondary_container_dark
+    </color>
+    <color name="widget_picker_widgets_container_background_dark">
+        @color/system_surface_bright_dark
+    </color>
+    <color name="widget_picker_featured_header_icon_background_dark">
+        @color/system_surface_bright_dark
+    </color>
+    <color name="widget_picker_featured_header_icon_color_dark">
+        @color/system_primary_dark
+    </color>
+    <color name="widget_picker_no_widget_error_color_dark">@color/system_on_surface_dark</color>
+
+    <color name="widget_picker_preview_placeholder_background_dark">
+        @color/system_secondary_container_dark
+    </color>
+    <color name="widget_picker_preview_placeholder_content_dark">
+        @color/system_on_secondary_container_dark
+    </color>
+
+    <color name="widget_picker_toolbar_background_dark">
+        @color/system_surface_bright_dark
+    </color>
+    <color name="widget_picker_toolbar_selected_tab_background_dark">
+        @color/system_secondary_container_dark
+    </color>
+    <color name="widget_picker_toolbar_unselected_tab_background_dark">
+        @android:color/transparent
+    </color>
+    <color name="widget_picker_toolbar_selected_tab_content_color_dark">
+        @color/system_on_secondary_container_dark
+    </color>
+    <color name="widget_picker_toolbar_unselected_tab_content_color_dark">
+        @color/system_on_surface_variant_dark
+    </color>
+
     <color name="widget_picker_expand_button_background_color_dark">
         @color/widget_picker_secondary_surface_color_dark
     </color>
@@ -155,6 +283,7 @@
     </color>
     <color name="widget_cell_title_color_dark">@color/system_on_surface_dark</color>
     <color name="widget_cell_subtitle_color_dark">@color/system_on_surface_variant_dark</color>
+
 
     <color name="material_color_surface_container_lowest">#FFFFFF</color>
     <color name="material_color_on_surface">#1B1B1F</color>

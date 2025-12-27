@@ -63,7 +63,7 @@ class DrawerFolders(val manager: AppGroupsManager) :
     override fun getDefaultCreators(): List<GroupCreator<Folder>> {
         return emptyList()
     }
-
+    /*
     fun getFolderInfos(apps: AlphabeticalAppsList<*>, modelWriter: ModelWriter) =
         getFolderInfos(buildAppsMap(apps)::get, modelWriter)
 
@@ -72,13 +72,14 @@ class DrawerFolders(val manager: AppGroupsManager) :
         return apps.apps.toList().associateBy { it.toComponentKey() }
     }
 
+
     private fun getFolderInfos(
         getAppInfo: (ComponentKey) -> AppInfo?, modelWriter: ModelWriter,
     ): List<DrawerFolderInfo> = getGroups()
         .asSequence()
         .filter { !it.isEmpty }
         .map { it.toFolderInfo(getAppInfo, modelWriter) }
-        .toList()
+        .toList()*/
 
     fun getHiddenComponents() = getGroups()
         .asSequence()
@@ -102,7 +103,7 @@ class DrawerFolders(val manager: AppGroupsManager) :
             ).apply {
                 setTitle(this@Folder.title, modelWriter)
                 id = this@Folder.id.value().toInt()
-                contents = ArrayList()
+                //contents = ArrayList()
             }
     }
 

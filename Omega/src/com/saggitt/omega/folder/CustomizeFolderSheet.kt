@@ -86,10 +86,10 @@ fun CustomizeFolderSheet(
                 folder.setTitle(newTitle)
             }
             val model = LauncherAppState.getInstance(context).model
-            model.onPackageChanged(
+            /*model.onPackageChanged(
                 folder.toComponentKey().componentName.toString(),
                 folder.toComponentKey().user
-            )
+            )*/
         }
     }
 

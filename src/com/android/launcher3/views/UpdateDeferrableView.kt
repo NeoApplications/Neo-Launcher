@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package com.android.launcher3.compose
+package com.android.launcher3.views
 
-import android.content.Context
-import android.view.View
-import androidx.compose.ui.platform.ComposeView
-import com.android.launcher3.compose.core.BaseComposeFacade
+/** Interface which indicates that the underlying view is capable of deferring some updates */
+interface UpdateDeferrableView {
 
-object ComposeFacade : BaseComposeFacade {
-    override fun isComposeAvailable(): Boolean = true
-
-    override fun initComposeView(appContext: Context): View = ComposeView(appContext)
+    fun setUpdatesDeferred(isDeferred: Boolean)
 }

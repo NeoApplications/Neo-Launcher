@@ -108,6 +108,7 @@ import static com.android.launcher3.util.SettingsCache.TOUCHPAD_NATURAL_SCROLLIN
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
@@ -2073,6 +2074,7 @@ public class Launcher extends StatefulActivity<LauncherState>
         return super.dispatchTouchEvent(ev);
     }
 
+    @SuppressLint("GestureBackNavigation")
     @Override
     @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void onBackPressed() {
@@ -2948,7 +2950,6 @@ public class Launcher extends StatefulActivity<LauncherState>
     /**
      * Gets the system shortcuts that are supported by launcher in a given container.
      *
-     * @param container is the container of the item as derived from ItemInfo.
      * @return a stream of supported system shortcuts.
      */
     public Stream<SystemShortcut.Factory> getSupportedShortcuts(ItemInfo itemInfo) {
@@ -2975,10 +2976,6 @@ public class Launcher extends StatefulActivity<LauncherState>
         return new float[] {NO_SCALE, NO_OFFSET};
     }
 
-    /**
-     * Handles an app pair launch; overridden in
-     * {@link com.android.launcher3.uioverrides.QuickstepLauncher}
-     */
     public void launchAppPair(AppPairIcon appPairIcon) {
         // Overridden
     }
@@ -3071,7 +3068,4 @@ public class Launcher extends StatefulActivity<LauncherState>
         mIsTopResumedActivity = isResumed;
         mLauncherUiState.setIsTopResumedActivity(isResumed);
     }
-
-
-    // End of Getters and Setters
 }

@@ -221,23 +221,17 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return null;
     }
 
-    /**
-     * @return {@code true} if all apps background blur is enabled
-     */
+    /** @return {@code true} if all apps background blur is enabled */
     default boolean isAllAppsBackgroundBlurEnabled() {
         return false;
     }
 
-    /**
-     * @return {@code true} if overview background blur is enabled
-     */
+    /** @return {@code true} if overview background blur is enabled */
     default boolean isOverviewBackgroundBlurEnabled() {
         return false;
     }
 
-    /**
-     * @return the resource id of the style to apply for the current blur state in All Apps.
-     */
+    /** @return the resource id of the style to apply for the current blur state in All Apps. */
     default int getAllAppsBlurStyleResId() {
         if (!Flags.allAppsBlur()) {
             // Don't alter the colors provided in the default Launcher themes.
@@ -247,9 +241,7 @@ public interface ActivityContext extends SavedStateRegistryOwner {
                 : R.style.AllAppsBlurFallbackStyle;
     }
 
-    /**
-     * @return the resource id of the style to apply for the current blur state in Overview.
-     */
+    /** @return the resource id of the style to apply for the current blur state in Overview. */
     default int getOverviewBlurStyleResId() {
         return View.NO_ID;
     }
@@ -359,8 +351,7 @@ public interface ActivityContext extends SavedStateRegistryOwner {
      * @param args is {@link PendingRequestArgs} which has information regarding a pending
      *             request made by launcher.
      */
-    default void setWaitingForResult(PendingRequestArgs args) {
-    }
+    default void setWaitingForResult(PendingRequestArgs args) {}
 
     /**
      * @return the {@link LauncherWidgetHolder} wrapper which allows AppWidgetHost to run in
@@ -373,9 +364,8 @@ public interface ActivityContext extends SavedStateRegistryOwner {
 
     /**
      * Starts the configuration activity for the widget.
-     *
-     * @param activity    The activity in which to start the configuration page.
-     * @param widgetId    The ID of the widget.
+     * @param activity The activity in which to start the configuration page.
+     * @param widgetId The ID of the widget.
      * @param requestCode The request code.
      */
     default void startConfigActivity(@NonNull BaseActivity activity, int widgetId,
@@ -611,9 +601,7 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return new CellPosMapper(dp.isVerticalBarLayout(), dp.numShownHotseatIcons);
     }
 
-    /**
-     * Returns a writer for updating model properties
-     */
+    /** Returns a writer for updating model properties */
     default ModelWriter getModelWriter() {
         return LauncherAppState.getInstance(asContext()).getModel().getWriter(
                 false, getCellPosMapper(), null);
@@ -637,9 +625,7 @@ public interface ActivityContext extends SavedStateRegistryOwner {
         return (Context) this;
     }
 
-    /**
-     * Closes the closeable when this context is destroyed
-     */
+    /** Closes the closeable when this context is destroyed */
     default void closeOnDestroy(SafeCloseable closeable) {
         MAIN_EXECUTOR.execute(() -> getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override

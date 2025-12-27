@@ -132,7 +132,8 @@ enum class NexusLauncherEnum(private val mId: Int) : EventEnum {
             get() = 520
     };
 
+    /*
     fun getId(): Int {
         return mId
-    }
+    }*/
 }

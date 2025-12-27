@@ -30,6 +30,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Trace;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,20 +171,22 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
             // Center the icon/folder
             int cHeight = getCellContentHeight();
             int cellPaddingY =
-                    dp.cellYPaddingPx >= 0 && mContainerType == WORKSPACE
-                            ? dp.cellYPaddingPx
+                    dp.getWorkspaceIconProfile().getCellYPaddingPx() >= 0 && mContainerType == WORKSPACE
+                            ? dp.getWorkspaceIconProfile().getCellYPaddingPx()
                             : (int) Math.max(0, ((lp.height - cHeight) / 2f));
 
             // No need to add padding when cell layout border spacing is present.
             boolean noPaddingX =
-                    (dp.cellLayoutBorderSpacePx.x > 0 && mContainerType == WORKSPACE)
-                            || (dp.folderCellLayoutBorderSpacePx.x > 0 && mContainerType == FOLDER)
+                    (dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x > 0
+                            && mContainerType == WORKSPACE)
+                            || (dp.getFolderProfile().getCellLayoutBorderSpacePx().x > 0
+                            && mContainerType == FOLDER)
                             || (dp.hotseatBorderSpace > 0 && mContainerType == HOTSEAT);
             int cellPaddingX = noPaddingX
                     ? 0
                     : mContainerType == WORKSPACE
-                            ? dp.workspaceCellPaddingXPx
-                            : (int) (dp.edgeMarginPx / 2f);
+                    ? dp.mWorkspaceProfile.getWorkspaceCellPaddingXPx()
+                    : (int) (dp.mWorkspaceProfile.getEdgeMarginPx() / 2f);
             child.setPadding(cellPaddingX, cellPaddingY, cellPaddingX, 0);
         }
         int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
@@ -226,6 +229,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
             final PointF appWidgetScale = profile.getAppWidgetScale((ItemInfo) child.getTag());
             float scaleX = appWidgetScale.x;
             float scaleY = appWidgetScale.y;
+            Log.d(TAG, "appWidgetScale - [x,y]: [" + scaleX + "," + scaleY + "]");
 
             nahv.setScaleToFit(Math.min(scaleX, scaleY));
             nahv.getTranslateDelegate().setTranslation(INDEX_WIDGET_CENTERING,

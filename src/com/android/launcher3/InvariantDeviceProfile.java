@@ -36,7 +36,6 @@ import static com.android.launcher3.util.SimpleBroadcastReceiver.actionsFilter;
 
 import android.content.Context;
 import android.content.Intent;
-
 import com.android.launcher3.concurrent.annotations.Ui;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -134,7 +133,7 @@ public class InvariantDeviceProfile {
 
     // Used for arrays to specify different sizes (e.g. border spaces, width/height) in different
     // constraints
-    public static final int COUNT_SIZES = 4;
+    static final int COUNT_SIZES = 4;
     public static final int INDEX_DEFAULT = 0;
     public static final int INDEX_LANDSCAPE = 1;
     public static final int INDEX_TWO_PANEL_PORTRAIT = 2;
@@ -1033,9 +1032,7 @@ public class InvariantDeviceProfile {
                         displayInfo.getDeviceType()), isLandscape);
     }
 
-    /**
-     * Class to expose properties required for external displays to {@link DeviceProfile}
-     */
+    /** Class to expose properties required for external displays to {@link DeviceProfile} */
     public static final class DisplayOptionSpec {
         public final int typeIndex;
         public final int numShownHotseatIcons;
@@ -1414,7 +1411,7 @@ public class InvariantDeviceProfile {
 
     /**
      * Optional spec that configures the size of the all apps container.
-     * <p>
+     *
      * Allows the all apps height to be set so the top of the all apps container aligns with the
      * top of a workspace row.
      */

@@ -23,7 +23,6 @@ import android.util.Log
 import android.view.DragEvent
 import com.android.launcher3.Launcher
 import com.android.launcher3.icons.IconCache
-import com.android.launcher3.widget.PendingItemDragHelper
 import dagger.Lazy
 
 /**
@@ -56,9 +55,6 @@ class SystemDragListener(launcher: Launcher, private val iconCache: Lazy<IconCac
      * @see https://developer.android.com/reference/android/view/DragEvent
      */
     override fun getMimeType(): String = "*/*"
-    override fun createDragHelper(): PendingItemDragHelper? {
-        TODO("Not yet implemented")
-    }
 
     /**
      * Sets a callback to be run when the listener is cleaned up.
@@ -69,7 +65,7 @@ class SystemDragListener(launcher: Launcher, private val iconCache: Lazy<IconCac
         cleanupCallback = callback
     }
 
-    fun onDrag(event: DragEvent): Boolean {
+    override fun onDrag(event: DragEvent): Boolean {
         if (event.action == DragEvent.ACTION_DROP) {
             try {
                 itemInfo?.apply {
@@ -89,7 +85,7 @@ class SystemDragListener(launcher: Launcher, private val iconCache: Lazy<IconCac
         return super.onDrag(event)
     }
 
-    fun startDrag(
+    override fun startDrag(
         previewRect: Rect,
         previewBitmapWidth: Int,
         previewViewWidth: Int,

@@ -388,7 +388,6 @@ constructor(
                     it is WorkspaceItemInfo && userHandle == it.user -> workspaceItemOp.invoke(it)
                     widgetItemOp != null && it is LauncherAppWidgetInfo && userHandle == it.user ->
                         widgetItemOp.invoke(it)
-
                     it is PredictedContainerInfo -> {
                         // Do not use filter or any as we want to run the update on every item. If
                         // any
@@ -399,7 +398,6 @@ constructor(
                                     workspaceItemOp.invoke(predictedItem)
                         } > 0
                     }
-
                     else -> false
                 }
             }

@@ -47,6 +47,8 @@ project(":shared").projectDir = File(rootDir, "shared")
 
 include(":concurrent")
 project(":concurrent").projectDir = File(rootDir, "modules/concurrent")
+include(":widgetpicker")
+project(":widgetpicker").projectDir = File(rootDir, "modules/widgetpicker")
 
 include(":dagger")
 project(":dagger").projectDir = File(rootDir, "dagger")

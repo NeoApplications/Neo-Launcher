@@ -17,8 +17,10 @@
 package com.android.launcher3;
 
 import static com.android.launcher3.BuildConfig.WIDGET_ON_FIRST_SCREEN;
+import static com.android.launcher3.Flags.enableMouseInteractionChanges;
 import static com.android.launcher3.Flags.enableSmartspaceAsAWidget;
 import static com.android.launcher3.Flags.injectableModelItems;
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_PRIVATESPACE;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ICON_OVERLAP_FACTOR;
 import static com.android.launcher3.graphics.ShapeDelegate.DEFAULT_PATH_SIZE;
 import static com.android.launcher3.icons.BitmapInfo.FLAG_THEMED;
@@ -98,6 +100,7 @@ import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.CacheableShortcutInfo;
+import com.android.launcher3.icons.IconShape;
 import com.android.launcher3.icons.IconThemeController;
 import com.android.launcher3.icons.LauncherIcons;
 import com.android.launcher3.model.data.FolderInfo;
@@ -118,11 +121,13 @@ import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -685,7 +690,6 @@ public final class Utilities {
                 .equals(Locale.ENGLISH.getLanguage());
     }
 
-    // Edited
     /**
      * Returns the full drawable for info as multiple layers of AdaptiveIconDrawable. The second
      * drawable in the Pair is the badge used with the icon.
@@ -696,13 +700,13 @@ public final class Utilities {
     @Nullable
     @WorkerThread
     public static <T extends Context & ActivityContext> Pair<AdaptiveIconDrawable, Drawable>
-            getFullDrawable(T context, ItemInfo info, int width, int height, boolean useTheme) {
+    getFullDrawable(T context, ItemInfo info, int width, int height, boolean useTheme) {
         LauncherAppState appState = LauncherAppState.getInstance(context);
         Drawable mainIcon = null;
 
         Drawable badge = null;
         if ((info instanceof ItemInfoWithIcon iiwi) && !iiwi.getMatchingLookupFlag().useLowRes()) {
-            badge = iiwi.bitmap.getBadgeDrawable(context, useTheme, getIconShapeOrNull(context));
+            badge = iiwi.bitmap.getBadgeDrawable(context, useTheme);
         }
 
         if (info instanceof PendingAddShortcutInfo) {
@@ -715,7 +719,11 @@ public final class Utilities {
             if (activityInfo == null) {
                 return null;
             }
-            mainIcon = appState.getIconCache().getFullResIcon(activityInfo.getActivityInfo());
+            if (info instanceof ItemInfoWithIcon && info.container == CONTAINER_PRIVATESPACE) {
+                mainIcon = ((ItemInfoWithIcon) info).bitmap.getBadgeDrawable(context, useTheme);
+            } else {
+                mainIcon = appState.getIconCache().getFullResIcon(activityInfo.getActivityInfo());
+            }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
             List<ShortcutInfo> siList = ShortcutKey.fromItemInfo(info)
                     .buildRequest(context)
@@ -728,31 +736,23 @@ public final class Utilities {
                         appState.getInvariantDeviceProfile().fillResIconDpi);
                 // Only fetch badge if the icon is on workspace
                 if (info.id != ItemInfo.NO_ID && badge == null) {
-                    badge = appState.getIconCache().getShortcutInfoBadge(si).newIcon(
-                            context,
-                            ThemeManager.INSTANCE.get(context).isIconThemeEnabled()
-                                    ? FLAG_THEMED : 0,
-                            getIconShapeOrNull(context)
-                    );
+                    ThemeManager themeManager = ThemeManager.INSTANCE.get(context);
+                    BitmapInfo badgeInfo = appState.getIconCache().getShortcutInfoBadge(si);
+                    IconShape shape = themeManager.getIconShapeData().getValue();
+
+                    int flags = ThemeManager.INSTANCE.get(context).isIconThemeEnabled()
+                            ? FLAG_THEMED : 0;
+                    badge = badgeInfo.newIcon(context, flags, shape);
                 }
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
-            FolderInfo folderInfo = (FolderInfo) info;
-            if (folderInfo.isCoverMode()) {
-                WorkspaceItemInfo coverInfo = (WorkspaceItemInfo) folderInfo.getCoverInfo();
-                LauncherActivityInfo activityInfo = context.getSystemService(LauncherApps.class)
-                        .resolveActivity(coverInfo.getIntent(), coverInfo.user);
-                mainIcon = appState.getIconCache().getFullResIcon(activityInfo.getActivityInfo());
-                badge = coverInfo.bitmap.getBadgeDrawable(context, useTheme, getIconShapeOrNull(context));
-            } else {
-                FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
-                        context, info.id, new Point(width, height));
-                if (icon == null) {
-                    return null;
-                }
-                mainIcon =  icon;
-                badge = icon.getBadge();
+            FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
+                    context, info.id, new Point(width, height));
+            if (icon == null) {
+                return null;
             }
+            mainIcon = icon;
+            badge = icon.getBadge();
         }
 
         if (mainIcon == null) {
@@ -767,21 +767,18 @@ public final class Utilities {
                 result = li.wrapToAdaptiveIcon(mainIcon);
             }
         }
-        if (result == null) {
-            return null;
-        }
 
         // Inject theme icon drawable
         if (ATLEAST_T && useTheme) {
             IconThemeController themeController =
                     ThemeManager.INSTANCE.get(context).getThemeController();
             if (themeController != null) {
-                AdaptiveIconDrawable themed = themeController.createThemedAdaptiveIcon(
+                result = themeController.createThemedAdaptiveIcon(
                         context,
                         result,
                         info instanceof ItemInfoWithIcon iiwi ? iiwi.bitmap : null);
-                if (themed != null) {
-                    result = themed;
+                if (result == null) {
+                    return null;
                 }
             }
         }
@@ -792,7 +789,7 @@ public final class Utilities {
                                     .getUserInfo(info.user)
                                     .applyBitmapInfoFlags(FlagOp.NO_OP)
                     )
-                    .getBadgeDrawable(context, useTheme, getIconShapeOrNull(context));
+                    .getBadgeDrawable(context, useTheme);
             if (badge == null) {
                 badge = new ColorDrawable(Color.TRANSPARENT);
             }
@@ -1048,6 +1045,26 @@ public final class Utilities {
         }
     }
 
+    /**
+     * Returns whether mouse interaction changes intended for the desktop form factor should be
+     * enabled.
+     */
+    public static boolean shouldEnableMouseInteractionChanges(Context context) {
+        return enableMouseInteractionChanges() && context.getResources().getBoolean(
+                R.bool.desktop_form_factor);
+    }
+
+    /**
+     * Returns a partial, loggable stack trace.
+     */
+    public static String getTrimmedStackTrace(String callingMethodName) {
+        String stackTrace = Log.getStackTraceString(new Exception());
+        return Arrays.stream(stackTrace.split("\\n"))
+                .skip(2) // Removes the line "java.lang.Exception" and "getTrimmedStackTrace".
+                .filter(traceLine -> !traceLine.contains(callingMethodName))
+                .limit(3)
+                .collect(Collectors.joining("\n"));
+    }
     /**
      * Determines whether the split should be left/right split layout and returns a boolean.
      * The split orientation depends on the device's properties (tablet vs. phone, landscape vs.

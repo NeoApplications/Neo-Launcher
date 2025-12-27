@@ -26,7 +26,6 @@ import static com.android.launcher3.testing.shared.TestProtocol.EDIT_MODE_STATE_
 import static com.android.launcher3.testing.shared.TestProtocol.HINT_STATE_ORDINAL;
 import static com.android.launcher3.testing.shared.TestProtocol.HINT_STATE_TWO_BUTTON_ORDINAL;
 import static com.android.launcher3.testing.shared.TestProtocol.NORMAL_STATE_ORDINAL;
-import static com.android.launcher3.testing.shared.TestProtocol.OPTIONS_STATE_ORDINAL;
 import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_MODAL_TASK_STATE_ORDINAL;
 import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_SPLIT_SELECT_ORDINAL;
 import static com.android.launcher3.testing.shared.TestProtocol.OVERVIEW_STATE_ORDINAL;
@@ -41,17 +40,17 @@ import android.view.animation.Interpolator;
 import androidx.annotation.FloatRange;
 import androidx.annotation.StringRes;
 
+import com.android.launcher3.deviceprofile.DeviceProperties;
 import com.android.launcher3.statemanager.BaseState;
 import com.android.launcher3.statemanager.StateManager;
 import com.android.launcher3.states.EditModeState;
-import com.android.launcher3.states.HintState;
 import com.android.launcher3.states.SpringLoadedState;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.uioverrides.states.AllAppsState;
+import com.android.launcher3.uioverrides.states.HintState;
 import com.android.launcher3.uioverrides.states.OverviewState;
 import com.android.launcher3.views.ActivityContext;
-import com.neoapps.neolauncher.NeoLauncher;
-import com.neoapps.neolauncher.OptionsState;
+import com.android.launcher3.views.ScrimColors;
 
 import java.util.Arrays;
 
@@ -74,8 +73,6 @@ public abstract class LauncherState implements BaseState<LauncherState> {
     public static final int SPLIT_PLACHOLDER_VIEW = 1 << 6;
     public static final int FLOATING_SEARCH_BAR = 1 << 7;
     public static final int ADD_DESK_BUTTON = 1 << 8;
-    // Edited
-    public static final int OPTIONS_VIEW = 1 << 9;
 
     // Flag indicating workspace has multiple pages visible.
     public static final int FLAG_MULTI_PAGE = BaseState.getFlag(0);
@@ -94,6 +91,9 @@ public abstract class LauncherState implements BaseState<LauncherState> {
 
     // Flag indicating that hotseat and its contents are not accessible.
     public static final int FLAG_HOTSEAT_INACCESSIBLE = BaseState.getFlag(7);
+
+    // Flag indicating that this state should not be announced by Talkback when reached
+    public static final int FLAG_SKIP_STATE_ANNOUNCEMENT = BaseState.getFlag(8);
 
 
     public static final float NO_OFFSET = 0;
@@ -115,7 +115,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
                 }
             };
 
-    private static final LauncherState[] sAllStates = new LauncherState[13];
+    private static final LauncherState[] sAllStates = new LauncherState[11];
 
     /**
      * TODO: Create a separate class for NORMAL state.
@@ -127,14 +127,6 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         public int getTransitionDuration(ActivityContext context, boolean isToState) {
             // Arbitrary duration, when going to NORMAL we use the state we're coming from instead.
             return 0;
-        }
-
-        @Override
-        public void onBackInvoked(Launcher launcher) {
-            if (launcher instanceof NeoLauncher) {
-                ((NeoLauncher) launcher).getGestureController().onPressBack();
-            }
-            super.onBackInvoked(launcher);
         }
     };
 
@@ -162,8 +154,6 @@ public abstract class LauncherState implements BaseState<LauncherState> {
             OverviewState.newBackgroundState(BACKGROUND_APP_STATE_ORDINAL);
     public static final LauncherState OVERVIEW_SPLIT_SELECT =
             OverviewState.newSplitSelectState(OVERVIEW_SPLIT_SELECT_ORDINAL);
-    // Edited
-    public static final LauncherState OPTIONS = new OptionsState(OPTIONS_STATE_ORDINAL);
 
     public final int ordinal;
 
@@ -233,8 +223,9 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      */
     public int getFloatingSearchBarRestingMarginBottom(Launcher launcher) {
         DeviceProfile dp = launcher.getDeviceProfile();
-        return areElementsVisible(launcher, FLOATING_SEARCH_BAR) ? dp.getQsbOffsetY()
-                : -dp.hotseatQsbHeight;
+        return areElementsVisible(launcher.getLauncherUiState(), FLOATING_SEARCH_BAR)
+                ? dp.getQsbOffsetY()
+                : -dp.getHotseatProfile().getQsbHeight();
     }
 
     /**
@@ -257,7 +248,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         DeviceProfile dp = launcher.getDeviceProfile();
         if (dp.isQsbInline) {
             int marginStart = getFloatingSearchBarRestingMarginStart(launcher);
-            return dp.widthPx - marginStart - dp.hotseatQsbWidth;
+            return dp.getDeviceProperties().getWidthPx() - marginStart - dp.hotseatQsbWidth;
         }
 
         boolean isRtl = Utilities.isRtl(launcher.getResources());
@@ -270,10 +261,15 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         return false;
     }
 
-    public int getVisibleElements(Launcher launcher) {
+    /**
+     * We should remove Launcher param after roll out refactorTaskbarUiState() flag.
+     */
+    public int getVisibleElements(LauncherUiState launcherUiState) {
         int elements = HOTSEAT_ICONS | WORKSPACE_PAGE_INDICATOR | VERTICAL_SWIPE_INDICATOR;
         // Floating search bar is visible in normal state except in landscape on phones.
-        if (!(launcher.getDeviceProfile().isPhone && launcher.getDeviceProfile().isLandscape)) {
+        DeviceProperties dp = launcherUiState.getDeviceProfileRef().getValue()
+                .getDeviceProperties();
+        if (!(dp.isPhone() && dp.isLandscape())) {
             elements |= FLOATING_SEARCH_BAR;
         }
         return elements;
@@ -283,8 +279,8 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      * A shorthand for checking getVisibleElements() & elements == elements.
      * @return Whether all of the given elements are visible.
      */
-    public boolean areElementsVisible(Launcher launcher, int elements) {
-        return (getVisibleElements(launcher) & elements) == elements;
+    public boolean areElementsVisible(LauncherUiState launcherUiState, int elements) {
+        return (getVisibleElements(launcherUiState) & elements) == elements;
     }
 
     /**
@@ -292,12 +288,12 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      * 1) replace hotseat or taskbar icons with a handle in gesture navigation mode or
      * 2) fade out the hotseat or taskbar icons in 3-button navigation mode.
      */
-    public boolean isTaskbarStashed(Launcher launcher) {
+    public boolean isTaskbarStashed(DeviceProfile deviceProfile) {
         return false;
     }
 
     /** Returns whether taskbar is aligned with the hotseat vs position inside apps */
-    public boolean isTaskbarAlignedWithHotseat(Launcher launcher) {
+    public boolean isTaskbarAlignedWithHotseat() {
         return true;
     }
 
@@ -332,8 +328,9 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      * What color should the workspace scrim be in when at rest in this state.
      * Return {@link Color#TRANSPARENT} for no scrim.
      */
-    public int getWorkspaceScrimColor(Launcher launcher) {
-        return Color.TRANSPARENT;
+    public ScrimColors getWorkspaceScrimColor(Launcher launcher) {
+        return new ScrimColors(/* backgroundColor */ Color.TRANSPARENT,
+                /* foregroundColor */ Color.TRANSPARENT);
     }
 
     /**
@@ -360,26 +357,22 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      */
     public final  <DEVICE_PROFILE_CONTEXT extends Context & ActivityContext>
             float getDepth(DEVICE_PROFILE_CONTEXT context) {
-        return getDepth(context,
-                ActivityContext.lookupContext(context).getDeviceProfile().isMultiWindowMode);
-    }
-
-    /**
-     * Returns the amount of blur and wallpaper zoom for this state with {@param isMultiWindowMode}.
-     *
-     * @see #getDepth(Context).
-     */
-    public final <DEVICE_PROFILE_CONTEXT extends Context & ActivityContext>
-            float getDepth(DEVICE_PROFILE_CONTEXT context, boolean isMultiWindowMode) {
-        if (isMultiWindowMode) {
-            return 0;
-        }
         return getDepthUnchecked(context);
     }
 
     protected <DEVICE_PROFILE_CONTEXT extends Context & ActivityContext>
             float getDepthUnchecked(DEVICE_PROFILE_CONTEXT context) {
         return 0f;
+    }
+
+    /**
+     * Returns whether the workspace should be blurred alongside wallpaper depth.
+     *
+     * @param targetState - The target state if a transition is in progress, or current state
+     * @return {@code true} if the workspace should be blurred alongside wallpaper depth.
+     */
+    public boolean shouldBlurWorkspace(LauncherState targetState) {
+        return targetState == ALL_APPS;
     }
 
     public String getDescription(Launcher launcher) {
@@ -395,7 +388,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
         boolean shouldFadeAdjacentScreens = (this == NORMAL || this == HINT_STATE)
                 && dp.shouldFadeAdjacentWorkspaceScreens();
         // Avoid showing adjacent screens behind handheld All Apps sheet.
-        if (Flags.allAppsSheetForHandheld() && dp.isPhone && this == ALL_APPS) {
+        if (Flags.allAppsSheetForHandheld() && dp.getDeviceProperties().isPhone() && this == ALL_APPS) {
             shouldFadeAdjacentScreens = true;
         }
         if (!shouldFadeAdjacentScreens) {
@@ -415,7 +408,7 @@ public abstract class LauncherState implements BaseState<LauncherState> {
      */
     public PageTranslationProvider getWorkspacePageTranslationProvider(Launcher launcher) {
         if (!(this == SPRING_LOADED || this == EDIT_MODE)
-                || !launcher.getDeviceProfile().isTwoPanels) {
+                || !launcher.getDeviceProfile().getDeviceProperties().isTwoPanels()) {
             return DEFAULT_PAGE_TRANSLATION_PROVIDER;
         }
         final float quarterPageSpacing = launcher.getWorkspace().getPageSpacing() / 4f;
@@ -452,7 +445,11 @@ public abstract class LauncherState implements BaseState<LauncherState> {
     }
 
     /** Called when predictive back gesture is started. */
-    public void onBackStarted(Launcher launcher) {}
+    public void onBackStarted(Launcher launcher) {
+        StateManager<LauncherState, Launcher> lsm = launcher.getStateManager();
+        LauncherState toState = lsm.getLastState();
+        lsm.onBackStarted(toState);
+    }
 
     /**
      * Called when back action is invoked. This can happen when:

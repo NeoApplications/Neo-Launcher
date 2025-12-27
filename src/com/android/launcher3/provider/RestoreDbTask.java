@@ -80,6 +80,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -106,25 +107,22 @@ public class RestoreDbTask {
             "appWidgetId", "restored"};
 
     /**
-     * Tries to restore the backup DB if needed
+     * Creates a task for restoring the backed up DB if needed. It performs the initial disk
+     * validation immediately and returns a callback which can be used to complete any database
+     * updates.
      */
-    public static void restoreIfNeeded(Context context, ModelDbController dbController) {
+    public static Consumer<ModelDbController> createRestoreTask(Context context) {
         if (!isPending(context)) {
             Log.d(TAG, "No restore task pending, exiting RestoreDbTask");
-            return;
-        }
-        if (!performRestore(context, dbController)) {
-            dbController.createEmptyDB();
+            return c -> {
+            };
         }
 
         // Obtain InvariantDeviceProfile first before setting pending to false, so
         // InvariantDeviceProfile won't switch to new grid when initializing.
         InvariantDeviceProfile idp = InvariantDeviceProfile.INSTANCE.get(context);
 
-        // Set is pending to false irrespective of the result, so that it doesn't get
-        // executed again.
-        LauncherPrefs.get(context).removeSync(RESTORE_DEVICE);
-
+        // Perform any disk updates before accessing the actual database.
         DeviceGridState deviceGridState = new DeviceGridState(context);
         FileLog.d(TAG, "restoreIfNeeded: deviceGridState from context: " + deviceGridState);
         String oldPhoneFileName = deviceGridState.getDbFile();
@@ -134,9 +132,19 @@ public class RestoreDbTask {
         // of the current phone.
         if (!Flags.oneGridSpecs()) {
             FileLog.d(TAG, "Resetting IDP to default for restore dest device");
-            idp.reset(context);
+            idp.reset();
             trySettingPreviousGridAsCurrent(context, idp, oldPhoneFileName, previousDbs);
         }
+
+        return dbController -> {
+            if (!performRestore(context, dbController)) {
+                dbController.createEmptyDB();
+            }
+
+            // Set is pending to false irrespective of the result, so that it doesn't get
+            // executed again.
+            LauncherPrefs.get(context).removeSync(RESTORE_DEVICE);
+        };
     }
 
 
@@ -168,7 +176,7 @@ public class RestoreDbTask {
              */
             FileLog.d(TAG, "Setting grid from old device as current grid: "
                     + "oldPhoneGridOption:" + oldPhoneGridOption.name);
-            idp.setCurrentGrid(context, oldPhoneGridOption.name);
+            idp.setCurrentGrid(oldPhoneGridOption.name);
         }
     }
 
@@ -192,7 +200,7 @@ public class RestoreDbTask {
         LauncherFiles.GRID_DB_FILES.stream()
                 .filter(dbName -> !dbName.equals(oldPhoneDbFileName))
                 .forEach(dbName -> {
-                    if (context.getDatabasePath(dbName).delete()) {
+                    if (context.deleteDatabase(dbName)) {
                         FileLog.d(TAG, "Removed old grid db file: " + dbName);
                     }
                 });
@@ -433,8 +441,9 @@ public class RestoreDbTask {
     public static void setPending(Context context) {
         DeviceGridState deviceGridState = new DeviceGridState(context);
         FileLog.d(TAG, "restore initiated from backup: DeviceGridState=" + deviceGridState);
-        LauncherPrefs.get(context).putSync(RESTORE_DEVICE.to(deviceGridState.getDeviceType()));
-        LauncherPrefs.get(context).putSync(IS_FIRST_LOAD_AFTER_RESTORE.to(true));
+        LauncherPrefs.get(context).putSync(
+                RESTORE_DEVICE.to(deviceGridState.getDeviceType()),
+                IS_FIRST_LOAD_AFTER_RESTORE.to(true));
     }
 
     @WorkerThread

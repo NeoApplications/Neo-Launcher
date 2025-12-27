@@ -92,7 +92,7 @@ class IconPackProvider(private val context: Context) {
         val shouldTintBackgrounds = context.prefs.profileIconColoredBackground.getValue()
         val prefs = NeoPrefs.getInstance()
 
-        if (clockMetadata != null) {
+        /*if (clockMetadata != null) {
             val clockDrawable: ClockDrawableWrapper =
                 ClockDrawableWrapper.forMeta(Build.VERSION.SDK_INT, clockMetadata) {
                     if (shouldTintBackgrounds)
@@ -107,7 +107,7 @@ class IconPackProvider(private val context: Context) {
                     clockDrawable.foreground
                 else
                     CustomAdaptiveIconDrawable(clockDrawable.background, clockDrawable.foreground)
-        }
+        }*/
 
         if (shouldTintBackgrounds) {
             return wrapThemedData(packageManager, iconEntry, drawable)
@@ -120,7 +120,7 @@ class IconPackProvider(private val context: Context) {
         iconEntry: IconEntry,
         drawable: Drawable,
     ): Drawable? {
-        val themedColors: IntArray = ThemedIconDrawable.getThemedColors(context)
+        val themedColors: IntArray = ThemedIconDrawable.getColors(context)
         val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
 
         val iconPrefs = IconPreferences(context)

@@ -17,6 +17,8 @@
 package com.android.launcher3.widgetpicker.ui.components.bottomsheet
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
@@ -43,7 +45,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -102,7 +103,6 @@ import kotlinx.coroutines.launch
  * @param onDismissSheet callback to be invoked when the bottom sheet is closed
  * @param content the content to be displayed below the [title] and [description]
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TitledBottomSheet(
     modifier: Modifier = Modifier,
@@ -125,31 +125,37 @@ fun TitledBottomSheet(
             if (enforceStaticMaxSizes) {
                 val sheetMaxWidth = dimensionResource(id = R.dimen.bottom_sheet_max_width)
                 val sheetMaxHeight = dimensionResource(id = R.dimen.bottom_sheet_max_height)
-                Modifier.widthIn(max = sheetMaxWidth).heightIn(max = sheetMaxHeight)
+                Modifier
+                    .widthIn(max = sheetMaxWidth)
+                    .heightIn(max = sheetMaxHeight)
             } else {
                 Modifier
             }
 
         BoxWithConstraints(
-            modifier = modifier.then(sizeModifier).windowInsetsPadding(sheetWindowInsets)
+            modifier = modifier
+                .then(sizeModifier)
+                .windowInsetsPadding(sheetWindowInsets)
         ) {
-            val animSpec: AnimationSpec<Float> = MaterialTheme.motionScheme.slowSpatialSpec()
+            val animSpec: AnimationSpec<Float> =
+                tween(durationMillis = 267, easing = LinearOutSlowInEasing)
             val sheetState = remember {
                 BottomSheetDismissState(expandCollapseAnimationSpec = animSpec)
             }
 
             Surface(
                 modifier =
-                    Modifier.semantics {
-                        isTraversalGroup = true
-                        customActions =
-                            listOf(
-                                CustomAccessibilityAction(label = closeSheetLabel) {
-                                    onDismissSheet()
-                                    true
-                                }
-                            )
-                    }
+                    Modifier
+                        .semantics {
+                            isTraversalGroup = true
+                            customActions =
+                                listOf(
+                                    CustomAccessibilityAction(label = closeSheetLabel) {
+                                        onDismissSheet()
+                                        true
+                                    }
+                                )
+                        }
                         .fillMaxSize()
                         .dismissibleBottomSheet(
                             sheetState = sheetState,
@@ -163,7 +169,8 @@ fun TitledBottomSheet(
                 content = {
                     Column(
                         modifier =
-                            Modifier.imePadding()
+                            Modifier
+                                .imePadding()
                                 .windowInsetsPadding(contentWindowInsets)
                                 .sheetContentHeight(heightStyle, maxHeight)
                                 .padding(horizontal = sheetInnerHorizontalPadding)
@@ -178,7 +185,8 @@ fun TitledBottomSheet(
                         if (closeBehavior == CloseBehavior.DRAG_HANDLE) {
                             DecorativeDragHandle(
                                 modifier =
-                                    Modifier.align(alignment = Alignment.CenterHorizontally)
+                                    Modifier
+                                        .align(alignment = Alignment.CenterHorizontally)
                                         .padding(
                                             top = sheetInnerTopPadding,
                                             bottom = headerBottomMargin,
@@ -264,7 +272,9 @@ private fun Header(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(bottom = headerBottomMargin).fillMaxWidth(),
+        modifier = Modifier
+            .padding(bottom = headerBottomMargin)
+            .fillMaxWidth(),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(

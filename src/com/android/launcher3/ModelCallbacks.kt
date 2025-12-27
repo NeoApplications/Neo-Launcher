@@ -305,7 +305,6 @@ class ModelCallbacks(private var launcher: Launcher) : BgDataModel.Callbacks {
                     if (it.screenId == lastScreen) animatedItems.add(it)
                     else nonAnimatedItems.add(it)
                 }
-
                 else -> folderItems.add(it)
             }
         }

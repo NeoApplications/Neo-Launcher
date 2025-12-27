@@ -31,13 +31,17 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.os.SystemClock
 import android.util.Log
+import androidx.annotation.NonNull
+import androidx.core.util.Supplier
 import com.android.launcher3.icons.BitmapInfo.Extender
 import com.android.launcher3.icons.FastBitmapDrawableDelegate.Companion.drawShaderInBounds
 import com.android.launcher3.icons.FastBitmapDrawableDelegate.DelegateFactory
 import com.android.launcher3.icons.GraphicsUtils.getColorMultipliedFilter
 import com.android.launcher3.icons.GraphicsUtils.resizeToContentSize
+import com.neoapps.neolauncher.icons.ClockMetadata
 import java.util.Calendar
 import java.util.concurrent.TimeUnit.MINUTES
+
 
 /**
  * Wrapper over [AdaptiveIconDrawable] to intercept icon flattening logic for dynamic clock icons
