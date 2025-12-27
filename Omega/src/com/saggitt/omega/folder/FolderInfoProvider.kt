@@ -51,14 +51,14 @@ class FolderInfoProvider(context: Context) : CustomInfoProvider<FolderInfo>(cont
     override fun supportsIcon() = true
 
     override fun setSwipeUpAction(info: FolderInfo, action: String?) {
-        info.setSwipeUpAction(context, action)
+        //info.setSwipeUpAction(context, action)
     }
 
     fun isDisabled(): Boolean {
         return false
     }
 
-    override fun getSwipeUpAction(info: FolderInfo): String? = info.swipeUpAction
+    //override fun getSwipeUpAction(info: FolderInfo): String? = info.swipeUpAction
 
     companion object : SingletonHolder<FolderInfoProvider, Context>(
         ensureOnMainThread(

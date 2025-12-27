@@ -11,8 +11,6 @@ import com.android.launcher3.MainProcessInitializer;
 import com.android.launcher3.RemoveAnimationSettingsTracker;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.compose.core.widgetpicker.WidgetPickerComposeWrapper;
-import com.android.launcher3.contextualeducation.ContextualEduStatsManager;
-import com.android.launcher3.contextualeducation.ContextualEduStatsManager_Factory;
 import com.android.launcher3.dragndrop.SystemDragController;
 import com.android.launcher3.folder.FolderNameSuggestionLoader;
 import com.android.launcher3.graphics.GridCustomizationsProxy;
@@ -127,8 +125,6 @@ public final class DaggerLauncherAppComponent {
 
         private Provider<ApiWrapper> apiWrapperProvider;
 
-        private Provider<ContextualEduStatsManager> contextualEduStatsManagerProvider;
-
         private Provider<PluginManagerWrapper> pluginManagerWrapperProvider;
 
         private Provider<CustomWidgetManager> customWidgetManagerProvider;
@@ -164,7 +160,6 @@ public final class DaggerLauncherAppComponent {
             this.daggerSingletonTrackerProvider = DoubleCheck.provider(DaggerSingletonTracker_Factory.create());
             this.appContextProvider = InstanceFactory.create(appContextParam);
             this.apiWrapperProvider = DoubleCheck.provider(ApiWrapper_Factory.create(appContextProvider));
-            this.contextualEduStatsManagerProvider = DoubleCheck.provider(ContextualEduStatsManager_Factory.create());
             this.pluginManagerWrapperProvider = DoubleCheck.provider(PluginManagerWrapper_Factory.create());
             this.customWidgetManagerProvider = DoubleCheck.provider(CustomWidgetManager_Factory.create(appContextProvider, pluginManagerWrapperProvider, daggerSingletonTrackerProvider));
             /*this.dynamicResourceProvider = DoubleCheck.provider(DynamicResource_Factory.create(appContextProvider, pluginManagerWrapperProvider, daggerSingletonTrackerProvider));
@@ -187,10 +182,6 @@ public final class DaggerLauncherAppComponent {
         @Override
         public ApiWrapper getApiWrapper() {
             return apiWrapperProvider.get();
-        }
-
-        public ContextualEduStatsManager getContextualEduStatsManager() {
-            return contextualEduStatsManagerProvider.get();
         }
 
         @Override

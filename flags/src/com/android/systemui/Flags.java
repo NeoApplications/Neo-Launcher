@@ -576,7 +576,10 @@ public final class Flags {
         return FEATURE_FLAGS.addBlackBackgroundForWindowMagnifier();
     }
 
+    public static boolean generatedPreviews() {
 
+        return FEATURE_FLAGS.addBlackBackgroundForWindowMagnifier();
+    }
 
     public static boolean alwaysComposeQsUiFragment() {
         

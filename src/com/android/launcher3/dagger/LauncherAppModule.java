@@ -18,6 +18,7 @@ package com.android.launcher3.dagger;
 
 import dagger.Module;
 import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
 
 @Module(includes = {
         WindowManagerProxyModule.class,
@@ -27,5 +28,6 @@ import dagger.hilt.InstallIn;
         WidgetModule.class,
         AppModule.class
 })
+@InstallIn(SingletonComponent.class)
 public class LauncherAppModule {
 }

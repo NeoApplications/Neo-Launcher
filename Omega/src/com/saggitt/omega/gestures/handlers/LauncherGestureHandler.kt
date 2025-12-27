@@ -325,7 +325,11 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
         context.nLauncher.stateManager.goToState(
             LauncherState.ALL_APPS,
             true,
-            AnimatorListeners.forEndCallback(Runnable { context.nLauncher.appsView.searchUiManager.startSearch() })
+            AnimatorListeners.forEndCallback(Runnable {
+                context.nLauncher.appsView.searchUiManager.initializeSearch(
+                    context.nLauncher.appsView
+                )
+            })
         )
     }
 }

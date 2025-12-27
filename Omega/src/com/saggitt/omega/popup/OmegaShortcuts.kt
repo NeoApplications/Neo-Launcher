@@ -77,24 +77,24 @@ class OmegaShortcuts {
                 if (prefs.drawerPopupEdit) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
                     ComposeBottomSheet.show(launcher) {
-                        CustomizeIconPage(
+                        /*CustomizeIconPage(
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
                             appInfo = appInfo,
                             onClose = { close(true) }
-                        )
+                        )*/
                     }
                 }
             } else {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
                     ComposeBottomSheet.show(launcher) {
-                        CustomizeIconPage(
+                        /*CustomizeIconPage(
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
                             appInfo = appInfo,
                             onClose = { close(true) }
-                        )
+                        )*/
                     }
                 }
             }

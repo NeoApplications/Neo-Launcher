@@ -46,6 +46,11 @@
     <attr name="focusOutlineColor" format="color" />
     <attr name="focusInnerOutlineColor" format="color" />
 
+    <!-- Device search related attributes -->
+    <attr name="focusHighlight" format="color" />
+    <attr name="groupHighlight" format="color" />
+    <attr name="searchboxHighlight" format="color" />
+
     <attr name="pageIndicatorDotColor" format="color" />
     <attr name="pageIndicatorArrowBgColor" format="color" />
     <attr name="folderPreviewColor" format="color" />

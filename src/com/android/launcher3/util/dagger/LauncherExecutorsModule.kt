@@ -31,37 +31,38 @@ import com.google.common.util.concurrent.ListeningExecutorService
 import com.google.common.util.concurrent.MoreExecutors
 
 import dagger.Module
-import dagger.Binds
 import dagger.Provides
-
-import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 /**
  * Module that provides the executors for Launcher3 as per the [ExecutorsModule]
  * interface.
  */
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class LauncherExecutorsModule {
 
-    // Include UI LooperExecutor bindings here since they're not provided
-    // by the ExecutorsModule interface.
-    @Binds
-    @LauncherAppSingleton
-    @Ui
-    abstract fun provideUiExecutor(
-        @Ui executor: LooperExecutor
-    ): ListeningExecutorService
-
-    @Binds
-    @LauncherAppSingleton
-    @LightweightBackground(LightweightBackgroundPriority.UI)
-    abstract fun provideUiExecutorService(
-        @LightweightBackground(LightweightBackgroundPriority.UI)
-        executor: LooperExecutor
-    ): ListeningExecutorService
-
     companion object {
+        @Provides
+        @LauncherAppSingleton
+        @Ui
+        fun provideUiExecutor(
+            @Ui executor: LooperExecutor
+        ): ListeningExecutorService {
+            return MoreExecutors.listeningDecorator(executor)
+        }
+
+        @Provides
+        @LauncherAppSingleton
+        @LightweightBackground(LightweightBackgroundPriority.UI)
+        fun provideUiExecutorService(
+            @LightweightBackground(LightweightBackgroundPriority.UI)
+            executor: LooperExecutor
+        ): ListeningExecutorService {
+            return MoreExecutors.listeningDecorator(executor)
+        }
+
         @Provides
         @LauncherAppSingleton
         @Ui
@@ -85,9 +86,27 @@ abstract class LauncherExecutorsModule {
 
         @Provides
         @LauncherAppSingleton
+        @LightweightBackground(LightweightBackgroundPriority.DATA)
+        fun provideDataListeningExecutorService(
+            @LightweightBackground(LightweightBackgroundPriority.DATA) executor: LooperExecutor
+        ): ListeningExecutorService {
+            return MoreExecutors.listeningDecorator(executor)
+        }
+
+        @Provides
+        @LauncherAppSingleton
         @Background
         fun provideBackgroundExecutorService(): LooperExecutor {
             return Executors.ORDERED_BG_EXECUTOR
+        }
+
+        @Provides
+        @LauncherAppSingleton
+        @Background
+        fun provideBackgroundListeningExecutorService(
+            @Background executor: LooperExecutor
+        ): ListeningExecutorService {
+            return MoreExecutors.listeningDecorator(executor)
         }
 
         @Provides

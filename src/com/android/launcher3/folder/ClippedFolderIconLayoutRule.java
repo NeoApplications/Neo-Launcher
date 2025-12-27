@@ -191,9 +191,8 @@ public class ClippedFolderIconLayoutRule {
 
     /**
      * Calculate Scale for Preview Icons based on current page and number of items in page.
-     *
      * @param numItems number of items in page
-     * @param page     current page of Folder
+     * @param page current page of Folder
      * @return scale for icons in Folder
      */
     public float scaleForItem(int numItems, int page) {

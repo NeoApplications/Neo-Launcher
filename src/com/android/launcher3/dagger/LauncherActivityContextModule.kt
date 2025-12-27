@@ -19,5 +19,5 @@ import com.android.launcher3.views.ActivityContext
 import dagger.Module
 
 /** A Module that contains [ActivityContext] related bindings */
-//@Module(includes = [ActivityContextModule::class, AppActivityContextModule::class])
+@Module(includes = [ActivityContextModule::class, AppActivityContextModule::class])
 class LauncherActivityContextModule {}

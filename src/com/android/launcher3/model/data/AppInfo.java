@@ -21,24 +21,22 @@ import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_ALL_APP
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.os.UserHandle;
-import android.os.UserManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.drawable.DrawableKt;
-import androidx.palette.graphics.Palette;
 
 import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.pm.PackageInstallInfo;
 import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.pm.UserCache.CachedUserInfo;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.ApplicationInfoWrapper;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.UserIconInfo;
 
@@ -92,26 +90,23 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
      * Must not hold the Context.
      */
     public AppInfo(Context context, LauncherActivityInfo info, UserHandle user) {
-        this(info, UserCache.INSTANCE.get(context).getUserInfo(user),
-                ApiWrapper.INSTANCE.get(context), PackageManagerHelper.INSTANCE.get(context),
-                context.getSystemService(UserManager.class).isQuietModeEnabled(user));
+        this(info, UserCache.INSTANCE.get(context).getUserManagerState().getCachedInfo(user),
+                ApiWrapper.INSTANCE.get(context), PackageManagerHelper.INSTANCE.get(context));
     }
 
-    public AppInfo(LauncherActivityInfo info, UserIconInfo userIconInfo,
-                   ApiWrapper apiWrapper, PackageManagerHelper pmHelper, boolean quietModeEnabled) {
+    public AppInfo(LauncherActivityInfo info, CachedUserInfo cachedUserInfo,
+                   ApiWrapper apiWrapper, PackageManagerHelper pmHelper) {
         this.componentName = info.getComponentName();
         this.container = CONTAINER_ALL_APPS;
-        this.user = userIconInfo.user;
+        this.user = cachedUserInfo.getIconInfo().user;
         intent = makeLaunchIntent(info);
 
-        if (quietModeEnabled) {
+        if (cachedUserInfo.isQuietModeEnabled()) {
             runtimeStatusFlags |= FLAG_DISABLED_QUIET_USER;
         }
         uid = info.getApplicationInfo().uid;
-        updateRuntimeFlagsForActivityTarget(this, info, userIconInfo, apiWrapper, pmHelper);
-        this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
-                .generate()
-                .getDominantColor(0);
+        updateRuntimeFlagsForActivityTarget(
+                this, info, cachedUserInfo.getIconInfo(), apiWrapper, pmHelper);
     }
 
     public AppInfo(AppInfo info) {
@@ -120,7 +115,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         title = Utilities.trim(info.title);
         intent = new Intent(info.intent);
         uid = info.uid;
-        this.iconColor = info.iconColor;
     }
 
     @VisibleForTesting
@@ -130,17 +124,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         this.title = title;
         this.user = user;
         this.intent = intent;
-    }
-
-    public AppInfo(@NonNull PackageInstallInfo installInfo) {
-        componentName = installInfo.componentName;
-        intent = new Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_LAUNCHER)
-            .setComponent(componentName)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        setProgressLevel(installInfo);
-        user = installInfo.user;
     }
 
     @Override
@@ -165,10 +148,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         }
 
         return workspaceItemInfo;
-    }
-
-    public ComponentKey toComponentKey() {
-        return new ComponentKey(componentName, user);
     }
 
     public static Intent makeLaunchIntent(LauncherActivityInfo info) {
@@ -198,6 +177,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
             ApiWrapper apiWrapper, PackageManagerHelper pmHelper) {
         final int oldProgressLevel = info.getProgressLevel();
         final int oldRuntimeStatusFlags = info.runtimeStatusFlags;
+        final ActivityInfo activityInfo = lai.getActivityInfo();
         ApplicationInfoWrapper appInfo = new ApplicationInfoWrapper(lai.getApplicationInfo());
         if (appInfo.isSuspended()) {
             info.runtimeStatusFlags |= FLAG_DISABLED_SUSPENDED;
@@ -205,7 +185,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
             info.runtimeStatusFlags &= ~FLAG_DISABLED_SUSPENDED;
         }
         if (Flags.enableSupportForArchiving()) {
-            if (lai.getActivityInfo().isArchived) {
+            if (activityInfo.isArchived) {
                 info.runtimeStatusFlags |= FLAG_ARCHIVED;
             } else {
                 info.runtimeStatusFlags &= ~FLAG_ARCHIVED;
@@ -225,6 +205,12 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         info.setProgressLevel(
                 PackageManagerHelper.getLoadingProgress(lai),
                 PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
+        if (activityInfo.targetActivity != null) {
+            info.setTargetActivityComponentName(
+                    new ComponentName(activityInfo.packageName, activityInfo.targetActivity));
+        } else {
+            info.setTargetActivityComponentName(null);
+        }
         info.setNonResizeable(apiWrapper.isNonResizeableActivity(lai));
         info.setSupportsMultiInstance(apiWrapper.supportsMultiInstance(lai));
         return (oldProgressLevel != info.getProgressLevel())

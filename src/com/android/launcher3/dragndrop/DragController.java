@@ -42,7 +42,6 @@ import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.TouchController;
 import com.android.launcher3.views.ActivityContext;
-import com.android.launcher3.views.BaseDragLayer;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -488,7 +487,7 @@ public abstract class DragController<T extends ActivityContext>
 
         // Case: Handle other system drag events.
         if (mLastSystemDragHandler != null && mLastSystemDragHandler.onDrag(event)) {
-            if (mDragDriver != null) {
+            if (mDragDriver !=  null) {
                 mDragDriver.onDragEvent(event);
             }
             return true;

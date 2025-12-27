@@ -18,12 +18,14 @@ package com.android.launcher3.folder;
 
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
+import static com.android.launcher3.Flags.enableLauncherVisualRefresh;
 import static com.android.launcher3.folder.FolderGridOrganizer.createFolderGridOrganizer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -47,7 +49,6 @@ import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.model.data.AppPairInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
-import com.android.launcher3.pageindicators.Direction;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.util.LauncherBindableItemsContainer.ItemOperator;
 import com.android.launcher3.util.Thunk;
@@ -130,8 +131,6 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     public void setFolder(Folder folder) {
         mFolder = folder;
         mPageIndicator = folder.findViewById(R.id.folder_page_indicator);
-        mPageIndicator.setArrowClickListener(direction -> snapToPageImmediately(
-                (Direction.END == direction) ? mCurrentPage + 1 : mCurrentPage - 1));
         initParentViews(folder);
     }
 
@@ -264,12 +263,11 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         icon.setOnFocusChangeListener(mFocusIndicatorHelper);
 
         CellLayoutLayoutParams lp = (CellLayoutLayoutParams) icon.getLayoutParams();
+        Point pos = mOrganizer.getPosForRank(item.rank);
         if (lp == null) {
-            icon.setLayoutParams(new CellLayoutLayoutParams(
-                    item.cellX, item.cellY, item.spanX, item.spanY));
+            icon.setLayoutParams(new CellLayoutLayoutParams(pos.x, pos.y, 1, 1));
         } else {
-            lp.setCellX(item.cellX);
-            lp.setCellY(item.cellY);
+            lp.setCellXY(pos);
             lp.cellHSpan = lp.cellVSpan = 1;
         }
 
@@ -290,7 +288,8 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     private CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
-        page.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
+        page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
+                grid.getFolderProfile().getCellHeightPx());
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         page.setInvertIfRtl(true);
         page.setGridSize(mGridCountX, mGridCountY);
@@ -390,6 +389,9 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
 
         // Update footer
         mPageIndicator.setVisibility(getPageCount() > 1 ? View.VISIBLE : View.GONE);
+        if (enableLauncherVisualRefresh()) {
+            mFolder.onIndicatorVisibilityChanged();
+        }
         // Set the gravity as LEFT or RIGHT instead of START, as START depends on the actual text.
         int horizontalGravity = getPageCount() > 1
                 ? (mIsRtl ? Gravity.RIGHT : Gravity.LEFT) : Gravity.CENTER_HORIZONTAL;
@@ -485,6 +487,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         super.notifyPageSwitchListener(prevPage);
         if (mFolder != null) {
             mFolder.updateTextViewFocus();
+            mFolder.updateArrowAlphas();
         }
     }
 
@@ -649,7 +652,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
             if (v != null) {
                 if (pageToAnimate != p) {
                     page.removeView(v);
-                    addViewForRank(v, (WorkspaceItemInfo) v.getTag(), moveStart);
+                    addViewForRank(v, (ItemInfo) v.getTag(), moveStart);
                 } else {
                     // Do a fake animation before removing it.
                     final int newRank = moveStart;
@@ -662,7 +665,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
                             mPendingAnimations.remove(v);
                             v.setTranslationX(oldTranslateX);
                             ((CellLayout) v.getParent().getParent()).removeView(v);
-                            addViewForRank(v, (WorkspaceItemInfo) v.getTag(), newRank);
+                            addViewForRank(v, (ItemInfo) v.getTag(), newRank);
                         }
                     };
                     v.animate()

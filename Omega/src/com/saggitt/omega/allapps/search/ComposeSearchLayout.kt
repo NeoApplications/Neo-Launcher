@@ -263,13 +263,20 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         clearSearchResult()
     }
 
+    override fun onSearchResult(
+        query: String?,
+        items: java.util.ArrayList<BaseAllAppsAdapter.AdapterItem?>?
+    ) {
+        TODO("Not yet implemented")
+    }
+
     override fun clearSearchResult() {
         mAppsView?.setSearchResults(null)
         query.value = ""
         mAppsView?.onClearSearchResult()
     }
 
-    override fun startSearch() {
+    fun startSearch() {
         startSearch("")
     }
 
@@ -280,11 +287,11 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     override fun getEditText(): ExtendedEditText? = null
 
-    override fun hideSoftwareKeyboard() {
+    fun hideSoftwareKeyboard() {
         keyboardController?.hide()
     }
 
-    override fun onSearchResult(
+    fun onSearchResult(
         query: String?,
         items: ArrayList<BaseAllAppsAdapter.AdapterItem>?,
         suggestions: MutableList<String>?,
@@ -294,7 +301,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-    override fun onSubmitSearch(query: String?): Boolean =
+    fun onSubmitSearch(query: String?): Boolean =
         if (spController.activeSearchProvider.searchUrl.isNotEmpty()) {
             openURLInBrowser(mContext, spController.activeSearchProvider.searchUrl.format(query))
             true

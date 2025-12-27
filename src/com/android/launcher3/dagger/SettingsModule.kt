@@ -20,10 +20,13 @@ import android.net.Uri
 import com.android.launcher3.util.SettingsCache.NOTIFICATION_BADGING_URI
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Named
 
 @Module
+@InstallIn(SingletonComponent::class)
 class SettingsModule {
 
     @Provides

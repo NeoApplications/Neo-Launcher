@@ -39,11 +39,11 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     override fun doSearch(query: String, callback: SearchCallback<AdapterItem>?) {
-        mAppState.model.enqueueModelUpdateTask { app, dataModel, apps ->
+        /*mAppState.model.enqueueModelUpdateTask { app, dataModel, apps ->
             val result = getSearchResult(apps.data, query)
             var suggestions = emptyList<String>()
 
-            /*if (prefs.searchContacts.onGetValue()) { TODO
+            if (prefs.searchContacts.onGetValue()) { TODO
                         val repository = PeopleRepository.INSTANCE.get(app.context)
                         val contacts = repository.findPeople(query)
                         val total = result.size
@@ -63,17 +63,17 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
                                 position++
                             }
                         }
-                    }*/
+                    }
 
             mResultHandler.post {
                 callback?.onSearchResult(
                     query,
                     result,
-                    suggestions
+                    0
                 )
             }
 
-            /*if (callback!!.showWebResult()) { TODO
+            if (callback!!.showWebResult()) { TODO
                         suggestions = getSuggestions(query)
                         callback.setShowWebResult(false)
                     }
@@ -83,8 +83,8 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
                             result,
                             suggestions
                         )
-                    }*/
-        }
+                    }
+        }*/
     }
 
     private fun getSearchResult(apps: MutableList<AppInfo>, query: String): ArrayList<AdapterItem> {

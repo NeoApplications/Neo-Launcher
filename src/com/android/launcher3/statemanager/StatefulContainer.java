@@ -63,6 +63,14 @@ public interface StatefulContainer<STATE_TYPE extends BaseState<STATE_TYPE>> ext
     }
 
     /**
+     * Called when transition to state is aborted because the state is already set
+     *
+     * @param state current state of State_Type
+     */
+    default void onRepeatStateSetAborted(STATE_TYPE state) {
+    }
+
+    /**
      * Called when transition to state starts
      *
      * @param state current state of State_Type

@@ -33,13 +33,14 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.DeviceProfile;
+import com.android.launcher3.R;
 import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.statemanager.StatefulContainer;
 import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ScreenOnTracker;
 import com.android.launcher3.util.ScreenOnTracker.ScreenOnListener;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * View scrim which draws behind hotseat and workspace
@@ -92,7 +93,6 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
     private final AnimatedFloat mSysUiAnimMultiplier = new AnimatedFloat(this::reapplySysUiAlpha);
     private final AnimatedFloat mSysUiProgress = new AnimatedFloat(this::reapplySysUiAlpha);
 
-    // Edited
     public SysUiScrim(View view) {
         mRoot = view;
         mContainer = ActivityContext.lookupContext(view.getContext());
@@ -100,8 +100,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
 
         mTopMaskHeight = ResourceUtils.pxFromDp(TOP_MASK_HEIGHT_DP, dm);
         mBottomMaskHeight = ResourceUtils.pxFromDp(BOTTOM_MASK_HEIGHT_DP, dm);
-        NeoPrefs prefs = NeoPrefs.getInstance();
-        mHideSysUiScrim = !prefs.getProfileShowTopShadow().getValue();
+        mHideSysUiScrim = Themes.getAttrBoolean(view.getContext(), R.attr.isWorkspaceDarkText);
 
         mTopMaskBitmap = mHideSysUiScrim ? null : createDitheredAlphaMask(mTopMaskHeight,
                 new int[]{0x3DFFFFFF, 0x0AFFFFFF, 0x00FFFFFF},
@@ -170,7 +169,7 @@ public class SysUiScrim implements View.OnAttachStateChangeListener {
     public void onInsetsChanged(Rect insets) {
         DeviceProfile dp = mContainer.getDeviceProfile();
         mDrawTopScrim = insets.top > 0;
-        mDrawBottomScrim = !dp.isVerticalBarLayout() && !dp.isGestureMode && !dp.isTaskbarPresent;
+        mDrawBottomScrim = !dp.isVerticalBarLayout() && !dp.getDeviceProperties().isGestureMode() && !dp.isTaskbarPresent;
     }
 
     @Override

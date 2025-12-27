@@ -30,7 +30,6 @@ import com.android.launcher3.widget.model.WidgetsListHeaderEntry;
 import com.android.launcher3.widget.picker.search.WidgetsSearchBar.WidgetsSearchDataProvider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +46,10 @@ public final class SimpleWidgetsSearchAlgorithm implements SearchAlgorithm<Widge
         mDataProvider = dataProvider;
     }
 
-    // Edited
     @Override
     public void doSearch(String query, SearchCallback<WidgetsListBaseEntry> callback) {
         ArrayList<WidgetsListBaseEntry> result = getFilteredWidgets(mDataProvider, query);
-        mResultHandler.post(() -> callback.onSearchResult(query, result, Collections.emptyList()));
+        mResultHandler.post(() -> callback.onSearchResult(query, result));
     }
 
     @Override

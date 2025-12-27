@@ -143,7 +143,7 @@ fun FolderListDialogUI(
                 modifier = Modifier.padding(start = 16.dp),
                 cornerRadius = cornerRadius,
                 onClick = {
-                    folder.setSwipeUpAction(context, selected)
+                    //folder.setSwipeUpAction(context, selected)
                     onClose(selectedGesture)
                     openDialogCustom.value = false
                 }

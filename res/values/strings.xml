@@ -312,8 +312,12 @@
     <string name="folder_renamed">Folder renamed to <xliff:g id="name" example="Games">%1$s</xliff:g></string>
     <!-- Folder name format when folder has less than 4 items -->
     <string name="folder_name_format_exact">Folder: <xliff:g id="name" example="Games">%1$s</xliff:g>, <xliff:g id="size" example="2">%2$d</xliff:g> items</string>
+    <!-- Folder name format when folder has less than 4 items and a notification dot -->
+    <string name="folder_name_format_exact_with_dot">Folder: <xliff:g id="name" example="Games">%1$s</xliff:g>, <xliff:g id="size" example="2">%2$d</xliff:g> items, has notifications</string>
     <!-- Folder name format when folder has 4 or more items shown in preview-->
     <string name="folder_name_format_overflow">Folder: <xliff:g id="name" example="Games">%1$s</xliff:g>, <xliff:g id="size" example="2">%2$d</xliff:g> or more items</string>
+    <!-- Folder name format when folder has 4 or more items shown in preview and a notification dot -->
+    <string name="folder_name_format_overflow_with_dot">Folder: <xliff:g id="name" example="Games">%1$s</xliff:g>, <xliff:g id="size" example="2">%2$d</xliff:g> or more items, has notifications</string>
     <!-- Accessibility announement for unnamed folders -->
     <string name="unnamed_folder">Unnamed folder</string>
 
@@ -550,6 +554,8 @@
     <string name="ps_container_transition">Private Space Transitioning</string>
     <!-- Title for Private Space install app icon -->
     <string name="ps_add_button_label">Install</string>
+    <!-- Title for Private Space app icon to add files and more to Private Space -->
+    <string name="ps_app_label_override">Add</string>
     <!-- Content description for install app icon -->
     <string name="ps_add_button_content_description">Install apps to Private Space</string>
     <string name="ps_app_content_description">Add files and more to Private Space</string>

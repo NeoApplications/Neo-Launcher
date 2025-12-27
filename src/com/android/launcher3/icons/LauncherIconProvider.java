@@ -16,25 +16,17 @@
 package com.android.launcher3.icons;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.graphics.drawable.AdaptiveIconDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppSingleton;
-import com.android.launcher3.graphics.ShapeDelegate;
 import com.android.launcher3.graphics.ThemeManager;
-import com.android.launcher3.util.ApiWrapper;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -58,18 +50,15 @@ public class LauncherIconProvider extends IconProvider {
 
     private Map<String, ThemeData> mThemedIconMap;
 
-    private final ApiWrapper mApiWrapper;
-    private final ThemeManager mThemeManager;
+    protected final ThemeManager mThemeManager;
 
     @Inject
     public LauncherIconProvider(
             @ApplicationContext Context context,
-            ThemeManager themeManager,
-            ApiWrapper apiWrapper) {
+            ThemeManager themeManager) {
         super(context);
         mThemeManager = themeManager;
-        mApiWrapper = apiWrapper;
-        setIconThemeSupported(mThemeManager.isMonoThemeEnabled());
+        mThemedIconMap = FeatureFlags.USE_LOCAL_ICON_OVERRIDES.get() ? null : DISABLED_MAP;
     }
 
     @Override
@@ -81,19 +70,6 @@ public class LauncherIconProvider extends IconProvider {
     public void updateSystemState() {
         super.updateSystemState();
         mSystemState += "," + mThemeManager.getIconState().toUniqueId();
-    }
-
-    @Override
-    protected String getApplicationInfoHash(@NonNull ApplicationInfo appInfo) {
-        return mApiWrapper.getApplicationInfoHash(appInfo);
-    }
-
-    /**
-     * Enables or disables icon theme support
-     */
-    public void setIconThemeSupported(boolean isSupported) {
-        mThemedIconMap = isSupported && FeatureFlags.USE_LOCAL_ICON_OVERRIDES.get()
-                ? null : DISABLED_MAP;
     }
 
     private Map<String, ThemeData> getThemedIconMap() {

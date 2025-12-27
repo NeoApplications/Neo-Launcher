@@ -83,7 +83,7 @@ fun CustomizeFolderSheet(
             val previousTitle = infoProvider.getCustomTitle(folder)
             val newTitle = if (title != defaultTitle) title else null
             if (newTitle != previousTitle) {
-                folder.setTitle(newTitle)
+                //folder.setTitle(newTitle)
             }
             val model = LauncherAppState.getInstance(context).model
             /*model.onPackageChanged(
@@ -110,7 +110,7 @@ fun CustomizeFolderView(
     onTitleChange: (String) -> Unit,
     defaultTitle: String,
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
+    /*val keyboardController = LocalSoftwareKeyboardController.current
     val coverMode = remember { mutableStateOf(folder.isCoverMode) }
     val swipeUpHandler = createGestureHandler(
         launcher, folder.swipeUpAction, BlankGestureHandler(launcher, null)
@@ -212,5 +212,5 @@ fun CustomizeFolderView(
                 )
             }
         }
-    }
+    }*/
 }

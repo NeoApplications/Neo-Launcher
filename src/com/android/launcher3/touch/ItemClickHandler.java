@@ -25,7 +25,6 @@ import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_QU
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
-import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 import android.app.AlertDialog;
@@ -47,7 +46,6 @@ import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
@@ -66,16 +64,12 @@ import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.ApiWrapper;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.views.FloatingIconView;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
-import com.saggitt.omega.data.AppTrackerRepository;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -93,9 +87,7 @@ public class ItemClickHandler {
      * Instance used for click handling on items
      */
     public static final OnClickListener INSTANCE = ItemClickHandler::onClick;
-    public static final OnClickListener FOLDER_COVER_INSTANCE = ItemClickHandler::onClickFolderCover;
 
-    // Edited
     private static void onClick(View v) {
         // Make sure that rogue clicks don't get through while allapps is launching, or after the
         // view has detached (it's possible for this to happen if the view is removed mid touch).
@@ -113,14 +105,6 @@ public class ItemClickHandler {
             onClickAppPairIcon(v);
         } else if (tag instanceof AppInfo) {
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
-            MODEL_EXECUTOR.execute(() -> {
-                NeoPrefs prefs = NeoPrefs.getInstance();
-
-                if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
-                    prefs.getReloadGrid();
-                }
-            });
-
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
                 if (DEBUG) {
@@ -139,23 +123,6 @@ public class ItemClickHandler {
             }
         } else if (tag instanceof ItemClickProxy) {
             ((ItemClickProxy) tag).onItemClicked(v);
-        }
-    }
-
-    // Edited
-    private static void onClickFolderCover(View v) {
-        if (v.getWindowToken() == null) {
-            return;
-        }
-
-        Launcher launcher = Launcher.getLauncher(v.getContext());
-        if (!launcher.getWorkspace().isFinishedSwitchingState()) {
-            return;
-        }
-
-        Object tag = v.getTag();
-        if (tag instanceof FolderInfo) {
-            //onClickAppShortcut(v, (WorkspaceItemInfo).getCoverInfo(), launcher);
         }
     }
 
@@ -188,7 +155,7 @@ public class ItemClickHandler {
         if (!isApp1Launchable || !isApp2Launchable) {
             // App pair is unlaunchable due to screen size.
             boolean isFoldable = InvariantDeviceProfile.INSTANCE.get(launcher)
-                    .supportedProfiles.stream().anyMatch(dp -> dp.isTwoPanels);
+                    .supportedProfiles.stream().anyMatch(dp -> dp.getDeviceProperties().isTwoPanels());
             Toast.makeText(launcher, isFoldable
                             ? R.string.app_pair_needs_unfold
                             : R.string.app_pair_unlaunchable_at_screen_size,
@@ -250,7 +217,8 @@ public class ItemClickHandler {
                 addFlowHandler.startBindFlow(launcher, info.appWidgetId, info,
                         REQUEST_BIND_PENDING_APPWIDGET);
             } else {
-                addFlowHandler.startConfigActivity(launcher, info, REQUEST_RECONFIGURE_APPWIDGET);
+                addFlowHandler.startConfigActivityIfSupported(launcher, info,
+                        REQUEST_RECONFIGURE_APPWIDGET);
             }
         } else {
             final String packageName = info.providerName.getPackageName();
@@ -406,7 +374,6 @@ public class ItemClickHandler {
         startAppShortcutOrInfoActivity(v, shortcut, launcher);
     }
 
-    // Edited
     private static void startAppShortcutOrInfoActivity(View v, ItemInfo item, Launcher launcher) {
         TestLogging.recordEvent(
                 TestProtocol.SEQUENCE_MAIN, "start: startAppShortcutOrInfoActivity");
@@ -429,7 +396,6 @@ public class ItemClickHandler {
         if (intent == null) {
             throw new IllegalArgumentException("Input must have a valid intent");
         }
-        boolean isProtected = false;
         if (item instanceof WorkspaceItemInfo) {
             WorkspaceItemInfo si = (WorkspaceItemInfo) item;
             if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)
@@ -441,11 +407,6 @@ public class ItemClickHandler {
                 intent = new Intent(intent);
                 intent.setPackage(null);
             }
-
-            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
-                    new ComponentKey(si.getTargetComponent(), si.user)) &&
-                    NeoPrefs.getInstance().getDrawerEnableProtectedApps().getValue();
-
             if ((si.options & WorkspaceItemInfo.FLAG_START_FOR_RESULT) != 0) {
                 launcher.startActivityForResult(item.getIntent(), 0);
                 InstanceId instanceId = new InstanceIdSequence().newInstanceId();
@@ -458,19 +419,7 @@ public class ItemClickHandler {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
-        if (item instanceof AppInfo) {
-            AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
-            repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
-
-            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
-                    ((AppInfo) item).toComponentKey()) &&
-                    NeoPrefs.getInstance().getDrawerEnableProtectedApps().getValue();
-        }
-        if (isProtected) {
-            launcher.startActivitySafelyAuth(v, intent, item);
-        } else {
-            launcher.startActivitySafely(v, intent, item);
-        }
+        launcher.startActivitySafely(v, intent, item);
     }
 
     /**

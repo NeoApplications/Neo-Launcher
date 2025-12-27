@@ -19,7 +19,6 @@ import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.anim.AnimatorListeners.forSuccessCallback;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_WIDGET_ADD_BUTTON_TAP;
-import static com.android.window.flags.Flags.predictiveBackThreeButtonNav;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -130,7 +129,7 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
     @Override
     public void setScaleY(float scaleY) {
         super.setScaleY(scaleY);
-        if (predictiveBackThreeButtonNav() && mNavBarScrimHeight > 0) {
+        if (mNavBarScrimHeight > 0) {
             // Call invalidate to prevent navbar scrim from scaling. The navbar scrim is drawn
             // directly onto the canvas. To prevent it from being scaled with the canvas, there's a
             // counter scale applied in dispatchDraw.
@@ -344,7 +343,8 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
 
         DeviceProfile deviceProfile = mActivityContext.getDeviceProfile();
         measureChildWithMargins(mContent, widthMeasureSpec,
-                widthUsed, heightMeasureSpec, deviceProfile.bottomSheetTopPadding);
+                widthUsed, heightMeasureSpec,
+                deviceProfile.getBottomSheetProfile().getBottomSheetTopPadding());
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec),
                 MeasureSpec.getSize(heightMeasureSpec));
     }
@@ -355,13 +355,13 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
     protected int getInsetsWidth() {
         int widthUsed;
         DeviceProfile deviceProfile = mActivityContext.getDeviceProfile();
-        if (deviceProfile.isTablet) {
+        if (deviceProfile.getDeviceProperties().isTablet()) {
             widthUsed = Math.max(2 * getTabletHorizontalMargin(deviceProfile),
                     2 * (mInsets.left + mInsets.right));
         } else if (mInsets.bottom > 0) {
             widthUsed = mInsets.left + mInsets.right;
         } else {
-            Rect padding = deviceProfile.workspacePadding;
+            Rect padding = deviceProfile.mWorkspaceProfile.getWorkspacePadding();
             widthUsed = Math.max(padding.left + padding.right,
                     2 * (mInsets.left + mInsets.right));
         }
@@ -375,7 +375,7 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
 
     @Override
     protected Interpolator getIdleInterpolator() {
-        return mActivityContext.getDeviceProfile().isTablet
+        return mActivityContext.getDeviceProfile().getDeviceProperties().isTablet()
                 ? EMPHASIZED : super.getIdleInterpolator();
     }
 
@@ -394,7 +394,7 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
 
         // In light mode, landscape reverses navbar background color.
         boolean isPhoneLandscape =
-                !mActivityContext.getDeviceProfile().isTablet && mInsets.bottom == 0;
+                !mActivityContext.getDeviceProfile().getDeviceProperties().isTablet() && mInsets.bottom == 0;
         if (!isNavBarDark && isPhoneLandscape) {
             isNavBarDark = true;
         }

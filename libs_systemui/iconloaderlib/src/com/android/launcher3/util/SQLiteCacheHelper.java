@@ -1,9 +1,12 @@
 package com.android.launcher3.util;
 
+import static android.database.sqlite.SQLiteDatabase.NO_LOCALIZED_COLLATORS;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.OpenParams;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteFullException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -121,5 +124,13 @@ public abstract class SQLiteCacheHelper {
             db.execSQL("DROP TABLE IF EXISTS " + mTableName);
             onCreate(db);
         }
+    }
+
+    /**
+     * Returns {@link OpenParams} which can be used to create databases without support for
+     * localized collators.
+     */
+    public static OpenParams createNoLocaleParams() {
+        return new OpenParams.Builder().addOpenFlags(NO_LOCALIZED_COLLATORS).build();
     }
 }

@@ -254,7 +254,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements
                         Favorites.SCREEN, IntArray.wrap(-777, -778)), null);
             }
             case 30: {
-                if (BuildConfig.QSB_ON_FIRST_SCREEN) {
+                if (BuildConfig.WIDGET_ON_FIRST_SCREEN) {
                     // Clean up first row in screen 0 as it might contain junk data.
                     Log.d(TAG, "Cleaning up first row");
                     db.delete(Favorites.TABLE_NAME,

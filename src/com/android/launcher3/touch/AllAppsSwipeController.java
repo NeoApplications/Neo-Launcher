@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.touch;
 
+import static com.android.app.animation.Interpolators.ACCELERATE;
 import static com.android.app.animation.Interpolators.DECELERATED_EASE;
 import static com.android.app.animation.Interpolators.EMPHASIZED;
 import static com.android.app.animation.Interpolators.EMPHASIZED_ACCELERATE;
@@ -22,7 +23,6 @@ import static com.android.app.animation.Interpolators.EMPHASIZED_DECELERATE;
 import static com.android.app.animation.Interpolators.FINAL_FRAME;
 import static com.android.app.animation.Interpolators.INSTANT;
 import static com.android.app.animation.Interpolators.LINEAR;
-import static com.android.app.animation.Interpolators.clampToProgress;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_ALL_APPS_FADE;
@@ -63,6 +63,9 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
                     LINEAR,
                     1 - ALL_APPS_CONTENT_FADE_MAX_CLAMPING_THRESHOLD,
                     1 - ALL_APPS_CONTENT_FADE_MIN_CLAMPING_THRESHOLD);
+
+    // Depth to apply behind All Apps when it's presented on a sheet.
+    private static final Interpolator ALL_APPS_SHEET_DEPTH = DECELERATED_EASE;
 
     // ---- Custom interpolators for NORMAL -> ALL_APPS on phones only. ----
 
@@ -205,19 +208,15 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
                     Interpolators.reverse(ALL_APPS_SCRIM_RESPONDER));
             config.setInterpolator(ANIM_ALL_APPS_FADE, FINAL_FRAME);
             if (!config.isUserControlled()) {
-                config.setInterpolator(ANIM_VERTICAL_PROGRESS, EMPHASIZED);
+                config.duration = 200;
+                config.setInterpolator(ANIM_VERTICAL_PROGRESS, ACCELERATE);
             }
-            config.setInterpolator(ANIM_WORKSPACE_SCALE, DECELERATED_EASE);
-            config.setInterpolator(ANIM_DEPTH, DECELERATED_EASE);
-            if (Flags.allAppsBlur()) {
-                if (!config.isUserControlled()) {
-                    config.setInterpolator(ANIM_DEPTH, EMPHASIZED_DECELERATE);
-                }
-                config.setInterpolator(ANIM_WORKSPACE_FADE,
-                        clampToProgress(LINEAR, 1 - ALL_APPS_SCRIM_VISIBLE_THRESHOLD, 1));
-                config.setInterpolator(ANIM_HOTSEAT_FADE,
-                        clampToProgress(LINEAR, 1 - ALL_APPS_SCRIM_VISIBLE_THRESHOLD, 1));
-            } else if (launcher.getDeviceProfile().isPhone) {
+            config.setInterpolator(ANIM_WORKSPACE_SCALE,
+                    Interpolators.reverse(ALL_APPS_SHEET_DEPTH));
+            config.setInterpolator(ANIM_HOTSEAT_SCALE, Interpolators.reverse(ALL_APPS_SHEET_DEPTH));
+            config.setInterpolator(ANIM_DEPTH, Interpolators.reverse(ALL_APPS_SHEET_DEPTH));
+            if (!Flags.allAppsBlur()
+                    && launcher.getDeviceProfile().getDeviceProperties().isPhone()) {
                 // On phones without blur, reveal the workspace and hotseat when leaving All Apps.
                 config.setInterpolator(ANIM_WORKSPACE_FADE, INSTANT);
                 config.setInterpolator(ANIM_HOTSEAT_FADE, INSTANT);
@@ -262,15 +261,11 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
             if (!config.isUserControlled()) {
                 config.setInterpolator(ANIM_VERTICAL_PROGRESS, EMPHASIZED);
             }
-            config.setInterpolator(ANIM_WORKSPACE_SCALE, DECELERATED_EASE);
-            config.setInterpolator(ANIM_DEPTH, DECELERATED_EASE);
-            if (Flags.allAppsBlur()) {
-                config.setInterpolator(ANIM_DEPTH, LINEAR);
-                config.setInterpolator(ANIM_WORKSPACE_FADE,
-                        clampToProgress(LINEAR, 0, ALL_APPS_SCRIM_VISIBLE_THRESHOLD));
-                config.setInterpolator(ANIM_HOTSEAT_FADE,
-                        clampToProgress(LINEAR, 0, ALL_APPS_SCRIM_VISIBLE_THRESHOLD));
-            } else if (launcher.getDeviceProfile().isPhone) {
+            config.setInterpolator(ANIM_WORKSPACE_SCALE, ALL_APPS_SHEET_DEPTH);
+            config.setInterpolator(ANIM_HOTSEAT_SCALE, ALL_APPS_SHEET_DEPTH);
+            config.setInterpolator(ANIM_DEPTH, ALL_APPS_SHEET_DEPTH);
+            if (!Flags.allAppsBlur()
+                    && launcher.getDeviceProfile().getDeviceProperties().isPhone()) {
                 // On phones without blur, hide the workspace and hotseat when entering All Apps.
                 config.setInterpolator(ANIM_WORKSPACE_FADE, FINAL_FRAME);
                 config.setInterpolator(ANIM_HOTSEAT_FADE, FINAL_FRAME);

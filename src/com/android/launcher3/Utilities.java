@@ -70,6 +70,7 @@ import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Message;
 import android.os.TransactionTooLargeException;
+import android.os.Process;
 import android.os.UserHandle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -539,10 +540,9 @@ public final class Utilities {
     /**
      * Converts a pixel value (px) to scale pixel value (SP) for the current device.
      */
-    public static float pxToSp(float size) {
-        return size / Resources.getSystem().getDisplayMetrics().scaledDensity;
+    public static float pxToSp(float size, Context context) {
+        return size / context.getResources().getDisplayMetrics().scaledDensity;
     }
-
     public static float dpiFromPx(float size, int densityDpi) {
         float densityRatio = (float) densityDpi / DisplayMetrics.DENSITY_DEFAULT;
         return (size / densityRatio);

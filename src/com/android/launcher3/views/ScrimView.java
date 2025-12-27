@@ -184,6 +184,35 @@ public class ScrimView extends View implements Insettable {
     }
 
     /**
+     * Set foreground and background color to this ScrimView
+     */
+    public void setScrimColors(ScrimColors scrimColors) {
+        this.setBackgroundColor(scrimColors.getBackgroundColor());
+        setForeground(new ColorDrawable(scrimColors.getForegroundColor()));
+    }
+
+    /**
+     * returns foreground and background color of this ScrimView
+     */
+    public ScrimColors getScrimColors() {
+        int backgroundColor;
+        if (getBackground() instanceof ColorDrawable colorDrawable) {
+            backgroundColor = colorDrawable.getColor();
+        } else {
+            backgroundColor = Color.TRANSPARENT;
+        }
+
+        int foregroundColor;
+        if (getForeground() instanceof ColorDrawable colorDrawable) {
+            foregroundColor = colorDrawable.getColor();
+        } else {
+            foregroundColor = Color.TRANSPARENT;
+        }
+
+        return new ScrimColors(backgroundColor, foregroundColor);
+    }
+
+    /**
      * A Utility interface allowing for other surfaces to draw on ScrimView
      */
     public interface ScrimDrawingController {

@@ -39,12 +39,13 @@ class DrawerFolderInfo(private val drawerFolder: DrawerFolders.Folder) : FolderI
         drawerFolder.title = title.toString()
     }
 
+    /*
     override fun onIconChanged() {
         super.onIconChanged()
         drawerFolder.context.prefs.withChangeCallback {
             it.reloadGrid()
         }
-    }
+    }*/
 
     fun onCloseComplete() {
         if (changed) {

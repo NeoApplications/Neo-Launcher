@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.secondarydisplay;
 
+import static android.view.MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
@@ -36,9 +37,12 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.popup.PopupContainer;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.popup.PopupDataProvider;
 import com.android.launcher3.popup.SystemShortcut;
+import com.android.launcher3.touch.SingleAxisSwipeDetector;
+import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.ShortcutUtil;
 import com.android.launcher3.util.TouchController;
 import com.android.launcher3.views.BaseDragLayer;
@@ -64,8 +68,23 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
 
     @Override
     public void recreateControllers() {
-        mControllers = new TouchController[]{new CloseAllAppsTouchController(),
-                mContainer.getDragController()};
+        super.recreateControllers();
+        TouchController statusBarController =
+                ApiWrapper.INSTANCE.get(getContext())
+                        .createStatusBarTouchController(mContainer, () -> true);
+
+        if (statusBarController != null) {
+            mControllers = new TouchController[]{
+                    new SecondaryDisplayAllAppsTouchController(),
+                    mContainer.getDragController(),
+                    statusBarController
+            };
+        } else {
+            mControllers = new TouchController[]{
+                    new SecondaryDisplayAllAppsTouchController(),
+                    mContainer.getDragController()
+            };
+        }
     }
 
     /**
@@ -117,42 +136,84 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child == mAppsView) {
-                int horizontalPadding = (2 * grid.desiredWorkspaceHorizontalMarginPx)
-                        + grid.cellLayoutPaddingPx.left + grid.cellLayoutPaddingPx.right;
+                int horizontalPadding = (2 * grid.getWorkspaceIconProfile()
+                        .getDesiredWorkspaceHorizontalMarginPx())
+                        + grid.mWorkspaceProfile.getCellLayoutPaddingPx().left
+                        + grid.mWorkspaceProfile.getCellLayoutPaddingPx().right;
                 int verticalPadding =
-                        grid.cellLayoutPaddingPx.top + grid.cellLayoutPaddingPx.bottom;
+                        grid.mWorkspaceProfile.getCellLayoutPaddingPx().top
+                                + grid.mWorkspaceProfile.getCellLayoutPaddingPx().bottom;
 
                 int maxWidth =
-                        grid.allAppsCellWidthPx * grid.numShownAllAppsColumns + horizontalPadding;
+                        grid.getAllAppsProfile().getCellWidthPx() * grid.numShownAllAppsColumns
+                                + horizontalPadding;
                 int appsWidth = Math.min(width - getPaddingLeft() - getPaddingRight(), maxWidth);
 
                 int maxHeight =
-                        grid.allAppsCellHeightPx * grid.numShownAllAppsColumns + verticalPadding;
+                        grid.getAllAppsProfile().getCellHeightPx() * grid.numShownAllAppsColumns
+                                + verticalPadding;
                 int appsHeight = Math.min(height - getPaddingTop() - getPaddingBottom(), maxHeight);
 
                 mAppsView.measure(
                         makeMeasureSpec(appsWidth, EXACTLY), makeMeasureSpec(appsHeight, EXACTLY));
             } else if (child == mAllAppsButton) {
-                int appsButtonSpec = makeMeasureSpec(grid.iconSizePx, EXACTLY);
+                int appsButtonSpec = makeMeasureSpec(
+                        grid.getWorkspaceIconProfile().getIconSizePx(), EXACTLY
+                );
                 mAllAppsButton.measure(appsButtonSpec, appsButtonSpec);
             } else if (child == mWorkspace) {
                 measureChildWithMargins(mWorkspace, widthMeasureSpec, 0, heightMeasureSpec,
-                        grid.iconSizePx + grid.edgeMarginPx);
+                        grid.getWorkspaceIconProfile().getIconSizePx()
+                                + grid.mWorkspaceProfile.getEdgeMarginPx());
             } else {
                 measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
             }
         }
     }
 
-    private class CloseAllAppsTouchController implements TouchController {
+    private class SecondaryDisplayAllAppsTouchController implements TouchController {
+
+        private final SingleAxisSwipeDetector mSwipeDetector;
+
+        public SecondaryDisplayAllAppsTouchController() {
+            mSwipeDetector = new SingleAxisSwipeDetector(
+                    getContext(),
+                    new SingleAxisSwipeDetector.Listener() {
+                        @Override
+                        public void onDragStart(boolean start, float startDisplacement) {
+                            mContainer.getSecondaryDisplayDelegate().openAllAppsForDisplay(
+                                    mContainer.getAppsView().getDisplay().getDisplayId());
+                        }
+
+                        @Override
+                        public boolean onDrag(float displacement) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onDragEnd(float velocity) {
+                        }
+                    },
+                    SingleAxisSwipeDetector.VERTICAL
+            );
+            mSwipeDetector.setDetectableScrollConditions(
+                    SingleAxisSwipeDetector.DIRECTION_POSITIVE, false /* ignoreSlop */);
+        }
 
         @Override
         public boolean onControllerTouchEvent(MotionEvent ev) {
-            return false;
+            if (!usingTwoFingerSwipeOnConnectedDisplay(ev)) {
+                return false;
+            }
+            return mSwipeDetector.onTouchEvent(ev);
         }
 
         @Override
         public boolean onControllerInterceptTouchEvent(MotionEvent ev) {
+            if (usingTwoFingerSwipeOnConnectedDisplay(ev)) {
+                return true;
+            }
+
             if (!mContainer.isAppDrawerShown()) {
                 return false;
             }
@@ -168,6 +229,11 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
             }
             return false;
         }
+
+        private boolean usingTwoFingerSwipeOnConnectedDisplay(MotionEvent ev) {
+            return ev.getClassification() == CLASSIFICATION_TWO_FINGER_SWIPE
+                    && mContainer.getSecondaryDisplayDelegate().enableTaskbarConnectedDisplays();
+        }
     }
 
     public PinnedAppsAdapter getPinnedAppsAdapter() {
@@ -178,7 +244,7 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
         if (!(v instanceof BubbleTextView)) {
             return false;
         }
-        if (PopupContainerWithArrow.getOpen(mContainer) != null) {
+        if (PopupContainer.getOpen(mContainer) != null) {
             // There is already an items container open, so don't open this one.
             v.clearFocus();
             return false;
@@ -187,23 +253,25 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
         if (!ShortcutUtil.supportsShortcuts(item)) {
             return false;
         }
-        PopupDataProvider popupDataProvider = mContainer.getPopupDataProvider();
-        if (popupDataProvider == null) {
-            return false;
-        }
+        PopupDataProvider popupDataProvider =
+                mContainer.getActivityComponent().getPopupDataProvider();
 
         // order of this list will reflect in the popup
-        List<SystemShortcut> systemShortcuts = new ArrayList<>();
+        List<SystemShortcut<?>> systemShortcuts = new ArrayList<>();
         systemShortcuts.add(APP_INFO.getShortcut(mContainer, item, v));
         // Hide redundant pin shortcut for app drawer icons if drag-n-drop is enabled.
         if (!FeatureFlags.SECONDARY_DRAG_N_DROP_TO_PIN.get() || !mContainer.isAppDrawerShown()) {
             systemShortcuts.add(mPinnedAppsAdapter.getSystemShortcut(item, v));
         }
         int deepShortcutCount = popupDataProvider.getShortcutCountForItem(item);
-        final PopupContainerWithArrow<SecondaryDisplayLauncher> container;
-        container = (PopupContainerWithArrow) mContainer.getLayoutInflater().inflate(
-                R.layout.popup_container, mContainer.getDragLayer(), false);
-        container.populateAndShowRows((BubbleTextView) v, deepShortcutCount,
+        final PopupContainerWithArrow<SecondaryDisplayLauncher> container =
+                PopupContainerWithArrow.create(
+                        /* context */ mContainer,
+                        /* originalView */ v,
+                        /* itemInfo */ item,
+                        /* updateIconUi */ false
+                );
+        container.populateAndShowRows(deepShortcutCount,
                 systemShortcuts);
         container.requestFocus();
 
@@ -213,8 +281,9 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
 
         DragOptions options = new DragOptions();
         DeviceProfile grid = mContainer.getDeviceProfile();
-        options.intrinsicIconScaleFactor = (float) grid.allAppsIconSizePx / grid.iconSizePx;
-        options.preDragCondition = container.createPreDragCondition(false);
+        options.intrinsicIconScaleFactor = (float) grid.getAllAppsProfile().getIconSizePx()
+                / grid.getWorkspaceIconProfile().getIconSizePx();
+        options.preDragCondition = container.createPreDragCondition();
         if (options.preDragCondition == null) {
             options.preDragCondition = new DragOptions.PreDragCondition() {
                 private DragView<SecondaryDisplayLauncher> mDragView;

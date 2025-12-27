@@ -18,7 +18,6 @@
 
 <resources>
     <dimen name="button_corner_radius">4dp</dimen>
-
     <dimen name="smartspaceAmbientShadowBlur">1.5dp</dimen>
     <dimen name="smartspaceKeyShadowBlur">2dp</dimen>
     <dimen name="smartspaceKeyShadowOffset">0.5dp</dimen>

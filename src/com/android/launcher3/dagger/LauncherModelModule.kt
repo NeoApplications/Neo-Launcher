@@ -29,12 +29,15 @@ import com.android.launcher3.popup.PopupDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
 import dagger.multibindings.StringKey
 import javax.inject.Named
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class LauncherModelModule {
     @Binds
     abstract fun bindPopupDataRepository(impl: PopupDataRepositoryImpl): PopupDataRepository

@@ -38,10 +38,10 @@ import java.util.List;
  */
 public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
 
-    protected static final int MAX_RESULTS_COUNT = 5;
+    public static final int MAX_RESULTS_COUNT = 5;
 
-    protected final LauncherAppState mAppState;
-    protected final Handler mResultHandler;
+    private final LauncherAppState mAppState;
+    private final Handler mResultHandler;
     private final boolean mAddNoResultsMessage;
 
     public DefaultAppSearchAlgorithm(Context context) {
@@ -68,7 +68,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
             if (mAddNoResultsMessage && result.isEmpty()) {
                 result.add(getEmptyMessageAdapterItem(query));
             }
-            mResultHandler.post(() -> callback.onSearchResult(query, result, new ArrayList<>()));
+            mResultHandler.post(() -> callback.onSearchResult(query, result));
         });
     }
 

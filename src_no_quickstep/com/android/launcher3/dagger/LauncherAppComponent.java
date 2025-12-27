@@ -30,4 +30,3 @@ public interface LauncherAppComponent extends LauncherBaseAppComponent {
         LauncherAppComponent build();
     }
 }
-

@@ -70,7 +70,7 @@ public class AddWorkspaceItemsTask implements ModelUpdateTask {
     private final WorkspaceItemSpaceFinder mItemSpaceFinder;
 
     /**
-     * @param itemList        items to add on the workspace
+     * @param itemList items to add on the workspace
      * @param itemSpaceFinder inject WorkspaceItemSpaceFinder dependency for testing
      */
     public AddWorkspaceItemsTask(@NonNull final List<Pair<ItemInfo, Object>> itemList,

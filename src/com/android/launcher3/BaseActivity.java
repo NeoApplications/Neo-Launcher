@@ -27,10 +27,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Display;
 import android.view.View;
 import android.window.OnBackInvokedDispatcher;
 
@@ -47,6 +47,7 @@ import com.android.launcher3.dagger.ActivityContextComponent;
 import com.android.launcher3.dagger.LauncherComponentProvider;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.testing.TestInformationHandler;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.ActivityOptionsWrapper;
@@ -58,7 +59,6 @@ import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.SystemUiController;
 import com.android.launcher3.util.ViewCache;
 import com.android.launcher3.util.WeakCleanupSet;
-import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.ScrimView;
 
@@ -75,7 +75,8 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
         DisplayInfoChangeListener {
 
     private static final String TAG = "BaseActivity";
-    static final boolean DEBUG = false;
+    // TODO(b/406230491): Trun DEBUG back to false once done with investigation.
+    static final boolean DEBUG = true;
 
     public static final int INVISIBLE_BY_STATE_HANDLER = 1 << 0;
     public static final int INVISIBLE_BY_APP_TRANSITIONS = 1 << 1;
@@ -102,8 +103,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     }
 
     private final ArrayList<OnDeviceProfileChangeListener> mDPChangeListeners = new ArrayList<>();
-    private final ArrayList<MultiWindowModeChangedListener> mMultiWindowModeChangedListeners =
-            new ArrayList<>();
 
     private final SavedStateRegistryController mSavedStateRegistryController =
             SavedStateRegistryController.create(this);
@@ -112,6 +111,7 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
 
     protected DeviceProfile mDeviceProfile;
     protected SystemUiController mSystemUiController;
+    protected int mDisplayId;
     private StatsLogManager mStatsLogManager;
 
     public static final int ACTIVITY_STATE_STARTED = 1 << 0;
@@ -196,6 +196,7 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
         mSavedStateRegistryController.performAttach();
         registerActivityLifecycleCallbacks(
                 new LifecycleHelper(this, mSavedStateRegistryController, mLifecycleRegistry));
+        TestInformationHandler.trackUiSurface(this);
     }
 
     @Override
@@ -225,6 +226,7 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
         }
         return mActivityComponent;
     }
+
     /**
      * Returns {@link StatsLogManager} for user event logging.
      */
@@ -255,7 +257,13 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Cache displayId as it is a binder call.
+        Display display = getDisplay();
+        mDisplayId = display != null ? display.getDisplayId() : Display.DEFAULT_DISPLAY;
         registerBackDispatcher();
+
+        // TODO: b/362720616 - Investigate the impact of adding listener using correct displayId.
         DisplayController.INSTANCE.get(this).addChangeListener(this);
     }
 
@@ -277,14 +285,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     protected void onUserLeaveHint() {
         removeActivityFlags(ACTIVITY_STATE_USER_ACTIVE);
         super.onUserLeaveHint();
-    }
-
-    @Override
-    public void onMultiWindowModeChanged(boolean isInMultiWindowMode, Configuration newConfig) {
-        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig);
-        for (int i = mMultiWindowModeChangedListeners.size() - 1; i >= 0; i--) {
-            mMultiWindowModeChangedListeners.get(i).onMultiWindowModeChanged(isInMultiWindowMode);
-        }
     }
 
     @Override
@@ -397,14 +397,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     protected void onActivityFlagsChanged(int changeBits) {
     }
 
-    public void addMultiWindowModeChangedListener(MultiWindowModeChangedListener listener) {
-        mMultiWindowModeChangedListeners.add(listener);
-    }
-
-    public void removeMultiWindowModeChangedListener(MultiWindowModeChangedListener listener) {
-        mMultiWindowModeChangedListeners.remove(listener);
-    }
-
     /**
      * Used to set the override visibility state, used only to handle the transition home with the
      * recents animation.
@@ -440,10 +432,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     /** Removes a previously added callback */
     public void removeEventCallback(@ActivityEvent int event, Runnable callback) {
         mEventCallbacks[event].remove(callback);
-    }
-
-    public interface MultiWindowModeChangedListener {
-        void onMultiWindowModeChanged(boolean isInMultiWindowMode);
     }
 
     protected void dumpMisc(String prefix, PrintWriter writer) {
@@ -495,10 +483,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
                 ActivityContext.super.makeDefaultActivityOptions(splashScreenStyle);
         addEventCallback(EVENT_RESUMED, wrapper.onEndCallback::executeAllAndDestroy);
         return wrapper;
-    }
-
-    protected WindowBounds getMultiWindowDisplaySize() {
-        return WindowBounds.fromWindowMetrics(getWindowManager().getCurrentWindowMetrics());
     }
 
     @Override

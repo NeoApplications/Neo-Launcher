@@ -32,7 +32,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.DragSource;
@@ -50,6 +49,8 @@ import com.android.launcher3.widget.util.WidgetDragScaleUtils;
  * Drag controller for Launcher activity
  */
 public class LauncherDragController extends DragController<Launcher> {
+
+    public static final String TAG = "LauncherDragController";
 
     private static final boolean PROFILE_DRAWING_DURING_DRAG = false;
     private final FlingToDeleteHelper mFlingToDeleteHelper;
@@ -151,9 +152,7 @@ public class LauncherDragController extends DragController<Launcher> {
                 initialDragViewScale,
                 dragViewScaleOnDrop,
                 scalePx);
-        // During a drag, we don't want to expose the descendendants of drag view to a11y users,
-        // since those decendents are not a valid position in the workspace.
-        dragView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
         dragView.setItemInfo(dragInfo);
         mDragObject.dragComplete = false;
 
@@ -161,6 +160,7 @@ public class LauncherDragController extends DragController<Launcher> {
         mDragObject.yOffset = mMotionDown.y - (dragLayerY + dragRegionTop);
 
         mDragDriver = DragDriver.create(this, mOptions, mFlingToDeleteHelper::recordMotionEvent);
+        updateDescendantsAccessibility(dragView, /*accessible=*/ false);
         if (!mOptions.isAccessibleDrag) {
             mDragObject.stateAnnouncer = DragViewStateAnnouncer.createFor(dragView);
         }
@@ -190,22 +190,37 @@ public class LauncherDragController extends DragController<Launcher> {
 
         handleMoveEvent(mLastTouch.x, mLastTouch.y);
 
-        if (!isItemPinnable()
-                || (!mActivity.isTouchInProgress() && options.simulatedDndStartPoint == null)) {
+        if (!isItemPinnable() || (!mIsInPreDrag && !mActivity.isTouchInProgress()
+                && options.simulatedDndStartPoint == null)) {
             // If it is an internal drag and the touch is already complete, cancel immediately
             MAIN_EXECUTOR.post(this::cancelDrag);
         }
         return dragView;
     }
 
+    /**
+     * During a drag, we don't want to expose the descendants of drag view to a11y users,
+     * since those descendants are not a valid position in the workspace.
+     * We need to go through the children because the view itself is important for
+     * accessibility, basically we are implementing:
+     * IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS when {@code accessible} is true and
+     * reversing it when false.
+     */
+    void updateDescendantsAccessibility(DragView dragView, boolean accessible) {
+        for (int i = 0; i < dragView.getChildCount(); i++) {
+            dragView.getChildAt(i).setImportantForAccessibility(
+                    accessible ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+            );
+        }
+    }
 
     /**
      * Returns the scale in terms of pixels (to be applied on width) to scale the preview
      * during drag and drop.
      */
-    @VisibleForTesting
-    float getWidgetDragScalePx(@Nullable Drawable drawable, @Nullable View view,
-                               ItemInfo dragInfo) {
+    public float getWidgetDragScalePx(@Nullable Drawable drawable, @Nullable View view,
+                                      ItemInfo dragInfo) {
         float draggedViewWidthPx = 0;
         float draggedViewHeightPx = 0;
 
@@ -222,6 +237,11 @@ public class LauncherDragController extends DragController<Launcher> {
     }
 
     @Override
+    public String dump() {
+        return TAG;
+    }
+
+    @Override
     protected void exitDrag() {
         if (!mIsInPreDrag && !mActivity.isInState(EDIT_MODE)) {
             mActivity.getStateManager().goToState(NORMAL, SPRING_LOADED_EXIT_DELAY);
@@ -230,6 +250,9 @@ public class LauncherDragController extends DragController<Launcher> {
 
     @Override
     protected boolean endWithFlingAnimation() {
+        if (mDragObject != null && mDragObject.dragView != null) {
+            updateDescendantsAccessibility(mDragObject.dragView, /*accessible=*/ true);
+        }
         Runnable flingAnimation = mFlingToDeleteHelper.getFlingAnimation(mDragObject, mOptions);
         if (flingAnimation != null) {
             drop(mFlingToDeleteHelper.getDropTarget(), flingAnimation);
@@ -240,6 +263,9 @@ public class LauncherDragController extends DragController<Launcher> {
 
     @Override
     protected void endDrag() {
+        if (mDragObject != null && mDragObject.dragView != null) {
+            updateDescendantsAccessibility(mDragObject.dragView, /*accessible=*/ true);
+        }
         super.endDrag();
         mFlingToDeleteHelper.releaseVelocityTracker();
     }

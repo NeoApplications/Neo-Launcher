@@ -123,11 +123,9 @@ data class FirstScreenBroadcastModel(
         private const val PENDING_WORKSPACE_ITEM_EXTRA = "workspaceItem"
         private const val PENDING_HOTSEAT_ITEM_EXTRA = "hotseatItem"
         private const val PENDING_WIDGET_ITEM_EXTRA = "widgetItem"
-
         // Extras containing all installed items, including Archived Apps.
         private const val INSTALLED_WORKSPACE_ITEMS_EXTRA = "workspaceInstalledItems"
         private const val INSTALLED_HOTSEAT_ITEMS_EXTRA = "hotseatInstalledItems"
-
         // This includes installed widgets on all screens, not just first.
         private const val ALL_INSTALLED_WIDGETS_ITEM_EXTRA = "widgetInstalledItems"
         private const val VERIFICATION_TOKEN_EXTRA = "verificationToken"

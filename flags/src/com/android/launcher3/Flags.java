@@ -237,6 +237,15 @@ public final class Flags {
         return true;
     }
 
+    public static boolean homeScreenEditImprovements() {
+
+        return true;
+    }
+
+    public static boolean generatedPreviews() {
+
+        return true;
+    }
     public static boolean enableExpressiveFolderExpansion() {
 
         return true;

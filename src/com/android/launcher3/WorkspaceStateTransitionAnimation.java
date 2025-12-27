@@ -122,7 +122,7 @@ public class WorkspaceStateTransitionAnimation {
                     propertySetter, config);
         }
 
-        int elements = state.getVisibleElements(mLauncher);
+        int elements = state.getVisibleElements(mLauncher.getLauncherUiState());
         Hotseat hotseat = mWorkspace.getHotseat();
         Interpolator scaleInterpolator = config.getInterpolator(ANIM_WORKSPACE_SCALE, ZOOM_OUT);
         LauncherState fromState = mLauncher.getStateManager().getState();
@@ -207,7 +207,7 @@ public class WorkspaceStateTransitionAnimation {
         propertySetter.setFloat(sysUiScrim.getSysUIProgress(), AnimatedFloat.VALUE,
                 state.hasFlag(FLAG_HAS_SYS_UI_SCRIM) ? 1 : 0, LINEAR);
 
-        propertySetter.setViewBackgroundColor(mLauncher.getScrimView(),
+        propertySetter.setScrimColors(mLauncher.getScrimView(),
                 state.getWorkspaceScrimColor(mLauncher),
                 config.getInterpolator(ANIM_SCRIM_FADE, ACCELERATE_2));
     }

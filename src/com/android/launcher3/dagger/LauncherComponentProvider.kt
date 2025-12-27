@@ -31,7 +31,6 @@ object LauncherComponentProvider {
     @JvmStatic
     fun get(c: Context): LauncherAppComponent {
         val app = c.applicationContext
-        val isSafeMode = c.packageManager.isSafeMode
         if (app is LauncherApplication) return app.appComponent
 
         val inflater = LayoutInflater.from(app)
@@ -42,7 +41,7 @@ object LauncherComponentProvider {
         return Holder(
             DaggerLauncherAppComponent.builder()
                 .appContext(app)
-                .setSafeModeEnabled(isSafeMode)
+                .setSafeModeEnabled(true)
                 .build() as LauncherAppComponent,
             existingFilter,
         )

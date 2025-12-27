@@ -38,6 +38,10 @@ abstract class WindowManagerProxyModule {}
 
 @Module
 @InstallIn(SingletonComponent::class)
+abstract class ActivityContextModule {}
+
+@Module
+@InstallIn(SingletonComponent::class)
 abstract class ApiWrapperModule {}
 
 @Module
@@ -58,6 +62,7 @@ abstract class StaticObjectModule {
 }
 
 @Module
+@InstallIn(SingletonComponent::class)
 object SystemDragModule {
     @Provides
     @LauncherAppSingleton
@@ -70,15 +75,22 @@ object SystemDragModule {
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {}
 
+// Module containing bindings of [ActivityContext] for the final derivative app
 @Module
+@InstallIn(SingletonComponent::class)
+abstract class AppActivityContextModule {}
+
+@Module
+@InstallIn(SingletonComponent::class)
 abstract class PerDisplayModule {}
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class LauncherConcurrencyModule {}
-
 
 /** A dagger module responsible for managing files on the home screen. */
 @Module
+@InstallIn(SingletonComponent::class)
 object HomeScreenFilesModule {
     @Provides
     @LauncherAppSingleton

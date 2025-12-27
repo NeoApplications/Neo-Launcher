@@ -23,46 +23,26 @@ import static androidx.core.util.Preconditions.checkNotNull;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR;
 import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
-import static com.android.launcher3.folder.FolderIcon.inflateIcon;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Process;
-import android.text.TextUtils;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.Item;
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
-import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.Attribute;
 import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
-import com.saggitt.omega.data.GestureItemInfoRepository;
-import com.saggitt.omega.data.models.GestureItemInfo;
-import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
@@ -77,8 +57,6 @@ public class FolderInfo extends CollectionInfo {
     public static final int FLAG_MULTI_PAGE_ANIMATION = 0x00000004;
 
     public static final int FLAG_MANUAL_FOLDER_NAME = 0x00000008;
-
-    public static final int FLAG_COVER_MODE = 0x00000010;
 
     /**
      * Different states of folder label.
@@ -111,17 +89,10 @@ public class FolderInfo extends CollectionInfo {
     /**
      * The apps and shortcuts
      */
-    public final ArrayList<ItemInfo> contents = new ArrayList<>();
-
-    public String swipeUpAction;
-    private ArrayList<FolderListener> mListeners = new ArrayList<>();
-    public FirstItemProvider firstItemProvider = new FirstItemProvider(this);
+    private final ArrayList<ItemInfo> contents = new ArrayList<>();
 
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
-        user = Process.myUserHandle();
-
-        swipeUpAction = "";
     }
 
     @Override
@@ -129,40 +100,9 @@ public class FolderInfo extends CollectionInfo {
         if (!willAcceptItemType(item.itemType)) {
             throw new RuntimeException("tried to add an illegal type into a folder");
         }
-        add(item, contents.size(), true);
+        getContents().add(item);
     }
 
-    public void add(ItemInfo item, int rank, boolean animate) {
-        rank = Utilities.boundToRange(rank, 0, contents.size());
-        contents.add(rank, item);
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onAdd(item, rank);
-        }
-        itemsChanged(animate);
-    }
-
-    /**
-     * Remove an app or shortcut. Does not change the DB.
-     *
-     * @param item
-     */
-    public void remove(ItemInfo item, boolean animate) {
-        removeAll(Collections.singletonList(item), animate);
-    }
-
-    public void removeAll(List<ItemInfo> items, boolean animate) {
-        contents.removeAll(items);
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onRemove(items);
-        }
-        itemsChanged(animate);
-    }
-
-    public void itemsChanged(boolean animate) {
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onItemsChanged(animate);
-        }
-    }
     /**
      * Returns the folder's contents as an unsorted ArrayList of {@link ItemInfo}. Includes
      * {@link WorkspaceItemInfo} and {@link AppPairInfo}s.
@@ -197,28 +137,6 @@ public class FolderInfo extends CollectionInfo {
         writer.put(LauncherSettings.Favorites.OPTIONS, options);
     }
 
-    public void addListener(FolderListener listener) {
-        mListeners.add(listener);
-    }
-
-    public void removeListener(FolderListener listener) {
-        mListeners.remove(listener);
-    }
-
-    public interface FolderListener {
-        void onAdd(ItemInfo item, int rank);
-
-        void onRemove(List<ItemInfo> item);
-
-        void onItemsChanged(boolean animate);
-
-        void onTitleChanged(CharSequence title);
-
-        default void onIconChanged() {
-            // do nothing
-        }
-    }
-
     public boolean hasOption(int optionFlag) {
         return (options & optionFlag) != 0;
     }
@@ -237,62 +155,6 @@ public class FolderInfo extends CollectionInfo {
         }
         if (writer != null && oldOptions != options) {
             writer.updateItemInDatabase(this);
-        }
-    }
-
-    public boolean isCoverMode() {
-        return hasOption(FLAG_COVER_MODE);
-    }
-
-    public boolean isInDrawer() {
-        return container == ItemInfo.NO_ID;
-    }
-
-    public void setCoverMode(boolean enable, ModelWriter modelWriter) {
-        setOption(FLAG_COVER_MODE, enable, modelWriter);
-        onIconChanged();
-    }
-
-    public ItemInfo getCoverInfo() {
-        return firstItemProvider.getFirstItem();
-    }
-
-    public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
-        swipeUpAction = action;
-        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
-        GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
-        if (gestureItemInfo != null && gestureItemInfo.getSwipeUp() != null) {
-            gestureItemInfo.setSwipeUp(swipeUpAction);
-            repository.update(gestureItemInfo);
-        } else {
-            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
-            repository.insert(gestureItemInfo);
-        }
-    }
-
-    public CharSequence getIconTitle(Folder folder) {
-        if (!isCoverMode()) {
-            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
-                return title;
-            } else {
-                return folder.getDefaultFolderName();
-            }
-        } else {
-            WorkspaceItemInfo info = (WorkspaceItemInfo) getCoverInfo();
-            if (info.customTitle != null) {
-                return info.customTitle;
-            }
-            return info.title;
-        }
-    }
-
-    public ComponentKey toComponentKey() {
-        return new ComponentKey(new ComponentName("com.neoapps.neolauncher.folder", String.valueOf(id)), Process.myUserHandle());
-    }
-
-    public void onIconChanged() {
-        for (FolderListener listener : mListeners) {
-            listener.onIconChanged();
         }
     }
 
@@ -315,13 +177,6 @@ public class FolderInfo extends CollectionInfo {
                 .addItemAttributes(getLabelState().mLogAttribute)
                 .setContainerInfo(getContainerInfo())
                 .build();
-    }
-
-    public void setTitle(CharSequence title) {
-        this.title = title;
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onTitleChanged(title);
-        }
     }
 
     public void setTitle(@Nullable CharSequence title, ModelWriter modelWriter) {
@@ -467,33 +322,5 @@ public class FolderInfo extends CollectionInfo {
         return itemType == ITEM_TYPE_APPLICATION
                 || itemType == ITEM_TYPE_DEEP_SHORTCUT
                 || itemType == ITEM_TYPE_APP_PAIR;
-    }
-
-    public boolean useIconMode(Context context) {
-        return isCoverMode();
-    }
-
-    public boolean usingCustomIcon(Context context) {
-        return !isCoverMode();
-    }
-
-    public Drawable getIcon(Context context) {
-        Launcher launcher = Launcher.getLauncher(context);
-        if (isCoverMode()) return getCoverInfo().newIcon(context);
-        return getFolderIcon(launcher);
-    }
-
-    public Drawable getFolderIcon(Launcher launcher) {
-        int iconSize = launcher.getDeviceProfile().iconSizePx;
-        LinearLayout dummy = new LinearLayout(launcher, null);
-        com.android.launcher3.folder.FolderIcon icon =  inflateIcon(R.layout.folder_icon, launcher, dummy, this);
-        icon.isCustomIcon = false;
-        icon.getFolderBackground().setStartOpacity(1f);
-        Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
-            out.translate(iconSize / 2f, 0);
-            icon.draw(out);
-        });
-        icon.unbind();
-        return new BitmapDrawable(launcher.getResources(), b);
     }
 }

@@ -31,7 +31,6 @@ import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.dagger.HomeScreenFilesModule
 import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
-import com.android.launcher3.dagger.LauncherBaseAppComponent
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.android.launcher3.dagger.LauncherConcurrencyModule
 import com.android.launcher3.dagger.LauncherModelModule
@@ -56,6 +55,8 @@ import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import java.io.File
 import java.util.Arrays
 import java.util.UUID
@@ -172,6 +173,7 @@ constructor(
     }
 
     @Module
+    @InstallIn(SingletonComponent::class)
     abstract class PreviewModule {
 
         @Binds
@@ -199,6 +201,8 @@ constructor(
                 SystemDragModule::class,
             ]
     )
+    @InstallIn(SingletonComponent::class)
+    @Module
     interface PreviewAppComponent : LauncherAppComponent {
         val model: LauncherModel
         val modelInitializer: ModelInitializer

@@ -435,7 +435,7 @@ public abstract class AbstractSlideInView<T extends Context & ActivityContext>
 
     @Override
     public void onDragEnd(float velocity) {
-        float successfulShiftThreshold = mActivityContext.getDeviceProfile().isTablet
+        float successfulShiftThreshold = mActivityContext.getDeviceProfile().getDeviceProperties().isTablet()
                 ? TABLET_BOTTOM_SHEET_SUCCESS_TRANSITION_PROGRESS : SUCCESS_TRANSITION_PROGRESS;
         if ((mSwipeDetector.isFling(velocity) && velocity > 0)
                 || mTranslationShift > successfulShiftThreshold) {

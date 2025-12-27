@@ -16,7 +16,7 @@
 
 package com.android.launcher3.anim;
 
-import static com.android.launcher3.LauncherAnimUtils.VIEW_BACKGROUND_COLOR;
+import static com.android.launcher3.LauncherAnimUtils.SCRIM_COLORS;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -25,12 +25,15 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.graphics.drawable.ColorDrawable;
 import android.util.FloatProperty;
 import android.util.IntProperty;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+
+import com.android.launcher3.views.ScrimColors;
+import com.android.launcher3.views.ScrimView;
+import com.android.launcher3.views.ScrimColorsEvaluator;
 
 import java.util.function.Consumer;
 
@@ -63,15 +66,16 @@ public class AnimatedPropertySetter extends PropertySetter {
     }
 
     @Override
-    public Animator setViewBackgroundColor(View view, int color, TimeInterpolator interpolator) {
-        if (view == null || (view.getBackground() instanceof ColorDrawable
-                && ((ColorDrawable) view.getBackground()).getColor() == color)) {
+    public Animator setScrimColors(ScrimView view, ScrimColors scrimColors,
+                                   TimeInterpolator interpolator) {
+        if (view == null || view.getScrimColors().equals(scrimColors)) {
             return NO_OP;
         }
-        ObjectAnimator anim = ObjectAnimator.ofArgb(view, VIEW_BACKGROUND_COLOR, color);
-        anim.setInterpolator(interpolator);
-        add(anim);
-        return anim;
+        ObjectAnimator animator = ObjectAnimator.ofObject(view, SCRIM_COLORS,
+                ScrimColorsEvaluator.INSTANCE, scrimColors);
+        animator.setInterpolator(interpolator);
+        add(animator);
+        return animator;
     }
 
     @Override

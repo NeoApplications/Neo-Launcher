@@ -23,7 +23,6 @@ import android.app.Person;
 import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
@@ -31,13 +30,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Process;
 import android.os.UserHandle;
-import android.os.UserManager;
-import android.util.ArrayMap;
 import android.view.SurfaceControlViewHost;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.BaseActivity;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
@@ -47,8 +45,8 @@ import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.icons.BitmapRenderer;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -87,39 +85,6 @@ public class ApiWrapper {
      */
     public ActivityOptions createFadeOutAnimOptions() {
         return ActivityOptions.makeCustomAnimation(mContext, 0, android.R.anim.fade_out);
-    }
-
-    /**
-     * Returns a map of all users on the device to their corresponding UI properties
-     */
-    public Map<UserHandle, UserIconInfo> queryAllUsers() {
-        UserManager um = mContext.getSystemService(UserManager.class);
-        Map<UserHandle, UserIconInfo> users = new ArrayMap<>();
-        List<UserHandle> usersActual = um.getUserProfiles();
-        if (usersActual != null) {
-            for (UserHandle user : usersActual) {
-                long serial = um.getSerialNumberForUser(user);
-
-                // Simple check to check if the provided user is work profile
-                // TODO: Migrate to a better platform API
-                NoopDrawable d = new NoopDrawable();
-                boolean isWork = (d != mContext.getPackageManager().getUserBadgedIcon(d, user));
-                UserIconInfo info = new UserIconInfo(
-                        user,
-                        isWork ? UserIconInfo.TYPE_WORK : UserIconInfo.TYPE_MAIN,
-                        serial);
-                users.put(user, info);
-            }
-        }
-        return users;
-    }
-
-    /**
-     * Returns the list of the system packages that are installed at user creation.
-     * An empty list denotes that all system packages are installed for that user at creation.
-     */
-    public List<String> getPreInstalledSystemPackages(UserHandle user) {
-        return Collections.emptyList();
     }
 
     /**
@@ -204,19 +169,12 @@ public class ApiWrapper {
         }
     }
 
-    /**
-     * Returns a hash to uniquely identify a particular version of appInfo
-     */
-    public String getApplicationInfoHash(@NonNull ApplicationInfo appInfo) {
-        // The hashString in source dir changes with every install
-        return appInfo.sourceDir;
-    }
-
-    /**
-     * Returns the round icon resource Id if defined by the app
-     */
-    public int getRoundIconRes(@NonNull ApplicationInfo appInfo) {
-        return 0;
+    @Nullable
+    public TouchController createStatusBarTouchController(
+            BaseActivity launcher,
+            Supplier<Boolean> isEnabledCheck
+    ) {
+        return null;
     }
 
     /**
