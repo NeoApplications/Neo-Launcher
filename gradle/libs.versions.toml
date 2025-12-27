@@ -99,8 +99,7 @@ error-prone-annotations = { module = "com.google.errorprone:error_prone_annotati
 fuzzywuzzy = { module = "me.xdrop:fuzzywuzzy", version.ref = "fuzzywuzzy" }
 graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 hoko-blur = { module = "io.github.hokofly:hoko-blur", version.ref = "hoko-blur" }
 jakarta-inject = { group = "jakarta.inject", name = "jakarta.inject-api", version.ref = "jakarta-inject" }
 java-inject = { group = "javax.inject", name = "javax.inject", version.ref = "inject" }
@@ -148,21 +147,14 @@ uiautomator-v18 = { module = "com.android.support.test.uiautomator:uiautomator-v
 window = { module = "androidx.window:window", version.ref = "window" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
-google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
-mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito" }
-mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
-mockito-robolectric = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-mockito-robolectric-bytebuddy = "net.bytebuddy:byte-buddy:1.15.11"
-mockito-robolectric-bytebuddy-agent = "net.bytebuddy:byte-buddy-agent:1.15.11"
-kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-ksp = "com.google.devtools.ksp:2.3.4"
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }

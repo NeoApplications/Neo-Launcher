@@ -83,7 +83,6 @@ dependencies{
     implementation(libs.recyclerview)
 
     implementation(libs.kotlin.stdlib.jdk7)
-    implementation(libs.hilt.android)
     implementation(libs.hilt.compiler)
     protobuf(files("proto/"))
 

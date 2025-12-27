@@ -42,9 +42,9 @@ val addFrameworkJar = { name: String ->
         compileOnly(files(frameworkJar))
     }
 }
-addFrameworkJar("framework-15.jar")
+addFrameworkJar("framework-16.jar")
 dependencies {
-    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
     implementation(libs.java.inject)
     implementation(libs.guava)
     implementation(project(":dagger"))

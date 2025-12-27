@@ -88,7 +88,7 @@ android {
 
 dependencies {
     implementation(libs.core.ktx)
-    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
 
     // Compose UI dependencies
     implementation(libs.compose.ui)

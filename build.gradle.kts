@@ -41,6 +41,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.google.ksp)
 }
 allprojects {
     plugins.withType<AndroidBasePlugin>().configureEach {
@@ -78,7 +80,8 @@ android {
         minSdk = 30
         targetSdk = 36
         applicationId = "com.saggitt.omega"
-
+        javaCompileOptions.annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
+            "true"
         versionName = "1.0.1"
         versionCode = 1006
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
@@ -170,6 +173,7 @@ android {
         jniLibs {
             pickFirsts += listOf("**/libeasyBypass.so")
         }
+        resources.excludes.add("META-INF/gradle/incremental.annotation.processors")
         resources.excludes.add("META-INF/LICENSE.md")
         resources.excludes.add("META-INF/LICENSE-notice.md")
         resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin") // TODO remove when issue is fixed (https://github.com/Kotlin/kotlinx.coroutines/issues/3668)
@@ -277,7 +281,7 @@ dependencies {
     implementation(libs.fuzzywuzzy)
     implementation(libs.graphics.shapes)
     implementation(libs.guava)
-    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
     implementation(libs.hoko.blur)
     implementation(libs.koin.android)
     implementation(libs.koin.workmanager)
@@ -324,6 +328,8 @@ dependencies {
     androidTestImplementation(libs.uiautomator.v18)
 
     androidTestImplementation(libs.dexmaker.lib)
+
+    ksp("com.google.dagger:hilt-android-compiler:2.57.2")
 }
 
 // Returns the build date in a RFC3339 compatible format. TZ is always converted to UTC
