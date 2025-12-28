@@ -1,11 +1,9 @@
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.tasks.factory.dependsOn
+import com.android.build.gradle.api.AndroidBasePlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
-
-import com.android.build.gradle.api.AndroidBasePlugin
 
 buildscript {
     dependencies {
@@ -241,7 +239,6 @@ android {
 dependencies {
 
     implementation(project(":animationlib"))
-    implementation(project(":contextualeducationlib"))
     implementation(project(":concurrent"))
     implementation(project(":iconloaderlib"))
     implementation(project(":flags"))
