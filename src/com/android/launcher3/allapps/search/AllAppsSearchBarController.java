@@ -49,7 +49,7 @@ public class AllAppsSearchBarController
     protected SearchAlgorithm<AdapterItem> mSearchAlgorithm;
 
     public void setVisibility(int visibility) {
-        if (mInput != null) mInput.setVisibility(visibility);
+        mInput.setVisibility(visibility);
     }
 
     /**
@@ -62,11 +62,9 @@ public class AllAppsSearchBarController
         mLauncher = launcher;
 
         mInput = input;
-        if (mInput != null) {
-            mInput.addTextChangedListener(this);
-            mInput.setOnEditorActionListener(this);
-            mInput.setOnBackKeyListener(this);
-        }
+        mInput.addTextChangedListener(this);
+        mInput.setOnEditorActionListener(this);
+        mInput.setOnBackKeyListener(this);
         mSearchAlgorithm = searchAlgorithm;
     }
 
@@ -150,11 +148,9 @@ public class AllAppsSearchBarController
      */
     public void reset() {
         mCallback.clearSearchResult();
-        if (mInput != null) {
-            mInput.reset();
-            mInput.clearFocus();
-            mInput.hideKeyboard();
-        }
+        mInput.reset();
+        mInput.clearFocus();
+        mInput.hideKeyboard();
         mQuery = null;
     }
 
@@ -162,13 +158,13 @@ public class AllAppsSearchBarController
      * Focuses the search field to handle key events.
      */
     public void focusSearchField() {
-        if (mInput != null) mInput.showKeyboard();
+        mInput.showKeyboard();
     }
 
     /**
      * Returns whether the search field is focused.
      */
     public boolean isSearchFieldFocused() {
-        return mInput != null && mInput.isFocused();
+        return mInput.isFocused();
     }
 }
