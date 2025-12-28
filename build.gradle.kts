@@ -80,6 +80,14 @@ android {
         applicationId = "com.saggitt.omega"
         javaCompileOptions.annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
             "true"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                ksp {
+                    arg("room.schemaLocation", "$projectDir/schemas")
+                    arg("room.incremental", "true")
+                }
+            }
+        }
         versionName = "1.0.1"
         versionCode = 1006
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
@@ -306,6 +314,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.serialization.json)
     implementation(libs.slice.core)
+
+    ksp(libs.room.compiler)
 
     api(platform(libs.compose.bom))
     protobuf(files("protos/"))
