@@ -17,7 +17,10 @@ package com.android.launcher3.dagger
 
 import com.android.launcher3.views.ActivityContext
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 /** A Module that contains [ActivityContext] related bindings */
 @Module(includes = [ActivityContextModule::class, AppActivityContextModule::class])
+@InstallIn(SingletonComponent::class)
 class LauncherActivityContextModule {}

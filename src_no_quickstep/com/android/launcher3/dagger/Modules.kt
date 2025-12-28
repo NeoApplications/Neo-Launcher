@@ -16,19 +16,38 @@
 
 package com.android.launcher3.dagger
 
+import android.content.Context
+import android.os.Looper
+import android.os.Process
+import com.android.launcher3.MainProcessInitializer
+import com.android.launcher3.R
+import com.android.launcher3.concurrent.annotations.Background
+import com.android.launcher3.concurrent.annotations.LightweightBackground
+import com.android.launcher3.concurrent.annotations.LightweightBackgroundPriority
+import com.android.launcher3.concurrent.annotations.Ui
 import com.android.launcher3.dragndrop.SystemDragController
 import com.android.launcher3.dragndrop.SystemDragControllerStub
+import com.android.launcher3.folder.FolderNameProvider
 import com.android.launcher3.homescreenfiles.HomeScreenFilesNoOpProvider
 import com.android.launcher3.homescreenfiles.HomeScreenFilesProvider
+import com.android.launcher3.popup.PopupDataProvider
+import com.android.launcher3.util.InstantAppResolver
+import com.android.launcher3.util.LooperExecutor
+import com.android.launcher3.util.ResourceBasedOverride.Overrides
 import com.android.launcher3.util.window.RefreshRateTracker
 import com.android.launcher3.util.window.RefreshRateTracker.RefreshRateTrackerImpl
+import com.android.launcher3.views.ActivityContext
 import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactory
 import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactoryImpl
+import com.android.launcher3.widget.LocalColorExtractor
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.hilt.migration.DisableInstallInCheck
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 private object Modules {}
 
@@ -73,12 +92,40 @@ object SystemDragModule {
 // Module containing bindings for the final derivative app
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AppModule {}
+object AppModule {
+    @Provides
+    @LauncherAppSingleton
+    fun provideInstantAppResolver(@ApplicationContext context: Context): InstantAppResolver =
+        InstantAppResolver.newInstance(context)
+
+    @Provides
+    @LauncherAppSingleton
+    fun provideMainProcessInitializer(@ApplicationContext context: Context): MainProcessInitializer =
+        Overrides.getObject(
+            MainProcessInitializer::class.java,
+            context,
+            R.string.main_process_initializer_class
+        )
+
+    @Provides
+    @LauncherAppSingleton
+    fun provideFolderNameProvider(@ApplicationContext context: Context): FolderNameProvider =
+        FolderNameProvider.newInstance(context)
+
+    @Provides
+    @LauncherAppSingleton
+    fun provideLocalColorExtractor(@ApplicationContext context: Context): LocalColorExtractor =
+        LocalColorExtractor.newInstance(context)
+}
 
 // Module containing bindings of [ActivityContext] for the final derivative app
 @Module
-@InstallIn(SingletonComponent::class)
-abstract class AppActivityContextModule {}
+@DisableInstallInCheck
+object AppActivityContextModule {
+    @Provides
+    fun providePopupDataProvider(activityContext: ActivityContext): PopupDataProvider =
+        PopupDataProvider(activityContext)
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -86,7 +133,29 @@ abstract class PerDisplayModule {}
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class LauncherConcurrencyModule {}
+object LauncherConcurrencyModule {
+    @Provides
+    @LauncherAppSingleton
+    @Ui
+    fun provideUiExecutor(): LooperExecutor =
+        LooperExecutor(Looper.getMainLooper(), Process.THREAD_PRIORITY_DEFAULT)
+
+    @Provides
+    @LauncherAppSingleton
+    @Ui
+    fun provideUiExecutorService(@Ui executor: LooperExecutor): ExecutorService = executor
+
+    @Provides
+    @LauncherAppSingleton
+    @LightweightBackground(priority = LightweightBackgroundPriority.UI)
+    fun provideUiLightweightBackgroundExecutor(): LooperExecutor =
+        LooperExecutor("LightweightBackgroundUi", Process.THREAD_PRIORITY_FOREGROUND)
+
+    @Provides
+    @LauncherAppSingleton
+    @Background
+    fun provideBackgroundExecutorService(): ExecutorService = Executors.newCachedThreadPool()
+}
 
 /** A dagger module responsible for managing files on the home screen. */
 @Module

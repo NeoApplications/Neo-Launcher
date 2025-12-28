@@ -16,6 +16,8 @@
 
 package com.android.launcher3.dagger;
 
+import com.android.launcher3.compose.core.widgetpicker.NoOpWidgetPickerModule;
+
 import dagger.Module;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
@@ -26,7 +28,12 @@ import dagger.hilt.components.SingletonComponent;
         PluginManagerWrapperModule.class,
         StaticObjectModule.class,
         WidgetModule.class,
-        AppModule.class
+        AppModule.class,
+        LauncherModelModule.class,
+        SystemDragModule.class,
+        HomeScreenFilesModule.class,
+        LauncherConcurrencyModule.class,
+        NoOpWidgetPickerModule.class
 })
 @InstallIn(SingletonComponent.class)
 public class LauncherAppModule {

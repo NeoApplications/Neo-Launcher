@@ -32,7 +32,6 @@ import com.android.launcher3.dagger.HomeScreenFilesModule
 import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
-import com.android.launcher3.dagger.LauncherConcurrencyModule
 import com.android.launcher3.dagger.LauncherModelModule
 import com.android.launcher3.dagger.PerDisplayModule
 import com.android.launcher3.dagger.PluginManagerWrapperModule
@@ -190,7 +189,7 @@ constructor(
                 StaticObjectModule::class,
                 AppModule::class,
                 PerDisplayModule::class,
-                LauncherConcurrencyModule::class,
+                // LauncherConcurrencyModule::class, // Removed because ExecutorsModule and LauncherExecutorsModule are present
                 ExecutorsModule::class,
                 LauncherExecutorsModule::class,
                 NoOpWidgetPickerModule::class,
@@ -201,8 +200,6 @@ constructor(
                 SystemDragModule::class,
             ]
     )
-    @InstallIn(SingletonComponent::class)
-    @Module
     interface PreviewAppComponent : LauncherAppComponent {
         val model: LauncherModel
         val modelInitializer: ModelInitializer
