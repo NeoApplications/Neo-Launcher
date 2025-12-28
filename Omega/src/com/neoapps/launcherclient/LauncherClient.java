@@ -241,7 +241,13 @@ public class LauncherClient {
     }
 
     public void onDestroy() {
-        mActivity.unregisterReceiver(googleInstallListener);
+        if (!mDestroyed) {
+            try {
+                mActivity.unregisterReceiver(googleInstallListener);
+            } catch (IllegalArgumentException ignored) {
+            }
+            mDestroyed = true;
+        }
     }
 
     private void reconnect() {

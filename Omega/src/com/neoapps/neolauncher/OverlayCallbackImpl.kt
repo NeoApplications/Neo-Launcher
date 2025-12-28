@@ -19,7 +19,7 @@
 package com.neoapps.neolauncher
 
 import android.view.MotionEvent
-import androidx.lifecycle.asLiveData
+import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherPrefs
@@ -31,8 +31,8 @@ import com.neoapps.launcherclient.LauncherClient
 import com.neoapps.launcherclient.LauncherClientCallbacks
 import com.neoapps.launcherclient.StaticInteger
 import com.saggitt.omega.preferences.NeoPrefs
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
 
 class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     LauncherClientCallbacks, LauncherOverlayManager,
@@ -45,6 +45,7 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     private var mFlags = 0
     private var feedEnabled = false
     private val prefs = NeoPrefs.getInstance()
+    private var job: Job? = null
 
     init {
         mClient = LauncherClient(
@@ -55,8 +56,9 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     }
 
     override fun onAttachedToWindow() {
-        launcher.nLauncher.lifecycleScope.launch {
+        job = launcher.nLauncher.lifecycleScope.launch {
             prefs.feedProvider.get().collect {
+                mClient?.onDestroy()
                 feedEnabled = it != ""
                 mClient = LauncherClient(
                     launcher, this@OverlayCallbackImpl, StaticInteger(
@@ -69,8 +71,9 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     }
 
     override fun onDetachedFromWindow() {
-        prefs.feedProvider.get().asLiveData().removeObserver { }
+        job?.cancel()
         mClient?.onDetachedFromWindow()
+        mClient?.onDestroy()
     }
 
 
@@ -114,6 +117,10 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
             mWasOverlayAttached = overlayAttached
             launcher.setLauncherOverlay(if (overlayAttached) this else null)
         }
+    }
+
+    override fun onActivityDestroyed() {
+        mClient?.onDestroy()
     }
 
     override fun setPersistentFlags(myFlags: Int) {
