@@ -1285,10 +1285,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private void setDeviceManagementResources() {
         if (mActivityContext.getStringCache() != null) {
             Button personalTab = findViewById(R.id.tab_personal);
-            personalTab.setText(mActivityContext.getStringCache().allAppsPersonalTab);
+            if (personalTab != null)
+                personalTab.setText(mActivityContext.getStringCache().allAppsPersonalTab);
 
             Button workTab = findViewById(R.id.tab_work);
-            workTab.setText(mActivityContext.getStringCache().allAppsWorkTab);
+            if (workTab != null)
+                workTab.setText(mActivityContext.getStringCache().allAppsWorkTab);
         }
     }
 

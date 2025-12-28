@@ -28,13 +28,12 @@ import kotlin.math.max
 open class DoubleShadowTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = android.R.attr.textViewStyle
 ) :
     TextView(context, attrs, defStyleAttr) {
-    private val mShadowInfo: ShadowInfo
+    private val mShadowInfo: ShadowInfo = ShadowInfo.fromContext(context, attrs, defStyleAttr)
 
     init {
-        mShadowInfo = ShadowInfo.fromContext(context, attrs, defStyleAttr)
         setShadowLayer(
             max(
                 mShadowInfo.keyShadowBlur + mShadowInfo.keyShadowOffsetX,

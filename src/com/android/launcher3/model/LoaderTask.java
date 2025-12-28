@@ -103,10 +103,6 @@ import com.android.launcher3.util.UserIconInfo;
 import com.android.launcher3.widget.WidgetInflater;
 import com.android.launcher3.widget.util.WidgetSizeHandler;
 
-import dagger.assisted.Assisted;
-import dagger.assisted.AssistedFactory;
-import dagger.assisted.AssistedInject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,9 +113,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Provider;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * Runnable for the thread that loads the contents of the launcher:
@@ -250,14 +251,14 @@ public class LoaderTask implements Runnable {
         List<ItemInfo> firstScreenItems =
                 mBgDataModel.itemsIdMap.stream()
                         .filter(currentScreenContentFilter(firstScreens))
-                        .toList();
+                        .collect(Collectors.toList());
         boolean shouldAttachArchivingExtras = mIsRestoreFromBackup
                 && !mSettingsCache.getValue(DISABLE_INSTALLED_APPS_BROADCAST);
         List<FirstScreenBroadcastModel> broadcastModels =
                 mFirstScreenBroadcastHelper.createModelsForFirstScreenBroadcast(
                         firstScreenItems,
                         mInstallingPkgsCached,
-                        mBgDataModel.itemsIdMap.stream().filter(WIDGET_FILTER).toList(),
+                        mBgDataModel.itemsIdMap.stream().filter(WIDGET_FILTER).collect(Collectors.toList()),
                         shouldAttachArchivingExtras
                 );
         logASplit("Sending first screen broadcast with shouldAttachArchivingExtras="
@@ -459,7 +460,7 @@ public class LoaderTask implements Runnable {
             }
             installingPkgs.forEach(mIconCache::updateSessionCache);
             FileLog.d(TAG, "loadWorkspace: Packages with active install/update sessions: "
-                    + installingPkgs.keySet().stream().map(info -> info.mPackageName).toList());
+                    + installingPkgs.keySet().stream().map(info -> info.mPackageName).collect(Collectors.toList()));
 
             mShortcutKeyToPinnedShortcuts = new HashMap<>();
             final LoaderCursor c = mLoaderCursorFactory.createLoaderCursor(

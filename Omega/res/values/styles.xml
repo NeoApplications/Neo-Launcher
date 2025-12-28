@@ -223,6 +223,7 @@
         <item name="keyShadowBlur">@dimen/smartspaceKeyShadowBlur</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/smartspaceKeyShadowOffset</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
     <style name="SmartspaceTextHeadline">
@@ -233,6 +234,7 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
     <style name="EnhancedSmartspaceTextSubtitle" parent="@android:style/TextAppearance.Material.Title">
@@ -248,10 +250,11 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
     <style name="EnhancedSmartspaceTextTitle" parent="@android:style/Theme.DeviceDefault.DayNight">
-        <item name="android:textSize">?attr/smartspaceTitleTextSize</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0</item>
         <item name="lineHeight">26sp</item>
         <item name="android:lineHeight" tools:targetApi="p">26sp</item>
@@ -265,6 +268,7 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
 </resources>

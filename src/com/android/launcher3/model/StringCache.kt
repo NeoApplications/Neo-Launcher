@@ -90,7 +90,6 @@ private constructor(
                                 context.dm().managedSubscriptionsPolicy.policyType ==
                                         ManagedSubscriptionsPolicy.TYPE_ALL_MANAGED_SUBSCRIPTIONS ->
                                     R.string.work_apps_paused_telephony_unavailable_body
-
                                 else -> R.string.work_apps_paused_info_body
                             }
                         )

@@ -185,11 +185,13 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
             info.runtimeStatusFlags &= ~FLAG_DISABLED_SUSPENDED;
         }
         if (Flags.enableSupportForArchiving()) {
-            if (activityInfo.isArchived) {
+            /*if (activityInfo.isArchived) {
                 info.runtimeStatusFlags |= FLAG_ARCHIVED;
             } else {
                 info.runtimeStatusFlags &= ~FLAG_ARCHIVED;
-            }
+            }*/
+
+            info.runtimeStatusFlags &= ~FLAG_ARCHIVED;
         }
         info.runtimeStatusFlags |= appInfo.isSystem() ? FLAG_SYSTEM_YES : FLAG_SYSTEM_NO;
 
