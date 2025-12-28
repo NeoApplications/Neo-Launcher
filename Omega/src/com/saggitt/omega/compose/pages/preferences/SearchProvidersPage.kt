@@ -17,24 +17,10 @@
  */
 package com.saggitt.omega.compose.pages.preferences
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,27 +32,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.BaseDialog
-import com.saggitt.omega.compose.components.ListItemWithIcon
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.move
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.Plus
 import com.saggitt.omega.data.SearchProviderRepository
 import com.saggitt.omega.preferences.NeoPrefs
-import com.saggitt.omega.theme.GroupItemShape
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
-import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -125,7 +102,7 @@ fun SearchProvidersPage() {
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        /*LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .fillMaxSize()
@@ -237,7 +214,7 @@ fun SearchProvidersPage() {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-        }
+        }*/
     }
 
     if (openDialog.value) {

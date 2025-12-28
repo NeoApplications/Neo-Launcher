@@ -19,59 +19,30 @@ package com.saggitt.omega.compose.pages.preferences
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.util.Base64
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
-import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
-import com.saggitt.omega.compose.components.ContributorRow
-import com.saggitt.omega.compose.components.ItemLink
 import com.saggitt.omega.compose.components.ViewWithActionBar
-import com.saggitt.omega.compose.components.preferences.PagePreference
-import com.saggitt.omega.compose.components.preferences.PreferenceGroupHeading
 import com.saggitt.omega.compose.icons.Phosphor
 import com.saggitt.omega.compose.icons.phosphor.BracketsSquare
 import com.saggitt.omega.compose.icons.phosphor.GithubLogo
 import com.saggitt.omega.compose.icons.phosphor.Megaphone
 import com.saggitt.omega.compose.icons.phosphor.TelegramLogo
-import com.saggitt.omega.compose.objects.PageItem
-import com.saggitt.omega.theme.kaushanScript
 import com.saggitt.omega.util.Config
 import java.io.InputStream
 
@@ -80,7 +51,7 @@ fun AboutPrefPage() {
     ViewWithActionBar(
         title = stringResource(R.string.title__general_about),
     ) { paddingValues ->
-        LazyColumn(
+        /*LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -215,7 +186,7 @@ fun AboutPrefPage() {
                     groupSize = 2
                 )
             }
-        }
+        }*/
 
     }
 }

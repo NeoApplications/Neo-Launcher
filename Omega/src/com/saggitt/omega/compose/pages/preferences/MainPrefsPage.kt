@@ -21,17 +21,9 @@ package com.saggitt.omega.compose.pages.preferences
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.runtime.Composable
@@ -41,30 +33,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.changeDefaultHome
 import com.saggitt.omega.compose.components.OverflowMenu
 import com.saggitt.omega.compose.components.ViewWithActionBar
-import com.saggitt.omega.compose.components.plus
-import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.navigation.LocalPaneNavigator
 import com.saggitt.omega.compose.navigation.NavRoute
 import com.saggitt.omega.compose.objects.PageItem
-import com.saggitt.omega.compose.pages.AppCategoriesPage
-import com.saggitt.omega.compose.pages.ColorSelectionPage
-import com.saggitt.omega.compose.pages.GestureSelectorPage
-import com.saggitt.omega.compose.pages.HiddenAppsPage
-import com.saggitt.omega.compose.pages.IconShapePage
-import com.saggitt.omega.compose.pages.ProtectedAppsPage
-import com.saggitt.omega.compose.pages.ProtectedAppsView
 import com.saggitt.omega.preferences.NeoPrefs
-import com.saggitt.omega.preferences.PrefKey
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
@@ -89,8 +69,6 @@ fun MainPrefsPage() {
         PageItem.PrefsGesturesDash
     )
     val otherPrefs: List<PageItem> = listOfNotNull(
-        //PageItem.PrefsBackup,
-        //PageItem.PrefsDesktopMode,
         if (showDev) PageItem.PrefsDeveloper
         else null,
         PageItem.PrefsAbout
@@ -158,12 +136,11 @@ fun MainPrefsPage() {
                     }
                 }
             ) { paddingValues ->
-                Column(
+                /*Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .fillMaxSize()
                         .padding(paddingValues + PaddingValues(8.dp)),
-                    //contentPadding = paddingValues + PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     PreferenceGroup(
@@ -178,11 +155,11 @@ fun MainPrefsPage() {
                         heading = stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs
                     )
-                }
+                }*/
             }
         },
         detailPane = {
-            pageData.value = paneNavigator.currentDestination
+            /*pageData.value = paneNavigator.currentDestination
                 ?.takeIf { it.pane == this.paneRole }?.contentKey
                 ?.let { it as? NavRoute }
 
@@ -276,7 +253,7 @@ fun MainPrefsPage() {
                         else -> {}
                     }
                 }
-            }
+            }*/
         }
     )
 }

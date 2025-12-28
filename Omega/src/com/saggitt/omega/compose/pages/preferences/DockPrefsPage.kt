@@ -18,10 +18,6 @@
 
 package com.saggitt.omega.compose.pages.preferences
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,16 +25,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.GridSizePrefDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
-import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.preferences.GridSize
@@ -78,7 +71,7 @@ fun DockPrefsPage() {
     ViewWithActionBar(
         title = stringResource(R.string.title__general_dock)
     ) { paddingValues ->
-        LazyColumn(
+        /*LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 8.dp),
@@ -91,7 +84,7 @@ fun DockPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
-        }
+        }*/
 
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {
