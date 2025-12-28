@@ -1,6 +1,9 @@
 package com.android.launcher3;
 
 // TODO(b/303773055): Remove the annotation after access issue is resolved.
+
+import android.os.Build;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -472,10 +475,10 @@ public class CustomFeatureFlags implements FeatureFlags {
     }
 
     @Override
-
     public boolean enableSupportForArchiving() {
         return getValue(Flags.FLAG_ENABLE_SUPPORT_FOR_ARCHIVING,
-            FeatureFlags::enableSupportForArchiving);
+                FeatureFlags::enableSupportForArchiving) && Build.VERSION.SDK_INT
+                >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     @Override

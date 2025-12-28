@@ -409,8 +409,7 @@ class WorkspaceItemProcessor(
             if (
                 (c.restoreFlag != 0 ||
                     Flags.enableSupportForArchiving() &&
-                        activityInfo != null
-                        /*&& activityInfo.applicationInfo.isArchived*/)
+                        activityInfo != null /*&& activityInfo.applicationInfo.isArchived*/)
                 && !TextUtils.isEmpty(targetPkg)
             ) {
                 tempPackageKey.update(targetPkg, c.user)

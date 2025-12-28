@@ -63,11 +63,8 @@ constructor(private val packageManagerHelper: PackageManagerHelper) {
         allWidgets: List<ItemInfo>,
         shouldAttachArchivingExtras: Boolean,
     ): List<FirstScreenBroadcastModel> {
-
-        // installers for installing items
         val pendingItemInstallerMap: Map<String, Set<String>> =
             createPendingItemsMap(userKeyToSessionMap)
-
         val installingPackages = pendingItemInstallerMap.values.flatten().toSet()
 
         // Map of packageName to its installer packageName

@@ -254,6 +254,7 @@ public class LoaderTask implements Runnable {
                         .collect(Collectors.toList());
         boolean shouldAttachArchivingExtras = mIsRestoreFromBackup
                 && !mSettingsCache.getValue(DISABLE_INSTALLED_APPS_BROADCAST);
+        if (Utilities.ATLEAST_V) {
         List<FirstScreenBroadcastModel> broadcastModels =
                 mFirstScreenBroadcastHelper.createModelsForFirstScreenBroadcast(
                         firstScreenItems,
@@ -263,7 +264,8 @@ public class LoaderTask implements Runnable {
                 );
         logASplit("Sending first screen broadcast with shouldAttachArchivingExtras="
                 + shouldAttachArchivingExtras);
-        broadcastModels.forEach(bm -> bm.sentBroadcast(mContext));
+            broadcastModels.forEach(bm -> bm.sentBroadcast(mContext));
+        }
     }
 
     private void loadAllSurfacesOrdered(
@@ -453,8 +455,7 @@ public class LoaderTask implements Runnable {
             mBgDataModel.clear();
             mPendingPackages.clear();
 
-            final HashMap<PackageUserKey, SessionInfo> installingPkgs =
-                    mSessionHelper.getActiveSessions();
+            final HashMap<PackageUserKey, SessionInfo> installingPkgs = mSessionHelper.getActiveSessions();
             if (Flags.enableSupportForArchiving()) {
                 mInstallingPkgsCached = installingPkgs;
             }

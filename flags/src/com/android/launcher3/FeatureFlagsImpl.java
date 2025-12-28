@@ -1,5 +1,8 @@
 package com.android.launcher3;
 // TODO(b/303773055): Remove the annotation after access issue is resolved.
+
+import android.os.Build;
+
 /** @hide */
 public final class FeatureFlagsImpl implements FeatureFlags {
     @Override
@@ -452,17 +455,14 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enableStrictMode() {
         return false;
     }
 
     @Override
-
-
     public boolean enableSupportForArchiving() {
-        return true;
+        return Build.VERSION.SDK_INT
+                >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     @Override

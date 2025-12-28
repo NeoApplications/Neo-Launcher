@@ -1,6 +1,8 @@
 package com.android.launcher3;
 // TODO(b/303773055): Remove the annotation after access issue is resolved.
 
+import android.os.Build;
+
 /** @hide */
 public final class Flags {
     /** @hide */
@@ -650,22 +652,10 @@ public final class Flags {
         return FEATURE_FLAGS.enableSmartspaceRemovalToggle();
     }
 
-
-    public static boolean enableStateManagerProtoLog() {
-        
-        return FEATURE_FLAGS.enableStateManagerProtoLog();
-    }
-
-
-    public static boolean enableStrictMode() {
-        
-        return FEATURE_FLAGS.enableStrictMode();
-    }
-
-
     public static boolean enableSupportForArchiving() {
-        
-        return FEATURE_FLAGS.enableSupportForArchiving();
+
+        return FEATURE_FLAGS.enableSupportForArchiving() && Build.VERSION.SDK_INT
+                >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
 
