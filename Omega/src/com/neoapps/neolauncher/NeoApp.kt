@@ -58,7 +58,6 @@ class NeoApp : Application() {
             androidContext(this@NeoApp)
             modules(
                 prefsModule,
-                neoModule,
                 reposModule,
             )
         }

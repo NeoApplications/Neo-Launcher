@@ -21,12 +21,30 @@ package com.neoapps.neolauncher
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.LauncherApps
 import android.graphics.Rect
 import android.hardware.camera2.CameraManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
@@ -51,12 +69,11 @@ import com.saggitt.omega.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.android.ext.android.inject
 
-
-class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
-    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
+class NeoLauncher : Launcher(), SavedStateRegistryOwner,
+    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
+    val prefs: NeoPrefs by inject()
     private val prefCallback = PreferencesChangeCallback(this)
     private var paused = false
     override var currentTheme = 0
@@ -71,6 +88,10 @@ class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
 
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+    override val savedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController.savedStateRegistry
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!this.hasStoragePermission) {
             Permissions.requestPermission(
@@ -80,8 +101,9 @@ class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
             )
         }
 
-        super.onCreate(savedInstanceState)
         prefs.registerCallback(prefCallback)
+        super.onCreate(savedInstanceState)
+        savedStateRegistryController.performRestore(savedInstanceState)
 
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
 
@@ -117,6 +139,85 @@ class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
     }
 
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
+    override val activityResultRegistry: ActivityResultRegistry
+        get() = object : ActivityResultRegistry() {
+            override fun <I : Any?, O : Any?> onLaunch(
+                requestCode: Int,
+                contract: ActivityResultContract<I, O>,
+                input: I,
+                options: ActivityOptionsCompat?,
+            ) {
+                val activity = this@NeoLauncher
+
+                // Immediate result path
+                val synchronousResult = contract.getSynchronousResult(activity, input)
+                if (synchronousResult != null) {
+                    Handler(Looper.getMainLooper()).post {
+                        dispatchResult(
+                            requestCode,
+                            synchronousResult.value
+                        )
+                    }
+                    return
+                }
+
+                // Start activity path
+                val intent = contract.createIntent(activity, input)
+                var optionsBundle: Bundle? = null
+                // If there are any extras, we should defensively set the classLoader
+                if (intent.extras != null && intent.extras!!.classLoader == null) {
+                    intent.setExtrasClassLoader(activity.classLoader)
+                }
+                if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
+                    optionsBundle =
+                        intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+                    intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
+                } else if (options != null) {
+                    optionsBundle = options.toBundle()
+                }
+                if (ActivityResultContracts.RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS == intent.action) {
+                    // requestPermissions path
+                    var permissions =
+                        intent.getStringArrayExtra(ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS)
+                    if (permissions == null) {
+                        permissions = arrayOfNulls(0)
+                    }
+                    ActivityCompat.requestPermissions(activity, permissions, requestCode)
+                } else if (StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
+                    val request: IntentSenderRequest =
+                        intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+                    try {
+                        // startIntentSenderForResult path
+                        ActivityCompat.startIntentSenderForResult(
+                            activity, request.intentSender,
+                            requestCode, request.fillInIntent, request.flagsMask,
+                            request.flagsValues, 0, optionsBundle
+                        )
+                    } catch (e: IntentSender.SendIntentException) {
+                        Handler(Looper.getMainLooper()).post {
+                            dispatchResult(
+                                requestCode, RESULT_CANCELED,
+                                Intent()
+                                    .setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
+                                    .putExtra(
+                                        StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION,
+                                        e
+                                    )
+                            )
+                        }
+                    }
+                } else {
+                    // startActivityForResult path
+                    ActivityCompat.startActivityForResult(
+                        activity,
+                        intent,
+                        requestCode,
+                        optionsBundle
+                    )
+                }
+            }
+
+        }
 
     private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
@@ -160,7 +261,57 @@ class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
             super.onUiChangedWhileSleeping()
         }
     }
+    override fun onStart() {
+        super.onStart()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        // lifecycle handled by the Activity/Launcher base class
+        restartIfPending()
+        dragLayer.viewTreeObserver.addOnDrawListener(object : ViewTreeObserver.OnDrawListener {
+            private var handled = false
+
+            override fun onDraw() {
+                if (handled) {
+                    return
+                }
+                handled = true
+
+                dragLayer.post {
+                    dragLayer.viewTreeObserver.removeOnDrawListener(this)
+                }
+            }
+        })
+        paused = false
+    }
+
+    override fun onPause() {
+        super.onPause()
+        paused = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        prefs.unregisterCallback()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        savedStateRegistryController.performSave(outState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (activityResultRegistry.dispatchResult(requestCode, resultCode, data)) {
+            mPendingActivityRequestCode = -1
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
     override fun createTouchControllers(): Array<TouchController> {
         val list = ArrayList<TouchController>()
         list.add(dragController)
@@ -246,8 +397,5 @@ class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
     }
 }
 
-val Context.nLauncher: NeoLauncher by inject(NeoLauncher::class.java)
-
-val neoModule = module {
-    single { NeoLauncher.getLauncher(get()) }
-}
+val Context.nLauncher: NeoLauncher
+    get() = NeoLauncher.getLauncher(this)

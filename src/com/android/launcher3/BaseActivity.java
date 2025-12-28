@@ -20,7 +20,6 @@ import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
 import static com.android.launcher3.util.FlagDebugUtils.appendFlag;
 import static com.android.launcher3.util.FlagDebugUtils.formatFlagChange;
 import static com.android.launcher3.util.SystemUiController.UI_STATE_FULLSCREEN_TASK;
-
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.app.Activity;
@@ -30,6 +29,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
 import android.window.OnBackInvokedDispatcher;
@@ -514,10 +514,21 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     public static <T extends BaseActivity> T fromContext(Context context) {
         if (context instanceof BaseActivity) {
             return (T) context;
+        } else if (context instanceof ActivityContextDelegate) {
+            return (T) ((ActivityContextDelegate) context).mDelegate;
         } else if (context instanceof ContextWrapper cw) {
             return fromContext(cw.getBaseContext());
         } else {
             throw new IllegalArgumentException("Cannot find BaseActivity in parent tree");
+        }
+    }
+
+    class ActivityContextDelegate extends ContextThemeWrapper {
+        public final ActivityContext mDelegate;
+
+        public ActivityContextDelegate(Context base, int themeResId, ActivityContext delegate) {
+            super(base, themeResId);
+            mDelegate = delegate;
         }
     }
 }

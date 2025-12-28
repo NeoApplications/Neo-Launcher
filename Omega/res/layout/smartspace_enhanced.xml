@@ -3,12 +3,14 @@
     android:id="@+id/bc_smartspace_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <com.google.android.systemui.smartspace.InterceptingViewPager
-        android:layout_gravity="center"
+
+
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/smartspace_card_pager"
         android:layout_width="match_parent"
         android:layout_height="@dimen/enhanced_smartspace_height"
-        android:contentDescription="@string/home_widget"/>
+        android:layout_gravity="center" />
+
     <com.google.android.systemui.smartspace.PageIndicator
         android:layout_gravity="start|bottom"
         android:id="@+id/smartspace_page_indicator"

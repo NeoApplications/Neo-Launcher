@@ -39,7 +39,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.icons.IconShape
@@ -47,13 +46,12 @@ import com.saggitt.omega.icons.IconShapeItem
 import com.saggitt.omega.icons.IconShapeManager
 import com.saggitt.omega.icons.ShapeModel
 import com.saggitt.omega.preferences.NeoPrefs
-import org.koin.java.KoinJavaComponent.inject
-import kotlin.getValue
+import org.koin.java.KoinJavaComponent.get
 
 @Composable
 fun IconShapePage() {
     val context = LocalContext.current
-    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
+    val prefs: NeoPrefs = get(NeoPrefs::class.java)
     val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
         val systemShape = IconShapeManager.getSystemIconShape(context)
