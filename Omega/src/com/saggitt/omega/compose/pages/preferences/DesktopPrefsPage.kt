@@ -67,12 +67,12 @@ fun DesktopPrefsPage() {
         prefs.desktopLabelScale,
         prefs.desktopPopup,
     )
-    val gridPrefs = listOf(
+    /*val gridPrefs = listOf(
         prefs.desktopGridSize,
         prefs.desktopIconAddInstalled,
         prefs.desktopAllowFullWidthWidgets,
         prefs.desktopWidgetCornerRadius
-    )
+    )*/
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
@@ -111,13 +111,13 @@ fun DesktopPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
-            item {
+            /*item {
                 PreferenceGroup(
                     stringResource(id = R.string.cat_desktop_grid),
                     prefs = gridPrefs,
                     onPrefDialog = onPrefDialog
                 )
-            }
+            }*/
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.app_categorization_folders),

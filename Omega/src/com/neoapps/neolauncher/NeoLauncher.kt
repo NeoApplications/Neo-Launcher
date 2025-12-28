@@ -21,46 +21,18 @@ package com.neoapps.neolauncher
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
-import android.content.IntentSender
 import android.content.pm.LauncherApps
 import android.graphics.Rect
 import android.hardware.camera2.CameraManager
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.PersistableBundle
-import android.os.UserHandle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.Window
-import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.ActivityResultRegistryOwner
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryController
-import androidx.savedstate.SavedStateRegistryOwner
 import com.android.launcher3.AppFilter
 import com.android.launcher3.Launcher
-import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.android.launcher3.dagger.ActivityContextComponent
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.pm.UserCache
-import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
@@ -69,7 +41,6 @@ import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.neoapps.neolauncher.util.Permissions
 import com.saggitt.omega.gestures.GestureController
 import com.saggitt.omega.gestures.VerticalSwipeGestureController
-import com.saggitt.omega.popup.OmegaShortcuts
 import com.saggitt.omega.preferences.NeoPrefs
 import com.saggitt.omega.preferences.PreferencesChangeCallback
 import com.saggitt.omega.theme.ThemeManager
@@ -82,47 +53,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.inject
-import java.util.stream.Stream
 
-class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
-    ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
 
+class NeoLauncher : Launcher(), ThemeManager.ThemeableActivity {
+    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
+    private val prefCallback = PreferencesChangeCallback(this)
+    private var paused = false
     override var currentTheme = 0
     override var currentAccent = 0
+    val allApps = ArrayList<AppInfo>()
+    private val hiddenApps = ArrayList<AppInfo>()
+    val gestureController by lazy { GestureController(this) }
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
 
-    val prefs: NeoPrefs by inject(NeoPrefs::class.java)
-    val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
-    val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
-    private val prefCallback = PreferencesChangeCallback(this)
-
-    private val hiddenApps = ArrayList<AppInfo>()
-    val allApps = ArrayList<AppInfo>()
-    private var paused = false
-
-    private val lifecycleRegistry = LifecycleRegistry(this)
-    private val savedStateRegistryController = SavedStateRegistryController.create(this)
-    override val savedStateRegistry: SavedStateRegistry
-        get() = savedStateRegistryController.savedStateRegistry
-
-    override val lifecycle: Lifecycle
-        get() = lifecycleRegistry
+    val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
-            && !this.hasStoragePermission
-        ) Permissions.requestPermission(
+        if (!this.hasStoragePermission) {
+            Permissions.requestPermission(
             this,
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
             Permissions.REQUEST_PERMISSION_STORAGE_ACCESS
-        )
+            )
+        }
 
-        savedStateRegistryController.performRestore(savedInstanceState)
         super.onCreate(savedInstanceState)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         prefs.registerCallback(prefCallback)
 
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
@@ -160,86 +118,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
 
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
-    override val activityResultRegistry: ActivityResultRegistry
-        get() = object : ActivityResultRegistry() {
-            override fun <I : Any?, O : Any?> onLaunch(
-                requestCode: Int,
-                contract: ActivityResultContract<I, O>,
-                input: I,
-                options: ActivityOptionsCompat?,
-            ) {
-                val activity = this@NeoLauncher
-
-                // Immediate result path
-                val synchronousResult = contract.getSynchronousResult(activity, input)
-                if (synchronousResult != null) {
-                    Handler(Looper.getMainLooper()).post {
-                        dispatchResult(
-                            requestCode,
-                            synchronousResult.value
-                        )
-                    }
-                    return
-                }
-
-                // Start activity path
-                val intent = contract.createIntent(activity, input)
-                var optionsBundle: Bundle? = null
-                // If there are any extras, we should defensively set the classLoader
-                if (intent.extras != null && intent.extras!!.classLoader == null) {
-                    intent.setExtrasClassLoader(activity.classLoader)
-                }
-                if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
-                    optionsBundle =
-                        intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-                    intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-                } else if (options != null) {
-                    optionsBundle = options.toBundle()
-                }
-                if (RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS == intent.action) {
-                    // requestPermissions path
-                    var permissions =
-                        intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
-                    if (permissions == null) {
-                        permissions = arrayOfNulls(0)
-                    }
-                    ActivityCompat.requestPermissions(activity, permissions, requestCode)
-                } else if (StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST == intent.action) {
-                    val request: IntentSenderRequest =
-                        intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
-                    try {
-                        // startIntentSenderForResult path
-                        ActivityCompat.startIntentSenderForResult(
-                            activity, request.intentSender,
-                            requestCode, request.fillInIntent, request.flagsMask,
-                            request.flagsValues, 0, optionsBundle
-                        )
-                    } catch (e: IntentSender.SendIntentException) {
-                        Handler(Looper.getMainLooper()).post {
-                            dispatchResult(
-                                requestCode, RESULT_CANCELED,
-                                Intent()
-                                    .setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
-                                    .putExtra(
-                                        StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION,
-                                        e
-                                    )
-                            )
-                        }
-                    }
-                } else {
-                    // startActivityForResult path
-                    ActivityCompat.startActivityForResult(
-                        activity,
-                        intent,
-                        requestCode,
-                        optionsBundle
-                    )
-                }
-            }
-
-        }
-
     private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this
         val appFilter = AppFilter(mContext)
@@ -270,18 +148,6 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
-    /*
-    override fun getSupportedShortcuts(): Stream<SystemShortcut.Factory<*>> {
-        return Stream.concat(
-            super.getSupportedShortcuts(),
-            Stream.of(
-                OmegaShortcuts.CUSTOMIZE,
-                OmegaShortcuts.APP_REMOVE,
-                OmegaShortcuts.APP_UNINSTALL
-            )
-        )
-    }*/
-
     override fun getDefaultOverlay(): LauncherOverlayManager {
         if (mOverlayManager == null) {
             mOverlayManager = OverlayCallbackImpl(this)
@@ -295,106 +161,12 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         }
     }
 
+    override fun createTouchControllers(): Array<TouchController> {
+        val list = ArrayList<TouchController>()
+        list.add(dragController)
+        list.add(VerticalSwipeGestureController(this))
 
-    override fun onStart() {
-        super.onStart()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        restartIfPending()
-        dragLayer.viewTreeObserver.addOnDrawListener(object : ViewTreeObserver.OnDrawListener {
-            private var handled = false
-
-            override fun onDraw() {
-                if (handled) {
-                    return
-                }
-                handled = true
-
-                dragLayer.post {
-                    dragLayer.viewTreeObserver.removeOnDrawListener(this)
-                }
-            }
-        })
-        paused = false
-    }
-
-    override fun onPause() {
-        super.onPause()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        paused = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        prefs.unregisterCallback()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        savedStateRegistryController.performSave(outState)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (activityResultRegistry.dispatchResult(requestCode, resultCode, data)) {
-            mPendingActivityRequestCode = -1
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    fun startShortcut(
-        packageName: String, id: String, sourceBounds: Rect,
-        startActivityOptions: Bundle, user: UserHandle
-    ) {
-        try {
-            this@NeoLauncher.getSystemService(LauncherApps::class.java)
-                .startShortcut(
-                    packageName, id,
-                    sourceBounds, startActivityOptions, user
-                )
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
-    }
-
-    fun recreateIfNotScheduled() {
-        if (sRestartFlags == 0) {
-            recreate()
-        }
-    }
-
-    fun scheduleRecreate() {
-        if (paused) {
-            sRestartFlags = FLAG_RECREATE
-        }
-    }
-
-    private fun restartIfPending() {
-        when {
-            sRestartFlags and FLAG_RESTART != 0  -> neoApp.restart(false)
-            sRestartFlags and FLAG_RECREATE != 0 -> {
-                sRestartFlags = 0
-                recreate()
-            }
-        }
-    }
-
-    fun scheduleRestart() {
-        if (paused) {
-            sRestartFlags = FLAG_RESTART
-        } else {
-            Utilities.restartLauncher(this)
-        }
+        return list.toTypedArray() + super.createTouchControllers()
     }
 
     inline fun prepareDummyView(view: View, crossinline callback: (View) -> Unit) {
@@ -423,34 +195,43 @@ class NeoLauncher : Launcher(), LifecycleOwner, SavedStateRegistryOwner,
         dummyView.post { callback(dummyView) }
     }
 
-    override fun createTouchControllers(): Array<TouchController> {
-        val list = ArrayList<TouchController>()
-        list.add(dragController)
-        list.add(VerticalSwipeGestureController(this))
-
-        return list.toTypedArray() + super.createTouchControllers()
-    }
-
     fun getViewBounds(v: View): Rect {
         val pos = IntArray(2)
         v.getLocationOnScreen(pos)
         return Rect(pos[0], pos[1], pos[0] + v.width, pos[1] + v.height)
     }
 
-    override fun getActivityComponent(): ActivityContextComponent? {
-        TODO("Not yet implemented")
+    fun recreateIfNotScheduled() {
+        if (sRestartFlags == 0) {
+            recreate()
+        }
     }
 
-    override fun getWindow(): Window? {
-        TODO("Not yet implemented")
+    fun scheduleRecreate() {
+        if (paused) {
+            sRestartFlags = FLAG_RECREATE
+        }
     }
 
-    override fun getComponentName(): ComponentName? {
-        TODO("Not yet implemented")
+    fun scheduleRestart() {
+        if (paused) {
+            sRestartFlags = FLAG_RESTART
+        } else {
+            Utilities.restartLauncher(this)
+        }
+    }
+
+    private fun restartIfPending() {
+        when {
+            sRestartFlags and FLAG_RESTART != 0 -> neoApp.restart(false)
+            sRestartFlags and FLAG_RECREATE != 0 -> {
+                sRestartFlags = 0
+                recreate()
+            }
+        }
     }
 
     companion object {
-
         @JvmStatic
         fun getLauncher(context: Context): NeoLauncher {
             return context as? NeoLauncher

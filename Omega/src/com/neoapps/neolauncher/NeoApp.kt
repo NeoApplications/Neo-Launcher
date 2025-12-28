@@ -185,7 +185,7 @@ class NeoApp : Application() {
         var instance: NeoApp? = null
             private set
 
-        private const val TAG = "OmegaApp"
+        private const val TAG = "LauncherApp"
     }
 }
 

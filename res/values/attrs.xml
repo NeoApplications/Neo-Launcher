@@ -177,13 +177,12 @@
     </declare-styleable>
 
     <declare-styleable name="GridSize">
-        <attr name="minDeviceWidthPx" format="float"/>
-        <attr name="minDeviceHeightPx" format="float"/>
+        <attr name="minDeviceWidthPx" format="integer" />
+        <attr name="minDeviceHeightPx" format="integer" />
         <attr name="numGridRows" format="integer"/>
         <attr name="numGridColumns" format="integer"/>
         <attr name="dbFile" />
         <attr name="defaultLayoutId"/>
-        <attr name="demoModeLayoutId"/>
     </declare-styleable>
 
     <declare-styleable name="GridDisplayOption">
@@ -245,7 +244,6 @@
 
         <attr name="dbFile" format="string" />
         <attr name="defaultLayoutId" format="reference" />
-        <attr name="demoModeLayoutId" format="reference" />
         <attr name="isScalable" format="boolean" />
         <attr name="devicePaddingId" format="reference" />
 
@@ -278,6 +276,8 @@
         Needs FeatureFlags.ENABLE_RESPONSIVE_WORKSPACE enabled -->
         <attr name="allAppsCellSpecsId" format="reference" />
         <attr name="gridSizeSpecsId" format="reference" />
+        <!-- File that contains specs describing the all apps container height. If not specified,
+        all apps container will vertically expand to fill available space. -->
         <attr name="allAppsSizeSpecsId" format="reference" />
         <!-- defaults to allAppsCellSpecsId, if not specified -->
         <attr name="allAppsCellSpecsTwoPanelId" format="reference" />
@@ -299,6 +299,8 @@
             <flag name="tablet" value="2" />
             <!-- Enable on multi display devices only -->
             <flag name="multi_display" value="4" />
+            <!-- Enable on desktop devices only -->
+            <flag name="desktop" value="8" />
         </attr>
 
         <!-- By default all are false -->

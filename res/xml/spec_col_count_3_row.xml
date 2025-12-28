@@ -20,7 +20,7 @@
         launcher:dbFile="launcher_7_by_3.db"
         launcher:defaultLayoutId="@xml/default_workspace_7x3"
         launcher:minDeviceWidthPx="0"
-        launcher:minDeviceHeightPx="0"
+        launcher:minDeviceHeightPx="1"
         />
     <GridSize
         launcher:numGridColumns="8"

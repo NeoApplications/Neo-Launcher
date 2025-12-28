@@ -1,17 +1,9 @@
 package com.neoapps.neolauncher
 
 import android.content.Context
-import com.android.launcher3.InvariantDeviceProfile
-import com.android.launcher3.InvariantDeviceProfile.INDEX_DEFAULT
-import com.android.launcher3.InvariantDeviceProfile.INDEX_LANDSCAPE
-import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_LANDSCAPE
-import com.android.launcher3.InvariantDeviceProfile.INDEX_TWO_PANEL_PORTRAIT
-import com.android.launcher3.util.MainThreadInitializedObject
-import com.saggitt.omega.preferences.NeoPrefs
-import org.koin.java.KoinJavaComponent.inject
 
 class DeviceProfileOverrides(context: Context) {
-    private val prefs: NeoPrefs by inject(NeoPrefs::class.java)
+    /*private val prefs: NeoPrefs by inject(NeoPrefs::class.java)
 
     private val predefinedGrids =
         InvariantDeviceProfile.INSTANCE.get(context).parseAllGridOptions(context)
@@ -139,5 +131,5 @@ class DeviceProfileOverrides(context: Context) {
     companion object {
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::DeviceProfileOverrides)
-    }
+    }*/
 }

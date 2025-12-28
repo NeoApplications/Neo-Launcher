@@ -61,7 +61,7 @@ fun DockPrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.dockHide,
-                prefs.dockGridSize,
+                //prefs.dockGridSize,
                 prefs.dockCustomBackground,
                 if (prefs.dockCustomBackground.getValue()) {
                     prefs.dockBackgroundColor

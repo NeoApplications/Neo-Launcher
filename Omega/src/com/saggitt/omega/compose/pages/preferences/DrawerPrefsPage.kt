@@ -68,7 +68,7 @@ fun DrawerPrefsPage() {
         prefs.drawerPopup,
     )
     val gridPrefs = listOf(
-        prefs.drawerGridSize,
+        //prefs.drawerGridSize,
         prefs.drawerSortMode,
         prefs.drawerAppGroups,
         prefs.drawerSeparateWorkApps,
