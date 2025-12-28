@@ -16,7 +16,6 @@
 package com.android.launcher3.views;
 
 import static android.window.SplashScreen.SPLASH_SCREEN_STYLE_SOLID_COLOR;
-
 import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
 import static com.android.launcher3.LauncherSettings.Animation.DEFAULT_NO_ICON;
 import static com.android.launcher3.Utilities.allowBGLaunch;
@@ -86,7 +85,6 @@ import com.android.launcher3.model.StringCache;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.ActivityOptionsWrapper;
-import com.android.launcher3.util.ApplicationInfoWrapper;
 import com.android.launcher3.util.LauncherBindableItemsContainer;
 import com.android.launcher3.util.PendingRequestArgs;
 import com.android.launcher3.util.Preconditions;
@@ -499,11 +497,6 @@ public interface ActivityContext extends SavedStateRegistryOwner {
             View v, Intent intent, @Nullable ItemInfo item) {
         Preconditions.assertUIThread();
         Context context = (Context) this;
-        if (LauncherAppState.getInstance(context).isSafeModeEnabled()
-                && !new ApplicationInfoWrapper(context, intent).isSystem()) {
-            Toast.makeText(context, R.string.safemode_shortcut_error, Toast.LENGTH_SHORT).show();
-            return null;
-        }
 
         boolean isShortcut = (item instanceof WorkspaceItemInfo)
                 && item.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
