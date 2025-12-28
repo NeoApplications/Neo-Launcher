@@ -56,6 +56,7 @@ import com.android.launcher3.widget.model.WidgetsListBaseEntry
 import java.io.PrintWriter
 import java.util.Collections
 import java.util.function.Predicate
+import java.util.stream.Collectors
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -288,7 +289,8 @@ constructor(
                 )
             }
         allWorkspaceItems.addAll(
-            ItemInstallQueue.INSTANCE[context].getPendingShortcuts(user).toList()
+            ItemInstallQueue.INSTANCE[context].getPendingShortcuts(user)
+                .collect(Collectors.toList())
         )
         // Map of packageName to shortcutIds that are currently in our model
         val modelMap =
