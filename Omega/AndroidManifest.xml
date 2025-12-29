@@ -137,7 +137,7 @@
             android:theme="@style/SleepTimeoutTheme" />
 
         <activity
-            android:name="com.saggitt.omega.gestures.AssistantGestureReceiver"
+            android:name="com.neoapps.neolauncher.gestures.AssistantGestureReceiver"
             android:exported="true"
             android:theme="@style/SettingsTheme.Black">
             <intent-filter>

@@ -20,7 +20,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.saggitt.omega.views.OmegaBackgroundView
+    <com.neoapps.neolauncher.views.OmegaBackgroundView
         android:id="@+id/omega_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

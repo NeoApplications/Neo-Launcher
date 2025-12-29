@@ -13,7 +13,7 @@
      limitations under the License.
 -->
 
-<com.saggitt.omega.views.BaseBottomSheet xmlns:android="http://schemas.android.com/apk/res/android"
+<com.neoapps.neolauncher.views.BaseBottomSheet xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,4 +36,4 @@
         android:background="?attr/bottomSheetNavBarColor"
         android:focusable="false" />
 
-</com.saggitt.omega.views.BaseBottomSheet>
+</com.neoapps.neolauncher.views.BaseBottomSheet>

@@ -128,7 +128,7 @@ android {
         variant.resValue(
             "string",
             "launcher_component",
-            "${variant.applicationId}/com.saggitt.omega.OmegaLauncher"
+            "${variant.applicationId}/com.neoapps.neolauncher.NeoLauncher"
         )
     }
 

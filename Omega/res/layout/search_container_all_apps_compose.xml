@@ -16,7 +16,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.saggitt.omega.allapps.search.ComposeSearchLayout
+<com.neoapps.neolauncher.allapps.search.ComposeSearchLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_container_all_apps"
     android:layout_width="match_parent"

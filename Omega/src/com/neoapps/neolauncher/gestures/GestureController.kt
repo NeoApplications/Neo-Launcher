@@ -141,8 +141,8 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
     companion object {
         private const val TAG = "GestureController"
         private val LEGACY_SLEEP_HANDLERS = listOf(
-            "com.saggitt.omega.gestures.handlers.SleepGestureHandlerDeviceAdmin",
-            "com.saggitt.omega.gestures.handlers.SleepGestureHandlerAccessibility"
+            "com.neoapps.neolauncher.gestures.handlers.SleepGestureHandlerDeviceAdmin",
+            "com.neoapps.neolauncher.gestures.handlers.SleepGestureHandlerAccessibility"
         )
 
         fun createGestureHandler(

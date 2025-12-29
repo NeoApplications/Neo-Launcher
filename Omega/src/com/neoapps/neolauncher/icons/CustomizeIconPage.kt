@@ -220,7 +220,7 @@ fun CustomizeIconView(
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            if (!componentKey.componentName.equals("com.saggitt.omega.folder")) {
+            if (!componentKey.componentName.equals("com.neoapps.neolauncher.folder")) {
                 val stringKey = componentKey.toString()
                 ComposeSwitchView(
                     title = stringResource(R.string.hide_app),
