@@ -59,11 +59,11 @@ fun DrawerPrefsPage() {
     }
 
     val iconPrefs = listOf(
-        prefs.drawerIconScale,
-        prefs.drawerHideLabels,
+        /*prefs.drawerIconScale,
+        prefs.drawerHideLabels,*/
         prefs.drawerMultilineLabel,
-        prefs.drawerLabelScale,
-        prefs.drawerPopup,
+        /*prefs.drawerLabelScale,
+        prefs.drawerPopup,*/
     )
     val gridPrefs = listOf(
         //prefs.drawerGridSize,
@@ -103,13 +103,11 @@ fun DrawerPrefsPage() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                /*
-            }
                 PreferenceGroup(
                     stringResource(id = R.string.cat_drawer_icons),
                     prefs = iconPrefs,
                     onPrefDialog = onPrefDialog
-                )*/
+                )
                 PreferenceGroup(
                     stringResource(id = R.string.cat_drawer_grid),
                     prefs = gridPrefs,

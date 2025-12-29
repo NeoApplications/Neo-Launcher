@@ -746,7 +746,9 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_LABELS_MULTILINE,
         titleId = R.string.title__multiline_labels,
         defaultValue = false,
-        onChange = { reloadGrid() }
+        onChange = {
+            legacyPrefs.savePreference("pref_enable_two_line_toggle", it)
+        }
     )
 
     val drawerCellHeightMultiplier = FloatPref(
