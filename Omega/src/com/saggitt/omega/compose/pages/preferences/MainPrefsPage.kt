@@ -78,8 +78,8 @@ fun MainPrefsPage() {
     val scope = rememberCoroutineScope()
 
     val uiPrefs = persistentListOf(
-        /*PageItem.PrefsProfile,
-        PageItem.PrefsDesktop,
+        PageItem.PrefsProfile,
+        /*PageItem.PrefsDesktop,
         PageItem.PrefsDock,*/
         PageItem.PrefsDrawer
     )

@@ -37,6 +37,7 @@ import com.android.launcher3.R
 import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
+import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.ResetCustomIconsDialog
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
@@ -63,7 +64,7 @@ fun ProfilePrefsPage() {
     val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
     val profilePrefs = listOfNotNull(
         prefs.profileLanguage,
-        prefs.profileTheme,
+        /*prefs.profileTheme,
         prefs.profileAccentColor,
         prefs.profileIconPack,
         prefs.profileIconShape,
@@ -71,7 +72,7 @@ fun ProfilePrefsPage() {
             prefs.profileResetCustomIcons
         } else {
             null
-        }
+        }*/
     )
     val others = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
@@ -93,14 +94,14 @@ fun ProfilePrefsPage() {
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*item {
+            item {
                 PreferenceGroup(
                     stringResource(id = R.string.title__general_profile),
                     prefs = profilePrefs,
                     onPrefDialog = onPrefDialog
                 )
             }
-            item {
+            /*item {
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__others),
                     prefs = others,
