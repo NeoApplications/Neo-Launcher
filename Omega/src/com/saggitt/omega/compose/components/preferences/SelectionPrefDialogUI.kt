@@ -49,7 +49,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.saggitt.omega.compose.components.DialogNegativeButton
 import com.saggitt.omega.compose.components.DialogPositiveButton
 import com.saggitt.omega.compose.components.MultiSelectionListItem
@@ -71,7 +70,6 @@ fun IntSelectionPrefDialogUI(
     pref: IntSelectionPref,
     openDialogCustom: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
     val entryPairs = pref.entries.toList()
     val coroutineScope = rememberCoroutineScope()
@@ -154,7 +152,6 @@ fun LongSelectionPrefDialogUI(
     pref: LongSelectionPref,
     openDialogCustom: MutableState<Boolean>,
 ) {
-    val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
     val entryPairs = pref.entries().toList()
     val coroutineScope = rememberCoroutineScope()
