@@ -43,7 +43,7 @@ import android.view.WindowManager.LayoutParams;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.lang.ref.WeakReference;
 

@@ -24,7 +24,7 @@ import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_R
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_NOTHING;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT;
-import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
+import static com.neoapps.neolauncher.util.OmegaUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -43,7 +43,7 @@ import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

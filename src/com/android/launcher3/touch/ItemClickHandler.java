@@ -71,9 +71,9 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
-import com.saggitt.omega.data.AppTrackerRepository;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.Config;
+import com.neoapps.neolauncher.data.AppTrackerRepository;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
+import com.neoapps.neolauncher.util.Config;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;

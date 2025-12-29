@@ -40,7 +40,7 @@ import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SettingsCache;
-import com.saggitt.omega.smartspace.provider.NotificationsManager;
+import com.neoapps.neolauncher.smartspace.provider.NotificationsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

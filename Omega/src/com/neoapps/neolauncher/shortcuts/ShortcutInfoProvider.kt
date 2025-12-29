@@ -28,15 +28,15 @@ import com.android.launcher3.R
 import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.model.ModelWriter
 import com.android.launcher3.model.data.WorkspaceItemInfo
-import com.saggitt.omega.data.IconOverrideRepository
-import com.saggitt.omega.data.models.IconPickerItem
-import com.saggitt.omega.folder.CustomInfoProvider
-import com.saggitt.omega.iconpack.IconEntry
-import com.saggitt.omega.iconpack.IconType
-import com.saggitt.omega.preferences.NeoPrefs
-import com.saggitt.omega.util.SingletonHolder
-import com.saggitt.omega.util.ensureOnMainThread
-import com.saggitt.omega.util.useApplicationContext
+import com.neoapps.neolauncher.data.IconOverrideRepository
+import com.neoapps.neolauncher.data.models.IconPickerItem
+import com.neoapps.neolauncher.folder.CustomInfoProvider
+import com.neoapps.neolauncher.iconpack.IconEntry
+import com.neoapps.neolauncher.iconpack.IconType
+import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.util.SingletonHolder
+import com.neoapps.neolauncher.util.ensureOnMainThread
+import com.neoapps.neolauncher.util.useApplicationContext
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 

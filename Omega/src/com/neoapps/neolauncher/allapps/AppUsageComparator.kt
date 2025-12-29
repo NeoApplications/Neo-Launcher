@@ -19,7 +19,7 @@
 package com.neoapps.neolauncher.allapps
 
 import com.android.launcher3.model.data.AppInfo
-import com.saggitt.omega.data.models.AppTracker
+import com.neoapps.neolauncher.data.models.AppTracker
 
 class AppUsageComparator(private val mApps: List<AppTracker>) : Comparator<AppInfo> {
     override fun compare(app1: AppInfo, app2: AppInfo): Int {

@@ -23,7 +23,7 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import com.saggitt.omega.preferences.NeoPrefs
+import com.neoapps.neolauncher.preferences.NeoPrefs
 
 open class BaseClientService(val context: Context, flags: Int) : ServiceConnection {
     private var mConnected = false

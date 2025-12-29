@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.provider.MediaListener
+import com.neoapps.neolauncher.smartspace.provider.MediaListener
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import com.saulhdev.smartspace.hasIntent
@@ -193,10 +193,10 @@ class BcSmartspaceCard @JvmOverloads constructor(
                 } catch (e: Exception) {
                     null
                 }?.apply {
-                    if (!progressBar.isVisible) progressBar.visibility = View.VISIBLE
+                    if (!progressBar.isVisible) progressBar.visibility = VISIBLE
                     progressBar.progress = this
                 } ?: {
-                    if (progressBar.isVisible) progressBar.visibility = View.GONE
+                    if (progressBar.isVisible) progressBar.visibility = GONE
                 }
             }
         }

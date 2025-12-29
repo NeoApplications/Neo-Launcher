@@ -104,7 +104,7 @@
             android:exported="true"
             tools:node="remove" />
         <activity
-            android:name="com.saggitt.omega.preferences.PreferenceActivity"
+            android:name="com.neoapps.neolauncher.preferences.PreferenceActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true"
             android:label="@string/settings_button_text"
@@ -116,7 +116,7 @@
         </activity>
 
         <activity
-            android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
+            android:name="com.neoapps.neolauncher.smartspace.SmartSpacePreferencesShortcut"
             android:theme="@style/Theme.Transparent" />
 
         <activity
@@ -133,7 +133,7 @@
 
         <!-- DT2S using screen timeout -->
         <activity
-            android:name="com.saggitt.omega.gestures.handlers.SleepTimeoutActivity"
+            android:name="com.neoapps.neolauncher.gestures.handlers.SleepTimeoutActivity"
             android:theme="@style/SleepTimeoutTheme" />
 
         <activity
@@ -150,7 +150,7 @@
 
         <!-- DT2S using device admin -->
         <receiver
-            android:name="com.saggitt.omega.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
+            android:name="com.neoapps.neolauncher.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
             android:description="@string/dt2s_admin_hint"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -174,7 +174,7 @@
         </service>
 
         <receiver
-            android:name="com.saggitt.omega.smartspace.SmartSpaceAppWidgetProvider"
+            android:name="com.neoapps.neolauncher.smartspace.SmartSpaceAppWidgetProvider"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

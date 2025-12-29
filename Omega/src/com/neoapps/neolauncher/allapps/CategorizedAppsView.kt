@@ -27,11 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import com.android.launcher3.R
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
-import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.NeoLauncher
-import com.saggitt.omega.flowerpot.Flowerpot
-import com.saggitt.omega.theme.OmegaAppTheme
+import com.neoapps.neolauncher.flowerpot.Flowerpot
+import com.neoapps.neolauncher.theme.OmegaAppTheme
 
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val categories = Flowerpot.Manager.getInstance(context).getAllPots().map {

@@ -30,7 +30,7 @@ import com.neoapps.launcherclient.IScrollCallback
 import com.neoapps.launcherclient.LauncherClient
 import com.neoapps.launcherclient.LauncherClientCallbacks
 import com.neoapps.launcherclient.StaticInteger
-import com.saggitt.omega.preferences.NeoPrefs
+import com.neoapps.neolauncher.preferences.NeoPrefs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 

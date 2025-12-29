@@ -23,7 +23,7 @@ import android.view.LayoutInflater
 import androidx.compose.ui.platform.ComposeView
 import com.android.launcher3.FastScrollRecyclerView
 import com.android.launcher3.R
-import com.saggitt.omega.theme.OmegaAppTheme
+import com.neoapps.neolauncher.theme.OmegaAppTheme
 
 class AlphabeticalAppsView(context: Context, attrs: AttributeSet) :
     FastScrollRecyclerView(context, attrs) {

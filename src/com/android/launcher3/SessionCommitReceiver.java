@@ -32,7 +32,7 @@ import com.android.launcher3.model.ItemInstallQueue;
 import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.util.Executors;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.Locale;
 

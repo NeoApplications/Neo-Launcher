@@ -18,13 +18,8 @@
 package com.neoapps.neolauncher.search
 
 import android.content.Context
-import com.saggitt.omega.data.SearchProviderRepository
-import com.saggitt.omega.data.models.SearchProvider
-import com.saggitt.omega.theme.ThemeManager
-import com.saggitt.omega.theme.ThemeOverride
-import com.saggitt.omega.util.SingletonHolder
-import com.saggitt.omega.util.ensureOnMainThread
-import com.saggitt.omega.util.useApplicationContext
+import com.neoapps.neolauncher.data.SearchProviderRepository
+import com.neoapps.neolauncher.data.models.SearchProvider
 import com.neoapps.neolauncher.search.providers.BaiduSearchProvider
 import com.neoapps.neolauncher.search.providers.BingSearchProvider
 import com.neoapps.neolauncher.search.providers.DuckDuckGoSearchProvider
@@ -32,6 +27,11 @@ import com.neoapps.neolauncher.search.providers.EdgeSearchProvider
 import com.neoapps.neolauncher.search.providers.FirefoxSearchProvider
 import com.neoapps.neolauncher.search.providers.GoogleGoSearchProvider
 import com.neoapps.neolauncher.search.providers.SFinderSearchProvider
+import com.neoapps.neolauncher.theme.ThemeManager
+import com.neoapps.neolauncher.theme.ThemeOverride
+import com.neoapps.neolauncher.util.SingletonHolder
+import com.neoapps.neolauncher.util.ensureOnMainThread
+import com.neoapps.neolauncher.util.useApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

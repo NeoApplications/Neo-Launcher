@@ -18,16 +18,16 @@
 package com.neoapps.neolauncher.allapps
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.saggitt.omega.compose.icons.Phosphor
-import com.saggitt.omega.compose.icons.phosphor.Asterisk
-import com.saggitt.omega.compose.icons.phosphor.CirclesFour
-import com.saggitt.omega.compose.icons.phosphor.ImageSquare
-import com.saggitt.omega.compose.icons.phosphor.MapPin
-import com.saggitt.omega.compose.icons.phosphor.PaintBrush
-import com.saggitt.omega.compose.icons.phosphor.Pizza
-import com.saggitt.omega.compose.icons.phosphor.SpeakerHigh
-import com.saggitt.omega.compose.icons.phosphor.Swatches
-import com.saggitt.omega.compose.icons.phosphor.Wrench
+import com.neoapps.neolauncher.compose.icons.Phosphor
+import com.neoapps.neolauncher.compose.icons.phosphor.Asterisk
+import com.neoapps.neolauncher.compose.icons.phosphor.CirclesFour
+import com.neoapps.neolauncher.compose.icons.phosphor.ImageSquare
+import com.neoapps.neolauncher.compose.icons.phosphor.MapPin
+import com.neoapps.neolauncher.compose.icons.phosphor.PaintBrush
+import com.neoapps.neolauncher.compose.icons.phosphor.Pizza
+import com.neoapps.neolauncher.compose.icons.phosphor.SpeakerHigh
+import com.neoapps.neolauncher.compose.icons.phosphor.Swatches
+import com.neoapps.neolauncher.compose.icons.phosphor.Wrench
 
 const val FILTER_CATEGORY_ALL = "All"
 val String.appCategoryIcon: ImageVector
