@@ -288,13 +288,15 @@ dependencies {
     implementation(libs.graphics.shapes)
     implementation(libs.guava)
     implementation(libs.hilt.compiler)
+    ksp(libs.hilt.android)
     implementation(libs.hoko.blur)
     implementation(libs.koin.android)
-    implementation(libs.koin.workmanager)
     implementation(libs.koin.annotations)
     implementation(libs.kotlin.stdlib) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
     }
+    implementation(libs.koin.workmanager)
+    ksp(libs.koin.compiler)
     implementation(libs.jakarta.inject)
     implementation(libs.java.inject)
     implementation(libs.lifecycle.common)
@@ -310,13 +312,11 @@ dependencies {
     implementation(libs.preference.ktx)
     implementation(libs.protobuf.javalite)
     implementation(libs.recyclerview)
-    implementation(libs.restriction.bypass)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
     implementation(libs.serialization.json)
     implementation(libs.slice.core)
-
-    ksp(libs.room.compiler)
 
     api(platform(libs.compose.bom))
     protobuf(files("protos/"))
@@ -336,8 +336,6 @@ dependencies {
     androidTestImplementation(libs.uiautomator.v18)
 
     androidTestImplementation(libs.dexmaker.lib)
-
-    ksp("com.google.dagger:hilt-android-compiler:2.57.2")
 }
 
 // Returns the build date in a RFC3339 compatible format. TZ is always converted to UTC
