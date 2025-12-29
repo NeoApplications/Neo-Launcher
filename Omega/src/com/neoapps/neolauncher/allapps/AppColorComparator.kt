@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.saggitt.omega.allapps
+package com.neoapps.neolauncher.allapps
 
 import android.content.Context
 import androidx.core.graphics.ColorUtils
