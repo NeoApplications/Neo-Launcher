@@ -571,8 +571,6 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enabledFoldersInAllApps() {
         return false;
     }
@@ -585,22 +583,16 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean extendibleThemeManager() {
         return true;
     }
 
     @Override
-
-
     public boolean floatingSearchBar() {
         return false;
     }
 
     @Override
-
-
     public boolean forceMonochromeAppIcons() {
         return false;
     }

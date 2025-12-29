@@ -768,7 +768,6 @@ public final class Flags {
 
 
     public static boolean floatingSearchBar() {
-        
         return FEATURE_FLAGS.floatingSearchBar();
     }
 
