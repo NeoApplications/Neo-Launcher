@@ -86,6 +86,7 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.ActivityOptionsWrapper;
 import com.android.launcher3.util.LauncherBindableItemsContainer;
+import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PendingRequestArgs;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.RunnableList;
@@ -497,6 +498,10 @@ public interface ActivityContext extends SavedStateRegistryOwner {
             View v, Intent intent, @Nullable ItemInfo item) {
         Preconditions.assertUIThread();
         Context context = (Context) this;
+        if (isAppBlockedForSafeMode() && !PackageManagerHelper.isSystemApp(context, intent)) {
+            Toast.makeText(context, R.string.safemode_shortcut_error, Toast.LENGTH_SHORT).show();
+            return null;
+        }
 
         boolean isShortcut = (item instanceof WorkspaceItemInfo)
                 && item.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
@@ -537,6 +542,13 @@ public interface ActivityContext extends SavedStateRegistryOwner {
             Log.e(TAG, "Unable to launch. tag=" + item + " intent=" + intent, e);
         }
         return null;
+    }
+
+    /**
+     * Returns {@code true} if an app launch is blocked due to safe mode.
+     */
+    default boolean isAppBlockedForSafeMode() {
+        return false;
     }
 
     /**

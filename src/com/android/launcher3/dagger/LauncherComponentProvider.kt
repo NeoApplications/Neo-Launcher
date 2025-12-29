@@ -41,7 +41,7 @@ object LauncherComponentProvider {
         return Holder(
             DaggerLauncherAppComponent.builder()
                 .appContext(app)
-                .setSafeModeEnabled(true)
+                .setSafeModeEnabled(false)
                 .build() as LauncherAppComponent,
             existingFilter,
         )
