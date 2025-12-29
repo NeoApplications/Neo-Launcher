@@ -85,18 +85,30 @@ import com.neoapps.neolauncher.util.prefs
 open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     AbstractComposeView(context, attrs), SearchUiManager, Insettable,
     SearchCallback<BaseAllAppsAdapter.AdapterItem> {
+
     val mContext = context
     protected var prefs: NeoPrefs = mContext.prefs
-    private var spController = SearchProviderController.getInstance(getContext())
-    private val searchAlgorithm = NeoAppSearchAlgorithm(mContext)
+
+    private val verticalOffset =
+        resources.getDimensionPixelSize(R.dimen.all_apps_search_vertical_offset)
+    private var spController = SearchProviderController.getInstance(mContext)
+    private val searchAlgorithm = NeoAppSearchAlgorithm(mContext, true)
     private val mSearchBarController: AllAppsSearchBarController = AllAppsSearchBarController()
-
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
-
     private lateinit var focusManager: FocusManager
     private lateinit var textFieldFocusRequester: FocusRequester
     private var keyboardController: SoftwareKeyboardController? = null
     val query = mutableStateOf("")
+
+    init {
+        // Si la búsqueda en drawer está habilitada mostramos la vista, si no la ocultamos con GONE
+        // para que no deje espacio en el layout.
+        visibility = if (prefs.searchDrawerEnabled.getValue()) {
+            VISIBLE
+        } else {
+            GONE
+        }
+    }
 
     @Composable
     override fun Content() {
@@ -148,6 +160,8 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                         },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                     ),
@@ -157,7 +171,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                             modifier = Modifier.height(IntrinsicSize.Max),
                             shape = RoundedCornerShape(radius.dp),
                             colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                containerColor = Color.Transparent
                             ),
                             onClick = { spController.changeSearchProvider() }
                         ) {
@@ -188,11 +202,11 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                                 IconButton(onClick = {
                                     if (searchProvider.supportsAssistant) {
                                         searchProvider.startAssistant { intent ->
-                                            mContext.startActivity(intent)
+                                            context.startActivity(intent)
                                         }
                                     } else {
                                         searchProvider.startVoiceSearch { intent ->
-                                            mContext.startActivity(intent)
+                                            context.startActivity(intent)
                                         }
                                     }
                                 }) {
@@ -207,7 +221,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                     },
                     label = {
                         Text(
-                            text = stringResource(id = R.string.all_apps_search_bar_hint),
+                            text = stringResource(id = R.string.widgets_full_sheet_search_bar_hint),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -231,7 +245,6 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
                     )
                 }
             }
-
         }
     }
 
@@ -253,8 +266,10 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     override fun initializeSearch(containerView: ActivityAllAppsContainerView<*>?) {
         mAppsView = containerView
         mSearchBarController.initialize(
-            NeoAppSearchAlgorithm(mContext.nLauncher),
-            null, /*mCancelButton,*/ mContext.nLauncher, this
+            NeoAppSearchAlgorithm(mContext, true),
+            null,
+            mContext.nLauncher,
+            this
         )
     }
 
@@ -264,9 +279,21 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     override fun onSearchResult(
         query: String?,
-        items: java.util.ArrayList<BaseAllAppsAdapter.AdapterItem?>?
+        items: ArrayList<BaseAllAppsAdapter.AdapterItem>?
     ) {
-        TODO("Not yet implemented")
+        if (items != null) {
+            mAppsView?.setSearchResults(items)
+        }
+    }
+
+    override fun onSearchResult(
+        query: String?,
+        items: ArrayList<BaseAllAppsAdapter.AdapterItem>?,
+        suggestion: ArrayList<String>?
+    ) {
+        if (items != null) {
+            mAppsView?.setSearchResults(items)
+        }
     }
 
     override fun clearSearchResult() {
@@ -286,32 +313,24 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
 
     override fun getEditText(): ExtendedEditText? = null
 
-    fun hideSoftwareKeyboard() {
-        keyboardController?.hide()
-    }
-
-    fun onSearchResult(
-        query: String?,
-        items: ArrayList<BaseAllAppsAdapter.AdapterItem>?,
-        suggestions: MutableList<String>?,
-    ) {
-        if (items != null) {
-            mAppsView?.setSearchResults(items)
-        }
-    }
-
     fun onSubmitSearch(query: String?): Boolean =
         if (spController.activeSearchProvider.searchUrl.isNotEmpty()) {
-            openURLInBrowser(mContext, spController.activeSearchProvider.searchUrl.format(query))
+            openURLInBrowser(context, spController.activeSearchProvider.searchUrl.format(query))
             true
         } else {
-            mContext.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
+            context.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
             false
         }
 
     override fun setInsets(insets: Rect) {
         val mlp = layoutParams as MarginLayoutParams
-        mlp.topMargin = insets.top
+        val isEnabled = prefs.searchDrawerEnabled.getValue()
+        if (isEnabled) {
+            mlp.topMargin = insets.top
+        } else {
+            mlp.topMargin = verticalOffset
+        }
+
         requestLayout()
     }
 }

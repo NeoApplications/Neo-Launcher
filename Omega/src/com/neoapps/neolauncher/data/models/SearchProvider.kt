@@ -25,10 +25,10 @@ data class SearchProvider(
     val order: Int,
 ) {
 
-    fun getSuggestions(query: String): List<String> {
+    fun getSuggestions(query: String): ArrayList<String> {
         val client = OkHttpClient()
-        if (suggestionUrl == null) return emptyList()
-        if (query.isEmpty()) return emptyList()
+        if (suggestionUrl == null) return arrayListOf()
+        if (query.isEmpty()) return arrayListOf()
         val request = Request.Builder()
             .url(suggestionUrl.format(query))
             .build()
@@ -40,12 +40,12 @@ data class SearchProvider(
                 .take(MAX_SUGGESTIONS)
             response.close()
             Log.d("WebSearchProvider", "Websearch Query: $query")
-            return result
+            return result as ArrayList
         } catch (ex: Exception) {
             Log.e("WebSearchProvider", ex.message ?: "", ex)
         }
 
-        return emptyList()
+        return arrayListOf()
     }
 
     companion object {

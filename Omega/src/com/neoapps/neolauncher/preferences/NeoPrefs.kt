@@ -101,7 +101,6 @@ class NeoPrefs private constructor(val context: Context) {
     // TODO add more differentiate callbacks
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
-    val scheduleRecreate = { onChangeCallback?.scheduleRecreate() }
     val restart = { onChangeCallback?.restart() }
     val reloadModel = { onChangeCallback?.reloadModel() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
@@ -531,7 +530,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FREE_SCROLLING,
         titleId = R.string.title_desktop_free_scrolling,
         defaultValue = false,
-        onChange = { scheduleRecreate() },
+        onChange = { recreate() },
     )
 
     // Dock
@@ -547,7 +546,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_EXPANDABLE,
         titleId = R.string.title_expandable_dock,
         defaultValue = false,
-        onChange = { scheduleRecreate() }
+        onChange = { recreate() }
     )
     val dockIconScale = FloatPref(
         dataStore = dataStore,
@@ -601,7 +600,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DOCK_PAGE_INDICATOR_DOT,
         titleId = R.string.hotseat_show_dots_page_indicator,
         defaultValue = true,
-        onChange = { scheduleRecreate() },
+        onChange = { recreate() },
     )
     /*
 
@@ -1038,6 +1037,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.SEARCH_DRAWER_ENABLED,
         titleId = R.string.title_all_apps_search,
         defaultValue = true,
+        onChange = { recreate() }
     )
 
     val searchDockEnabled = BooleanPref(

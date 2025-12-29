@@ -84,9 +84,9 @@ fun MainPrefsPage() {
         PageItem.PrefsDrawer
     )
     val featuresPrefs = persistentListOf(
-        PageItem.PrefsWidgetsNotifications,
+        //PageItem.PrefsWidgetsNotifications,
         PageItem.PrefsSearchFeed,
-        PageItem.PrefsGesturesDash
+        //PageItem.PrefsGesturesDash
     )
     val otherPrefs: List<PageItem> = listOfNotNull(
         if (showDev) PageItem.PrefsDeveloper
@@ -167,12 +167,12 @@ fun MainPrefsPage() {
                         heading = stringResource(id = R.string.pref_category__interfaces),
                         prefs = uiPrefs
                     )
-                    /*
+
                     PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__features),
                         prefs = featuresPrefs
                     )
-                    PreferenceGroup(
+                    /*PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs
                     )*/

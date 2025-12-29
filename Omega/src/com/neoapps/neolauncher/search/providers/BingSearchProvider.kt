@@ -86,7 +86,7 @@ class BingSearchProvider(context: Context) : AbstractSearchProvider(context) {
     override val assistantIcon: Drawable?
         get() = ResourcesCompat.getDrawable(
             context.resources,
-            if (cortanaInstalled) R.drawable.ic_cortana
+            if (cortanaInstalled) R.drawable.ic_bing
             else R.drawable.ic_alexa, null
         )!!
 

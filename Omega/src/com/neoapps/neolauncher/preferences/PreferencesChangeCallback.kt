@@ -20,7 +20,6 @@ package com.neoapps.neolauncher.preferences
 
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
-import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 
@@ -38,15 +37,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     }
 
     fun recreate() {
-        MAIN_EXECUTOR.execute {
-            launcher.recreateIfNotScheduled()
-        }
-    }
-
-    fun scheduleRecreate() {
-        MAIN_EXECUTOR.execute {
-            launcher.scheduleRecreate()
-        }
+        launcher.recreateIfNotScheduled()
     }
 
     fun reloadTabs() {
@@ -58,6 +49,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     }
 
     fun restart() {
-        launcher.scheduleRestart()
+        reloadGrid()
+        recreate()
     }
 }

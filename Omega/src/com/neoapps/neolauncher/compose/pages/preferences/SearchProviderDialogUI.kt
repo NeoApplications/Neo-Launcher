@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
@@ -42,7 +41,6 @@ fun SearchProviderDialogUI(
     onDelete: (Long?) -> Unit,
     onSave: (SearchProvider?) -> Unit,
 ) {
-    val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
     val providerState = getKoin().get<SearchProviderRepository>().getFlow(repositoryId)
         .collectAsState(initial = null)

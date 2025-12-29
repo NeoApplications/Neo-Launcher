@@ -47,9 +47,23 @@ public interface SearchCallback<T> {
         onSearchResult(query, items);
     }
 
+    default void onSearchResult(String query, ArrayList<T> items, ArrayList<String> suggestions) {
+    }
+
+    ;
+
     /**
      * Called when the search results should be cleared.
      */
     void clearSearchResult();
+
+    default boolean showWebResults() {
+        return false;
+    }
+
+    default void setShowWebResults(boolean showWebResults) {
+    }
+
+    ;
 }
 

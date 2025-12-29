@@ -1,9 +1,14 @@
 package com.neoapps.neolauncher.allapps.search
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.asLiveData
+import com.android.launcher3.Launcher
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
 import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
+import com.android.launcher3.model.AllAppsList
+import com.android.launcher3.model.BgDataModel
+import com.android.launcher3.model.ModelTaskController
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchCallback
 import com.android.launcher3.search.StringMatcherUtility
@@ -15,7 +20,8 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
 import java.util.Locale
 
-class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(context) {
+class NeoAppSearchAlgorithm(val context: Context, addNoResultsMessage: Boolean) :
+    DefaultAppSearchAlgorithm(context, addNoResultsMessage) {
 
     private val prefs = context.prefs
     private var searchHiddenAppsEnable = false
@@ -34,52 +40,20 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
     }
 
     override fun doSearch(query: String, callback: SearchCallback<AdapterItem>?) {
-        /*mAppState.model.enqueueModelUpdateTask { app, dataModel, apps ->
-            val result = getSearchResult(apps.data, query)
-            var suggestions = emptyList<String>()
-
-            if (prefs.searchContacts.onGetValue()) { TODO
-                        val repository = PeopleRepository.INSTANCE.get(app.context)
-                        val contacts = repository.findPeople(query)
-                        val total = result.size
-                        var position = total + 1
-                        if (contacts.isNotEmpty()) {
-                            result.add(AdapterItem.asAllAppsDivider(position))
-                            position++
-                            result.add(
-                                AdapterItem.asSectionHeader(
-                                    position,
-                                    context.getString(R.string.section_contacts)
-                                )
-                            )
-                            position++
-                            contacts.forEach {
-                                result.add(AdapterItem.asContact(position, it))
-                                position++
-                            }
-                        }
-                    }
-
-            mResultHandler.post {
-                callback?.onSearchResult(
-                    query,
-                    result,
-                    0
-                )
+        Log.d("NeoAppSearchAlgorithm", "doSearch: $query")
+        Launcher.getLauncher(context).model.enqueueModelUpdateTask { taskController: ModelTaskController?, dataModel: BgDataModel?, apps: AllAppsList? ->
+            val result = getSearchResult(apps!!.data, query)
+            var suggestions: ArrayList<String> = arrayListOf()
+            if (mAddNoResultsMessage && result.isEmpty()) {
+                result.add(getEmptyMessageAdapterItem(query))
             }
-
-            if (callback!!.showWebResult()) { TODO
-                        suggestions = getSuggestions(query)
-                        callback.setShowWebResult(false)
-                    }
-                    mResultHandler.post {
-                        callback.onSearchResult(
-                            query,
-                            result,
-                            suggestions
-                        )
-                    }
-        }*/
+            mResultHandler.post(Runnable { callback!!.onSearchResult(query, result, suggestions) })
+            if (callback!!.showWebResults()) {
+                suggestions = getSuggestions(query)
+                callback.setShowWebResults(false)
+            }
+            mResultHandler.post(Runnable { callback.onSearchResult(query, result, suggestions) })
+        }
     }
 
     private fun getSearchResult(apps: MutableList<AppInfo>, query: String): ArrayList<AdapterItem> {
@@ -95,10 +69,9 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         query: String,
     ): ArrayList<AdapterItem> {
         val result = ArrayList<AdapterItem>()
-        val mApps = apps
         if (searchHiddenAppsEnable) {
-            mApps.clear()
-            mApps.addAll(context.nLauncher.allApps)
+            apps.clear()
+            apps.addAll(context.nLauncher.allApps)
         }
 
         val matcher = FuzzySearch.extractSorted(
@@ -155,14 +128,14 @@ class NeoAppSearchAlgorithm(val context: Context) : DefaultAppSearchAlgorithm(co
         return result
     }
 
-    private fun getSuggestions(query: String): List<String?> {
+    private fun getSuggestions(query: String): ArrayList<String> {
         if (!NeoPrefs.getInstance().searchGlobal.getValue()) {
-            return emptyList<String>()
+            return arrayListOf()
         }
         val provider = SearchProviderController
             .getInstance(context).activeSearchProvider
         return if (!provider.suggestionUrl.isNullOrEmpty()) {
             provider.getSuggestions(query)
-        } else emptyList<String>()
+        } else arrayListOf()
     }
 }

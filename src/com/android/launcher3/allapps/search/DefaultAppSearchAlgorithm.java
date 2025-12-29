@@ -40,9 +40,9 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
 
     public static final int MAX_RESULTS_COUNT = 5;
 
-    private final LauncherAppState mAppState;
-    private final Handler mResultHandler;
-    private final boolean mAddNoResultsMessage;
+    public final LauncherAppState mAppState;
+    public final Handler mResultHandler;
+    public final boolean mAddNoResultsMessage;
 
     public DefaultAppSearchAlgorithm(Context context) {
         this(context, false);
@@ -72,7 +72,7 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
         });
     }
 
-    private static AdapterItem getEmptyMessageAdapterItem(String query) {
+    public static AdapterItem getEmptyMessageAdapterItem(String query) {
         AdapterItem item = new AdapterItem(VIEW_TYPE_EMPTY_SEARCH);
         // Add a place holder info to propagate the query
         AppInfo placeHolder = new AppInfo();

@@ -62,9 +62,11 @@ public class AllAppsSearchBarController
         mLauncher = launcher;
 
         mInput = input;
-        mInput.addTextChangedListener(this);
-        mInput.setOnEditorActionListener(this);
-        mInput.setOnBackKeyListener(this);
+        if (mInput != null) {
+            mInput.addTextChangedListener(this);
+            mInput.setOnEditorActionListener(this);
+            mInput.setOnBackKeyListener(this);
+        }
         mSearchAlgorithm = searchAlgorithm;
     }
 

@@ -17,18 +17,25 @@
  */
 package com.neoapps.neolauncher.compose.pages.preferences
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.preferences.IntSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.LongSelectionPrefDialogUI
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.preferences.IntSelectionPref
@@ -50,10 +57,11 @@ fun SearchPrefsPage() {
     }
 
     val searchPrefs = listOf(
-        prefs.searchProvidersEdit,
-        prefs.searchHiddenApps,
+        prefs.searchDrawerEnabled,
         prefs.searchFuzzy,
-        prefs.searchBarRadius
+        /*prefs.searchProvidersEdit,
+        prefs.searchHiddenApps,
+        prefs.searchBarRadius*/
     )
     val feedPrefs = listOf(
         prefs.feedProvider,
@@ -62,7 +70,7 @@ fun SearchPrefsPage() {
     ViewWithActionBar(
         title = stringResource(R.string.title__general_search_feed)
     ) { paddingValues ->
-        /*LazyColumn(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 8.dp),
@@ -76,7 +84,7 @@ fun SearchPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
-            item {
+            /*item {
                 PreferenceGroup(
                         stringResource(id = R.string.cat_dock_search),
                         prefs = showPrefs,
@@ -90,8 +98,8 @@ fun SearchPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-            }
-        }*/
+            }*/
+        }
 
         if (openDialog.value) {
             BaseDialog(openDialogCustom = openDialog) {

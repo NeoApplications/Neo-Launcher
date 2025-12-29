@@ -71,7 +71,7 @@ public class AllAppsSearchUiDelegate {
 
     /** Inflate the search bar for All Apps. */
     public View inflateSearchBar() {
-        return getLayoutInflater().inflate(R.layout.search_container_all_apps, mAppsView, false);
+        return getLayoutInflater().inflate(R.layout.search_container_all_apps_compose, mAppsView, false);
     }
 
     /** Whether the search box is floating above the apps surface (inset by the IME). */

@@ -18,7 +18,6 @@ package com.android.launcher3.allapps.search;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.getSize;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-
 import static com.android.launcher3.Utilities.prefixTextWithIcon;
 import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 
@@ -42,6 +41,7 @@ import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.SearchUiManager;
 import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.views.ActivityContext;
+import com.neoapps.neolauncher.allapps.search.NeoAppSearchAlgorithm;
 
 import java.util.ArrayList;
 
@@ -132,7 +132,7 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public void initializeSearch(ActivityAllAppsContainerView<?> appsView) {
         mAppsView = appsView;
         mSearchBarController.initialize(
-                new DefaultAppSearchAlgorithm(getContext(), true),
+                new NeoAppSearchAlgorithm(getContext(), true),
                 this, mLauncher, this);
     }
 

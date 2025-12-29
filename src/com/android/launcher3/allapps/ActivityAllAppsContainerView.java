@@ -115,7 +115,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         OnDeviceProfileChangeListener, PersonalWorkSlidingTabStrip.OnActivePageChangedListener,
         ScrimView.ScrimDrawingController {
 
-
     private static final String TAG = "ActivityAllAppsContainerView";
     public static final float PULL_MULTIPLIER = .02f;
     public static final float FLING_VELOCITY_MULTIPLIER = 1200f;
@@ -732,12 +731,20 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
         removeCustomRules(rvContainer);
         removeCustomRules(getSearchRecyclerView());
+
+        boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
+
         if (isSearchBarFloating()) {
             alignParentTop(rvContainer, showTabs);
-            alignParentTop(getSearchRecyclerView(), /* tabs= */ false);
+            alignParentTop(getSearchRecyclerView(), false);
         } else {
+            if (searchVisible) {
             layoutBelowSearchContainer(rvContainer, showTabs);
             layoutBelowSearchContainer(getSearchRecyclerView(), /* tabs= */ false);
+            } else {
+                alignParentTop(rvContainer, showTabs);
+                alignParentTop(getSearchRecyclerView(), /* tabs= */ false);
+            }
         }
 
         updateSearchResultsVisibility();
@@ -766,10 +773,16 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mAdditionalHeaderRows.forEach(row -> mHeader.onPluginConnected(row, mActivityContext));
 
         removeCustomRules(mHeader);
+
+        boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
         if (isSearchBarFloating()) {
             alignParentTop(mHeader, false /* includeTabsMargin */);
         } else {
-            layoutBelowSearchContainer(mHeader, false /* includeTabsMargin */);
+            if (searchVisible) {
+                layoutBelowSearchContainer(mHeader, false /* includeTabsMargin */);
+            } else {
+                alignParentTop(mHeader, false /* includeTabsMargin */);
+            }
         }
     }
 
