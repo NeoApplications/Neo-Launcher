@@ -38,6 +38,7 @@ import com.saggitt.omega.compose.components.BaseDialog
 import com.saggitt.omega.compose.components.ViewWithActionBar
 import com.saggitt.omega.compose.components.preferences.GridSizePrefDialogUI
 import com.saggitt.omega.compose.components.preferences.IntSelectionPrefDialogUI
+import com.saggitt.omega.compose.components.preferences.PreferenceGroup
 import com.saggitt.omega.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.saggitt.omega.compose.components.preferences.StringSelectionPrefDialogUI
 import com.saggitt.omega.preferences.GridSize
@@ -67,11 +68,12 @@ fun DrawerPrefsPage() {
     val gridPrefs = listOf(
         //prefs.drawerGridSize,
         prefs.drawerSortMode,
-        prefs.drawerAppGroups,
-        prefs.drawerSeparateWorkApps,
-        prefs.drawerCellHeightMultiplier,
-        prefs.drawerSaveScrollPosition,
-        prefs.drawerHideScrollbar,
+        /*
+                prefs.drawerAppGroups,
+                prefs.drawerSeparateWorkApps,
+                prefs.drawerCellHeightMultiplier,
+                prefs.drawerSaveScrollPosition,
+                prefs.drawerHideScrollbar*/
     )
     val otherPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
@@ -100,24 +102,27 @@ fun DrawerPrefsPage() {
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*item {
+            item {
+                /*
+            }
                 PreferenceGroup(
                     stringResource(id = R.string.cat_drawer_icons),
                     prefs = iconPrefs,
                     onPrefDialog = onPrefDialog
-                )
+                )*/
                 PreferenceGroup(
                     stringResource(id = R.string.cat_drawer_grid),
                     prefs = gridPrefs,
                     onPrefDialog = onPrefDialog
                 )
+                /*
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__others),
                     prefs = otherPrefs,
                     onPrefDialog = onPrefDialog
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-            }*/
+                Spacer(modifier = Modifier.height(8.dp))*/
+            }
         }
     }
     if (openDialog.value) {

@@ -19,6 +19,7 @@
 package com.saggitt.omega.preferences
 
 import com.android.launcher3.InvariantDeviceProfile
+import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.neoapps.neolauncher.NeoLauncher
 import com.saggitt.omega.blur.BlurWallpaperProvider
@@ -29,7 +30,7 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
         get() = InvariantDeviceProfile.INSTANCE.get(launcher)
 
     fun reloadGrid() {
-        //idp.onPreferencesChanged(launcher)
+        launcher.appComponent.idp.onPreferencesChanged()
     }
 
     fun reloadModel() {

@@ -20,7 +20,6 @@ import android.app.Application;
 import com.android.launcher3.dagger.DaggerLauncherAppComponent;
 import com.android.launcher3.dagger.LauncherAppComponent;
 import com.android.launcher3.dagger.LauncherBaseAppComponent;
-import com.android.launcher3.util.TraceHelper;
 
 /**
  * Main application class for Launcher
@@ -60,8 +59,9 @@ public class LauncherApplication extends Application {
     public void initDaggerComponent(LauncherBaseAppComponent.Builder componentBuilder) {
         mAppComponent = componentBuilder
                 .appContext(this)
-                .setSafeModeEnabled(TraceHelper.allowIpcs(
-                        "isSafeMode", () -> getPackageManager().isSafeMode()))
+                .setSafeModeEnabled(false)
+                //.setSafeModeEnabled(TraceHelper.allowIpcs(
+                //       "isSafeMode", () -> getPackageManager().isSafeMode()))
                 .build();
     }
 }

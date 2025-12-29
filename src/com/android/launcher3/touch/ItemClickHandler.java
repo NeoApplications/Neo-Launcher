@@ -25,6 +25,7 @@ import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_QU
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
+import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 import android.app.AlertDialog;
@@ -70,6 +71,9 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
+import com.saggitt.omega.data.AppTrackerRepository;
+import com.saggitt.omega.preferences.NeoPrefs;
+import com.saggitt.omega.util.Config;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -413,6 +417,17 @@ public class ItemClickHandler {
                 launcher.logAppLaunch(launcher.getStatsLogManager(), item, instanceId);
                 return;
             }
+        }
+        if (item instanceof AppInfo) {
+            MODEL_EXECUTOR.execute(() -> {
+                NeoPrefs prefs = NeoPrefs.getInstance();
+                if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
+                    AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
+                    assert ((AppInfo) item).componentName != null;
+                    repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
+                    prefs.getReloadGrid().invoke();
+                }
+            });
         }
         if (v != null && launcher.supportsAdaptiveIconAnimation(v)
                 && !item.shouldUseBackgroundAnimation()) {

@@ -32,11 +32,11 @@ import static com.android.launcher3.util.DisplayController.CHANGE_DESKTOP_MODE;
 import static com.android.launcher3.util.DisplayController.CHANGE_NAVIGATION_MODE;
 import static com.android.launcher3.util.DisplayController.CHANGE_SUPPORTED_BOUNDS;
 import static com.android.launcher3.util.DisplayController.CHANGE_TASKBAR_PINNING;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.SimpleBroadcastReceiver.actionsFilter;
 
 import android.content.Context;
 import android.content.Intent;
-import com.android.launcher3.concurrent.annotations.Ui;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
@@ -59,6 +59,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.XmlRes;
 
+import com.android.launcher3.concurrent.annotations.Ui;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppComponent;
@@ -94,7 +95,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -527,6 +527,10 @@ public class InvariantDeviceProfile {
         mChangeListeners.remove(listener);
     }
 
+    public void onPreferencesChanged() {
+        MAIN_EXECUTOR.execute(this::onConfigChanged);
+    }
+
     /**
      * Updates the current grid, this triggers a new IDP, reloads the database and triggers a grid
      * migration.
@@ -548,7 +552,7 @@ public class InvariantDeviceProfile {
     }
 
     /** Updates IDP using the provided context. Notifies listeners of change. */
-    private void onConfigChanged() {
+    public void onConfigChanged() {
         Object[] oldState = toModelState();
 
         // Re-init grid

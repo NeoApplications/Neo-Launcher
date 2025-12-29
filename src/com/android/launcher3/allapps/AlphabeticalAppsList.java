@@ -16,7 +16,6 @@
 package com.android.launcher3.allapps;
 
 import static android.multiuser.Flags.enableMovingContentIntoPrivateSpace;
-
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_PRIVATESPACE;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_BOTTOM_VIEW_TO_SCROLL_TO;
 import static com.android.launcher3.allapps.BaseAllAppsAdapter.VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER;
@@ -25,6 +24,7 @@ import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_BOTTOM_R
 import static com.android.launcher3.allapps.SectionDecorationInfo.ROUND_NOTHING;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_PREINSTALLED_APPS_COUNT;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_USER_INSTALLED_APPS_COUNT;
+import static com.saggitt.omega.util.OmegaUtilsKt.getAllAppsComparator;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -43,9 +43,11 @@ import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.views.ActivityContext;
+import com.saggitt.omega.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -110,18 +112,19 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     private final SpannableString mPrivateProfileAppScrollerBadge;
     private final SpannableString mPrivateProfileDividerBadge;
     private BaseAllAppsAdapter mAdapter;
-    private AppInfoComparator mAppNameComparator;
+    private Comparator mAppNameComparator;
     private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
-
+    private final NeoPrefs prefs;
     public AlphabeticalAppsList(ActivityContext activityContext, @Nullable AllAppsStore appsStore,
                                 WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
         mAllAppsStore = appsStore;
         mActivityContext = activityContext;
+        prefs = NeoPrefs.getInstance();
 
         Context context = activityContext.asContext();
-        mAppNameComparator = new AppInfoComparator(context);
+        mAppNameComparator = getAllAppsComparator(context, prefs.getDrawerSortMode().getValue());
         mWorkProviderManager = workProfileManager;
         mPrivateProviderManager = privateProfileManager;
         mNumAppsPerRowAllApps = mActivityContext.getDeviceProfile().numShownAllAppsColumns;
@@ -242,6 +245,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         // Sort the list of apps
         mApps.clear();
         mPrivateApps.clear();
+        mAppNameComparator = getAllAppsComparator(mActivityContext.asContext(), prefs.getDrawerSortMode().getValue());
 
         // Filter against private space app that may show outside of Private Profile.
         Stream<AppInfo> appSteam = Stream.of(mAllAppsStore.getApps()).filter(

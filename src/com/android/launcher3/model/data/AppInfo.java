@@ -28,6 +28,8 @@ import android.os.UserHandle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.drawable.DrawableKt;
+import androidx.palette.graphics.Palette;
 
 import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherSettings;
@@ -75,7 +77,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
      * ID (multiple applications can have the same uid).
      */
     public int uid = -1;
-
+    public int iconColor;
     public AppInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
     }
@@ -107,6 +109,9 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         uid = info.getApplicationInfo().uid;
         updateRuntimeFlagsForActivityTarget(
                 this, info, cachedUserInfo.getIconInfo(), apiWrapper, pmHelper);
+        this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
+                .generate()
+                .getDominantColor(0);
     }
 
     public AppInfo(AppInfo info) {
@@ -115,6 +120,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         title = Utilities.trim(info.title);
         intent = new Intent(info.intent);
         uid = info.uid;
+        this.iconColor = info.iconColor;
     }
 
     @VisibleForTesting

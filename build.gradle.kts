@@ -296,7 +296,6 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
     }
     implementation(libs.koin.workmanager)
-    ksp(libs.koin.compiler)
     implementation(libs.jakarta.inject)
     implementation(libs.java.inject)
     implementation(libs.lifecycle.common)
@@ -311,6 +310,7 @@ dependencies {
     implementation(libs.palette.ktx)
     implementation(libs.preference.ktx)
     implementation(libs.protobuf.javalite)
+    implementation(libs.restriction.bypass)
     implementation(libs.recyclerview)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
