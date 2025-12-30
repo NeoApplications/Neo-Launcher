@@ -184,6 +184,9 @@ fun NavigationPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
+        endWidget = {
+            pref.endIcon(pref.getValue())
+        },
         onClick = {
             scope.launch {
                 paneNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, pref.navRoute)

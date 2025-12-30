@@ -210,6 +210,7 @@ open class NavigationPref(
     val key: Preferences.Key<String>,
     val navRoute: NavRoute,
     val defaultValue: String = "",
+    val endIcon: @Composable (String) -> Unit = {},
     onChange: (String) -> Unit = {},
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange)
 

@@ -29,6 +29,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.Utilities.makeComponentKey
@@ -40,6 +41,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SettingsCache
 import com.android.launcher3.util.Themes
 import com.neoapps.neolauncher.compose.navigation.NavRoute
+import com.neoapps.neolauncher.compose.views.IconShapeIcon
 import com.neoapps.neolauncher.dash.actionprovider.DeviceSettings
 import com.neoapps.neolauncher.dash.actionprovider.EditDash
 import com.neoapps.neolauncher.dash.actionprovider.LaunchAssistant
@@ -59,7 +61,6 @@ import com.neoapps.neolauncher.iconpack.IconPackInfo
 import com.neoapps.neolauncher.iconpack.IconPackProvider
 import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.icons.IconShape
-import com.neoapps.neolauncher.nLauncher
 import com.neoapps.neolauncher.search.SearchProviderController
 import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
 import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
@@ -152,8 +153,13 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_ICON_SHAPE,
         defaultValue = "system",
         navRoute = NavRoute.Profile.IconShape(),
+        endIcon = {
+            IconShapeIcon(
+                iconShape = IconShape.fromString(context, it)
+            )
+        },
         onChange = {
-            legacyPrefs.savePreference("icon_shape_model", "")
+            legacyPrefs.savePreference("icon_shape_model", it)
         }
     )
 
@@ -1288,7 +1294,7 @@ class NeoPrefs private constructor(val context: Context) {
             .onEach { shape ->
                 initializeIconShape(IconShape.fromString(context, shape))
                 ThemeManager.INSTANCE.get(context)
-                context.nLauncher.model.reloadIfActive()
+                LauncherAppState.getInstance(context).model.reloadIfActive()
             }
             .launchIn(scope)
     }

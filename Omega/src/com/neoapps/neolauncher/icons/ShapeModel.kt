@@ -39,6 +39,7 @@ class ShapeModel(val shapeName: String) {
             "squircle" -> SquircleShape()
             "sammy" -> SammyShape()
             "teardrop" -> TearDropShape
+            "sharpSquare" -> RoundedCornerShape(corner = CornerSize(0.dp))
             "cylinder" -> CylinderShape()
             "cupertino" -> RoundedCornerShape(corner = CornerSize(12.dp))
             "hexagon" -> HexagonShape()

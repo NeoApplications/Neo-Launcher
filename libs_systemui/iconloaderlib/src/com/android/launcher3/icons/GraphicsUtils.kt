@@ -34,6 +34,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Region
+import android.graphics.RegionIterator
 import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils.compositeColors
@@ -122,6 +124,17 @@ object GraphicsUtils {
      */
     @JvmStatic
     fun getExpectedBitmapSize(bitmap: Bitmap): Int = bitmap.width * bitmap.height * 4
+
+    @JvmStatic
+    fun getArea(region: Region): Int {
+        val regionIterator = RegionIterator(region)
+        var area = 0
+        val tempRect = Rect()
+        while (regionIterator.next(tempRect)) {
+            area += tempRect.width() * tempRect.height()
+        }
+        return area
+    }
 
     /** Utility method to track new bitmap creation */
     @JvmStatic

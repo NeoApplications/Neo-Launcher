@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.neoapps.neolauncher.compose.pages
+package com.neoapps.neolauncher.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,22 +54,23 @@ fun IconShapePage() {
     val prefs: NeoPrefs = get(NeoPrefs::class.java)
     val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
-        val systemShape = IconShapeManager.getSystemIconShape(context)
+        val systemShape = IconShapeManager.INSTANCE.get(context).getSystemShape()
         val iconShapes = arrayListOf(
             systemShape,
             IconShape.Circle,
-            IconShape.Square,
-            IconShape.RoundedSquare,
-            IconShape.Squircle,
-            IconShape.Sammy,
-            IconShape.Teardrop,
             IconShape.Cylinder,
             IconShape.Cupertino,
+            IconShape.Egg,
             IconShape.Hexagon,
             IconShape.Octagon,
-            IconShape.Egg,
+            IconShape.RoundedSquare,
+            IconShape.Sammy,
+            IconShape.SharpSquare,
+            IconShape.Square,
+            IconShape.Squircle,
+            IconShape.Teardrop,
         )
-        val listItems = iconShapes.map { ShapeModel(it.toString()) }
+        val listItems = iconShapes.distinctBy { it.getMaskPath() }.map { ShapeModel(it.toString()) }
         val iconPrefs = listOfNotNull(
             prefs.profileIconAdaptify,
             prefs.profileIconColoredBackground,

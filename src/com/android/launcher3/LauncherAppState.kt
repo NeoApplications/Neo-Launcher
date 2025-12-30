@@ -18,8 +18,8 @@ package com.android.launcher3
 import android.content.Context
 import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.icons.IconCache
-import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.util.DaggerSingletonObject
+import com.neoapps.neolauncher.icons.CustomIconProvider
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -29,7 +29,7 @@ data class LauncherAppState
 @Inject
 constructor(
     @ApplicationContext val context: Context,
-    val iconProvider: LauncherIconProvider,
+    val iconProvider: CustomIconProvider,
     val iconCache: IconCache,
     val model: LauncherModel,
     val invariantDeviceProfile: InvariantDeviceProfile,

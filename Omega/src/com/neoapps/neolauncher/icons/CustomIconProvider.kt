@@ -39,18 +39,16 @@ import android.os.Build
 import android.os.Handler
 import android.os.UserHandle
 import android.os.UserManager
-import android.text.TextUtils
 import android.util.ArrayMap
 import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.graphics.ThemeManager
-import com.android.launcher3.icons.IconProvider
-import com.android.launcher3.icons.LauncherIconProvider.ATTR_DRAWABLE
-import com.android.launcher3.icons.LauncherIconProvider.ATTR_PACKAGE
-import com.android.launcher3.icons.LauncherIconProvider.TAG_ICON
+import com.android.launcher3.icons.LauncherIconProvider
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SafeCloseable
 import com.neoapps.neolauncher.data.IconOverrideRepository
@@ -67,11 +65,13 @@ import com.neoapps.neolauncher.util.overrideSdk
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
+import javax.inject.Inject
 
-class CustomIconProvider @JvmOverloads constructor(
-    private val context: Context,
-    supportsIconTheme: Boolean = false,
-) : IconProvider(context) {
+@LauncherAppSingleton
+class CustomIconProvider @JvmOverloads @Inject constructor(
+    @ApplicationContext private val context: Context,
+    themeManager: ThemeManager
+) : LauncherIconProvider(context, themeManager) {
 
     private val prefs = NeoPrefs.getInstance()
     private val iconPackPref = prefs.profileIconPack
@@ -83,37 +83,37 @@ class CustomIconProvider @JvmOverloads constructor(
     private val iconPack get() = iconPackProvider.getIconPackOrSystem(iconPackPref.getValue())
     private var iconPackVersion = 0L
     private var themeMapName: String = ""
-    private var _themeMap: Map<String, ThemeData>? = null
-    private val mThemeManager: ThemeManager? = null
+    private var mThemedIconMap: Map<String, ThemeData>? = null
     private val themedIconPack
         get() = iconPackProvider.getIconPack(context.getString(R.string.icon_packs_intent_name))
             ?.apply { loadBlocking() }
+
     private val themeMap: Map<String, ThemeData>
         get() {
             if (drawerThemedIcons && !(isOlderLawnIconsInstalled)) {
-                _themeMap = DISABLED_MAP
+                mThemedIconMap = DISABLED_MAP
             }
-            if (_themeMap == null) {
-                _themeMap = createThemedIconMap()
+            if (mThemedIconMap == null) {
+                mThemedIconMap = createThemedIconMap()
             }
             if (isOlderLawnIconsInstalled && iconPackPref.getValue() == LAWNICONS_PACKAGE_NAME) {
                 themeMapName = iconPackPref.getValue()
-                _themeMap = createThemedIconMap()
+                mThemedIconMap = createThemedIconMap()
             }
             if (themedIconPack != null && themeMapName != themedIconPack!!.packPackageName) {
                 themeMapName = themedIconPack!!.packPackageName
-                _themeMap = createThemedIconMap()
+                mThemedIconMap = createThemedIconMap()
             }
-            return _themeMap!!
+            return mThemedIconMap!!
         }
     private val supportsIconTheme get() = themeMap != DISABLED_MAP
 
     init {
-        setIconThemeSupported(supportsIconTheme)
+        setIconThemeSupported(true)
     }
 
     fun setIconThemeSupported(isSupported: Boolean) {
-        _themeMap = if (isSupported && isOlderLawnIconsInstalled) null else DISABLED_MAP
+        mThemedIconMap = if (isSupported && isOlderLawnIconsInstalled) null else DISABLED_MAP
     }
 
     private fun resolveIconEntry(componentName: ComponentName, user: UserHandle): IconEntry? {
@@ -135,55 +135,8 @@ class CustomIconProvider @JvmOverloads constructor(
     }
 
     fun isThemeEnabled(): Boolean {
-        return _themeMap != DISABLED_MAP
+        return mThemedIconMap != DISABLED_MAP
     }
-
-    override fun getThemeDataForPackage(packageName: String?): ThemeData? {
-        return getThemedIconMap().get(packageName)
-    }
-
-    fun getThemedIconMap(): MutableMap<String, ThemeData> {
-        if (_themeMap != null) {
-            return _themeMap!!.toMutableMap()
-        }
-        val map = ArrayMap<String, ThemeData>()
-        val res = mContext.resources
-        try {
-            res.getXml(R.xml.grayscale_icon_map).use { parser ->
-                val depth = parser.getDepth()
-                var type: Int
-                while ((parser.next().also { type = it }) != XmlPullParser.START_TAG &&
-                    type != XmlPullParser.END_DOCUMENT
-                );
-                while ((
-                            (parser.next().also { type = it }) != XmlPullParser.END_TAG ||
-                                    parser.getDepth() > depth
-                            ) &&
-                    type != XmlPullParser.END_DOCUMENT
-                ) {
-                    if (type != XmlPullParser.START_TAG) {
-                        continue
-                    }
-                    if (TAG_ICON == parser.getName()) {
-                        val pkg = parser.getAttributeValue(null, ATTR_PACKAGE)
-                        val iconId = parser.getAttributeResourceValue(
-                            null,
-                            ATTR_DRAWABLE,
-                            0,
-                        )
-                        if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                            map.put(pkg, ThemeData(res, iconId))
-                        }
-                    }
-                }
-            }
-        } catch (e: java.lang.Exception) {
-            Log.e(TAG, "Unable to parse icon map", e)
-        }
-        _themeMap = map
-        return _themeMap!!.toMutableMap()
-    }
-
 
     override fun getIcon(info: ComponentInfo?): Drawable {
         return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
@@ -444,7 +397,6 @@ class CustomIconProvider @JvmOverloads constructor(
     companion object {
         const val TAG = "CustomIconProvider"
 
-        val DISABLED_MAP = emptyMap<String, ThemeData>()
         const val MANIFEST_XML = "AndroidManifest.xml"
     }
 }

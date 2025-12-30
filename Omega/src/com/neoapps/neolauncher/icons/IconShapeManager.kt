@@ -23,12 +23,11 @@ import android.graphics.Path
 import android.graphics.Region
 import android.graphics.drawable.AdaptiveIconDrawable
 import com.android.launcher3.graphics.ThemeManager
+import com.android.launcher3.icons.GraphicsUtils
 import com.android.launcher3.util.MainThreadInitializedObject
 
 class IconShapeManager(private val context: Context) {
-    val systemIconShape = getSystemShape()
-
-    private fun getSystemShape(): IconShape {
+    fun getSystemShape(): IconShape {
         val iconMask = AdaptiveIconDrawable(null, null).iconMask
         val systemShape = findNearestShape(iconMask)
         return object : IconShape(systemShape) {
@@ -60,7 +59,12 @@ class IconShapeManager(private val context: Context) {
         return listOf(
             IconShape.Circle,
             IconShape.Square,
+            IconShape.SharpSquare,
+            IconShape.Egg,
+            IconShape.Hexagon,
+            IconShape.Octagon,
             IconShape.RoundedSquare,
+            IconShape.Cupertino,
             IconShape.Squircle,
             IconShape.Sammy,
             IconShape.Teardrop,
@@ -72,7 +76,7 @@ class IconShapeManager(private val context: Context) {
                 shapeR.setPath(shapePath, clip)
                 shapeR.op(iconR, Region.Op.XOR)
 
-                //GraphicsUtils.getArea(shapeR)
+                GraphicsUtils.getArea(shapeR)
             }!!
     }
 
@@ -80,8 +84,6 @@ class IconShapeManager(private val context: Context) {
 
         @JvmField
         val INSTANCE = MainThreadInitializedObject(::IconShapeManager)
-
-        fun getSystemIconShape(context: Context) = INSTANCE.get(context).systemIconShape
     }
 
 }

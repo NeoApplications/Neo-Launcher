@@ -66,13 +66,14 @@ fun ProfilePrefsPage() {
         prefs.profileLanguage,
         /*prefs.profileTheme,
         prefs.profileAccentColor,
-        prefs.profileIconPack,
+        prefs.profileIconPack,*/
         prefs.profileIconShape,
-        if (customIconsCount > 0) {
-            prefs.profileResetCustomIcons
-        } else {
-            null
-        }*/
+        /*
+                if (customIconsCount > 0) {
+                    prefs.profileResetCustomIcons
+                } else {
+                    null
+                }*/
     )
     val others = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(

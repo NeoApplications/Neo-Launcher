@@ -60,7 +60,6 @@ import com.neoapps.neolauncher.compose.pages.AppCategoriesPage
 import com.neoapps.neolauncher.compose.pages.ColorSelectionPage
 import com.neoapps.neolauncher.compose.pages.GestureSelectorPage
 import com.neoapps.neolauncher.compose.pages.HiddenAppsPage
-import com.neoapps.neolauncher.compose.pages.IconShapePage
 import com.neoapps.neolauncher.compose.pages.ProtectedAppsPage
 import com.neoapps.neolauncher.compose.pages.ProtectedAppsView
 import com.neoapps.neolauncher.preferences.NeoPrefs

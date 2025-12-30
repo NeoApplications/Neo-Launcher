@@ -46,11 +46,11 @@ public class LauncherIconProvider extends IconProvider {
     public static final String ATTR_DRAWABLE = "drawable";
 
     private static final String TAG = "LIconProvider";
-    private static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
+    public static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
 
     private Map<String, ThemeData> mThemedIconMap;
 
-    protected final ThemeManager mThemeManager;
+    public final ThemeManager mThemeManager;
 
     @Inject
     public LauncherIconProvider(

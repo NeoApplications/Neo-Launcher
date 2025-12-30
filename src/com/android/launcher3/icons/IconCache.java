@@ -22,7 +22,6 @@ import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.LooperExecutor.CALLER_ICON_CACHE;
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
-
 import static java.util.stream.Collectors.groupingBy;
 
 import android.content.ComponentName;
@@ -76,6 +75,7 @@ import com.android.launcher3.util.InstantAppResolver;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.WidgetSections;
 import com.android.launcher3.widget.WidgetSections.WidgetSection;
+import com.neoapps.neolauncher.icons.CustomIconProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +117,7 @@ public class IconCache extends BaseIconCache {
             InvariantDeviceProfile idp,
             @Nullable @Named("ICONS_DB") String dbFileName,
             UserCache userCache,
-            LauncherIconProvider iconProvider,
+            CustomIconProvider iconProvider,
             InstallSessionHelper installSessionHelper,
             LauncherIcons.IconPool iconPool,
             InstantAppResolver instantAppResolver,

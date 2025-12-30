@@ -259,15 +259,11 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enableLauncherIconShapes() {
-        return true;
+        return false;
     }
 
     @Override
-
-
     public boolean enableLauncherOverviewInWindow() {
         return false;
     }
