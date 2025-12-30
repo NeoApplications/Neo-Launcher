@@ -36,7 +36,7 @@ fun IconShapeIcon(
     iconShape: IconShape,
     modifier: Modifier = Modifier,
     strokeColor: Color = MaterialTheme.colorScheme.primary,
-    fillColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0f),
+    fillColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
 ) {
     val path = iconShape.getMaskPath().asComposePath()
 
