@@ -40,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
-import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.icons.IconShape
 import com.neoapps.neolauncher.icons.IconShapeItem
 import com.neoapps.neolauncher.icons.IconShapeManager
@@ -118,13 +117,14 @@ fun IconShapePage() {
                         thickness = 1.dp
                     )
                 }
+                /*
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     PreferenceGroup(
                         heading = null,
                         prefs = iconPrefs,
                         onPrefDialog = onPrefDialog
                     )
-                }
+                }*/
             }
         }
     }

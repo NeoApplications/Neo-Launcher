@@ -26,6 +26,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.createBitmap
 import androidx.palette.graphics.Palette
 
 class IconPreferences(context: Context) {
@@ -47,10 +48,6 @@ class IconPreferences(context: Context) {
         return setLightness(dominantColor, lightness)
     }
 
-    fun shouldTransparentBGIcons(): Boolean {
-        return prefs.getBoolean("prefs_transparent_icon_background", false)
-    }
-
     private fun setLightness(color: Int, lightness: Float): Int {
         if (color == Color.WHITE) {
             return color
@@ -69,7 +66,7 @@ fun drawableToBitmap(drawable: Drawable): Bitmap {
 
     val width = drawable.intrinsicWidth.coerceAtLeast(1)
     val height = drawable.intrinsicHeight.coerceAtLeast(1)
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(width, height)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)

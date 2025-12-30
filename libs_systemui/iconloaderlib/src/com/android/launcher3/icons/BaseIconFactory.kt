@@ -32,6 +32,7 @@ import android.os.UserHandle
 import android.util.SparseArray
 import androidx.annotation.ColorInt
 import androidx.annotation.IntDef
+import androidx.core.graphics.drawable.toDrawable
 import com.android.launcher3.icons.BitmapInfo.Extender
 import com.android.launcher3.icons.ColorExtractor.findDominantColorByHue
 import com.android.launcher3.icons.GraphicsUtils.generateIconShape
@@ -43,11 +44,16 @@ import com.android.launcher3.util.UserIconInfo
 import com.android.launcher3.util.UserIconInfo.Companion.TYPE_MAIN
 import com.android.launcher3.util.UserIconInfo.Companion.TYPE_WORK
 import com.android.systemui.shared.Flags.extendibleThemeManager
+import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
+import com.neoapps.neolauncher.icons.ExtendedBitmapDrawable.Companion.isFromIconPack
+import com.neoapps.neolauncher.icons.FixedScaleDrawable
+import com.neoapps.neolauncher.icons.IconPreferences
 import java.lang.ref.WeakReference
 import kotlin.annotation.AnnotationRetention.SOURCE
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
+
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside this
@@ -95,7 +101,7 @@ constructor(
     fun createIconBitmap(placeholder: String, color: Int): BitmapInfo =
         createBadgedIconBitmap(
             AdaptiveIconDrawable(
-                ColorDrawable(PLACEHOLDER_BACKGROUND_COLOR),
+                PLACEHOLDER_BACKGROUND_COLOR.toDrawable(),
                 CenterTextDrawable(placeholder, color),
             ),
             IconOptions().setExtractedColor(color),
@@ -104,7 +110,7 @@ constructor(
     fun createIconBitmap(icon: Bitmap, isFullBleed: Boolean): BitmapInfo =
         if (iconBitmapSize != icon.width || iconBitmapSize != icon.height)
             createBadgedIconBitmap(
-                BitmapDrawable(context.resources, icon),
+                icon.toDrawable(context.resources),
                 IconOptions()
                     .setWrapNonAdaptiveIcon(false)
                     .setIconScale(1f)
@@ -119,12 +125,47 @@ constructor(
                 flags = if (isFullBleed && isIconFullBleed(icon)) BitmapInfo.FLAG_FULL_BLEED else 0,
             )
 
-    fun createScaledBitmap(icon: Drawable, @BitmapGenerationMode mode: Int): Bitmap =
-        createBadgedIconBitmap(
-            icon,
+    fun createScaledBitmap(icon: Drawable, @BitmapGenerationMode mode: Int): Bitmap {
+        val scale = FloatArray(1)
+        val newIcon = normalizeAndWrapToAdaptiveIcon(icon, scale)
+        val iconOptions = IconOptions().setBitmapGenerationMode(mode).setDrawFullBleed(false)
+        iconOptions.iconScale = scale[0]
+
+        return createBadgedIconBitmap(
+            newIcon,
             IconOptions().setBitmapGenerationMode(mode).setDrawFullBleed(false),
-        )
-            .icon
+        ).icon
+    }
+
+    fun normalizeAndWrapToAdaptiveIcon(
+        icon: Drawable?,
+        outScale: FloatArray
+    ): AdaptiveIconDrawable? {
+        if (icon == null) {
+            return null
+        }
+        val isFromIconPack = icon.isFromIconPack
+        val shrinkNonAdaptiveIcons =
+            !isFromIconPack && IconPreferences(context).shouldWrapAdaptive()
+        val scale: Float
+        if (shrinkNonAdaptiveIcons && icon !is AdaptiveIconDrawable) {
+            scale = IconNormalizer(iconBitmapSize).getScale(icon)
+            val wrapperBackgroundColor: Int =
+                IconPreferences(context).getWrapperBackgroundColor(icon)
+            val foreground = FixedScaleDrawable()
+            foreground.apply {
+                drawable = icon
+                setScale(scale)
+            }
+            val wrapper =
+                CustomAdaptiveIconDrawable(wrapperBackgroundColor.toDrawable(), foreground)
+            outScale[0] = IconNormalizer(iconBitmapSize).getScale(wrapper)
+            return wrapper
+        } else {
+            outScale[0] = IconNormalizer(iconBitmapSize).getScale(icon)
+            return wrapToAdaptiveIcon(icon)
+        }
+    }
 
     @JvmOverloads
     @Deprecated("Use createBadgedIconBitmap instead")
@@ -165,7 +206,7 @@ constructor(
 
         // Create the bitmap first
         val oldBounds = icon.bounds
-
+        val scale = FloatArray(1)
         var tempIcon: Drawable = icon
         if (options.isFullBleed && icon is BitmapDrawable) {
             // If the source is a full-bleed icon, create an adaptive icon by insetting this icon to
@@ -174,13 +215,16 @@ constructor(
             inset /= (1 + 2 * inset)
             tempIcon =
                 AdaptiveIconDrawable(
-                    ColorDrawable(Color.BLACK),
+                    Color.BLACK.toDrawable(),
                     InsetDrawable(icon, inset, inset, inset, inset),
                 )
         }
+
+        options.setWrapperBackgroundColor(IconPreferences(context).getWrapperBackgroundColor(icon))
         if (options.wrapNonAdaptiveIcon) tempIcon = wrapToAdaptiveIcon(tempIcon, options)
 
         val drawFullBleed = options.drawFullBleed ?: drawFullBleedIcons
+
         val bitmap = drawableToBitmap(tempIcon, drawFullBleed, options)
         icon.bounds = oldBounds
 
@@ -276,7 +320,7 @@ constructor(
     fun wrapToAdaptiveIcon(icon: Drawable, options: IconOptions? = null): AdaptiveIconDrawable =
         icon as? AdaptiveIconDrawable
             ?: AdaptiveIconDrawable(
-                ColorDrawable(options?.wrapperBackgroundColor ?: DEFAULT_WRAPPER_BACKGROUND),
+                (options?.wrapperBackgroundColor ?: DEFAULT_WRAPPER_BACKGROUND).toDrawable(),
                 icon.wrapIntoSquareDrawable(LEGACY_ICON_SCALE),
             )
                 .apply { setBounds(0, 0, 1, 1) }
@@ -463,7 +507,7 @@ constructor(
         // Ratio of icon visible area to full icon size for a square shaped icon
         private const val MAX_SQUARE_AREA_FACTOR = 375.0 / 576
 
-        private val LEGACY_ICON_SCALE =
+        val LEGACY_ICON_SCALE =
             sqrt(MAX_SQUARE_AREA_FACTOR).toFloat() *
                     .7f *
                     (1f / (1 + 2 * AdaptiveIconDrawable.getExtraInsetFraction()))
