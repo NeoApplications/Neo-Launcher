@@ -22,9 +22,50 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.android.launcher3.R
+import com.android.launcher3.allapps.AllAppsPagedView
+import com.android.launcher3.allapps.AlphabeticalAppsList
 
 class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+    private var pagerAdapter: AllAppViewPagerAdapter? = null
+    private var allAppsPagedView: AllAppsPagedView? = null
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.all_apps_horizontal, this, true)
+        LayoutInflater.from(context).inflate(R.layout.all_apps_horizontal, this)
+        allAppsPagedView = findViewById(R.id.apps_paged_view)
+    }
+
+    fun setData(
+        alphabeticalAppsList: AlphabeticalAppsList,
+        allAppsViewPagerAdapter: AllAppViewPagerAdapter
+    ) {
+        pagerAdapter = allAppsViewPagerAdapter
+        pagerAdapter?.setAppsList(alphabeticalAppsList)
+        pagerAdapter?.setPagedView(allAppsPagedView)
+
+        pagerAdapter?.setGridDimensions(5, 4)
+
+        updatePages()
+    }
+
+    private fun updatePages() {
+        pagerAdapter?.notifyDataChanged()
+    }
+
+    fun onConfigurationChanged() {
+        pagerAdapter?.calculatePages()
+        updatePages()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        if (measuredWidth > 0 && measuredHeight > 0) {
+            pagerAdapter?.let {
+                val oldPageCount = it.getPageCount()
+                it.calculatePages()
+                if (oldPageCount != it.getPageCount()) {
+                    updatePages()
+                }
+            }
+        }
     }
 }
