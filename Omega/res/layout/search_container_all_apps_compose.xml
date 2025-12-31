@@ -23,4 +23,4 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
     android:background="@drawable/bg_all_apps_searchbox"
-    android:padding="4dp" />
+    android:padding="2dp" />
