@@ -78,8 +78,8 @@ fun MainPrefsPage() {
 
     val uiPrefs = persistentListOf(
         PageItem.PrefsProfile,
-        /*PageItem.PrefsDesktop,
-        PageItem.PrefsDock,*/
+        //PageItem.PrefsDesktop,
+        PageItem.PrefsDock,
         PageItem.PrefsDrawer
     )
     val featuresPrefs = persistentListOf(
