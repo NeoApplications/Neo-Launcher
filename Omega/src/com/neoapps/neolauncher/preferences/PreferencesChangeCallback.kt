@@ -18,15 +18,11 @@
 
 package com.neoapps.neolauncher.preferences
 
-import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 
 class PreferencesChangeCallback(val launcher: NeoLauncher) {
-
-    private val idp: InvariantDeviceProfile
-        get() = InvariantDeviceProfile.INSTANCE.get(launcher)
 
     fun reloadGrid() {
         launcher.appComponent.idp.onPreferencesChanged()

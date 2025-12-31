@@ -56,7 +56,7 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
     }
 
     override fun onAttachedToWindow() {
-        job = launcher.nLauncher.lifecycleScope.launch {
+        job = launcher.launcher.lifecycleScope.launch {
             prefs.feedProvider.get().collect {
                 mClient?.onDestroy()
                 feedEnabled = it != ""

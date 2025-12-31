@@ -39,7 +39,7 @@ import com.android.launcher3.widget.picker.WidgetsFullSheet
 import com.neoapps.neolauncher.dash.DashSheet
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.GestureHandler
-import com.neoapps.neolauncher.nLauncher
+import com.neoapps.neolauncher.launcher
 import com.neoapps.neolauncher.search.SearchProviderController
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.getIcon
@@ -320,12 +320,12 @@ class StartGlobalSearchGestureHandler(context: Context, config: JSONObject?) :
     override val requiresForeground = false
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        context.nLauncher.stateManager.goToState(
+        context.launcher.stateManager.goToState(
             LauncherState.ALL_APPS,
             true,
             AnimatorListeners.forEndCallback(Runnable {
-                context.nLauncher.appsView.searchUiManager.initializeSearch(
-                    context.nLauncher.appsView
+                context.launcher.appsView.searchUiManager.initializeSearch(
+                    context.launcher.appsView
                 )
             })
         )

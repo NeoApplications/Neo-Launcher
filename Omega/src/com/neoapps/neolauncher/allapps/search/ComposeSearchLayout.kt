@@ -74,7 +74,7 @@ import com.neoapps.neolauncher.compose.icons.Phosphor
 import com.neoapps.neolauncher.compose.icons.phosphor.Nut
 import com.neoapps.neolauncher.compose.icons.phosphor.X
 import com.neoapps.neolauncher.compose.navigation.Routes
-import com.neoapps.neolauncher.nLauncher
+import com.neoapps.neolauncher.launcher
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PreferenceActivity
 import com.neoapps.neolauncher.search.SearchProviderController
@@ -268,7 +268,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         mSearchBarController.initialize(
             NeoAppSearchAlgorithm(mContext, true),
             null,
-            mContext.nLauncher,
+            mContext.launcher,
             this
         )
     }
@@ -318,7 +318,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
             openURLInBrowser(context, spController.activeSearchProvider.searchUrl.format(query))
             true
         } else {
-            context.nLauncher.appsView.mainAdapterProvider.launchHighlightedItem()
+            context.launcher.appsView.mainAdapterProvider.launchHighlightedItem()
             false
         }
 

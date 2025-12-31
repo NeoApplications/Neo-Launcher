@@ -36,7 +36,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.util.SystemUiController
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
-import com.neoapps.neolauncher.nLauncher
+import com.neoapps.neolauncher.launcher
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.runOnMainThread
 import kotlin.math.roundToInt
@@ -47,7 +47,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet?) : ScrimView(context,
     private val prefs = NeoPrefs.getInstance()
     private var drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
     private var radius = prefs.profileBlurRadius.getValue()
-    private var mLauncher = context.nLauncher
+    private var mLauncher = context.launcher
 
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {

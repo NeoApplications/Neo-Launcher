@@ -104,7 +104,7 @@ class NeoPrefs private constructor(val context: Context) {
     val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
     val restart = { onChangeCallback?.restart() }
-    val reloadModel = { onChangeCallback?.reloadModel() }
+    val reloadModel = { onChangeCallback!!.reloadModel() }
     val reloadGrid = { onChangeCallback?.reloadGrid() }
     val reloadAll = { reloadModel(); reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }

@@ -46,6 +46,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.android.launcher3.AppFilter
+import com.android.launcher3.BaseActivity
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -383,5 +384,5 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     }
 }
 
-val Context.nLauncher: NeoLauncher
-    get() = NeoLauncher.getLauncher(this)
+val Context.launcher: NeoLauncher
+    get() = BaseActivity.fromContext(this)

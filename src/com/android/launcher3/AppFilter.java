@@ -19,7 +19,6 @@ public class AppFilter {
 
     private final Set<ComponentName> mFilteredComponents;
 
-    // Edited
     @Inject
     public AppFilter(@ApplicationContext Context context) {
         mFilteredComponents = Arrays.stream(

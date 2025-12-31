@@ -24,7 +24,7 @@ import com.android.launcher3.LauncherState
 import com.android.launcher3.touch.SingleAxisSwipeDetector
 import com.android.launcher3.util.TouchController
 import com.neoapps.neolauncher.gestures.handlers.VerticalSwipeGestureHandler
-import com.neoapps.neolauncher.nLauncher
+import com.neoapps.neolauncher.launcher
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
@@ -42,7 +42,7 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
     private val triggerVelocity = 2.25f
     private val notificationsCloseVelocity = 0.35f
 
-    private val controller get() = launcher.nLauncher.gestureController
+    private val controller get() = launcher.launcher.gestureController
     private val customSwipeUpGesture get() = controller.swipeUpGesture.custom
     private val customSwipeUpDockGesture get() = controller.swipeUpDockGesture.custom
     private val customSwipeDownGesture get() = controller.swipeDownGesture.custom

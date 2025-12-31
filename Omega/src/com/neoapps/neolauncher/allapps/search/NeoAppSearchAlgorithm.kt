@@ -12,7 +12,7 @@ import com.android.launcher3.model.ModelTaskController
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.search.SearchCallback
 import com.android.launcher3.search.StringMatcherUtility
-import com.neoapps.neolauncher.nLauncher
+import com.neoapps.neolauncher.launcher
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.search.SearchProviderController
 import com.neoapps.neolauncher.util.prefs
@@ -71,7 +71,7 @@ class NeoAppSearchAlgorithm(val context: Context, addNoResultsMessage: Boolean) 
         val result = ArrayList<AdapterItem>()
         if (searchHiddenAppsEnable) {
             apps.clear()
-            apps.addAll(context.nLauncher.allApps)
+            apps.addAll(context.launcher.allApps)
         }
 
         val matcher = FuzzySearch.extractSorted(
@@ -109,7 +109,7 @@ class NeoAppSearchAlgorithm(val context: Context, addNoResultsMessage: Boolean) 
         val mApps = apps
         if (searchHiddenAppsEnable) {
             mApps.clear()
-            mApps.addAll(context.nLauncher.allApps)
+            mApps.addAll(context.launcher.allApps)
         }
 
         var i = 0

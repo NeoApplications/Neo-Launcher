@@ -16,7 +16,6 @@
  */
 package com.neoapps.neolauncher
 
-import android.content.Context
 import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherAnimUtils
 import com.android.launcher3.LauncherState
@@ -40,7 +39,7 @@ class OptionsState(id: Int) :
 
         val scale = 85f / 100f
         if (grid.isVerticalBarLayout) {
-            val optionsView = launcher.nLauncher.optionsView
+            val optionsView = launcher.launcher.optionsView
 
             val wsHeightWithoutInsets = ws.height - grid.insets.top - grid.insets.bottom
             val desiredCenter = wsHeightWithoutInsets * 0.5f * scale
