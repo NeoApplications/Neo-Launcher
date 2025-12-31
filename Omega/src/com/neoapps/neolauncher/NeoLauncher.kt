@@ -66,7 +66,6 @@ import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.hasStoragePermission
-import com.neoapps.neolauncher.views.OmegaBackgroundView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -84,8 +83,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     val gestureController by lazy { GestureController(this) }
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
-
-    val background by lazy { findViewById<OmegaBackgroundView>(R.id.omega_background)!! }
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
 

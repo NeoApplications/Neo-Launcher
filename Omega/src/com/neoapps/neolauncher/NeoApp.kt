@@ -28,7 +28,6 @@ import android.provider.Settings
 import android.util.Log
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
-import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 import com.neoapps.neolauncher.data.reposModule
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -48,7 +47,6 @@ class NeoApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        BlurWallpaperProvider.getInstance(this).updateAsync()
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -74,7 +72,6 @@ class NeoApp : Application() {
 
     fun onLauncherAppStateCreated() {
         registerActivityLifecycleCallbacks(activityHandler)
-        BlurWallpaperProvider.getInstance(this)
         Flowerpot.Manager.getInstance(this)
     }
 

@@ -101,7 +101,6 @@ class NeoPrefs private constructor(val context: Context) {
     val changePoker = _changePoker.asSharedFlow()
 
     // TODO add more differentiate callbacks
-    val updateBlur = { onChangeCallback?.updateBlur() }
     val recreate = { onChangeCallback?.recreate() }
     val restart = { onChangeCallback?.restart() }
     val reloadModel = { onChangeCallback!!.reloadModel() }
@@ -204,27 +203,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_ICON_SHAPE_LESS,
         defaultValue = false,
         onChange = { reloadModel() }
-    )
-
-    // TODO Remove the legacy blur
-    var profileBlurEnable = BooleanPref(
-        titleId = R.string.title__theme_blur,
-        summaryId = R.string.summary__theme_blur,
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_BLUR_ENABLED,
-        defaultValue = false,
-        onChange = { updateBlur() }
-    )
-
-    var profileBlurRadius = FloatPref(
-        key = PrefKey.PROFILE_BLUR_RADIUS,
-        titleId = R.string.title__theme_blur_radius,
-        dataStore = dataStore,
-        defaultValue = 0.75f,
-        maxValue = 1.5f,
-        minValue = 0.1f,
-        steps = 27,
-        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var profileIconColoredBackground = BooleanPref(
