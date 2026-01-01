@@ -29,6 +29,9 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.ScrollableLayoutManager.PREDICTIVE_BACK_MIN_SCALE;
 import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerLocation.ALL_APPS_SCROLLER;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_CATEGORIES;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_TABS;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -97,6 +100,7 @@ import com.android.launcher3.views.ScrimView;
 import com.android.launcher3.views.SpringRelativeLayout;
 import com.android.launcher3.workprofile.PersonalWorkSlidingTabStrip;
 import com.android.systemui.plugins.AllAppsRow;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,6 +187,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private int mBottomSheetBackgroundColorOverBlur;
     private int mBottomSheetBackgroundColorLegacy;
     private int mTabsProtectionAlpha;
+    private final NeoPrefs prefs;
     @Nullable private AllAppsTransitionController mAllAppsTransitionController;
 
     public ActivityAllAppsContainerView(Context context) {
@@ -196,6 +201,8 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     public ActivityAllAppsContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mActivityContext = ActivityContext.lookupContext(context);
+
+        prefs = NeoPrefs.getInstance();
         mAllAppsStore = mActivityContext.getActivityComponent().getAppsStore();
 
         mScrimColor = Themes.getAttrColor(context, R.attr.allAppsScrimColor);
@@ -358,6 +365,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         getMainAdapterProvider().clearHighlightedItem();
         animateToSearchState(false);
         rebindAdapters();
+        View categoriesBar = findViewById(R.id.categories_bar);
+        if (categoriesBar != null) categoriesBar.setVisibility(
+                prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIES ? VISIBLE : GONE
+        );
     }
 
     /**
@@ -370,6 +381,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         if (results != null) {
             animateToSearchState(true);
+            View categoriesBar = findViewById(R.id.categories_bar);
+            if (categoriesBar != null) categoriesBar.setVisibility(
+                    prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIES ? INVISIBLE : GONE
+            );
         }
     }
 
@@ -701,7 +716,13 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         View oldView = getAppsRecyclerViewContainer();
         int index = indexOfChild(oldView);
         removeView(oldView);
-        int layout = showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
+        int layout = switch (prefs.getDrawerLayout().getValue()) {
+            case LAYOUT_HORIZONTAL -> R.layout.all_apps_horizontal;
+            case LAYOUT_CATEGORIES -> R.layout.all_apps_categorized;
+            case LAYOUT_TABS -> R.layout.all_apps_custom_tabs;
+            default -> showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
+        };
+
         final View rvContainer = getLayoutInflater().inflate(layout, this, false);
         addView(rvContainer, index);
         if (showTabs) {
@@ -995,7 +1016,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             // Many slice view id is not properly assigned, and hence throws null
             // pointer exception in the underneath method. Catching the exception
             // simply doesn't restore these slice views. This doesn't have any
-            // user visible effect because because we query them again.
+            // user visible effect because we query them again.
             super.dispatchRestoreInstanceState(sparseArray);
         } catch (Exception e) {
             Log.e("AllAppsContainerView", "restoreInstanceState viewId = 0", e);

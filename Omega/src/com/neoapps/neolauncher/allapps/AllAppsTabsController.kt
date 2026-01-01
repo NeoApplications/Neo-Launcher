@@ -6,7 +6,7 @@ import com.android.launcher3.BaseActivity
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
 import com.android.launcher3.allapps.AllAppsPagedView
 import com.android.launcher3.allapps.AllAppsStore
-import com.neoapps.neolauncher.preferences.LAYOUT_CUSTOM_CATEGORIES
+import com.neoapps.neolauncher.preferences.LAYOUT_CATEGORIES
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.forEachChildIndexed
 
@@ -18,7 +18,7 @@ class AllAppsTabsController<T : BaseActivity>(
 ) {
     val tabsCount get() = tabs.count
     val prefs = NeoPrefs.getInstance()
-    val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_CUSTOM_CATEGORIES
+    val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_CATEGORIES
 
     private var holders = mutableListOf<ActivityAllAppsContainerView<*>.AdapterHolder>()
 
