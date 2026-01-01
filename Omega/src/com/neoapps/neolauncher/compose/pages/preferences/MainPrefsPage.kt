@@ -119,7 +119,7 @@ fun MainPrefsPage() {
 
     NavigableListDetailPaneScaffold(
         navigator = paneNavigator,
-        defaultBackBehavior = BackNavigationBehavior.PopUntilContentChange,
+        defaultBackBehavior = BackNavigationBehavior.PopLatest,
         listPane = {
             ViewWithActionBar(
                 title = stringResource(R.string.settings_button_text),
