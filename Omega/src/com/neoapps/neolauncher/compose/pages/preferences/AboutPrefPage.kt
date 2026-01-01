@@ -19,30 +19,58 @@ package com.neoapps.neolauncher.compose.pages.preferences
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Canvas
 import android.util.Base64
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
+import com.neoapps.neolauncher.compose.components.ActionItemPreference
+import com.neoapps.neolauncher.compose.components.ContributorRow
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
+import com.neoapps.neolauncher.compose.components.preferences.PagePreference
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroupHeading
 import com.neoapps.neolauncher.compose.icons.Phosphor
 import com.neoapps.neolauncher.compose.icons.phosphor.BracketsSquare
 import com.neoapps.neolauncher.compose.icons.phosphor.GithubLogo
 import com.neoapps.neolauncher.compose.icons.phosphor.Megaphone
 import com.neoapps.neolauncher.compose.icons.phosphor.TelegramLogo
+import com.neoapps.neolauncher.compose.objects.PageItem
+import com.neoapps.neolauncher.theme.kaushanScript
 import com.neoapps.neolauncher.util.Config
 import java.io.InputStream
 
@@ -51,7 +79,7 @@ fun AboutPrefPage() {
     ViewWithActionBar(
         title = stringResource(R.string.title__general_about),
     ) { paddingValues ->
-        /*LazyColumn(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -62,12 +90,7 @@ fun AboutPrefPage() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(4.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainerHighest,
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .clip(MaterialTheme.shapes.extraLarge),
+                        .padding(4.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -78,15 +101,12 @@ fun AboutPrefPage() {
                         ),
                         leadingContent = {
                             ResourcesCompat.getDrawable(
-                                LocalContext.current.resources,
+                                LocalResources.current,
                                 R.drawable.ic_launcher,
                                 LocalContext.current.theme
                             )?.let { drawable ->
-                                val bitmap = Bitmap.createBitmap(
-                                    drawable.intrinsicWidth,
-                                    drawable.intrinsicHeight,
-                                    Bitmap.Config.ARGB_8888
-                                )
+                                val bitmap =
+                                    createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
                                 val canvas = Canvas(bitmap)
                                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                                 drawable.draw(canvas)
@@ -115,79 +135,67 @@ fun AboutPrefPage() {
                                     style = MaterialTheme.typography.titleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Text(
-                                    text = BuildConfig.APPLICATION_ID,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
                             }
                         }
                     )
-
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(8.dp),
-                    ) {
-                        items(links) { link ->
-                            ItemLink(
-                                icon = link.icon,
-                                label = stringResource(id = link.labelResId),
-                                url = link.url
-                            )
-                        }
-                    }
                 }
             }
             item {
                 PreferenceGroupHeading(stringResource(id = R.string.about_team))
             }
-            itemsIndexed(contributors) { i, it ->
+            itemsIndexed(developers) { i, it ->
                 ContributorRow(
                     nameId = it.name,
                     roleId = it.descriptionRes,
                     photoUrl = it.photoUrl,
                     url = it.webpage,
                     index = i,
-                    groupSize = contributors.size
+                    groupSize = developers.size
                 )
             }
+
             item {
-                PreferenceGroupHeading(stringResource(id = R.string.about_translators_group))
+                PreferenceGroupHeading(stringResource(id = R.string.about_community))
             }
-            item {
-                ContributorRow(
-                    nameId = R.string.contributor2,
-                    roleId = R.string.contributor_role,
-                    photoUrl = "https://avatars.githubusercontent.com/u/69337602",
-                    url = "https://github.com/nonaybay",
-                    index = 0,
-                    groupSize = 2
+
+            val groupSize = community.size
+            itemsIndexed(community) { index, item ->
+                ActionItemPreference(
+                    titleId = item.labelResId,
+                    icon = item.icon,
+                    url = item.url,
+                    index = index,
+                    groupSize = groupSize
                 )
             }
-            item {
-                val page = PageItem.AboutTranslators
-                PagePreference(
-                    titleId = page.titleId,
-                    icon = page.icon,
-                    route = page.route,
-                    index = 1,
-                    groupSize = 2
-                )
-            }
+
             item {
                 PreferenceGroupHeading(stringResource(id = R.string.about_build_information))
             }
-            itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, page ->
+
+            item {
+                ActionItemPreference(
+                    titleId = R.string.about_source,
+                    icon = Phosphor.GithubLogo,
+                    url = "https://github.com/NeoApplications/Neo-Launcher",
+                    index = 0,
+                    groupSize = 4
+                )
+            }
+
+            val pages =
+                listOf(PageItem.AboutTranslators, PageItem.AboutLicense, PageItem.Acknowledgement)
+            itemsIndexed(pages) { i, page ->
                 PagePreference(
                     titleId = page.titleId,
                     icon = page.icon,
                     route = page.route,
-                    index = i,
-                    groupSize = 2
+                    index = i + 1,
+                    groupSize = 4,
+                    modifier = Modifier
                 )
             }
-        }*/
-
+        }
     }
 }
 
@@ -204,12 +212,7 @@ private data class TeamMember(
     val webpage: String,
 )
 
-private val links = listOf(
-    Link(
-        icon = Phosphor.GithubLogo,
-        labelResId = R.string.about_source,
-        url = "https://github.com/NeoApplications/Neo-Launcher"
-    ),
+private val community = listOf(
     Link(
         icon = Phosphor.Megaphone,
         labelResId = R.string.about_channel,
@@ -227,7 +230,7 @@ private val links = listOf(
     )
 )
 
-private val contributors = listOf(
+private val developers = listOf(
     TeamMember(
         name = R.string.author,
         descriptionRes = R.string.author_role,
@@ -246,14 +249,28 @@ private val contributors = listOf(
 fun LicenseScreen() {
     ViewWithActionBar(
         title = stringResource(R.string.about_open_source),
-    ) {
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
         ) {
             ComposableWebView(url = "file:///android_asset/license.htm")
         }
     }
 }
+
+@Composable
+fun AcknowledgementScreen() {
+    ViewWithActionBar(
+        title = stringResource(R.string.title__about_acknowledgement)
+    ) {
+        Column(
+            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+        ) {
+            ComposableWebView(url = "file:///android_asset/acknowledgement.htm")
+        }
+    }
+}
+
 
 @Composable
 fun ChangelogScreen() {
@@ -286,8 +303,8 @@ fun ComposableWebView(url: String) {
 
     val cssFile = when (Config.getCurrentTheme(LocalContext.current)) {
         Config.THEME_BLACK -> "black.css"
-        Config.THEME_DARK  -> "dark.css"
-        else               -> "light.css"
+        Config.THEME_DARK -> "dark.css"
+        else -> "light.css"
     }
     AndroidView(
         factory = { context ->
@@ -345,4 +362,10 @@ fun ComposableWebView(url: String) {
         },
         update = { webView -> webView.loadUrl(url) }
     )
+}
+
+@Preview
+@Composable
+fun AboutPrefPagePreview() {
+    AboutPrefPage()
 }

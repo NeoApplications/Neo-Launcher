@@ -535,6 +535,7 @@
     <string name="about_build_information">Build info</string>
     <string name="title__about_donate">Donate</string>
     <string name="title__about_changelog">Changelog</string>
+    <string name="title__about_acknowledgement">Acknowledgement</string>
     <string name="about_copyright">Copyright © 2020–2021</string>
     <string name="about_team">Team Members</string>
     <string name="about_translators_group">Contributors and Translators</string>

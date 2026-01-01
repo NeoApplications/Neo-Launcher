@@ -29,9 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.neoapps.neolauncher.compose.components.preferences.BasePreference
@@ -70,8 +73,40 @@ fun ContributorRow(
                 contentDescription = stringResource(id = nameId),
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(30.dp)
+                    .size(36.dp)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12F))
+            )
+        }
+    )
+}
+
+@Composable
+fun ActionItemPreference(
+    @StringRes titleId: Int,
+    icon: ImageVector,
+    url: String,
+    index: Int = 0,
+    groupSize: Int = 1,
+) {
+    val context = LocalContext.current
+
+    BasePreference(
+        titleId = titleId,
+        onClick = {
+            val webpage = url.toUri()
+            val intent = Intent(Intent.ACTION_VIEW, webpage)
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            }
+        },
+        index = index,
+        groupSize = groupSize,
+        startWidget = {
+            Image(
+                imageVector = icon,
+                contentDescription = stringResource(titleId),
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
             )
         }
     )

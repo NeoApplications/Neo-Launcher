@@ -91,5 +91,11 @@ open class PageItem(
             icon = Phosphor.ListDashes,
             route = NavRoute.About.Changelog()
         )
+
+        val Acknowledgement = PageItem(
+            titleId = R.string.title__about_acknowledgement,
+            icon = Phosphor.Copyleft,
+            route = NavRoute.About.Acknowledgement()
+        )
     }
 }

@@ -91,6 +91,8 @@ open class NavRoute : Parcelable {
         class Translators : About()
 
         @Serializable
+        class Acknowledgement : About()
+        @Serializable
         class Changelog : About()
     }
 
