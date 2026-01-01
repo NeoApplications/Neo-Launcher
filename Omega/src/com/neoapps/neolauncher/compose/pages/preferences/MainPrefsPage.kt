@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -118,6 +119,7 @@ fun MainPrefsPage() {
 
     NavigableListDetailPaneScaffold(
         navigator = paneNavigator,
+        defaultBackBehavior = BackNavigationBehavior.PopUntilContentChange,
         listPane = {
             ViewWithActionBar(
                 title = stringResource(R.string.settings_button_text),
@@ -171,10 +173,10 @@ fun MainPrefsPage() {
                         heading = stringResource(id = R.string.pref_category__features),
                         prefs = featuresPrefs
                     )
-                    /*PreferenceGroup(
+                    PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs
-                    )*/
+                    )
                 }
             }
         },
@@ -266,6 +268,8 @@ fun MainPrefsPage() {
 
                         is NavRoute.About.Changelog
                             -> ChangelogScreen()
+                        is NavRoute.About.Acknowledgement
+                            -> AcknowledgementScreen()
 
                         is NavRoute.About
                             -> AboutPrefPage()
