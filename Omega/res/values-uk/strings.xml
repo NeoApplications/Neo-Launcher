@@ -8,7 +8,6 @@
     <string name="summary__general_dock">Значки гарячих клавіш, панель пошуку</string>
     <string name="summary__general_search">Провайдер пошуку, стиль та значки</string>
     <string name="summary__general_notifications">Кількість і колір значків, жести</string>
-    <string name="summary__general_about">Детальніше про Neo Launcher</string>
     <string name="pref_category__inputs">Жести та пошук</string>
     <string name="pref_category__others">Інше</string>
     <string name="title_desktop_full_width_widgets">Віджети на всю ширину</string>
@@ -185,7 +184,6 @@
     <string name="feed_add_widget">Додати віджет</string>
     <string name="feed_widget">Віджети</string>
     <string name="title__about_changelog">Історія змін</string>
-    <string name="about_copyright">Авторське право © 2020–2021</string>
     <string name="about_team">Учасники команди</string>
     <string name="about_translators_group">Учасники та перекладачі</string>
     <string name="dash_mobile_network_title">Мобільна мережа</string>
@@ -348,7 +346,6 @@
     <string name="pref_desktop_mode">Настільний режим</string>
     <string name="summary_dock_search">Показати в нижній панелі</string>
     <string name="title_drawer_vertical">Вертикальний</string>
-    <string name="title_drawer_vertical_list">Вертикальний список</string>
     <string name="title_drawer_paged">Посторінковий</string>
     <string name="hide_app_selected">Приховані застосунки (%1$d)</string>
     <string name="hide_app_reset">Скинути приховані застосунки</string>

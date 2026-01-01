@@ -62,7 +62,6 @@
     <string name="allow_rotation_blocked_desc">La configuración actual no permite la rotación de pantalla</string>
     <string name="pref_category__inputs">Gestos y Búsqueda</string>
     <string name="pref_category__interfaces">Interfaz de usuario</string>
-    <string name="summary__general_about">Mas acerca de Neo Launcher</string>
     <string name="summary__general_advanced">Idioma, respaldo, búsqueda de preferencias</string>
     <string name="summary__general_smartspace">Fecha, Hora, widget inicio</string>
     <string name="summary__general_theme">Cambiar colores, pack de iconos, forma de icono</string>
@@ -233,7 +232,6 @@
     <string name="icon_shape_override_progress">Aplicando cambios de forma de Icono</string>
     <string name="menu_icon_shape">Icono Personalizado</string>
     <string name="title_drawer_paged">Paginado</string>
-    <string name="title_drawer_vertical_list">Lista Vertical</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="summary_full_width_widgets">Permitir que los widgets abarquen todo el ancho sin relleno</string>
     <string name="title__drawer_icon_popup_menu">Burbuja de acceso directo</string>
@@ -338,7 +336,6 @@
     <string name="edit_dash_summary">Activar o desactivar los accesos directos</string>
     <string name="button_organize_screens">Organizar páginas</string>
     <string name="developer_options_enabled">Opciones del desarrollador en</string>
-    <string name="about_copyright">© 2020–2021</string>
     <string name="about_open_source">Bibliotecas de Fuente Abierta</string>
     <string name="about_team">Miembros del Equipo</string>
     <string name="title_storage_permission_required">Acceso al Almacenaje Necesario</string>
@@ -514,7 +511,6 @@
     <string name="title_themed_background">Fondo del icono transparente</string>
     <string name="color_wallpaper_tertiary">Fondos de pantalla terciarios</string>
     <string name="title_drawer_categorized">Por categorías</string>
-    <string name="title_drawer_custom_categories">Categorías personalizadas</string>
     <string name="title_drawer_all_apps">Todo</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_smartspace_background">Mostrar fondos temáticos</string>

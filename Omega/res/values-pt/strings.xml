@@ -155,7 +155,6 @@
     <string name="restore_failed">Restauração falhou</string>
     <string name="title__dev_show_Dev">Mostrar nas configurações</string>
     <string name="title__about_changelog">Log de mudanças</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
     <string name="about_team">Membros do Time</string>
     <string name="about_translators">Tradutores</string>
     <string name="about_source">Código fonte</string>
@@ -194,7 +193,6 @@
     <string name="summary__general_smartspace">Data, hora, widget</string>
     <string name="summary__general_notifications">Número e cor do ícone das notificações, gestos</string>
     <string name="summary__general_advanced">Idioma, backup, pesquisas</string>
-    <string name="summary__general_about">Mais sobre Neo Launcher</string>
     <string name="pref_category__interfaces">Interface</string>
     <string name="pref_category__inputs">Gestos e pesquisa</string>
     <string name="pref_category__others">Outras</string>
@@ -221,7 +219,6 @@
     <string name="msg_disable_suggestions_prompt">Os dados de uso serão excluídos.</string>
     <string name="label_turn_off_suggestions">Desativar</string>
     <string name="title_text_color">Cor do Texto</string>
-    <string name="title_drawer_vertical_list">Lista Vertical</string>
     <string name="pref_appcategorization_folders_summary">Toque para abrir o popup.</string>
     <string name="app_categorization_tabs">Abas</string>
     <string name="protected_app_reset">Redefinir apps protegidas</string>

@@ -287,7 +287,6 @@
     <string name="title_desktop_full_width_widgets">Виджеты на всю ширину</string>
     <string name="allow_rotation_blocked_desc">Текущая настройка экрана не допускает вращения</string>
     <string name="pref_category__others">Другое</string>
-    <string name="summary__general_about">Больше информации об Neo Launcher</string>
     <string name="summary__general_advanced">Язык, резервное копирование, поиск</string>
     <string name="summary__general_smartspace">Дата, время, домашний виджет</string>
     <string name="summary__general_search">Провайдер поиска, стиль, иконки</string>
@@ -342,7 +341,6 @@
     <string name="add_new_tab">Добавить</string>
     <string name="cat_drawer_icons">Иконки</string>
     <string name="title_drawer_paged">Постранично</string>
-    <string name="title_drawer_vertical_list">Вертикальный список</string>
     <string name="title_drawer_vertical">Вертикально</string>
     <string name="title__drawer_paged_apps">Постраничный вид приложений</string>
     <string name="title_dock_two_row">Показать вторую строку</string>
@@ -449,7 +447,6 @@
     <string name="section_web">Web</string>
     <string name="section_contacts">Контакты</string>
     <string name="backup_create_new">Создать новую резервную копию</string>
-    <string name="about_copyright">Авторское право © 2020-2021</string>
     <string name="about_translators_group">Соавторы и переводчики</string>
     <string name="accessibility_undo">Отменить</string>
     <string name="dash_media_player_description">Показать или скрыть элементы управления аудиоплеером</string>
@@ -517,7 +514,6 @@
     <string name="color_wallpaper_tertiary">Третичные обои</string>
     <string name="title_drawer_all_apps">Все</string>
     <string name="title_drawer_horizontal">Горизонтально</string>
-    <string name="title_drawer_custom_categories">Свои категории</string>
     <string name="title_drawer_categorized">Упорядоченно</string>
     <string name="title_smartspace_background">Показывать изменённый фон</string>
     <string name="web_search_provider">Поисковая система для сети</string>

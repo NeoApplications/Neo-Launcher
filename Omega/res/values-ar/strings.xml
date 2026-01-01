@@ -127,7 +127,6 @@
     <string name="pref_category__others">أخرى</string>
     <string name="pref_category__inputs">الأيماءات والبحث</string>
     <string name="pref_category__interfaces">واجهة المستخدم</string>
-    <string name="summary__general_about">المزيد حول Neo Launcher</string>
     <string name="summary__general_advanced">اللغة, النسخ الأحتياطي, بحث الأعدادات</string>
     <string name="summary__general_smartspace">الزمن, الوقت, أدوات سطح المكتب</string>
     <string name="summary__general_drawer">خصص الدرج</string>
@@ -377,7 +376,6 @@
     <string name="cat_drawer_grid">شبكة</string>
     <string name="dialog_message_change_sort">هل تريد التغيير إلى فرز التطبيقات أبجديا؟</string>
     <string name="title_drawer_paged">صفحات</string>
-    <string name="title_drawer_vertical_list">قائمة عمودية</string>
     <string name="title_drawer_vertical">عمودي</string>
     <string name="title_drawer_layout">وضع التخطيط</string>
     <string name="fonts_change_global_font">تغيير</string>
@@ -409,7 +407,6 @@
     <string name="about_open_source">المكتبات المفتوحة المصدر</string>
     <string name="about_translators_group">المساهمون والمترجمون</string>
     <string name="about_community">المجتمع</string>
-    <string name="about_copyright">حقوق الطبع والنشر © 2020-2021</string>
     <string name="pref_desktop_mode_settings">إعدادات وضع سطح المكتب</string>
     <string name="pref_desktop_mode">وضع سطح المكتب</string>
     <string name="pref_desktop_mode_summary">تنشيط وضع سطح المكتب لأندرويد</string>
@@ -519,7 +516,6 @@
     <string name="title_all_apps_hide_scrollbar">اخفاء شريط السحب</string>
     <string name="title_themed_background">خلفية أيقونة شفافة</string>
     <string name="color_wallpaper_tertiary">خلفيات Tertiary</string>
-    <string name="title_drawer_custom_categories">فئات مخصصة</string>
     <string name="title_drawer_all_apps">الكل</string>
     <string name="title_drawer_horizontal">أفقي</string>
     <string name="title_drawer_categorized">مصنف</string>

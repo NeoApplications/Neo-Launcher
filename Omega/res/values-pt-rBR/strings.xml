@@ -92,7 +92,6 @@
     <string name="pref_category__others">Outros</string>
     <string name="pref_category__inputs">Gestos e Pesquisa</string>
     <string name="pref_category__interfaces">Interface</string>
-    <string name="summary__general_about">Mais sobre Neo Launcher</string>
     <string name="summary__general_advanced">Idioma, backup, pesquisa de configuração</string>
     <string name="summary__general_search">Provedor de pesquisa, estilo, ícones</string>
     <string name="summary__general_theme">Alterar cores, pacote de ícones, forma de ícones</string>
@@ -330,7 +329,6 @@
     <string name="cat_drawer_icons">Ícones</string>
     <string name="cat_drawer_grid">Grade</string>
     <string name="title_drawer_paged">Paginada</string>
-    <string name="title_drawer_vertical_list">Lista Vertical</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="title_drawer_layout">Modo de Layout</string>
     <string name="button_organize_screens">Organizar Páginas</string>
@@ -406,7 +404,6 @@
     <string name="pref_desktop_mode_settings">Configurações do modo desktop</string>
     <string name="dash_torch">Lanterna</string>
     <string name="gesture_launch_assistant">Iniciar o Assistente (por meio de botão ou gesto)</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
     <string name="dash_wifi">Wi-Fi</string>
     <string name="title_theme_customize_icons">Personalizar Ícones</string>
     <string name="theme_auto_night_mode_black">Sistema (Preto)</string>

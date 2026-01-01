@@ -50,7 +50,6 @@
     <string name="summary__general_drawer">Přizpůsobte si seznam aplikací</string>
     <string name="summary__general_search">Poskytovatel vyhledávání, motiv, ikony</string>
     <string name="summary__general_advanced">Jazyk, zálohování, nastavení vyhledávání</string>
-    <string name="summary__general_about">Více o Neo Launcher</string>
     <string name="pref_category__interfaces">Uživatelské rozhraní</string>
     <string name="pref_category__features">Funkce</string>
     <string name="pref_category__inputs">Gesta a hledání</string>
@@ -97,7 +96,6 @@
     <string name="summary_all_apps_google_search">Najděte webové výsledky a aplikace</string>
     <string name="summary__drawer_hide_apps">Skrýt aplikaci ze seznamu aplikací</string>
     <string name="title_drawer_vertical">Vertikální</string>
-    <string name="title_drawer_vertical_list">Vertikální seznam</string>
     <string name="title_app_categorization_enable">Povolit kategorie aplikací</string>
     <string name="pref_appcategorization_tabs_summary">Přejíždějte mezi skupinami.</string>
     <string name="tab_type_smart">Automaticky</string>
@@ -234,7 +232,6 @@
     <string name="title_fuzzy_search">Fuzzy Vyhledávání</string>
     <string name="summary_search_hidden_apps">Zobrazovat skryté aplikace ve vyhledávání.</string>
     <string name="title_drawer_horizontal">Vodorovný</string>
-    <string name="title_drawer_custom_categories">Vlastní Kategorie</string>
     <string name="title_drawer_categorized">Kategorizováno</string>
     <string name="tab_type_custom_desc">Vybrat aplikace manuálně.</string>
     <string name="selected_count">%1$d vybráno</string>

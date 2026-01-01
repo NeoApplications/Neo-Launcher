@@ -8,7 +8,6 @@
     <string name="title__general_desktop">Pulpit</string>
     <string name="summary__general_theme">Zmień kolory, pakiet ikon, kształt ikon</string>
     <string name="summary__general_search">Dostawca wyszukiwania, styl, ikony</string>
-    <string name="summary__general_about">Więcej o Neo Launcher</string>
     <string name="pref_category__interfaces">Interfejs użytkownika</string>
     <string name="pref_category__inputs">Gesty i wyszukiwanie</string>
     <string name="summary__general_desktop">Dostosuj pulpit</string>
@@ -176,7 +175,6 @@
     <string name="label_search">Wyszukiwanie</string>
     <string name="title_drawer_row_height">Wysokość wiersza</string>
     <string name="title_disable_suggestions_prompt">Wyłącz sugestie aplikacji</string>
-    <string name="title_drawer_vertical_list">Lista pionowa</string>
     <string name="pref_app_groups_edit_tip">Stuknij, aby edytować, przeciągnij, aby zmienić kolejność.</string>
     <string name="trust_apps_no_lock_error">Proszę skonfigurować bezpieczny ekran blokady, aby ograniczyć dostęp do aplikacji</string>
     <string name="title__theme_accent_color">Kolor akcentu</string>
@@ -349,7 +347,6 @@
     <string name="permission_denied">Odmowa uprawnień do odczytu!</string>
     <string name="theme_auto_black">Podążaj za tapetą (czarny)</string>
     <string name="title_colored_backgrounds">Kolorowe tła</string>
-    <string name="about_copyright">Copyright © 2020-2021</string>
     <string name="dash_location_summary">Zmiana ustawień lokalizacji</string>
     <string name="drag_to_enable_packs">Przeciągnij w górę, aby włączyć</string>
     <string name="title__general_profile">Profil</string>
@@ -511,7 +508,6 @@
     <string name="title_all_apps_hide_scrollbar">Ukryj pasek przewijania</string>
     <string name="title_themed_background">Przezroczyste tło ikony</string>
     <string name="title_expandable_dock">Rozszerzalny pasek szybkiego dostępu</string>
-    <string name="title_drawer_custom_categories">Własny podział na kategorie</string>
     <string name="title_desktop_free_scrolling">Przewijanie bez końca</string>
     <string name="title_drawer_all_apps">Wszystkie</string>
     <string name="title_drawer_horizontal">Poziomo</string>

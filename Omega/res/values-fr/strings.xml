@@ -180,7 +180,6 @@
     <string name="pref_category__others">Autres</string>
     <string name="pref_category__inputs">Gestes et recherche</string>
     <string name="pref_category__interfaces">Interface utilisateur</string>
-    <string name="summary__general_about">Plus d\'infos sur Neo Launcher</string>
     <string name="summary__general_advanced">Langue, sauvegarde, configuration de la recherche</string>
     <string name="summary__general_notifications">Compteur du badge, couleur du badge, gestes</string>
     <string name="summary__general_smartspace">Date, heure, widget d\'accueil</string>
@@ -392,8 +391,6 @@
     <string name="notification_custom_color">Utiliser une couleur personnalisée</string>
     <string name="cat_drawer_grid">Grille</string>
     <string name="cat_drawer_icons">Icônes</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
-    <string name="title_drawer_vertical_list">Liste verticale</string>
     <string name="dialog_message_change_sort">Changer l\'ordre des applications en alphabétique \?</string>
     <string name="trust_apps_manager_name">Applications cachées et protégées</string>
     <string name="disable_protected_apps">Désactiver les applications protégées</string>
@@ -481,7 +478,6 @@
     <string name="title_drawer_all_apps">Tout</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Catégorisé</string>
-    <string name="title_drawer_custom_categories">Catégories personnalisée</string>
     <string name="color_wallpaper_tertiary">Troisième fond d\'écran</string>
     <string name="show_top_shadow">Montrer ombre supérieur</string>
     <string name="title_calendar_gregorian">Grégorien</string>

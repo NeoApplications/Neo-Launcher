@@ -31,7 +31,6 @@
     <string name="summary_all_apps_google_search">Găsește rezultate web și aplicații</string>
     <string name="summary__drawer_hide_apps">Ascunde aplicația din sertarul de aplicații</string>
     <string name="title_text_color">Culoare text</string>
-    <string name="summary__general_about">Mai multe despre Neo Launcher</string>
     <string name="title_disabled">Dezactivat</string>
     <string name="folder_name">Nume dosar</string>
     <string name="title_desktop_hide_statusbar">Ascunde bara de stare</string>
@@ -71,7 +70,6 @@
     <string name="title__drawer_icon_size">Dimensiunea pictogramelor tuturor aplicațiilor</string>
     <string name="title_drawer_layout">Modul de prezentare</string>
     <string name="title_drawer_vertical">Vertical</string>
-    <string name="title_drawer_vertical_list">Listă verticală</string>
     <string name="event_provider_missing_notification_access">Activați notificările de la <xliff:g example="My App" id="name">“%2$s” pentru a utiliza </xliff:g><xliff:g example="My Provider" id="providerName">“%1$s”.</xliff:g></string>
     <string name="gesture_dock_swipe_up">Trageți cu degetul în sus de la doc</string>
     <string name="title_desktop_widget_corner_radius">Raza colțului widget-ului</string>
