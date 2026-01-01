@@ -143,7 +143,6 @@ object PrefKey {
     val SEARCH_HIDDEN_APPS_ENABLED = booleanPreferencesKey("search_hidden_apps_enable")
     val SEARCH_CONTACTS_ENABLED = booleanPreferencesKey("search_contacts_enable")
     val SEARCH_FUZZY_ENABLED = booleanPreferencesKey("search_bar_show_assistant")
-    val SEARCH_CORNER_RADIUS = floatPreferencesKey("search_bar_corner_radius")
     val SEARCH_DRAWER_ENABLED = booleanPreferencesKey("search_bar_drawer_enable")
     val SEARCH_DOCK_ENABLED = booleanPreferencesKey("search_bar_dock_enable")
 

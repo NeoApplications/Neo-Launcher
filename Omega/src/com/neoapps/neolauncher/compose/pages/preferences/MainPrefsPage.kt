@@ -84,7 +84,7 @@ fun MainPrefsPage() {
         PageItem.PrefsDrawer
     )
     val featuresPrefs = persistentListOf(
-        //PageItem.PrefsWidgetsNotifications,
+        PageItem.PrefsWidgetsNotifications,
         PageItem.PrefsSearchFeed,
         //PageItem.PrefsGesturesDash
     )

@@ -38,6 +38,7 @@ import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.preferences.IntSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.IntentLauncherDialogUI
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.StringTextPrefDialogUI
@@ -61,22 +62,22 @@ fun WidgetsPrefsPage() {
         openDialog.value = true
     }
     val smartspacePrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
+        val isOwm =
+            prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name
         mutableStateListOf(
             *listOfNotNull(
-                prefs.smartspaceEnable,
+                /*prefs.smartspaceEnable,
                 prefs.smartspaceBackground,
                 prefs.smartspaceDate,
                 if (prefs.smartspaceDate.getValue()) prefs.smartspaceCalendar
                 else null,
                 prefs.smartspaceTime,
-                prefs.smartspaceTime24H,
+                prefs.smartspaceTime24H,*/
                 prefs.smartspaceWeatherProvider,
-                if (prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name) {
-                    prefs.smartspaceWeatherApiKey
-                    prefs.smartspaceWeatherCity
-                } else null,
-                prefs.smartspaceWeatherUnit,
-                prefs.smartspaceEventProviders
+                if (isOwm) prefs.smartspaceWeatherApiKey else null,
+                if (isOwm) prefs.smartspaceWeatherCity else null,
+                /*prefs.smartspaceWeatherUnit,
+                prefs.smartspaceEventProviders*/
             ).toTypedArray()
         )
     }
@@ -106,14 +107,14 @@ fun WidgetsPrefsPage() {
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*item {
+            item {
                 PreferenceGroup(
                     stringResource(id = R.string.title__general_smartspace),
                     prefs = smartspacePrefs,
                     onPrefDialog = onPrefDialog
                 )
             }
-            item {
+            /*item {
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__notifications),
                     prefs = notificationsPrefs,

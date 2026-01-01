@@ -127,7 +127,7 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
             )*/
 
             var radius by remember { mutableFloatStateOf(0f) }
-            val radiusPrefs = prefs.searchBarRadius.get().collectAsState(initial = 0f)
+            val radiusPrefs = prefs.profileWindowCornerRadius.get().collectAsState(initial = 0f)
             radius = radiusPrefs.value.coerceAtLeast(8f)
 
             var textFieldValue by query

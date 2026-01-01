@@ -996,7 +996,10 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_smartspace_widget_provider,
         defaultValue = OWMWeatherProvider::class.java.name,
         entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
-        onChange = { pokeChange() }
+        onChange = {
+            pokeChange()
+            recreate()
+        }
     )
 
 
@@ -1051,22 +1054,6 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.SEARCH_PROVIDERS,
         defaultValue = setOf(1L),
         entries = { SearchProviderController.getSearchProvidersMap() },
-    )
-
-    var searchBarRadius = FloatPref(
-        dataStore = dataStore,
-        key = PrefKey.SEARCH_CORNER_RADIUS,
-        titleId = R.string.title__search_bar_radius,
-        defaultValue = -1f,
-        maxValue = 36f,
-        minValue = -1f,
-        steps = 36,
-        specialOutputs = {
-            when {
-                it < 0f -> context.getString(R.string.automatic_short)
-                else    -> "${it.roundToInt()}dp"
-            }
-        }
     )
 
     /*var searchProvider = StringSelectionPref(

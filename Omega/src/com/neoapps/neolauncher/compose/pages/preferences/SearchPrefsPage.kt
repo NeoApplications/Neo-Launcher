@@ -60,8 +60,7 @@ fun SearchPrefsPage() {
         prefs.searchDrawerEnabled,
         prefs.searchFuzzy,
         /*prefs.searchProvidersEdit,
-        prefs.searchHiddenApps,
-        prefs.searchBarRadius*/
+        prefs.searchHiddenAppss*/
     )
     val feedPrefs = listOf(
         prefs.feedProvider,
