@@ -60,9 +60,9 @@ import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
 import com.android.launcher3.util.Themes
 import com.android.launcher3.views.OptionsPopupView
 import com.neoapps.neolauncher.NeoLauncher
-import com.neoapps.neolauncher.allapps.AppColorComparator
-import com.neoapps.neolauncher.allapps.AppUsageComparator
-import com.neoapps.neolauncher.allapps.InstallTimeComparator
+import com.neoapps.neolauncher.allapps.comparator.AppColorComparator
+import com.neoapps.neolauncher.allapps.comparator.AppUsageComparator
+import com.neoapps.neolauncher.allapps.comparator.InstallTimeComparator
 import com.neoapps.neolauncher.data.AppTrackerRepository
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import org.json.JSONObject
