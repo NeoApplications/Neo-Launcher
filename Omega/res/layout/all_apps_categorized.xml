@@ -12,7 +12,8 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:descendantFocusability="afterDescendants"
-        android:translationZ="4dp"
+        android:translationZ="16dp"
+        android:elevation="16dp"
         android:focusable="true" />
 
     <include layout="@layout/all_apps_rv_layout" />

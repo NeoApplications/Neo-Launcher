@@ -34,7 +34,10 @@ import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.theme.OmegaAppTheme
 
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val categories = Flowerpot.Manager.getInstance(context).getAllPots().map {
+    private val categories = Flowerpot.Manager.getInstance(context).getAllPots().filter {
+        it.ensureLoaded()
+        it.apps.matches.isNotEmpty()
+    }.map {
         Pair(it.name, it.displayName)
     }.toMutableList()
     private val currentApps = ArrayList<ComponentKey>()
@@ -86,7 +89,6 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
             mAppsView?.appsStore!!.apps.filter {
                 currentApps.containsAll(currentApps)
             }
-            //recreate view to show the filtered apps only
             mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter { itemInfo: ItemInfo ->
                 currentApps.contains(ComponentKey(itemInfo.targetComponent, itemInfo.user))
             }
