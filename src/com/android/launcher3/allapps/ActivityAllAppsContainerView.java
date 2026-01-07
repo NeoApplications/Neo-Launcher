@@ -32,6 +32,7 @@ import static com.android.launcher3.views.RecyclerViewFastScroller.FastScrollerL
 import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_CATEGORIES;
 import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
 import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_TABS;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_VERTICAL;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -609,7 +610,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
         updateSearchResultsVisibility();
 
-        boolean showTabs = shouldShowTabs();
+        boolean showTabs = shouldShowTabs() && prefs.getDrawerLayout().getValue() != LAYOUT_CATEGORIES;
         if (showTabs == mUsingTabs && !force) {
             Log.d(TAG, "rebindAdapters: Not needed.");
             return;
@@ -627,7 +628,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
         final AllAppsRecyclerView mainRecyclerView;
         final AllAppsRecyclerView workRecyclerView;
-        if (mUsingTabs) {
+        if (mUsingTabs && prefs.getDrawerLayout().getValue() == LAYOUT_VERTICAL) {
             mainRecyclerView = (AllAppsRecyclerView) mViewPager.getChildAt(0);
             workRecyclerView = (AllAppsRecyclerView) mViewPager.getChildAt(1);
             mAH.get(AdapterHolder.MAIN).setup(mainRecyclerView, mPersonalMatcher);
@@ -716,6 +717,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         View oldView = getAppsRecyclerViewContainer();
         int index = indexOfChild(oldView);
         removeView(oldView);
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIES) {
+            removeView(findViewById(R.id.all_apps_categorized));
+            showTabs = false;
+        }
+
         int layout = switch (prefs.getDrawerLayout().getValue()) {
             case LAYOUT_HORIZONTAL -> R.layout.all_apps_horizontal;
             case LAYOUT_CATEGORIES -> R.layout.all_apps_categorized;
@@ -760,8 +766,8 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             alignParentTop(getSearchRecyclerView(), false);
         } else {
             if (searchVisible) {
-            layoutBelowSearchContainer(rvContainer, showTabs);
-            layoutBelowSearchContainer(getSearchRecyclerView(), /* tabs= */ false);
+                layoutBelowSearchContainer(rvContainer, showTabs);
+                layoutBelowSearchContainer(getSearchRecyclerView(), /* tabs= */ false);
             } else {
                 alignParentTop(rvContainer, showTabs);
                 alignParentTop(getSearchRecyclerView(), /* tabs= */ false);
