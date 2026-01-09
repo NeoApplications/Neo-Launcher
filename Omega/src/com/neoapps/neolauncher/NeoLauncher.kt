@@ -51,6 +51,7 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
@@ -216,6 +217,12 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             }
 
         }
+
+    fun startActivitySafelyAuth(v: View?, intent: Intent, itemInfo: ItemInfo) {
+        Config.showLockScreen(this, getString(R.string.trust_apps_manager_name)) {
+            startActivitySafely(v, intent, itemInfo)
+        }
+    }
 
     private fun loadHiddenApps(hiddenAppsSet: Set<String>) {
         val mContext = this

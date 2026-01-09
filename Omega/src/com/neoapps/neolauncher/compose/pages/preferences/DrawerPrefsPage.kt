@@ -19,7 +19,9 @@
 package com.neoapps.neolauncher.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -78,16 +80,18 @@ fun DrawerPrefsPage() {
     val otherPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
-                prefs.drawerHiddenAppSet,
+                /*prefs.drawerHiddenAppSet,*/
                 prefs.drawerEnableProtectedApps,
-                prefs.drawerProtectedAppsSet,
-                prefs.drawerCustomBackground,
+                if (prefs.drawerEnableProtectedApps.getValue())
+                    prefs.drawerProtectedAppsSet
+                else null
+                /*prefs.drawerCustomBackground,
                 if (prefs.drawerCustomBackground.getValue()) {
                     prefs.drawerBackgroundColor
                 } else {
                     null
                 },
-                prefs.drawerBackgroundOpacity
+                prefs.drawerBackgroundOpacity*/
             ).toTypedArray()
         )
     }
@@ -113,13 +117,13 @@ fun DrawerPrefsPage() {
                     prefs = gridPrefs,
                     onPrefDialog = onPrefDialog
                 )
-                /*
+
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__others),
                     prefs = otherPrefs,
                     onPrefDialog = onPrefDialog
                 )
-                Spacer(modifier = Modifier.height(8.dp))*/
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

@@ -47,6 +47,7 @@ import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
@@ -65,12 +66,14 @@ import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.ApiWrapper;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.views.FloatingIconView;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
+import com.neoapps.neolauncher.NeoLauncher;
 import com.neoapps.neolauncher.data.AppTrackerRepository;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
 import com.neoapps.neolauncher.util.Config;
@@ -400,6 +403,9 @@ public class ItemClickHandler {
         if (intent == null) {
             throw new IllegalArgumentException("Input must have a valid intent");
         }
+        boolean isProtected = false;
+        NeoLauncher myLauncher = (NeoLauncher) launcher;
+        NeoPrefs prefs = NeoPrefs.getInstance();
         if (item instanceof WorkspaceItemInfo) {
             WorkspaceItemInfo si = (WorkspaceItemInfo) item;
             if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)
@@ -411,6 +417,9 @@ public class ItemClickHandler {
                 intent = new Intent(intent);
                 intent.setPackage(null);
             }
+            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
+                    new ComponentKey(si.getTargetComponent(), si.user)) &&
+                    prefs.getDrawerEnableProtectedApps().getValue();
             if ((si.options & WorkspaceItemInfo.FLAG_START_FOR_RESULT) != 0) {
                 launcher.startActivityForResult(item.getIntent(), 0);
                 InstanceId instanceId = new InstanceIdSequence().newInstanceId();
@@ -419,8 +428,10 @@ public class ItemClickHandler {
             }
         }
         if (item instanceof AppInfo) {
+            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
+                    ((AppInfo) item).toComponentKey()) &&
+                    prefs.getDrawerEnableProtectedApps().getValue();
             MODEL_EXECUTOR.execute(() -> {
-                NeoPrefs prefs = NeoPrefs.getInstance();
                 if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
                     AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
                     assert ((AppInfo) item).componentName != null;
@@ -434,7 +445,11 @@ public class ItemClickHandler {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
-        launcher.startActivitySafely(v, intent, item);
+        if (isProtected && Utilities.ATLEAST_R) {
+            myLauncher.startActivitySafelyAuth(v, intent, item);
+        } else {
+            launcher.startActivitySafely(v, intent, item);
+        }
     }
 
     /**
