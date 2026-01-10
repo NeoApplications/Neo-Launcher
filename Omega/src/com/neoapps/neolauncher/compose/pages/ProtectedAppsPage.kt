@@ -18,13 +18,23 @@
 
 package com.neoapps.neolauncher.compose.pages
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.Config
@@ -35,10 +45,12 @@ fun ProtectedAppsPage() {
     val context = LocalContext.current
     val prefs = NeoPrefs.getInstance()
     val showView = remember { mutableStateOf(false) }
+    val authAttempted = remember { mutableStateOf(false) }
 
-    LaunchedEffect(showView.value) {
-        if (!showView.value) {
+    LaunchedEffect(showView.value, authAttempted.value) {
+        if (!showView.value && !authAttempted.value) {
             if (prefs.drawerEnableProtectedApps.getValue()) {
+                authAttempted.value = true
                 Config.showLockScreen(
                     context,
                     context.resources.getString(R.string.trust_apps_manager_name)
@@ -49,9 +61,26 @@ fun ProtectedAppsPage() {
         }
     }
 
-    // TODO add button for relaunching lock screen when not unlocked yet
-    if (showView.value)
+    if (showView.value) {
         ProtectedAppsView()
+    } else if (authAttempted.value) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(stringResource(R.string.trust_apps_message))
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                Config.showLockScreen(
+                    context,
+                    context.resources.getString(R.string.trust_apps_manager_name)
+                ) { showView.value = true }
+            }) {
+                Text(stringResource(R.string.trust_apps_unlock))
+            }
+        }
+    }
 }
 
 @Composable
