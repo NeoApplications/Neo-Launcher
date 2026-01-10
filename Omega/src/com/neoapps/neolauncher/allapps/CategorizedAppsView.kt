@@ -31,25 +31,28 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.flowerpot.Flowerpot
+import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.theme.OmegaAppTheme
+import com.neoapps.neolauncher.util.Config
 
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
-    private val categories = Flowerpot.Manager.getInstance(context).getAllPots().filter {
-        it.ensureLoaded()
-        it.apps.matches.isNotEmpty()
-    }.map {
-        Pair(it.name, it.displayName)
-    }.toMutableList()
+    private val all = Pair(
+        context.getString(R.string.title_drawer_all_apps),
+        R.string.title_drawer_all_apps
+    )
+
+    private val prefs = NeoPrefs.getInstance()
+    private val categories: MutableList<Pair<String, Int>> =
+        Config.activeCategories(context).toList().toMutableList()
+    private val enabledCategories = prefs.categoriesLayout.getValue()
+
     private val currentApps = ArrayList<ComponentKey>()
     private var currentCategory by mutableStateOf(categories[0])
 
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
-    private val all = Pair(
-        context.getString(R.string.title_drawer_all_apps),
-        context.getString(R.string.title_drawer_all_apps)
-    )
 
     init {
+        categories.removeAll { !enabledCategories.contains(it.first) }
         categories.add(0, all)
     }
 
@@ -77,7 +80,7 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
         val flowerpotManager = Flowerpot.Manager.getInstance(context)
 
         mAppsView = launcher.appsView
-        if (currentCategory.second == "All") {
+        if (currentCategory.second == R.string.title_drawer_all_apps) {
             currentApps.clear()
             mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter(null)
         } else {

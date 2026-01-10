@@ -110,6 +110,7 @@ object PrefKey {
     val DRAWER_CATEGORIZATION_ENABLED = booleanPreferencesKey("drawer_categorization_enabled")
     val DRAWER_CATEGORIZATION_TYPE = stringPreferencesKey("drawer_categorization_type")
     val DRAWER_LAYOUT = intPreferencesKey("drawer_layout")
+    val DRAWER_LAYOUT_CATEGORIES = stringSetPreferencesKey("drawer_layout_categories")
 
     // Widgets
     val WIDGETS_SMARTSPACE_ENABLED = booleanPreferencesKey("widgets_smartspace_enable")

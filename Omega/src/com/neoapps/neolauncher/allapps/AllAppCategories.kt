@@ -39,19 +39,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.util.vertical
 
 @Composable
 fun AllAppsCategories(
-    categories: List<Pair<String, String>>,
+    categories: List<Pair<String, Int>>,
     modifier: Modifier = Modifier,
-    onClick: (Pair<String, String>) -> Unit
+    onClick: (Pair<String, Int>) -> Unit
 ) {
-    val items = categories.map {
-        Pair(it.second, it.second.appCategoryIcon)
-    }
-
     val selectedKey = remember { mutableStateOf("All") }
     LazyColumn(
         modifier = modifier
@@ -60,18 +57,18 @@ fun AllAppsCategories(
         contentPadding = PaddingValues(vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(items) { item ->
+        items(categories) { item ->
             CategoryItem(
                 modifier = Modifier
                     .vertical()
                     .rotate(-90f)
                     .wrapContentHeight(),
-                icon = item.second,
-                label = item.first,
+                icon = item.first.appCategoryIcon,
+                label = item.second,
                 selected = item.first == selectedKey.value,
                 onClick = {
                     selectedKey.value = item.first
-                    onClick(categories.find { it.second == item.first }!!)
+                    onClick(categories.find { it.first == item.first }!!)
                 }
             )
         }
@@ -82,7 +79,7 @@ fun AllAppsCategories(
 fun CategoryItem(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    label: String,
+    label: Int,
     selected: Boolean,
     colors: SelectableChipColors = FilterChipDefaults.filterChipColors(
         containerColor = Color.Transparent,
@@ -103,7 +100,7 @@ fun CategoryItem(
         selected = selected,
         label = {
             Text(
-                text = label,
+                text = stringResource(label),
                 maxLines = 1,
             )
         },
@@ -112,7 +109,7 @@ fun CategoryItem(
                 Icon(
                     modifier = Modifier,
                     imageVector = icon,
-                    contentDescription = label,
+                    contentDescription = stringResource(label),
                 )
             }
         }

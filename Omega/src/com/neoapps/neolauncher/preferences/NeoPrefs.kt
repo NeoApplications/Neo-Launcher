@@ -24,7 +24,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -650,9 +649,19 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.protected_apps,
         key = PrefKey.DRAWER_PROTECTED_APPS_LIST,
         navRoute = NavRoute.Drawer.ProtectedApps(),
-        defaultValue = setOf(),
-        onChange = { reloadGrid() }
-    )
+        defaultValue = setOf()
+    ) {
+        recreate()
+    }
+
+    var drawerEnableProtectedApps = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
+        titleId = R.string.enable_protected_apps,
+        defaultValue = false
+    ) {
+        pokeChange()
+    }
 
     /*
     private val drawerGridSizeDelegate = ResettableLazy {
@@ -689,13 +698,6 @@ class NeoPrefs private constructor(val context: Context) {
         get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_UNINSTALL)
     val drawerPopupEdit: Boolean
         get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_EDIT)
-
-    var drawerEnableProtectedApps = BooleanPref(
-        dataStore = dataStore,
-        key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
-        titleId = R.string.enable_protected_apps,
-        defaultValue = false
-    )
 
     var drawerIconScale = FloatPref(
         dataStore = dataStore,
@@ -818,27 +820,28 @@ class NeoPrefs private constructor(val context: Context) {
         navRoute = NavRoute.Drawer.Categorize(),
     )
 
-    var drawerLayout = IntSelectionPref(
+    val drawerLayout = IntSelectionPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_LAYOUT,
         titleId = R.string.title_drawer_layout,
         defaultValue = LAYOUT_VERTICAL,
         entries = drawerLayoutOptions,
         onChange = {
-            Log.d("NeoPref", "Drawer layout changed to $it")
+            pokeChange()
+            reloadGrid()
         }
     )
 
-    /*var categoriesLayout = StringMultiSelectionPref(
+    var categoriesLayout = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_LAYOUT_CATEGORIES,
         titleId = R.string.title_drawer_layout_categories,
-        defaultValue = setOf(),
-        entries = Config.layoutCategories(context),
+        defaultValue = Config.activeCategories(context).keys.toSet(),
+        entries = Config.activeCategories(context),
         onChange = {
-            Log.d("NeoPref", "Categories layout changed to $it")
+            recreate()
         }
-    )*/
+    )
 
     // Notifications & Widgets/Smartspace
     val notificationDots = IntentLauncherPref(

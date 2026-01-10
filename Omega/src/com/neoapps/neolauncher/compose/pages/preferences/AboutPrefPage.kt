@@ -252,7 +252,7 @@ fun LicenseScreen() {
     ) { paddingValues ->
         Column(
             modifier = Modifier.padding(
-                top = it.calculateTopPadding() + 8.dp,
+                top = paddingValues.calculateTopPadding() + 8.dp,
                 bottom = paddingValues.calculateBottomPadding()
             ),
         ) {

@@ -248,6 +248,18 @@ class Config(val context: Context) {
             }
         }
 
+        fun activeCategories(context: Context): Map<String, Int> {
+            val activeCategories = Flowerpot.Manager.getInstance(context).getAllPots().filter {
+                it.ensureLoaded()
+                it.apps.matches.isNotEmpty()
+            }
+
+            val categories: Map<String, Int> = activeCategories.associate {
+                it.name to it.resId
+            }
+            return categories
+        }
+
         private fun hasSecureKeyguard(context: Context): Boolean {
             val keyguardManager = context.getSystemService(
                 KeyguardManager::class.java
