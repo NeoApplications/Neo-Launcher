@@ -144,12 +144,12 @@ fun MainPrefsPage() {
                         )
                         DropdownMenuItem(
                             onClick = {
+                                hideMenu()
                                 scope.launch {
                                     paneNavigator.navigateTo(
                                         ListDetailPaneScaffoldRole.Detail,
                                         NavRoute.Dev()
                                     )
-                                    hideMenu()
                                 }
                             },
                             text = { Text(text = stringResource(id = R.string.developer_options_title)) }
