@@ -18,6 +18,7 @@
 package com.neoapps.neolauncher.flowerpot
 
 import android.content.Context
+import com.android.launcher3.R
 import com.neoapps.neolauncher.flowerpot.parser.FlowerpotReader
 import com.neoapps.neolauncher.flowerpot.rules.Rule
 import com.neoapps.neolauncher.util.SingletonHolder
@@ -46,6 +47,19 @@ class Flowerpot(
         else
             beautifyName(name)
     }
+    val resId by lazy {
+        val id = context.resources.getIdentifier(
+            "category_${name.lowercase()}",
+            "string",
+            context.packageName
+        )
+        if (id != 0)
+            id
+        else
+            R.string.app_name
+    }
+
+
     private var loaded = false
     val rules: MutableSet<Rule> = mutableSetOf()
     val size get() = rules.size
