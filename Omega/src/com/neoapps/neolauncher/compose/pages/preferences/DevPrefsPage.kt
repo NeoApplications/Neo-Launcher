@@ -52,14 +52,14 @@ fun DevPrefsPage() {
 
     val developerPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
-            *listOfNotNull(
-                /*prefs.restartLauncher,
+            listOfNotNull(
+                prefs.restartLauncher,
                 prefs.developerOptionsEnabled,
-                prefs.showDebugInfo,
-                prefs.desktopFreeScrolling,*/
+                /*prefs.showDebugInfo,
+                prefs.desktopFreeScrolling,
                 prefs.drawerLayout,
-                /*if (prefs.drawerLayout.getValue() == LAYOUT_CUSTOM_CATEGORIES) {
-                    prefs.drawerAppGroups
+                if (prefs.drawerLayout.getValue() == LAYOUT_CATEGORIES) {
+                    prefs.categoriesLayout
                 } else {
                     null
                 }*/

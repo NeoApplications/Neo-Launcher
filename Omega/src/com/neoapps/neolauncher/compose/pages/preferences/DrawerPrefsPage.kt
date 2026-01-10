@@ -45,6 +45,7 @@ import com.neoapps.neolauncher.compose.components.preferences.StringMultiSelecti
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.preferences.GridSize
 import com.neoapps.neolauncher.preferences.IntSelectionPref
+import com.neoapps.neolauncher.preferences.LAYOUT_CATEGORIES
 import com.neoapps.neolauncher.preferences.StringMultiSelectionPref
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.util.prefs
@@ -67,16 +68,27 @@ fun DrawerPrefsPage() {
         /*prefs.drawerLabelScale,
         prefs.drawerPopup,*/
     )
-    val gridPrefs = listOf(
+    val gridPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
+        mutableStateListOf(
+            *listOfNotNull(
         //prefs.drawerGridSize,
         prefs.drawerSortMode,
+                prefs.drawerLayout,
+                if (prefs.drawerLayout.getValue() == LAYOUT_CATEGORIES) {
+                    prefs.categoriesLayout
+                } else {
+                    null
+                }
         /*
                 prefs.drawerAppGroups,
                 prefs.drawerSeparateWorkApps,
                 prefs.drawerCellHeightMultiplier,
                 prefs.drawerSaveScrollPosition,
                 prefs.drawerHideScrollbar*/
-    )
+            ).toTypedArray()
+        )
+    }
+
     val otherPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
