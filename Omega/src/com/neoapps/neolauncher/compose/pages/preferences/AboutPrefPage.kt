@@ -251,7 +251,10 @@ fun LicenseScreen() {
         title = stringResource(R.string.about_open_source),
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
+            modifier = Modifier.padding(
+                top = it.calculateTopPadding() + 8.dp,
+                bottom = paddingValues.calculateBottomPadding()
+            ),
         ) {
             ComposableWebView(url = "file:///android_asset/license.htm")
         }
