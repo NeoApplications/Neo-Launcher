@@ -39,9 +39,6 @@
     <string name="clock_component_name" translatable="false">com.google.android.deskclock/com.android.deskclock.DeskClock</string>
     <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
 
-    <!-- Out of 100, the percent to shrink the workspace during options mode. -->
-    <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
-
     <!-- Gesture actions -->
     <string name="action_do_nothing_class" translatable="false">com.neoapps.neolauncher.gestures.BlankGestureHandler</string>
     <string name="action_open_notifications_class" translatable="false">com.neoapps.neolauncher.gestures.handlers.NotificationsOpenGestureHandler</string>
