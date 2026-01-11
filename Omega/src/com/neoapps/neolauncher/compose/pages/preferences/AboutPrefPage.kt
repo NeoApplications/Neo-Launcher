@@ -267,7 +267,10 @@ fun AcknowledgementScreen() {
         title = stringResource(R.string.title__about_acknowledgement)
     ) {
         Column(
-            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+            modifier = Modifier.padding(
+                top = it.calculateTopPadding() + 8.dp,
+                bottom = it.calculateBottomPadding()
+            )
         ) {
             ComposableWebView(url = "file:///android_asset/acknowledgement.htm")
         }
@@ -281,7 +284,10 @@ fun ChangelogScreen() {
         title = stringResource(R.string.title__about_changelog),
     ) {
         Column(
-            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+            modifier = Modifier.padding(
+                top = it.calculateTopPadding() + 8.dp,
+                bottom = it.calculateBottomPadding()
+            )
         ) {
             ComposableWebView(url = "file:///android_asset/changelog.htm")
         }
@@ -294,7 +300,10 @@ fun TranslatorsScreen() {
         title = stringResource(R.string.about_translators),
     ) {
         Column(
-            modifier = Modifier.padding(top = it.calculateTopPadding() + 8.dp)
+            modifier = Modifier.padding(
+                top = it.calculateTopPadding() + 8.dp,
+                bottom = it.calculateBottomPadding()
+            )
         ) {
             ComposableWebView(url = "file:///android_asset/translators.htm")
         }
