@@ -28,7 +28,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -36,7 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neoapps.neolauncher.preferences.PREFS_DESKTOP_POPUP_REMOVE
 import com.neoapps.neolauncher.preferences.iconIds
+import com.neoapps.neolauncher.theme.GroupItemShape
 
 @Composable
 fun SingleSelectionListItem(
@@ -85,57 +89,86 @@ fun SingleSelectionListItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MultiSelectionListItem(
     modifier: Modifier = Modifier,
     text: String,
+    secondaryText: String? = null,
     isChecked: Boolean,
     isEnabled: Boolean = true,
+    index: Int = 1,
+    groupSize: Int = 1,
     withIcon: Boolean = false,
     iconId: String? = null,
     onClick: (Boolean) -> Unit = {}
 ) {
-    val checkbox = @Composable {
+    val leadingContent: @Composable (() -> Unit)? = if (withIcon && iconId != null) {
+        {
+            iconIds[iconId]?.let { iconResId ->
+                Icon(
+                    painter = painterResource(id = iconResId),
+                    contentDescription = null,
+                    tint = if (isEnabled) {
+                        if (isChecked) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    } else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                )
+            }
+        }
+    } else null
+
+    val trailingContent: @Composable (() -> Unit) = {
         Checkbox(
             checked = isChecked,
             enabled = isEnabled,
             onCheckedChange = onClick,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.primary,
-                uncheckedColor = MaterialTheme.colorScheme.onSurface,
-                checkmarkColor = Color.White
-            )
+                uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                checkmarkColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            modifier = Modifier.size(24.dp)
         )
     }
 
-    Row(
+    ListItem(
         modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clickable(onClick = { onClick(!isChecked) }, enabled = isEnabled),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (withIcon) iconIds[iconId]?.let {
-            Spacer(modifier = Modifier.width(16.dp))
-            Icon(
-                    modifier = Modifier
-                            .size(32.dp),
-                painter = painterResource(id = it),
-                contentDescription = text,
+            .clip(
+                GroupItemShape(index, groupSize - 1)
             )
-        }
-        else checkbox()
-        Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 12.dp),
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
+            .clickable(
+                enabled = isEnabled,
+                onClick = { onClick(!isChecked) }
+            ),
+        headlineContent = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (!isEnabled) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                } else MaterialTheme.colorScheme.onSurface
+            )
+        },
+        supportingContent = if (secondaryText != null) {
+            {
+                Text(
+                    text = secondaryText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (!isEnabled) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    } else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else null,
+        leadingContent = leadingContent,
+        trailingContent = trailingContent,
+        colors = ListItemDefaults.colors(
+            containerColor = if (isChecked) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+            } else MaterialTheme.colorScheme.surface
         )
-        if (withIcon) checkbox()
-    }
+    )
 }
 
 @Preview

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -319,15 +320,19 @@ fun StringMultiSelectionPrefDialogUI(
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 8.dp)
                     .weight(1f, false)
-                    .blockShadow()
+                    .blockShadow(),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = entryPairs) { item ->
+                val groupSize = entryPairs.size
+                itemsIndexed(items = entryPairs) { index, item ->
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected.contains(item.first))
                     }
 
                     MultiSelectionListItem(
                         text = stringResource(id = item.second),
+                        index = index,
+                        groupSize = groupSize,
                         isChecked = isSelected.value,
                         withIcon = pref.withIcons,
                         iconId = item.first
