@@ -16,18 +16,19 @@
 
 package com.android.launcher3.model
 
-import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherApps
 import android.content.pm.PackageInstaller
 import android.content.pm.ShortcutInfo
+import android.net.Uri
 import android.os.Process
 import android.os.UserHandle
 import android.platform.test.annotations.DisableFlags
 import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
+import android.provider.DocumentsContract
 import android.util.LongSparseArray
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.launcher3.Flags
@@ -37,9 +38,15 @@ import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
+import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FILE_SYSTEM_FILE
+import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FILE_SYSTEM_FOLDER
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FOLDER
 import com.android.launcher3.Utilities.EMPTY_PERSON_ARRAY
+import com.android.launcher3.Utilities.qsbOnFirstScreen
+import com.android.launcher3.WorkspaceLayoutManager
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger.RestoreError
+import com.android.launcher3.homescreenfiles.HomeScreenFile
+import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.CacheableShortcutInfo
 import com.android.launcher3.icons.IconCache
 import com.android.launcher3.model.data.FolderInfo
@@ -47,17 +54,17 @@ import com.android.launcher3.model.data.IconRequestInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.LauncherAppWidgetInfo
 import com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_UI_NOT_READY
+import com.android.launcher3.model.data.WorkspaceItemCoordinates
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo.FLAG_RESTORED_ICON
 import com.android.launcher3.model.data.WorkspaceItemInfo.FLAG_RESTORE_STARTED
-import com.android.launcher3.pm.UserCache
+import com.android.launcher3.pm.UserManagerState
 import com.android.launcher3.shortcuts.ShortcutKey
-import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.ContentWriter
-import com.android.launcher3.util.LauncherModelHelper
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
 import com.android.launcher3.util.PackageManagerHelper
 import com.android.launcher3.util.PackageUserKey
+import com.android.launcher3.util.RoboApiWrapper
+import com.android.launcher3.util.SandboxApplication
 import com.android.launcher3.util.UserIconInfo
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo
 import com.android.launcher3.widget.WidgetInflater
@@ -70,13 +77,12 @@ import org.junit.runner.RunWith
 import org.mockito.Answers
 import org.mockito.ArgumentCaptor
 import org.mockito.Mock
-import org.mockito.Mockito.RETURNS_DEEP_STUBS
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -86,20 +92,24 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class WorkspaceItemProcessorTest {
 
+    @get:Rule
+    val mockitoRule = MockitoJUnit.rule()
     @get:Rule val setFlagsRule: SetFlagsRule = SetFlagsRule()
+    @get:Rule
+    val mContext = SandboxApplication().withModelDependency()
+    @get:Rule
+    val shortcutAccessRule = RoboApiWrapper.grantShortcutsPermissionRule()
 
     @Mock private lateinit var mockIconRequestInfo: IconRequestInfo<WorkspaceItemInfo>
     @Mock private lateinit var mockWorkspaceInfo: WorkspaceItemInfo
-    @Mock private lateinit var mockBgDataModel: BgDataModel
     @Mock private lateinit var mockPmHelper: PackageManagerHelper
     @Mock(answer = Answers.RETURNS_DEEP_STUBS) private lateinit var mockCursor: LoaderCursor
-    @Mock private lateinit var mockUserCache: UserCache
     @Mock private lateinit var mockUserManagerState: UserManagerState
     @Mock private lateinit var mockWidgetInflater: WidgetInflater
     @Mock private lateinit var mockIconCache: IconCache
+    @Mock
+    private lateinit var mockWorkspaceItemSpaceFinder: WorkspaceItemSpaceFinder
 
-    lateinit var mModelHelper: LauncherModelHelper
-    lateinit var mContext: SandboxModelContext
     lateinit var mLauncherApps: LauncherApps
     private var mIntent: Intent = Intent()
     private var mUserHandle: UserHandle = Process.myUserHandle()
@@ -109,17 +119,12 @@ class WorkspaceItemProcessorTest {
     private var mKeyToPinnedShortcutsMap: MutableMap<ShortcutKey, ShortcutInfo> = mutableMapOf()
     private var mInstallingPkgs: HashMap<PackageUserKey, PackageInstaller.SessionInfo> = hashMapOf()
     private var mAllDeepShortcuts: MutableList<CacheableShortcutInfo> = mutableListOf()
-    private var mWidgetProvidersMap: MutableMap<ComponentKey, AppWidgetProviderInfo?> =
-        mutableMapOf()
     private var mPendingPackages: MutableSet<PackageUserKey> = mutableSetOf()
 
     private lateinit var itemProcessorUnderTest: WorkspaceItemProcessor
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
-        mModelHelper = LauncherModelHelper()
-        mContext = mModelHelper.sandboxContext
         mLauncherApps =
             mContext.spyService(LauncherApps::class.java).apply {
                 doReturn(true).whenever(this).isPackageEnabled("package", mUserHandle)
@@ -149,7 +154,7 @@ class WorkspaceItemProcessorTest {
             whenever(getAppShortcutInfo(any(), any(), any(), any())).thenReturn(mockWorkspaceInfo)
             whenever(createIconRequestInfo(any(), any())).thenReturn(mockIconRequestInfo)
         }
-        mockUserCache.apply {
+        mockUserManagerState.apply {
             val userIconInfo = mock<UserIconInfo>().apply { whenever(isPrivate).thenReturn(false) }
             whenever(getUserInfo(any())).thenReturn(userIconInfo)
         }
@@ -157,7 +162,6 @@ class WorkspaceItemProcessorTest {
         mKeyToPinnedShortcutsMap = mutableMapOf()
         mInstallingPkgs = hashMapOf()
         mAllDeepShortcuts = mutableListOf()
-        mWidgetProvidersMap = mutableMapOf()
         mIconRequestInfos = mutableListOf()
         mPendingPackages = mutableSetOf()
     }
@@ -170,12 +174,9 @@ class WorkspaceItemProcessorTest {
     private fun createWorkspaceItemProcessorUnderTest(
         cursor: LoaderCursor = mockCursor,
         memoryLogger: LoaderMemoryLogger? = null,
-        userCache: UserCache = mockUserCache,
         userManagerState: UserManagerState = mockUserManagerState,
         launcherApps: LauncherApps = mLauncherApps,
         shortcutKeyToPinnedShortcuts: Map<ShortcutKey, ShortcutInfo> = mKeyToPinnedShortcutsMap,
-        bgDataModel: BgDataModel = mockBgDataModel,
-        widgetProvidersMap: MutableMap<ComponentKey, AppWidgetProviderInfo?> = mWidgetProvidersMap,
         widgetInflater: WidgetInflater = mockWidgetInflater,
         pmHelper: PackageManagerHelper = mockPmHelper,
         iconRequestInfos: MutableList<IconRequestInfo<WorkspaceItemInfo>> = mIconRequestInfos,
@@ -184,16 +185,14 @@ class WorkspaceItemProcessorTest {
         unlockedUsers: LongSparseArray<Boolean> = mUnlockedUsersArray,
         installingPkgs: HashMap<PackageUserKey, PackageInstaller.SessionInfo> = mInstallingPkgs,
         allDeepShortcuts: MutableList<CacheableShortcutInfo> = mAllDeepShortcuts,
+        homeScreenFiles: Lazy<Map<Uri, HomeScreenFile>> = lazyOf(mapOf()),
     ) =
         WorkspaceItemProcessor(
             c = cursor,
             memoryLogger = memoryLogger,
-            userCache = userCache,
             userManagerState = userManagerState,
             launcherApps = launcherApps,
             context = mContext,
-            bgDataModel = bgDataModel,
-            widgetProvidersMap = widgetProvidersMap,
             widgetInflater = widgetInflater,
             pmHelper = pmHelper,
             unlockedUsers = unlockedUsers,
@@ -206,6 +205,9 @@ class WorkspaceItemProcessorTest {
             iconCache = mockIconCache,
             idp = InvariantDeviceProfile.INSTANCE.get(mContext),
             isSafeMode = false,
+            widgetSizeHandler = mContext.appComponent.widgetSizeHandler,
+            workspaceItemSpaceFinder = mockWorkspaceItemSpaceFinder,
+            homeScreenFiles = homeScreenFiles,
         )
 
     @Test
@@ -288,7 +290,7 @@ class WorkspaceItemProcessorTest {
         // currently gets marked restored twice, although markRestore() has check for restoreFlag
         verify(mockCursor, times(2)).markRestored()
         assertThat(mIconRequestInfos).containsExactly(mockIconRequestInfo)
-        verify(mockCursor).checkAndAddItem(mockWorkspaceInfo, mockBgDataModel, null)
+        verify(mockCursor).checkAndAddItem(eq(mockWorkspaceInfo), any(), anyOrNull())
     }
 
     @Test
@@ -315,7 +317,7 @@ class WorkspaceItemProcessorTest {
             .isEqualTo(0)
         verify(mockCursor.updater().put(Favorites.INTENT, mIntent.toUri(0))).commit()
         assertThat(mIconRequestInfos).containsExactly(mockIconRequestInfo)
-        verify(mockCursor).checkAndAddItem(mockWorkspaceInfo, mockBgDataModel, null)
+        verify(mockCursor).checkAndAddItem(eq(mockWorkspaceInfo), any(), anyOrNull())
     }
 
     @Test
@@ -342,10 +344,7 @@ class WorkspaceItemProcessorTest {
             .isEqualTo(1)
         verify(mockCursor)
             .markDeleted(
-                "No Activities found for id=1," +
-                    " targetPkg=package," +
-                    " component=ComponentInfo{package/class}." +
-                    " Unable to create launch Intent.",
+                "No Activities found for id=1, targetPkg=package, component=ComponentInfo{package/class}. Unable to create launch Intent.",
                 RestoreError.APP_NO_LAUNCH_INTENT,
             )
         verify(mockCursor, times(0)).checkAndAddItem(any(), any(), anyOrNull())
@@ -420,7 +419,7 @@ class WorkspaceItemProcessorTest {
         assertThat(mIconRequestInfos).isNotEmpty()
         assertThat(mAllDeepShortcuts).isEmpty()
         verify(mockContentWriter).put(Favorites.RESTORED, expectedRestoreFlag)
-        verify(mockCursor).checkAndAddItem(any(), eq(mockBgDataModel), eq(null))
+        verify(mockCursor).checkAndAddItem(any(), any(), eq(null))
     }
 
     @Test
@@ -551,7 +550,6 @@ class WorkspaceItemProcessorTest {
     @Test
     fun `When processing Folder then create FolderInfo and mark restored`() {
         val actualFolderInfo = FolderInfo()
-        mockBgDataModel = mock<BgDataModel>()
         mockCursor =
             mock<LoaderCursor>().apply {
                 user = mUserHandle
@@ -593,7 +591,7 @@ class WorkspaceItemProcessorTest {
         assertThat(actualFolderInfo.spanX).isEqualTo(expectedFolderInfo.spanX)
         assertThat(actualFolderInfo.spanY).isEqualTo(expectedFolderInfo.spanY)
         assertThat(actualFolderInfo.options).isEqualTo(expectedFolderInfo.options)
-        verify(mockCursor).checkAndAddItem(actualFolderInfo, mockBgDataModel, null)
+        verify(mockCursor).checkAndAddItem(eq(actualFolderInfo), any(), anyOrNull())
     }
 
     @Test
@@ -651,14 +649,12 @@ class WorkspaceItemProcessorTest {
         mInstallingPkgs[packageUserKey] = PackageInstaller.SessionInfo()
 
         // When
-        itemProcessorUnderTest =
-            createWorkspaceItemProcessorUnderTest(widgetProvidersMap = mWidgetProvidersMap)
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
         itemProcessorUnderTest.processItem()
 
         // Then
         val widgetInfoCaptor = ArgumentCaptor.forClass(LauncherAppWidgetInfo::class.java)
-        verify(mockCursor)
-            .checkAndAddItem(widgetInfoCaptor.capture(), eq(mockBgDataModel), anyOrNull())
+        verify(mockCursor).checkAndAddItem(widgetInfoCaptor.capture(), any(), anyOrNull())
         val actualWidgetInfo = widgetInfoCaptor.value
         with(actualWidgetInfo) {
             assertThat(providerName).isEqualTo(expectedWidgetInfo.providerName)
@@ -666,9 +662,6 @@ class WorkspaceItemProcessorTest {
             assertThat(targetComponent).isEqualTo(expectedWidgetInfo.targetComponent)
             assertThat(appWidgetId).isEqualTo(expectedWidgetInfo.appWidgetId)
         }
-        val expectedComponentKey =
-            ComponentKey(expectedWidgetProviderInfo.provider, expectedWidgetProviderInfo.user)
-        assertThat(mWidgetProvidersMap[expectedComponentKey]).isEqualTo(expectedWidgetProviderInfo)
     }
 
     @Test
@@ -706,14 +699,13 @@ class WorkspaceItemProcessorTest {
             mock<WidgetInflater>().apply {
                 whenever(inflateAppWidget(any())).thenReturn(inflationResult)
             }
-        itemProcessorUnderTest =
-            createWorkspaceItemProcessorUnderTest(widgetProvidersMap = mWidgetProvidersMap)
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
 
         // When
         itemProcessorUnderTest.processItem()
 
         // Then
-        verify(mockCursor).checkAndAddItem(any(), eq(mockBgDataModel), eq(null))
+        verify(mockCursor).checkAndAddItem(any(), any(), eq(null))
     }
 
     @Test
@@ -747,8 +739,7 @@ class WorkspaceItemProcessorTest {
         val expectedComponentName = ComponentName.unflattenFromString(expectedProvider)
 
         // When
-        itemProcessorUnderTest =
-            createWorkspaceItemProcessorUnderTest(widgetProvidersMap = mWidgetProvidersMap)
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
         itemProcessorUnderTest.processItem()
 
         // Then
@@ -787,13 +778,144 @@ class WorkspaceItemProcessorTest {
             mock<WidgetInflater>().apply {
                 whenever(inflateAppWidget(any())).thenReturn(inflationResult)
             }
-        itemProcessorUnderTest =
-            createWorkspaceItemProcessorUnderTest(widgetProvidersMap = mWidgetProvidersMap)
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
 
         // When
         itemProcessorUnderTest.processItem()
 
         // Then
         verify(mockCursor).markDeleted(inflationResult.reason, inflationResult.restoreErrorType)
+    }
+
+    @Test
+    fun restoresFileSystemFileItemType() {
+        // Given
+        mockCursor.apply {
+            itemType = ITEM_TYPE_FILE_SYSTEM_FILE
+            whenever(title).thenReturn("name.ext")
+        }
+
+        // When
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
+        itemProcessorUnderTest.processItem()
+
+        // Then
+        // TODO(b/424466810): update expectation after implementing
+        // `WorkspaceItemProcessor#processFileSystemItem()`.
+        verify(mockCursor)
+            .markDeleted(
+                "File system item name.ext no longer exists",
+                RestoreError.FILE_SYSTEM_ITEM_NO_LONGER_EXISTS,
+            )
+        verify(mockCursor, times(0)).checkAndAddItem(any(), any(), anyOrNull())
+    }
+
+    @Test
+    fun restoresFileSystemFolderItemType() {
+        // Given
+        mockCursor.apply {
+            itemType = ITEM_TYPE_FILE_SYSTEM_FOLDER
+            whenever(title).thenReturn("folder_a")
+        }
+
+        // When
+        itemProcessorUnderTest = createWorkspaceItemProcessorUnderTest()
+        itemProcessorUnderTest.processItem()
+
+        // Then
+        // TODO(b/424466810): update expectation after implementing
+        // `WorkspaceItemProcessor#processFileSystemItem()`.
+        verify(mockCursor)
+            .markDeleted(
+                "File system item folder_a no longer exists",
+                RestoreError.FILE_SYSTEM_ITEM_NO_LONGER_EXISTS,
+            )
+        verify(mockCursor, times(0)).checkAndAddItem(any(), any(), anyOrNull())
+    }
+
+    @Test
+    fun addsRemainingFileSystemItemsThatWereNotPartOfRestore() {
+        // Given
+        val homeScreenFiles =
+            lazyOf(
+                mapOf(
+                    Uri.parse("content://media/external/file/1") to
+                            HomeScreenFile("file.png", "image/png", false),
+                    Uri.parse("content://media/external/file/2") to
+                            HomeScreenFile("folder_a", null, true),
+                )
+            )
+        val maybeReservesSpaceForQsb: (ArrayList<WorkspaceItemInfo>) -> Boolean = { addItemsFinal ->
+            val idp = InvariantDeviceProfile.INSTANCE.get(mContext)
+            !qsbOnFirstScreen() ||
+                    addItemsFinal.any {
+                        with(it) {
+                            cellX == 0 &&
+                                    cellY == 0 &&
+                                    container == CONTAINER_DESKTOP &&
+                                    screenId == WorkspaceLayoutManager.FIRST_SCREEN_ID &&
+                                    spanX == idp.numSearchContainerColumns &&
+                                    spanY == 1
+                        }
+                    }
+        }
+        mockIconCache.apply { whenever(getDefaultIcon(any())).thenReturn(BitmapInfo.LOW_RES_INFO) }
+        mockWorkspaceItemSpaceFinder.apply {
+            whenever(findSpaceForItem(argThat(maybeReservesSpaceForQsb), any(), any(), any()))
+                .thenAnswer { WorkspaceItemCoordinates(0, 0, 0) }
+                .thenAnswer { WorkspaceItemCoordinates(0, 1, 1) }
+        }
+        val mockModelDelegate = mock<ModelDelegate>()
+        val mockModelDbController =
+            mock<ModelDbController>().apply { whenever(generateNewItemId()).thenReturn(0, 1) }
+
+        // When
+        itemProcessorUnderTest =
+            createWorkspaceItemProcessorUnderTest(homeScreenFiles = homeScreenFiles)
+        val items = itemProcessorUnderTest.finalizeData(mockModelDelegate, mockModelDbController)
+
+        // Then
+        assertThat(items.size()).isEqualTo(2)
+
+        assertThat(items.get(0).id).isEqualTo(0)
+        assertThat(items.get(0).title).isEqualTo("file.png")
+        assertThat(items.get(0).itemType).isEqualTo(ITEM_TYPE_FILE_SYSTEM_FILE)
+        assertThat(items.get(0).container).isEqualTo(CONTAINER_DESKTOP)
+        assertThat(items.get(0).spanX).isEqualTo(1)
+        assertThat(items.get(0).spanY).isEqualTo(1)
+        assertThat(items.get(0).screenId).isEqualTo(0)
+        assertThat(items.get(0).cellX).isEqualTo(0)
+        assertThat(items.get(0).cellY).isEqualTo(0)
+        assertThat(items.get(0).intent).isNotNull()
+        assertThat(items.get(0).intent!!.action).isEqualTo(Intent.ACTION_VIEW)
+        assertThat(items.get(0).intent!!.flags)
+            .isEqualTo(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        assertThat(items.get(0).intent!!.data)
+            .isEqualTo(Uri.parse("content://media/external/file/1"))
+        assertThat(items.get(0).intent!!.type).isEqualTo("image/png")
+
+        assertThat(items.get(1).id).isEqualTo(1)
+        assertThat(items.get(1).title).isEqualTo("folder_a")
+        assertThat(items.get(1).itemType).isEqualTo(ITEM_TYPE_FILE_SYSTEM_FOLDER)
+        assertThat(items.get(1).container).isEqualTo(CONTAINER_DESKTOP)
+        assertThat(items.get(1).spanX).isEqualTo(1)
+        assertThat(items.get(1).spanY).isEqualTo(1)
+        assertThat(items.get(1).screenId).isEqualTo(0)
+        assertThat(items.get(1).cellX).isEqualTo(1)
+        assertThat(items.get(1).cellY).isEqualTo(1)
+        assertThat(items.get(1).intent!!.action).isEqualTo(Intent.ACTION_VIEW)
+        assertThat(items.get(1).intent!!.flags)
+            .isEqualTo(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        assertThat(items.get(1).intent!!.data)
+            .isEqualTo(Uri.parse("content://media/external/file/2"))
+        assertThat(items.get(1).intent!!.type).isEqualTo(DocumentsContract.Document.MIME_TYPE_DIR)
     }
 }

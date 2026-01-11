@@ -16,6 +16,9 @@
 
 package com.android.launcher3.shapes
 
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.Region
 import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
 import androidx.core.graphics.PathParser
@@ -27,8 +30,8 @@ import com.android.launcher3.shapes.ShapesProvider.ARCH_KEY
 import com.android.launcher3.shapes.ShapesProvider.CIRCLE_KEY
 import com.android.launcher3.shapes.ShapesProvider.FOUR_SIDED_COOKIE_KEY
 import com.android.launcher3.shapes.ShapesProvider.SEVEN_SIDED_COOKIE_KEY
-import com.android.launcher3.shapes.ShapesProvider.SQUARE_KEY
 import com.android.systemui.shared.Flags.FLAG_NEW_CUSTOMIZATION_PICKER_UI
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,7 +49,7 @@ class ShapesProviderTest {
             .find { it.key == ARCH_KEY }!!
             .run {
                 GenericPathShape(pathString)
-                PathParser.createPathFromPathData(pathString)
+                PathParser.createPathFromPathData(pathString).verifyInBounds()
             }
     }
 
@@ -57,7 +60,7 @@ class ShapesProviderTest {
             .find { it.key == FOUR_SIDED_COOKIE_KEY }!!
             .run {
                 GenericPathShape(pathString)
-                PathParser.createPathFromPathData(pathString)
+                PathParser.createPathFromPathData(pathString).verifyInBounds()
             }
     }
 
@@ -68,7 +71,7 @@ class ShapesProviderTest {
             .find { it.key == SEVEN_SIDED_COOKIE_KEY }!!
             .run {
                 GenericPathShape(pathString)
-                PathParser.createPathFromPathData(pathString)
+                PathParser.createPathFromPathData(pathString).verifyInBounds()
             }
     }
 
@@ -79,7 +82,7 @@ class ShapesProviderTest {
             .find { it.key == CIRCLE_KEY }!!
             .run {
                 GenericPathShape(pathString)
-                PathParser.createPathFromPathData(pathString)
+                PathParser.createPathFromPathData(pathString).verifyInBounds()
             }
     }
 
@@ -90,51 +93,14 @@ class ShapesProviderTest {
             .find { it.key == ARCH_KEY }!!
             .run {
                 GenericPathShape(pathString)
-                PathParser.createPathFromPathData(pathString)
+                PathParser.createPathFromPathData(pathString).verifyInBounds()
             }
     }
 
-    @Test
-    @EnableFlags(FLAG_ENABLE_LAUNCHER_ICON_SHAPES, FLAG_NEW_CUSTOMIZATION_PICKER_UI)
-    fun `verify valid folder path clover`() {
-        ShapesProvider.iconShapes
-            .find { it.key == CIRCLE_KEY }!!
-            .run {
-                GenericPathShape(folderPathString)
-                PathParser.createPathFromPathData(folderPathString)
-            }
-    }
-
-    @Test
-    @EnableFlags(FLAG_ENABLE_LAUNCHER_ICON_SHAPES, FLAG_NEW_CUSTOMIZATION_PICKER_UI)
-    fun `verify valid folder path complexClover`() {
-        ShapesProvider.iconShapes
-            .find { it.key == FOUR_SIDED_COOKIE_KEY }!!
-            .run {
-                GenericPathShape(folderPathString)
-                PathParser.createPathFromPathData(folderPathString)
-            }
-    }
-
-    @Test
-    @EnableFlags(FLAG_ENABLE_LAUNCHER_ICON_SHAPES, FLAG_NEW_CUSTOMIZATION_PICKER_UI)
-    fun `verify valid folder path arch`() {
-        ShapesProvider.iconShapes
-            .find { it.key == ARCH_KEY }!!
-            .run {
-                GenericPathShape(folderPathString)
-                PathParser.createPathFromPathData(folderPathString)
-            }
-    }
-
-    @Test
-    @EnableFlags(FLAG_ENABLE_LAUNCHER_ICON_SHAPES, FLAG_NEW_CUSTOMIZATION_PICKER_UI)
-    fun `verify valid folder path square`() {
-        ShapesProvider.iconShapes
-            .find { it.key == SQUARE_KEY }!!
-            .run {
-                GenericPathShape(folderPathString)
-                PathParser.createPathFromPathData(folderPathString)
-            }
+    private fun Path.verifyInBounds() {
+        val region = Region()
+        region.setPath(this, Region().apply { set(-10, -10, 110, 110) })
+        val bounds = region.bounds
+        assertTrue("Path outside bounds $bounds", Rect(0, 0, 100, 100).contains(bounds))
     }
 }

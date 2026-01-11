@@ -35,11 +35,11 @@ public class KeyboardFocusTest extends BaseLauncherActivityTest<Launcher> {
     @Test
     public void testAllAppsFocusApp() {
         loadLauncherSync();
-        goToState(LauncherState.ALL_APPS);
+        getLauncherActivity().goToState(LauncherState.ALL_APPS);
         freezeAllApps();
 
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
         waitForLauncherCondition("No focused child", launcher ->
                 launcher.getAppsView().getActiveRecyclerView().getApps().getFocusedChild()
                         != null);
@@ -48,15 +48,16 @@ public class KeyboardFocusTest extends BaseLauncherActivityTest<Launcher> {
     @Test
     public void testAllAppsExitSearchAndFocusApp() {
         loadLauncherSync();
-        goToState(LauncherState.ALL_APPS);
+        getLauncherActivity().goToState(LauncherState.ALL_APPS);
         freezeAllApps();
 
-        executeOnLauncher(launcher -> launcher.getAppsView().getSearchView().requestFocus());
+        getLauncherActivity().executeOnLauncher(
+                launcher -> launcher.getAppsView().getSearchView().requestFocus());
         waitForLauncherCondition("Search view does not have focus.",
                 launcher -> launcher.getAppsView().getSearchView().hasFocus());
 
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
         waitForLauncherCondition("No focused child", launcher ->
                 launcher.getAppsView().getActiveRecyclerView().getApps().getFocusedChild()
                         != null);
@@ -65,26 +66,28 @@ public class KeyboardFocusTest extends BaseLauncherActivityTest<Launcher> {
     @Test
     public void testAllAppsExitSearchAndFocusSearchResults() {
         loadLauncherSync();
-        goToState(LauncherState.ALL_APPS);
+        getLauncherActivity().goToState(LauncherState.ALL_APPS);
         freezeAllApps();
 
-        executeOnLauncher(launcher -> launcher.getAppsView().getSearchView().requestFocus());
+        getLauncherActivity().executeOnLauncher(
+                launcher -> launcher.getAppsView().getSearchView().requestFocus());
         waitForLauncherCondition("Search view does not have focus.",
                 launcher -> launcher.getAppsView().getSearchView().hasFocus());
 
-        injectKeyEvent(KeyEvent.KEYCODE_C, true);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_C, true);
         waitForLauncherCondition("Search view not active.",
                 launcher -> launcher.getAppsView().getActiveRecyclerView()
                         instanceof SearchRecyclerView);
-        injectKeyEvent(KeyEvent.KEYCODE_C, false);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_C, false);
 
-        executeOnLauncher(launcher -> launcher.getAppsView().getSearchUiManager().getEditText()
-                .hideKeyboard(/* clearFocus= */ false));
+        getLauncherActivity().executeOnLauncher(
+                launcher -> launcher.getAppsView().getSearchUiManager().getEditText()
+                        .hideKeyboard(/* clearFocus= */ false));
         waitForLauncherCondition("Keyboard still visible.",
                 ActivityContext::isSoftwareKeyboardHidden);
 
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
-        injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, true);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN, false);
         waitForLauncherCondition("No focused child", launcher ->
                 launcher.getAppsView().getActiveRecyclerView().getApps().getFocusedChild()
                         != null);

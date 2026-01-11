@@ -1,10 +1,11 @@
 package com.android.launcher3.util
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Process
+import android.util.SparseArray
 import androidx.test.platform.app.InstrumentationRegistry
-import com.android.launcher3.Flags
 import com.android.launcher3.LauncherModel
 import com.android.launcher3.LauncherSettings.Favorites.APPWIDGET_ID
 import com.android.launcher3.LauncherSettings.Favorites.APPWIDGET_PROVIDER
@@ -13,6 +14,7 @@ import com.android.launcher3.LauncherSettings.Favorites.CELLX
 import com.android.launcher3.LauncherSettings.Favorites.CELLY
 import com.android.launcher3.LauncherSettings.Favorites.CONTAINER
 import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP
+import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT
 import com.android.launcher3.LauncherSettings.Favorites.INTENT
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
@@ -21,10 +23,13 @@ import com.android.launcher3.LauncherSettings.Favorites.RESTORED
 import com.android.launcher3.LauncherSettings.Favorites.SCREEN
 import com.android.launcher3.LauncherSettings.Favorites.SPANX
 import com.android.launcher3.LauncherSettings.Favorites.SPANY
+import com.android.launcher3.LauncherSettings.Favorites.TABLE_NAME
 import com.android.launcher3.LauncherSettings.Favorites.TITLE
 import com.android.launcher3.LauncherSettings.Favorites._ID
 import com.android.launcher3.model.BgDataModel
 import com.android.launcher3.model.ModelDbController
+import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.pm.UserCache
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -35,9 +40,7 @@ object ModelTestExtensions {
         loadModelSync()
         TestUtil.runOnExecutorSync(Executors.MODEL_EXECUTOR) {
             modelDbController.run {
-                if (Flags.gridMigrationRefactor())
-                    attemptMigrateDb(null /* restoreEventLogger */, modelDelegate)
-                else tryMigrateDB(null /* restoreEventLogger */, modelDelegate)
+                attemptMigrateDb(null /* restoreEventLogger */, modelDelegate)
                 createEmptyDB()
                 clearEmptyDbFlag()
             }
@@ -105,8 +108,30 @@ object ModelTestExtensions {
         }
     }
 
+    @JvmStatic
+    val SandboxApplication.bgDataModel
+        get() = appComponent.testableModelState.dataModel
+
+    /**
+     * Checks if an item is persisted in model. It excludes items whose ID corresponds to an AAPT
+     * generated id which always has a non-zero package identifier first-byte.
+     *
+     * @see [android.view.View.generateViewId]
+     */
+    @JvmStatic
+    fun ItemInfo.isPersistedModelItem() = id >= 0 && (id ushr 24) == 0
+
+    /**
+     * Total number of items which are persisted in the model. This excludes any predicted item and
+     * any dynamically injected item with an AAPT generated id.
+     */
+    @JvmStatic
+    fun Iterable<ItemInfo>.countPersistedModelItems() = count {
+        it.isPersistedModelItem() && it.container >= CONTAINER_HOTSEAT
+    }
+
     /** Creates an in-memory sqlite DB and initializes with the data in [insertFile] */
-    fun createInMemoryDb(insertFile: String): SQLiteDatabase =
+    fun createInMemoryDb(context: Context, insertFile: String): SQLiteDatabase =
         SQLiteDatabase.createInMemory(SQLiteDatabase.OpenParams.Builder().build()).also { db ->
             BufferedReader(
                     InputStreamReader(
@@ -115,5 +140,17 @@ object ModelTestExtensions {
                 )
                 .lines()
                 .forEach { sqlStatement -> db.execSQL(sqlStatement) }
+            val mainProfileId =
+                UserCache.INSTANCE.get(context).getSerialNumberForUser(Process.myUserHandle())
+            if (mainProfileId != 0L) {
+                db.execSQL(
+                    "UPDATE $TABLE_NAME SET $PROFILE_ID = $mainProfileId WHERE $PROFILE_ID = 0;"
+                )
+            }
         }
+
+    /** Initializes [BgDataModel.itemsIdMap] with provided [items] */
+    fun BgDataModel.initItems(vararg items: ItemInfo) {
+        dataLoadComplete(SparseArray<ItemInfo>().apply { items.forEach { this[it.id] = it } })
+    }
 }

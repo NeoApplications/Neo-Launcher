@@ -16,17 +16,25 @@
 
 package com.android.launcher3.icons.cache
 
+import android.platform.test.annotations.DisableFlags
+import android.platform.test.annotations.EnableFlags
+import android.platform.test.flag.junit.SetFlagsRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.android.launcher3.icons.cache.CacheLookupFlag.Companion.DEFAULT_LOOKUP_FLAG
+import com.android.systemui.shared.Flags.FLAG_EXTENDIBLE_THEME_MANAGER
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
 class CacheLookupFlagTest {
+
+    @get:Rule
+    val flags = SetFlagsRule()
 
     @Test
     fun `useLowRes preserves lowRes values`() {
@@ -98,5 +106,19 @@ class CacheLookupFlagTest {
             DEFAULT_LOOKUP_FLAG.withUseLowRes()
                 .isVisuallyLessThan(DEFAULT_LOOKUP_FLAG.withUsePackageIcon())
         )
+    }
+
+    @DisableFlags(FLAG_EXTENDIBLE_THEME_MANAGER)
+    @Test
+    fun `isVisuallyLessThan does not depend on theme with flag off`() {
+        assertFalse(DEFAULT_LOOKUP_FLAG.withThemeIcon().isVisuallyLessThan(DEFAULT_LOOKUP_FLAG))
+        assertFalse(DEFAULT_LOOKUP_FLAG.isVisuallyLessThan(DEFAULT_LOOKUP_FLAG.withThemeIcon()))
+    }
+
+    @EnableFlags(FLAG_EXTENDIBLE_THEME_MANAGER)
+    @Test
+    fun `isVisuallyLessThan depends on theme with flag on`() {
+        assertFalse(DEFAULT_LOOKUP_FLAG.withThemeIcon().isVisuallyLessThan(DEFAULT_LOOKUP_FLAG))
+        assertTrue(DEFAULT_LOOKUP_FLAG.isVisuallyLessThan(DEFAULT_LOOKUP_FLAG.withThemeIcon()))
     }
 }

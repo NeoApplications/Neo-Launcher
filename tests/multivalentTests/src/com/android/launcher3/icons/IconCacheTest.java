@@ -28,6 +28,7 @@ import static com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY;
 import static com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY2;
 import static com.android.launcher3.util.LauncherModelHelper.TEST_PACKAGE;
 import static com.android.launcher3.util.TestUtil.runOnExecutorSync;
+import static com.android.systemui.shared.Flags.FLAG_EXTENDIBLE_THEME_MANAGER;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,6 +51,9 @@ import android.graphics.Bitmap.Config;
 import android.graphics.drawable.Icon;
 import android.os.PersistableBundle;
 import android.os.UserHandle;
+import android.platform.test.annotations.DisableFlags;
+import android.platform.test.annotations.EnableFlags;
+import android.platform.test.flag.junit.SetFlagsRule;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -70,6 +74,7 @@ import com.android.launcher3.util.ApplicationInfoWrapper;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.SandboxApplication;
+import com.android.launcher3.util.TestUtil;
 
 import com.google.common.truth.Truth;
 
@@ -88,6 +93,7 @@ import java.util.Set;
 public class IconCacheTest {
 
     @Rule public SandboxApplication mContext = new SandboxApplication();
+    @Rule public SetFlagsRule mFlags = new SetFlagsRule();
 
     private IconCache mIconCache;
 
@@ -189,7 +195,8 @@ public class IconCacheTest {
         ShortcutKey cacheKey = ShortcutKey.fromInfo(si.getShortcutInfo());
 
         WorkspaceItemInfo info = new WorkspaceItemInfo();
-        runOnExecutorSync(MODEL_EXECUTOR, () -> mIconCache.getShortcutIcon(info, si));
+        runOnExecutorSync(MODEL_EXECUTOR,
+                () -> mIconCache.getShortcutIcon(info, si, DEFAULT_LOOKUP_FLAG));
         assertNotNull(info.bitmap);
         assertFalse(info.bitmap.isLowRes());
 
@@ -275,6 +282,60 @@ public class IconCacheTest {
         Truth.assertThat(executeIconUpdate(lai2, LauncherActivityCachingLogic.INSTANCE)).isEmpty();
         assertFalse(mIconCache.isItemInDb(new ComponentKey(cn, user)));
         assertTrue(mIconCache.isItemInDb(new ComponentKey(cn2, user)));
+    }
+
+    @Test
+    @EnableFlags(FLAG_EXTENDIBLE_THEME_MANAGER)
+    public void theme_icon_not_returned_if_not_requested() {
+        ComponentName cn = new ComponentName(TEST_PACKAGE, TEST_ACTIVITY);
+        UserHandle user = myUserHandle();
+        LauncherActivityInfo lai = mContext.getSystemService(LauncherApps.class)
+                .resolveActivity(makeLaunchIntent(cn), user);
+        assertNotNull(lai);
+        executeIconUpdate(lai, LauncherActivityCachingLogic.INSTANCE);
+
+        AppInfo info  = new AppInfo(mContext, lai, user);
+        TestUtil.runOnExecutorSync(MODEL_EXECUTOR, () -> {
+            mIconCache.clearMemoryCache();
+            mIconCache.getTitleAndIcon(info, () -> lai, DEFAULT_LOOKUP_FLAG);
+        });
+        assertFalse(info.bitmap.getMatchingLookupFlag().hasThemeIcon());
+    }
+
+    @Test
+    @EnableFlags(FLAG_EXTENDIBLE_THEME_MANAGER)
+    public void theme_icon_returned_if_requested() {
+        ComponentName cn = new ComponentName(TEST_PACKAGE, TEST_ACTIVITY);
+        UserHandle user = myUserHandle();
+        LauncherActivityInfo lai = mContext.getSystemService(LauncherApps.class)
+                .resolveActivity(makeLaunchIntent(cn), user);
+        assertNotNull(lai);
+        executeIconUpdate(lai, LauncherActivityCachingLogic.INSTANCE);
+
+        AppInfo info  = new AppInfo(mContext, lai, user);
+        TestUtil.runOnExecutorSync(MODEL_EXECUTOR, () -> {
+            mIconCache.clearMemoryCache();
+            mIconCache.getTitleAndIcon(info, () -> lai, DEFAULT_LOOKUP_FLAG.withThemeIcon());
+        });
+        assertTrue(info.bitmap.getMatchingLookupFlag().hasThemeIcon());
+    }
+
+    @Test
+    @DisableFlags(FLAG_EXTENDIBLE_THEME_MANAGER)
+    public void theme_icon_returned_if_not_requested_with_flag_off() {
+        ComponentName cn = new ComponentName(TEST_PACKAGE, TEST_ACTIVITY);
+        UserHandle user = myUserHandle();
+        LauncherActivityInfo lai = mContext.getSystemService(LauncherApps.class)
+                .resolveActivity(makeLaunchIntent(cn), user);
+        assertNotNull(lai);
+        executeIconUpdate(lai, LauncherActivityCachingLogic.INSTANCE);
+
+        AppInfo info  = new AppInfo(mContext, lai, user);
+        TestUtil.runOnExecutorSync(MODEL_EXECUTOR, () -> {
+            mIconCache.clearMemoryCache();
+            mIconCache.getTitleAndIcon(info, () -> lai, DEFAULT_LOOKUP_FLAG);
+        });
+        assertTrue(info.bitmap.getMatchingLookupFlag().hasThemeIcon());
     }
 
     /**

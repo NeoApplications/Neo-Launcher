@@ -56,7 +56,7 @@ interface WorkspaceDragSource {
                         launchableCenter.x >= width
                                 ? launchableCenter.x - width / 2
                                 : launchableCenter.x + width / 2,
-                        displaySize.y / 2),
+                        (int) (displaySize.y / 2.5f)),
                 startsActivity,
                 isWidgetShortcut,
                 launchable::addExpectedEventsForLongClick);

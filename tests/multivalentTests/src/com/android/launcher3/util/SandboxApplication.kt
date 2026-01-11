@@ -16,22 +16,41 @@
 
 package com.android.launcher3.util
 
+import android.content.ContentProvider
+import android.content.ContentResolver
 import android.content.Context
 import android.content.ContextParams
 import android.content.ContextWrapper
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.content.pm.ProviderInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.IBinder
 import android.os.UserHandle
+import android.os.UserManager
+import android.provider.Settings.Global
+import android.provider.Settings.Secure
+import android.provider.Settings.System
+import android.test.mock.MockContentResolver
+import android.util.ArrayMap
 import android.view.Display
 import androidx.test.core.app.ApplicationProvider
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
+import com.android.launcher3.dagger.LauncherBaseAppComponent.Builder
+import java.io.File
+import java.util.UUID
+import java.util.concurrent.CountDownLatch
 import org.junit.Rule
 import org.junit.rules.ExternalResource
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 
 /**
  * Sandbox application where created [Context] instances are still sandboxed within it.
@@ -45,12 +64,27 @@ import org.junit.runners.model.Statement
  * propagate this application (see [SandboxApplicationWrapper]).
  */
 class SandboxApplication private constructor(private val base: SandboxApplicationWrapper) :
-    SandboxModelContext(base), TestRule {
+    SandboxContext(base), TestRule {
+
+    private val mockResolver = MockContentResolver()
+    private val manuallyNamedServices = ArrayMap<Class<*>, String>()
+    private val spiedServices = ArrayMap<String, Any>()
+    private val packageManager = spy(baseContext.packageManager)
+    private val dbDir = File(cacheDir, UUID.randomUUID().toString())
+
+    private var lockModelThreadOnDestroy = false
 
     @JvmOverloads
     constructor(
         base: Context = ApplicationProvider.getApplicationContext()
     ) : this(SandboxApplicationWrapper(base))
+
+    init {
+        // System settings cache content provider. Ensure that they are statically initialized
+        Secure.getString(base.contentResolver, "test")
+        System.getString(base.contentResolver, "test")
+        Global.getString(base.contentResolver, "test")
+    }
 
     /**
      * Initializes the sandbox application propagation logic.
@@ -70,6 +104,97 @@ class SandboxApplication private constructor(private val base: SandboxApplicatio
         val app = ApplicationProvider.getApplicationContext<Context>()
         return (app as? SandboxContext)?.shouldCleanUpOnDestroy() ?: true
     }
+
+    override fun getDatabasePath(name: String) = File(dbDir.apply { if (!exists()) mkdirs() }, name)
+
+    override fun getContentResolver(): ContentResolver = mockResolver
+
+    override fun cleanUpObjects() {
+        // When destroying the context, make sure that the model thread is blocked, so that no
+        // new jobs get posted while we are cleaning up
+        val modelLock = CountDownLatch(1)
+        val modelRelease = CountDownLatch(1)
+        if (lockModelThreadOnDestroy) {
+            Executors.MODEL_EXECUTOR.execute {
+                modelLock.countDown()
+                modelRelease.await()
+            }
+            modelLock.await()
+        }
+        if (deleteContents(dbDir)) {
+            dbDir.delete()
+        }
+        super.cleanUpObjects()
+        modelRelease.countDown()
+    }
+
+    private fun deleteContents(dir: File): Boolean {
+        var success = true
+        dir.listFiles()?.forEach {
+            if (it.isDirectory) success = success and deleteContents(it)
+            if (!it.delete()) success = false
+        }
+        return success
+    }
+
+    override fun initDaggerComponent(componentBuilder: Builder) {
+        super.initDaggerComponent(componentBuilder.iconsDbName(null))
+    }
+
+    override fun getPackageManager(): PackageManager = packageManager
+
+    override fun getSystemServiceName(tClass: Class<*>): String? {
+        return manuallyNamedServices[tClass] ?: super.getSystemServiceName(tClass)
+    }
+
+    override fun getSystemService(name: String): Any? =
+        spiedServices[name] ?: super.getSystemService(name)
+
+    override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences? {
+        checkUnlockedIfCredentialProtectedStorage()
+        return super.getSharedPreferences(name, mode)
+    }
+
+    override fun getSharedPreferences(file: File?, mode: Int): SharedPreferences? {
+        checkUnlockedIfCredentialProtectedStorage()
+        return super.getSharedPreferences(file, mode)
+    }
+
+    fun <T> mockService(name: String, mockedServiceType: Class<T>, mockedServiceInstance: T) {
+        manuallyNamedServices[mockedServiceType] = name
+        spiedServices[name] = mockedServiceInstance
+    }
+
+    @JvmOverloads
+    fun <T> spyService(tClass: Class<T>, provider: (T?) -> T = { spy(it!!) }): T {
+        val name = getSystemServiceName(tClass)
+        val service = spiedServices[name]
+        if (service != null) return service as T
+
+        val result = provider.invoke(getSystemService(tClass))
+        spiedServices[name] = result
+        return result
+    }
+
+    fun setupProvider(authority: String, provider: ContentProvider) {
+        val providerInfo = ProviderInfo()
+        providerInfo.authority = authority
+        providerInfo.applicationInfo = applicationInfo
+        provider.attachInfo(this, providerInfo)
+        mockResolver.addProvider(providerInfo.authority, provider)
+        doReturn(providerInfo)
+            .whenever(packageManager)
+            .resolveContentProvider(eq(authority), any<Int>())
+    }
+
+    /**
+     * Notifies the rule to lock the model thread during cleanup operation so that no new tasks get
+     * posted
+     */
+    fun withModelDependency() = this.apply { lockModelThreadOnDestroy = true }
+
+    /** Returns `true` if [displayId] is different from this display's ID. */
+    fun isSecondaryDisplay(displayId: Int): Boolean = displayId != this.displayId
 
     override fun apply(statement: Statement, description: Description): Statement {
         return object : ExternalResource() {
@@ -160,5 +285,29 @@ private class SandboxApplicationWrapper(base: Context, var app: Context? = null)
 
     override fun createTokenContext(token: IBinder, display: Display): Context {
         return SandboxApplicationWrapper(super.createTokenContext(token, display), app)
+    }
+
+    override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences? {
+        checkUnlockedIfCredentialProtectedStorage()
+        return super.getSharedPreferences(name, mode)
+    }
+
+    override fun getSharedPreferences(file: File?, mode: Int): SharedPreferences? {
+        checkUnlockedIfCredentialProtectedStorage()
+        return super.getSharedPreferences(file, mode)
+    }
+}
+
+/**
+ * Emulates preconditions in `ContextImpl#getSharedPreferences(File, Int)`.
+ *
+ * Only stubbing [UserManager] is insufficient because `ContextImpl` maintains a static cache for
+ * [SharedPreferences], which may populate before creating the stub.
+ */
+private fun Context.checkUnlockedIfCredentialProtectedStorage() {
+    if (!isCredentialProtectedStorage) return
+    val userManager = checkNotNull(applicationContext.getSystemService(UserManager::class.java))
+    if (!userManager.isUserUnlockingOrUnlocked(UserHandle.myUserId())) {
+        throw IllegalStateException("Encrypted SharedPreferences accessed while locked")
     }
 }

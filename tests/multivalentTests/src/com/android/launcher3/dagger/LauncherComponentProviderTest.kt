@@ -22,8 +22,8 @@ import android.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.launcher3.R
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
 import com.android.launcher3.util.LauncherModelHelper.TEST_PACKAGE
+import com.android.launcher3.util.SandboxApplication
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertSame
@@ -37,9 +37,14 @@ class LauncherComponentProviderTest {
 
     @Test
     fun `returns same component as Launcher application`() {
-        val c = SandboxModelContext()
-        assertSame(c.appComponent, LauncherComponentProvider.get(c))
-        assertNotSame(LauncherComponentProvider.get(c), LauncherComponentProvider.get(app))
+        val c = SandboxApplication()
+        c.init()
+        try {
+            assertSame(c.appComponent, LauncherComponentProvider.get(c))
+            assertNotSame(LauncherComponentProvider.get(c), LauncherComponentProvider.get(app))
+        } finally {
+            c.onDestroy()
+        }
     }
 
     @Test

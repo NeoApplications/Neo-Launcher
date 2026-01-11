@@ -18,6 +18,8 @@ package com.android.launcher3.compat;
 
 import static android.os.Process.myUserHandle;
 
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+
 import static com.android.launcher3.Flags.FLAG_ENABLE_SUPPORT_FOR_ARCHIVING;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -32,6 +34,7 @@ import android.text.TextUtils;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.uiautomator.UiDevice;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
@@ -69,7 +72,6 @@ public class PromiseIconUiTest extends BaseLauncherActivityTest<Launcher> {
     @Before
     public void setUp() throws Exception {
         loadLauncherSync();
-        goToState(LauncherState.NORMAL);
         mSessionId = -1;
     }
 
@@ -137,7 +139,7 @@ public class PromiseIconUiTest extends BaseLauncherActivityTest<Launcher> {
     @RequiresFlagsEnabled(FLAG_ENABLE_SUPPORT_FOR_ARCHIVING)
     public void testPromiseIcon_addedArchivedApp() throws Throwable {
         installDummyAppAndWaitForUIUpdate();
-        assertThat(executeShellCommand(
+        assertThat(UiDevice.getInstance(getInstrumentation()).executeShellCommand(
                 String.format("pm archive --user %d %s",
                         myUserHandle().getIdentifier(), DUMMY_PACKAGE)))
                 .isEqualTo("Success\n");
@@ -149,7 +151,7 @@ public class PromiseIconUiTest extends BaseLauncherActivityTest<Launcher> {
         // Verify promise icon is added to all apps view. The icon may not be added to the
         // workspace even if there might be no icon present for archived app. But icon will
         // always be in all apps view. In case an icon is not added, an exception would be thrown.
-        goToState(LauncherState.ALL_APPS);
+        getLauncherActivity().goToState(LauncherState.ALL_APPS);
 
         // Wait for the promise icon to be added.
         waitForLauncherCondition(

@@ -1,96 +1,113 @@
-package com.android.launcher3.logging;
+package com.android.launcher3.logging
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SmallTest;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Calendar;
-
-/**
- * Tests for {@link FileLog}
+/*
+ * Copyright (C) 2025 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
+import com.android.launcher3.logging.FileLog.flushAll
+import com.android.launcher3.logging.FileLog.print
+import com.android.launcher3.logging.FileLog.setDir
+import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.util.Calendar
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+/** Tests for [FileLog] */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
-public class FileLogTest {
+@RunWith(AndroidJUnit4::class)
+class FileLogTest {
+    private var mTempDir: File? = null
 
-    private File mTempDir;
     @Before
-    public void setUp() {
-        int count = 0;
+    fun setUp() {
+        var count = 0
         do {
-            mTempDir = new File(getApplicationContext().getCacheDir(),
-                    "log-test-" + (count++));
-        } while (!mTempDir.mkdir());
+            mTempDir =
+                File(
+                    ApplicationProvider.getApplicationContext<Context>().cacheDir,
+                    "log-test-" + (count++),
+                )
+        } while (!mTempDir!!.mkdir())
 
-        FileLog.setDir(mTempDir);
+        setDir(mTempDir!!)
     }
 
     @After
-    public void tearDown() {
+    fun tearDown() {
         // Clear existing logs
-        for (int i = 0; i < FileLog.LOG_DAYS; i++) {
-            new File(mTempDir, "log-" + i).delete();
+        for (i in 0..<FileLog.LOG_DAYS) {
+            File(mTempDir, "log-$i").delete()
         }
-        mTempDir.delete();
+        mTempDir!!.delete()
     }
 
     @Test
-    public void testPrintLog() throws Exception {
+    @Throws(Exception::class)
+    fun testPrintLog() {
         if (!FileLog.ENABLED) {
-            return;
+            return
         }
-        FileLog.print("Testing", "hoolalala");
-        StringWriter writer = new StringWriter();
-        assertTrue(FileLog.flushAll(new PrintWriter(writer)));
-        assertTrue(writer.toString().contains("hoolalala"));
+        print("Testing", "hoolalala")
+        var writer = StringWriter()
+        Assert.assertTrue(flushAll(PrintWriter(writer)))
+        Assert.assertTrue(writer.toString().contains("hoolalala"))
 
-        FileLog.print("Testing", "abracadabra", new Exception("cat! cat!"));
-        writer = new StringWriter();
-        assertTrue(FileLog.flushAll(new PrintWriter(writer)));
-        assertTrue(writer.toString().contains("abracadabra"));
+        print("Testing", "abracadabra", Exception("cat! cat!"))
+        writer = StringWriter()
+        Assert.assertTrue(flushAll(PrintWriter(writer)))
+        Assert.assertTrue(writer.toString().contains("abracadabra"))
         // Exception is also printed
-        assertTrue(writer.toString().contains("cat! cat!"));
+        Assert.assertTrue(writer.toString().contains("cat! cat!"))
 
         // Old logs still present after flush
-        assertTrue(writer.toString().contains("hoolalala"));
+        Assert.assertTrue(writer.toString().contains("hoolalala"))
     }
 
     @Test
-    public void testOldFileTruncated() throws Exception {
+    @Throws(Exception::class)
+    fun testOldFileTruncated() {
         if (!FileLog.ENABLED) {
-            return;
+            return
         }
-        FileLog.print("Testing", "hoolalala");
-        StringWriter writer = new StringWriter();
-        assertTrue(FileLog.flushAll(new PrintWriter(writer)));
-        assertTrue(writer.toString().contains("hoolalala"));
+        print("Testing", "hoolalala")
+        var writer = StringWriter()
+        Assert.assertTrue(flushAll(PrintWriter(writer)))
+        Assert.assertTrue(writer.toString().contains("hoolalala"))
 
-        Calendar threeDaysAgo = Calendar.getInstance();
-        threeDaysAgo.add(Calendar.HOUR, -72);
-        for (int i = 0; i < FileLog.LOG_DAYS; i++) {
-            new File(mTempDir, "log-" + i).setLastModified(threeDaysAgo.getTimeInMillis());
+        val threeDaysAgo = Calendar.getInstance()
+        threeDaysAgo.add(Calendar.HOUR, -72)
+        for (i in 0..<FileLog.LOG_DAYS) {
+            File(mTempDir, "log-$i").setLastModified(threeDaysAgo.timeInMillis)
         }
 
-        FileLog.print("Testing", "abracadabra", new Exception("cat! cat!"));
-        writer = new StringWriter();
-        assertTrue(FileLog.flushAll(new PrintWriter(writer)));
-        assertTrue(writer.toString().contains("abracadabra"));
+        print("Testing", "abracadabra", Exception("cat! cat!"))
+        writer = StringWriter()
+        Assert.assertTrue(flushAll(PrintWriter(writer)))
+        Assert.assertTrue(writer.toString().contains("abracadabra"))
         // Exception is also printed
-        assertTrue(writer.toString().contains("cat! cat!"));
+        Assert.assertTrue(writer.toString().contains("cat! cat!"))
 
         // Old logs have been truncated
-        assertFalse(writer.toString().contains("hoolalala"));
+        Assert.assertFalse(writer.toString().contains("hoolalala"))
     }
 }

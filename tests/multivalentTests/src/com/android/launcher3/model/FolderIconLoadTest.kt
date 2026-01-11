@@ -17,6 +17,7 @@ package com.android.launcher3.model
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FOLDER
 import com.android.launcher3.icons.BitmapInfo
@@ -25,13 +26,16 @@ import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.LauncherLayoutBuilder
-import com.android.launcher3.util.LauncherModelHelper
 import com.android.launcher3.util.LauncherModelHelper.*
+import com.android.launcher3.util.LayoutResource
+import com.android.launcher3.util.ModelTestExtensions.bgDataModel
+import com.android.launcher3.util.ModelTestExtensions.loadModelSync
+import com.android.launcher3.util.SandboxApplication
 import com.android.launcher3.util.TestUtil
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import org.junit.After
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -40,7 +44,10 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class FolderIconLoadTest {
 
-    private lateinit var modelHelper: LauncherModelHelper
+    @get:Rule
+    val context = SandboxApplication().withModelDependency()
+    @get:Rule
+    val layoutResource = LayoutResource(context)
 
     private val uniqueActivities =
         listOf(
@@ -60,15 +67,11 @@ class FolderIconLoadTest {
             TEST_ACTIVITY14,
         )
 
-    @Before
-    fun setUp() {
-        modelHelper = LauncherModelHelper()
-    }
+    fun getIdp() = InvariantDeviceProfile.INSTANCE.get(context)
 
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        modelHelper.destroy()
         TestUtil.uninstallDummyApp()
     }
 
@@ -92,7 +95,7 @@ class FolderIconLoadTest {
     @Test
     @Throws(Exception::class)
     fun folderLoadedWithHighRes_max_3x3() {
-        val idp = LauncherAppState.getIDP(modelHelper.sandboxContext)
+        val idp = getIdp()
         idp.numFolderColumns = intArrayOf(3, 3, 3, 3)
         idp.numFolderRows = intArrayOf(3, 3, 3, 3)
         recreateSupportedDeviceProfiles()
@@ -105,7 +108,7 @@ class FolderIconLoadTest {
     @Test
     @Throws(Exception::class)
     fun folderLoadedWithHighRes_max_4x4() {
-        val idp = LauncherAppState.getIDP(modelHelper.sandboxContext)
+        val idp = getIdp()
         idp.numFolderColumns = intArrayOf(4, 4, 4, 4)
         idp.numFolderRows = intArrayOf(4, 4, 4, 4)
         recreateSupportedDeviceProfiles()
@@ -118,7 +121,7 @@ class FolderIconLoadTest {
     @Test
     @Throws(Exception::class)
     fun folderLoadedWithHighRes_differentFolderConfigurations() {
-        val idp = LauncherAppState.getIDP(modelHelper.sandboxContext)
+        val idp = getIdp()
         idp.numFolderColumns = intArrayOf(4, 3, 4, 4)
         idp.numFolderRows = intArrayOf(4, 3, 4, 4)
         recreateSupportedDeviceProfiles()
@@ -130,6 +133,8 @@ class FolderIconLoadTest {
 
     @Throws(Exception::class)
     private fun setupAndLoadFolder(itemCount: Int): ArrayList<WorkspaceItemInfo> {
+        val app = LauncherAppState.getInstance(context)
+
         val builder =
             LauncherLayoutBuilder()
                 .atWorkspace(0, 0, 1)
@@ -138,21 +143,18 @@ class FolderIconLoadTest {
                     for (i in 0..itemCount - 1) this.addApp(TEST_PACKAGE, uniqueActivities[i])
                 }
                 .build()
-
-        modelHelper.setupDefaultLayoutProvider(builder)
-        modelHelper.loadModelSync()
+        layoutResource.set(builder)
 
         // The first load initializes the DB, load again so that icons are now used from the DB
         // Wait for the icon cache to be updated and then reload
-        val app = LauncherAppState.getInstance(modelHelper.sandboxContext)
         app.iconCache.waitForUpdateHandlerToFinish()
 
         TestUtil.runOnExecutorSync(Executors.MODEL_EXECUTOR) { app.iconCache.clearMemoryCache() }
         // Reload again with correct icon state
         app.model.forceReload()
-        modelHelper.loadModelSync()
+        app.model.loadModelSync()
         val collections =
-            modelHelper.bgDataModel.itemsIdMap
+            context.bgDataModel.itemsIdMap
                 .filter { it.itemType == ITEM_TYPE_FOLDER }
                 .map { it as FolderInfo }
         assertThat(collections.size).isEqualTo(1)
@@ -163,7 +165,7 @@ class FolderIconLoadTest {
     private fun verifyHighRes(items: ArrayList<WorkspaceItemInfo>, vararg indices: Int) {
         for (index in indices) {
             assertWithMessage("Index $index was not highRes")
-                .that(items[index].bitmap.isNullOrLowRes)
+                .that(items[index].bitmap.isLowRes)
                 .isFalse()
             assertWithMessage("Index $index was the default icon")
                 .that(isDefaultIcon(items[index].bitmap))
@@ -174,7 +176,7 @@ class FolderIconLoadTest {
     private fun verifyLowRes(items: ArrayList<WorkspaceItemInfo>, vararg indices: Int) {
         for (index in indices) {
             assertWithMessage("Index $index was not lowRes")
-                .that(items[index].bitmap.isNullOrLowRes)
+                .that(items[index].bitmap.isLowRes)
                 .isTrue()
             assertWithMessage("Index $index was the default icon")
                 .that(isDefaultIcon(items[index].bitmap))
@@ -183,15 +185,10 @@ class FolderIconLoadTest {
     }
 
     private fun isDefaultIcon(bitmap: BitmapInfo) =
-        LauncherAppState.getInstance(modelHelper.sandboxContext)
-            .iconCache
-            .isDefaultIcon(bitmap, modelHelper.sandboxContext.user)
+        LauncherAppState.getInstance(context).iconCache.isDefaultIcon(bitmap, context.user)
 
     /** Recreate DeviceProfiles after changing InvariantDeviceProfile */
     private fun recreateSupportedDeviceProfiles() {
-        LauncherAppState.getIDP(modelHelper.sandboxContext).supportedProfiles =
-            LauncherAppState.getIDP(modelHelper.sandboxContext).supportedProfiles.map {
-                it.copy(modelHelper.sandboxContext)
-            }
+        getIdp().supportedProfiles = getIdp().supportedProfiles.map { it.copy() }
     }
 }

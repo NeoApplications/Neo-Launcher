@@ -24,9 +24,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.android.launcher3.util.DaggerSingletonTracker
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
 import com.android.launcher3.util.PluginManagerWrapper
 import com.android.launcher3.util.SafeCloseable
+import com.android.launcher3.util.SandboxApplication
 import com.android.launcher3.util.WidgetUtils
 import com.android.launcher3.widget.LauncherAppWidgetHostView
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo
@@ -41,7 +41,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.mock
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -54,8 +54,11 @@ import org.mockito.kotlin.whenever
 class CustomWidgetManagerTest {
 
     @get:Rule val setFlagsRule = SetFlagsRule()
+    @get:Rule
+    val mockitoRule = MockitoJUnit.rule()
+    @get:Rule
+    val context = SandboxApplication()
 
-    private val context = SandboxModelContext()
     private lateinit var underTest: CustomWidgetManager
 
     @Mock private lateinit var pluginManager: PluginManagerWrapper
@@ -66,7 +69,6 @@ class CustomWidgetManagerTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         underTest = CustomWidgetManager(context, pluginManager, mockAppWidgetManager, tracker)
     }
 

@@ -17,12 +17,10 @@
 package com.android.launcher3.widget.picker.model
 
 import android.content.ComponentName
-import android.content.Context
 import android.os.UserHandle
 import android.platform.test.rule.AllowedDevices
 import android.platform.test.rule.DeviceProduct
 import android.platform.test.rule.LimitDevicesRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherAppState
@@ -31,7 +29,7 @@ import com.android.launcher3.icons.IconCache
 import com.android.launcher3.icons.cache.CachedObject
 import com.android.launcher3.model.WidgetItem
 import com.android.launcher3.model.data.PackageItemInfo
-import com.android.launcher3.util.ActivityContextWrapper
+import com.android.launcher3.util.TestActivityContext
 import com.android.launcher3.util.WidgetUtils
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo
 import com.android.launcher3.widget.PendingAddWidgetInfo
@@ -40,6 +38,7 @@ import com.android.launcher3.widget.model.WidgetsListContentEntry
 import com.android.launcher3.widget.model.WidgetsListHeaderEntry
 import com.android.launcher3.widget.picker.model.WidgetPickerDataProvider.WidgetPickerDataChangeListener
 import com.google.common.truth.Truth.assertThat
+import java.util.function.Predicate
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -60,15 +59,18 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 @RunWith(AndroidJUnit4::class)
 @AllowedDevices(allowed = [DeviceProduct.ROBOLECTRIC])
 class WidgetPickerDataProviderTest {
-    @Rule @JvmField val limitDevicesRule = LimitDevicesRule()
-    @Rule @JvmField val mockitoRule: MockitoRule = MockitoJUnit.rule()
+    @get:Rule
+    val limitDevicesRule = LimitDevicesRule()
+    @get:Rule
+    val mockitoRule: MockitoRule = MockitoJUnit.rule()
+    @get:Rule
+    val context = TestActivityContext()
 
     @Mock private lateinit var changeListener: WidgetPickerDataChangeListener
 
     @Mock private lateinit var iconCache: IconCache
 
     private lateinit var userHandle: UserHandle
-    private lateinit var context: Context
     private lateinit var testInvariantProfile: InvariantDeviceProfile
 
     private lateinit var appWidgetItem: WidgetItem
@@ -78,9 +80,8 @@ class WidgetPickerDataProviderTest {
     @Before
     fun setUp() {
         userHandle = UserHandle.CURRENT
-        context = ActivityContextWrapper(ApplicationProvider.getApplicationContext())
         testInvariantProfile = LauncherAppState.getIDP(context)
-        underTest = WidgetPickerDataProvider(context)
+        underTest = WidgetPickerDataProvider()
         doAnswer { invocation: InvocationOnMock ->
                 val componentWithLabel = invocation.getArgument<Any>(0) as CachedObject
                 componentWithLabel.getComponent().shortClassName
@@ -105,6 +106,29 @@ class WidgetPickerDataProviderTest {
         underTest.setWidgets(allWidgets = allWidgets)
 
         assertThat(underTest.get().allWidgets).containsExactlyElementsIn(allWidgets)
+        verify(changeListener, times(1)).onWidgetsBound()
+        verifyNoMoreInteractions(changeListener)
+    }
+
+    @Test
+    fun setWidgets_filtersDefaultWidgets_whenHostFilterSpecified() {
+        assertThat(underTest.get().allWidgets).isEmpty()
+        // Filter that removes appWidgetItem2 from default widgets
+        underTest.hostSpecifiedDefaultWidgetsFilter =
+            Predicate<WidgetItem> { w ->
+                w.widgetInfo.component.className != APP_PROVIDER_2_CLASS_NAME
+            }
+        val appWidgetItem2 = createWidgetItem(APP_PROVIDER_2_CLASS_NAME)
+        underTest.setChangeListener(changeListener)
+
+        val allWidgets = appWidgetListBaseEntries(listOf(appWidgetItem, appWidgetItem2))
+        underTest.setWidgets(allWidgets = allWidgets)
+
+        assertThat(underTest.get().allWidgets).containsExactlyElementsIn(allWidgets)
+        underTest.get().defaultWidgets.forEach {
+            assertThat(it.mWidgets).containsExactly(appWidgetItem)
+        }
+
         verify(changeListener, times(1)).onWidgetsBound()
         verifyNoMoreInteractions(changeListener)
     }
@@ -147,19 +171,22 @@ class WidgetPickerDataProviderTest {
         verifyNoMoreInteractions(changeListener)
     }
 
-    private fun createWidgetItem(): WidgetItem {
+    private fun createWidgetItem(
+        providerClassName: String = APP_PROVIDER_1_CLASS_NAME
+    ): WidgetItem {
         val providerInfo =
             WidgetUtils.createAppWidgetProviderInfo(
-                ComponentName.createRelative(APP_PACKAGE_NAME, APP_PROVIDER_1_CLASS_NAME)
+                ComponentName.createRelative(APP_PACKAGE_NAME, providerClassName)
             )
         val widgetInfo = LauncherAppWidgetProviderInfo.fromProviderInfo(context, providerInfo)
         return WidgetItem(widgetInfo, testInvariantProfile, iconCache, context)
     }
 
-    private fun appWidgetListBaseEntries(): List<WidgetsListBaseEntry> {
+    private fun appWidgetListBaseEntries(
+        widgets: List<WidgetItem> = listOf(appWidgetItem)
+    ): List<WidgetsListBaseEntry> {
         val packageItemInfo = PackageItemInfo(APP_PACKAGE_NAME, userHandle)
         packageItemInfo.title = APP_PACKAGE_TITLE
-        val widgets = listOf(appWidgetItem)
 
         return buildList {
             add(WidgetsListHeaderEntry.create(packageItemInfo, APP_SECTION_NAME, widgets))
@@ -172,5 +199,6 @@ class WidgetPickerDataProviderTest {
         const val APP_PACKAGE_TITLE = "SomeApp"
         const val APP_SECTION_NAME = "S" // for fast popup
         const val APP_PROVIDER_1_CLASS_NAME = "appProvider1"
+        const val APP_PROVIDER_2_CLASS_NAME = "appProvider2"
     }
 }

@@ -20,6 +20,7 @@ import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
 import static com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY;
 import static com.android.launcher3.util.LauncherModelHelper.TEST_PACKAGE;
+import static com.android.launcher3.util.ModelTestExtensions.getBgDataModel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
@@ -37,10 +38,11 @@ import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LauncherLayoutBuilder;
-import com.android.launcher3.util.LauncherModelHelper;
+import com.android.launcher3.util.LayoutResource;
+import com.android.launcher3.util.ModelTestExtensions;
+import com.android.launcher3.util.SandboxApplication;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,32 +55,21 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class DefaultLayoutProviderTest {
 
-    private LauncherModelHelper mModelHelper;
-    private LauncherModelHelper.SandboxModelContext mTargetContext;
-
-    @Before
-    public void setUp() {
-        mModelHelper = new LauncherModelHelper();
-        mTargetContext = mModelHelper.sandboxContext;
-    }
-
-    @After
-    public void tearDown() {
-        mModelHelper.destroy();
-    }
+    @Rule public SandboxApplication mTargetContext = new SandboxApplication().withModelDependency();
+    @Rule public LayoutResource mLayout = new LayoutResource(mTargetContext);
 
     private List<ItemInfo> getWorkspaceItems() {
-        return mModelHelper
-                .getBgDataModel()
+        return getBgDataModel(mTargetContext)
                 .itemsIdMap
                 .stream()
+                .filter(ModelTestExtensions::isPersistedModelItem)
                 .filter(i -> i.container == CONTAINER_DESKTOP || i.container == CONTAINER_HOTSEAT)
                 .toList();
     }
 
     @Test
-    public void testCustomProfileLoaded_with_icon_on_hotseat() throws Exception {
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atHotseat(0)
+    public void testCustomProfileLoaded_with_icon_on_hotseat() {
+        mLayout.set(new LauncherLayoutBuilder().atHotseat(0)
                 .putApp(TEST_PACKAGE, TEST_ACTIVITY));
 
         // Verify one item in hotseat
@@ -89,8 +80,8 @@ public class DefaultLayoutProviderTest {
     }
 
     @Test
-    public void testCustomProfileLoaded_with_folder() throws Exception {
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atHotseat(0).putFolder(android.R.string.copy)
+    public void testCustomProfileLoaded_with_folder() {
+        mLayout.set(new LauncherLayoutBuilder().atHotseat(0).putFolder(android.R.string.copy)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
@@ -104,8 +95,8 @@ public class DefaultLayoutProviderTest {
     }
 
     @Test
-    public void testCustomProfileLoaded_with_folder_custom_title() throws Exception {
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atHotseat(0).putFolder("CustomFolder")
+    public void testCustomProfileLoaded_with_folder_custom_title() {
+        mLayout.set(new LauncherLayoutBuilder().atHotseat(0).putFolder("CustomFolder")
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
@@ -133,7 +124,7 @@ public class DefaultLayoutProviderTest {
                 .getPackageInstaller();
         installer.createSession(params);
 
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atWorkspace(0, 1, 0)
+        mLayout.set(new LauncherLayoutBuilder().atWorkspace(0, 1, 0)
                 .putWidget(pendingAppPkg, "PlaceholderWidget", 2, 2));
 
         // Verify widget
@@ -145,9 +136,9 @@ public class DefaultLayoutProviderTest {
     }
 
     @Test
-    public void testCustomProfileLoaded_with_shortcut_on_hotseat() throws Exception {
+    public void testCustomProfileLoaded_with_shortcut_on_hotseat() {
         assumeTrue(mTargetContext.getSystemService(LauncherApps.class).hasShortcutHostPermission());
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atHotseat(0)
+        mLayout.set(new LauncherLayoutBuilder().atHotseat(0)
                 .putShortcut(TEST_PACKAGE, "shortcut2"));
 
         // Verify one item in hotseat
@@ -158,9 +149,9 @@ public class DefaultLayoutProviderTest {
     }
 
     @Test
-    public void testCustomProfileLoaded_with_shortcut_in_folder() throws Exception {
+    public void testCustomProfileLoaded_with_shortcut_in_folder() {
         assumeTrue(mTargetContext.getSystemService(LauncherApps.class).hasShortcutHostPermission());
-        writeLayoutAndLoad(new LauncherLayoutBuilder().atHotseat(0).putFolder(android.R.string.copy)
+        mLayout.set(new LauncherLayoutBuilder().atHotseat(0).putFolder(android.R.string.copy)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addApp(TEST_PACKAGE, TEST_ACTIVITY)
                 .addShortcut(TEST_PACKAGE, "shortcut2")
@@ -174,9 +165,5 @@ public class DefaultLayoutProviderTest {
         // Verify last icon
         assertEquals(LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT,
                 info.getContents().get(info.getContents().size() - 1).itemType);
-    }
-
-    private void writeLayoutAndLoad(LauncherLayoutBuilder builder) throws Exception {
-        mModelHelper.setupDefaultLayoutProvider(builder).loadModelSync();
     }
 }

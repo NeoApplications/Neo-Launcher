@@ -6,13 +6,10 @@ import android.os.FileUtils;
 import android.os.ParcelFileDescriptor.AutoCloseInputStream;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.test.uiautomator.UiDevice;
 
-import com.android.app.viewcapture.data.ExportedData;
 import com.android.launcher3.tapl.LauncherInstrumentation;
-import com.android.launcher3.ui.BaseLauncherTaplTest;
+import com.android.launcher3.util.ui.BaseLauncherTaplTest;
 
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -23,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -33,18 +29,20 @@ public class FailureWatcher extends TestWatcher {
     private static Description sDescriptionForLastSavedArtifacts;
 
     private final LauncherInstrumentation mLauncher;
-    @NonNull
-    private final Supplier<ExportedData> mViewCaptureDataSupplier;
 
-    public FailureWatcher(LauncherInstrumentation launcher,
-            @NonNull Supplier<ExportedData> viewCaptureDataSupplier) {
+    public FailureWatcher(LauncherInstrumentation launcher) {
         mLauncher = launcher;
-        mViewCaptureDataSupplier = viewCaptureDataSupplier;
     }
 
     @Override
     protected void starting(Description description) {
-        mLauncher.setOnFailure(() -> onError(mLauncher, description, mViewCaptureDataSupplier));
+        // Set a handler to save artifacts immediately when TAPL detects a failure. This
+        // results in the freshesh screenshot etc.
+        // But skipping saving a bugreport because this may happen in the time-limited part of the
+        // test and if slow, can result in TestTimedOutException.
+        // Bug report then will be taken from failed().
+        mLauncher.setOnFailure(() -> onErrorImpl(mLauncher, description,
+                /* skipBugreport */ true));
         super.starting(description);
     }
 
@@ -84,7 +82,7 @@ public class FailureWatcher extends TestWatcher {
 
     @Override
     protected void failed(Throwable e, Description description) {
-        onError(mLauncher, description, mViewCaptureDataSupplier);
+        onError(mLauncher, description);
     }
 
     static File diagFile(Description description, String prefix, String ext) {
@@ -95,11 +93,12 @@ public class FailureWatcher extends TestWatcher {
 
     /** Action executed when an error condition is expected. Saves artifacts. */
     public static void onError(LauncherInstrumentation launcher, Description description) {
-        onError(launcher, description, null);
+        onErrorImpl(launcher, description, false);
     }
 
-    private static void onError(LauncherInstrumentation launcher, Description description,
-            @Nullable Supplier<ExportedData> viewCaptureDataSupplier) {
+    /** Action executed when an error condition is expected. Saves artifacts. */
+    private static void onErrorImpl(LauncherInstrumentation launcher, Description description,
+            boolean skipBugreport) {
         if (description.equals(sDescriptionForLastSavedArtifacts)) {
             // This test has already saved its artifacts.
             return;
@@ -120,13 +119,6 @@ public class FailureWatcher extends TestWatcher {
             out.putNextEntry(new ZipEntry("visible_windows.zip"));
             dumpCommand("cmd window dump-visible-window-views", out);
             out.closeEntry();
-
-            if (viewCaptureDataSupplier != null) {
-                out.putNextEntry(new ZipEntry("FS/data/misc/wmtrace/failed_test.vc"));
-                final ExportedData exportedData = viewCaptureDataSupplier.get();
-                if (exportedData != null) exportedData.writeTo(out);
-                out.closeEntry();
-            }
         } catch (Exception ignored) {
         }
 
@@ -145,7 +137,7 @@ public class FailureWatcher extends TestWatcher {
         }
 
         // Dump bugreport
-        if (!sSavedBugreport) {
+        if (!sSavedBugreport && !skipBugreport) {
             dumpCommand("bugreportz -s", diagFile(description, "Bugreport", "zip"));
             // Not saving bugreport for each failure for time and space economy.
             sSavedBugreport = true;

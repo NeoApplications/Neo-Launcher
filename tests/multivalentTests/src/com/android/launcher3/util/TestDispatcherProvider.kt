@@ -21,7 +21,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 
 class TestDispatcherProvider(testDispatcher: CoroutineDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = testDispatcher
-    override val background: CoroutineDispatcher = testDispatcher
+    override val ioBackground: CoroutineDispatcher = testDispatcher
+    override val lightweightBackground: CoroutineDispatcher = testDispatcher
     override val main: CoroutineDispatcher = testDispatcher
     override val unconfined: CoroutineDispatcher = testDispatcher
 }

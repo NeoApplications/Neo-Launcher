@@ -20,7 +20,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.android.launcher3.tapl.LauncherInstrumentation;
-import com.android.launcher3.ui.AbstractLauncherUiTest;
+import com.android.launcher3.util.ui.AbstractLauncherUiTest;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -48,7 +48,7 @@ public class TestIsolationRule implements TestRule {
                 // Make sure that Launcher workspace looks correct.
 
                 UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressHome();
-                AbstractLauncherUiTest.checkDetectedLeaks(mLauncher, mRequireOneActiveActivity);
+                AbstractLauncherUiTest.checkDetectedLeaks(mLauncher);
             }
         };
     }

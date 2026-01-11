@@ -47,14 +47,14 @@ public class LauncherIntentTest extends BaseLauncherActivityTest<Launcher> {
     @Test
     public void testAllAppsIntent() {
         // Try executing ALL_APPS intent
-        executeOnLauncher(launcher -> launcher.onNewIntent(allAppsIntent));
+        getLauncherActivity().executeOnLauncher(launcher -> launcher.onNewIntent(allAppsIntent));
         // A-Z view with Main adapter should be loaded
         assertOnMainAdapterAToZView();
 
         // Try Moving to search view now
         moveToSearchView();
         // Try executing ALL_APPS intent
-        executeOnLauncher(launcher -> launcher.onNewIntent(allAppsIntent));
+        getLauncherActivity().executeOnLauncher(launcher -> launcher.onNewIntent(allAppsIntent));
         // A-Z view with Main adapter should be loaded
         assertOnMainAdapterAToZView();
     }
@@ -63,26 +63,28 @@ public class LauncherIntentTest extends BaseLauncherActivityTest<Launcher> {
     private void moveToSearchView() {
         // All Apps view should be loaded
         assertTrue("Launcher internal state is not All Apps",
-                isInState(() -> LauncherState.ALL_APPS));
-        executeOnLauncher(launcher -> launcher.getAppsView().getSearchView().requestFocus());
+                getLauncherActivity().isInState(() -> LauncherState.ALL_APPS));
+        getLauncherActivity().executeOnLauncher(
+                launcher -> launcher.getAppsView().getSearchView().requestFocus()
+        );
         // Search view should be in focus
         waitForLauncherCondition("Search view is not in focus.",
                 launcher -> launcher.getAppsView().getSearchView().hasFocus());
 
-        injectKeyEvent(KeyEvent.KEYCODE_C, true);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_C, true);
         // Upon key press, search recycler view should be loaded
         waitForLauncherCondition("Search view not active.",
                 launcher -> launcher.getAppsView().getActiveRecyclerView()
                         instanceof SearchRecyclerView);
 
-        injectKeyEvent(KeyEvent.KEYCODE_C, false);
+        getLauncherActivity().injectKeyEvent(KeyEvent.KEYCODE_C, false);
     }
 
     // Checks if main adapter view is selected, search bar is out of focus and scroller is at start.
     private void assertOnMainAdapterAToZView() {
         // All Apps State should be loaded
         assertTrue("Launcher internal state is not All Apps",
-                isInState(() -> LauncherState.ALL_APPS));
+                getLauncherActivity().isInState(() -> LauncherState.ALL_APPS));
 
         // A-Z recycler view should be active.
         waitForLauncherCondition("A-Z view not active.",
@@ -96,8 +98,12 @@ public class LauncherIntentTest extends BaseLauncherActivityTest<Launcher> {
         waitForLauncherCondition("Search view has focus.",
                 launcher -> !launcher.getAppsView().getSearchView().hasFocus());
         // Scroller should be at top
-        executeOnLauncher(launcher -> assertEquals(
-                "All Apps started in already scrolled state", 0,
-                getAllAppsScroll(launcher)));
+        getLauncherActivity().executeOnLauncher(launcher ->
+                assertEquals(
+                        "All Apps started in already scrolled state",
+                        0,
+                        launcher.getAppsView().getActiveRecyclerView().computeVerticalScrollOffset()
+                )
+        );
     }
 }

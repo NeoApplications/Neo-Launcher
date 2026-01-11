@@ -18,12 +18,11 @@ package com.android.launcher3.util
 
 import androidx.test.filters.SmallTest
 import com.android.launcher3.dagger.LauncherAppComponent
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
-import org.junit.After
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import platform.test.runner.parameterized.ParameterizedAndroidJunit4
@@ -33,12 +32,8 @@ import platform.test.runner.parameterized.Parameters
 @RunWith(ParameterizedAndroidJunit4::class)
 class DaggerSingletonDeadlockTest(val method: KFunction<*>, val methodName: String) {
 
-    private val context = SandboxModelContext()
-
-    @After
-    fun tearDown() {
-        context.onDestroy()
-    }
+    @get:Rule
+    val context = SandboxApplication()
 
     /** Test to verify that the object can be created successfully on the main thread. */
     @Test

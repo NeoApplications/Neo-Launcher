@@ -23,6 +23,9 @@
 
     <application android:debuggable="true">
         <uses-library android:name="android.test.runner" />
+        <activity
+            android:name="platform.test.screenshot.ScreenshotActivity"
+            android:exported="true" />
     </application>
 
     <instrumentation

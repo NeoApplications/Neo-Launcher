@@ -17,35 +17,41 @@
 package com.android.launcher3.folder
 
 import android.R
+import android.content.ComponentName
+import android.graphics.drawable.Drawable
 import android.os.Process
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn
 import com.android.launcher3.LauncherAppState
-import com.android.launcher3.LauncherPrefs
-import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FOLDER
+import com.android.launcher3.LauncherSettings.Favorites.DESKTOP_ICON_FLAG
 import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
-import com.android.launcher3.graphics.PreloadIconDrawable
-import com.android.launcher3.graphics.ThemeManager
+import com.android.launcher3.graphics.PreloadIconDelegate
+import com.android.launcher3.graphics.theme.ThemePreference.Companion.MONO_THEME_VALUE
 import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.FastBitmapDrawable
 import com.android.launcher3.icons.IconCache
 import com.android.launcher3.icons.IconCache.ItemInfoUpdateReceiver
-import com.android.launcher3.icons.PlaceHolderIconDrawable
+import com.android.launcher3.icons.PlaceHolderDrawableDelegate
 import com.android.launcher3.icons.UserBadgeDrawable
+import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_ARCHIVED
 import com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE
 import com.android.launcher3.model.data.WorkspaceItemInfo
-import com.android.launcher3.util.ActivityContextWrapper
 import com.android.launcher3.util.AllModulesForTest
 import com.android.launcher3.util.Executors
+import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.FakePrefsModule
 import com.android.launcher3.util.FlagOp
-import com.android.launcher3.util.LauncherLayoutBuilder
-import com.android.launcher3.util.LauncherModelHelper
-import com.android.launcher3.util.LauncherModelHelper.SandboxModelContext
+import com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY
+import com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY2
+import com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY3
+import com.android.launcher3.util.LauncherModelHelper.TEST_ACTIVITY4
+import com.android.launcher3.util.LauncherModelHelper.TEST_PACKAGE
+import com.android.launcher3.util.SandboxApplication
+import com.android.launcher3.util.TestActivityContext
 import com.android.launcher3.util.TestUtil
 import com.android.launcher3.util.UserIconInfo
 import com.google.common.truth.Truth.assertThat
@@ -54,7 +60,6 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.FUNCTION
 import kotlin.annotation.AnnotationTarget.PROPERTY_GETTER
 import kotlin.annotation.AnnotationTarget.PROPERTY_SETTER
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -62,11 +67,13 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -75,52 +82,47 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class PreviewItemManagerTest {
 
+    @get:Rule
+    val context = SandboxApplication().withModelDependency()
+    @get:Rule
+    val uiContext = TestActivityContext(context)
+
     @get:Rule val theseStateRule = ThemeStateRule()
+    @get:Rule
+    val mockitoRule = MockitoJUnit.rule()
 
     private lateinit var previewItemManager: PreviewItemManager
-    private lateinit var context: SandboxModelContext
     private lateinit var folderItems: ArrayList<WorkspaceItemInfo>
-    private lateinit var modelHelper: LauncherModelHelper
     private lateinit var folderIcon: FolderIcon
     private lateinit var iconCache: IconCache
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
-        modelHelper = LauncherModelHelper()
-        context = modelHelper.sandboxContext
         context.initDaggerComponent(DaggerPreviewItemManagerTestComponent.builder())
         theseStateRule.themeState?.let {
-            LauncherPrefs.get(context).putSync(ThemeManager.THEMED_ICONS.to(it))
+            context.appComponent.themePreference.setValue(if (it) MONO_THEME_VALUE else null)
         }
-        folderIcon = FolderIcon(ActivityContextWrapper(context))
+        folderIcon = FolderIcon(uiContext)
 
         iconCache = LauncherAppState.INSTANCE[context].iconCache
         spyOn(iconCache)
-        doReturn(null).whenever(iconCache).updateIconInBackground(any(), any())
+        doReturn(null).whenever(iconCache).updateIconInBackground(any(), any(), any())
 
         previewItemManager = PreviewItemManager(folderIcon)
-        modelHelper
-            .setupDefaultLayoutProvider(
-                LauncherLayoutBuilder()
-                    .atWorkspace(0, 0, 1)
-                    .putFolder(R.string.copy)
-                    .addApp(LauncherModelHelper.TEST_PACKAGE, LauncherModelHelper.TEST_ACTIVITY)
-                    .addApp(LauncherModelHelper.TEST_PACKAGE, LauncherModelHelper.TEST_ACTIVITY2)
-                    .addApp(LauncherModelHelper.TEST_PACKAGE, LauncherModelHelper.TEST_ACTIVITY3)
-                    .addApp(LauncherModelHelper.TEST_PACKAGE, LauncherModelHelper.TEST_ACTIVITY4)
-                    .build()
-            )
-            .loadModelSync()
 
         folderIcon.mInfo =
-            modelHelper.bgDataModel.itemsIdMap.find { it.itemType == ITEM_TYPE_FOLDER }
-                as FolderInfo
+            FolderInfo().apply {
+                title = context.getString(R.string.copy)
+                add(buildWorkspaceItemInfo(TEST_ACTIVITY))
+                add(buildWorkspaceItemInfo(TEST_ACTIVITY2))
+                add(buildWorkspaceItemInfo(TEST_ACTIVITY3))
+                add(buildWorkspaceItemInfo(TEST_ACTIVITY4))
+            }
         // Use getAppContents() to "cast" contents to WorkspaceItemInfo so we can set bitmaps
         folderItems = folderIcon.mInfo.getAppContents()
 
         // Set second icon to be non-themed.
-        folderItems[1].bitmap.themedBitmap = null
+        folderItems[1].bitmap = folderItems[1].bitmap.copy(themedBitmap = null)
 
         // Set third icon to be themed with badge.
         folderItems[2].bitmap =
@@ -128,14 +130,10 @@ class PreviewItemManagerTest {
 
         // Set fourth icon to be non-themed with badge.
         folderItems[3].bitmap =
-            folderItems[3].bitmap.withFlags(profileFlagOp(UserIconInfo.TYPE_WORK))
-        folderItems[3].bitmap.themedBitmap = null
-    }
-
-    @After
-    @Throws(Exception::class)
-    fun tearDown() {
-        modelHelper.destroy()
+            folderItems[3]
+                .bitmap
+                .withFlags(profileFlagOp(UserIconInfo.TYPE_WORK))
+                .copy(themedBitmap = null)
     }
 
     @Test
@@ -145,7 +143,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[0])
 
-        assert((drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert((drawingParams.drawable as FastBitmapDrawable).isThemed())
     }
 
     @Test
@@ -155,7 +153,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[0])
 
-        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed())
     }
 
     @Test
@@ -165,7 +163,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[1])
 
-        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed())
     }
 
     @Test
@@ -175,7 +173,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[1])
 
-        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed())
     }
 
     @Test
@@ -185,7 +183,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[2])
 
-        assert((drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert((drawingParams.drawable as FastBitmapDrawable).isThemed())
         assert(
             ((drawingParams.drawable as FastBitmapDrawable).badge as UserBadgeDrawable).mIsThemed
         )
@@ -198,7 +196,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[3])
 
-        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed())
         assert(
             ((drawingParams.drawable as FastBitmapDrawable).badge as UserBadgeDrawable).mIsThemed
         )
@@ -211,7 +209,7 @@ class PreviewItemManagerTest {
 
         previewItemManager.setDrawable(drawingParams, folderItems[3])
 
-        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed)
+        assert(!(drawingParams.drawable as FastBitmapDrawable).isThemed())
         assert(
             !((drawingParams.drawable as FastBitmapDrawable).badge as UserBadgeDrawable).mIsThemed
         )
@@ -229,7 +227,8 @@ class PreviewItemManagerTest {
         // When
         previewItemManager.setDrawable(drawingParams, archivedApp)
         // Then
-        assertThat(drawingParams.drawable).isNotInstanceOf(PreloadIconDrawable::class.java)
+        assertThat(drawingParams.drawable.getDelegate())
+            .isNotInstanceOf(PreloadIconDelegate::class.java)
     }
 
     @Test
@@ -247,7 +246,8 @@ class PreviewItemManagerTest {
             previewItemManager.setDrawable(drawingParams, archivedApp)
         }
         // Then
-        assertThat(drawingParams.drawable).isInstanceOf(PreloadIconDrawable::class.java)
+        assertThat(drawingParams.drawable.getDelegate())
+            .isInstanceOf(PreloadIconDelegate::class.java)
     }
 
     @Test
@@ -257,26 +257,59 @@ class PreviewItemManagerTest {
         folderItems[3].bitmap = BitmapInfo.LOW_RES_INFO
 
         previewItemManager.setDrawable(drawingParams, folderItems[3])
-        assertThat(drawingParams.drawable).isInstanceOf(PlaceHolderIconDrawable::class.java)
+        assertThat(drawingParams.drawable.getDelegate())
+            .isInstanceOf(PlaceHolderDrawableDelegate::class.java)
 
         val callbackCaptor = argumentCaptor<ItemInfoUpdateReceiver>()
-        verify(iconCache).updateIconInBackground(callbackCaptor.capture(), eq(folderItems[3]))
+        verify(iconCache)
+            .updateIconInBackground(callbackCaptor.capture(), eq(folderItems[3]), any())
 
         // Restore high-res icon
         folderItems[3].bitmap = originalBitmap
 
         // Calling with a different item info will ignore the update
         callbackCaptor.firstValue.reapplyItemInfo(folderItems[2])
-        assertThat(drawingParams.drawable).isInstanceOf(PlaceHolderIconDrawable::class.java)
+        assertThat(drawingParams.drawable.getDelegate())
+            .isInstanceOf(PlaceHolderDrawableDelegate::class.java)
 
         // Calling with correct value will update the drawable to high-res
         callbackCaptor.firstValue.reapplyItemInfo(folderItems[3])
-        assertThat(drawingParams.drawable).isNotInstanceOf(PlaceHolderIconDrawable::class.java)
-        assertThat(drawingParams.drawable).isInstanceOf(FastBitmapDrawable::class.java)
+        assertThat(drawingParams.drawable.getDelegate())
+            .isNotInstanceOf(PlaceHolderDrawableDelegate::class.java)
+    }
+
+    @Test
+    fun `prevent recursive calls when loading high res icon`() {
+        val drawingParams = PreviewItemDrawingParams(0f, 0f, 0f)
+        folderItems[3].bitmap = BitmapInfo.LOW_RES_INFO
+
+        // Setting low res icon will trigger update
+        previewItemManager.setDrawable(drawingParams, folderItems[3])
+        val callbackCaptor = argumentCaptor<ItemInfoUpdateReceiver>()
+        verify(iconCache)
+            .updateIconInBackground(callbackCaptor.capture(), eq(folderItems[3]), any())
+
+        reset(iconCache)
+        callbackCaptor.firstValue.reapplyItemInfo(folderItems[3])
+        // Verify that no new update calls are made, if the cache returns the same low-res icon
+        verify(iconCache, never()).updateIconInBackground(any(), any(), any())
     }
 
     private fun profileFlagOp(type: Int) =
         UserIconInfo(Process.myUserHandle(), type).applyBitmapInfoFlags(FlagOp.NO_OP)
+
+    private fun buildWorkspaceItemInfo(targetClass: String) =
+        WorkspaceItemInfo().apply {
+            intent = AppInfo.makeLaunchIntent(ComponentName(TEST_PACKAGE, targetClass))
+            TestUtil.runOnExecutorSync(MODEL_EXECUTOR) {
+                iconCache.getTitleAndIcon(this, DESKTOP_ICON_FLAG)
+            }
+        }
+
+    private fun Drawable?.getDelegate() = let {
+        assertThat(it).isInstanceOf(FastBitmapDrawable::class.java)
+        (it as FastBitmapDrawable).delegate
+    }
 }
 
 class ThemeStateRule : TestRule {

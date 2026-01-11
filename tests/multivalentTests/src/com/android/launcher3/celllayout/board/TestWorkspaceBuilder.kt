@@ -25,13 +25,13 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherSettings
-import com.android.launcher3.celllayout.FavoriteItemsTransaction
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
-import com.android.launcher3.ui.TestViewHelpers
 import com.android.launcher3.util.WidgetUtils
+import com.android.launcher3.util.ui.TestViewHelpers
+import com.android.launcher3.util.workspace.FavoriteItemsTransaction
 import java.util.function.Supplier
 
 class TestWorkspaceBuilder(private val mContext: Context) {

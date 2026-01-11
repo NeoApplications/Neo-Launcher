@@ -17,18 +17,30 @@ package com.android.launcher3.tapl;
 
 import androidx.test.uiautomator.UiObject2;
 
+import com.android.launcher3.tapl.Taskbar.TaskbarLocation;
+
 import java.util.regex.Pattern;
 
 /**
  * App icon specifically on the Taskbar.
  */
-public final class TaskbarAppIcon extends AppIcon implements SplitscreenDragSource {
+public final class TaskbarAppIcon extends AppIcon implements SplitscreenDragSource,
+        BubbleBarDragSource {
 
     private static final Pattern LONG_CLICK_EVENT = Pattern.compile("onTaskbarItemLongClick");
     private static final Pattern RIGHT_CLICK_EVENT = Pattern.compile("onTaskbarItemRightClick");
 
-    TaskbarAppIcon(LauncherInstrumentation launcher, UiObject2 icon) {
+    private final TaskbarLocation mTaskbarLocation;
+    // Whether launching the icon is expected to start a new activity. Should be false if launching
+    // the icon refocuses/opens an existing activity.
+    private final boolean mLaunchStartsNewActivity;
+
+    TaskbarAppIcon(LauncherInstrumentation launcher, UiObject2 icon,
+            TaskbarLocation taskbarLocation,
+            boolean launchStartsNewActivity) {
         super(launcher, icon);
+        this.mTaskbarLocation = taskbarLocation;
+        this.mLaunchStartsNewActivity = launchStartsNewActivity;
     }
 
     @Override
@@ -62,6 +74,11 @@ public final class TaskbarAppIcon extends AppIcon implements SplitscreenDragSour
     }
 
     @Override
+    public TaskbarLocation getTaskbarLocation() {
+        return mTaskbarLocation;
+    }
+
+    @Override
     public Launchable getLaunchable() {
         return this;
     }
@@ -70,5 +87,12 @@ public final class TaskbarAppIcon extends AppIcon implements SplitscreenDragSour
     protected boolean launcherStopsAfterLaunch() {
         // false because if taskbar is showing then launcher is already stopped.
         return false;
+    }
+
+    @Override
+    protected void expectActivityStartEvents() {
+        if (mLaunchStartsNewActivity) {
+            super.expectActivityStartEvents();
+        }
     }
 }

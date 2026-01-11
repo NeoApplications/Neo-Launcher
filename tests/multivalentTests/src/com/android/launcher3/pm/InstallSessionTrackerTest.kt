@@ -27,9 +27,8 @@ import androidx.test.filters.SdkSuppress
 import androidx.test.filters.SmallTest
 import com.android.launcher3.Flags.FLAG_ENABLE_SUPPORT_FOR_ARCHIVING
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
-import com.android.launcher3.util.LauncherModelHelper
 import com.android.launcher3.util.PackageUserKey
-import org.junit.After
+import com.android.launcher3.util.SandboxApplication
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,13 +44,12 @@ import org.mockito.kotlin.whenever
 @RunWith(AndroidJUnit4::class)
 class InstallSessionTrackerTest {
     @get:Rule val setFlagsRule = SetFlagsRule()
+    @get:Rule
+    val sandboxContext = SandboxApplication().withModelDependency()
 
     private val mockInstallSessionHelper: InstallSessionHelper = mock()
     private val mockCallback: InstallSessionTracker.Callback = mock()
     private val mockPackageInstaller: PackageInstaller = mock()
-
-    private val launcherModelHelper = LauncherModelHelper()
-    private val sandboxContext = launcherModelHelper.sandboxContext
 
     lateinit var launcherApps: LauncherApps
     lateinit var installSessionTracker: InstallSessionTracker
@@ -66,11 +64,6 @@ class InstallSessionTrackerTest {
                 mockPackageInstaller,
                 launcherApps,
             )
-    }
-
-    @After
-    fun teardown() {
-        launcherModelHelper.destroy()
     }
 
     @Test

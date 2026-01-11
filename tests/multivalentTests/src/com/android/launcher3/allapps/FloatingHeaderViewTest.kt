@@ -16,14 +16,12 @@
 
 package com.android.launcher3.allapps
 
-import android.content.Context
 import android.platform.test.annotations.DisableFlags
 import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.launcher3.Flags
-import com.android.launcher3.util.ActivityContextWrapper
+import com.android.launcher3.util.TestActivityContext
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -35,12 +33,12 @@ class FloatingHeaderViewTest {
 
     @get:Rule val mSetFlagsRule = SetFlagsRule()
 
-    private lateinit var context: Context
+    @get:Rule
+    val context = TestActivityContext()
     private lateinit var vut: FloatingHeaderView
 
     @Before
     fun setUp() {
-        context = ActivityContextWrapper(getApplicationContext())
         // TODO(b/352161553): Inflate FloatingHeaderView or R.layout.all_apps_content with proper
         // FloatingHeaderView#setup
         vut = FloatingHeaderView(context)
@@ -48,19 +46,6 @@ class FloatingHeaderViewTest {
     }
 
     @Test
-    @DisableFlags(Flags.FLAG_FLOATING_SEARCH_BAR, Flags.FLAG_MULTILINE_SEARCH_BAR)
-    fun onHeightUpdated_whenNotMultiline_thenZeroHeight() {
-        vut.setFloatingRowsCollapsed(true)
-        val beforeHeight = vut.maxTranslation
-        vut.updateSearchBarOffset(HEADER_HEIGHT_OFFSET)
-
-        vut.onHeightUpdated()
-
-        assertThat(vut.maxTranslation).isEqualTo(beforeHeight)
-    }
-
-    @Test
-    @EnableFlags(Flags.FLAG_MULTILINE_SEARCH_BAR)
     @DisableFlags(Flags.FLAG_FLOATING_SEARCH_BAR)
     fun onHeightUpdated_whenMultiline_thenHeightIsOffset() {
         vut.setFloatingRowsCollapsed(true)
@@ -72,9 +57,8 @@ class FloatingHeaderViewTest {
     }
 
     @Test
-    @DisableFlags(Flags.FLAG_MULTILINE_SEARCH_BAR)
     @EnableFlags(Flags.FLAG_FLOATING_SEARCH_BAR)
-    fun onHeightUpdated_whenFloatingRowsShownAndNotMultiline_thenAddsOnlyFloatingRow() {
+    fun onHeightUpdated_whenFloatingRowsShownAndSingleLine_thenAddsOnlyFloatingRow() {
         // Collapse floating rows and expand to trigger header height calculation
         vut.setFloatingRowsCollapsed(true)
         vut.setFloatingRowsCollapsed(false)

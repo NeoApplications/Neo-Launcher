@@ -90,4 +90,10 @@ class WallpaperThemeManagerTest {
         callbacksCaptor.value.onConfigurationChanged(Configuration())
         verify(activity, times(1)).recreate()
     }
+
+    @Test
+    fun `activity recreated if recreation requested`() {
+        WallpaperThemeManager(activity).recreateToUpdateTheme()
+        verify(activity).recreate()
+    }
 }
