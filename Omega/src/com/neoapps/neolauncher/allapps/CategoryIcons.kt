@@ -20,26 +20,46 @@ package com.neoapps.neolauncher.allapps
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.neoapps.neolauncher.compose.icons.Phosphor
 import com.neoapps.neolauncher.compose.icons.phosphor.Asterisk
+import com.neoapps.neolauncher.compose.icons.phosphor.Bank
+import com.neoapps.neolauncher.compose.icons.phosphor.Book
+import com.neoapps.neolauncher.compose.icons.phosphor.Briefcase
+import com.neoapps.neolauncher.compose.icons.phosphor.ChatCircle
 import com.neoapps.neolauncher.compose.icons.phosphor.CirclesFour
+import com.neoapps.neolauncher.compose.icons.phosphor.Code
+import com.neoapps.neolauncher.compose.icons.phosphor.GameController
+import com.neoapps.neolauncher.compose.icons.phosphor.Heatbeat
 import com.neoapps.neolauncher.compose.icons.phosphor.ImageSquare
 import com.neoapps.neolauncher.compose.icons.phosphor.MapPin
+import com.neoapps.neolauncher.compose.icons.phosphor.MusicNote
 import com.neoapps.neolauncher.compose.icons.phosphor.PaintBrush
 import com.neoapps.neolauncher.compose.icons.phosphor.Pizza
-import com.neoapps.neolauncher.compose.icons.phosphor.SpeakerHigh
+import com.neoapps.neolauncher.compose.icons.phosphor.ShoppingCart
+import com.neoapps.neolauncher.compose.icons.phosphor.Student
 import com.neoapps.neolauncher.compose.icons.phosphor.Swatches
+import com.neoapps.neolauncher.compose.icons.phosphor.Television
 import com.neoapps.neolauncher.compose.icons.phosphor.Wrench
 
 const val FILTER_CATEGORY_ALL = "All"
 val String.appCategoryIcon: ImageVector
     get() = when (this.lowercase()) {
         FILTER_CATEGORY_ALL.lowercase() -> Phosphor.CirclesFour
-        "art and design" -> Phosphor.PaintBrush
-        "food and drink" -> Phosphor.Pizza
-        "photography" -> Phosphor.ImageSquare
-        "music" -> Phosphor.SpeakerHigh
+        "art_and_design" -> Phosphor.PaintBrush
+        "business_and_productivity" -> Phosphor.Briefcase
+        "communication" -> Phosphor.ChatCircle
+        "development" -> Phosphor.Code
+        "education" -> Phosphor.Student
+        "entertainment" -> Phosphor.Television
+        "finance" -> Phosphor.Bank
+        "food_and_drink" -> Phosphor.Pizza
+        "game" -> Phosphor.GameController
+        "health_and_fitness" -> Phosphor.Heatbeat
+        "knowledge_and_reference" -> Phosphor.Book
+        "lifestyle" -> Phosphor.ShoppingCart
+        "music" -> Phosphor.MusicNote
         "personalization" -> Phosphor.Swatches
+        "photography" -> Phosphor.ImageSquare
         "tools" -> Phosphor.Wrench
-        "travel and navigation" -> Phosphor.MapPin
+        "travel_and_navigation" -> Phosphor.MapPin
         else -> Phosphor.Asterisk
 
     }
