@@ -66,7 +66,7 @@ fun PreferenceGroup(
         val size = prefs.size
         prefs.forEachIndexed { i, it ->
             PreferenceBuilder(it, onPrefDialog, i, size)
-            if (i + 1 < size) Spacer(modifier = Modifier.height(4.dp))
+            if (i + 1 < size) Spacer(modifier = Modifier.height(2.dp))
         }
     }
 }
