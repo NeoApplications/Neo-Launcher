@@ -53,10 +53,13 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
     private var currentCategory by mutableStateOf(categories[0])
 
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
-    protected val personalMatcher: Predicate<ItemInfo?> =
+    private val personalMatcher: Predicate<ItemInfo?> =
         ItemInfoMatcher.ofUser(Process.myUserHandle())
 
     init {
+        categories.sortBy {
+            context.getString(it.second)
+        }
         categories.removeAll { !enabledCategories.contains(it.first) }
         categories.add(0, all)
     }
