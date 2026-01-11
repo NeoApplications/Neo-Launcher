@@ -32,7 +32,6 @@ import com.android.launcher3.model.ItemInstallQueue;
 import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.util.Executors;
-import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.Locale;
 
@@ -106,7 +105,6 @@ public class SessionCommitReceiver extends BroadcastReceiver {
                 && UserCache.getInstance(context).getUserInfo(user).isPrivate()) {
             return false;
         }
-        //return LauncherPrefs.getPrefs(context).getBoolean(ADD_ICON_PREFERENCE_KEY, true);
-        return NeoPrefs.getInstance().getDesktopIconAddInstalled().getValue();
+        return LauncherPrefs.getPrefs(context).getBoolean(ADD_ICON_PREFERENCE_KEY, true);
     }
 }

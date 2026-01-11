@@ -38,6 +38,7 @@ import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.preferences.GridSizePrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.IntSelectionPrefDialogUI
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.compose.components.preferences.StringMultiSelectionPrefDialogUI
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.preferences.GridSize
@@ -64,13 +65,13 @@ fun DesktopPrefsPage() {
         prefs.desktopLabelScale,
         prefs.desktopPopup,
     )
-    /*
+
     val gridPrefs = listOf(
-        prefs.desktopGridSize,
+        //prefs.desktopGridSize,
         prefs.desktopIconAddInstalled,
-        prefs.desktopAllowFullWidthWidgets,
-        prefs.desktopWidgetCornerRadius
-    )*/
+        //prefs.desktopAllowFullWidthWidgets,
+        //prefs.desktopWidgetCornerRadius
+    )
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
@@ -110,13 +111,15 @@ fun DesktopPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
+
+             */
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.cat_desktop_grid),
                     prefs = gridPrefs,
                     onPrefDialog = onPrefDialog
                 )
-            }
+            }/*
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.app_categorization_folders),
