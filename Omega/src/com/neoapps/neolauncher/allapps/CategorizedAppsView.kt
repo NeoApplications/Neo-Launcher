@@ -19,6 +19,7 @@ package com.neoapps.neolauncher.allapps
 
 import android.content.Context
 import android.content.res.Resources
+import android.os.Process
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.compose.runtime.getValue
@@ -29,11 +30,13 @@ import com.android.launcher3.R
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.ItemInfoMatcher
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.theme.OmegaAppTheme
 import com.neoapps.neolauncher.util.Config
+import java.util.function.Predicate
 
 class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val all = Pair(
@@ -50,6 +53,8 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
     private var currentCategory by mutableStateOf(categories[0])
 
     private var mAppsView: ActivityAllAppsContainerView<*>? = null
+    protected val personalMatcher: Predicate<ItemInfo?> =
+        ItemInfoMatcher.ofUser(Process.myUserHandle())
 
     init {
         categories.removeAll { !enabledCategories.contains(it.first) }
@@ -82,7 +87,7 @@ class CategorizedAppsView(context: Context, attrs: AttributeSet) : LinearLayout(
         mAppsView = launcher.appsView
         if (currentCategory.second == R.string.title_drawer_all_apps) {
             currentApps.clear()
-            mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter(null)
+            mAppsView?.getActiveRecyclerView()?.apps?.updateItemFilter(personalMatcher)
         } else {
             val pot = flowerpotManager.getPot(currentCategory.first, true)
             currentApps.clear()
