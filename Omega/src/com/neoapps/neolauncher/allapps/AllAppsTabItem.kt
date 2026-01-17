@@ -60,6 +60,18 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
         mIsRtl = Utilities.isRtl(resources)
     }
 
+    override fun onInterceptTouchEvent(ev: android.view.MotionEvent): Boolean {
+        // Allow children (ColoredButton) to handle touch events
+        // Don't let the parent HorizontalScrollView intercept clicks
+        when (ev.action) {
+            android.view.MotionEvent.ACTION_DOWN -> {
+                // Request parent not to intercept touch events
+                parent?.requestDisallowInterceptTouchEvent(true)
+            }
+        }
+        return super.onInterceptTouchEvent(ev)
+    }
+
     override fun updateTabTextColor(pos: Int) {
         mSelectedPosition = pos
         for (i in 0 until childCount) {

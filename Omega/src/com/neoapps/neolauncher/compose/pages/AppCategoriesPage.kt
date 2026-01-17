@@ -44,7 +44,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -66,11 +65,9 @@ import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.move
-import com.neoapps.neolauncher.compose.components.preferences.PreferenceBuilder
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.groups.AppGroups
 import com.neoapps.neolauncher.groups.AppGroupsManager
-import com.neoapps.neolauncher.groups.category.DrawerFolders
 import com.neoapps.neolauncher.groups.category.DrawerTabs
 import com.neoapps.neolauncher.groups.category.FlowerpotTabs
 import com.neoapps.neolauncher.groups.ui.CreateGroupBottomSheet
@@ -93,7 +90,6 @@ fun AppCategoriesPage() {
     val coroutineScope = rememberCoroutineScope()
     val prefs = NeoPrefs.getInstance()
     val manager by lazy { prefs.drawerAppGroupsManager }
-    val categoriesEnabled by manager.categorizationEnabled.collectAsState(false)
 
     var categoryTitle by remember { mutableStateOf("") }
 
@@ -125,10 +121,6 @@ fun AppCategoriesPage() {
         AppGroupsManager.Category.FLOWERPOT.key,
                                              -> {
             categoryTitle = stringResource(id = R.string.app_categorization_tabs)
-        }
-
-        AppGroupsManager.Category.FOLDER.key -> {
-            categoryTitle = stringResource(id = R.string.app_categorization_folders)
         }
     }
 
@@ -173,7 +165,6 @@ fun AppCategoriesPage() {
                         }
                 }
 
-                //Create tab or folder
                 Config.BS_CREATE_GROUP    -> {
                     CreateGroupBottomSheet(category = openedOption) {
                         sheetChanger =
@@ -214,9 +205,6 @@ fun AppCategoriesPage() {
                     onClick = {
                         sheetChanger =
                             when (selectedCategorizationKey) {
-                                AppGroupsManager.Category.FOLDER.key
-                                     -> Config.BS_CREATE_GROUP
-
                                 AppGroupsManager.Category.TAB.key,
                                 AppGroupsManager.Category.FLOWERPOT.key,
                                      -> Config.BS_SELECT_TAB_TYPE
@@ -256,15 +244,6 @@ fun AppCategoriesPage() {
                     ),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                PreferenceBuilder(
-                    manager.categorizationType,
-                    { pref: Any ->
-                        dialogPref = pref
-                        openDialog.value = true
-                    },
-                    0, 1
-                )
-                if (categoriesEnabled) {
                     Text(
                         text = categoryTitle,
                         style = MaterialTheme.typography.headlineMedium,
@@ -315,8 +294,7 @@ fun AppCategoriesPage() {
                                     containerColor = bgColor,
                                     removable = item.type in arrayOf(
                                         DrawerTabs.TYPE_CUSTOM,
-                                        FlowerpotTabs.TYPE_FLOWERPOT,
-                                        DrawerFolders.TYPE_CUSTOM
+                                        FlowerpotTabs.TYPE_FLOWERPOT
                                     ),
                                     onClick = {
                                         coroutineScope.launch {
@@ -324,8 +302,7 @@ fun AppCategoriesPage() {
                                             onOptionOpen(
                                                 when (item.type) {
                                                     DrawerTabs.TYPE_CUSTOM       -> AppGroupsManager.Category.TAB
-                                                    FlowerpotTabs.TYPE_FLOWERPOT -> AppGroupsManager.Category.FLOWERPOT
-                                                    else                         -> AppGroupsManager.Category.FOLDER
+                                                    else -> AppGroupsManager.Category.FLOWERPOT
                                                 }
                                             )
                                             editGroup.value = item
@@ -340,7 +317,7 @@ fun AppCategoriesPage() {
                             }
                         }
                     }
-                }
+
 
             }
 
@@ -374,11 +351,6 @@ fun saveGroupPositions(manager: AppGroupsManager, groups: List<AppGroups.Group>)
             manager.drawerTabs.setGroups(groups as List<DrawerTabs.Tab>)
             manager.drawerTabs.saveToJson()
         }
-
-        AppGroupsManager.Category.FOLDER.key -> {
-            manager.drawerFolders.setGroups(groups as List<DrawerFolders.Folder>)
-            manager.drawerFolders.saveToJson()
-        }
     }
 }
 
@@ -393,11 +365,6 @@ fun loadAppGroups(manager: AppGroupsManager, hasWorkApps: Boolean): Array<AppGro
                 .filter { it !is DrawerTabs.ProfileTab || it.profile.matchesAll }
 
         }
-
-        AppGroupsManager.Category.FOLDER.key -> {
-            manager.drawerFolders.getGroups()
-        }
-
         else                                 -> {
             emptyList()
         }

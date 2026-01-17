@@ -91,11 +91,11 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
 
 
     override fun onFlingVelocity(velocity: Float) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onOverlayMotionEvent(ev: MotionEvent?, scrollProgress: Float) {
-        TODO("Not yet implemented")
+
     }
 
     override fun setOverlayCallbacks(callbacks: LauncherOverlayCallbacks) {

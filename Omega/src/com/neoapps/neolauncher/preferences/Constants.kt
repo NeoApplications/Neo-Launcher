@@ -70,7 +70,7 @@ val drawerLayoutOptions = mutableMapOf(
     LAYOUT_VERTICAL to R.string.title_drawer_vertical,
     //LAYOUT_HORIZONTAL to R.string.title_drawer_horizontal, //TODO: Enable when implemented
     LAYOUT_CATEGORIES to R.string.title_drawer_categorized,
-    //LAYOUT_TABS to R.string.title_drawer_tabs //TODO: Enable when implemented
+    LAYOUT_TABS to R.string.title_drawer_tabs
 )
 
 val temperatureUnitOptions = listOfNotNull(

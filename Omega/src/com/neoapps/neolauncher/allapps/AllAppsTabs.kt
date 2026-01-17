@@ -49,21 +49,21 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
         addedApps.clear()
         tabs.clear()
         context.prefs.drawerEnabledGroupsModel.getGroups().mapNotNullTo(tabs) {
-            when {
-                it is DrawerTabs.ProfileTab                                      -> {
+            when (it) {
+                is DrawerTabs.ProfileTab -> {
                     if (hasWorkApps != it.profile.matchesAll) {
                         ProfileTab(createMatcher(addedApps, it.profile.matcher), it)
                     } else null
                 }
 
-                it is DrawerTabs.CustomTab                                       -> {
+                is DrawerTabs.CustomTab -> {
                     if (it.hideFromAllApps.value()) {
                         addedApps.addAll(it.contents.value())
                     }
                     Tab(it.title, it.filter.matcher, drawerTab = it)
                 }
 
-                it is FlowerpotTabs.FlowerpotTab && it.getMatches().isNotEmpty() -> {
+                is FlowerpotTabs.FlowerpotTab if it.getMatches().isNotEmpty() -> {
                     addedApps.addAll(it.getMatches())
                     Tab(it.title, it.getFilter(context).matcher, drawerTab = it)
                 }
@@ -89,7 +89,7 @@ class AllAppsTabs(private val context: Context) : Iterable<AllAppsTabs.Tab> {
 
     operator fun get(index: Int) = tabs[index]
 
-    inner class ProfileTab(matcher: Predicate<ItemInfo>, drawerTab: DrawerTabs.ProfileTab) :
+    class ProfileTab(matcher: Predicate<ItemInfo>, drawerTab: DrawerTabs.ProfileTab) :
         Tab(drawerTab.title, matcher, drawerTab.profile.isWork, drawerTab)
 
     open class Tab(

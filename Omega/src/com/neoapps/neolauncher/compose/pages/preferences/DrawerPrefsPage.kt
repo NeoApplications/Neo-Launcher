@@ -46,6 +46,7 @@ import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPre
 import com.neoapps.neolauncher.preferences.GridSize
 import com.neoapps.neolauncher.preferences.IntSelectionPref
 import com.neoapps.neolauncher.preferences.LAYOUT_CATEGORIES
+import com.neoapps.neolauncher.preferences.LAYOUT_TABS
 import com.neoapps.neolauncher.preferences.StringMultiSelectionPref
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.util.prefs
@@ -78,13 +79,19 @@ fun DrawerPrefsPage() {
                     prefs.categoriesLayout
                 } else {
                     null
-                }
+                },
+                if (prefs.drawerLayout.getValue() == LAYOUT_TABS) {
+                    prefs.drawerTabManager
+                } else {
+                    null
+                },
         /*
-                prefs.drawerAppGroups,
+                prefs.drawerAppGroups,*/
                 prefs.drawerSeparateWorkApps,
-                prefs.drawerCellHeightMultiplier,
-                prefs.drawerSaveScrollPosition,
-                prefs.drawerHideScrollbar*/
+                /*
+                                prefs.drawerCellHeightMultiplier,
+                                prefs.drawerSaveScrollPosition,
+                                prefs.drawerHideScrollbar*/
             ).toTypedArray()
         )
     }

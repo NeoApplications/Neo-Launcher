@@ -85,7 +85,7 @@ public final class FeatureFlags {
 
     // TODO(Block 13): Clean up flags
     public static final BooleanFlag ENABLE_DEVICE_SEARCH_PERFORMANCE_LOGGING = getReleaseFlag(
-            270391397, "ENABLE_DEVICE_SEARCH_PERFORMANCE_LOGGING", DISABLED,
+            270391397, "ENABLE_DEVICE_SEARCH_PERFORMANCE_LOGGING", ENABLED,
             "Allows on device search in all apps logging");
 
     // TODO(Block 14): Cleanup flags

@@ -4,9 +4,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.android.launcher3.BaseActivity
 import com.android.launcher3.allapps.ActivityAllAppsContainerView
+import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.MAIN
+import com.android.launcher3.allapps.ActivityAllAppsContainerView.AdapterHolder.WORK
 import com.android.launcher3.allapps.AllAppsPagedView
 import com.android.launcher3.allapps.AllAppsStore
-import com.neoapps.neolauncher.preferences.LAYOUT_CATEGORIES
+import com.neoapps.neolauncher.preferences.LAYOUT_TABS
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.forEachChildIndexed
 
@@ -18,7 +20,7 @@ class AllAppsTabsController<T : BaseActivity>(
 ) {
     val tabsCount get() = tabs.count
     val prefs = NeoPrefs.getInstance()
-    val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_CATEGORIES
+    val shouldShowTabs get() = tabsCount > 1 && prefs.drawerLayout.getValue() == LAYOUT_TABS
 
     private var holders = mutableListOf<ActivityAllAppsContainerView<*>.AdapterHolder>()
 
@@ -26,7 +28,7 @@ class AllAppsTabsController<T : BaseActivity>(
     private var bottomPadding = 0
 
     fun createHolders(): AdapterHolders {
-        /*for (tab in tabs) {
+        for (tab in tabs) {
             if (tab.isWork) {
                 holders.add(container.createHolder(WORK).apply {
                     mPadding.bottom = bottomPadding
@@ -40,7 +42,7 @@ class AllAppsTabsController<T : BaseActivity>(
                     mPadding.right = horizontalPadding
                 })
             }
-        }*/
+        }
         return holders
     }
 
@@ -58,7 +60,7 @@ class AllAppsTabsController<T : BaseActivity>(
 
     fun setup(pagedView: AllAppsPagedView) {
         tabs.forEachIndexed { index, tab ->
-            //holders[index].setIsWork(tab.isWork)
+            holders[index].setIsWork(tab.isWork)
             holders[index].setup(pagedView.getChildAt(index), tab.matcher)
         }
     }

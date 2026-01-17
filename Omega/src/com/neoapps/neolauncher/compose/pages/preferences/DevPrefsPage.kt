@@ -56,13 +56,7 @@ fun DevPrefsPage() {
                 prefs.restartLauncher,
                 prefs.developerOptionsEnabled,
                 /*prefs.showDebugInfo,
-                prefs.desktopFreeScrolling,
-                prefs.drawerLayout,
-                if (prefs.drawerLayout.getValue() == LAYOUT_CATEGORIES) {
-                    prefs.categoriesLayout
-                } else {
-                    null
-                }*/
+                prefs.desktopFreeScrolling,*/
             ).toTypedArray()
         )
     }

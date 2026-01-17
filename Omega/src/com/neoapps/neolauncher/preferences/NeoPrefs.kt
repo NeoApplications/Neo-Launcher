@@ -843,6 +843,14 @@ class NeoPrefs private constructor(val context: Context) {
         }
     )
 
+    var drawerTabManager = NavigationPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_CATEGORIZATION,
+        titleId = R.string.title_app_categorize,
+        summaryId = R.string.summary_app_categorize,
+        navRoute = NavRoute.Drawer.Categorize(),
+    )
+
     // Notifications & Widgets/Smartspace
     val notificationDots = IntentLauncherPref(
         dataStore = dataStore,
