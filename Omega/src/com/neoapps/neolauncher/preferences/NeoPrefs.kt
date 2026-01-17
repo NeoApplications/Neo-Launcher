@@ -815,8 +815,8 @@ class NeoPrefs private constructor(val context: Context) {
     var drawerAppGroups = NavigationPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_CATEGORIZATION,
-        titleId = R.string.title_app_categorize,
-        summaryId = R.string.summary_app_categorize,
+        titleId = R.string.title_manage_tabs,
+        summaryId = R.string.summary_manage_tabs,
         navRoute = NavRoute.Drawer.Categorize(),
     )
 
@@ -846,8 +846,8 @@ class NeoPrefs private constructor(val context: Context) {
     var drawerTabManager = NavigationPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_CATEGORIZATION,
-        titleId = R.string.title_app_categorize,
-        summaryId = R.string.summary_app_categorize,
+        titleId = R.string.title_manage_tabs,
+        summaryId = R.string.summary_manage_tabs,
         navRoute = NavRoute.Drawer.Categorize(),
     )
 

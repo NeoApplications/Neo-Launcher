@@ -89,8 +89,7 @@
     <string name="title_all_apps_google_search">Výsledky na webu</string>
     <string name="title_search_hidden_apps">Najít skryté aplikace</string>
     <string name="summary_fuzzy_search">Přibližná shoda pro vyhledávání aplikací.</string>
-    <string name="title_app_categorize">Kategorizovat aplikace</string>
-    <string name="summary_app_categorize">Vyberte si mezi kartami nebo složkami</string>
+
     <string name="summary_app_categorization_enable">Vytvořit karty nebo složky</string>
     <string name="label_turn_off_suggestions">Zakázat</string>
     <string name="summary_all_apps_google_search">Najděte webové výsledky a aplikace</string>

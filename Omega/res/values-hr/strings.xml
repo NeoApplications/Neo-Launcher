@@ -412,8 +412,7 @@
     <string name="cat_drawer_icons">Ikone</string>
     <string name="pref_appcategorization_flowerpot_title">Kategorija programa</string>
     <string name="pref_appcategorization_style_text">Stil</string>
-    <string name="title_app_categorize">Kategoriziraj programe</string>
-    <string name="summary_app_categorize">Odaberi između kartica ili mapa</string>
+
     <string name="app_categorization_tabs">Kartice</string>
     <string name="title_white_only_treatment">Zamijeni bijele pozadine</string>
     <string name="title_smartspace_time">Prikaži vrijeme</string>

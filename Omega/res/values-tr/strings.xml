@@ -196,7 +196,6 @@
     <string name="tab_type_smart">Otomatik</string>
     <string name="app_categorization_tabs">Sekmeler</string>
     <string name="app_categorization_folders">Klasörler</string>
-    <string name="title_app_categorize">Uygulamaları Kategorilere Ayır</string>
     <string name="pref_appcategorization_flowerpot_title">Uygulama Kategorisi</string>
     <string name="cat_drawer_icons">Simgeler</string>
     <string name="dialog_message_change_sort">Alfabetik uygulama sıralamasına geçilsin mi\?</string>
@@ -411,7 +410,7 @@
     <string name="web_search_metager">Metager (Web)</string>
     <string name="web_search_searx">Searx (Web)</string>
     <string name="cat_desktop_grid">Izgara ve Düzen</string>
-    <string name="summary_app_categorize">Sekmeler veya Klasörler arasında seçim yapın</string>
+
     <string name="title_app_categorization_enable">Uygulama kategorilerini etkinleştir</string>
     <string name="summary_app_categorization_enable">Sekmeler veya klasörler oluşturun</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>

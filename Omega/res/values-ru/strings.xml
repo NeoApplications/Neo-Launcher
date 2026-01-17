@@ -7,7 +7,6 @@
     <string name="app_categorization_tabs">Вкладки</string>
     <string name="app_categorization_folders">Папки</string>
     <string name="pref_appcategorization_style_text">Стиль</string>
-    <string name="title_app_categorize">Категоризация приложений</string>
     <string name="pref_appcategorization_flowerpot_title">Категория приложений</string>
     <string name="label_turn_off_suggestions">Отключить</string>
     <string name="title_all_apps_google_search">Веб-результаты</string>
@@ -388,7 +387,7 @@
     <string name="summary_colored_backgrounds">Для фона адаптивных иконок.</string>
     <string name="title_dock_search">Панель поиска</string>
     <string name="summary_dock_search">Показать под панелью</string>
-    <string name="summary_app_categorize">Выбрать между вкладками или папками</string>
+
     <string name="cat_desktop_grid">Сетка</string>
     <string name="summary_app_categorization_enable">Создать вкладку или папку</string>
     <string name="summary_force_shapeless">Попробовать использовать устаревшие значки для всех приложений.</string>

@@ -66,8 +66,7 @@
     <string name="title_all_apps_search">Sovellusvalikon hakupalkki</string>
     <string name="title_all_apps_google_search">Globaali haku</string>
     <string name="title_search_hidden_apps">Etsi piilotetut pikakuvakkeet</string>
-    <string name="title_app_categorize">Luokittele sovellukset</string>
-    <string name="summary_app_categorize">Valitse välilehdet tai kansiot</string>
+
     <string name="summary_all_apps_google_search">Etsi verkkotuloksia ja sovelluksia</string>
     <string name="summary_app_suggestions">Kaikille sovelluksille ja aloitusnäytölle</string>
     <string name="title_disable_suggestions_prompt">Poista sovellusehdotukset käytöstä</string>

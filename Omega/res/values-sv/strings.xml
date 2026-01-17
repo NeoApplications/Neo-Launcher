@@ -142,7 +142,6 @@
     <string name="title_all_apps_search">Appsidans sökfält</string>
     <string name="title_all_apps_google_search">Webbresultat</string>
     <string name="summary_fuzzy_search">Ungefärlig matchning för appsökning.</string>
-    <string name="title_app_categorize">Kategorisera Appar</string>
     <string name="summary_app_categorization_enable">Skapa flikar eller mappar</string>
     <string name="title_drawer_vertical">Vertikal</string>
     <string name="title_drawer_horizontal">Horisental</string>
@@ -186,7 +185,7 @@
     <string name="weather_city">Stad</string>
     <string name="title__drawer_rows">Antal rader</string>
     <string name="title_drawer_enable_background">Använd anpassad bakgrundsfärg</string>
-    <string name="summary_app_categorize">Välj mellan Flikar eller Mappar</string>
+
     <string name="summary__drawer_hide_apps">Dölj app från appsidan</string>
     <string name="label_search">Sök</string>
     <string name="cat_dock_search">docka</string>

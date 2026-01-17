@@ -121,8 +121,8 @@
     <string name="title_search_hidden_apps">Find hidden apps</string>
     <string name="title_fuzzy_search">Fuzzy Search</string>
     <string name="summary_fuzzy_search">Approximate matching for app searches.</string>
-    <string name="title_app_categorize">Categorize Apps</string>
-    <string name="summary_app_categorize">Choose between Tabs or Folders</string>
+    <string name="title_manage_tabs">Manage Tabs</string>
+    <string name="summary_manage_tabs">Create or edit Tabs</string>
     <string name="summary_search_hidden_apps">Show hidden shortcuts in results.</string>
     <string name="summary_all_apps_google_search">Find web results and apps</string>
     <string name="summary__drawer_hide_apps">Hide app from the app drawer</string>
@@ -133,7 +133,7 @@
     <string name="label_turn_off_suggestions">Disable</string>
     <string name="title_text_color">Text Color</string>
     <string name="title_drawer_layout">Layout Mode</string>
-    <string name="title_drawer_layout_categories">Layout Categories</string>
+    <string name="title_drawer_layout_categories">Manage Categories</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Vertical Categories</string>

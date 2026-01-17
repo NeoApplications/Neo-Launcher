@@ -85,13 +85,16 @@ fun DrawerPrefsPage() {
                 } else {
                     null
                 },
-        /*
-                prefs.drawerAppGroups,*/
-                prefs.drawerSeparateWorkApps,
+                if (prefs.drawerLayout.getValue() == LAYOUT_TABS) {
+                    prefs.drawerSeparateWorkApps
+                } else {
+                    null
+                },
                 /*
-                                prefs.drawerCellHeightMultiplier,
-                                prefs.drawerSaveScrollPosition,
-                                prefs.drawerHideScrollbar*/
+                prefs.drawerAppGroups,
+                prefs.drawerCellHeightMultiplier,
+                prefs.drawerSaveScrollPosition,
+                prefs.drawerHideScrollbar*/
             ).toTypedArray()
         )
     }

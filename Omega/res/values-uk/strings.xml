@@ -70,7 +70,6 @@
     <string name="title__sort_by_color">За кольором</string>
     <string name="title_all_apps_google_search">Веб-результати</string>
     <string name="title_all_apps_keep_scroll_state">Запам\'ятати позицію</string>
-    <string name="title_app_categorize">Категоризація застосунків</string>
     <string name="summary_search_hidden_apps">Показувати приховані ярлики в результатах.</string>
     <string name="summary_all_apps_google_search">Пошук веб-результатів і застосунків</string>
     <string name="summary__drawer_hide_apps">Приховати застосунок із шухляди</string>
@@ -107,7 +106,7 @@
     <string name="title_search_hidden_apps">Знайти приховані застосунки</string>
     <string name="summary_fuzzy_search">Приблизна відповідність для пошуку застосунків.</string>
     <string name="title__drawer_icon_size">Розмір значків усіх застосунків</string>
-    <string name="summary_app_categorize">Вибрати між вкладками чи теками</string>
+
     <string name="dialog_message_change_sort">Установити сортування застосунків за абеткою\?</string>
     <string name="cat_desktop_grid">Сітка та макет</string>
     <string name="icon_shape_squircle">Закруглений квадрат</string>

@@ -208,8 +208,7 @@
     <string name="title_fuzzy_search">Fuzzy keresés</string>
     <string name="summary_fuzzy_search">Közelítő egyezés az alkalmazáskeresésekhez.</string>
     <string name="summary_all_apps_google_search">Keresés a világhálón és az alkalmazások között</string>
-    <string name="title_app_categorize">Alkalmazások kategorizálása</string>
-    <string name="summary_app_categorize">Lapok vagy mappák közötti választás</string>
+
     <string name="summary__drawer_hide_apps">Alkalmazás elrejtése az alkalmazástárból</string>
     <string name="summary_app_categorization_enable">Lapok vagy mappák létrehozása</string>
     <string name="summary_app_suggestions">Összes alkalmazáshoz és a kezdőképernyőhöz</string>

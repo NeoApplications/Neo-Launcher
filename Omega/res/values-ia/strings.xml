@@ -9,7 +9,7 @@
     <string name="title__general_theme">Thema</string>
     <string name="pref_appcategorization_tabs_summary">Glissar inter le gruppos.</string>
     <string name="title_desktop_hide_statusbar">Celar barra de stato</string>
-    <string name="summary_app_categorize">Seliger inter schedas o dossieres</string>
+
     <string name="title__drawer_categorization">Categorias</string>
     <string name="title__dock_icon_size">Dimension de icone</string>
     <string name="title__general_search">Recerca e dossieres</string>

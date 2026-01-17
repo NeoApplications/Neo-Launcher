@@ -332,8 +332,7 @@
     <string name="title__general_widgets_notifications">ウィジェット &amp; 通知</string>
     <string name="title__general_search_feed">検索 &amp; フィード</string>
     <string name="title__general_smartspace">ホームウィジェット</string>
-    <string name="title_app_categorize">アプリのカテゴリ化</string>
-    <string name="summary_app_categorize">タブまたはフォルダのどちらかを選択</string>
+
     <string name="section_web">Web</string>
     <string name="tab_type_smart">自動</string>
     <string name="pref_appcategorization_flowerpot_summary">ショートカットを自動的に選択する</string>

@@ -57,10 +57,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
@@ -198,7 +196,7 @@ fun AppCategoriesPage() {
     ) {
         ViewWithActionBar(
             modifier = Modifier.padding(it),
-            title = stringResource(id = R.string.title_app_categorize),
+            title = stringResource(id = R.string.title_manage_tabs),
             floatingActionButton = {
                 // TODO fix
                 FloatingActionButton(
@@ -244,14 +242,6 @@ fun AppCategoriesPage() {
                     ),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                    Text(
-                        text = categoryTitle,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
                     Text(
                         text = stringResource(id = R.string.pref_app_groups_edit_tip),
                         style = MaterialTheme.typography.titleSmall,

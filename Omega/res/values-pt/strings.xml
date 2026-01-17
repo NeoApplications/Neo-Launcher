@@ -33,8 +33,7 @@
     <string name="title_search_hidden_apps">Encontrar apps ocultos</string>
     <string name="title_fuzzy_search">Pesquisa aproximada</string>
     <string name="summary_fuzzy_search">Correspondência aproximada para pesquisas de apps.</string>
-    <string name="title_app_categorize">Categorizar as apps</string>
-    <string name="summary_app_categorize">Escolha entre Abas e Pastas</string>
+
     <string name="summary_search_hidden_apps">Mostrar atalhos ocultos nos resultados.</string>
     <string name="summary_all_apps_google_search">Encontrar resultados e apps na internet</string>
     <string name="summary__drawer_hide_apps">Ocultar apps da Gaveta de Apps</string>

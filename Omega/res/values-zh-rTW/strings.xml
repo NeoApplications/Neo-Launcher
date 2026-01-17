@@ -45,8 +45,7 @@
     <string name="title_search_hidden_apps">尋找隱藏的應用程式</string>
     <string name="title_fuzzy_search">模糊搜尋</string>
     <string name="summary_fuzzy_search">為應用程式搜尋進行近似匹配。</string>
-    <string name="title_app_categorize">分類應用程式</string>
-    <string name="summary_app_categorize">選擇分頁或資料夾</string>
+
     <string name="summary_search_hidden_apps">在結果中顯示隱藏的捷徑。</string>
     <string name="summary_all_apps_google_search">尋找網路結果和應用程式</string>
     <string name="summary__drawer_hide_apps">從應用程式抽屜中隱藏應用程式</string>

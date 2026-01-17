@@ -74,7 +74,7 @@
     <string name="title__sort_by_color">Theo màu sắc</string>
     <string name="title_all_apps_search">Thanh tìm kiếm ngăn kéo</string>
     <string name="title_all_apps_google_search">Tìm kiếm Global</string>
-    <string name="summary_app_categorize">Chọn giữa các tab hoặc thư mục</string>
+
     <string name="summary__drawer_hide_apps">Ẩn ứng dụng khỏi ngăn ứng dụng</string>
     <string name="title_disable_suggestions_prompt">Tắt đề xuất ứng dụng</string>
     <string name="msg_disable_suggestions_prompt">Dữ liệu sử dụng sẽ bị xóa.</string>
@@ -294,7 +294,6 @@
     <string name="title__desktop_grid_size">Kích thước lưới</string>
     <string name="num_hotseat_icons_pref_title">Số lượng biểu tượng</string>
     <string name="title_all_apps_keep_scroll_state">Ghi nhớ vị trí</string>
-    <string name="title_app_categorize">Phân loại ứng dụng</string>
     <string name="title__drawer_sort">Sắp xếp ứng dụng</string>
     <string name="title__sort_last_installed">Cài đặt lần cuối</string>
     <string name="summary_search_hidden_apps">Hiển thị các phím tắt ẩn trong kết quả.</string>

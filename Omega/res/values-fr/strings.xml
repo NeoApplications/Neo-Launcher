@@ -10,7 +10,6 @@
     <string name="icon_pack_external_picker">Ouvrir un sélecteur externe</string>
     <string name="pref_appcategorization_flowerpot_summary">Sélectionner les raccourcis automatiquement.</string>
     <string name="tab_type_custom_desc">Sélectionner les raccourcis manuellement.</string>
-    <string name="title_app_categorize">Catégoriser les applications</string>
     <string name="reset_custom_icons_confirmation">Réinitialiser les icônes de ce pack \? Cela ne peut pas être annulé.</string>
     <string name="reset_custom_icons">Supprimer les icônes personnalisées</string>
     <string name="loading">Chargement…</string>
@@ -426,7 +425,7 @@
     <string name="backup_create_new">Créer une nouvelle sauvegarde</string>
     <string name="permission_denied">Autorisation de lecture refusée !</string>
     <string name="enabled_events">Activé</string>
-    <string name="summary_app_categorize">Choisir entre Onglets et Répertoires</string>
+
     <string name="summary_app_categorization_enable">Créer des onglets ou répertoires</string>
     <string name="cat_desktop_grid">Grille et disposition</string>
     <string name="title_app_categorization_enable">Activer les catégories d\'apps</string>

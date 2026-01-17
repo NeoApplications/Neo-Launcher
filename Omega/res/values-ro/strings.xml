@@ -98,8 +98,7 @@
     <string name="title_dock_two_row">Arată al doilea rând</string>
     <string name="title__dock_hide_labels">Ascunde etichetele</string>
     <string name="title_fuzzy_search">Căutare prin aproximare</string>
-    <string name="title_app_categorize">Clasificare aplicații</string>
-    <string name="summary_app_categorize">Alege între file sau dosare</string>
+
     <string name="summary_search_hidden_apps">Afișare scurtături ascunse în rezultate.</string>
     <string name="summary_app_categorization_enable">Creează file sau dosare</string>
     <string name="title_drawer_row_height">Înălțime rând</string>
