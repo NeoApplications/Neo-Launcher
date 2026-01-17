@@ -63,6 +63,7 @@ import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.move
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceBuilder
 import com.neoapps.neolauncher.compose.components.preferences.StringSelectionPrefDialogUI
 import com.neoapps.neolauncher.groups.AppGroups
 import com.neoapps.neolauncher.groups.AppGroupsManager
@@ -89,8 +90,6 @@ fun AppCategoriesPage() {
     val prefs = NeoPrefs.getInstance()
     val manager by lazy { prefs.drawerAppGroupsManager }
 
-    var categoryTitle by remember { mutableStateOf("") }
-
     val scaffoldState = rememberBottomSheetScaffoldState()
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
 
@@ -112,14 +111,6 @@ fun AppCategoriesPage() {
 
     val editGroup = remember {
         mutableStateOf(groups.firstOrNull())
-    }
-
-    when (selectedCategorizationKey) {
-        AppGroupsManager.Category.TAB.key,
-        AppGroupsManager.Category.FLOWERPOT.key,
-                                             -> {
-            categoryTitle = stringResource(id = R.string.app_categorization_tabs)
-        }
     }
 
     var sheetChanger by rememberSaveable {
@@ -242,6 +233,15 @@ fun AppCategoriesPage() {
                     ),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                PreferenceBuilder(
+                    prefs.drawerSeparateWorkApps,
+                    { pref: Any ->
+                        dialogPref = pref
+                        openDialog.value = true
+                    },
+                    0, 1
+                )
+
                     Text(
                         text = stringResource(id = R.string.pref_app_groups_edit_tip),
                         style = MaterialTheme.typography.titleSmall,

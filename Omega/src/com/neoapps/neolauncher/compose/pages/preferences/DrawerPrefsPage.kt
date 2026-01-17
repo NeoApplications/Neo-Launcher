@@ -84,12 +84,7 @@ fun DrawerPrefsPage() {
                     prefs.drawerTabManager
                 } else {
                     null
-                },
-                if (prefs.drawerLayout.getValue() == LAYOUT_TABS) {
-                    prefs.drawerSeparateWorkApps
-                } else {
-                    null
-                },
+                }
                 /*
                 prefs.drawerAppGroups,
                 prefs.drawerCellHeightMultiplier,
