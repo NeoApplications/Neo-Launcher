@@ -628,7 +628,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         }
 
         if (isSearching()) {
-            mUsingTabs = false;
+            mUsingTabs = showTabs;
             return;
         }
         for (ActivityAllAppsContainerView<?>.AdapterHolder holder : mAH) {
