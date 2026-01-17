@@ -190,7 +190,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     private int mTabsProtectionAlpha;
     @Nullable
     private AllAppsTransitionController mAllAppsTransitionController;
-    private final AllAppsTabsController tabController;
+    private final AllAppsTabsController<BaseActivity> tabController;
     private final NeoPrefs prefs;
 
     public ActivityAllAppsContainerView(Context context) {
@@ -266,16 +266,6 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         mMainAdapterProvider = mSearchUiDelegate.createMainAdapterProvider();
 
         createHolders();
-
-        /*mAH.set(AdapterHolder.MAIN, new AdapterHolder(AdapterHolder.MAIN,
-                new AlphabeticalAppsList(mActivityContext,
-                        mAllAppsStore,
-                        null,
-                        mPrivateProfileManager)));
-        mAH.set(AdapterHolder.WORK, new AdapterHolder(AdapterHolder.WORK,
-                new AlphabeticalAppsList(mActivityContext, mAllAppsStore, mWorkManager, null)));
-        mAH.set(SEARCH, new AdapterHolder(SEARCH,
-                new AlphabeticalAppsList(mActivityContext, null, null, null)));*/
 
         getLayoutInflater().inflate(R.layout.all_apps_content, this);
         mHeader = findViewById(R.id.all_apps_header);
@@ -758,7 +748,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         int layout = switch (prefs.getDrawerLayout().getValue()) {
             case LAYOUT_HORIZONTAL -> R.layout.all_apps_horizontal;
             case LAYOUT_CATEGORIES -> R.layout.all_apps_categorized;
-            case LAYOUT_TABS -> R.layout.all_apps_tabs;
+            case LAYOUT_TABS -> showTabs ? R.layout.all_apps_tabs : R.layout.all_apps_rv_layout;
             default -> R.layout.all_apps_rv_layout;
         };
 

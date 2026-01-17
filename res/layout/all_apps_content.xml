@@ -50,6 +50,8 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:fillViewport="true"
+            android:clickable="false"
+            android:focusable="false"
             android:scrollbars="none">
 
             <com.neoapps.neolauncher.allapps.AllAppsTabItem

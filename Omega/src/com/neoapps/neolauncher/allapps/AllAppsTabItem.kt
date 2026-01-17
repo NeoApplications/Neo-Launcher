@@ -217,6 +217,12 @@ class AllAppsTabItem(context: Context, attrs: AttributeSet) :
             button.color = getTabColor(tab.drawerTab)
             button.refreshColor()
             button.text = tab.name
+            button.isClickable = true
+            button.isFocusable = true
+            button.setOnClickListener {
+                // This will be overridden by bindButtons, but ensures clickability
+                android.util.Log.d("AllAppsTabItem", "Tab clicked: $i")
+            }
             button.setOnLongClickListener { v: View ->
                 ComposeBottomSheet.show(
                     context = v.context,
