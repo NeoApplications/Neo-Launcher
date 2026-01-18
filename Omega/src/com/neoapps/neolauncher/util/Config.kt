@@ -162,16 +162,6 @@ class Config(val context: Context) {
             )
         )
 
-
-        fun layoutCategories(context: Context) =
-            Flowerpot.Manager.getInstance(context).getAllPots().map {
-                it.name to context.resources.getIdentifier(
-                    "category_${it.name.lowercase()}",
-                    "string",
-                    context.packageName
-                )
-            }.toMap()
-
         fun getCurrentTheme(context: Context): Int {
             val themeSet = ThemeOverride.Settings()
             var currentTheme = THEME_LIGHT

@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.groups.AppGroupsManager
@@ -50,7 +51,7 @@ fun SelectTabBottomSheet(
             .padding(horizontal = 8.dp, vertical = 16.dp)
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.systemBars),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
@@ -62,13 +63,18 @@ fun SelectTabBottomSheet(
             )
         }
         item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        item {
             CategoryTabItem(
                 titleId = R.string.tab_type_smart,
                 summaryId = R.string.pref_appcategorization_flowerpot_summary,
                 iconId = R.drawable.ic_category,
                 onClick = {
                     onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.FLOWERPOT)
-                }
+                },
+                index = 0,
+                groupSize = 2
             )
         }
         item {
@@ -78,9 +84,19 @@ fun SelectTabBottomSheet(
                 iconId = R.drawable.ic_squares_four,
                 onClick = {
                     onClose(Config.BS_CREATE_GROUP, AppGroupsManager.Category.TAB)
-                }
+                },
+                index = 1,
+                groupSize = 2
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Composable
+@Preview
+fun SelectTabBottomSheetPreview() {
+    SelectTabBottomSheet(
+        onClose = ({ _, _ -> })
+    )
 }

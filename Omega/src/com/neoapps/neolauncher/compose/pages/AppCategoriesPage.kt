@@ -192,14 +192,7 @@ fun AppCategoriesPage() {
                 // TODO fix
                 FloatingActionButton(
                     onClick = {
-                        sheetChanger =
-                            when (selectedCategorizationKey) {
-                                AppGroupsManager.Category.TAB.key,
-                                AppGroupsManager.Category.FLOWERPOT.key,
-                                     -> Config.BS_SELECT_TAB_TYPE
-
-                                else -> Config.BS_NONE
-                            }
+                        sheetChanger = Config.BS_SELECT_TAB_TYPE
                         coroutineScope.launch {
                             if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
                                 scaffoldState.bottomSheetState.partialExpand()

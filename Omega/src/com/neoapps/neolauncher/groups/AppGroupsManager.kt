@@ -31,8 +31,6 @@ import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PrefKey
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.util.drawerCategorizationOptions
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 
 typealias CategoryKey = String
@@ -42,7 +40,7 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
         key = PrefKey.DRAWER_CATEGORIZATION_TYPE,
         dataStore = dataStore,
         titleId = R.string.pref_appcategorization_style_text,
-        defaultValue = Category.NONE.key,
+        defaultValue = Category.TAB.key,
         entries = prefs.context.drawerCategorizationOptions,
         onChange = {
             MAIN_EXECUTOR.execute {
@@ -50,10 +48,6 @@ class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences
             }
         }
     )
-
-    val categorizationEnabled: Flow<Boolean> = categorizationType.get()
-        .map { it != Category.NONE.key }
-
 
     val drawerTabs by lazy { CustomTabs(this) }
     private val flowerpotTabs by lazy { FlowerpotTabs(this) }

@@ -34,12 +34,16 @@ fun CategoryTabItem(
     @StringRes summaryId: Int,
     modifier: Modifier = Modifier,
     @DrawableRes iconId: Int? = null,
+    index: Int = 1,
+    groupSize: Int = 1,
     onClick: () -> Unit,
 ) {
     BasePreference(
         titleId = titleId,
         summaryId = summaryId,
         modifier = modifier,
+        index = index,
+        groupSize = groupSize,
         startWidget = {
             if (iconId != null) {
                 Icon(
@@ -63,6 +67,6 @@ fun CategoryTabItem(
 fun CategoryTabItemPreview() {
     CategoryTabItem(
         titleId = R.string.tab_type_smart,
-        summaryId = R.string.custom
+        summaryId = R.string.custom,
     ) {}
 }
