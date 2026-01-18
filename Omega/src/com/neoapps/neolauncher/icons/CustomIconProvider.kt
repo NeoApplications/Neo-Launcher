@@ -231,7 +231,7 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
         return MultiSafeCloseable().apply {
             add(super.registerIconChangeListener(callback, handler))
             add(IconPackChangeReceiver(context, handler, callback))
-            add(CustomIconChangeReceiver(context, handler, callback))
+            add(CustomIconChangeReceiver(context, handler))
         }
     }
 
@@ -281,7 +281,8 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
     }
 
     private class CalendarAndClockChangeReceiver(
-        private val context: Context, handler: Handler,
+        private val context: Context,
+        private val handler: Handler,
         private val iconPack: IconPack,
         private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
@@ -325,7 +326,6 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
     private inner class CustomIconChangeReceiver(
         private val context: Context,
         handler: Handler,
-        private val callback: IconChangeListener,
     ) : BroadcastReceiver(), SafeCloseable {
 
         init {
