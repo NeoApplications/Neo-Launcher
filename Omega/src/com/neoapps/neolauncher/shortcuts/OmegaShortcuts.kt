@@ -25,6 +25,7 @@ import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.compose.components.ComposeBottomSheet
+import com.neoapps.neolauncher.icons.CustomizeIconPage
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.hasFlag
 import com.neoapps.neolauncher.util.hasFlags
@@ -42,43 +43,49 @@ class OmegaShortcuts {
         originalView
     ) {
 
-        val prefs: NeoPrefs = NeoPrefs.Companion.getInstance()
+        val prefs: NeoPrefs = NeoPrefs.getInstance()
         override fun onClick(v: View?) {
-            val outObj = Array<Any?>(1) { null }
             var icon = Utilities.getFullDrawable(launcher, appInfo, 0, 0, true)
             if (mItemInfo.screenId != NO_ID && icon is BitmapInfo.Extender) {
                 //icon = icon.getThemedDrawable(launcher)
             }
 
-            val launcherActivityInfo = outObj[0] as LauncherActivityInfo
-            val defaultTitle = launcherActivityInfo.label.toString()
+            val launcherActivityInfo = getLauncherActivityInfo(mItemInfo)
+            val defaultTitle = launcherActivityInfo?.label.toString()
 
             if (launcher.isInState(LauncherState.ALL_APPS)) {
                 if (prefs.drawerPopupEdit) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
-                    ComposeBottomSheet.Companion.show(launcher) {
-                        /*CustomizeIconPage(
+                    ComposeBottomSheet.show(launcher) {
+                        CustomizeIconPage(
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
                             appInfo = appInfo,
                             onClose = { close(true) }
-                        )*/
+                        )
                     }
                 }
             } else {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
                     AbstractFloatingView.closeAllOpenViews(mTarget)
-                    ComposeBottomSheet.Companion.show(launcher) {
-                        /*CustomizeIconPage(
+                    ComposeBottomSheet.show(launcher) {
+                        CustomizeIconPage(
                             defaultTitle = defaultTitle,
                             componentKey = appInfo.toComponentKey(),
                             appInfo = appInfo,
                             onClose = { close(true) }
-                        )*/
+                        )
                     }
                 }
             }
         }
+
+        private fun getLauncherActivityInfo(info: ItemInfo): LauncherActivityInfo? {
+            val shortcutInfoProvider = ShortcutInfoProvider.getInstance(launcher)
+
+            return shortcutInfoProvider.getLauncherActivityInfo(info)
+        }
+
     }
 
     class AppRemove(
@@ -148,7 +155,7 @@ class OmegaShortcuts {
 
     companion object {
         val CUSTOMIZE = SystemShortcut.Factory<NeoLauncher> { activity, itemInfo, originalView ->
-            val prefs = NeoPrefs.Companion.getInstance()
+            val prefs = NeoPrefs.getInstance()
             var customize: Customize? = null
             if (Launcher.getLauncher(activity).isInState(LauncherState.NORMAL)) {
                 if (prefs.desktopPopupEdit && !prefs.desktopLock.getValue()) {
@@ -174,7 +181,7 @@ class OmegaShortcuts {
         }
 
         val APP_REMOVE = SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
-            val prefs = NeoPrefs.Companion.getInstance()
+            val prefs = NeoPrefs.getInstance()
             var appRemove: AppRemove? = null
             if (Launcher.getLauncher(launcher).isInState(LauncherState.NORMAL)) {
                 if (itemInfo is WorkspaceItemInfo
@@ -192,7 +199,7 @@ class OmegaShortcuts {
 
         val APP_UNINSTALL =
             SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
-                val prefs = NeoPrefs.Companion.getInstance()
+                val prefs = NeoPrefs.getInstance()
                 val inUninstallState =
                     (prefs.drawerPopupUninstall && launcher.isInState(LauncherState.ALL_APPS)) ||
                             (prefs.desktopPopupUninstall && !launcher.isInState(LauncherState.ALL_APPS))

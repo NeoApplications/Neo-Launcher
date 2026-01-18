@@ -27,6 +27,7 @@ import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT
 import com.android.launcher3.R
 import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.model.ModelWriter
+import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.neoapps.neolauncher.data.IconOverrideRepository
 import com.neoapps.neolauncher.data.models.IconPickerItem
@@ -101,8 +102,8 @@ class ShortcutInfoProvider(context: Context) : CustomInfoProvider<WorkspaceItemI
         return info.getSwipeUpAction(context)
     }*/
 
-    private fun getLauncherActivityInfo(info: WorkspaceItemInfo): LauncherActivityInfo? {
-        return launcherApps!!.resolveActivity(info.getIntent(), info.user)
+    fun getLauncherActivityInfo(info: ItemInfo): LauncherActivityInfo? {
+        return launcherApps!!.resolveActivity(info.intent, info.user)
     }
 
     companion object :

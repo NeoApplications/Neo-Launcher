@@ -53,6 +53,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.pm.UserCache
+import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MODEL_EXECUTOR
 import com.android.launcher3.util.TouchController
@@ -62,6 +63,7 @@ import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PreferencesChangeCallback
+import com.neoapps.neolauncher.shortcuts.OmegaShortcuts
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
@@ -71,6 +73,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.util.stream.Stream
 
 class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
@@ -252,6 +255,17 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
                 }
             }
         }
+    }
+
+    override fun getSupportedShortcuts(itemInfo: ItemInfo): Stream<SystemShortcut.Factory<*>> {
+        return Stream.concat(
+            super.getSupportedShortcuts(itemInfo),
+            Stream.of(
+                OmegaShortcuts.CUSTOMIZE,
+                OmegaShortcuts.APP_REMOVE,
+                OmegaShortcuts.APP_UNINSTALL
+            )
+        )
     }
 
     override fun getDefaultOverlay(): LauncherOverlayManager {
