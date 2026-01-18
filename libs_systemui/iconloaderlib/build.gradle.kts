@@ -18,7 +18,16 @@ android {
             res.directories.add("res")
         }
     }
-
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21

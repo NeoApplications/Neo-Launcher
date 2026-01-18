@@ -67,6 +67,18 @@ android {
         }
         */
     }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
+
     /*
     signingConfigs {
         getByName("debug") {
@@ -138,5 +150,5 @@ dependencies {
     androidTestImplementation(project(":ScreenshotComposeLib"))*/
 
     implementation(project(":concurrent"))
-    implementation(project(":dagger"))
+    //implementation(project(":dagger"))
 }

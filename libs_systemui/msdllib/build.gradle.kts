@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -19,6 +18,17 @@ android {
             java.directories.add("src")
             kotlin.directories.add("src")
             manifest.srcFile("AndroidManifest.xml")
+        }
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
         }
     }
 }

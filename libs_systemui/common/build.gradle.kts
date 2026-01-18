@@ -1,9 +1,9 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins{
     alias(libs.plugins.android.library)
 }
+
 android {
     compileSdk = 36
     namespace = "com.android.systemui.common"
@@ -20,12 +20,20 @@ android {
             manifest.srcFile("AndroidManifest.xml")
         }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+            isMinifyEnabled = true
+        }
+        release {
+            isMinifyEnabled = true
+            setProguardFiles(listOf("proguard-android-optimize.txt", "proguard.flags"))
+        }
     }
-    
+
     buildFeatures {
         viewBinding = true
         aidl = true

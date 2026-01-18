@@ -40,6 +40,7 @@ project(":common").projectDir = File(rootDir, "libs_systemui/common")
 
 include(":utils")
 project(":utils").projectDir = File(rootDir, "libs_systemui/utils")
+
 include(":shared")
 project(":shared").projectDir = File(rootDir, "shared")
 
@@ -47,9 +48,6 @@ include(":concurrent")
 project(":concurrent").projectDir = File(rootDir, "modules/concurrent")
 include(":widgetpicker")
 project(":widgetpicker").projectDir = File(rootDir, "modules/widgetpicker")
-
-include(":dagger")
-project(":dagger").projectDir = File(rootDir, "dagger")
 
 include (":wmshell")
 include (":compatLib")

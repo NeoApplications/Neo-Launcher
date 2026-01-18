@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -19,8 +18,23 @@ android {
             aidl.directories.add("src/main/java")
         }
     }
-}
 
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+}
 
 val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"
 val addFrameworkJar = { name: String ->

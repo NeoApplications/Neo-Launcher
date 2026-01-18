@@ -1,6 +1,6 @@
 [versions]
 activity = "1.11.0"
-agp = "9.1.0-alpha04"
+agp = "9.1.0-alpha05"
 alwan = "1.0.1"
 annotation = "1.2.0"
 coil = "2.7.0"

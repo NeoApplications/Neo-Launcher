@@ -17,6 +17,17 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
+
     buildFeatures {
         aidl = true
     }

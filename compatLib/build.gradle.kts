@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -9,12 +8,32 @@ android {
     compileSdk = 36
     namespace = "app.lawnchair.compatlib"
 
+    defaultConfig {
+        minSdk = 30
+    }
+
     sourceSets {
         getByName("main") {
             kotlin.directories.add("src/main/java")
             java.directories.add("src/main/java")
             aidl.directories.add("src/main/java")
         }
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -43,3 +62,7 @@ val addFrameworkJar = { name: String ->
     }
 }
 addFrameworkJar("framework-15.jar")
+
+dependencies {
+    implementation(libs.core.ktx)
+}

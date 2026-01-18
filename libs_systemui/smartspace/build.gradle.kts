@@ -10,18 +10,23 @@ android {
         minSdk = 30
     }
 
-    buildTypes {
-        create("neo") {
-            isMinifyEnabled = false
-        }
-    }
-
     sourceSets {
         named("main") {
             java.directories.add("src")
             kotlin.directories.add("src")
             manifest.srcFile("AndroidManifest.xml")
             res.directories.add("res")
+        }
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
         }
     }
 

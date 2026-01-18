@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,6 +13,16 @@ android {
             kotlin.directories.add("src")
             java.directories.add("src")
             aidl.directories.add("src")
+        }
+    }
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
         }
     }
 
@@ -47,5 +56,5 @@ dependencies {
     implementation(libs.hilt.compiler)
     implementation(libs.java.inject)
     implementation(libs.guava)
-    implementation(project(":dagger"))
+    //implementation(project(":dagger"))
 }
