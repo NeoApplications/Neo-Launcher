@@ -15,8 +15,7 @@
 <!-- This file is used by multiple all_apps.xml. Layout consists of all contents
      showed in all apps screen
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res-auto">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <include
         layout="@layout/all_apps_bottom_sheet_background"
@@ -50,8 +49,6 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:fillViewport="true"
-            android:clickable="false"
-            android:focusable="false"
             android:scrollbars="none">
 
             <com.neoapps.neolauncher.allapps.AllAppsTabItem
@@ -62,8 +59,7 @@
                 android:layout_marginTop="8dp"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:orientation="horizontal"
-                launcher:alignOnIcon="true" />
+                android:orientation="horizontal" />
         </HorizontalScrollView>
 
     </com.android.launcher3.allapps.FloatingHeaderView>
