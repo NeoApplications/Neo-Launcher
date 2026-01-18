@@ -32,7 +32,7 @@ jobs:
       - name: Save name of our Artifact
         id: set-result-artifact
         run: |
-          ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
+          ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
           ARTIFACT_NAME_APK=$(basename $ARTIFACT_PATHNAME_APK)
           echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
           echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $GITHUB_ENV
