@@ -72,7 +72,7 @@ public class LauncherIconProvider extends IconProvider {
         mSystemState += "," + mThemeManager.getIconState().toUniqueId();
     }
 
-    private Map<String, ThemeData> getThemedIconMap() {
+    public Map<String, ThemeData> getThemedIconMap() {
         if (mThemedIconMap != null) {
             return mThemedIconMap;
         }

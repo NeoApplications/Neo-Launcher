@@ -17,7 +17,6 @@
   -->
 <resources>
     <!-- String representing the fragment class for settings activity.-->
-    <string name="launcher_activity_logic_class" translatable="false">com.neoapps.neolauncher.util.CustomActivityCachingLogic</string>
     <string name="app_filter_class" translatable="false">com.neoapps.neolauncher.allapps.CustomAppFilter</string>
     <string name="config_default_search_provider" translatable="false">com.neoapps.neolauncher.search.webproviders.DDGWebSearchProvider</string>
     <string name="calendar_component_name" translatable="false">com.google.android.calendar/com.android.calendar.AllInOneActivity</string>
