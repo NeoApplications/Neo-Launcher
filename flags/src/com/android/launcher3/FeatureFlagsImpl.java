@@ -368,7 +368,6 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
     @Override
 
-
     public boolean enableRecentsInTaskbar() {
         return false;
     }
@@ -566,7 +565,7 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
     @Override
     public boolean enabledFoldersInAllApps() {
-        return false;
+        return true;
     }
 
     @Override
@@ -630,7 +629,7 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
 
     public boolean multilineSearchBar() {
-        return true;
+        return false;
     }
 
     @Override
@@ -735,7 +734,7 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
 
     public boolean restoreArchivedAppIconsFromDb() {
-        return false;
+        return true;
     }
 
     @Override
