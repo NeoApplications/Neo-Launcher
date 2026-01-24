@@ -329,7 +329,7 @@
     <string name="needs_usage_access">Utilisation Accès nécessaire</string>
     <string name="title_drawer_row_height">Hauteur de ligne</string>
     <string name="num_hotseat_icons_pref_title">Nombre d\'icônes</string>
-    <string name="dock_colored_google">Icônes de couleur</string>
+    <string name="dock_colored_google">Icônes de Couleurs</string>
     <string name="title_desktop_lock_desktop">Verrouiller le bureau</string>
     <string name="about_source">Code source</string>
     <string name="about_team">Membres de l\'équipe</string>
@@ -448,7 +448,7 @@
     <string name="title__general_profile">Profil</string>
     <string name="title__feed">Flux</string>
     <string name="title_search_contacts">Rechercher dans les contacts</string>
-    <string name="title__general_gestures_dash">Gestes et Dash</string>
+    <string name="title__general_gestures_dash">Gestes &amp; Dash</string>
     <string name="title__general_search_feed">Recherche et flux</string>
     <string name="pref_category__features">Fonctionnalités</string>
     <string name="section_contacts">Contacts</string>
@@ -519,4 +519,5 @@
     <string name="search_provider_search_url">URL de recherche</string>
     <string name="search_provider_suggestion_url">URL de suggestions</string>
     <string name="search_provider_url_hint">Utiliser %s à la place du terme recherché</string>
+    <string name="title_drawer_layout_categories">Catégories de disposition</string>
 </resources>
