@@ -16,7 +16,7 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
 
     public boolean allAppsBlur() {
-        return true;
+        return false;
     }
 
     @Override
