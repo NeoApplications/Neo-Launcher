@@ -16,11 +16,8 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.model.data.AppInfo
-import com.android.launcher3.model.data.FolderInfo
 import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.ItemInfoWithIcon
-import com.android.launcher3.model.data.LauncherAppWidgetInfo
-import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.popup.SystemShortcut
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.NeoLauncher
@@ -180,23 +177,6 @@ class OmegaShortcuts {
             if (itemInfo.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) return null
             val key = ComponentKey(itemInfo.targetComponent, itemInfo.user)
             return launcher.appsView.appsStore.getApp(key)
-        }
-
-        val APP_REMOVE = SystemShortcut.Factory<NeoLauncher> { launcher, itemInfo, originalView ->
-            val prefs = NeoPrefs.getInstance()
-            var appRemove: AppRemove? = null
-            if (Launcher.getLauncher(launcher).isInState(LauncherState.NORMAL)) {
-                if (itemInfo is WorkspaceItemInfo
-                    || itemInfo is LauncherAppWidgetInfo
-                    || itemInfo is FolderInfo
-                ) {
-                    if (prefs.desktopPopupRemove && !prefs.desktopLock.getValue()
-                    ) {
-                        appRemove = AppRemove(launcher, itemInfo, originalView)
-                    }
-                }
-            }
-            appRemove
         }
 
         val APP_UNINSTALL =

@@ -367,8 +367,6 @@ class NeoPrefs private constructor(val context: Context) {
 
     val desktopPopupEdit: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_EDIT)
-    val desktopPopupRemove: Boolean
-        get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_REMOVE)
     val desktopPopupUninstall: Boolean
         get() = desktopPopup.getValue().contains(PREFS_DESKTOP_POPUP_UNINSTALL)
 

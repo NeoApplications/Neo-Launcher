@@ -45,7 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.neoapps.neolauncher.preferences.PREFS_DESKTOP_POPUP_REMOVE
+import com.neoapps.neolauncher.preferences.PREFS_DESKTOP_POPUP_EDIT
 import com.neoapps.neolauncher.preferences.iconIds
 import com.neoapps.neolauncher.theme.GroupItemShape
 
@@ -178,6 +178,6 @@ fun MultiSelectionListItemPreview() {
         text = "Test",
         isChecked = true,
         withIcon = true,
-        iconId = PREFS_DESKTOP_POPUP_REMOVE
+        iconId = PREFS_DESKTOP_POPUP_EDIT
     )
 }

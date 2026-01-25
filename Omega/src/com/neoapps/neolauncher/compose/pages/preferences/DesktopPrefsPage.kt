@@ -59,10 +59,10 @@ fun DesktopPrefsPage() {
     }
 
     val iconPrefs = listOf(
-        prefs.desktopIconScale,
+        /*prefs.desktopIconScale,
         prefs.desktopHideAppLabels,
         prefs.desktopMultilineLabel,
-        prefs.desktopLabelScale,
+        prefs.desktopLabelScale,*/
         prefs.desktopPopup,
     )
 
@@ -102,8 +102,8 @@ fun DesktopPrefsPage() {
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*
-            item {
+
+        item {
                 PreferenceGroup(
                     stringResource(id = R.string.cat_drawer_icons),
                     prefs = iconPrefs,
@@ -111,7 +111,6 @@ fun DesktopPrefsPage() {
                 )
             }
 
-             */
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.cat_desktop_grid),

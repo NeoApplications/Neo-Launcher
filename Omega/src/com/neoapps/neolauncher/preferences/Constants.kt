@@ -43,7 +43,6 @@ val themeItems = mutableMapOf(
 )
 
 const val PREFS_DESKTOP_POPUP_EDIT = "desktop_popup_edit"
-const val PREFS_DESKTOP_POPUP_REMOVE = "desktop_popup_remove"
 const val PREFS_DESKTOP_POPUP_UNINSTALL = "desktop_popup_uninstall"
 
 const val PREFS_DRAWER_POPUP_EDIT = "drawer_popup_edit"
@@ -56,7 +55,7 @@ const val LAYOUT_CATEGORIES = 2
 const val LAYOUT_TABS = 3
 
 val desktopPopupOptions = mutableMapOf(
-    PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,
+    //PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,
     PREFS_DESKTOP_POPUP_EDIT to R.string.action_preferences,
     PREFS_DESKTOP_POPUP_UNINSTALL to R.string.uninstall_drop_target_label,
 )
@@ -90,7 +89,6 @@ val temperatureUnitOptions = listOfNotNull(
 
 val iconIds = mapOf(
     // Desktop Popup
-    PREFS_DESKTOP_POPUP_REMOVE to R.drawable.ic_remove_no_shadow,
     PREFS_DESKTOP_POPUP_EDIT to R.drawable.ic_edit_no_shadow,
     PREFS_DESKTOP_POPUP_UNINSTALL to R.drawable.ic_uninstall_no_shadow,
     // Drawer Popup

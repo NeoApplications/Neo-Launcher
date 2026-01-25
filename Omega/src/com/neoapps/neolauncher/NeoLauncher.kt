@@ -262,7 +262,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             super.getSupportedShortcuts(itemInfo),
             Stream.of(
                 OmegaShortcuts.CUSTOMIZE,
-                OmegaShortcuts.APP_REMOVE,
                 OmegaShortcuts.APP_UNINSTALL
             )
         )
