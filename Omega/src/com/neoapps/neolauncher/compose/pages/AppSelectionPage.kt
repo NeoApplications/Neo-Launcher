@@ -18,7 +18,6 @@
 
 package com.neoapps.neolauncher.compose.pages
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,14 +60,17 @@ fun AppSelectionPage(
     pluralTitleId: Int,
     onSave: (Set<String>) -> Unit
 ) {
-    val colors = CheckboxDefaults.colors(
-        checkedColor = MaterialTheme.colorScheme.primary,
-        uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
     var selected by remember { mutableStateOf(selectedApps) }
     var title by remember { mutableStateOf(pageTitle) }
     val allApps by appsState(comparator = hiddenAppsComparator(selectedApps))
     val pluralTitle = stringResource(id = pluralTitleId, selected.size)
+    var appsSize by remember { mutableIntStateOf(1) }
+
+    DisposableEffect(allApps.size) {
+        appsSize = allApps.size
+        onDispose { }
+    }
+
     title = if (selected.isNotEmpty()) {
         pluralTitle
     } else {
@@ -92,39 +95,31 @@ fun AppSelectionPage(
         }
     ) { paddingValues ->
         //TODO: Show loading indicator while apps are being loaded
-        val groupSize = allApps.size
         PreferenceGroup {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 8.dp, end = 8.dp, top = 0.dp, bottom = 8.dp),
+                    .padding(8.dp),
                 contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(3.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 itemsIndexed(allApps) { index, app ->
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected.contains(app.key.toString()))
                     }
-                    val bgColor by animateColorAsState(
-                        if (isSelected.value)
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        else MaterialTheme.colorScheme.surfaceContainer, label = "bgColor"
-                    )
-
                     ListItemWithIcon(
                         modifier = Modifier
-                            .clip(GroupItemShape(index, groupSize - 1))
+                            .clip(GroupItemShape(index, appsSize - 1))
                             .clickable {
                                 selected = if (isSelected.value) selected.minus(app.key.toString())
                                 else selected.plus(app.key.toString())
                             },
                         title = app.label + if (app.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
-                        containerColor = bgColor,
                         startIcon = {
                             Image(
                                 painter = BitmapPainter(app.icon.asImageBitmap()),
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(40.dp)
                             )
                         },
                         endCheckbox = {
@@ -134,9 +129,17 @@ fun AppSelectionPage(
                                     selected = if (it) selected.plus(app.key.toString())
                                     else selected.minus(app.key.toString())
                                 },
-                                colors = colors
+
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = MaterialTheme.colorScheme.primary,
+                                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.size(24.dp)
                             )
                         },
+                        index = index,
+                        groupSize = appsSize
                     )
                 }
             }
