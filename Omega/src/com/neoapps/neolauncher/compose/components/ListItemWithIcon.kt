@@ -21,7 +21,10 @@ package com.neoapps.neolauncher.compose.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ListItem
@@ -32,27 +35,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.compose.icons.Phosphor
 import com.neoapps.neolauncher.compose.icons.phosphor.BracketsCurly
+import com.neoapps.neolauncher.theme.GroupItemShape
 
 @Composable
 fun ListItemWithIcon(
     modifier: Modifier = Modifier,
     title: String,
     summary: String = "",
+    index: Int = 0,
+    groupSize: Int = 1,
     startIcon: (@Composable () -> Unit)? = null,
     endCheckbox: (@Composable () -> Unit)? = null,
-    containerColor: Color = Color.Transparent,
 ) {
     ListItem(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(GroupItemShape(index, groupSize - 1)),
         leadingContent = startIcon?.apply {} ?: {},
-        colors = ListItemDefaults.colors(
-            containerColor = containerColor,
-        ),
         headlineContent = {
             Text(
                 text = title,
@@ -68,16 +71,20 @@ fun ListItemWithIcon(
             }
         },
         trailingContent = endCheckbox?.apply {} ?: {},
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+        )
     )
 }
 
 @Preview
 @Composable
 fun PreviewListItemWithIcon() {
+    Column() {
     ListItemWithIcon(
         title = "System Iconpack",
         modifier = Modifier.clickable { },
-        summary = "com.saggitt.iconpack",
+        summary = "com.neoapps.neolauncher",
         startIcon = {
             Image(
                 Phosphor.BracketsCurly,
@@ -86,7 +93,7 @@ fun PreviewListItemWithIcon() {
                     .clip(CircleShape)
                     .size(40.dp)
                     .background(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12F)
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45F)
                     )
             )
 
@@ -96,6 +103,36 @@ fun PreviewListItemWithIcon() {
                 selected = false,
                 onClick = null
             )
-        }
+        },
+        index = 0,
+        groupSize = 2
     )
+        Spacer(modifier = Modifier.height(2.dp))
+        ListItemWithIcon(
+            title = "System Iconpack",
+            modifier = Modifier.clickable { },
+            summary = "com.neoapps.neolauncher",
+            startIcon = {
+                Image(
+                    Phosphor.BracketsCurly,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45F)
+                        )
+                )
+
+            },
+            endCheckbox = {
+                RadioButton(
+                    selected = false,
+                    onClick = null
+                )
+            },
+            index = 1,
+            groupSize = 2
+        )
+    }
 }
