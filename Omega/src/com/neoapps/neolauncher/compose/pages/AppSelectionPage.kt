@@ -21,6 +21,7 @@ package com.neoapps.neolauncher.compose.pages
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
@@ -94,53 +97,64 @@ fun AppSelectionPage(
             onSave(selected)
         }
     ) { paddingValues ->
-        //TODO: Show loading indicator while apps are being loaded
-        PreferenceGroup {
-            LazyColumn(
+        if (allApps.isEmpty()) {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                itemsIndexed(allApps) { index, app ->
-                    val isSelected = rememberSaveable(selected) {
-                        mutableStateOf(selected.contains(app.key.toString()))
-                    }
-                    ListItemWithIcon(
-                        modifier = Modifier
-                            .clip(GroupItemShape(index, appsSize - 1))
-                            .clickable {
-                                selected = if (isSelected.value) selected.minus(app.key.toString())
-                                else selected.plus(app.key.toString())
-                            },
-                        title = app.label + if (app.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
-                        startIcon = {
-                            Image(
-                                painter = BitmapPainter(app.icon.asImageBitmap()),
-                                contentDescription = null,
-                                modifier = Modifier.size(40.dp)
-                            )
-                        },
-                        endCheckbox = {
-                            Checkbox(
-                                checked = isSelected.value,
-                                onCheckedChange = {
-                                    selected = if (it) selected.plus(app.key.toString())
-                                    else selected.minus(app.key.toString())
+                CircularProgressIndicator()
+            }
+        } else {
+            PreferenceGroup {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    itemsIndexed(allApps) { index, app ->
+                        val isSelected = rememberSaveable(selected) {
+                            mutableStateOf(selected.contains(app.key.toString()))
+                        }
+                        ListItemWithIcon(
+                            modifier = Modifier
+                                .clip(GroupItemShape(index, appsSize - 1))
+                                .clickable {
+                                    selected =
+                                        if (isSelected.value) selected.minus(app.key.toString())
+                                        else selected.plus(app.key.toString())
                                 },
+                            title = app.label + if (app.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
+                            startIcon = {
+                                Image(
+                                    painter = BitmapPainter(app.icon.asImageBitmap()),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            },
+                            endCheckbox = {
+                                Checkbox(
+                                    checked = isSelected.value,
+                                    onCheckedChange = {
+                                        selected = if (it) selected.plus(app.key.toString())
+                                        else selected.minus(app.key.toString())
+                                    },
 
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        index = index,
-                        groupSize = appsSize
-                    )
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = MaterialTheme.colorScheme.primary,
+                                        uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            index = index,
+                            groupSize = appsSize
+                        )
+                    }
                 }
             }
         }
