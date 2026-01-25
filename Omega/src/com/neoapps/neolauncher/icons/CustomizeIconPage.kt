@@ -148,7 +148,19 @@ fun CustomizeIconView(
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
     val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsState(initial = emptySet())
-    val currentIcon by remember { mutableStateOf(icon) }
+    val currentIcon = remember(overrideItem, icon) {
+        overrideItem?.iconPickerItem?.let { item ->
+            try {
+                val resources =
+                    context.packageManager.getResourcesForApplication(item.packPackageName)
+                val resId =
+                    resources.getIdentifier(item.drawableName, "drawable", item.packPackageName)
+                resources.getDrawable(resId, context.theme) ?: icon
+            } catch (e: Exception) {
+                icon
+            }
+        } ?: icon
+    }
 
     Column(
         modifier = Modifier
@@ -166,8 +178,8 @@ fun CustomizeIconView(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(vertical = 16.dp)
-                .clip(MaterialTheme.shapes.small)
+                .padding(vertical = 8.dp)
+                .clip(MaterialTheme.shapes.medium)
                 .addIfNotNull(launchSelectIcon) {
                     clickable(onClick = it)
                 }
