@@ -247,6 +247,8 @@ public class LauncherClient {
             } catch (IllegalArgumentException ignored) {
             }
             mDestroyed = true;
+            mBaseService.disconnect();
+            mLauncherService.disconnect();
         }
     }
 
