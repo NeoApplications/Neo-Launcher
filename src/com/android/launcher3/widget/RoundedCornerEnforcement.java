@@ -101,8 +101,8 @@ public class RoundedCornerEnforcement {
      */
     public static float computeEnforcedRadius(@NonNull Context context) {
         NeoPrefs prefs = NeoPrefs.getInstance();
-        if (prefs.getDesktopWidgetCornerRadius().getValue() >= 0) {
-            return prefs.getDesktopWidgetCornerRadius().getValue();
+        if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
+            return prefs.getProfileWindowCornerRadius().getValue();
         } else {
             if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
                 return prefs.getProfileWindowCornerRadius().getValue();
