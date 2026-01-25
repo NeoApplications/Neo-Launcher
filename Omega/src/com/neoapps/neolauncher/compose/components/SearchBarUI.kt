@@ -28,13 +28,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -42,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.pages.TOPBAR_HEIGHT
 import com.neoapps.neolauncher.compose.pages.TOPBAR_PADDING
+import com.neoapps.neolauncher.preferences.NeoPrefs
 
 @Composable
 fun SearchBarUI(
@@ -49,11 +53,16 @@ fun SearchBarUI(
     actions: @Composable RowScope.() -> Unit = {},
     onBack: () -> Unit = {},
 ) {
+    val prefs = NeoPrefs.getInstance()
+    val cornerRadius: Float by remember { prefs.profileWindowCornerRadius.get() }.collectAsState(
+        initial = 16f
+    )
+    val radiusDp = cornerRadius.dp
     Surface(
         modifier = Modifier
             .padding(TOPBAR_PADDING)
             .height(TOPBAR_HEIGHT),
-        shape = MaterialTheme.shapes.small,
+        shape = RoundedCornerShape(radiusDp),
         shadowElevation = 2.dp
     ) {
         Box(
