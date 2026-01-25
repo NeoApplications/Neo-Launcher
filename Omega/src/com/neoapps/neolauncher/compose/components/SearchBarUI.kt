@@ -35,9 +35,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -54,15 +51,15 @@ fun SearchBarUI(
     onBack: () -> Unit = {},
 ) {
     val prefs = NeoPrefs.getInstance()
-    val cornerRadius: Float by remember { prefs.profileWindowCornerRadius.get() }.collectAsState(
-        initial = 16f
-    )
-    val radiusDp = cornerRadius.dp
+    var radius = 16.dp
+    if (prefs.profileWindowCornerRadius.getValue() > -1) {
+        radius = prefs.profileWindowCornerRadius.getValue().dp
+    }
     Surface(
         modifier = Modifier
             .padding(TOPBAR_PADDING)
             .height(TOPBAR_HEIGHT),
-        shape = RoundedCornerShape(radiusDp),
+        shape = RoundedCornerShape(radius),
         shadowElevation = 2.dp
     ) {
         Box(
