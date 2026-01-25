@@ -19,6 +19,7 @@
 package com.neoapps.neolauncher.compose.pages
 
 import android.graphics.drawable.Drawable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IconListPage(
     iconPack: IconPack,
@@ -140,7 +142,7 @@ fun IconPreview(
             .padding(8.dp),
     ) {
         Image(
-            bitmap = drawableToBitmap(drawable ?: LocalContext.current.getIcon())!!.asImageBitmap(),
+            bitmap = drawableToBitmap(drawable ?: LocalContext.current.getIcon()).asImageBitmap(),
             contentDescription = iconItem.drawableName,
             modifier = Modifier.aspectRatio(1f),
         )
