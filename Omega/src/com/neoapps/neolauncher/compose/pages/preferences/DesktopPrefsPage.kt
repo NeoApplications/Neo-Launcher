@@ -79,7 +79,6 @@ fun DesktopPrefsPage() {
                 if (prefs.desktopCustomFolderBackground.getValue()) {
                     prefs.desktopFolderBackgroundColor
                 } else null,
-                prefs.desktopFolderCornerRadius,
                 prefs.desktopFolderOpacity,
                 prefs.desktopFolderStroke,
                 if (prefs.desktopFolderStroke.getValue()) {
