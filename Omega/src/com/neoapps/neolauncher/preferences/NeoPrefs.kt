@@ -651,7 +651,7 @@ class NeoPrefs private constructor(val context: Context) {
         navRoute = NavRoute.Drawer.ProtectedApps(),
         defaultValue = setOf()
     ) {
-        recreate()
+        reloadGrid()
     }
 
     var drawerEnableProtectedApps = BooleanPref(
