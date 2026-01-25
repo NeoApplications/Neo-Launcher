@@ -2,11 +2,7 @@ package com.android.launcher3;
 // TODO(b/303773055): Remove the annotation after access issue is resolved.
 /** @hide */
 public interface FeatureFlags {
-
-
-
     boolean accessibilityScrollOnAllapps();
-
 
     boolean allAppsBlur();
 
