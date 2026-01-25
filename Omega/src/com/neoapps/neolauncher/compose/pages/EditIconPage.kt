@@ -84,7 +84,6 @@ import com.neoapps.neolauncher.iconpack.CustomIconPack
 import com.neoapps.neolauncher.iconpack.IconPackInfo
 import com.neoapps.neolauncher.iconpack.IconPackProvider
 import com.neoapps.neolauncher.icons.drawableToBitmap
-import com.neoapps.neolauncher.util.blockBorder
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -103,7 +102,6 @@ fun EditIconPage(
     val intent = Intent().setComponent(componentKey.componentName)
     val activity = launcherApps.resolveActivity(intent, componentKey.user)
 
-    // TODO get the set icon
     val originalIcon: Drawable = activity.getIcon(context.resources.displayMetrics.densityDpi)
     val title = remember(componentKey) {
         activity.label.toString()
@@ -122,7 +120,7 @@ fun EditIconPage(
             ?.getActivityList(iconPack?.packPackageName, Process.myUserHandle())
             ?.firstOrNull()?.componentName
     }
-    val onItemCLick: (IconPickerItem) -> Unit = { iconPickerItem: IconPickerItem ->
+    val onItemClick: (IconPickerItem) -> Unit = { iconPickerItem: IconPickerItem ->
         scope.launch {
             repo.setOverride(
                 componentKey,
@@ -138,7 +136,7 @@ fun EditIconPage(
             ) ?: return@rememberLauncherForActivityResult
             val entry = (iconPack as CustomIconPack).createFromExternalPicker(icon)
                 ?: return@rememberLauncherForActivityResult
-            onItemCLick(entry)
+            onItemClick(entry)
         }
 
     Scaffold { paddingValues ->
@@ -161,22 +159,23 @@ fun EditIconPage(
             NavigableListDetailPaneScaffold(
                 navigator = paneNavigator,
                 listPane = {
-                    Column {
+                    Column(modifier = Modifier.padding(vertical = 16.dp)) {
                         AppPacksIconsBar(
                             originalIcon = originalIcon,
                             iconPacks = iconPacks,
                             ipp = ipp,
                             componentKey = componentKey,
-                            onItemCLick = onItemCLick,
+                            onItemCLick = onItemClick,
                         )
                         LazyColumn(
                             modifier = Modifier
+                                .padding(vertical = 16.dp, horizontal = 8.dp)
                                 .fillMaxWidth()
-                                .weight(1f)
-                                .blockBorder(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                                .weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
-                            itemsIndexed(iconPacks) { _, iconPack ->
+                            val groupSize = iconPacks.size
+                            itemsIndexed(iconPacks) { index, iconPack ->
                                 if (iconPack.packageName != context.getString(R.string.icon_packs_intent_name)) {
                                     ListItemWithIcon(
                                         modifier = Modifier
@@ -189,6 +188,8 @@ fun EditIconPage(
                                                 }
                                             },
                                         title = iconPack.name,
+                                        index = index,
+                                        groupSize = groupSize,
                                         startIcon = {
                                             Image(
                                                 bitmap = drawableToBitmap(iconPack.icon).asImageBitmap(),
@@ -255,14 +256,14 @@ fun EditIconPage(
                                     )
                                     Column(
                                         modifier = Modifier
+                                            .padding(vertical = 16.dp)
                                             .fillMaxWidth()
                                             .weight(1f)
-                                            .blockBorder(),
                                     ) {
                                         IconListPage(
                                             iconPack = iconPack,
                                             searchQuery = searchQuery,
-                                            onClickItem = onItemCLick,
+                                            onClickItem = onItemClick,
                                         )
                                     }
                                 }
@@ -325,8 +326,8 @@ fun AppPacksIconsBar(
                                 bitmap = drawableToBitmap(mIcon).asImageBitmap(),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .requiredSize(60.dp)
-                                    .padding(start = 8.dp, end = 8.dp)
+                                    .requiredSize(TOPBAR_HEIGHT)
+                                    .padding(vertical = TOPBAR_PADDING)
                                     .clickable {
                                         val iconPickerItem = IconPickerItem(
                                             iconPack.packPackageName,
