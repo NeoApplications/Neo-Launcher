@@ -23,7 +23,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -53,7 +52,6 @@ fun ListItemWithIcon(
 ) {
     ListItem(
         modifier = modifier
-            .fillMaxWidth()
             .clip(GroupItemShape(index, groupSize - 1)),
         leadingContent = startIcon?.apply {} ?: {},
         headlineContent = {
@@ -72,7 +70,7 @@ fun ListItemWithIcon(
         },
         trailingContent = endCheckbox?.apply {} ?: {},
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
         )
     )
 }
@@ -80,7 +78,7 @@ fun ListItemWithIcon(
 @Preview
 @Composable
 fun PreviewListItemWithIcon() {
-    Column() {
+    Column {
     ListItemWithIcon(
         title = "System Iconpack",
         modifier = Modifier.clickable { },
