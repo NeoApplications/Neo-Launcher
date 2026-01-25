@@ -229,10 +229,10 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         titleId = R.string.title_override_corner_radius_value,
         key = PrefKey.PROFILE_WINDOW_CORNER_RADIUS,
-        defaultValue = 8f,
-        maxValue = 24f,
+        defaultValue = 24f,
+        maxValue = 48f,
         minValue = -1f,
-        steps = 24,
+        steps = 50,
         specialOutputs = {
             when {
                 it < 0f -> context.getString(R.string.automatic_short)
