@@ -19,7 +19,6 @@
 package com.neoapps.neolauncher.icons
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,12 +60,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.Launcher
-import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
-import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.model.data.AppInfo
-import com.android.launcher3.popup.SystemShortcut
+import com.android.launcher3.model.tasks.PackageUpdatedTask
 import com.android.launcher3.util.ComponentKey
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.neoapps.neolauncher.compose.components.ComposeSwitchView
@@ -82,6 +78,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CustomizeIconPage(
+    icon: Drawable,
     defaultTitle: String,
     componentKey: ComponentKey,
     appInfo: AppInfo,
@@ -104,18 +101,26 @@ fun CustomizeIconPage(
 
     DisposableEffect(key1 = null) {
         title = prefs.customAppName[componentKey] ?: defaultTitle
+        val model = Launcher.getLauncher(context).model
+
         onDispose {
             val previousTitle = prefs.customAppName[componentKey]
             val newTitle = if (title != defaultTitle) title else null
             if (newTitle != previousTitle) {
                 prefs.customAppName[componentKey] = newTitle
-                val model = LauncherAppState.getInstance(context).model
-                //model.onPackageChanged(componentKey.componentName.packageName, componentKey.user)
+                model.enqueueModelUpdateTask(
+                    PackageUpdatedTask(
+                        PackageUpdatedTask.OP_UPDATE,
+                        componentKey.user,
+                        componentKey.componentName.packageName
+                    )
+                )
             }
         }
     }
 
     CustomizeIconView(
+        icon = icon,
         title = title,
         onTitleChange = { title = it },
         defaultTitle = defaultTitle,
@@ -125,17 +130,9 @@ fun CustomizeIconPage(
     )
 }
 
-fun getAppIcon(context: Context, appInfo: AppInfo): Drawable {
-    val launcher = Launcher.getLauncher(context)
-    var icon = Utilities.getFullDrawable(launcher, appInfo, 0, 0, true)!!
-    if (appInfo.screenId != SystemShortcut.NO_ID && icon is BitmapInfo.Extender) {
-        //icon = icon.getThemedDrawable(context)
-    }
-    return icon.first
-}
-
 @Composable
 fun CustomizeIconView(
+    icon: Drawable,
     title: String,
     onTitleChange: (String) -> Unit,
     defaultTitle: String,
@@ -150,8 +147,8 @@ fun CustomizeIconView(
     val repo = IconOverrideRepository.INSTANCE.get(context)
     val overrideItem by repo.observeTarget(componentKey).collectAsState(initial = null)
     val hasOverride = overrideItem != null
-    var icon = getAppIcon(context, appInfo)
     val hiddenApps = prefs.drawerHiddenAppSet.get().collectAsState(initial = emptySet())
+    val currentIcon by remember { mutableStateOf(icon) }
 
     Column(
         modifier = Modifier
@@ -176,10 +173,9 @@ fun CustomizeIconView(
                 }
         ) {
             Image(
-                painter = rememberDrawablePainter(icon),
+                painter = rememberDrawablePainter(currentIcon),
                 contentDescription = title,
-                modifier = Modifier
-                    .requiredSize(64.dp)
+                modifier = Modifier.requiredSize(64.dp)
             )
         }
 
@@ -218,7 +214,7 @@ fun CustomizeIconView(
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             if (!componentKey.componentName.equals("com.neoapps.neolauncher.folder")) {
                 val stringKey = componentKey.toString()
@@ -244,7 +240,6 @@ fun CustomizeIconView(
                         modifier = Modifier.clickable {
                             scope.launch {
                                 repo.deleteOverride(componentKey)
-                                icon = getAppIcon(context, appInfo)
                             }
                         }
                     )
