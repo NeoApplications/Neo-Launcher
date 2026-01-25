@@ -113,7 +113,8 @@ public class IconProvider {
     public Drawable getIcon(ApplicationInfo info, int iconDpi) {
         return getIcon(info, info, iconDpi);
     }
-    private Drawable getIcon(PackageItemInfo info, ApplicationInfo appInfo, int iconDpi) {
+
+    public Drawable getIcon(PackageItemInfo info, ApplicationInfo appInfo, int iconDpi) {
         String packageName = info.packageName;
         ThemeData td = getThemeDataForPackage(packageName);
         Drawable icon = null;
