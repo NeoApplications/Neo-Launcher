@@ -97,7 +97,7 @@ fun DrawerPrefsPage() {
     val otherPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
-                /*prefs.drawerHiddenAppSet,*/
+                prefs.drawerHiddenAppSet,
                 prefs.drawerEnableProtectedApps,
                 if (prefs.drawerEnableProtectedApps.getValue())
                     prefs.drawerProtectedAppsSet

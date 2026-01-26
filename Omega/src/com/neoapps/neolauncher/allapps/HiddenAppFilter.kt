@@ -20,39 +20,28 @@ package com.neoapps.neolauncher.allapps
 
 import android.content.ComponentName
 import android.content.Context
-import android.os.UserHandle
+import android.os.Process
 import com.android.launcher3.AppFilter
+import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import javax.inject.Inject
 
-class CustomAppFilter(private val mContext: Context) : AppFilter(mContext) {
-    fun shouldShowApp(componentName: ComponentName?, user: UserHandle?): Boolean {
-        return super.shouldShowApp(componentName)
-                && !isHiddenApp(mContext, ComponentKey(componentName, user))
+class HiddenAppFilter @Inject constructor(@ApplicationContext context: Context) :
+    AppFilter(context) {
+
+    override fun shouldShowApp(componentName: ComponentName): Boolean {
+        val key = ComponentKey(componentName, Process.myUserHandle())
+        return super.shouldShowApp(componentName) && !isHiddenApp(key)
     }
 
     companion object {
-        fun setComponentNameState(context: Context, comp: String, hidden: Boolean) {
-            val hiddenApps = getHiddenApps(context)
-            while (hiddenApps.contains(comp)) {
-                hiddenApps.remove(comp)
-            }
-            if (hidden) {
-                hiddenApps.add(comp)
-            }
-            setHiddenApps(context, hiddenApps)
+        private fun isHiddenApp(key: ComponentKey?): Boolean {
+            return getHiddenAppList().contains(key.toString())
         }
 
-        fun isHiddenApp(context: Context, key: ComponentKey?): Boolean {
-            return getHiddenApps(context).contains(key.toString())
-        }
-
-        private fun getHiddenApps(context: Context): MutableSet<String> {
+        private fun getHiddenAppList(): MutableSet<String> {
             return HashSet(NeoPrefs.getInstance().drawerHiddenAppSet.getValue())
-        }
-
-        private fun setHiddenApps(context: Context, hiddenApps: Set<String>?) {
-            NeoPrefs.getInstance().drawerHiddenAppSet.setValue(hiddenApps!!)
         }
     }
 }

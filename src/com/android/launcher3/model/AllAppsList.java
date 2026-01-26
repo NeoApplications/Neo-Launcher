@@ -30,7 +30,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.android.launcher3.AppFilter;
 import com.android.launcher3.Flags;
 import com.android.launcher3.compat.AlphabeticIndexCompat;
 import com.android.launcher3.dagger.LauncherAppSingleton;
@@ -44,6 +43,7 @@ import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.FlagOp;
 import com.android.launcher3.util.PackageManagerHelper;
+import com.neoapps.neolauncher.allapps.HiddenAppFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +77,7 @@ public class AllAppsList {
     private final IconCache mIconCache;
 
     @NonNull
-    private final AppFilter mAppFilter;
+    private final HiddenAppFilter mAppFilter;
 
     @NonNull
     private final Provider<AppsListRepository> mRepo;
@@ -100,7 +100,7 @@ public class AllAppsList {
      */
     @Inject
     public AllAppsList(@NonNull IconCache iconCache,
-                       @NonNull AppFilter appFilter,
+                       @NonNull HiddenAppFilter appFilter,
                        @NonNull Provider<AppsListRepository> repositoryProvider) {
         mIconCache = iconCache;
         mAppFilter = appFilter;

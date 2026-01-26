@@ -2,12 +2,10 @@
 package com.android.launcher3.model;
 
 import static android.appwidget.AppWidgetProviderInfo.WIDGET_FEATURE_HIDE_FROM_PICKER;
-
 import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
 import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
 import static com.android.launcher3.pm.ShortcutConfigActivityInfo.queryList;
 import static com.android.launcher3.widget.WidgetSections.NO_CATEGORY;
-
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
@@ -40,6 +38,7 @@ import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.WidgetManagerHelper;
 import com.android.launcher3.widget.WidgetSections;
 import com.android.wm.shell.Flags;
+import com.neoapps.neolauncher.allapps.HiddenAppFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,14 +73,14 @@ public class WidgetsModel {
     private final Context mContext;
     private final InvariantDeviceProfile mIdp;
     private final IconCache mIconCache;
-    private final AppFilter mAppFilter;
+    private final HiddenAppFilter mAppFilter;
 
     @Inject
     public WidgetsModel(
             @ApplicationContext Context context,
             InvariantDeviceProfile idp,
             IconCache iconCache,
-            AppFilter appFilter) {
+            HiddenAppFilter appFilter) {
         mContext = context;
         mIdp = idp;
         mIconCache = iconCache;
@@ -91,7 +90,7 @@ public class WidgetsModel {
     public WidgetsModel(Context context) {
         this(context,
                 LauncherAppState.getIDP(context),
-                LauncherAppState.getInstance(context).getIconCache(), new AppFilter(context));
+                LauncherAppState.getInstance(context).getIconCache(), new HiddenAppFilter(context));
     }
 
     /**

@@ -1081,7 +1081,8 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.SEARCH_HIDDEN_APPS_ENABLED,
         titleId = R.string.title_search_hidden_apps,
         summaryId = R.string.summary_search_hidden_apps,
-        defaultValue = false
+        defaultValue = false,
+        onChange = { recreate() }
     )
 
     val searchFuzzy = BooleanPref(

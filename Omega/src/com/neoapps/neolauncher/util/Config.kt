@@ -38,7 +38,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.neoapps.neolauncher.allapps.CustomAppFilter
+import com.neoapps.neolauncher.allapps.HiddenAppFilter
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PrefKey
@@ -75,13 +75,13 @@ class Config(val context: Context) {
         } else Resources.getSystem().configuration.locales[0]
     }
 
-    fun getAppsList(filter: CustomAppFilter?): MutableList<LauncherActivityInfo> {
+    fun getAppsList(filter: HiddenAppFilter?): MutableList<LauncherActivityInfo> {
         val apps = ArrayList<LauncherActivityInfo>()
         val profiles = UserCache.INSTANCE[context].userProfiles
         val launcherApps = context.getSystemService(LauncherApps::class.java)
         profiles.forEach { apps += launcherApps.getActivityList(null, it) }
         return if (filter != null) {
-            apps.filter { filter.shouldShowApp(it.componentName, it.user) }.toMutableList()
+            apps.filter { filter.shouldShowApp(it.componentName) }.toMutableList()
         } else {
             apps
         }
