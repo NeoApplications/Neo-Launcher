@@ -81,7 +81,7 @@ fun ProfilePrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.profileWindowCornerRadius,
-                //prefs.profileAllowRotation,
+                prefs.profileAllowRotation,
                 //prefs.profileShowTopShadow
             ).toTypedArray()
         )

@@ -344,18 +344,6 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    // TODO fix this
-    var desktopWidgetCornerRadius = FloatPref(
-        dataStore = dataStore,
-        key = PrefKey.DESKTOP_WIDGETS_CORNER_RADIUS,
-        titleId = R.string.title_desktop_widget_corner_radius,
-        defaultValue = 16f,
-        maxValue = 24f,
-        minValue = 1f,
-        steps = 22,
-        specialOutputs = { "${it.roundToInt()}dp" },
-    )
-
     var desktopPopup = StringMultiSelectionPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_POPUP_OPTIONS,
