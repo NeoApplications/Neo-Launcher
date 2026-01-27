@@ -320,7 +320,9 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_LABELS_HIDE,
         titleId = R.string.title__desktop_hide_icon_labels,
         defaultValue = false,
-        onChange = { reloadGrid() }
+        onChange = {
+            reloadGrid()
+        }
     )
 
     val desktopLabelScale = FloatPref(
@@ -714,7 +716,10 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_LABELS_HIDE,
         titleId = R.string.title__drawer_hide_icon_labels,
         defaultValue = false,
-        onChange = { reloadGrid() }
+        onChange = {
+            reloadGrid()
+            pokeChange()
+        }
     )
 
     val drawerMultilineLabel = BooleanPref(
