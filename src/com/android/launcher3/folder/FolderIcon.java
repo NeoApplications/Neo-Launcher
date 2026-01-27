@@ -208,7 +208,9 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
         icon.setClipToPadding(false);
         icon.mFolderName = icon.findViewById(R.id.folder_icon_name);
-        icon.mFolderName.applyLabel(folderInfo.title);
+        if (icon.mFolderName.shouldShowLabel()) {
+            icon.mFolderName.applyLabel(folderInfo.title);
+        }
         icon.mFolderName.setCompoundDrawablePadding(0);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) icon.mFolderName.getLayoutParams();
         lp.topMargin = grid.getWorkspaceIconProfile().getIconSizePx()

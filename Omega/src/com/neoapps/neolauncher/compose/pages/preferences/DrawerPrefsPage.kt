@@ -63,8 +63,8 @@ fun DrawerPrefsPage() {
     }
 
     val iconPrefs = listOf(
-        /*prefs.drawerIconScale,
-        prefs.drawerHideLabels,*/
+        //prefs.drawerIconScale,
+        prefs.drawerHideLabels,
         prefs.drawerMultilineLabel,
         //prefs.drawerLabelScale,
         prefs.drawerPopup,

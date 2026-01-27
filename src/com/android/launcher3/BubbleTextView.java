@@ -250,6 +250,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private boolean mThemeAllAppsIcons;
     private CancellableTask mIconLoadRequest;
+    private boolean mShouldShowLabel;
     private final NeoPrefs prefs = NeoPrefs.getInstance();
 
     private boolean mHighResUpdateInProgress = false;
@@ -286,6 +287,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     mDeviceProfile.getWorkspaceIconProfile().getIconDrawablePaddingPx());
             defaultIconSize = mDeviceProfile.getWorkspaceIconProfile().getIconSizePx();
             setCenterVertically(mDeviceProfile.getWorkspaceIconProfile().getIconCenterVertically());
+            mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
         } else if (mDisplay == DISPLAY_ALL_APPS || mDisplay == DISPLAY_PREDICTION_ROW
                 || mDisplay == DISPLAY_SEARCH_RESULT_APP_ROW) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -294,24 +296,29 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     mDeviceProfile.getAllAppsProfile().getIconDrawablePaddingPx());
             defaultIconSize = mDeviceProfile.getAllAppsProfile().getIconSizePx();
             mThemeAllAppsIcons = prefs.getProfileThemedIcons().getValue();
+            mShouldShowLabel = !prefs.getDrawerHideLabels().getValue();
         } else if (mDisplay == DISPLAY_FOLDER) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mDeviceProfile.getFolderProfile().getChildTextSizePx());
             setCompoundDrawablePadding(
                     mDeviceProfile.getFolderProfile().getChildDrawablePaddingPx());
             defaultIconSize = mDeviceProfile.getFolderProfile().getChildIconSizePx();
+            mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
         } else if (mDisplay == DISPLAY_SEARCH_RESULT) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mDeviceProfile.getAllAppsProfile().getIconTextSizePx());
             defaultIconSize = getResources().getDimensionPixelSize(R.dimen.search_row_icon_size);
+            mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
         } else if (mDisplay == DISPLAY_SEARCH_RESULT_SMALL) {
             defaultIconSize = getResources().getDimensionPixelSize(
                     R.dimen.search_row_small_icon_size);
+            mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
         } else if (mDisplay == DISPLAY_TASKBAR) {
             defaultIconSize = mDeviceProfile.getTaskbarProfile().getIconSize();
         } else {
             // widget_selection or shortcut_popup
             defaultIconSize = mDeviceProfile.getWorkspaceIconProfile().getIconSizePx();
+            mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
         }
 
 
@@ -641,6 +648,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     private void applyLabel(@Nullable CharSequence label, @Nullable CharSequence contentDescription,
             boolean isTextWithArchivingIcon, boolean isItemDisabled) {
+        if (mShouldShowLabel) {
         if (label != null) {
             mLastOriginalText = label;
             mLastModifiedText = mLastOriginalText;
@@ -655,6 +663,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             setContentDescription(isItemDisabled
                     ? getContext().getString(R.string.disabled_app_label, contentDescription)
                     : contentDescription);
+        }
         }
     }
 
@@ -1101,6 +1110,10 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         } else {
             super.setTextColor(getModifiedColor());
         }
+    }
+
+    public boolean shouldShowLabel() {
+        return mShouldShowLabel;
     }
 
     public boolean shouldTextBeVisible() {

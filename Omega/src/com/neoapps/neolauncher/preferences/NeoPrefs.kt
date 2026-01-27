@@ -723,7 +723,11 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title__multiline_labels,
         defaultValue = false,
         onChange = {
-            legacyPrefs.savePreference("pref_enable_two_line_toggle", it)
+            if (drawerHideLabels.getValue()) {
+                legacyPrefs.savePreference("pref_enable_two_line_toggle", false)
+            } else {
+                legacyPrefs.savePreference("pref_enable_two_line_toggle", it)
+            }
         }
     )
 
