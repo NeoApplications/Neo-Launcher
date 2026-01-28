@@ -17,10 +17,24 @@
  */
 package com.neoapps.neolauncher.compose.pages.preferences
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,18 +46,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
+import com.neoapps.neolauncher.compose.components.ListItemWithIcon
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.move
 import com.neoapps.neolauncher.compose.icons.Phosphor
 import com.neoapps.neolauncher.compose.icons.phosphor.Plus
 import com.neoapps.neolauncher.data.SearchProviderRepository
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.theme.GroupItemShape
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.getKoin
+import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -102,7 +124,7 @@ fun SearchProvidersPage() {
             )
         }
     ) { paddingValues ->
-        /*LazyColumn(
+        LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .fillMaxSize()
@@ -164,12 +186,14 @@ fun SearchProvidersPage() {
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.ic_plus),
+                                    painter = painterResource(id = R.drawable.ic_rows),
                                     contentDescription = null,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
                         },
+                        index = subIndex,
+                        groupSize = enabledItems.size
                     )
                 }
             }
@@ -208,13 +232,15 @@ fun SearchProvidersPage() {
                     endCheckbox = {
                         Spacer(modifier = Modifier.height(32.dp))
                     },
+                    index = subIndex,
+                    groupSize = disabledItems.size
                 )
             }
 
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-        }*/
+        }
     }
 
     if (openDialog.value) {

@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.compose.icons.Phosphor
@@ -45,6 +46,7 @@ fun ListItemWithIcon(
     modifier: Modifier = Modifier,
     title: String,
     summary: String = "",
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f),
     index: Int = 0,
     groupSize: Int = 1,
     startIcon: (@Composable () -> Unit)? = null,
@@ -70,7 +72,7 @@ fun ListItemWithIcon(
         },
         trailingContent = endCheckbox?.apply {} ?: {},
         colors = ListItemDefaults.colors(
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+            containerColor = containerColor
         )
     )
 }
@@ -79,32 +81,32 @@ fun ListItemWithIcon(
 @Composable
 fun PreviewListItemWithIcon() {
     Column {
-    ListItemWithIcon(
-        title = "System Iconpack",
-        modifier = Modifier.clickable { },
-        summary = "com.neoapps.neolauncher",
-        startIcon = {
-            Image(
-                Phosphor.BracketsCurly,
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(40.dp)
-                    .background(
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45F)
-                    )
-            )
+        ListItemWithIcon(
+            title = "System Iconpack",
+            modifier = Modifier.clickable { },
+            summary = "com.neoapps.neolauncher",
+            startIcon = {
+                Image(
+                    Phosphor.BracketsCurly,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45F)
+                        )
+                )
 
-        },
-        endCheckbox = {
-            RadioButton(
-                selected = false,
-                onClick = null
-            )
-        },
-        index = 0,
-        groupSize = 2
-    )
+            },
+            endCheckbox = {
+                RadioButton(
+                    selected = false,
+                    onClick = null
+                )
+            },
+            index = 0,
+            groupSize = 2
+        )
         Spacer(modifier = Modifier.height(2.dp))
         ListItemWithIcon(
             title = "System Iconpack",
