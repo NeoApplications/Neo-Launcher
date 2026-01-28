@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "com.android.launcher3.flags"
     compileSdk = 36
@@ -26,11 +30,6 @@ android {
         }
         release {
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"

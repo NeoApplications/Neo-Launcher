@@ -2,6 +2,10 @@ plugins {
     id 'com.android.library'
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace 'com.neoapps.hiddenapi'
     compileSdk 36
@@ -25,11 +29,6 @@ android {
         }
         release {
         }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
     }
 
     gradle.projectsEvaluated {

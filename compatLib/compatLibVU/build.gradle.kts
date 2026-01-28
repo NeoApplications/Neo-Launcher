@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     compileSdk = 36
     namespace = "app.lawnchair.compatlib.fourteen"
@@ -28,11 +32,6 @@ android {
         }
         release {
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 

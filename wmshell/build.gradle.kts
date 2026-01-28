@@ -6,6 +6,11 @@ plugins {
     alias(libs.plugins.protobuf)
     alias(libs.plugins.kotlin.parcelize)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "com.android.wm.shell"
     compileSdk = 36
@@ -50,10 +55,6 @@ android {
 
     packaging {
         resources.excludes += "META-INF/gradle/incremental.annotation.processors"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {

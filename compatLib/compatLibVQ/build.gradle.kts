@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     compileSdk = 36
     namespace = "app.lawnchair.compatlib.ten"
@@ -29,11 +33,6 @@ android {
         release {
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
 }
 
 val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"
