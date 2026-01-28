@@ -34,7 +34,7 @@ import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.NeoPrefs.Companion.prefsModule
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.util.minSDK
-import org.chickenhook.restrictionbypass.Unseal
+//import org.chickenhook.restrictionbypass.Unseal
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -61,7 +61,7 @@ class NeoApp : Application() {
         }
         if (minSDK(Build.VERSION_CODES.P)) {
             try {
-                Unseal.unseal()
+                //Unseal.unseal()
                 Log.i(TAG, "Unseal success!")
             } catch (e: Exception) {
                 Log.e(TAG, "Unseal fail!")

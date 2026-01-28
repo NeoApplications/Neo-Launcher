@@ -285,7 +285,6 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.hilt.compiler)
     ksp(libs.hilt.android)
-    //implementation(libs.hoko.blur)
     implementation(libs.koin.android)
     implementation(libs.koin.annotations)
     implementation(libs.kotlin.stdlib) {
@@ -306,7 +305,7 @@ dependencies {
     implementation(libs.palette.ktx)
     implementation(libs.preference.ktx)
     implementation(libs.protobuf.javalite)
-    implementation(libs.restriction.bypass)
+    //implementation(libs.restriction.bypass)
     implementation(libs.recyclerview)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

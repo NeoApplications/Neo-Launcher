@@ -97,7 +97,6 @@ graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", versi
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
-hoko-blur = { module = "io.github.hokofly:hoko-blur", version.ref = "hoko-blur" }
 jakarta-inject = { group = "jakarta.inject", name = "jakarta.inject-api", version.ref = "jakarta-inject" }
 java-inject = { group = "javax.inject", name = "javax.inject", version.ref = "inject" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -119,8 +118,7 @@ palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = 
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-lib" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recycler-view" }
-#noinspection Aligned16KB
-restriction-bypass = { module = "com.github.ChickenHook:RestrictionBypass", version.ref = "restriction-bypass" }
+#restriction-bypass = { module = "com.github.ChickenHook:RestrictionBypass", version.ref = "restriction-bypass" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
