@@ -47,7 +47,7 @@ internal interface ViewModel {
  * @param key a unique key to remember the view model
  */
 @Composable
-fun <T : ViewModel> rememberViewModel(key: Any = Unit, factory: () -> T): T {
+internal fun <T : ViewModel> rememberViewModel(key: Any = Unit, factory: () -> T): T {
     val instance = remember(key) { factory() }
     // Here we initialize our view model using the launched effect so that it is tied to lifecycle
     // of the UI.
