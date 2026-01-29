@@ -27,6 +27,7 @@ import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.graphics.ShapeDelegate.Companion.DEFAULT_PATH_SIZE_INT
 import com.android.launcher3.graphics.ShapeDelegate.Companion.pickBestShape
+import com.android.launcher3.graphics.ThemeManager.Companion.createIconShape
 import com.android.launcher3.graphics.theme.IconThemeFactory
 import com.android.launcher3.graphics.theme.ThemePreference
 import com.android.launcher3.graphics.theme.ThemePreference.Companion.MONO_THEME_VALUE
@@ -172,6 +173,7 @@ constructor(
             }
 
         return IconState(
+            key = shapeModel?.key ?: "",
             iconMask = iconMask,
             folderRadius = folderRadius,
             themeController = iconControllerFactory,
@@ -183,6 +185,7 @@ constructor(
     }
 
     data class IconState(
+        val key: String,
         val iconMask: String,
         val folderRadius: Float,
         val themeController: IconThemeController?,
@@ -193,7 +196,7 @@ constructor(
         val folderShape: ShapeDelegate,
         val shapeRadius: Float,
     ) {
-        fun toUniqueId() = "$themeCode,$isCircle"
+        fun toUniqueId() = "$key,$themeCode,$isCircle"
 
         val iconShapeInfo = IconShapeInfo.fromPath(iconShape.getPath(), DEFAULT_PATH_SIZE_INT)
         val folderShapeInfo = IconShapeInfo.fromPath(folderShape.getPath(), DEFAULT_PATH_SIZE_INT)

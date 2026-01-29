@@ -1258,13 +1258,11 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     init {
-        val iconShape = IconShape.fromString(context, profileIconShape.getValue())
-        initializeIconShape(iconShape)
         profileIconShape.get()
-            .drop(1)
             .distinctUntilChanged()
             .onEach { shape ->
-                initializeIconShape(IconShape.fromString(context, shape))
+                val iconShape = IconShape.fromString(context, profileIconShape.getValue())
+                initializeIconShape(iconShape)
                 ThemeManager.INSTANCE.get(context)
                 LauncherAppState.getInstance(context).model.reloadIfActive()
             }

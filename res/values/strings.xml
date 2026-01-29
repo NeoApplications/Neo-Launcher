@@ -570,5 +570,15 @@
     <string name="seven_sided_cookie_shape_title">7-sided cookie</string>
     <!-- label for arch shape option in customization picker -->
     <string name="arch_shape_title">Arch</string>
+    <string name="sharp_square_shape_title">Sharp Square</string>
+    <string name="rounded_square_shape_title">Rounded Square</string>
+    <string name="squircle_shape_title">Squircle</string>
+    <string name="sammy_shape_title">Samsung</string>
+    <string name="teardrop_shape_title">Teardrop</string>
+    <string name="cylinder_shape_title">Cylinder</string>
+    <string name="cupertino_shape_title">iOS (Cupertino)</string>
+    <string name="hexagon_shape_title">Hexagon</string>
+    <string name="octagon_shape_title">Octagon</string>
+    <string name="egg_shape_title">Egg</string>
 
 </resources>

@@ -20,10 +20,12 @@ package com.neoapps.neolauncher.icons
 
 import android.content.Context
 import android.graphics.Path
+import android.graphics.PathIterator
 import android.graphics.PointF
 import android.util.Log
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.shapes.IconShapeModel
 
 open class IconShape(
     private val topLeft: Corner,
@@ -368,6 +370,47 @@ open class IconShape(
         }
     }
 
+    open fun toPathString(): String {
+        val path = getMaskPath()
+        return pathToSvgString(path)
+    }
+
+    open fun getFolderRadiusRatio(): Float {
+        val avgScale = (topLeft.scale.x + topLeft.scale.y +
+                topRight.scale.x + topRight.scale.y +
+                bottomLeft.scale.x + bottomLeft.scale.y +
+                bottomRight.scale.x + bottomRight.scale.y) / 8f
+        return avgScale
+    }
+
+    open fun getShapeRadius(): Float {
+        return when (this) {
+            is Circle        -> 26f
+            is Square        -> 17.33f
+            is SharpSquare   -> 0f
+            is RoundedSquare -> 20f
+            is Squircle      -> 26f
+            is Sammy         -> 26f
+            is Teardrop      -> 22f
+            is Cylinder      -> 24f
+            is Cupertino     -> 16f
+            is Hexagon       -> 15f
+            is Octagon       -> 18f
+            is Egg           -> 23f
+            else             -> 26f // Default for custom shapes
+        }
+    }
+
+    fun toIconShapeModel(key: String, titleId: Int): IconShapeModel {
+        return IconShapeModel(
+            key = key,
+            titleId = titleId,
+            pathString = toPathString(),
+            folderRadiusRatio = getFolderRadiusRatio(),
+            shapeRadius = getShapeRadius()
+        )
+    }
+
     companion object {
 
         fun fromString(context: Context, value: String): IconShape {
@@ -380,20 +423,21 @@ open class IconShape(
         }
 
         fun fromString(value: String): IconShape = when (value) {
-            "circle" -> Circle
-            "square" -> Square
-            "sharpSquare" -> SharpSquare
+            // TODO add constants instead of string literals
+            "circle"        -> Circle
+            "square"        -> Square
+            "sharpSquare"   -> SharpSquare
             "roundedSquare" -> RoundedSquare
-            "squircle" -> Squircle
-            "sammy" -> Sammy
-            "teardrop" -> Teardrop
-            "cylinder" -> Cylinder
-            "cupertino" -> Cupertino
-            "hexagon" -> Hexagon
-            "octagon" -> Octagon
-            "egg" -> Egg
-            "" -> Circle
-            else -> runCatching { parseCustomShape(value) }.getOrDefault(Circle)
+            "squircle"      -> Squircle
+            "sammy"         -> Sammy
+            "teardrop"      -> Teardrop
+            "cylinder"      -> Cylinder
+            "cupertino"     -> Cupertino
+            "hexagon"       -> Hexagon
+            "octagon"       -> Octagon
+            "egg"           -> Egg
+            ""              -> Circle
+            else            -> runCatching { parseCustomShape(value) }.getOrDefault(Circle)
         }
 
         private fun parseCustomShape(value: String): IconShape {
@@ -405,6 +449,59 @@ open class IconShape(
                 Corner.fromString(parts[2]),
                 Corner.fromString(parts[3]),
                 Corner.fromString(parts[4])
+            )
+        }
+
+        private fun pathToSvgString(path: Path): String {
+            return buildString {
+                val points = FloatArray(8)
+                val iterator = path.pathIterator
+
+                while (iterator.hasNext()) {
+                    when (iterator.next(points, 0)) {
+                        PathIterator.VERB_MOVE  -> {
+                            append("M${points[0]} ${points[1]} ")
+                        }
+
+                        PathIterator.VERB_LINE  -> {
+                            append("L${points[0]} ${points[1]} ")
+                        }
+
+                        PathIterator.VERB_CONIC -> {
+                            append("C${points[0]} ${points[1]} ")
+                            append("${points[2]} ${points[3]} ")
+                            append("${points[4]} ${points[5]} ")
+                        }
+
+                        PathIterator.VERB_QUAD  -> {
+                            append("Q${points[0]} ${points[1]} ")
+                            append("${points[2]} ${points[3]} ")
+                        }
+
+                        PathIterator.VERB_CLOSE -> append("Z ")
+                    }
+                }
+            }.trim()
+        }
+
+        fun getAllShapeModels(): Array<IconShapeModel> {
+            return arrayOf(
+                // TODO use constants instead of string literals for keys
+                Circle.toIconShapeModel("circle", R.string.circle_shape_title),
+                Square.toIconShapeModel("square", R.string.square_shape_title),
+                SharpSquare.toIconShapeModel("sharp_square", R.string.sharp_square_shape_title),
+                RoundedSquare.toIconShapeModel(
+                    "rounded_square",
+                    R.string.rounded_square_shape_title
+                ),
+                Squircle.toIconShapeModel("squircle", R.string.squircle_shape_title),
+                Sammy.toIconShapeModel("sammy", R.string.sammy_shape_title),
+                Teardrop.toIconShapeModel("teardrop", R.string.teardrop_shape_title),
+                Cylinder.toIconShapeModel("cylinder", R.string.cylinder_shape_title),
+                Cupertino.toIconShapeModel("cupertino", R.string.cupertino_shape_title),
+                Hexagon.toIconShapeModel("hexagon", R.string.hexagon_shape_title),
+                Octagon.toIconShapeModel("octagon", R.string.octagon_shape_title),
+                Egg.toIconShapeModel("egg", R.string.egg_shape_title)
             )
         }
 
