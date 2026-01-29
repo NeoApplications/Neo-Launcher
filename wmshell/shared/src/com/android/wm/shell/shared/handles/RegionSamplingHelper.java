@@ -95,6 +95,7 @@ public class RegionSamplingHelper implements View.OnAttachStateChangeListener,
     /**
      * @deprecated Pass a main executor.
      */
+    @Deprecated
     public RegionSamplingHelper(View sampledView, SamplingCallback samplingCallback,
             Executor backgroundExecutor) {
         this(sampledView, samplingCallback, sampledView.getContext().getMainExecutor(),

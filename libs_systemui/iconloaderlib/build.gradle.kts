@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     compileSdk = 36
     namespace = "com.android.launcher3.icons"
@@ -27,10 +31,6 @@ android {
         }
         release {
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 

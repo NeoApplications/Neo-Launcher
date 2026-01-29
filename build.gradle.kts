@@ -71,6 +71,15 @@ configurations.all {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "com.android.launcher3"
     compileSdk = 36
@@ -81,14 +90,6 @@ android {
         applicationId = "com.saggitt.omega"
         javaCompileOptions.annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
             "true"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                ksp {
-                    arg("room.schemaLocation", "$projectDir/schemas")
-                    arg("room.incremental", "true")
-                }
-            }
-        }
         versionName = "1.0.1"
         versionCode = 1006
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
@@ -169,11 +170,6 @@ android {
         compose = true
         dataBinding = true
         aidl = true
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 
     packaging {
@@ -289,7 +285,6 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.hilt.compiler)
     ksp(libs.hilt.android)
-    implementation(libs.hoko.blur)
     implementation(libs.koin.android)
     implementation(libs.koin.annotations)
     implementation(libs.kotlin.stdlib) {
@@ -310,7 +305,7 @@ dependencies {
     implementation(libs.palette.ktx)
     implementation(libs.preference.ktx)
     implementation(libs.protobuf.javalite)
-    implementation(libs.restriction.bypass)
+    //implementation(libs.restriction.bypass)
     implementation(libs.recyclerview)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

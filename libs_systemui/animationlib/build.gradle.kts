@@ -1,6 +1,11 @@
 plugins{
     alias(libs.plugins.android.library)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     compileSdk = 36
     namespace = "com.android.systemui.animationlib"
@@ -33,11 +38,6 @@ android {
         }
         release {
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
     
     buildFeatures {

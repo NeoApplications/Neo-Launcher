@@ -28,6 +28,9 @@
 [<img src="get_codeberg.svg" alt="Get it on Codeberg" width="24%" align="center">](https://codeberg.org/NeoApplications/Neo-Launcher/releases)
 [<img src="get_github.svg" alt="Get it on GitHub" width="24%" align="center">](https://github.com/NeoApplications/Neo-Launcher/releases)
 
+> [!IMPORTANT]
+> **This project is not abandoned.** It's just that we (Saul and Antonios) both faced couple of barriers on private life level and technically (on AOSP's side). But the A16-based version is in progress.
+
 [![Neo Applications Banner](neo_banner.png)](https://github.com/NeoApplications)
 
 ## Community :speech_balloon:

@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "android.app.smartspace"
     compileSdk = 36
@@ -36,11 +40,6 @@ android {
 
     tasks.withType<JavaCompile> {
         options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 

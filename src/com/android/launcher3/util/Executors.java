@@ -74,6 +74,7 @@ public class Executors {
      * executor annotated with {@link
      * com.android.launcher3.concurrent.annotations.LightweightBackground} instead.
      */
+    @Deprecated
     public static final LooperExecutor DATA_HELPER_EXECUTOR =
             new LooperExecutor("DataThreadHelper", Process.THREAD_PRIORITY_DEFAULT);
 

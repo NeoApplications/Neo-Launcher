@@ -59,7 +59,7 @@ fun SearchPrefsPage() {
     val searchPrefs = listOf(
         prefs.searchDrawerEnabled,
         prefs.searchFuzzy,
-        //prefs.searchProvidersEdit,
+        prefs.searchProvidersEdit,
         prefs.searchHiddenApps
     )
     val feedPrefs = listOf(

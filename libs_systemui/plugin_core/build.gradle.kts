@@ -3,6 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins{
     alias(libs.plugins.android.library)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     compileSdk = 36
     namespace = "com.android.systemui.plugin_core"
@@ -28,11 +33,6 @@ android {
         }
         release {
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
     
     buildFeatures {
