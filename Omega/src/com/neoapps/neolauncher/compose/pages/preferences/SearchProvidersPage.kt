@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.ListItemWithIcon
@@ -172,8 +173,8 @@ fun SearchProvidersPage() {
                         containerColor = bgColor,
                         title = item.name,
                         startIcon = {
-                            Image(
-                                painter = painterResource(id = item.iconId),
+                            AsyncImage(
+                                model = item.iconId,
                                 contentDescription = item.name,
                                 modifier = Modifier.size(30.dp)
                             )
@@ -223,8 +224,8 @@ fun SearchProvidersPage() {
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     title = item.name,
                     startIcon = {
-                        Image(
-                            painter = painterResource(id = item.iconId),
+                        AsyncImage(
+                            model = item.iconId,
                             contentDescription = item.name,
                             modifier = Modifier.size(30.dp)
                         )
