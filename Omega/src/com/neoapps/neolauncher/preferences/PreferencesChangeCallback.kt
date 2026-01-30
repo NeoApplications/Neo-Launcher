@@ -40,7 +40,6 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
     }
 
     fun restart() {
-        reloadGrid()
-        recreate()
+        launcher.scheduleRestart()
     }
 }

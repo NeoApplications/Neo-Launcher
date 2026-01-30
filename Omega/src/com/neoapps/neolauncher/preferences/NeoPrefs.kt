@@ -77,7 +77,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -934,7 +933,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_ENABLED,
         titleId = R.string.title_smartspace,
         defaultValue = false,
-        onChange = { reloadModel() }
+        onChange = { restart() }
     )
 
     val smartspaceBackground = BooleanPref(

@@ -114,6 +114,7 @@ import com.android.launcher3.util.SplitConfigurationOptions.SplitPositionOption;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -170,7 +171,8 @@ public final class Utilities {
     public static final boolean IS_DEBUG_DEVICE = BuildConfig.IS_DEBUG_DEVICE;
 
     public static boolean qsbOnFirstScreen() {
-        return !injectableModelItems() && WIDGET_ON_FIRST_SCREEN;
+        NeoPrefs prefs = NeoPrefs.getInstance();
+        return !injectableModelItems() && WIDGET_ON_FIRST_SCREEN && prefs.getSmartspaceEnable().getValue();
     }
     public static final int TRANSLATE_UP = 0;
     public static final int TRANSLATE_DOWN = 1;

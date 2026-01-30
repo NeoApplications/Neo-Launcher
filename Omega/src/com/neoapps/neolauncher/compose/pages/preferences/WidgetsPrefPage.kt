@@ -66,8 +66,8 @@ fun WidgetsPrefsPage() {
             prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name
         mutableStateListOf(
             *listOfNotNull(
-                /*prefs.smartspaceEnable,
-                prefs.smartspaceBackground,
+                prefs.smartspaceEnable,
+                /*prefs.smartspaceBackground,
                 prefs.smartspaceDate,
                 if (prefs.smartspaceDate.getValue()) prefs.smartspaceCalendar
                 else null,
