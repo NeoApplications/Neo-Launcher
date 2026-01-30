@@ -492,7 +492,6 @@
     <string name="title_override_corner_radius_value">Радиус глобального угла</string>
     <string name="show_top_shadow">Показывать верхнюю тень</string>
     <string name="color_wallpaper_secondary">Вторичный обоев</string>
-    <string name="web_search_phind">Phind (Веб)</string>
     <string name="title_smartspace_time_format">Формат времени</string>
     <string name="title_calendar_gregorian">Григорианский</string>
     <string name="title_smartspace_calendar">Выбрать календарь</string>

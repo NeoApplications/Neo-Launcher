@@ -492,7 +492,6 @@
     <string name="tab_color">標籤顏色</string>
     <string name="tab_manage_apps">管理應用程式</string>
     <string name="none">無</string>
-    <string name="web_search_phind">Phind（網頁）</string>
     <string name="web_search_perplexity">Perplexity（網頁）</string>
     <string name="web_search_searx">Searx（網頁）</string>
     <string name="hotseat_accessibility_expand">Dock 展開</string>

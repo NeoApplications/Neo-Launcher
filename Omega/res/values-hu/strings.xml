@@ -484,7 +484,6 @@
     <string name="drag_to_disable_packs">Húzza lefelé a kikapcsoláshoz</string>
     <string name="tap_to_enable">Koppintson az elemre az engedélyezéséhez</string>
     <string name="enabled_events">Engedélyezve</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="title_override_corner_radius_value">Globális saroksugár</string>
     <string name="web_search_searx">Searx (Web)</string>
     <string name="dash_line_size">Pontozott vonal mérete</string>
