@@ -69,9 +69,9 @@ fun WidgetsPrefsPage() {
                 prefs.smartspaceEnable,
                 prefs.smartspaceBackground,
                 prefs.smartspaceDate,
-                /*
+
                 prefs.smartspaceTime,
-                prefs.smartspaceTime24H,*/
+                prefs.smartspaceTime24H,
                 prefs.smartspaceWeatherProvider,
                 if (isOwm) prefs.smartspaceWeatherApiKey else null,
                 if (isOwm) prefs.smartspaceWeatherCity else null,
