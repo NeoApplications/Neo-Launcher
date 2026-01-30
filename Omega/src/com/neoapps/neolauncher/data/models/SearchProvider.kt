@@ -160,13 +160,6 @@ data class SearchProvider(
             suggestionUrl = null,
         )
 
-        private val PHIND = defaultProvider(
-            name = "Phind",
-            iconId = R.drawable.ic_phind,
-            searchUrl = "https://www.phind.com/search?q=%s",
-            suggestionUrl = null,
-        )
-
         private val QWANT = defaultProvider(
             name = "Qwant",
             iconId = R.drawable.ic_qwant,
@@ -233,7 +226,7 @@ data class SearchProvider(
         val defaultProviders = listOf(
             ALTERNATIVE_TO, BAIDU, BING, BRAVE, DUCKDUCKGO,
             ECOSIA, GOOGLE, METAGER_ORG, METAGER_DE, METAGER_ES,
-            OPENVERSE, PERPLEXITY, PHIND, QWANT, REDDIT, SEARX_INFO,
+            OPENVERSE, PERPLEXITY, QWANT, REDDIT, SEARX_INFO,
             STARTPAGE, SWISSCOWS, WOLFRAM_ALPHA, YAHOO, YANDEX, YOU,
         )
 
