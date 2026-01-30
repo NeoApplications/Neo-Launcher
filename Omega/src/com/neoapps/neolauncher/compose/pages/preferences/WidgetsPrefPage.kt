@@ -67,8 +67,8 @@ fun WidgetsPrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.smartspaceEnable,
-                /*prefs.smartspaceBackground,
-                prefs.smartspaceDate,
+                prefs.smartspaceBackground,
+                /*prefs.smartspaceDate,
                 if (prefs.smartspaceDate.getValue()) prefs.smartspaceCalendar
                 else null,
                 prefs.smartspaceTime,

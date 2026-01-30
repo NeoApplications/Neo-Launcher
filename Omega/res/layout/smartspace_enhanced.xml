@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/smartspace_card_pager"
         android:layout_width="match_parent"
@@ -20,4 +19,5 @@
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
         android:layoutDirection="ltr"/>
+
 </com.google.android.systemui.smartspace.BcSmartspaceView>
