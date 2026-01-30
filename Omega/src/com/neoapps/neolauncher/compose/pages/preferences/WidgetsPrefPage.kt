@@ -68,9 +68,8 @@ fun WidgetsPrefsPage() {
             *listOfNotNull(
                 prefs.smartspaceEnable,
                 prefs.smartspaceBackground,
-                /*prefs.smartspaceDate,
-                if (prefs.smartspaceDate.getValue()) prefs.smartspaceCalendar
-                else null,
+                prefs.smartspaceDate,
+                /*
                 prefs.smartspaceTime,
                 prefs.smartspaceTime24H,*/
                 prefs.smartspaceWeatherProvider,
