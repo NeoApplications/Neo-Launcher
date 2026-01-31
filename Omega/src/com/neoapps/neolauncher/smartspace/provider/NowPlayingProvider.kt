@@ -11,9 +11,11 @@ import com.neoapps.neolauncher.preferences.PreferenceActivity
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 
 class NowPlayingProvider(context: Context) : SmartspaceDataSource(
     context, R.string.event_provider_now_playing
@@ -56,7 +58,7 @@ class NowPlayingProvider(context: Context) : SmartspaceDataSource(
 
     override suspend fun requiresSetup(): Boolean =
         isNotificationServiceEnabled(context = context).not() ||
-                notificationDotsEnabled(context = context).first().not()
+                withContext(Dispatchers.IO) { notificationDotsEnabled(context).first() }.not()
 
     override suspend fun startSetup(activity: Activity) {
         val intent = PreferenceActivity.navigateIntent(activity, Routes.PREFS_WIDGETS)
