@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.os.Build
 import android.provider.AlarmClock
 import com.android.launcher3.R
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
@@ -33,13 +34,19 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun alarmTarget(): List<SmartspaceTarget> {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
-        if (alarmManager.nextAlarmClock != null
-            && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
-                30
-            )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                return emptyList()
+            }
+        }
+
+        val alarmClock = alarmManager.nextAlarmClock
+        if (alarmClock != null &&
+            alarmClock.showIntent.isActivity &&
+            alarmClock.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(30)
         ) {
-            val alarmClock = alarmManager.nextAlarmClock!!
             val title = context.getString(R.string.resuable_text_alarm)
             val calendarTrigerTime = Calendar.getInstance()
             calendarTrigerTime.timeInMillis = alarmClock.triggerTime
@@ -62,7 +69,6 @@ class AlarmEventProvider(context: Context) : SmartspaceDataSource(
         }
 
         return emptyList()
-
     }
 
     private fun getPendingIntent(): PendingIntent {
