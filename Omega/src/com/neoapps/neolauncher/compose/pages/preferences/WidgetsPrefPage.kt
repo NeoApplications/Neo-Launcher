@@ -76,7 +76,7 @@ fun WidgetsPrefsPage() {
                 if (isOwm) prefs.smartspaceWeatherApiKey else null,
                 if (isOwm) prefs.smartspaceWeatherCity else null,
                 prefs.smartspaceWeatherUnit,
-                //prefs.smartspaceEventProviders
+                prefs.smartspaceEventProviders
             ).toTypedArray()
         )
     }
