@@ -36,7 +36,6 @@ class BcSmartspaceCard @JvmOverloads constructor(
     private var progressView: ProgressBar? = null
     lateinit var target: SmartspaceTarget
     private var titleTextView: TextView? = null
-    private var topPadding = 0
     private var usePageIndicatorUi = false
     private var textGroup: ViewGroup? = null
     private var secondaryCardGroup: ViewGroup? = null

@@ -964,6 +964,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_TIME,
         titleId = R.string.title_smartspace_time,
         defaultValue = true,
+        onChange = { pokeChange() }
     )
 
     val smartspaceTime24H = BooleanPref(
@@ -971,6 +972,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_TIME_24H,
         titleId = R.string.title_smartspace_time_24_h,
         defaultValue = false,
+        onChange = { restart() }
     )
 
     var smartspaceWeatherApiKey = StringTextPref(
@@ -985,6 +987,9 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_CITY,
         titleId = R.string.weather_city,
         defaultValue = context.getString(R.string.default_city),
+        onChange = {
+            pokeChange()
+        }
     )
 
     val smartspaceWeatherUnit = StringSelectionPref(
@@ -992,7 +997,8 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_UNIT,
         titleId = R.string.title_smartspace_weather_units,
         defaultValue = Temperature.Unit.Celsius.toString(),
-        entries = temperatureUnitOptions
+        entries = temperatureUnitOptions,
+        onChange = { recreate() }
     )
 
     var smartspaceWeatherProvider = StringSelectionPref(

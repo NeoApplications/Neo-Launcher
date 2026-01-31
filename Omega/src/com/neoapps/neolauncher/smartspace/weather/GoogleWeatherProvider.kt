@@ -121,11 +121,35 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
         return listOfNotNull(card, weather)
     }
 
+    private fun convertTemperature(temperature: String): String {
+        val targetUnit = Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())
+        val value = try {
+            temperature.substring(
+                0,
+                temperature.indexOfFirst { (it !in '0'..'9') && it != '-' }
+            ).toInt()
+        } catch (e: StringIndexOutOfBoundsException) {
+            return temperature
+        }
+
+        val currentUnit = when {
+            temperature.contains("C") -> Temperature.Unit.Celsius
+            temperature.contains("F") -> Temperature.Unit.Fahrenheit
+            temperature.contains("K") -> Temperature.Unit.Kelvin
+            else -> return temperature
+        }
+
+        val temp = Temperature(value, currentUnit)
+        val convertedValue = temp.inUnit(targetUnit)
+
+        return "$convertedValue${targetUnit.suffix}"
+    }
+
     private fun parseWeatherData(
         weatherIcon: Bitmap?,
         temperatureText: TextView?
     ): SmartspaceTarget? {
-        val temperature = temperatureText?.text?.toString()
+        val temperature = convertTemperature(temperatureText?.text.toString())
         val pendingIntent = (temperatureText?.parent as? View)?.pendingIntent
         val weatherData = parseWeatherData(
             weatherIcon, temperature, pendingIntent
@@ -172,7 +196,7 @@ class GoogleWeatherProvider(context: Context) : SmartspaceDataSource(
                 try {
                     val value = temperature.substring(
                         0,
-                        temperature.indexOfFirst { (it < '0' || it > '9') && it != '-' }).toInt()
+                        temperature.indexOfFirst { (it !in '0'..'9') && it != '-' }).toInt()
                     WeatherData(
                         weatherIcon, Temperature(
                             value, when {
