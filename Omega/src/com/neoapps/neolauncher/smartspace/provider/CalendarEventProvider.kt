@@ -7,9 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
-import android.net.Uri
 import android.provider.CalendarContract
 import android.text.format.DateFormat
+import androidx.core.net.toUri
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.navigation.Routes
 import com.neoapps.neolauncher.preferences.PreferenceActivity
@@ -38,8 +38,8 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
         CalendarContract.Events.CUSTOM_APP_PACKAGE
     )
     private val oneMinute = TimeUnit.MINUTES.toMillis(1)
-    private val includeBehind = oneMinute * 15
-    private val includeAhead = oneMinute * 60
+    private val includeBehind = oneMinute * 20
+    private val includeAhead = oneMinute * 20
 
     init {
         internalTargets = flow {
@@ -57,9 +57,9 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
     private fun calendarTarget(): List<SmartspaceTarget> {
         val events = getNextEvent()
 
-        return if (events != null && events.isNotEmpty()) {
+        return if (!events.isNullOrEmpty()) {
             val eventTargets = mutableListOf<SmartspaceTarget>()
-            events.map { event ->
+            events.forEach { event ->
                 val timeText = "${formatTime(event.start)} – ${formatTime(event.end)}"
                 val subtitle = event.location?.let { "$it $timeText" } ?: timeText
 
@@ -111,7 +111,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
 
     private fun getPendingIntent(event: CalendarEvent): PendingIntent? {
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("content://com.android.calendar/events/${event.id}")
+            data = "content://com.android.calendar/events/${event.id}".toUri()
             `package` = event.appPackage
         }
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
