@@ -19,7 +19,9 @@
 package com.neoapps.neolauncher.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -48,7 +50,6 @@ import com.neoapps.neolauncher.preferences.StringMultiSelectionPref
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.preferences.StringTextPref
 import com.neoapps.neolauncher.smartspace.weather.OWMWeatherProvider
-import com.neoapps.neolauncher.util.firstBlocking
 import com.neoapps.neolauncher.util.prefs
 
 @Composable
@@ -69,7 +70,6 @@ fun WidgetsPrefsPage() {
                 prefs.smartspaceEnable,
                 prefs.smartspaceBackground,
                 prefs.smartspaceDate,
-
                 prefs.smartspaceTime,
                 prefs.smartspaceTime24H,
                 prefs.smartspaceWeatherProvider,
@@ -85,13 +85,13 @@ fun WidgetsPrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.notificationDots,
-                prefs.notificationCustomColor,
+                /*prefs.notificationCustomColor,
                 if (prefs.notificationCustomColor.get().firstBlocking()) {
                     prefs.notificationBackground
                 } else {
                     null
                 },
-                prefs.notificationCount
+                prefs.notificationCount*/
             ).toTypedArray()
         )
     }
@@ -113,14 +113,14 @@ fun WidgetsPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
-            /*item {
+            item {
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__notifications),
                     prefs = notificationsPrefs,
                     onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-            }*/
+            }
         }
 
         if (openDialog.value) {
