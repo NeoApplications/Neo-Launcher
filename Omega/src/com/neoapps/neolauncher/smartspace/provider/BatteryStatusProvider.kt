@@ -18,6 +18,7 @@
 
 package com.neoapps.neolauncher.smartspace.provider
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -77,11 +78,17 @@ class BatteryStatusProvider(context: Context) : SmartspaceDataSource(
                 id = "batteryStatusAction",
                 icon = Icon.createWithResource(context, iconResId),
                 title = title,
-                subtitle = subtitle
+                subtitle = subtitle,
+                pendingIntent = getPendingIntent()
             ),
             score = SmartspaceScores.SCORE_BATTERY,
             featureType = SmartspaceTarget.FEATURE_BATTERY
         )
+    }
+
+    private fun getPendingIntent(): PendingIntent? {
+        val intent = Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 
     private fun computeChargeTimeRemaining(): Long {
