@@ -36,6 +36,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
     private var progressView: ProgressBar? = null
     lateinit var target: SmartspaceTarget
     private var titleTextView: TextView? = null
+    private var topPadding = 0
     private var usePageIndicatorUi = false
     private var textGroup: ViewGroup? = null
     private var secondaryCardGroup: ViewGroup? = null
@@ -192,10 +193,10 @@ class BcSmartspaceCard @JvmOverloads constructor(
                 } catch (e: Exception) {
                     null
                 }?.apply {
-                    if (!progressBar.isVisible) progressBar.visibility = VISIBLE
+                    if (!progressBar.isVisible) progressBar.visibility = View.VISIBLE
                     progressBar.progress = this
                 } ?: {
-                    if (progressBar.isVisible) progressBar.visibility = GONE
+                    if (progressBar.isVisible) progressBar.visibility = View.GONE
                 }
             }
         }

@@ -1,60 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+     Copyright (C) 2022 Benzo Rom
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/text_group"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.google.android.systemui.smartspace.DoubleShadowTextView
+        android:id="@+id/title_text"
+        style="@style/EnhancedSmartspaceTextTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/smartspace_subtitle_group"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/text_group"
-        android:clipChildren="false"
-        android:clipToPadding="false"
+        android:id="@+id/smartspace_subtitle_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/smartspace_extras_group"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_text">
+
+        <include layout="@layout/smartspace_subtitle_pane" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/smartspace_extras_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_min="wrap"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/smartspace_subtitle_group">
 
-        <com.google.android.systemui.smartspace.DoubleShadowTextView
-            android:id="@+id/title_text"
-            android:focusable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/smartspace_subtitle_group"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            style="@style/EnhancedSmartspaceTextTitle"/>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/smartspace_subtitle_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/enhanced_smartspace_subtitle_margin_top"
-            app:layout_constraintBottom_toTopOf="@+id/smartspace_extras_group"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title_text">
-
-            <include layout="@layout/smartspace_subtitle_text"/>
-
-            <include layout="@layout/smartspace_subtitle_supplemental"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:gravity="top"
-            android:orientation="horizontal"
-            android:id="@+id/smartspace_extras_group"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_min="wrap"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/smartspace_subtitle_group">
-
-        <include layout="@layout/smartspace_extras"/>
-
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <include layout="@layout/smartspace_extras" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

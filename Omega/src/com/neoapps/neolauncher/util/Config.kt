@@ -45,6 +45,7 @@ import com.neoapps.neolauncher.preferences.PrefKey
 import com.neoapps.neolauncher.smartspace.provider.AlarmEventProvider
 import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
 import com.neoapps.neolauncher.smartspace.provider.CalendarEventProvider
+import com.neoapps.neolauncher.smartspace.provider.NotificationUnreadProvider
 import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
 import com.neoapps.neolauncher.smartspace.weather.BlankWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider
@@ -140,6 +141,7 @@ class Config(val context: Context) {
             NowPlayingProvider::class.java.name to R.string.event_provider_now_playing,
             CalendarEventProvider::class.java.name to R.string.smartspace_provider_calendar,
             AlarmEventProvider::class.java.name to R.string.name_provider_alarm_events,
+            NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
         )
 
         fun smartspaceWeatherProviders(context: Context) = mapOf(
