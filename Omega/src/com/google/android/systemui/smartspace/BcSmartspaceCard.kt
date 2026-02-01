@@ -7,9 +7,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.android.launcher3.R
@@ -22,7 +22,7 @@ import java.util.UUID
 
 class BcSmartspaceCard @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : LinearLayout(context, attrs) {
+) : ConstraintLayout(context, attrs) {
 
     private var baseActionIconSubtitleView: DoubleShadowTextView? = null
     private var dateView: IcuDateTextView? = null
