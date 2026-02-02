@@ -40,6 +40,7 @@ class SmartspaceProvider private constructor(context: Context) {
             NowPlayingProvider::class.java.name    -> NowPlayingProvider(context)
             CalendarEventProvider::class.java.name -> CalendarEventProvider(context)
             AlarmEventProvider::class.java.name    -> AlarmEventProvider(context)
+            NotificationUnreadProvider::class.java.name -> NotificationUnreadProvider(context)
             else                                   -> null
         }?.let { dataSources.add(it) }
     }

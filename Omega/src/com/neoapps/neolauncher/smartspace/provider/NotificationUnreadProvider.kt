@@ -2,7 +2,6 @@ package com.neoapps.neolauncher.smartspace.provider
 
 import android.app.Notification
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.service.notification.StatusBarNotification
 import android.text.TextUtils
@@ -10,6 +9,7 @@ import com.android.launcher3.R
 import com.android.launcher3.util.PackageUserKey
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.flowerpot.FlowerpotApps
+import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import com.saulhdev.smartspace.uitemplatedata.BaseTemplateData
 import com.saulhdev.smartspace.uitemplatedata.BaseTemplateData.SubItemInfo
@@ -35,7 +35,7 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
     private var zenModeEnabled = false
     private var currentNotifications = emptyList<StatusBarNotification>()
 
-    override val internalTargets: Flow<List<SmartspaceTarget>> = callbackFlow<Unit> {
+    override val internalTargets: Flow<List<SmartspaceTarget>> = callbackFlow {
         val zenModeListener = ZenModeListener(context.contentResolver) {
             zenModeEnabled = it
             trySend(Unit)
@@ -58,6 +58,8 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
             }
         }
 
+        manager.onNotificationFullRefresh()
+
         awaitClose {
             zenModeListener.stopListening()
             job.cancel()
@@ -77,7 +79,7 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
 
     private fun isCommunicationApp(sbn: StatusBarNotification): Boolean {
         return tmpKey.updateFromNotification(sbn)
-                && flowerpotApps?.packageMatches?.contains(tmpKey) != false
+                && (flowerpotApps == null || flowerpotApps?.packageMatches?.contains(tmpKey) != false)
     }
 
     private fun findCurrentNotification(): StatusBarNotification? {
@@ -108,7 +110,7 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
         }
         lines.addAll(splitted.reversed())
 
-        val appName = getAppName(sbn.packageName)
+        val appName = context.getAppName(sbn.packageName).toString()
         if (!lines.contains(appName)) {
             lines.add(appName)
         }
@@ -127,6 +129,14 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
         else null
 
         val clickIntent = sbn.notification.contentIntent
+
+        val headerAction = SmartspaceAction(
+            id = sbn.key,
+            icon = sbn.notification.smallIcon,
+            title = titleText,
+            subtitle = bodyText,
+            pendingIntent = clickIntent
+        )
 
         val subItemInfo = SubItemInfo(
             primaryText,
@@ -153,6 +163,7 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
 
         return SmartspaceTarget(
             smartspaceTargetId = context.getString(R.string.event_provider_unread_notifications),
+            headerAction = headerAction,
             featureType = SmartspaceTarget.FEATURE_MISSED_CALL, // Using this as a placeholder for communication
             templateData = templateData,
             creationTimeMillis = sbn.notification.`when`
@@ -183,15 +194,6 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
             templateData = templateData,
             score = 100
         )
-    }
-
-    private fun getAppName(packageName: String): String {
-        return try {
-            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
-            context.packageManager.getApplicationLabel(appInfo).toString()
-        } catch (e: PackageManager.NameNotFoundException) {
-            packageName
-        }
     }
 
     private fun splitTitle(title: String): Array<String> {

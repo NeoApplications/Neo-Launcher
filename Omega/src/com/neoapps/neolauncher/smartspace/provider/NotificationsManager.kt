@@ -51,7 +51,7 @@ class NotificationsManager(@Suppress("UNUSED_PARAMETER") context: Context) {
     fun onNotificationFullRefresh() {
         scope.launch(Dispatchers.IO) {
             val tmpMap = runCatching {
-                NotificationListener().activeNotifications?.associateBy { it.key }
+                NotificationListener.getInstanceIfConnected()?.activeNotifications?.associateBy { it.key }
             }.getOrNull()
             withContext(Dispatchers.Main) {
                 notificationsMap.clear()
@@ -95,4 +95,3 @@ fun Context.getAppName(name: String): CharSequence {
     }
     return name
 }
-
