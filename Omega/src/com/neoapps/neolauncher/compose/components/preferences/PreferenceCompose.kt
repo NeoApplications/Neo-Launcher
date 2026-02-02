@@ -592,8 +592,14 @@ fun IntentLauncherPreference(
     isEnabled: Boolean = true,
     onClick: (() -> Unit) = {},
 ) {
-    val summaryId = if (pref.getValue()) R.string.notification_dots_desc_on
-    else R.string.notification_dots_desc_off
+    val state = pref.getter()
+    val summaryId = if (state) {
+        R.string.notification_dots_desc_on
+    } else if (pref.summaryId != -1) {
+        pref.summaryId
+    } else {
+        R.string.notification_dots_desc_off
+    }
 
     BasePreference(
         modifier = modifier,
