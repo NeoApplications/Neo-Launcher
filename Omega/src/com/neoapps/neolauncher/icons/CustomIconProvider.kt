@@ -51,7 +51,7 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
 
     private val prefs = NeoPrefs.getInstance()
     private val iconPackPref = prefs.profileIconPack
-    private val drawerThemedIcons = prefs.profileThemedIcons.getValue()
+    private val drawerThemedIcons get() = prefs.profileThemedIcons.getValue()
     private var isOlderLawnIconsInstalled =
         context.packageManager.getPackageVersionCode(LAWNICONS_PACKAGE_NAME) in 1..3
     private val iconPackProvider = IconPackProvider.INSTANCE.get(context)
@@ -175,6 +175,11 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
 
     fun setIconThemeSupported(isSupported: Boolean) {
         mThemedIconMap = if (isSupported && isOlderLawnIconsInstalled) null else DISABLED_MAP
+    }
+
+    override fun updateSystemState() {
+        super.updateSystemState()
+        mSystemState += ",${iconPackPref.getValue()},$drawerThemedIcons"
     }
 
     override fun getIcon(info: ComponentInfo?): Drawable {

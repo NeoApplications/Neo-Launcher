@@ -79,6 +79,7 @@ constructor(
 ) : LauncherDumpable {
 
     private val mCallbacksList = ArrayList<BgDataModel.Callbacks>(1)
+    private val mPendingTasks = ArrayList<ModelUpdateTask>()
 
     private val mLock = Any()
 
@@ -189,6 +190,9 @@ constructor(
             // Stop any existing loaders first, so they don't set mModelLoaded to true later
             stopLoader()
             mModelLoaded = false
+        }
+        MODEL_EXECUTOR.execute {
+            taskControllerProvider.get().iconCache.clearMemoryCache()
         }
         rebindCallbacks()
     }
@@ -333,9 +337,19 @@ constructor(
         }
 
         fun commit() {
+            val pendingTasks: List<ModelUpdateTask>
             synchronized(mLock) {
                 // Everything loaded bind the data.
                 mModelLoaded = true
+                pendingTasks = ArrayList(mPendingTasks)
+                mPendingTasks.clear()
+            }
+            if (pendingTasks.isNotEmpty()) {
+                MODEL_EXECUTOR.execute {
+                    for (task in pendingTasks) {
+                        task.execute(taskControllerProvider.get(), mBgDataModel, mBgAllAppsList)
+                    }
+                }
             }
             if (Flags.simplifiedLauncherModelBinding())
                 installQueue.resumeModelPush(ItemInstallQueue.FLAG_LOADER_RUNNING)
@@ -387,9 +401,12 @@ constructor(
             return
         }
         MODEL_EXECUTOR.execute {
-            if (!isModelLoaded()) {
-                // Loader has not yet run.
-                return@execute
+            synchronized(mLock) {
+                if (!mModelLoaded) {
+                    // Loader has not yet run.
+                    mPendingTasks.add(task)
+                    return@execute
+                }
             }
             task.execute(taskControllerProvider.get(), mBgDataModel, mBgAllAppsList)
         }
