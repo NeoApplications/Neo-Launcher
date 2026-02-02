@@ -92,7 +92,7 @@ public class NotificationListener extends NotificationListenerService {
         sNotificationListenerInstance = this;
     }
 
-    private static @Nullable NotificationListener getInstanceIfConnected() {
+    public static @Nullable NotificationListener getInstanceIfConnected() {
         return sIsConnected ? sNotificationListenerInstance : null;
     }
 

@@ -38,6 +38,10 @@ class ZenModeListener(
         contentResolver.unregisterContentObserver(this)
     }
 
+    override fun onChange(selfChange: Boolean) {
+        notifyZenModeChange()
+    }
+
     private fun notifyZenModeChange() {
         try {
             val zenModeEnabled = Settings.Global.getInt(contentResolver, ZEN_MODE) != 0
