@@ -29,11 +29,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
 import com.neoapps.neolauncher.smartspace.model.WeatherData
 import com.neoapps.neolauncher.smartspace.provider.SmartspaceDataSource
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
-import com.neoapps.neolauncher.widget.Temperature
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay

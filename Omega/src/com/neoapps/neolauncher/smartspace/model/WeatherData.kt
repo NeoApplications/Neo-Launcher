@@ -21,7 +21,7 @@ package com.neoapps.neolauncher.smartspace.model
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
-import com.neoapps.neolauncher.widget.Temperature
+import com.neoapps.neolauncher.smartspace.Temperature
 
 data class WeatherData(
     val icon: Bitmap,

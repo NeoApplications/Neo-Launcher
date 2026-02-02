@@ -18,7 +18,7 @@ import com.neoapps.neolauncher.dash.controlprovider.Location
 import com.neoapps.neolauncher.dash.controlprovider.MobileData
 import com.neoapps.neolauncher.dash.controlprovider.Sync
 import com.neoapps.neolauncher.dash.controlprovider.Wifi
-import com.neoapps.neolauncher.widget.Temperature
+import com.neoapps.neolauncher.smartspace.Temperature
 
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
 const val PREFS_LANGUAGE_DEFAULT_CODE = "en"

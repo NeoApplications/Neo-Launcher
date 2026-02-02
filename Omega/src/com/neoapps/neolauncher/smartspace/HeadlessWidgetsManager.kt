@@ -1,4 +1,21 @@
-package com.neoapps.neolauncher.widget
+/*
+ * This file is part of Neo Launcher
+ * Copyright (c) 2026   Neo Launcher Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.neoapps.neolauncher.smartspace
 
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHost
@@ -25,7 +42,7 @@ import kotlinx.coroutines.plus
 class HeadlessWidgetsManager(private val context: Context) {
 
     private val scope = MainScope() + CoroutineName("HeadlessWidgetsManager")
-    private val prefs = LauncherPrefs.getDevicePrefs(context)
+    private val prefs = LauncherPrefs.Companion.getDevicePrefs(context)
     private val widgetManager = AppWidgetManager.getInstance(context)
     private val host = HeadlessAppWidgetHost(context)
     private val widgetsMap = mutableMapOf<String, Widget>()
@@ -91,7 +108,7 @@ class HeadlessWidgetsManager(private val context: Context) {
             .onStart { if (!isBound) throw WidgetNotBoundException() }
             .shareIn(
                 scope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Companion.WhileSubscribed(),
                 replay = 1
             )
 

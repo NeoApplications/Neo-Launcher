@@ -15,13 +15,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.android.launcher3.R
 import com.neoapps.neolauncher.preferences.PreferenceActivity
+import com.neoapps.neolauncher.smartspace.HeadlessWidgetsManager
+import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
 import com.neoapps.neolauncher.smartspace.model.WeatherData
 import com.neoapps.neolauncher.smartspace.provider.SmartspaceDataSource
 import com.neoapps.neolauncher.util.pendingIntent
 import com.neoapps.neolauncher.util.recursiveChildren
-import com.neoapps.neolauncher.widget.HeadlessWidgetsManager
-import com.neoapps.neolauncher.widget.Temperature
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.flow.Flow

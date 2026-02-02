@@ -61,6 +61,7 @@ import com.neoapps.neolauncher.iconpack.IconPackProvider
 import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.icons.IconShape
 import com.neoapps.neolauncher.search.SearchProviderController
+import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
 import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider
@@ -69,7 +70,6 @@ import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.CustomPreferencesMigration
 import com.neoapps.neolauncher.util.getFeedProviders
 import com.neoapps.neolauncher.util.languageOptions
-import com.neoapps.neolauncher.widget.Temperature
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

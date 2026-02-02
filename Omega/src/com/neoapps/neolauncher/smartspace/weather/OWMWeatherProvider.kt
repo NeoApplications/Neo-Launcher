@@ -32,6 +32,7 @@ import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import com.kwabenaberko.openweathermaplib.implementation.callback.CurrentWeatherCallback
 import com.kwabenaberko.openweathermaplib.model.currentweather.CurrentWeather
 import com.neoapps.neolauncher.neoApp
+import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
 import com.neoapps.neolauncher.smartspace.model.WeatherData
 import com.neoapps.neolauncher.smartspace.provider.SmartspaceDataSource
@@ -40,7 +41,6 @@ import com.neoapps.neolauncher.smartspace.weather.icons.WeatherIconProvider
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.Permissions.REQUEST_PERMISSION_LOCATION_ACCESS
 import com.neoapps.neolauncher.util.checkLocationAccess
-import com.neoapps.neolauncher.widget.Temperature
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
