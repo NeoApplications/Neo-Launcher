@@ -22,6 +22,7 @@ import android.content.Context
 import android.graphics.Path
 import android.graphics.PathIterator
 import android.graphics.PointF
+import android.os.Build
 import android.util.Log
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -453,35 +454,39 @@ open class IconShape(
         }
 
         private fun pathToSvgString(path: Path): String {
-            return buildString {
-                val points = FloatArray(8)
-                val iterator = path.pathIterator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                return buildString {
+                    val points = FloatArray(8)
+                    val iterator = path.pathIterator
 
-                while (iterator.hasNext()) {
-                    when (iterator.next(points, 0)) {
-                        PathIterator.VERB_MOVE  -> {
-                            append("M${points[0]} ${points[1]} ")
+                    while (iterator.hasNext()) {
+                        when (iterator.next(points, 0)) {
+                            PathIterator.VERB_MOVE -> {
+                                append("M${points[0]} ${points[1]} ")
+                            }
+
+                            PathIterator.VERB_LINE -> {
+                                append("L${points[0]} ${points[1]} ")
+                            }
+
+                            PathIterator.VERB_CONIC -> {
+                                append("C${points[0]} ${points[1]} ")
+                                append("${points[2]} ${points[3]} ")
+                                append("${points[4]} ${points[5]} ")
+                            }
+
+                            PathIterator.VERB_QUAD -> {
+                                append("Q${points[0]} ${points[1]} ")
+                                append("${points[2]} ${points[3]} ")
+                            }
+
+                            PathIterator.VERB_CLOSE -> append("Z ")
                         }
-
-                        PathIterator.VERB_LINE  -> {
-                            append("L${points[0]} ${points[1]} ")
-                        }
-
-                        PathIterator.VERB_CONIC -> {
-                            append("C${points[0]} ${points[1]} ")
-                            append("${points[2]} ${points[3]} ")
-                            append("${points[4]} ${points[5]} ")
-                        }
-
-                        PathIterator.VERB_QUAD  -> {
-                            append("Q${points[0]} ${points[1]} ")
-                            append("${points[2]} ${points[3]} ")
-                        }
-
-                        PathIterator.VERB_CLOSE -> append("Z ")
                     }
-                }
-            }.trim()
+                }.trim()
+            } else {
+                return ""
+            }
         }
 
         fun getAllShapeModels(): Array<IconShapeModel> {
