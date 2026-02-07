@@ -19,7 +19,6 @@ package com.android.launcher3.icons;
 import static android.graphics.Color.luminance;
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.graphics.Paint.FILTER_BITMAP_FLAG;
-
 import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 import static com.android.systemui.shared.Flags.notificationDotContrastBorder;
 
@@ -57,6 +56,11 @@ public class DotRenderer {
 
     private static final int MIN_DOT_SIZE = 1;
 
+    private final Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private static final float TEXT_SIZE_PERCENTAGE = 0.26f;
+    private final int mTextHeight;
+    private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+
     public DotRenderer(int iconSizePx) {
         int size = Math.round(SIZE_PERCENTAGE * iconSizePx);
         if (size <= 0) {
@@ -68,6 +72,13 @@ public class DotRenderer {
         mCircleRadius = builder.radius;
 
         mBitmapOffset = -mBackgroundWithShadow.getHeight() * 0.5f; // Same as width.
+
+        // Measure the text height.
+        Rect tempTextHeight = new Rect();
+        mTextPaint.setTextSize(iconSizePx * TEXT_SIZE_PERCENTAGE);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.getTextBounds("0", 0, 1, tempTextHeight);
+        mTextHeight = tempTextHeight.height();
     }
 
     private static PointF getPathPoint(Path path, float size, float direction) {
@@ -118,8 +129,18 @@ public class DotRenderer {
         mCirclePaint.setColor(Color.BLACK);
         canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
 
-        mCirclePaint.setColor(params.mDotColor);
-        canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
+        boolean isText = params.showCount && params.count != 0;
+        int backgroundWithShadowSize = mBackgroundWithShadow.getHeight(); // Same as width.
+        String count = String.valueOf(params.count);
+
+        if (isText) {
+            mBackgroundPaint.setColor(params.mDotColor);
+            canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f, -backgroundWithShadowSize / 2f, mBackgroundPaint);
+            canvas.drawText(count, 0, mTextHeight / 2f, mTextPaint);
+        } else {
+            mCirclePaint.setColor(params.mDotColor);
+            canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
+        }
         canvas.restore();
     }
 
@@ -135,6 +156,14 @@ public class DotRenderer {
         /** Whether the dot should align to the top left of the icon rather than the top right. */
         @ViewDebug.ExportedProperty(category = "notification dot")
         public boolean leftAlign;
+
+        //CUSTOM BADGE
+        @ViewDebug.ExportedProperty(category = "notification dot")
+        public boolean showCount;
+        @ViewDebug.ExportedProperty(category = "notification dot")
+        public int count;
+        @ViewDebug.ExportedProperty(category = "notification dot")
+        public int notificationKeys;
 
         @NonNull
         public IconShapeInfo shapeInfo = IconShapeInfo.DEFAULT;

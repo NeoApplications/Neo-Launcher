@@ -85,13 +85,13 @@ fun WidgetsPrefsPage() {
         mutableStateListOf(
             *listOfNotNull(
                 prefs.notificationDots,
-                /*prefs.notificationCustomColor,
-                if (prefs.notificationCustomColor.get().firstBlocking()) {
+                prefs.notificationCustomColor,
+                if (prefs.notificationCustomColor.getValue()) {
                     prefs.notificationBackground
                 } else {
                     null
                 },
-                prefs.notificationCount*/
+                prefs.notificationCount
             ).toTypedArray()
         )
     }

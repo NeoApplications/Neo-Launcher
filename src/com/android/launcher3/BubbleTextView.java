@@ -131,7 +131,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     public static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
     public static final int DISPLAY_PREDICTION_ROW = 8;
     public static final int DISPLAY_SEARCH_RESULT_APP_ROW = 9;
-
     private static final float MIN_LETTER_SPACING = -0.05f;
     private static final int MAX_SEARCH_LOOP_COUNT = 20;
     private static final Character NEW_LINE = '\n';
@@ -862,6 +861,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             final int scrollX = getScrollX();
             final int scrollY = getScrollY();
             canvas.translate(scrollX, scrollY);
+            if (mDotInfo != null) {
+                mDotParams.count = mDotInfo.getNotificationCount();
+                mDotParams.notificationKeys = mDotInfo.getNotificationKeys().size();
+                mDotParams.showCount = prefs.getNotificationCount().getValue();
+                if (prefs.getNotificationCustomColor().getValue()) {
+                    mDotParams.setDotColor(prefs.getNotificationBackground().getColor());
+                }
+            }
             mDotRenderer.draw(canvas, mDotParams);
             canvas.translate(-scrollX, -scrollY);
         }

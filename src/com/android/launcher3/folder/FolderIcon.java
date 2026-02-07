@@ -88,6 +88,7 @@ import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.FloatingIconViewCompanion;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -621,7 +622,11 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             Utilities.scaleRectAboutCenter(iconBounds, iconScale);
 
             // If we are animating to the accepting state, animate the dot out.
+            NeoPrefs prefs = NeoPrefs.getInstance();
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getAcceptScaleProgress());
+            mDotParams.count = mDotInfo.getNotificationCount();
+            if (prefs.getNotificationCount().getValue())
+                mDotParams.showCount = true;
             mDotRenderer.draw(canvas, mDotParams);
         }
     }
