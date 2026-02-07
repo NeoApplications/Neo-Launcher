@@ -241,7 +241,7 @@ public class NotificationListener extends NotificationListenerService {
 
     private void onNotificationSettingsChanged(boolean areNotificationDotsEnabled) {
         if (!areNotificationDotsEnabled && sIsConnected) {
-            requestUnbind();
+            mUiHandler.post(this::requestUnbind);
         }
     }
 
