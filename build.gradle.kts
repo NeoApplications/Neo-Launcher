@@ -199,8 +199,8 @@ android {
 
     sourceSets {
         named("main") {
-            java.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep"))
-            kotlin.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep"))
+            java.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep", "compose"))
+            kotlin.directories.addAll(listOf("src", "src_plugins", "src_no_quickstep", "compose"))
             res.directories.add("res")
             assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
@@ -210,8 +210,8 @@ android {
             kotlin.directories.addAll(listOf("src_flags"))
         }
         named("omega") {
-            java.directories.addAll(listOf("Omega/src", "compose"))
-            kotlin.directories.addAll(listOf("Omega/src", "compose"))
+            java.directories.addAll(listOf("Omega/src"))
+            kotlin.directories.addAll(listOf("Omega/src"))
             res.directories.add("Omega/res")
             aidl.directories.add("Omega/aidl")
             manifest.srcFile("Omega/AndroidManifest.xml")
