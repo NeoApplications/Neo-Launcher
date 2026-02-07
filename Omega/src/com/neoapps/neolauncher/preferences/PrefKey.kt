@@ -128,6 +128,7 @@ object PrefKey {
     val WIDGETS_SMARTSPACE_WEATHER_CITY = stringPreferencesKey("widgets_smartspace_weather_city")
 
     // Notification
+    val NOTIFICATION_DOTS = booleanPreferencesKey("notification_dots")
     val NOTIFICATION_DOTS_CUSTOM = booleanPreferencesKey("notification_dots_custom")
     val NOTIFICATION_DOTS_COLOR = stringPreferencesKey("notification_dots_color")
     val NOTIFICATION_DOTS_COUNT = booleanPreferencesKey("notification_dots_count")

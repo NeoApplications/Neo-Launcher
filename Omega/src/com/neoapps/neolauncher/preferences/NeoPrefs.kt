@@ -848,7 +848,7 @@ class NeoPrefs private constructor(val context: Context) {
     // Notifications & Widgets/Smartspace
     val notificationDots = IntentLauncherPref(
         dataStore = dataStore,
-        key = PrefKey.NOTIFICATION_DOTS_COUNT,
+        key = PrefKey.NOTIFICATION_DOTS,
         titleId = R.string.notification_dots_title,
         summaryId = run {
             val enabledListeners = Settings.Secure.getString(
@@ -1263,10 +1263,11 @@ class NeoPrefs private constructor(val context: Context) {
     )
 
     init {
+        initializeIconShape(IconShape.fromString(context, profileIconShape.getValue()))
         profileIconShape.get()
             .distinctUntilChanged()
             .onEach { shape ->
-                val iconShape = IconShape.fromString(context, profileIconShape.getValue())
+                val iconShape = IconShape.fromString(context, shape)
                 initializeIconShape(iconShape)
                 ThemeManager.INSTANCE.get(context)
                 LauncherAppState.getInstance(context).model.reloadIfActive()
