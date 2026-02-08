@@ -253,6 +253,7 @@ dependencies {
     implementation(project(":smartspace"))
     implementation(project(":widgetpicker"))
     implementation(project(":wmshell"))
+    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-core-16.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
     compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))
 

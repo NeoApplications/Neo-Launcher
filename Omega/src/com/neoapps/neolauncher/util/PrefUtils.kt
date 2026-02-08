@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
+import com.android.launcher3.qsb.OSEManager
 import com.neoapps.neolauncher.groups.AppGroupsManager
 import com.neoapps.neolauncher.preferences.PREFS_LANGUAGE_DEFAULT_CODE
 import com.neoapps.neolauncher.preferences.PREFS_LANGUAGE_DEFAULT_NAME
@@ -103,7 +104,7 @@ val Context.drawerCategorizationOptions: Map<String, String>
 
 fun Context.availableFeedProviders(): List<ApplicationInfo> {
     val packageManager = packageManager
-    val intent = Intent("com.android.launcher3.WINDOW_OVERLAY")
+    val intent = Intent(OSEManager.OVERLAY_ACTION)
         .setData(Uri.parse("app://$packageName"))
     val feedList: MutableList<ApplicationInfo> = ArrayList()
     for (resolveInfo in packageManager.queryIntentServices(

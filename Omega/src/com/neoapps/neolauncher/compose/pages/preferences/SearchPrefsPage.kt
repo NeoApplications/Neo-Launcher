@@ -18,7 +18,9 @@
 package com.neoapps.neolauncher.compose.pages.preferences
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -89,7 +91,7 @@ fun SearchPrefsPage() {
                         prefs = showPrefs,
                         onPrefDialog = onPrefDialog
                 )
-            }
+            }*/
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.title_feed_provider),
@@ -97,7 +99,7 @@ fun SearchPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-            }*/
+            }
         }
 
         if (openDialog.value) {

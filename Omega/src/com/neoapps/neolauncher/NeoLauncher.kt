@@ -42,6 +42,7 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
@@ -69,14 +70,19 @@ import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.hasStoragePermission
+import com.neoapps.neolauncher.util.unsafeLazy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.stream.Stream
 
 class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     ActivityResultRegistryOwner, ThemeManager.ThemeableActivity {
+    private val defaultOverlay by unsafeLazy { OverlayCallbackImpl(this) }
     val prefs: NeoPrefs by inject()
     private val prefCallback = PreferencesChangeCallback(this)
     private var paused = false
@@ -126,6 +132,10 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
                 }
             }
         }, null)
+        prefs.feedProvider.get().distinctUntilChanged().onEach { provider ->
+            val enable = provider != ""
+            defaultOverlay.setEnableFeed(enable)
+        }.launchIn(scope = lifecycleScope)
 
         themeOverride = ThemeOverride(themeSet, this)
         themeOverride.applyTheme(this)
@@ -267,12 +277,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         )
     }
 
-    override fun getDefaultOverlay(): LauncherOverlayManager {
-        if (mOverlayManager == null) {
-            mOverlayManager = OverlayCallbackImpl(this)
-        }
-        return mOverlayManager
-    }
+    override fun getDefaultOverlay(): LauncherOverlayManager = defaultOverlay
 
     override fun onUiChangedWhileSleeping() {
         if (Utilities.ATLEAST_S) {

@@ -18,6 +18,7 @@
 
 package com.neoapps.neolauncher
 
+import android.util.Log
 import android.view.MotionEvent
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
@@ -26,10 +27,10 @@ import com.android.launcher3.LauncherPrefs
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy
-import com.neoapps.launcherclient.IScrollCallback
-import com.neoapps.launcherclient.LauncherClient
-import com.neoapps.launcherclient.LauncherClientCallbacks
-import com.neoapps.launcherclient.StaticInteger
+import com.google.android.libraries.launcherclient.IScrollCallback
+import com.google.android.libraries.launcherclient.LauncherClient
+import com.google.android.libraries.launcherclient.LauncherClientCallbacks
+import com.google.android.libraries.launcherclient.StaticInteger
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -55,6 +56,20 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
         )
     }
 
+    fun reconnect() {
+        mClient?.reconnect()
+    }
+
+    fun setEnableFeed(enable: Boolean) {
+        feedEnabled = enable
+        mClient?.setEnableFeed(enable)
+        reconnect()
+    }
+
+    override fun onDeviceProvideChanged() {
+        mClient?.redraw()
+    }
+
     override fun onAttachedToWindow() {
         job = launcher.launcher.lifecycleScope.launch {
             prefs.feedProvider.get().collect {
@@ -78,6 +93,7 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
 
 
     override fun openOverlay() {
+        Log.d("OverlayCallbackImpl", "openOverlay")
         mClient!!.showOverlay(true)
     }
 
@@ -96,10 +112,6 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
 
     override fun onOverlayMotionEvent(ev: MotionEvent?, scrollProgress: Float) {
 
-    }
-
-    override fun setOverlayCallbacks(callbacks: LauncherOverlayCallbacks) {
-        mLauncherOverlayCallbacks = callbacks
     }
 
     override fun onOverlayScrollChanged(progress: Float) {
@@ -121,6 +133,10 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
 
     override fun onActivityDestroyed() {
         mClient?.onDestroy()
+    }
+
+    override fun setOverlayCallbacks(callbacks: LauncherOverlayCallbacks) {
+        mLauncherOverlayCallbacks = callbacks
     }
 
     override fun setPersistentFlags(myFlags: Int) {

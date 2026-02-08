@@ -387,3 +387,29 @@ fun getFolderPreviewAlpha(context: Context): Int {
 fun minSDK(sdk: Int): Boolean {
     return Build.VERSION.SDK_INT >= sdk
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T : Any> unsafeLazy(noinline initializer: () -> T): Lazy<T> =
+    lazy(LazyThreadSafetyMode.NONE, initializer)
+
+fun getSignatureHash(context: Context, packageName: String): Long? {
+    return try {
+        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            context.packageManager.getPackageInfo(
+                packageName,
+                PackageManager.GET_SIGNING_CERTIFICATES
+            )
+        } else {
+            context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+        }
+
+        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            packageInfo.signingInfo?.apkContentsSigners
+        } else {
+            packageInfo.signatures
+        }
+        signatures?.firstOrNull()?.hashCode()?.toLong()
+    } catch (_: PackageManager.NameNotFoundException) {
+        null
+    }
+}
