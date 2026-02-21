@@ -2,18 +2,17 @@ package com.android.launcher3;
 
 import static com.android.launcher3.config.FeatureFlags.SEPARATE_RECENTS_ACTIVITY;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewDebug;
 import android.view.WindowInsets;
 
 import com.android.launcher3.graphics.SysUiScrim;
-import com.android.launcher3.statemanager.StatefulActivity;
+import com.android.launcher3.statemanager.StatefulContainer;
 import com.android.launcher3.util.window.WindowManagerProxy;
+import com.android.launcher3.views.ActivityContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +21,7 @@ public class LauncherRootView extends InsettableFrameLayout {
 
     private final Rect mTempRect = new Rect();
 
-    private final StatefulActivity mActivity;
+    private final StatefulContainer mStatefulContainer;
 
     @ViewDebug.ExportedProperty(category = "launcher")
     private static final List<Rect> SYSTEM_GESTURE_EXCLUSION_RECT =
@@ -38,25 +37,29 @@ public class LauncherRootView extends InsettableFrameLayout {
 
     public LauncherRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mActivity = StatefulActivity.fromContext(context);
+        mStatefulContainer = ActivityContext.lookupContext(context);
         mSysUiScrim = new SysUiScrim(this);
     }
 
     private void handleSystemWindowInsets(Rect insets) {
         // Update device profile before notifying the children.
-        mActivity.getDeviceProfile().updateInsets(insets);
+        mStatefulContainer.getDeviceProfile().updateInsets(insets);
         boolean resetState = !insets.equals(mInsets);
         setInsets(insets);
 
         if (resetState) {
-            mActivity.getStateManager().reapplyState(true /* cancelCurrentAnimation */);
+            mStatefulContainer.getStateManager().reapplyState(true /* cancelCurrentAnimation */);
         }
     }
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        mActivity.handleConfigurationChanged(mActivity.getResources().getConfiguration());
+        mStatefulContainer.handleConfigurationChanged(
+                mStatefulContainer.asContext().getResources().getConfiguration());
+        return updateInsets(insets);
+    }
 
+    private WindowInsets updateInsets(WindowInsets insets) {
         insets = WindowManagerProxy.INSTANCE.get(getContext())
                 .normalizeWindowInsets(getContext(), insets, mTempRect);
         handleSystemWindowInsets(mTempRect);
@@ -74,7 +77,11 @@ public class LauncherRootView extends InsettableFrameLayout {
     }
 
     public void dispatchInsets() {
-        mActivity.getDeviceProfile().updateInsets(mInsets);
+        if (isAttachedToWindow()) {
+            updateInsets(getRootWindowInsets());
+        } else {
+            mStatefulContainer.getDeviceProfile().updateInsets(mInsets);
+        }
         super.setInsets(mInsets);
     }
 
@@ -112,15 +119,13 @@ public class LauncherRootView extends InsettableFrameLayout {
         mSysUiScrim.setSize(r - l, b - t);
     }
 
-    @TargetApi(Build.VERSION_CODES.Q)
     public void setForceHideBackArrow(boolean forceHideBackArrow) {
         this.mForceHideBackArrow = forceHideBackArrow;
         setDisallowBackGesture(mDisallowBackGesture);
     }
 
-    @TargetApi(Build.VERSION_CODES.Q)
     public void setDisallowBackGesture(boolean disallowBackGesture) {
-        if (!Utilities.ATLEAST_Q || SEPARATE_RECENTS_ACTIVITY.get()) {
+        if (SEPARATE_RECENTS_ACTIVITY.get()) {
             return;
         }
         mDisallowBackGesture = disallowBackGesture;

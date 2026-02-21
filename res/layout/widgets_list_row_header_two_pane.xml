@@ -23,6 +23,7 @@
     android:importantForAccessibility="yes"
     android:focusable="true"
     launcher:appIconSize="48dp"
+    launcher:collapsable="false"
     android:descendantFocusability="afterDescendants"
     android:background="@drawable/bg_widgets_header_two_pane" >
 
@@ -46,11 +47,10 @@
             android:id="@+id/app_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/WidgetListHeader.Title"
             android:layout_gravity="start|center_vertical"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?attr/widgetPickerHeaderAppTitleColor"
-            android:textSize="16sp"
             android:duplicateParentState="true"
             tools:text="App name" />
 
@@ -58,10 +58,9 @@
             android:id="@+id/app_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/WidgetListHeader.SubTitle"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?attr/widgetPickerHeaderAppSubtitleColor"
-            android:alpha="0.7"
             android:duplicateParentState="true"
             tools:text="m widgets, n shortcuts" />
 

@@ -15,10 +15,6 @@
  */
 package com.android.launcher3.tapl;
 
-import static com.android.launcher3.testing.shared.TestProtocol.SEQUENCE_MAIN;
-import static com.android.launcher3.testing.shared.TestProtocol.SEQUENCE_PILFER;
-import static com.android.launcher3.testing.shared.TestProtocol.SEQUENCE_TIS;
-
 import android.os.SystemClock;
 
 import com.android.launcher3.testing.shared.TestProtocol;
@@ -39,6 +35,8 @@ public class LogEventChecker {
     // Map from an event sequence name to an ordered list of expected events in that sequence.
     private final ListMap<Pattern> mExpectedEvents = new ListMap<>();
 
+    private LogExclusionRule mLogExclusionRule = null;
+
     LogEventChecker(LauncherInstrumentation launcher) {
         mLauncher = launcher;
     }
@@ -50,6 +48,10 @@ public class LogEventChecker {
 
     void expectPattern(String sequence, Pattern pattern) {
         mExpectedEvents.add(sequence, pattern);
+    }
+
+    void setLogExclusionRule(LogExclusionRule logExclusionRule) {
+        mLogExclusionRule = logExclusionRule;
     }
 
     // Waits for the expected number of events and returns them.
@@ -78,7 +80,9 @@ public class LogEventChecker {
         final ListMap<String> eventSequences = new ListMap<>();
         for (String rawEvent : rawEvents) {
             final String[] split = rawEvent.split("/");
-            eventSequences.add(split[0], split[1]);
+            if (mLogExclusionRule == null || !mLogExclusionRule.shouldExclude(split[1])) {
+                eventSequences.add(split[0], split[1]);
+            }
         }
         return eventSequences;
     }
@@ -87,25 +91,11 @@ public class LogEventChecker {
         mLauncher.getTestInfo(TestProtocol.REQUEST_STOP_EVENT_LOGGING);
     }
 
-    String verify(long waitForExpectedCountMs, boolean successfulGesture) {
+    String verify(long waitForExpectedCountMs) {
         final ListMap<String> actualEvents = finishSync(waitForExpectedCountMs);
         if (actualEvents == null) return "null event sequences because launcher likely died";
 
-        final String lowLevelDiags = lowLevelMismatchDiagnostics(actualEvents);
-        // If we have a sequence mismatch for a successful gesture, we want to provide all low-level
-        // details.
-        if (successfulGesture) {
-            return lowLevelDiags;
-        }
-
-        final String sequenceMismatchInEnglish = highLevelMismatchDiagnostics(actualEvents);
-
-        if (sequenceMismatchInEnglish != null) {
-            LauncherInstrumentation.log(lowLevelDiags);
-            return "Hint: " + sequenceMismatchInEnglish;
-        } else {
-            return lowLevelDiags;
-        }
+        return lowLevelMismatchDiagnostics(actualEvents);
     }
 
     private String lowLevelMismatchDiagnostics(ListMap<String> actualEvents) {
@@ -138,42 +128,6 @@ public class LogEventChecker {
         }
 
         return hasMismatches ? "Mismatching events: " + sb.toString() : null;
-    }
-
-    private String highLevelMismatchDiagnostics(ListMap<String> actualEvents) {
-        if (!mExpectedEvents.getNonNull(SEQUENCE_TIS).isEmpty()
-                && actualEvents.getNonNull(SEQUENCE_TIS).isEmpty()) {
-            return "TouchInteractionService didn't receive any of the touch events sent by the "
-                    + "test";
-        }
-        if (getMismatchPosition(mExpectedEvents.getNonNull(SEQUENCE_TIS),
-                actualEvents.getNonNull(SEQUENCE_TIS)) != -1) {
-            // If TIS has a mismatch that we can't convert to high-level diags, don't convert
-            // other sequences either.
-            return null;
-        }
-
-        if (mExpectedEvents.getNonNull(SEQUENCE_PILFER).size() == 1
-                && actualEvents.getNonNull(SEQUENCE_PILFER).isEmpty()) {
-            return "Launcher didn't detect the navigation gesture sent by the test";
-        }
-        if (mExpectedEvents.getNonNull(SEQUENCE_PILFER).isEmpty()
-                && actualEvents.getNonNull(SEQUENCE_PILFER).size() == 1) {
-            return "Launcher detected a navigation gesture, but the test didn't send one";
-        }
-        if (getMismatchPosition(mExpectedEvents.getNonNull(SEQUENCE_PILFER),
-                actualEvents.getNonNull(SEQUENCE_PILFER)) != -1) {
-            // If Pilfer has a mismatch that we can't convert to high-level diags, don't analyze
-            // other sequences.
-            return null;
-        }
-
-        if (!mExpectedEvents.getNonNull(SEQUENCE_MAIN).isEmpty()
-                && actualEvents.getNonNull(SEQUENCE_MAIN).isEmpty()) {
-            return "None of the touch or keyboard events sent by the test was received by "
-                    + "Launcher's main thread";
-        }
-        return null;
     }
 
     // If the list of actual events matches the list of expected events, returns -1, otherwise
@@ -228,5 +182,9 @@ public class LogEventChecker {
             }
             return list;
         }
+    }
+
+    interface LogExclusionRule {
+        boolean shouldExclude(String event);
     }
 }

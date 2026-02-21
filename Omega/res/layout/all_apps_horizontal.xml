@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.saulhdev.neolauncher.allapps.HorizontalAppsView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.neoapps.neolauncher.allapps.HorizontalAppsView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/horizontal_all_apps_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_below="@+id/all_apps_search_header_container" />
+    android:layout_below="@+id/all_apps_search_header_container">
+
+    <com.android.launcher3.allapps.AllAppsPagedView
+        android:id="@+id/apps_paged_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false" />
+
+</com.neoapps.neolauncher.allapps.HorizontalAppsView>

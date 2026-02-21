@@ -34,6 +34,7 @@ import static com.android.launcher3.LauncherState.HOTSEAT_ICONS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.WORKSPACE_PAGE_INDICATOR;
 import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
+import static com.android.launcher3.config.FeatureFlags.FOLDABLE_SINGLE_PAGE;
 import static com.android.launcher3.graphics.Scrim.SCRIM_PROGRESS;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_HOTSEAT_FADE;
 import static com.android.launcher3.states.StateAnimationConfig.ANIM_HOTSEAT_SCALE;
@@ -48,6 +49,7 @@ import static com.android.launcher3.states.StateAnimationConfig.SKIP_SCRIM;
 import android.animation.ValueAnimator;
 import android.util.FloatProperty;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 
 import com.android.launcher3.LauncherState.PageAlphaProvider;
@@ -120,7 +122,7 @@ public class WorkspaceStateTransitionAnimation {
                     propertySetter, config);
         }
 
-        int elements = state.getVisibleElements(mLauncher);
+        int elements = state.getVisibleElements(mLauncher.getLauncherUiState());
         Hotseat hotseat = mWorkspace.getHotseat();
         Interpolator scaleInterpolator = config.getInterpolator(ANIM_WORKSPACE_SCALE, ZOOM_OUT);
         LauncherState fromState = mLauncher.getStateManager().getState();
@@ -163,6 +165,8 @@ public class WorkspaceStateTransitionAnimation {
                 state.hasFlag(FLAG_HOTSEAT_INACCESSIBLE)
                         ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                         : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        hotseat.setDescendantFocusability(state.hasFlag(FLAG_HOTSEAT_INACCESSIBLE)
+                ? ViewGroup.FOCUS_BLOCK_DESCENDANTS : ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         Interpolator translationInterpolator =
                 config.getInterpolator(ANIM_WORKSPACE_TRANSLATE, ZOOM_OUT);
@@ -172,9 +176,13 @@ public class WorkspaceStateTransitionAnimation {
                 scaleAndTranslation.translationY, translationInterpolator);
         PageTranslationProvider pageTranslationProvider = state.getWorkspacePageTranslationProvider(
                 mLauncher);
-        for (int i = 0; i < childCount; i++) {
-            applyPageTranslation((CellLayout) mWorkspace.getChildAt(i), i, pageTranslationProvider,
-                    propertySetter, config);
+
+        if (!FOLDABLE_SINGLE_PAGE.get()) {
+            for (int i = 0; i < childCount; i++) {
+                applyPageTranslation((CellLayout) mWorkspace.getChildAt(i), i,
+                        pageTranslationProvider,
+                        propertySetter, config);
+            }
         }
 
         Interpolator hotseatTranslationInterpolator = config.getInterpolator(
@@ -199,7 +207,7 @@ public class WorkspaceStateTransitionAnimation {
         propertySetter.setFloat(sysUiScrim.getSysUIProgress(), AnimatedFloat.VALUE,
                 state.hasFlag(FLAG_HAS_SYS_UI_SCRIM) ? 1 : 0, LINEAR);
 
-        propertySetter.setViewBackgroundColor(mLauncher.getScrimView(),
+        propertySetter.setScrimColors(mLauncher.getScrimView(),
                 state.getWorkspaceScrimColor(mLauncher),
                 config.getInterpolator(ANIM_SCRIM_FADE, ACCELERATE_2));
     }

@@ -44,7 +44,6 @@
     <string name="summary__general_smartspace">Date, time, home widget</string>
     <string name="summary__general_notifications">Badge count, badge color, gestures</string>
     <string name="summary__general_advanced">Language, back up, setting search</string>
-    <string name="summary__general_about">More about Neo Launcher</string>
     <string name="pref_category__interfaces">User Interface</string>
     <string name="pref_category__features">Features</string>
     <string name="pref_category__inputs">Gestures and Search</string>
@@ -122,8 +121,8 @@
     <string name="title_search_hidden_apps">Find hidden apps</string>
     <string name="title_fuzzy_search">Fuzzy Search</string>
     <string name="summary_fuzzy_search">Approximate matching for app searches.</string>
-    <string name="title_app_categorize">Categorize Apps</string>
-    <string name="summary_app_categorize">Choose between Tabs or Folders</string>
+    <string name="title_manage_tabs">Manage Tabs</string>
+    <string name="summary_manage_tabs">Create or edit Tabs</string>
     <string name="summary_search_hidden_apps">Show hidden shortcuts in results.</string>
     <string name="summary_all_apps_google_search">Find web results and apps</string>
     <string name="summary__drawer_hide_apps">Hide app from the app drawer</string>
@@ -134,12 +133,11 @@
     <string name="label_turn_off_suggestions">Disable</string>
     <string name="title_text_color">Text Color</string>
     <string name="title_drawer_layout">Layout Mode</string>
-    <string name="title_drawer_layout_categories">Layout Categories</string>
+    <string name="title_drawer_layout_categories">Manage Categories</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="title_drawer_horizontal">Horizontal</string>
-    <string name="title_drawer_categorized">Categorized</string>
-    <string name="title_drawer_custom_categories">Custom Categories</string>
-    <string name="title_drawer_vertical_list">Vertical List</string>
+    <string name="title_drawer_categorized">Vertical Categories</string>
+    <string name="title_drawer_tabs">Horizontal Tabs</string>
     <string name="title_drawer_paged">Paged</string>
     <string name="dialog_message_change_sort">Change to alphabetical app sorting?</string>
     <string name="cat_desktop_grid">Grid and Layout</string>
@@ -168,6 +166,19 @@
         <item quantity="other">%1$d Hidden</item>
     </plurals>
     <string name="protected_apps">Protected Apps</string>
+    <string name="category_art_and_design">Design</string>
+    <string name="category_business_and_productivity">Productivity</string>
+    <string name="category_communication">Communication</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_game">Games</string>
+    <string name="category_health_and_fitness">Fitness</string>
+    <string name="category_lifestyle">Lifestyle</string>
+    <string name="category_knowledge_and_reference">Knowledge</string>
+    <string name="category_music">Music</string>
+    <string name="category_news">News</string>
+    <string name="category_personalization">Personalization</string>
+    <string name="category_tools">Tools</string>
+    <string name="category_travel_and_navigation">Navigation</string>
     <string name="protected_app_selected">Protected Apps (%1$d)</string>
     <string name="hide_app_selected">Hidden Apps (%1$d)</string>
     <string name="hide_app_reset">Reset hidden apps</string>
@@ -179,6 +190,8 @@
     <string name="msg_missing_usage_access">Turn on usage access for <xliff:g example="My App" id="name">%1$s</xliff:g> to show app suggestions</string>
     <string name="trust_apps_no_lock_error">Please set up a secure lock screen to restrict app access</string>
     <string name="trust_apps_manager_name">Hidden and protected apps</string>
+    <string name="trust_apps_unlock">Unlock</string>
+    <string name="trust_apps_message">Authentication required to access protected apps</string>
     <string name="enable_protected_apps">Turn on protected apps</string>
     <string name="disable_protected_apps">Turn off protected apps</string>
     <string name="disable_protected_apps_message">Turn off protected apps requiring authentication</string>
@@ -535,7 +548,7 @@
     <string name="about_build_information">Build info</string>
     <string name="title__about_donate">Donate</string>
     <string name="title__about_changelog">Changelog</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
+    <string name="title__about_acknowledgement">Acknowledgement</string>
     <string name="about_team">Team Members</string>
     <string name="about_translators_group">Contributors and Translators</string>
     <string name="about_translators">Translators</string>
@@ -634,7 +647,6 @@
     <string name="pref_desktop_mode_settings">Desktop mode settings</string>
     <string name="web_search_metager">Metager (Web)</string>
     <string name="web_search_searx">Searx (Web)</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>

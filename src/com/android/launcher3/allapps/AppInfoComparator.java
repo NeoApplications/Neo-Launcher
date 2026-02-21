@@ -18,6 +18,7 @@ package com.android.launcher3.allapps;
 import android.content.Context;
 import android.os.Process;
 import android.os.UserHandle;
+import android.text.TextUtils;
 
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.pm.UserCache;
@@ -43,9 +44,7 @@ public class AppInfoComparator implements Comparator<AppInfo> {
     @Override
     public int compare(AppInfo a, AppInfo b) {
         // Order by the title in the current locale
-        int result = mLabelComparator.compare(
-                a.title == null ? "" : a.title.toString(),
-                b.title == null ? "" : b.title.toString());
+        int result = mLabelComparator.compare(getSortingTitle(a), getSortingTitle(b));
         if (result != 0) {
             return result;
         }
@@ -63,5 +62,15 @@ public class AppInfoComparator implements Comparator<AppInfo> {
             Long bUserSerial = mUserManager.getSerialNumberForUser(b.user);
             return aUserSerial.compareTo(bUserSerial);
         }
+    }
+
+    private String getSortingTitle(AppInfo info) {
+        if (!TextUtils.isEmpty(info.appTitle)) {
+            return info.appTitle.toString();
+        }
+        if (info.title != null) {
+            return info.title.toString();
+        }
+        return "";
     }
 }

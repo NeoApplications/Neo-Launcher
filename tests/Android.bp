@@ -15,17 +15,34 @@
 package {
     // See: http://go/android-license-faq
     default_applicable_licenses: ["Android-Apache-2.0"],
+    default_team: "trendy_team_launcher",
 }
 
 // Source code used for test
 filegroup {
     name: "launcher-tests-src",
     srcs: [
-      "src/**/*.java",
-      "src/**/*.kt"
+        "src/**/*.java",
+        "src/**/*.kt",
+        "multivalentTests/src/**/*.java",
+        "multivalentTests/src/**/*.kt",
+        "src_e2e/**/*.java",
+        "src_e2e/**/*.kt",
     ],
     exclude_srcs: [
-        ":launcher-non-quickstep-tests-src"
+        ":launcher-non-quickstep-tests-src",
+    ],
+}
+
+filegroup {
+    name: "launcher3-robo-src",
+    // multivalentTests directory is a shared folder for not only robolectric converted test
+    // classes but also shared helper classes.
+    srcs: [
+        "multivalentTests/src/**/*.java",
+        "multivalentTests/src/**/*.kt",
+        "src_deviceless/**/*.java",
+        "src_deviceless/**/*.kt",
     ],
 }
 
@@ -33,8 +50,8 @@ filegroup {
 filegroup {
     name: "launcher-non-quickstep-tests-src",
     srcs: [
-       "src/com/android/launcher3/nonquickstep/**/*.java",
-       "src/com/android/launcher3/nonquickstep/**/*.kt",
+        "src/com/android/launcher3/nonquickstep/**/*.java",
+        "src/com/android/launcher3/nonquickstep/**/*.kt",
     ],
 }
 
@@ -42,37 +59,19 @@ filegroup {
 filegroup {
     name: "launcher-oop-tests-src",
     srcs: [
-      "src/com/android/launcher3/ui/AbstractLauncherUiTest.java",
-      "src/com/android/launcher3/ui/PortraitLandscapeRunner.java",
-      "src/com/android/launcher3/ui/TaplTestsLauncher3.java",
-      "src/com/android/launcher3/util/LauncherLayoutBuilder.java",
-      "src/com/android/launcher3/util/TestUtil.java",
-      "src/com/android/launcher3/util/Wait.java",
-      "src/com/android/launcher3/util/WidgetUtils.java",
-      "src/com/android/launcher3/util/rule/FailureWatcher.java",
-      "src/com/android/launcher3/util/rule/ViewCaptureRule.kt",
-      "src/com/android/launcher3/util/rule/SamplerRule.java",
-      "src/com/android/launcher3/util/rule/ScreenRecordRule.java",
-      "src/com/android/launcher3/util/rule/ShellCommandRule.java",
-      "src/com/android/launcher3/util/rule/TestStabilityRule.java",
-      "src/com/android/launcher3/util/rule/TISBindRule.java",
-      "src/com/android/launcher3/util/viewcapture_analysis/*.java",
-      "src/com/android/launcher3/testcomponent/BaseTestingActivity.java",
-      "src/com/android/launcher3/testcomponent/OtherBaseTestingActivity.java",
-      "src/com/android/launcher3/testcomponent/CustomShortcutConfigActivity.java",
-      "src/com/android/launcher3/testcomponent/TestCommandReceiver.java",
-      "src/com/android/launcher3/testcomponent/TestLauncherActivity.java",
-      "src/com/android/launcher3/testcomponent/ImeTestActivity.java",
+        ":launcher-testing-helpers",
+        ":launcher-oop-tests-only",
     ],
 }
 
 // Library with all the dependencies for building quickstep
 android_library {
     name: "Launcher3TestLib",
-    srcs: [ ],
+    srcs: [],
     asset_dirs: ["assets"],
     resource_dirs: ["res"],
     static_libs: [
+        "flag-junit-base",
         "launcher-aosp-tapl",
         "androidx.test.core",
         "androidx.test.runner",
@@ -82,33 +81,63 @@ android_library {
         "androidx.test.espresso.contrib",
         "androidx.test.espresso.intents",
         "androidx.test.uiautomator_uiautomator",
-        "mockito-target-inline-minus-junit4",
+        "mockito-kotlin2",
+        "mockito-target-extended-minus-junit4",
         "launcher_log_protos_lite",
-        "truth-prebuilt",
+        "truth",
+        "kotlinx_coroutines_test",
         "platform-test-rules",
         "testables",
+        "com_android_launcher3_flags_lib",
+        "com_android_wm_shell_flags_lib",
+        "com_android_systemui_shared_flags_lib",
+        "android.appwidget.flags-aconfig-java",
+        "platform-parametric-runner-lib",
+        "kotlin-reflect",
+        "kotlin-test",
     ],
     manifest: "AndroidManifest-common.xml",
     platform_apis: true,
+    // TODO(b/319712088): re-enable use_resource_processor
+    use_resource_processor: false,
 }
 
 android_library {
     name: "Launcher3TestResources",
     resource_dirs: ["res"],
+    asset_dirs: ["assets"],
+    // TODO(b/319712088): re-enable use_resource_processor
+    use_resource_processor: false,
+    static_libs: [
+        "kotlin-reflect",
+    ],
 }
 
 android_test {
     name: "Launcher3Tests",
+    defaults: [
+        "launcher_compose_tests_defaults",
+    ],
     srcs: [
         ":launcher-tests-src",
         ":launcher-non-quickstep-tests-src",
     ],
-    static_libs: ["Launcher3TestLib"],
-    libs: [
-        "android.test.base",
-        "android.test.runner",
-        "android.test.mock",
+    exclude_srcs: [
+        // Launcher3 tests setup has an issue with resolving a few resources within transitive
+        // compose dependencies that work fine in actual Launcher3 app.
+        "src_e2e/com/android/launcher3/widget/TaplAddWidgetTest.java",
     ],
+    static_libs: [
+        "Launcher3TestLib",
+        "com_android_launcher3_flags_lib",
+        "com_android_systemui_shared_flags_lib",
+    ],
+    libs: [
+        "android.test.base.stubs.system",
+        "android.test.runner.stubs.system",
+        "android.test.mock.stubs.system",
+    ],
+    // Libraries used by mockito inline extended
     jni_libs: [
         "libdexmakerjvmtiagent",
         "libstaticjvmtiagent",
@@ -120,17 +149,90 @@ android_test {
     platform_apis: true,
     test_config: "Launcher3Tests.xml",
     data: [":Launcher3"],
+    plugins: ["dagger2-compiler"],
     test_suites: ["general-tests"],
+    lint: {
+        baseline_filename: "lint-baseline.xml",
+    },
 }
 
-// Shared between tests and launcher
-android_library {
-    name: "launcher-testing-shared",
+filegroup {
+    name: "launcher-testing-helpers-robo",
     srcs: [
-        "shared/com/android/launcher3/testing/shared/**/*.java"
+        "src/**/*.java",
+        "src/**/*.kt",
+        "multivalentTests/src/**/*.java",
+        "multivalentTests/src/**/*.kt",
+        "src/com/android/launcher3/util/ui/AbstractLauncherUiTest.java",
+        "src/com/android/launcher3/util/ui/BaseLauncherTaplTest.java",
+        "tapl/com/android/launcher3/tapl/*.java",
+        "tapl/com/android/launcher3/tapl/*.kt",
     ],
-    resource_dirs: [ ],
-    manifest: "shared/AndroidManifest.xml",
-    sdk_version: "current",
-    min_sdk_version: min_launcher3_sdk_version,
- }
+    exclude_srcs: [
+        // Test classes
+        "src/**/*Test.java",
+        "src/**/*Test.kt",
+        "src/**/RoboApiWrapper.kt",
+        "src/**/EventsRule.kt",
+        "src/**/LauncherCustomizer.kt",
+        "multivalentTests/src/**/*Test.java",
+        "multivalentTests/src/**/*Test.kt",
+    ],
+}
+
+filegroup {
+    name: "launcher-testing-helpers",
+    srcs: [
+        ":launcher-testing-helpers-robo",
+        "src/**/RoboApiWrapper.kt",
+    ],
+}
+
+android_robolectric_test {
+    enabled: true,
+    name: "Launcher3RoboTests",
+    srcs: [
+        ":launcher3-robo-src",
+        ":launcher-testing-helpers-robo",
+    ],
+    exclude_srcs: [
+        //"src/com/android/launcher3/util/CellContentDimensionsTest.kt", // Failing - b/316553889
+
+        // requires modification to work with inline mock maker
+        "src/com/android/launcher3/util/rule/StaticMockitoRule.java",
+    ],
+    java_resource_dirs: ["config"],
+    static_libs: [
+        "flag-junit-base",
+        "flag-junit",
+        "com_android_launcher3_flags_lib",
+        "com_android_wm_shell_flags_lib",
+        "com_android_systemui_shared_flags_lib",
+        "androidx.test.uiautomator_uiautomator",
+        "androidx.core_core-animation-testing",
+        "androidx.test.ext.junit",
+        "androidx.test.espresso.core",
+        "androidx.test.espresso.contrib",
+        "androidx.test.espresso.intents",
+        "androidx.test.rules",
+        "uiautomator-helpers",
+        "inline-mockito-robolectric-prebuilt",
+        "mockito-kotlin-nodeps",
+        "platform-parametric-runner-lib",
+        "platform-test-rules-deviceless",
+        "testables",
+        "Launcher3TestResources",
+        "SystemUISharedLib",
+        "launcher-testing-shared",
+        "android.appwidget.flags-aconfig-java",
+    ],
+    libs: [
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
+        "android.test.mock.stubs.system",
+        "truth",
+    ],
+    instrumentation_for: "Launcher3",
+    plugins: ["dagger2-compiler"],
+    strict_mode: false,
+}

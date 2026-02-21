@@ -255,7 +255,7 @@ public class AddItemActivity extends BaseActivity
                         .addCategory(Intent.CATEGORY_HOME)
                         .setPackage(getPackageName())
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Launcher.ACTIVITY_TRACKER.registerCallback(listener);
+        Launcher.ACTIVITY_TRACKER.registerCallback(listener, "AddItemActivity.onLongClick");
         startActivity(homeIntent, ApiWrapper.createFadeOutAnimOptions(this).toBundle());
         logCommand(LAUNCHER_ADD_EXTERNAL_ITEM_DRAGGED);
         mFinishOnPause = true;
@@ -275,7 +275,7 @@ public class AddItemActivity extends BaseActivity
                 new PinShortcutRequestActivityInfo(mRequest, this);
         mWidgetCell.getWidgetView().setTag(new PendingAddShortcutInfo(shortcutInfo));
         applyWidgetItemAsync(
-                () -> new WidgetItem(shortcutInfo, mApp.getIconCache(), getPackageManager()));
+                () -> new WidgetItem(shortcutInfo, mApp.getIconCache()));
         return new PackageItemInfo(mRequest.getShortcutInfo().getPackage(),
                 mRequest.getShortcutInfo().getUserHandle());
     }

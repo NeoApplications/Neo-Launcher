@@ -17,9 +17,8 @@
   -->
 <resources>
     <!-- String representing the fragment class for settings activity.-->
-    <string name="launcher_activity_logic_class" translatable="false">com.saggitt.omega.util.CustomActivityCachingLogic</string>
-    <string name="app_filter_class" translatable="false">com.saggitt.omega.allapps.CustomAppFilter</string>
-    <string name="config_default_search_provider" translatable="false">com.saggitt.omega.search.webproviders.DDGWebSearchProvider</string>
+    <string name="app_filter_class" translatable="false">com.neoapps.neolauncher.allapps.CustomAppFilter</string>
+    <string name="config_default_search_provider" translatable="false">com.neoapps.neolauncher.search.webproviders.DDGWebSearchProvider</string>
     <string name="calendar_component_name" translatable="false">com.google.android.calendar/com.android.calendar.AllInOneActivity</string>
     <string-array name="dynamic_calendar_components_name">
         <item>com.android.calendar</item>
@@ -35,19 +34,16 @@
         <item>org.withouthat.acalendar</item>
         <item>ws.xsoh.etar</item>
     </string-array>
-    <string name="icon_packs_intent_name" translatable="false">com.neolauncher.icons.THEMED_ICON</string>
+    <string name="icon_packs_intent_name" translatable="false">com.neoapps.neolauncher.icons.THEMED_ICON</string>
     <string name="clock_component_name" translatable="false">com.google.android.deskclock/com.android.deskclock.DeskClock</string>
     <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
 
-    <!-- Out of 100, the percent to shrink the workspace during options mode. -->
-    <integer name="config_workspaceOptionsShrinkPercentage">70</integer>
-
     <!-- Gesture actions -->
-    <string name="action_do_nothing_class" translatable="false">com.saggitt.omega.gestures.BlankGestureHandler</string>
-    <string name="action_open_notifications_class" translatable="false">com.saggitt.omega.gestures.handlers.NotificationsOpenGestureHandler</string>
-    <string name="action_open_drawer_class" translatable="false">com.saggitt.omega.gestures.handlers.OpenDrawerGestureHandler</string>
-    <string name="action_open_overview_class" translatable="false">com.saggitt.omega.gestures.handlers.OpenOverviewGestureHandler</string>
-    <string name="action_open_dash_class" translatable="false">com.saggitt.omega.gestures.handlers.OpenDashGestureHandler</string>
+    <string name="action_do_nothing_class" translatable="false">com.neoapps.neolauncher.gestures.BlankGestureHandler</string>
+    <string name="action_open_notifications_class" translatable="false">com.neoapps.neolauncher.gestures.handlers.NotificationsOpenGestureHandler</string>
+    <string name="action_open_drawer_class" translatable="false">com.neoapps.neolauncher.gestures.handlers.OpenDrawerGestureHandler</string>
+    <string name="action_open_overview_class" translatable="false">com.neoapps.neolauncher.gestures.handlers.OpenOverviewGestureHandler</string>
+    <string name="action_open_dash_class" translatable="false">com.neoapps.neolauncher.gestures.handlers.OpenDashGestureHandler</string>
     <string name="default_owm_key" translatable="false">22415ba03480f0f2d271d4d5b9109652</string>
 
     <string-array name="filtered_components">

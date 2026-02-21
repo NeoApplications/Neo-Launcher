@@ -15,20 +15,20 @@
  */
 package com.android.launcher3.util;
 
-import static android.content.Intent.ACTION_CONFIGURATION_CHANGED;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
-
-import static com.android.launcher3.LauncherPrefs.TASKBAR_PINNING;
+import static com.android.launcher3.Flags.enableScalabilityForDesktopExperience;
+import static com.android.launcher3.InvariantDeviceProfile.TYPE_DESKTOP;
+import static com.android.launcher3.InvariantDeviceProfile.TYPE_MULTI_DISPLAY;
+import static com.android.launcher3.InvariantDeviceProfile.TYPE_PHONE;
+import static com.android.launcher3.InvariantDeviceProfile.TYPE_TABLET;
 import static com.android.launcher3.Utilities.dpiFromPx;
-import static com.android.launcher3.config.FeatureFlags.ENABLE_TASKBAR_PINNING;
-import static com.android.launcher3.config.FeatureFlags.ENABLE_TRANSIENT_TASKBAR;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.FlagDebugUtils.appendFlag;
+import static com.android.launcher3.util.SimpleBroadcastReceiver.packageFilter;
 import static com.android.launcher3.util.window.WindowManagerProxy.MIN_TABLET_WIDTH;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
@@ -36,149 +36,198 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
-import android.os.Build;
 import android.util.ArrayMap;
 import android.util.ArraySet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Display;
+import android.view.DisplayCutout;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.launcher3.InvariantDeviceProfile.DeviceType;
 import com.android.launcher3.LauncherPrefs;
-import com.android.launcher3.Utilities;
+import com.android.launcher3.R;
+import com.android.launcher3.dagger.ApplicationContext;
+import com.android.launcher3.dagger.LauncherAppComponent;
+import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.window.CachedDisplayInfo;
 import com.android.launcher3.util.window.WindowManagerProxy;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.inject.Inject;
 
 /**
  * Utility class to cache properties of default display to avoid a system RPC on every call.
  */
 @SuppressLint("NewApi")
-public class DisplayController implements ComponentCallbacks, SafeCloseable {
+@LauncherAppSingleton
+public class DisplayController {
 
     private static final String TAG = "DisplayController";
     private static final boolean DEBUG = false;
-    private static boolean sTransientTaskbarStatusForTests;
 
     // TODO(b/254119092) remove all logs with this tag
     public static final String TASKBAR_NOT_DESTROYED_TAG = "b/254119092";
 
-    public static final MainThreadInitializedObject<DisplayController> INSTANCE =
-            new MainThreadInitializedObject<>(DisplayController::new);
+    public static final DaggerSingletonObject<DisplayController> INSTANCE =
+            new DaggerSingletonObject<>(LauncherAppComponent::getDisplayController);
 
     public static final int CHANGE_ACTIVE_SCREEN = 1 << 0;
     public static final int CHANGE_ROTATION = 1 << 1;
     public static final int CHANGE_DENSITY = 1 << 2;
     public static final int CHANGE_SUPPORTED_BOUNDS = 1 << 3;
     public static final int CHANGE_NAVIGATION_MODE = 1 << 4;
+    public static final int CHANGE_TASKBAR_PINNING = 1 << 5;
+    public static final int CHANGE_DESKTOP_MODE = 1 << 6;
+    public static final int CHANGE_SHOW_LOCKED_TASKBAR = 1 << 7;
+    public static final int CHANGE_NIGHT_MODE = 1 << 8;
 
     public static final int CHANGE_ALL = CHANGE_ACTIVE_SCREEN | CHANGE_ROTATION
-            | CHANGE_DENSITY | CHANGE_SUPPORTED_BOUNDS | CHANGE_NAVIGATION_MODE;
+            | CHANGE_DENSITY | CHANGE_SUPPORTED_BOUNDS | CHANGE_NAVIGATION_MODE
+            | CHANGE_TASKBAR_PINNING | CHANGE_DESKTOP_MODE | CHANGE_SHOW_LOCKED_TASKBAR
+            | CHANGE_NIGHT_MODE;
 
     private static final String ACTION_OVERLAY_CHANGED = "android.intent.action.OVERLAY_CHANGED";
     private static final String TARGET_OVERLAY_PACKAGE = "android";
 
-    private final Context mContext;
-    private final DisplayManager mDM;
+    private final WindowManagerProxy mWMProxy;
 
-    // Null for SDK < S
-    private final Context mWindowContext;
+    private final @ApplicationContext Context mAppContext;
 
     // The callback in this listener updates DeviceProfile, which other listeners might depend on
     private DisplayInfoChangeListener mPriorityListener;
-    private final ArrayList<DisplayInfoChangeListener> mListeners = new ArrayList<>();
 
-    private final SimpleBroadcastReceiver mReceiver = new SimpleBroadcastReceiver(this::onIntent);
+    private final SparseArray<PerDisplayInfo> mPerDisplayInfo =
+            new SparseArray<>();
 
-    private Info mInfo;
+    // We will register broadcast receiver on main thread to ensure not missing changes on
+    // TARGET_OVERLAY_PACKAGE and ACTION_OVERLAY_CHANGED.
+    private final SimpleBroadcastReceiver mReceiver;
+
+    private final boolean mIsDesktopFormFactor;
     private boolean mDestroyed = false;
 
-    private final LauncherPrefs mPrefs;
+    @Inject
+    protected DisplayController(@ApplicationContext Context context,
+                                WindowManagerProxy wmProxy,
+                                LauncherPrefs prefs,
+                                DaggerSingletonTracker lifecycle) {
+        mAppContext = context;
+        mWMProxy = wmProxy;
 
-    @VisibleForTesting
-    protected DisplayController(Context context) {
-        mContext = context;
-        mDM = context.getSystemService(DisplayManager.class);
-        mPrefs = LauncherPrefs.get(context);
+        mIsDesktopFormFactor = enableScalabilityForDesktopExperience()
+                && mAppContext.getResources().getBoolean(R.bool.desktop_form_factor);
 
-        Display display = mDM.getDisplay(DEFAULT_DISPLAY);
-        if (Utilities.ATLEAST_S) {
-            mWindowContext = mContext.createWindowContext(display, TYPE_APPLICATION, null);
-            mWindowContext.registerComponentCallbacks(this);
-        } else {
-            mWindowContext = null;
-            mReceiver.register(mContext, ACTION_CONFIGURATION_CHANGED);
-        }
+        DisplayManager displayManager = context.getSystemService(DisplayManager.class);
+        Display defaultDisplay = displayManager.getDisplay(DEFAULT_DISPLAY);
+        PerDisplayInfo defaultPerDisplayInfo = getOrCreatePerDisplayInfo(defaultDisplay);
 
         // Initialize navigation mode change listener
-        mReceiver.registerPkgActions(mContext, TARGET_OVERLAY_PACKAGE, ACTION_OVERLAY_CHANGED);
+        mReceiver = new SimpleBroadcastReceiver(context, MAIN_EXECUTOR, this::onIntent);
+        mReceiver.register(packageFilter(TARGET_OVERLAY_PACKAGE, ACTION_OVERLAY_CHANGED));
 
-        WindowManagerProxy wmProxy = WindowManagerProxy.INSTANCE.get(context);
-        Context displayInfoContext = getDisplayInfoContext(display);
-        mInfo = new Info(displayInfoContext, wmProxy,
-                wmProxy.estimateInternalDisplayBounds(displayInfoContext));
-        FileLog.i(TAG, "(CTOR) perDisplayBounds: " + mInfo.mPerDisplayBounds);
+        FileLog.i(TAG, "(CTOR) perDisplayBounds: "
+                + defaultPerDisplayInfo.mInfo.mPerDisplayBounds);
+
+        if (mWMProxy.enableOverviewOnConnectedDisplays()) {
+            final DisplayManager.DisplayListener displayListener =
+                    new DisplayManager.DisplayListener() {
+                        @Override
+                        public void onDisplayAdded(int displayId) {
+                            Display display = displayManager.getDisplay(displayId);
+                            if (display != null) {
+                                getOrCreatePerDisplayInfo(display);
+                            }
+                        }
+
+                        @Override
+                        public void onDisplayChanged(int displayId) {
+                        }
+
+                        @Override
+                        public void onDisplayRemoved(int displayId) {
+                            removePerDisplayInfo(displayId);
+                        }
+                    };
+            displayManager.registerDisplayListener(displayListener, MAIN_EXECUTOR.getHandler());
+            lifecycle.addCloseable(() -> {
+                displayManager.unregisterDisplayListener(displayListener);
+            });
+            // Add any PerDisplayInfos for already-connected displays.
+            Arrays.stream(displayManager.getDisplays())
+                    .forEach((it) ->
+                            getOrCreatePerDisplayInfo(
+                                    displayManager.getDisplay(it.getDisplayId())));
+        }
+
+        lifecycle.addCloseable(() -> {
+            mDestroyed = true;
+            defaultPerDisplayInfo.cleanup();
+            mReceiver.close();
+        });
     }
 
     /**
      * Returns the current navigation mode
      */
     public static NavigationMode getNavigationMode(Context context) {
-        return INSTANCE.get(context).getInfo().navigationMode;
+        return getInfo(context).getNavigationMode();
     }
 
     /**
-     * Returns whether taskbar is transient.
+     * Returns whether the display is in desktop-first mode.
      */
-    public static boolean isTransientTaskbar(Context context) {
-        return INSTANCE.get(context).isTransientTaskbar();
+    public static boolean isInDesktopFirstMode(Context context) {
+        return getInfo(context).isInDesktopFirstMode();
     }
 
     /**
-     * Returns whether taskbar is transient.
+     * Returns whether the taskbar is forced to be pinned when home is visible on the display
+     * associated with the context.
      */
-    public boolean isTransientTaskbar() {
-        // TODO(b/258604917): When running in test harness, use !sTransientTaskbarStatusForTests
-        //  once tests are updated to expect new persistent behavior such as not allowing long press
-        //  to stash.
-        if (!Utilities.isRunningInTestHarness()
-                && ENABLE_TASKBAR_PINNING.get()
-                && mPrefs.get(TASKBAR_PINNING)) {
-            return false;
+    public static boolean showLockedTaskbarOnHome(Context context) {
+        return getInfo(context).showLockedTaskbarOnHome();
+    }
+
+    /**
+     * Returns whether desktop taskbar (pinned taskbar that shows desktop tasks) is to be used
+     * on the display because the display is a freeform display.
+     */
+    public static boolean showDesktopTaskbarForFreeformDisplay(Context context) {
+        return getInfo(context).showDesktopTaskbarForFreeformDisplay();
+    }
+
+    // Gets the info for whatever display the context is associated with or the default display
+    // if it is not associated with a display.
+    private static Info getInfo(Context context) {
+        DisplayController controller = INSTANCE.get(context);
+        if (controller.mWMProxy.enableOverviewOnConnectedDisplays()) {
+            Display display = controller.mWMProxy.getDisplay(context);
+            int displayId = display.getDisplayId();
+            Info info = controller.getInfoForDisplay(displayId);
+            if (info != null) {
+                return info;
+            }
         }
-        return getInfo().navigationMode == NavigationMode.NO_BUTTON
-                && (Utilities.isRunningInTestHarness()
-                    ? sTransientTaskbarStatusForTests
-                    : ENABLE_TRANSIENT_TASKBAR.get());
-    }
-
-    /**
-     * Enables transient taskbar status for tests.
-     */
-    @VisibleForTesting
-    public static void enableTransientTaskbarForTests(boolean enable) {
-        sTransientTaskbarStatusForTests = enable;
-    }
-
-    @Override
-    public void close() {
-        mDestroyed = true;
-        if (mWindowContext != null) {
-            mWindowContext.unregisterComponentCallbacks(this);
-        } else {
-            // TODO: unregister broadcast receiver
-        }
+        return controller.getInfo();
     }
 
     /**
@@ -199,77 +248,91 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         if (mDestroyed) {
             return;
         }
-        boolean reconfigure = false;
         if (ACTION_OVERLAY_CHANGED.equals(intent.getAction())) {
-            reconfigure = true;
-        } else if (ACTION_CONFIGURATION_CHANGED.equals(intent.getAction())) {
-            Configuration config = mContext.getResources().getConfiguration();
-            reconfigure = mInfo.fontScale != config.fontScale
-                    || mInfo.densityDpi != config.densityDpi;
+            Log.d(TAG, "Overlay changed, notifying listeners");
+            notifyConfigChange(DEFAULT_DISPLAY);
         }
+    }
 
-        if (reconfigure) {
-            Log.d(TAG, "Configuration changed, notifying listeners");
-            Display display = mDM.getDisplay(DEFAULT_DISPLAY);
-            if (display != null) {
-                handleInfoChange(display);
-            }
-        }
+    @VisibleForTesting
+    public void onConfigurationChanged(Configuration config) {
+        onConfigurationChanged(config, DEFAULT_DISPLAY);
     }
 
     @UiThread
-    @Override
-    @TargetApi(Build.VERSION_CODES.S)
-    public final void onConfigurationChanged(Configuration config) {
+    private void onConfigurationChanged(Configuration config, int displayId) {
         Log.d(TASKBAR_NOT_DESTROYED_TAG, "DisplayController#onConfigurationChanged: " + config);
-        Display display = mWindowContext.getDisplay();
-        if (config.densityDpi != mInfo.densityDpi
-                || config.fontScale != mInfo.fontScale
-                || display.getRotation() != mInfo.rotation
-                || !mInfo.mScreenSizeDp.equals(
-                        new PortraitSize(config.screenHeightDp, config.screenWidthDp))) {
-            handleInfoChange(display);
+        PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+        Context windowContext = perDisplayInfo.mWindowContext;
+        Info info = perDisplayInfo.mInfo;
+        if (config.densityDpi != info.densityDpi
+                || config.fontScale != info.fontScale
+                || !info.mScreenSizeDp.equals(
+                new PortraitSize(config.screenHeightDp, config.screenWidthDp))
+                || windowContext.getDisplay().getRotation() != info.rotation
+                || mWMProxy.showLockedTaskbarOnHome(windowContext)
+                != info.showLockedTaskbarOnHome()
+                || mWMProxy.showDesktopTaskbarForFreeformDisplay(windowContext)
+                != info.showDesktopTaskbarForFreeformDisplay()
+                || config.isNightModeActive() != info.mIsNightModeActive) {
+            notifyConfigChange(displayId);
         }
     }
-
-    @Override
-    public final void onLowMemory() { }
 
     public void setPriorityListener(DisplayInfoChangeListener listener) {
         mPriorityListener = listener;
     }
 
     public void addChangeListener(DisplayInfoChangeListener listener) {
-        mListeners.add(listener);
+        addChangeListenerForDisplay(listener, DEFAULT_DISPLAY);
     }
 
     public void removeChangeListener(DisplayInfoChangeListener listener) {
-        mListeners.remove(listener);
+        removeChangeListenerForDisplay(listener, DEFAULT_DISPLAY);
+    }
+
+    public void addChangeListenerForDisplay(DisplayInfoChangeListener listener, int displayId) {
+        PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+        if (perDisplayInfo != null) {
+            perDisplayInfo.addListener(listener);
+        }
+    }
+
+    public void removeChangeListenerForDisplay(DisplayInfoChangeListener listener, int displayId) {
+        PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+        if (perDisplayInfo != null) {
+            perDisplayInfo.removeListener(listener);
+        }
     }
 
     public Info getInfo() {
-        return mInfo;
+        return mPerDisplayInfo.get(DEFAULT_DISPLAY).mInfo;
     }
 
-    private Context getDisplayInfoContext(Display display) {
-        return Utilities.ATLEAST_S ? mWindowContext : mContext.createDisplayContext(display);
+    public @Nullable Info getInfoForDisplay(int displayId) {
+        if (mWMProxy.enableOverviewOnConnectedDisplays()) {
+            PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+            if (perDisplayInfo != null) {
+                return perDisplayInfo.mInfo;
+            } else {
+                return null;
+            }
+        } else {
+            return getInfo();
+        }
     }
 
     @AnyThread
-    private void handleInfoChange(Display display) {
-        WindowManagerProxy wmProxy = WindowManagerProxy.INSTANCE.get(mContext);
-        Info oldInfo = mInfo;
+    public void notifyConfigChange() {
+        notifyConfigChange(DEFAULT_DISPLAY);
+    }
 
-        Context displayInfoContext = getDisplayInfoContext(display);
-        Info newInfo = new Info(displayInfoContext, wmProxy, oldInfo.mPerDisplayBounds);
+    @AnyThread
+    public void notifyConfigChange(int displayId) {
+        notifyConfigChangeForDisplay(displayId);
+    }
 
-        if (newInfo.densityDpi != oldInfo.densityDpi || newInfo.fontScale != oldInfo.fontScale
-                || newInfo.navigationMode != oldInfo.navigationMode) {
-            // Cache may not be valid anymore, recreate without cache
-            newInfo = new Info(displayInfoContext, wmProxy,
-                    wmProxy.estimateInternalDisplayBounds(displayInfoContext));
-        }
-
+    private int calculateChange(Info oldInfo, Info newInfo) {
         int change = 0;
         if (!newInfo.normalizedDisplayInfo.equals(oldInfo.normalizedDisplayInfo)) {
             change |= CHANGE_ACTIVE_SCREEN;
@@ -280,7 +343,7 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         if (newInfo.densityDpi != oldInfo.densityDpi || newInfo.fontScale != oldInfo.fontScale) {
             change |= CHANGE_DENSITY;
         }
-        if (newInfo.navigationMode != oldInfo.navigationMode) {
+        if (newInfo.getNavigationMode() != oldInfo.getNavigationMode()) {
             change |= CHANGE_NAVIGATION_MODE;
         }
         if (!newInfo.supportedBounds.equals(oldInfo.supportedBounds)
@@ -289,40 +352,102 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
             FileLog.w(TAG,
                     "(CHANGE_SUPPORTED_BOUNDS) perDisplayBounds: " + newInfo.mPerDisplayBounds);
         }
+        if (newInfo.mShowLockedTaskbarOnHome != oldInfo.mShowLockedTaskbarOnHome) {
+            change |= CHANGE_SHOW_LOCKED_TASKBAR;
+        }
+        if (newInfo.mIsNightModeActive != oldInfo.mIsNightModeActive) {
+            change |= CHANGE_NIGHT_MODE;
+        }
+
         if (DEBUG) {
             Log.d(TAG, "handleInfoChange - change: " + getChangeFlagsString(change));
         }
+        return change;
+    }
 
-        if (change != 0) {
-            mInfo = newInfo;
-            final int flags = change;
-            MAIN_EXECUTOR.execute(() -> notifyChange(displayInfoContext, flags));
+    private Info getNewInfo(Info oldInfo, Context displayInfoContext) {
+        Info newInfo = new Info(displayInfoContext, mIsDesktopFormFactor, mWMProxy,
+                oldInfo.mPerDisplayBounds, DisplayMetrics.DENSITY_DEVICE_STABLE);
+
+        if (newInfo.densityDpi != oldInfo.densityDpi || newInfo.fontScale != oldInfo.fontScale
+                || newInfo.getNavigationMode() != oldInfo.getNavigationMode()) {
+            // Cache may not be valid anymore, recreate without cache
+            newInfo = new Info(displayInfoContext, mIsDesktopFormFactor, mWMProxy,
+                    mWMProxy.estimateInternalDisplayBounds(displayInfoContext),
+                    DisplayMetrics.DENSITY_DEVICE_STABLE);
+        }
+        return newInfo;
+    }
+
+    @AnyThread
+    public void notifyConfigChangeForDisplay(int displayId) {
+        PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+        if (perDisplayInfo == null) return;
+        Info oldInfo = perDisplayInfo.mInfo;
+        final Info newInfo = getNewInfo(oldInfo, perDisplayInfo.mWindowContext);
+        final int flags = calculateChange(oldInfo, newInfo);
+        if (flags != 0) {
+            MAIN_EXECUTOR.execute(() -> {
+                perDisplayInfo.mInfo = newInfo;
+                if (displayId == DEFAULT_DISPLAY && mPriorityListener != null) {
+                    mPriorityListener.onDisplayInfoChanged(perDisplayInfo.mWindowContext, newInfo,
+                            flags);
+                }
+                perDisplayInfo.notifyListeners(newInfo, flags);
+            });
         }
     }
 
-    private void notifyChange(Context context, int flags) {
-        if (mPriorityListener != null) {
-            mPriorityListener.onDisplayInfoChanged(context, mInfo, flags);
+    @VisibleForTesting
+    protected PerDisplayInfo getOrCreatePerDisplayInfo(Display display) {
+        int displayId = display.getDisplayId();
+        PerDisplayInfo perDisplayInfo = mPerDisplayInfo.get(displayId);
+        if (perDisplayInfo != null) {
+            return perDisplayInfo;
         }
+        if (DEBUG) {
+            Log.d(TAG,
+                    String.format("getOrCreatePerDisplayInfo - no cached value found for %d",
+                            displayId));
+        }
+        Context windowContext = mAppContext.createWindowContext(display, TYPE_APPLICATION, null);
+        Info info = new Info(windowContext, mIsDesktopFormFactor, mWMProxy,
+                mWMProxy.estimateInternalDisplayBounds(windowContext),
+                DisplayMetrics.DENSITY_DEVICE_STABLE);
+        perDisplayInfo = new PerDisplayInfo(displayId, windowContext, info);
+        mPerDisplayInfo.put(displayId, perDisplayInfo);
+        return perDisplayInfo;
+    }
 
-        int count = mListeners.size();
-        for (int i = 0; i < count; i++) {
-            mListeners.get(i).onDisplayInfoChanged(context, mInfo, flags);
-        }
+    /**
+     * Clean up resources for the given display id.
+     * @param displayId The display id
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    protected void removePerDisplayInfo(int displayId) {
+        PerDisplayInfo info = mPerDisplayInfo.get(displayId);
+        if (info == null) return;
+        info.cleanup();
+        mPerDisplayInfo.remove(displayId);
     }
 
     public static class Info {
+
+        // Display context
+        public final Context context;
 
         // Cached property
         public final CachedDisplayInfo normalizedDisplayInfo;
         public final int rotation;
         public final Point currentSize;
         public final Rect cutout;
+        public final DisplayCutout displayCutout;
 
         // Configuration property
         public final float fontScale;
         private final int densityDpi;
-        public final NavigationMode navigationMode;
+        private final float mStableDensityScaleFactor;
+        private final NavigationMode navigationMode;
         private final PortraitSize mScreenSizeDp;
 
         // WindowBounds
@@ -331,29 +456,50 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         private final ArrayMap<CachedDisplayInfo, List<WindowBounds>> mPerDisplayBounds =
                 new ArrayMap<>();
 
-        public Info(Context displayInfoContext) {
-            /* don't need system overrides for external displays */
-            this(displayInfoContext, new WindowManagerProxy(), new ArrayMap<>());
+        private final boolean mIsInDesktopFirstMode;
+
+        private final boolean mShowLockedTaskbarOnHome;
+        private final boolean mIsHomeVisible;
+        private final boolean mIsDesktopFormFactor;
+
+        private final boolean mShowDesktopTaskbarForFreeformDisplay;
+
+        private final boolean mIsNightModeActive;
+
+        public Info(Context displayInfoContext, WindowManagerProxy wmProxy) {
+            this(displayInfoContext, enableScalabilityForDesktopExperience()
+                            && displayInfoContext.getResources().getBoolean(
+                            R.bool.desktop_form_factor),
+                    wmProxy, new ArrayMap<>(),
+                    DisplayMetrics.DENSITY_DEVICE_STABLE);
         }
 
         // Used for testing
         public Info(Context displayInfoContext,
-                WindowManagerProxy wmProxy,
-                Map<CachedDisplayInfo, List<WindowBounds>> perDisplayBoundsCache) {
+                    boolean isDesktopFormFactor,
+                    WindowManagerProxy wmProxy,
+                    Map<CachedDisplayInfo, List<WindowBounds>> perDisplayBoundsCache,
+                    int defaultDensityDpi) {
+            this.context = displayInfoContext;
+
             CachedDisplayInfo displayInfo = wmProxy.getDisplayInfo(displayInfoContext);
-            normalizedDisplayInfo = displayInfo.normalize();
+            normalizedDisplayInfo = displayInfo.normalize(wmProxy);
             rotation = displayInfo.rotation;
             currentSize = displayInfo.size;
-            cutout = displayInfo.cutout;
+
+            cutout = WindowManagerProxy.getSafeInsets(displayInfo.cutout);
+            displayCutout = displayInfo.cutout;
 
             Configuration config = displayInfoContext.getResources().getConfiguration();
             fontScale = config.fontScale;
             densityDpi = config.densityDpi;
+            mStableDensityScaleFactor = (float) defaultDensityDpi / DisplayMetrics.DENSITY_DEFAULT;
             mScreenSizeDp = new PortraitSize(config.screenHeightDp, config.screenWidthDp);
             navigationMode = wmProxy.getNavigationMode(displayInfoContext);
+            mIsNightModeActive = config.isNightModeActive();
 
             mPerDisplayBounds.putAll(perDisplayBoundsCache);
-            List<WindowBounds> cachedValue = mPerDisplayBounds.get(normalizedDisplayInfo);
+            List<WindowBounds> cachedValue = getCurrentBounds();
 
             realBounds = wmProxy.getRealBounds(displayInfoContext, displayInfo);
             if (cachedValue == null) {
@@ -363,7 +509,7 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
                 FileLog.e(TAG, "(Invalid Cache) perDisplayBounds : " + mPerDisplayBounds);
                 mPerDisplayBounds.clear();
                 mPerDisplayBounds.putAll(wmProxy.estimateInternalDisplayBounds(displayInfoContext));
-                cachedValue = mPerDisplayBounds.get(normalizedDisplayInfo);
+                cachedValue = getCurrentBounds();
                 if (cachedValue == null) {
                     FileLog.e(TAG, "normalizedDisplayInfo not found in estimation: "
                             + normalizedDisplayInfo);
@@ -387,13 +533,34 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
                 Log.d(TAG, "normalizedDisplayInfo: " + normalizedDisplayInfo);
                 Log.d(TAG, "perDisplayBounds: " + mPerDisplayBounds);
             }
+
+            mIsInDesktopFirstMode = wmProxy.isDisplayDesktopFirst(displayInfoContext);
+            mShowLockedTaskbarOnHome = wmProxy.showLockedTaskbarOnHome(displayInfoContext);
+            mShowDesktopTaskbarForFreeformDisplay = wmProxy.showDesktopTaskbarForFreeformDisplay(
+                    displayInfoContext);
+            mIsHomeVisible = wmProxy.isHomeVisible();
+            mIsDesktopFormFactor = isDesktopFormFactor;
+        }
+
+        /**
+         * Returns whether the display is in desktop-first mode.
+         */
+        public boolean isInDesktopFirstMode() {
+            return mIsInDesktopFirstMode;
         }
 
         /**
          * Returns {@code true} if the bounds represent a tablet.
          */
         public boolean isTablet(WindowBounds bounds) {
-            return smallestSizeDp(bounds) >= MIN_TABLET_WIDTH;
+            return smallestSizeDp(bounds) >= MIN_TABLET_WIDTH
+                    // External displays should always be considered tablet.
+                    || context.getDisplay().getDisplayId() != DEFAULT_DISPLAY;
+        }
+
+        /** Getter for {@link #navigationMode} to allow mocking. */
+        public NavigationMode getNavigationMode() {
+            return navigationMode;
         }
 
         /**
@@ -410,8 +577,63 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
             return Collections.unmodifiableSet(mPerDisplayBounds.keySet());
         }
 
+        /** Returns all {@link WindowBounds}s for the current display. */
+        @Nullable
+        public List<WindowBounds> getCurrentBounds() {
+            return mPerDisplayBounds.get(normalizedDisplayInfo);
+        }
+
         public int getDensityDpi() {
             return densityDpi;
+        }
+
+        public float getStableDensityScaleFactor() {
+            return mStableDensityScaleFactor;
+        }
+
+        public @DeviceType int getDeviceType() {
+            if (mIsDesktopFormFactor) {
+                return TYPE_DESKTOP;
+            }
+
+            int flagPhone = 1 << 0;
+            int flagTablet = 1 << 1;
+
+            int type = supportedBounds.stream()
+                    .mapToInt(bounds -> isTablet(bounds) ? flagTablet : flagPhone)
+                    .reduce(0, (a, b) -> a | b);
+            if (type == (flagPhone | flagTablet)) {
+                // device has profiles supporting both phone and tablet modes
+                return TYPE_MULTI_DISPLAY;
+            } else if (type == flagTablet) {
+                return TYPE_TABLET;
+            } else {
+                return TYPE_PHONE;
+            }
+        }
+
+        /**
+         * Returns whether the taskbar is forced to be pinned when home is visible.
+         */
+        public boolean showLockedTaskbarOnHome() {
+            return mShowLockedTaskbarOnHome;
+        }
+
+        public boolean isHomeVisible() {
+            return mIsHomeVisible;
+        }
+
+        /**
+         * Returns whether the taskbar should be pinned, and showing desktop tasks, because the
+         * display is a "freeform" display.
+         */
+        public boolean showDesktopTaskbarForFreeformDisplay() {
+            return mShowDesktopTaskbarForFreeformDisplay;
+        }
+
+        @VisibleForTesting
+        public Context getContext() {
+            return context;
         }
     }
 
@@ -426,6 +648,10 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         appendFlag(result, change, CHANGE_DENSITY, "CHANGE_DENSITY");
         appendFlag(result, change, CHANGE_SUPPORTED_BOUNDS, "CHANGE_SUPPORTED_BOUNDS");
         appendFlag(result, change, CHANGE_NAVIGATION_MODE, "CHANGE_NAVIGATION_MODE");
+        appendFlag(result, change, CHANGE_TASKBAR_PINNING, "CHANGE_TASKBAR_VARIANT");
+        appendFlag(result, change, CHANGE_DESKTOP_MODE, "CHANGE_DESKTOP_MODE");
+        appendFlag(result, change, CHANGE_SHOW_LOCKED_TASKBAR, "CHANGE_SHOW_LOCKED_TASKBAR");
+        appendFlag(result, change, CHANGE_NIGHT_MODE, "CHANGE_NIGHT_MODE");
         return result.toString();
     }
 
@@ -433,16 +659,26 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
      * Dumps the current state information
      */
     public void dump(PrintWriter pw) {
-        Info info = mInfo;
-        pw.println("DisplayController.Info:");
-        pw.println("  normalizedDisplayInfo=" + info.normalizedDisplayInfo);
-        pw.println("  rotation=" + info.rotation);
-        pw.println("  fontScale=" + info.fontScale);
-        pw.println("  densityDpi=" + info.densityDpi);
-        pw.println("  navigationMode=" + info.navigationMode.name());
-        pw.println("  currentSize=" + info.currentSize);
-        info.mPerDisplayBounds.forEach((key, value) -> pw.println(
-                "  perDisplayBounds - " + key + ": " + value));
+        int count = mPerDisplayInfo.size();
+        for (int i = 0; i < count; ++i) {
+            int displayId = mPerDisplayInfo.keyAt(i);
+            Info info = getInfoForDisplay(displayId);
+            if (info == null) {
+                continue;
+            }
+            pw.println(String.format(Locale.ENGLISH, "DisplayController.Info (displayId=%d):",
+                    displayId));
+            pw.println("  normalizedDisplayInfo=" + info.normalizedDisplayInfo);
+            pw.println("  rotation=" + info.rotation);
+            pw.println("  fontScale=" + info.fontScale);
+            pw.println("  densityDpi=" + info.densityDpi);
+            pw.println("  navigationMode=" + info.getNavigationMode().name());
+            pw.println("  isInDesktopFirstMode=" + info.isInDesktopFirstMode());
+            pw.println("  showLockedTaskbarOnHome=" + info.showLockedTaskbarOnHome());
+            pw.println("  currentSize=" + info.currentSize);
+            info.mPerDisplayBounds.forEach((key, value) -> pw.println(
+                    "  perDisplayBounds - " + key + ": " + value));
+        }
     }
 
     /**
@@ -467,6 +703,50 @@ public class DisplayController implements ComponentCallbacks, SafeCloseable {
         @Override
         public int hashCode() {
             return Objects.hash(width, height);
+        }
+    }
+
+    @VisibleForTesting
+    protected class PerDisplayInfo implements ComponentCallbacks {
+        final int mDisplayId;
+        final CopyOnWriteArrayList<DisplayInfoChangeListener> mListeners =
+                new CopyOnWriteArrayList<>();
+        final Context mWindowContext;
+        Info mInfo;
+
+        PerDisplayInfo(int displayId, Context windowContext, Info info) {
+            this.mDisplayId = displayId;
+            this.mWindowContext = windowContext;
+            this.mInfo = info;
+            windowContext.registerComponentCallbacks(this);
+        }
+
+        void addListener(DisplayInfoChangeListener listener) {
+            mListeners.add(listener);
+        }
+
+        void removeListener(DisplayInfoChangeListener listener) {
+            mListeners.remove(listener);
+        }
+
+        void notifyListeners(Info info, int flags) {
+            int count = mListeners.size();
+            for (int i = 0; i < count; ++i) {
+                mListeners.get(i).onDisplayInfoChanged(mWindowContext, info, flags);
+            }
+        }
+
+        @Override
+        public void onConfigurationChanged(@NonNull Configuration newConfig) {
+            DisplayController.this.onConfigurationChanged(newConfig, mDisplayId);
+        }
+
+        @Override
+        public void onLowMemory() {}
+
+        void cleanup() {
+            mWindowContext.unregisterComponentCallbacks(this);
+            mListeners.clear();
         }
     }
 

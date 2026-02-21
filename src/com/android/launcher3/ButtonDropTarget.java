@@ -41,7 +41,10 @@ import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.util.MSDLPlayerWrapper;
 import com.android.launcher3.views.ActivityContext;
+
+import com.google.android.msdl.data.model.MSDLToken;
 
 /**
  * Implements a DropTarget.
@@ -62,6 +65,7 @@ public abstract class ButtonDropTarget extends TextView
     protected final ActivityContext mActivityContext;
     protected final DropTargetHandler mDropTargetHandler;
     protected DropTargetBar mDropTargetBar;
+    private MSDLPlayerWrapper mMSDLPlayerWrapper;
 
     /** Whether this drop target is active for the current drag */
     protected boolean mActive;
@@ -94,6 +98,7 @@ public abstract class ButtonDropTarget extends TextView
         super(context, attrs, defStyle);
         mActivityContext = ActivityContext.lookupContext(context);
         mDropTargetHandler = mActivityContext.getDropTargetHandler();
+        mMSDLPlayerWrapper = MSDLPlayerWrapper.INSTANCE.get(context);
 
         Resources resources = getResources();
         mDragDistanceThreshold = resources.getDimensionPixelSize(R.dimen.drag_distanceThreshold);
@@ -142,6 +147,10 @@ public abstract class ButtonDropTarget extends TextView
 
     @Override
     public final void onDragEnter(DragObject d) {
+        // Perform Haptic feedback
+        if (Flags.msdlFeedback()) {
+            mMSDLPlayerWrapper.playToken(MSDLToken.SWIPE_THRESHOLD_INDICATOR);
+        }
         if (!mAccessibleDrag && !mTextVisible) {
             // Show tooltip
             hideTooltip();
@@ -215,7 +224,10 @@ public abstract class ButtonDropTarget extends TextView
 
     protected abstract boolean supportsDrop(ItemInfo info);
 
-    public abstract boolean supportsAccessibilityDrop(ItemInfo info, View view);
+    /**
+     * Returns the accessibility action that {@link ButtonDropTarget} supports for the itemInfo.
+     */
+    public abstract int getSupportedAccessibilityAction(ItemInfo info, View view);
 
     @Override
     public boolean isDropEnabled() {
@@ -267,14 +279,18 @@ public abstract class ButtonDropTarget extends TextView
     @Override
     public void prepareAccessibilityDrop() { }
 
-    public abstract void onAccessibilityDrop(View view, ItemInfo item);
+    /**
+     * Performs a drop in case of accessibility services with the provided action for the item.
+     */
+    public abstract void onAccessibilityDrop(View view, ItemInfo item, int action);
 
     public abstract void completeDrop(DragObject d);
 
     @Override
     public void getHitRectRelativeToDragLayer(android.graphics.Rect outRect) {
         super.getHitRect(outRect);
-        outRect.bottom += mActivityContext.getDeviceProfile().dropTargetDragPaddingPx;
+        outRect.bottom +=
+                mActivityContext.getDeviceProfile().getDropTargetProfile().getDragPaddingPx();
 
         sTempCords[0] = sTempCords[1] = 0;
         mActivityContext.getDragLayer().getDescendantCoordRelativeToSelf(this, sTempCords);
@@ -429,6 +445,11 @@ public abstract class ButtonDropTarget extends TextView
         return textHeight + getPaddingTop() + getPaddingBottom() >= availableHeight;
     }
 
+    @VisibleForTesting
+    public void setMSDLPlayerWrapper(MSDLPlayerWrapper wrapper) {
+        mMSDLPlayerWrapper = wrapper;
+    }
+
     /**
      * Reduce the size of the text until it fits the measured width or reaches a minimum.
      *
@@ -444,10 +465,11 @@ public abstract class ButtonDropTarget extends TextView
      */
     public float resizeTextToFit() {
         float minSize = Utilities.pxToSp(getResources()
-                .getDimensionPixelSize(R.dimen.button_drop_target_min_text_size));
+                .getDimensionPixelSize(R.dimen.button_drop_target_min_text_size), getContext());
         float step = Utilities.pxToSp(getResources()
-                .getDimensionPixelSize(R.dimen.button_drop_target_resize_text_increment));
-        float textSize = Utilities.pxToSp(getTextSize());
+                        .getDimensionPixelSize(R.dimen.button_drop_target_resize_text_increment),
+                getContext());
+        float textSize = Utilities.pxToSp(getTextSize(), getContext());
 
         int availableWidth = getMeasuredWidth();
         int availableHeight = getMeasuredHeight();

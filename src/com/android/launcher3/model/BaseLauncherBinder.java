@@ -16,54 +16,44 @@
 
 package com.android.launcher3.model;
 
-import static com.android.launcher3.model.ItemInstallQueue.FLAG_LOADER_RUNNING;
-import static com.android.launcher3.model.ModelUtils.filterCurrentWorkspaceItems;
-import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
+import static com.android.launcher3.BuildConfig.WIDGETS_ENABLED;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
-import android.os.Process;
+import android.content.Context;
 import android.os.Trace;
 import android.util.Log;
 
-import com.android.launcher3.InvariantDeviceProfile;
-import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherModel.CallbackTask;
-import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.Workspace;
-import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.BgDataModel.FixedContainerItems;
-import com.android.launcher3.model.data.AppInfo;
-import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.model.data.LauncherAppWidgetInfo;
-import com.android.launcher3.util.IntArray;
-import com.android.launcher3.util.IntSet;
+import com.android.launcher3.model.data.AppsListData;
+import com.android.launcher3.model.data.WorkspaceData;
 import com.android.launcher3.util.LooperExecutor;
 import com.android.launcher3.util.LooperIdleLock;
-import com.android.launcher3.util.PackageUserKey;
-import com.android.launcher3.util.RunnableList;
+import com.android.launcher3.widget.model.WidgetsListBaseEntriesBuilder;
+import com.android.launcher3.widget.model.WidgetsListBaseEntry;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * Binds the results of {@link com.android.launcher3.model.LoaderTask} to the Callbacks objects.
  */
-public abstract class BaseLauncherBinder {
+public class BaseLauncherBinder {
 
     protected static final String TAG = "LauncherBinder";
-    private static final int ITEMS_CHUNK = 6; // batch size for the workspace icons
 
     protected final LooperExecutor mUiExecutor;
 
-    protected final LauncherAppState mApp;
+    private final Context mContext;
+    private final LauncherModel mModel;
     protected final BgDataModel mBgDataModel;
     private final AllAppsList mBgAllAppsList;
 
@@ -71,10 +61,16 @@ public abstract class BaseLauncherBinder {
 
     private int mMyBindingId;
 
-    public BaseLauncherBinder(LauncherAppState app, BgDataModel dataModel,
-            AllAppsList allAppsList, Callbacks[] callbacksList, LooperExecutor uiExecutor) {
-        mUiExecutor = uiExecutor;
-        mApp = app;
+    @AssistedInject
+    public BaseLauncherBinder(
+            @ApplicationContext Context context,
+            LauncherModel model,
+            BgDataModel dataModel,
+            AllAppsList allAppsList,
+            @Assisted Callbacks[] callbacksList) {
+        mUiExecutor = MAIN_EXECUTOR;
+        mContext = context;
+        mModel = model;
         mBgDataModel = dataModel;
         mBgAllAppsList = allAppsList;
         mCallbacksList = callbacksList;
@@ -86,13 +82,29 @@ public abstract class BaseLauncherBinder {
     public void bindWorkspace(boolean incrementBindId, boolean isBindSync) {
         Trace.beginSection("BaseLauncherBinder#bindWorkspace");
         try {
-            if (FeatureFlags.ENABLE_WORKSPACE_LOADING_OPTIMIZATION.get()) {
-                DisjointWorkspaceBinder workspaceBinder =
-                    initWorkspaceBinder(incrementBindId, mBgDataModel.collectWorkspaceScreens());
-                workspaceBinder.bindCurrentWorkspacePages(isBindSync);
-                workspaceBinder.bindOtherWorkspacePages();
-            } else {
-                bindWorkspaceAllAtOnce(incrementBindId, isBindSync);
+            // Save a copy of all the bg-thread collections
+            WorkspaceData itemsIdMap;
+            ArrayList<FixedContainerItems> extraItems = new ArrayList<>();
+            StringCache stringCache;
+
+            synchronized (mBgDataModel) {
+                itemsIdMap = mBgDataModel.itemsIdMap.copy();
+                mBgDataModel.extraItems.forEach(extraItems::add);
+                if (incrementBindId) {
+                    mBgDataModel.lastBindId++;
+                    mBgDataModel.lastLoadId = mModel.getLastLoadId();
+                }
+                mMyBindingId = mBgDataModel.lastBindId;
+                stringCache = mBgDataModel.getStringCache();
+            }
+
+            for (Callbacks cb : mCallbacksList) {
+                cb.bindCompleteModelAsync(itemsIdMap, isBindSync);
+            }
+
+            executeCallbacksTask(c -> c.bindStringCache(stringCache), mUiExecutor);
+            for (FixedContainerItems extraItem : extraItems) {
+                executeCallbacksTask(c -> c.bindExtraContainerItems(extraItem), mUiExecutor);
             }
         } finally {
             Trace.endSection();
@@ -100,111 +112,27 @@ public abstract class BaseLauncherBinder {
     }
 
     /**
-     * Initializes the WorkspaceBinder for binding.
-     *
-     * @param incrementBindId this is used to stop previously started binding tasks that are
-     *                        obsolete but still queued.
-     * @param workspacePages this allows the Launcher to add the correct workspace screens.
-     */
-    public DisjointWorkspaceBinder initWorkspaceBinder(boolean incrementBindId,
-            IntArray workspacePages) {
-
-        synchronized (mBgDataModel) {
-            if (incrementBindId) {
-                mBgDataModel.lastBindId++;
-                mBgDataModel.lastLoadId = mApp.getModel().getLastLoadId();
-            }
-            mMyBindingId = mBgDataModel.lastBindId;
-            return new DisjointWorkspaceBinder(workspacePages);
-        }
-    }
-
-    private void bindWorkspaceAllAtOnce(boolean incrementBindId, boolean isBindSync) {
-        // Save a copy of all the bg-thread collections
-        ArrayList<ItemInfo> workspaceItems = new ArrayList<>();
-        ArrayList<LauncherAppWidgetInfo> appWidgets = new ArrayList<>();
-        final IntArray orderedScreenIds = new IntArray();
-        ArrayList<FixedContainerItems> extraItems = new ArrayList<>();
-        final int workspaceItemCount;
-        synchronized (mBgDataModel) {
-            workspaceItems.addAll(mBgDataModel.workspaceItems);
-            appWidgets.addAll(mBgDataModel.appWidgets);
-            orderedScreenIds.addAll(mBgDataModel.collectWorkspaceScreens());
-            mBgDataModel.extraItems.forEach(extraItems::add);
-            if (incrementBindId) {
-                mBgDataModel.lastBindId++;
-                mBgDataModel.lastLoadId = mApp.getModel().getLastLoadId();
-            }
-            mMyBindingId = mBgDataModel.lastBindId;
-            workspaceItemCount = mBgDataModel.itemsIdMap.size();
-        }
-
-        for (Callbacks cb : mCallbacksList) {
-            new UnifiedWorkspaceBinder(cb, mUiExecutor, mApp, mBgDataModel, mMyBindingId,
-                    workspaceItems, appWidgets, extraItems, orderedScreenIds)
-                    .bind(isBindSync, workspaceItemCount);
-        }
-    }
-
-    /**
-     * BindDeepShortcuts is abstract because it is a no-op for the go launcher.
-     */
-    public abstract void bindDeepShortcuts();
-
-    /**
      * Binds the all apps results from LoaderTask to the callbacks UX.
      */
     public void bindAllApps() {
         // shallow copy
-        AppInfo[] apps = mBgAllAppsList.copyData();
-        int flags = mBgAllAppsList.getFlags();
-        Map<PackageUserKey, Integer> packageUserKeytoUidMap = Arrays.stream(apps).collect(
-                Collectors.toMap(
-                        appInfo -> new PackageUserKey(appInfo.componentName.getPackageName(),
-                                appInfo.user), appInfo -> appInfo.uid, (a, b) -> a));
-        executeCallbacksTask(c -> c.bindAllApplications(apps, flags, packageUserKeytoUidMap),
+        AppsListData data = mBgAllAppsList.getImmutableData();
+        executeCallbacksTask(c -> c.bindAllApplications(
+                        data.getApps(), data.getFlags(), data.getPackageUserKeyToUidMap()),
                 mUiExecutor);
     }
 
     /**
      * bindWidgets is abstract because it is a no-op for the go launcher.
      */
-    public abstract void bindWidgets();
-
-    /**
-     * Sorts the set of items by hotseat, workspace (spatially from top to bottom, left to right)
-     */
-    protected void sortWorkspaceItemsSpatially(InvariantDeviceProfile profile,
-            ArrayList<ItemInfo> workspaceItems) {
-        final int screenCols = profile.numColumns;
-        final int screenCellCount = profile.numColumns * profile.numRows;
-        Collections.sort(workspaceItems, (lhs, rhs) -> {
-            if (lhs.container == rhs.container) {
-                // Within containers, order by their spatial position in that container
-                switch (lhs.container) {
-                    case LauncherSettings.Favorites.CONTAINER_DESKTOP: {
-                        int lr = (lhs.screenId * screenCellCount + lhs.cellY * screenCols
-                                + lhs.cellX);
-                        int rr = (rhs.screenId * screenCellCount + +rhs.cellY * screenCols
-                                + rhs.cellX);
-                        return Integer.compare(lr, rr);
-                    }
-                    case LauncherSettings.Favorites.CONTAINER_HOTSEAT: {
-                        // We currently use the screen id as the rank
-                        return Integer.compare(lhs.screenId, rhs.screenId);
-                    }
-                    default:
-                        if (FeatureFlags.IS_STUDIO_BUILD) {
-                            throw new RuntimeException(
-                                    "Unexpected container type when sorting workspace items.");
-                        }
-                        return 0;
-                }
-            } else {
-                // Between containers, order by hotseat, desktop
-                return Integer.compare(lhs.container, rhs.container);
-            }
-        });
+    public void bindWidgets() {
+        if (!WIDGETS_ENABLED) {
+            return;
+        }
+        List<WidgetsListBaseEntry> widgets = new WidgetsListBaseEntriesBuilder(mContext)
+                .build(mBgDataModel.widgetsModel.getWidgetsByPackageItemForPicker());
+        mBgDataModel.notifyWidgetsUpdate(widgets);
+        executeCallbacksTask(c -> c.bindAllWidgets(widgets), mUiExecutor);
     }
 
     protected void executeCallbacksTask(CallbackTask task, Executor executor) {
@@ -230,250 +158,8 @@ public abstract class BaseLauncherBinder {
         }
         return idleLock;
     }
-
-    private class UnifiedWorkspaceBinder {
-
-        private final Executor mUiExecutor;
-        private final Callbacks mCallbacks;
-
-        private final LauncherAppState mApp;
-        private final BgDataModel mBgDataModel;
-
-        private final int mMyBindingId;
-        private final ArrayList<ItemInfo> mWorkspaceItems;
-        private final ArrayList<LauncherAppWidgetInfo> mAppWidgets;
-        private final IntArray mOrderedScreenIds;
-        private final ArrayList<FixedContainerItems> mExtraItems;
-
-        UnifiedWorkspaceBinder(Callbacks callbacks,
-                Executor uiExecutor,
-                LauncherAppState app,
-                BgDataModel bgDataModel,
-                int myBindingId,
-                ArrayList<ItemInfo> workspaceItems,
-                ArrayList<LauncherAppWidgetInfo> appWidgets,
-                ArrayList<FixedContainerItems> extraItems,
-                IntArray orderedScreenIds) {
-            mCallbacks = callbacks;
-            mUiExecutor = uiExecutor;
-            mApp = app;
-            mBgDataModel = bgDataModel;
-            mMyBindingId = myBindingId;
-            mWorkspaceItems = workspaceItems;
-            mAppWidgets = appWidgets;
-            mExtraItems = extraItems;
-            mOrderedScreenIds = orderedScreenIds;
-        }
-
-        private void bind(boolean isBindSync, int workspaceItemCount) {
-            final IntSet currentScreenIds =
-                    mCallbacks.getPagesToBindSynchronously(mOrderedScreenIds);
-            Objects.requireNonNull(currentScreenIds, "Null screen ids provided by " + mCallbacks);
-
-            // Separate the items that are on the current screen, and all the other remaining items
-            ArrayList<ItemInfo> currentWorkspaceItems = new ArrayList<>();
-            ArrayList<ItemInfo> otherWorkspaceItems = new ArrayList<>();
-            ArrayList<LauncherAppWidgetInfo> currentAppWidgets = new ArrayList<>();
-            ArrayList<LauncherAppWidgetInfo> otherAppWidgets = new ArrayList<>();
-
-            filterCurrentWorkspaceItems(currentScreenIds, mWorkspaceItems, currentWorkspaceItems,
-                    otherWorkspaceItems);
-            filterCurrentWorkspaceItems(currentScreenIds, mAppWidgets, currentAppWidgets,
-                    otherAppWidgets);
-            final InvariantDeviceProfile idp = mApp.getInvariantDeviceProfile();
-            sortWorkspaceItemsSpatially(idp, currentWorkspaceItems);
-            sortWorkspaceItemsSpatially(idp, otherWorkspaceItems);
-
-            // Tell the workspace that we're about to start binding items
-            executeCallbacksTask(c -> {
-                c.clearPendingBinds();
-                c.startBinding();
-            }, mUiExecutor);
-
-            // Bind workspace screens
-            executeCallbacksTask(c -> c.bindScreens(mOrderedScreenIds), mUiExecutor);
-
-            // Load items on the current page.
-            bindWorkspaceItems(currentWorkspaceItems, mUiExecutor);
-            bindAppWidgets(currentAppWidgets, mUiExecutor);
-            if (!FeatureFlags.CHANGE_MODEL_DELEGATE_LOADING_ORDER.get()) {
-                mExtraItems.forEach(item ->
-                        executeCallbacksTask(c -> c.bindExtraContainerItems(item), mUiExecutor));
-            }
-
-            RunnableList pendingTasks = new RunnableList();
-            Executor pendingExecutor = pendingTasks::add;
-            bindWorkspaceItems(otherWorkspaceItems, pendingExecutor);
-            bindAppWidgets(otherAppWidgets, pendingExecutor);
-            executeCallbacksTask(c -> c.finishBindingItems(currentScreenIds), pendingExecutor);
-            pendingExecutor.execute(
-                    () -> {
-                        MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-                        ItemInstallQueue.INSTANCE.get(mApp.getContext())
-                                .resumeModelPush(FLAG_LOADER_RUNNING);
-                    });
-
-            executeCallbacksTask(
-                    c -> {
-                        MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                        c.onInitialBindComplete(
-                                currentScreenIds, pendingTasks, workspaceItemCount, isBindSync);
-                    }, mUiExecutor);
-
-            StringCache cacheClone = mBgDataModel.stringCache.clone();
-            executeCallbacksTask(c -> c.bindStringCache(cacheClone), pendingExecutor);
-        }
-
-        private void bindWorkspaceItems(
-                final ArrayList<ItemInfo> workspaceItems, final Executor executor) {
-            // Bind the workspace items
-            int count = workspaceItems.size();
-            for (int i = 0; i < count; i += ITEMS_CHUNK) {
-                final int start = i;
-                final int chunkSize = (i + ITEMS_CHUNK <= count) ? ITEMS_CHUNK : (count - i);
-                executeCallbacksTask(
-                        c -> c.bindItems(workspaceItems.subList(start, start + chunkSize), false),
-                        executor);
-            }
-        }
-
-        private void bindAppWidgets(List<LauncherAppWidgetInfo> appWidgets, Executor executor) {
-            // Bind the widgets, one at a time
-            int count = appWidgets.size();
-            for (int i = 0; i < count; i++) {
-                final ItemInfo widget = appWidgets.get(i);
-                executeCallbacksTask(
-                        c -> c.bindItems(Collections.singletonList(widget), false), executor);
-            }
-        }
-
-        protected void executeCallbacksTask(CallbackTask task, Executor executor) {
-            executor.execute(() -> {
-                if (mMyBindingId != mBgDataModel.lastBindId) {
-                    Log.d(TAG, "Too many consecutive reloads, skipping obsolete data-bind");
-                    return;
-                }
-                task.execute(mCallbacks);
-            });
-        }
-    }
-
-    private class DisjointWorkspaceBinder {
-        private final IntArray mOrderedScreenIds;
-        private final IntSet mCurrentScreenIds = new IntSet();
-        private final Set<Integer> mBoundItemIds = new HashSet<>();
-
-        protected DisjointWorkspaceBinder(IntArray orderedScreenIds) {
-            mOrderedScreenIds = orderedScreenIds;
-
-            for (Callbacks cb : mCallbacksList) {
-                mCurrentScreenIds.addAll(cb.getPagesToBindSynchronously(orderedScreenIds));
-            }
-            if (mCurrentScreenIds.size() == 0) {
-                mCurrentScreenIds.add(Workspace.FIRST_SCREEN_ID);
-            }
-        }
-
-        /**
-         * Binds the currently loaded items in the Data Model. Also signals to the Callbacks[]
-         * that these items have been bound and their respective screens are ready to be shown.
-         *
-         * If this method is called after all the items on the workspace screen have already been
-         * loaded, it will bind all workspace items immediately, and bindOtherWorkspacePages() will
-         * not bind any items.
-         */
-        protected void bindCurrentWorkspacePages(boolean isBindSync) {
-            // Save a copy of all the bg-thread collections
-            ArrayList<ItemInfo> workspaceItems;
-            ArrayList<LauncherAppWidgetInfo> appWidgets;
-            ArrayList<FixedContainerItems> fciList = new ArrayList<>();
-            final int workspaceItemCount;
-            synchronized (mBgDataModel) {
-                workspaceItems = new ArrayList<>(mBgDataModel.workspaceItems);
-                appWidgets = new ArrayList<>(mBgDataModel.appWidgets);
-                if (!FeatureFlags.CHANGE_MODEL_DELEGATE_LOADING_ORDER.get()) {
-                    mBgDataModel.extraItems.forEach(fciList::add);
-                }
-                workspaceItemCount = mBgDataModel.itemsIdMap.size();
-            }
-
-            workspaceItems.forEach(it -> mBoundItemIds.add(it.id));
-            appWidgets.forEach(it -> mBoundItemIds.add(it.id));
-            if (!FeatureFlags.CHANGE_MODEL_DELEGATE_LOADING_ORDER.get()) {
-                fciList.forEach(item ->
-                        executeCallbacksTask(c -> c.bindExtraContainerItems(item), mUiExecutor));
-            }
-
-            sortWorkspaceItemsSpatially(mApp.getInvariantDeviceProfile(), workspaceItems);
-
-            // Tell the workspace that we're about to start binding items
-            executeCallbacksTask(c -> {
-                c.clearPendingBinds();
-                c.startBinding();
-            }, mUiExecutor);
-
-            // Bind workspace screens
-            executeCallbacksTask(c -> c.bindScreens(mOrderedScreenIds), mUiExecutor);
-
-            bindWorkspaceItems(workspaceItems);
-            bindAppWidgets(appWidgets);
-            executeCallbacksTask(c -> {
-                MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                c.onInitialBindComplete(
-                        mCurrentScreenIds, new RunnableList(), workspaceItemCount, isBindSync);
-            }, mUiExecutor);
-        }
-
-        protected void bindOtherWorkspacePages() {
-            // Save a copy of all the bg-thread collections
-            ArrayList<ItemInfo> workspaceItems;
-            ArrayList<LauncherAppWidgetInfo> appWidgets;
-
-            synchronized (mBgDataModel) {
-                workspaceItems = new ArrayList<>(mBgDataModel.workspaceItems);
-                appWidgets = new ArrayList<>(mBgDataModel.appWidgets);
-            }
-
-            workspaceItems.removeIf(it -> mBoundItemIds.contains(it.id));
-            appWidgets.removeIf(it -> mBoundItemIds.contains(it.id));
-
-            sortWorkspaceItemsSpatially(mApp.getInvariantDeviceProfile(), workspaceItems);
-
-            bindWorkspaceItems(workspaceItems);
-            bindAppWidgets(appWidgets);
-
-            executeCallbacksTask(c -> c.finishBindingItems(mCurrentScreenIds), mUiExecutor);
-            mUiExecutor.execute(() -> {
-                MODEL_EXECUTOR.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-                ItemInstallQueue.INSTANCE.get(mApp.getContext())
-                        .resumeModelPush(FLAG_LOADER_RUNNING);
-            });
-
-            StringCache cacheClone = mBgDataModel.stringCache.clone();
-            executeCallbacksTask(c -> c.bindStringCache(cacheClone), mUiExecutor);
-        }
-
-        private void bindWorkspaceItems(final ArrayList<ItemInfo> workspaceItems) {
-            // Bind the workspace items
-            int count = workspaceItems.size();
-            for (int i = 0; i < count; i += ITEMS_CHUNK) {
-                final int start = i;
-                final int chunkSize = (i + ITEMS_CHUNK <= count) ? ITEMS_CHUNK : (count - i);
-                executeCallbacksTask(
-                        c -> c.bindItems(workspaceItems.subList(start, start + chunkSize), false),
-                        mUiExecutor);
-            }
-        }
-
-        private void bindAppWidgets(List<LauncherAppWidgetInfo> appWidgets) {
-            // Bind the widgets, one at a time
-            int count = appWidgets.size();
-            for (int i = 0; i < count; i++) {
-                final ItemInfo widget = appWidgets.get(i);
-                executeCallbacksTask(
-                        c -> c.bindItems(Collections.singletonList(widget), false),
-                        mUiExecutor);
-            }
-        }
+    @AssistedFactory
+    public interface BaseLauncherBinderFactory {
+        BaseLauncherBinder createBinder(Callbacks[] callbacks);
     }
 }

@@ -42,13 +42,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.android.launcher3.BuildConfig;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
-import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.dagger.LauncherComponentProvider;
 import com.android.launcher3.graphics.FragmentWithPreview;
-import com.android.launcher3.widget.util.WidgetSizes;
 
 /**
  * A frame layout which contains a QSB. This internally uses fragment to bind the view, which
@@ -59,7 +59,7 @@ import com.android.launcher3.widget.util.WidgetSizes;
  */
 public class QsbContainerView extends FrameLayout {
 
-    public static final String SEARCH_PROVIDER_SETTINGS_KEY = "SEARCH_PROVIDER_PACKAGE_NAME";
+    public static final String SEARCH_ENGINE_SETTINGS_KEY = "selected_search_engine";
 
     /**
      * Returns the package name for user configured search provider or from searchManager
@@ -69,8 +69,8 @@ public class QsbContainerView extends FrameLayout {
     @WorkerThread
     @Nullable
     public static String getSearchWidgetPackageName(@NonNull Context context) {
-        String providerPkg = Settings.Global.getString(context.getContentResolver(),
-                SEARCH_PROVIDER_SETTINGS_KEY);
+        String providerPkg = Settings.Secure.getString(context.getContentResolver(),
+                SEARCH_ENGINE_SETTINGS_KEY);
         if (providerPkg == null) {
             SearchManager searchManager = context.getSystemService(SearchManager.class);
             ComponentName componentName = searchManager.getGlobalSearchActivity();
@@ -290,13 +290,13 @@ public class QsbContainerView extends FrameLayout {
         }
 
         public boolean isQsbEnabled() {
-            return FeatureFlags.QSbOnFirstScreen(getContext());
+            return BuildConfig.WIDGET_ON_FIRST_SCREEN;
         }
 
         protected Bundle createBindOptions() {
             InvariantDeviceProfile idp = LauncherAppState.getIDP(getContext());
-            return WidgetSizes.getWidgetSizeOptions(getContext(), mWidgetInfo.provider,
-                    idp.numColumns, 1);
+            return LauncherComponentProvider.get(getContext())
+                    .getWidgetSizeHandler().getWidgetSizeOptions(idp.numColumns, 1);
         }
 
         protected View getDefaultView(ViewGroup container, boolean showSetupIcon) {

@@ -22,13 +22,9 @@ import android.content.Context;
 import android.os.Handler;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
-import com.android.launcher3.model.AllAppsList;
-import com.android.launcher3.model.BaseModelUpdateTask;
-import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.search.SearchAlgorithm;
 import com.android.launcher3.search.SearchCallback;
@@ -42,11 +38,11 @@ import java.util.List;
  */
 public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
 
-    protected static final int MAX_RESULTS_COUNT = 5;
+    public static final int MAX_RESULTS_COUNT = 5;
 
-    protected final LauncherAppState mAppState;
-    protected final Handler mResultHandler;
-    private final boolean mAddNoResultsMessage;
+    public final LauncherAppState mAppState;
+    public final Handler mResultHandler;
+    public final boolean mAddNoResultsMessage;
 
     public DefaultAppSearchAlgorithm(Context context) {
         this(context, false);
@@ -67,20 +63,16 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm<AdapterItem> {
 
     @Override
     public void doSearch(String query, SearchCallback<AdapterItem> callback) {
-        mAppState.getModel().enqueueModelUpdateTask(new BaseModelUpdateTask() {
-            @Override
-            public void execute(@NonNull final LauncherAppState app,
-                    @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
-                ArrayList<AdapterItem> result = getTitleMatchResult(apps.data, query);
-                if (mAddNoResultsMessage && result.isEmpty()) {
-                    result.add(getEmptyMessageAdapterItem(query));
-                }
-                mResultHandler.post(() -> callback.onSearchResult(query, result, new ArrayList<>()));
+        mAppState.getModel().enqueueModelUpdateTask((taskController, dataModel, apps) ->  {
+            ArrayList<AdapterItem> result = getTitleMatchResult(apps.data, query);
+            if (mAddNoResultsMessage && result.isEmpty()) {
+                result.add(getEmptyMessageAdapterItem(query));
             }
+            mResultHandler.post(() -> callback.onSearchResult(query, result));
         });
     }
 
-    private static AdapterItem getEmptyMessageAdapterItem(String query) {
+    public static AdapterItem getEmptyMessageAdapterItem(String query) {
         AdapterItem item = new AdapterItem(VIEW_TYPE_EMPTY_SEARCH);
         // Add a place holder info to propagate the query
         AppInfo placeHolder = new AppInfo();

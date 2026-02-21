@@ -30,7 +30,6 @@
     <string name="pref_category__interfaces">Interfaccia utente</string>
     <string name="pref_category__others">Altri</string>
     <string name="pref_category__inputs">Gesti e ricerca</string>
-    <string name="summary__general_about">Maggiori informazioni su Neo Launcher</string>
     <string name="summary__general_advanced">Lingua, backup, impostazione ricerca</string>
     <string name="summary__general_notifications">Conteggio badge, colore badge, gesti</string>
     <string name="summary__general_smartspace">Data, ora, widget Home</string>
@@ -331,13 +330,11 @@
     <string name="app_categorization_tabs">Schede</string>
     <string name="pref_appcategorization_folders_summary">Tocca per aprire il popup.</string>
     <string name="pref_appcategorization_style_text">Stile</string>
-    <string name="title_app_categorize">Categorizza app</string>
     <string name="pref_appcategorization_flowerpot_title">Categoria app</string>
     <string name="cat_drawer_icons">Icone</string>
     <string name="cat_drawer_grid">Griglia</string>
     <string name="dialog_message_change_sort">Passare all\'ordinamento alfabetico delle app\?</string>
     <string name="title_drawer_paged">Impaginato</string>
-    <string name="title_drawer_vertical_list">Elenco verticale</string>
     <string name="title_drawer_vertical">Verticale</string>
     <string name="title_drawer_layout">Modalità di layout</string>
     <string name="title_text_color">Colore testo</string>
@@ -419,7 +416,6 @@
     <string name="web_search_metager">Metager (Web)</string>
     <string name="pref_desktop_mode_settings">Impostazioni modalità Desktop</string>
     <string name="backup_create_new">Crea un nuovo backup</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
     <string name="web_search_searx">Searx (Web)</string>
     <string name="summary_dock_search">Mostra nella barra app in basso</string>
     <string name="summary_app_categorization_enable">Crea schede o cartelle</string>
@@ -434,7 +430,7 @@
     <string name="launch_assistant">Assistente di avvio</string>
     <string name="gesture_launch_assistant">Assistente di avvio (tramite pulsante o gesto)</string>
     <string name="dash_sync_summary">Attiva o disattiva la sincronizzazione.</string>
-    <string name="summary_app_categorize">Scegli tra schede o cartelle</string>
+
     <string name="title_dock_search">Barra di ricerca nella barra app</string>
     <string name="label_search">Cerca</string>
     <string name="theme_auto_night_mode_black">Sistema (nero)</string>
@@ -511,7 +507,6 @@
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="color_wallpaper_secondary">Sfondo secondario</string>
     <string name="title_calendar_gregorian">Gregoriano</string>
@@ -531,7 +526,6 @@
     <string name="title_drawer_all_apps">Tutto</string>
     <string name="title_drawer_horizontal">Orizzontale</string>
     <string name="title_drawer_categorized">Classificato</string>
-    <string name="title_drawer_custom_categories">Categorie personalizzate</string>
     <string name="title_smartspace_background">Mostra sfondo a tema</string>
     <string name="search_provider">Fornitore di ricerca</string>
     <string name="web_search_provider">Fornitore di ricerca Web</string>

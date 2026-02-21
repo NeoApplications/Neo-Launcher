@@ -1,192 +1,139 @@
+/*
+ * Copyright (C) 2025 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.launcher3.logging
 
+import android.os.Process
 import android.os.SystemClock
+import android.os.Trace
 import android.util.Log
 import android.util.SparseLongArray
-import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
-import androidx.core.util.contains
-import androidx.core.util.isEmpty
-import com.android.launcher3.BuildConfig
+import com.android.launcher3.LauncherConstants.TraceEvents.COLD_STARTUP_TRACE_METHOD_NAME
+import com.android.launcher3.LauncherConstants.TraceEvents.SINGLE_TRACE_COOKIE
 import com.android.launcher3.logging.StatsLogManager.LauncherLatencyEvent
+import com.android.launcher3.logging.StatsLogManager.LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION
+import com.android.launcher3.logging.StatsLogManager.LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC
+import com.android.launcher3.logging.StatsLogManager.StatsLatencyLogger.Companion.LAUNCHER_LATENCY_PACKAGE_ID
 import com.android.launcher3.logging.StatsLogManager.StatsLatencyLogger.LatencyType
-import com.android.launcher3.util.Preconditions
+import com.android.launcher3.util.Executors
+import com.android.launcher3.util.LockedUserState
+import com.android.launcher3.views.ActivityContext
 
-/** Logger for logging Launcher activity's startup latency. */
-open class StartupLatencyLogger(val latencyType: LatencyType) {
+/** Interface to log launcher startup latency metrics. */
+sealed interface StartupLatencyLogger {
 
-    companion object {
-        const val TAG = "LauncherStartupLatencyLogger"
-        const val UNSET_INT = -1
-        const val UNSET_LONG = -1L
-    }
+    fun logWorkspaceLoadStartTime() {}
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    val startTimeByEvent = SparseLongArray()
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    val endTimeByEvent = SparseLongArray()
+    /** Notes the end of an event. Final logs are pushed on [finishLogs] */
+    fun logStart(event: LauncherLatencyEvent) {}
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED) var cardinality: Int = UNSET_INT
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    var workspaceLoadStartTime: Long = UNSET_LONG
-
-    private var isInTest = false
-
-    /** Subclass can override this method to handle collected latency metrics. */
-    @MainThread
-    open fun log(): StartupLatencyLogger {
-        return this
-    }
-
-    @MainThread
-    fun logWorkspaceLoadStartTime() = logWorkspaceLoadStartTime(SystemClock.elapsedRealtime())
-
-    @VisibleForTesting
-    @MainThread
-    fun logWorkspaceLoadStartTime(startTimeMs: Long): StartupLatencyLogger {
-        Preconditions.assertUIThread()
-        workspaceLoadStartTime = startTimeMs
-        return this
-    }
+    /** Notes the start of an event. Final logs are pushed on [finishLogs] */
+    fun logEnd(event: LauncherLatencyEvent) {}
 
     /**
-     * Log size of workspace. Larger number of workspace items (icons, folders, widgets) means
-     * longer latency to initialize workspace.
+     * Finishes the current logging session and returns a new logger to be used for the next session
      */
-    @MainThread
-    fun logCardinality(cardinality: Int): StartupLatencyLogger {
-        Preconditions.assertUIThread()
-        this.cardinality = cardinality
-        return this
-    }
+    fun finishLogs(workspaceCount: Int, isBindSync: Boolean): StartupLatencyLogger = this
 
-    @MainThread
-    fun logStart(event: LauncherLatencyEvent) = logStart(event, SystemClock.elapsedRealtime())
-
-    @MainThread
-    fun logStart(event: LauncherLatencyEvent, startTimeMs: Long): StartupLatencyLogger {
-        // In unit test no looper is attached to current thread
-        Preconditions.assertUIThread()
-        if (validateLoggingEventAtStart(event)) {
-            startTimeByEvent.put(event.id, startTimeMs)
-        }
-        return this
-    }
-
-    @MainThread
-    fun logEnd(event: LauncherLatencyEvent) = logEnd(event, SystemClock.elapsedRealtime())
-
-    @MainThread
-    fun logEnd(event: LauncherLatencyEvent, endTimeMs: Long): StartupLatencyLogger {
-        // In unit test no looper is attached to current thread
-        Preconditions.assertUIThread()
-        maybeLogStartOfWorkspaceLoadTime(event)
-        if (validateLoggingEventAtEnd(event)) {
-            endTimeByEvent.put(event.id, endTimeMs)
-        }
-
-        return this
-    }
-
-    @MainThread
-    fun reset() {
-        // In unit test no looper is attached to current thread
-        Preconditions.assertUIThread()
-        startTimeByEvent.clear()
-        endTimeByEvent.clear()
-        cardinality = UNSET_INT
-        workspaceLoadStartTime = UNSET_LONG
-    }
-
-    @MainThread
-    private fun maybeLogStartOfWorkspaceLoadTime(event: LauncherLatencyEvent) {
-        if (workspaceLoadStartTime == UNSET_LONG) {
-            return
-        }
-        if (
-            event == LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC ||
-                event == LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC
-        ) {
-            logStart(event, workspaceLoadStartTime)
-            workspaceLoadStartTime = UNSET_LONG
-        }
-    }
-
-    /** @return true if we can log start of [LauncherLatencyEvent] and vice versa. */
-    @MainThread
-    private fun validateLoggingEventAtStart(event: LauncherLatencyEvent): Boolean {
-        if (!BuildConfig.DEBUG && !isInTest) {
-            return true
-        }
-        if (startTimeByEvent.contains(event.id)) {
-            Log.e(TAG, "Cannot restart same ${event.name} event")
-            return false
-        } else if (
-            startTimeByEvent.isEmpty() &&
-                event != LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION
-        ) {
-            Log.e(
-                TAG,
-                "The first log start event must be " +
-                    "${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION.name}.",
-            )
-            return false
-        } else if (
-            event == LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC &&
-                startTimeByEvent.get(
-                    LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC.id
-                ) != 0L
-        ) {
-            Log.e(
-                TAG,
-                "Cannot start ${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC.name} event after ${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC.name} starts",
-            )
-            return false
-        } else if (
-            event == LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC &&
-                startTimeByEvent.get(
-                    LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC.id
-                ) != 0L
-        ) {
-            Log.e(
-                TAG,
-                "Cannot start ${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC.name} event after ${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_SYNC.name} starts",
-            )
-            return false
-        }
-
-        return true
-    }
-
-    /** @return true if we can log end of [LauncherLatencyEvent] and vice versa. */
-    @MainThread
-    private fun validateLoggingEventAtEnd(event: LauncherLatencyEvent): Boolean {
-        if (!BuildConfig.DEBUG && !isInTest) {
-            return true
-        }
-        if (!startTimeByEvent.contains(event.id)) {
-            Log.e(TAG, "Cannot end ${event.name} event before starting it")
-            return false
-        } else if (endTimeByEvent.contains(event.id)) {
-            Log.e(TAG, "Cannot end same ${event.name} event again")
-            return false
-        } else if (
-            event != LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION &&
-                endTimeByEvent.contains(
-                    LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION.id
-                )
-        ) {
-            Log.e(
-                TAG,
-                "Cannot end ${event.name} event after ${LauncherLatencyEvent.LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION.name}",
-            )
-            return false
-        }
-        return true
-    }
+    object NoOpLogger : StartupLatencyLogger
 
     @VisibleForTesting
-    fun setIsInTest() {
-        isInTest = true
+    class ColdRebootStartupLogger(
+        private val ctx: ActivityContext,
+        private val timeProvider: () -> Long,
+    ) : StartupLatencyLogger {
+
+        @VisibleForTesting
+        val startTimeByEvent = SparseLongArray()
+        @VisibleForTesting
+        val endTimeByEvent = SparseLongArray()
+
+        private var cardinality: Int = -1
+
+        init {
+            Trace.beginAsyncSection(COLD_STARTUP_TRACE_METHOD_NAME, SINGLE_TRACE_COOKIE)
+            logStart(LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION)
+        }
+
+        override fun logWorkspaceLoadStartTime() =
+            logStart(LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC)
+
+        override fun logStart(event: LauncherLatencyEvent) =
+            startTimeByEvent.put(event.id, timeProvider.invoke())
+
+        override fun logEnd(event: LauncherLatencyEvent) =
+            endTimeByEvent.put(event.id, timeProvider.invoke())
+
+        override fun finishLogs(workspaceCount: Int, isBindSync: Boolean): StartupLatencyLogger {
+            if (!isBindSync) {
+                cardinality = workspaceCount
+                logEnd(LAUNCHER_LATENCY_STARTUP_WORKSPACE_LOADER_ASYNC)
+            }
+
+            Executors.MAIN_EXECUTOR.handler.postAtFrontOfQueue {
+                Log.i(
+                    "Launcher",
+                    "LauncherReady. " +
+                            "User: " +
+                            Process.myUserHandle() +
+                            " TS: " +
+                            SystemClock.uptimeMillis(),
+                )
+                logEnd(LAUNCHER_LATENCY_STARTUP_TOTAL_DURATION)
+                commitLogs()
+            }
+            Trace.endAsyncSection(COLD_STARTUP_TRACE_METHOD_NAME, SINGLE_TRACE_COOKIE)
+            return NoOpLogger
+        }
+
+        private fun commitLogs() {
+            val instanceId = InstanceIdSequence().newInstanceId()
+            val logger = ctx.statsLogManager
+            for (event in LauncherLatencyEvent.entries) {
+                val start = startTimeByEvent.get(event.id)
+                val end = endTimeByEvent.get(event.id)
+                val duration = end - start
+                if (start != 0L && end != 0L) {
+                    logger
+                        .latencyLogger()
+                        .withType(LatencyType.COLD_DEVICE_REBOOTING)
+                        .withInstanceId(instanceId)
+                        .withLatency(duration)
+                        .withPackageId(LAUNCHER_LATENCY_PACKAGE_ID)
+                        .withCardinality(cardinality)
+                        .log(event)
+                }
+            }
+        }
+    }
+
+    companion object {
+
+        private var isNewProcess: Boolean = true
+
+        @JvmStatic
+        fun getLogger(ctx: ActivityContext): StartupLatencyLogger {
+            val isColdStartupAfterReboot =
+                isNewProcess &&
+                        !LockedUserState.get(ctx.asContext()).isUserUnlockedAtLauncherStartup
+            isNewProcess = false
+            return if (isColdStartupAfterReboot)
+                ColdRebootStartupLogger(ctx) { SystemClock.elapsedRealtime() }
+            else NoOpLogger
+        }
     }
 }

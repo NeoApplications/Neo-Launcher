@@ -1,51 +1,45 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 android {
+    compileSdk = 36
     namespace = "com.android.launcher3.icons"
-    compileSdk = 34
 
     defaultConfig {
-        minSdk = 26
-    }
-
-    buildTypes {
-        create("neo") {
-            isMinifyEnabled = false
-        }
+        minSdk = 30
     }
 
     sourceSets {
         named("main") {
-            java.srcDirs(listOf("src", "src_full_lib"))
+            java.directories.addAll(listOf("src","src_full_lib"))
+            kotlin.directories.addAll(listOf("src","src_full_lib"))
             manifest.srcFile("AndroidManifest.xml")
-            res.srcDirs(listOf("res"))
+            res.directories.add("res")
         }
     }
-
-    lint {
-        abortOnError = false
-    }
-
-    tasks.withType<JavaCompile> {
-        options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
     }
 }
 
 dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.palette)
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.annotation)
+    implementation(project(":flags"))
+    implementation(libs.core.ktx)
+    implementation(libs.core.animation)
+    implementation(libs.koin.android)
+    implementation(libs.palette.ktx)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.rules)
 }

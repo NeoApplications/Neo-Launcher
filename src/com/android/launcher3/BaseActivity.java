@@ -16,30 +16,49 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.util.DisplayController.CHANGE_ROTATION;
 import static com.android.launcher3.util.FlagDebugUtils.appendFlag;
 import static com.android.launcher3.util.FlagDebugUtils.formatFlagChange;
 import static com.android.launcher3.util.SystemUiController.UI_STATE_FULLSCREEN_TASK;
-
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.ContextThemeWrapper;
+import android.view.Display;
 import android.view.View;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleRegistry;
+import androidx.savedstate.SavedStateRegistry;
+import androidx.savedstate.SavedStateRegistryController;
 
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
+import com.android.launcher3.dagger.ActivityContextComponent;
+import com.android.launcher3.dagger.LauncherComponentProvider;
 import com.android.launcher3.logging.StatsLogManager;
+import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.testing.TestInformationHandler;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.android.launcher3.util.ActivityOptionsWrapper;
+import com.android.launcher3.util.DisplayController;
+import com.android.launcher3.util.DisplayController.DisplayInfoChangeListener;
+import com.android.launcher3.util.DisplayController.Info;
+import com.android.launcher3.util.LifecycleHelper;
+import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.SystemUiController;
 import com.android.launcher3.util.ViewCache;
+import com.android.launcher3.util.WeakCleanupSet;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.ScrimView;
 
@@ -52,10 +71,12 @@ import java.util.StringJoiner;
 /**
  * Launcher BaseActivity
  */
-public abstract class BaseActivity extends Activity implements ActivityContext {
+public abstract class BaseActivity extends Activity implements ActivityContext,
+        DisplayInfoChangeListener {
 
     private static final String TAG = "BaseActivity";
-    static final boolean DEBUG = false;
+    // TODO(b/406230491): Trun DEBUG back to false once done with investigation.
+    static final boolean DEBUG = true;
 
     public static final int INVISIBLE_BY_STATE_HANDLER = 1 << 0;
     public static final int INVISIBLE_BY_APP_TRANSITIONS = 1 << 1;
@@ -82,13 +103,16 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     }
 
     private final ArrayList<OnDeviceProfileChangeListener> mDPChangeListeners = new ArrayList<>();
-    private final ArrayList<MultiWindowModeChangedListener> mMultiWindowModeChangedListeners =
-            new ArrayList<>();
+
+    private final SavedStateRegistryController mSavedStateRegistryController =
+            SavedStateRegistryController.create(this);
+    private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
+    private final WeakCleanupSet mCleanupSet = new WeakCleanupSet(this);
 
     protected DeviceProfile mDeviceProfile;
     protected SystemUiController mSystemUiController;
+    protected int mDisplayId;
     private StatsLogManager mStatsLogManager;
-
 
     public static final int ACTIVITY_STATE_STARTED = 1 << 0;
     public static final int ACTIVITY_STATE_RESUMED = 1 << 1;
@@ -110,11 +134,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     public static final int ACTIVITY_STATE_USER_ACTIVE = 1 << 4;
 
     /**
-     * State flag indicating if the user will be active shortly.
-     */
-    public static final int ACTIVITY_STATE_USER_WILL_BE_ACTIVE = 1 << 5;
-
-    /**
      * State flag indicating that a state transition is in progress
      */
     public static final int ACTIVITY_STATE_TRANSITION_ACTIVE = 1 << 6;
@@ -130,6 +149,10 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
                     ACTIVITY_STATE_TRANSITION_ACTIVE})
     public @interface ActivityFlags {
     }
+
+    // When starting an action mode, setting this tag will cause the action mode to be cancelled
+    // automatically when user interacts with the launcher.
+    public static final Object AUTO_CANCEL_ACTION_MODE = new Object();
 
     /** Returns a human-readable string for the specified {@link ActivityFlags}. */
     public static String getActivityStateString(@ActivityFlags int flags) {
@@ -153,6 +176,29 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
 
     private final ViewCache mViewCache = new ViewCache();
 
+    @Retention(SOURCE)
+    @IntDef({EVENT_STARTED, EVENT_RESUMED, EVENT_STOPPED, EVENT_DESTROYED})
+    public @interface ActivityEvent { }
+    public static final int EVENT_STARTED = 0;
+    public static final int EVENT_RESUMED = 1;
+    public static final int EVENT_STOPPED = 2;
+    public static final int EVENT_DESTROYED = 3;
+
+    // Callback array that corresponds to events defined in @ActivityEvent
+    private final RunnableList[] mEventCallbacks =
+            {new RunnableList(), new RunnableList(), new RunnableList(), new RunnableList()};
+
+    private ActionMode mCurrentActionMode;
+
+    private ActivityContextComponent mActivityComponent;
+
+    public BaseActivity() {
+        mSavedStateRegistryController.performAttach();
+        registerActivityLifecycleCallbacks(
+                new LifecycleHelper(this, mSavedStateRegistryController, mLifecycleRegistry));
+        TestInformationHandler.trackUiSurface(this);
+    }
+
     @Override
     public ViewCache getViewCache() {
         return mViewCache;
@@ -168,6 +214,19 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
         return mDPChangeListeners;
     }
 
+    @Override
+    public ActivityContextComponent getActivityComponent() {
+        if (mActivityComponent == null) {
+            // Preload all-apps when when embedded in Launcher or any other activity based UI
+            mActivityComponent = (ActivityContextComponent) LauncherComponentProvider.get(this)
+                    .getActivityContextComponentBuilder()
+                    .activityContext(this)
+                    .setAllAppsPreloaded(true)
+                    .build();
+        }
+        return mActivityComponent;
+    }
+
     /**
      * Returns {@link StatsLogManager} for user event logging.
      */
@@ -181,7 +240,7 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
 
     public SystemUiController getSystemUiController() {
         if (mSystemUiController == null) {
-            mSystemUiController = new SystemUiController(getWindow());
+            mSystemUiController = new SystemUiController(getWindow().getDecorView());
         }
         return mSystemUiController;
     }
@@ -198,19 +257,28 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Cache displayId as it is a binder call.
+        Display display = getDisplay();
+        mDisplayId = display != null ? display.getDisplayId() : Display.DEFAULT_DISPLAY;
         registerBackDispatcher();
+
+        // TODO: b/362720616 - Investigate the impact of adding listener using correct displayId.
+        DisplayController.INSTANCE.get(this).addChangeListener(this);
     }
 
     @Override
     protected void onStart() {
         addActivityFlags(ACTIVITY_STATE_STARTED);
         super.onStart();
+        mEventCallbacks[EVENT_STARTED].executeAllAndClear();
     }
 
     @Override
     protected void onResume() {
         setResumed();
         super.onResume();
+        mEventCallbacks[EVENT_RESUMED].executeAllAndClear();
     }
 
     @Override
@@ -220,22 +288,23 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     }
 
     @Override
-    public void onMultiWindowModeChanged(boolean isInMultiWindowMode, Configuration newConfig) {
-        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig);
-        for (int i = mMultiWindowModeChangedListeners.size() - 1; i >= 0; i--) {
-            mMultiWindowModeChangedListeners.get(i).onMultiWindowModeChanged(isInMultiWindowMode);
-        }
-    }
-
-    @Override
     protected void onStop() {
         removeActivityFlags(ACTIVITY_STATE_STARTED | ACTIVITY_STATE_USER_ACTIVE);
         mForceInvisible = 0;
         super.onStop();
+        mEventCallbacks[EVENT_STOPPED].executeAllAndClear();
+
 
         // Reset the overridden sysui flags used for the task-swipe launch animation, this is a
         // catch all for if we do not get resumed (and therefore not paused below)
         getSystemUiController().updateUiState(UI_STATE_FULLSCREEN_TASK, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mEventCallbacks[EVENT_DESTROYED].executeAllAndClear();
+        DisplayController.INSTANCE.get(this).removeChangeListener(this);
     }
 
     @Override
@@ -258,7 +327,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
         } else {
             removeActivityFlags(ACTIVITY_STATE_WINDOW_FOCUSED);
         }
-
     }
 
     protected void registerBackDispatcher() {
@@ -295,7 +363,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
      */
     public void setResumed() {
         addActivityFlags(ACTIVITY_STATE_RESUMED | ACTIVITY_STATE_USER_ACTIVE);
-        removeActivityFlags(ACTIVITY_STATE_USER_WILL_BE_ACTIVE);
     }
 
     public boolean isUserActive() {
@@ -330,14 +397,6 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     protected void onActivityFlagsChanged(int changeBits) {
     }
 
-    public void addMultiWindowModeChangedListener(MultiWindowModeChangedListener listener) {
-        mMultiWindowModeChangedListeners.add(listener);
-    }
-
-    public void removeMultiWindowModeChangedListener(MultiWindowModeChangedListener listener) {
-        mMultiWindowModeChangedListeners.remove(listener);
-    }
-
     /**
      * Used to set the override visibility state, used only to handle the transition home with the
      * recents animation.
@@ -364,13 +423,15 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
     }
 
     /**
-     * Attempts to clear accessibility focus on {@param view}.
+     * Adds a callback for the provided activity event
      */
-    public void tryClearAccessibilityFocus(View view) {
+    public void addEventCallback(@ActivityEvent int event, Runnable callback) {
+        mEventCallbacks[event].add(callback);
     }
 
-    public interface MultiWindowModeChangedListener {
-        void onMultiWindowModeChanged(boolean isInMultiWindowMode);
+    /** Removes a previously added callback */
+    public void removeEventCallback(@ActivityEvent int event, Runnable callback) {
+        mEventCallbacks[event].remove(callback);
     }
 
     protected void dumpMisc(String prefix, PrintWriter writer) {
@@ -382,13 +443,92 @@ public abstract class BaseActivity extends Activity implements ActivityContext {
         writer.println(prefix + "mForceInvisible: " + mForceInvisible);
     }
 
+
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        mCurrentActionMode = mode;
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        super.onActionModeFinished(mode);
+        mCurrentActionMode = null;
+    }
+
+    protected boolean isInAutoCancelActionMode() {
+        return mCurrentActionMode != null && AUTO_CANCEL_ACTION_MODE == mCurrentActionMode.getTag();
+    }
+
+    @Override
+    public boolean finishAutoCancelActionMode() {
+        if (isInAutoCancelActionMode()) {
+            mCurrentActionMode.finish();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @NonNull
+    public ActivityOptionsWrapper getActivityLaunchOptions(View v, @Nullable ItemInfo item) {
+        ActivityOptionsWrapper wrapper = ActivityContext.super.getActivityLaunchOptions(v, item);
+        addEventCallback(EVENT_RESUMED, wrapper.onEndCallback::executeAllAndDestroy);
+        return wrapper;
+    }
+
+    @Override
+    public ActivityOptionsWrapper makeDefaultActivityOptions(int splashScreenStyle) {
+        ActivityOptionsWrapper wrapper =
+                ActivityContext.super.makeDefaultActivityOptions(splashScreenStyle);
+        addEventCallback(EVENT_RESUMED, wrapper.onEndCallback::executeAllAndDestroy);
+        return wrapper;
+    }
+
+    @Override
+    public void onDisplayInfoChanged(Context context, Info info, int flags) {
+        if ((flags & CHANGE_ROTATION) != 0 && mDeviceProfile.isVerticalBarLayout()) {
+            reapplyUi();
+        }
+    }
+
+    protected void reapplyUi() {}
+
+    @NonNull
+    @Override
+    public SavedStateRegistry getSavedStateRegistry() {
+        return mSavedStateRegistryController.getSavedStateRegistry();
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return mLifecycleRegistry;
+    }
+
+    @Override
+    public WeakCleanupSet getOwnerCleanupSet() {
+        return mCleanupSet;
+    }
+
     public static <T extends BaseActivity> T fromContext(Context context) {
         if (context instanceof BaseActivity) {
             return (T) context;
-        } else if (context instanceof ContextWrapper) {
-            return fromContext(((ContextWrapper) context).getBaseContext());
+        } else if (context instanceof ActivityContextDelegate) {
+            return (T) ((ActivityContextDelegate) context).mDelegate;
+        } else if (context instanceof ContextWrapper cw) {
+            return fromContext(cw.getBaseContext());
         } else {
             throw new IllegalArgumentException("Cannot find BaseActivity in parent tree");
+        }
+    }
+
+    class ActivityContextDelegate extends ContextThemeWrapper {
+        public final ActivityContext mDelegate;
+
+        public ActivityContextDelegate(Context base, int themeResId, ActivityContext delegate) {
+            super(base, themeResId);
+            mDelegate = delegate;
         }
     }
 }

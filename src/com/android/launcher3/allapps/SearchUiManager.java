@@ -42,17 +42,11 @@ public interface SearchUiManager {
      */
     default void preDispatchKeyEvent(KeyEvent keyEvent) { };
 
-    void startSearch();
-
     /**
      * @return the edit text object
      */
     @Nullable
     ExtendedEditText getEditText();
-
-    default void hideSoftwareKeyboard() {
-        getEditText().hideKeyboard();
-    }
 
     /**
      * Hint to the edit text that it is about to be focused or unfocused. This can be used to start

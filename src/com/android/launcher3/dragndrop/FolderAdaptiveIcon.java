@@ -37,9 +37,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import com.android.launcher3.Utilities;
 import com.android.launcher3.folder.FolderIcon;
-import com.android.launcher3.folder.PreviewBackground;
 import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.views.ActivityContext;
@@ -47,6 +45,7 @@ import com.android.launcher3.views.ActivityContext;
 /**
  * {@link AdaptiveIconDrawable} representation of a {@link FolderIcon}
  */
+@TargetApi(Build.VERSION_CODES.O)
 public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
     private static final String TAG = "FolderAdaptiveIcon";
 
@@ -73,13 +72,9 @@ public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
         return mBadge;
     }
 
-    @TargetApi(Build.VERSION_CODES.P)
     public static @Nullable FolderAdaptiveIcon createFolderAdaptiveIcon(
             ActivityContext activity, int folderId, Point size) {
         Preconditions.assertNonUiThread();
-        if (!Utilities.ATLEAST_P) {
-            return null;
-        }
 
         // assume square
         if (size.x != size.y) {
@@ -143,11 +138,10 @@ public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
 
     @UiThread
     private static void initLayersOnUiThread(FolderIcon icon, int size,
-            Canvas backgroundCanvas, Canvas foregroundCanvas, Canvas badgeCanvas) {
+                                             Canvas backgroundCanvas, Canvas foregroundCanvas, Canvas badgeCanvas) {
         icon.getPreviewBounds(sTmpRect);
         final int previewSize = sTmpRect.width();
 
-        PreviewBackground bg = icon.getFolderBackground();
         final int margin = (size - previewSize) / 2;
         final float previewShiftX = -sTmpRect.left + margin;
         final float previewShiftY = -sTmpRect.top + margin;
@@ -166,11 +160,10 @@ public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
         foregroundCanvas.restore();
 
         // Draw background
-        Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setColor(bg.getBgColor());
-        bg.drawShadow(backgroundCanvas);
-        backgroundCanvas.drawCircle(size / 2f, size / 2f, bg.getRadius(), backgroundPaint);
-        bg.drawBackgroundStroke(backgroundCanvas);
+        backgroundCanvas.save();
+        backgroundCanvas.translate(previewShiftX, previewShiftY);
+        icon.getFolderBackground().drawBackground(backgroundCanvas);
+        backgroundCanvas.restore();
     }
 
     @Override

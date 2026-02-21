@@ -18,7 +18,6 @@
 
 <resources>
     <dimen name="button_corner_radius">4dp</dimen>
-
     <dimen name="smartspaceAmbientShadowBlur">1.5dp</dimen>
     <dimen name="smartspaceKeyShadowBlur">2dp</dimen>
     <dimen name="smartspaceKeyShadowOffset">0.5dp</dimen>
@@ -26,6 +25,20 @@
     <dimen name="key_text_shadow_dy">0.5dip</dimen>
     <dimen name="key_text_shadow_radius">0.5dip</dimen>
 
+
+    <dimen name="date_weather_view_height">24dp</dimen>
+    <dimen name="enhanced_smartspace_base_action_icon_margin">8dp</dimen>
+    <dimen name="enhanced_smartspace_base_action_icon_padding">4dp</dimen>
+    <dimen name="enhanced_smartspace_secondary_card_corner_radius">20dp</dimen>
+    <dimen name="enhanced_smartspace_secondary_card_padding_end">12dp</dimen>
+    <dimen name="enhanced_smartspace_combination_sub_card_corner_radius">20dp</dimen>
+    <dimen name="enhanced_smartspace_subtitle_margin_top">5dp</dimen>
+    <dimen name="enhanced_smartspace_dismiss_margin">16dp</dimen>
+    <dimen name="enhanced_smartspace_height">120dp</dimen>
+    <dimen name="enhanced_smartspace_icon_inset">2dp</dimen>
+    <dimen name="enhanced_smartspace_icon_margin">6dp</dimen>
+    <dimen name="enhanced_smartspace_icon_size">30dp</dimen>
+    <dimen name="enhanced_smartspace_card_height">76dp</dimen>
     <dimen name="ambient_text_shadow_radius">1.5dip</dimen>
     <dimen name="smartspace_letter_spacing">0.02</dimen>
     <dimen name="smartspace_horizontal_padding">56dp</dimen>
@@ -35,18 +48,15 @@
     <dimen name="smartspace_preview_widget_margin">24dp</dimen>
     <dimen name="smartspace_title_size">24sp</dimen>
     <dimen name="smartspace_title_min_size">14dp</dimen>
-    <dimen name="enhanced_smartspace_dismiss_margin">16dp</dimen>
-    <dimen name="enhanced_smartspace_height">120dp</dimen>
-    <dimen name="enhanced_smartspace_icon_inset">2dp</dimen>
-    <dimen name="enhanced_smartspace_icon_margin">6dp</dimen>
-    <dimen name="enhanced_smartspace_icon_size">30dp</dimen>
     <dimen name="page_indicator_dot_margin">3dp</dimen>
     <dimen name="page_indicator_dot_size">6dp</dimen>
     <dimen name="page_indicator_padding_start">2dp</dimen>
+    <dimen name="page_indicator_padding_top">10dp</dimen>
     <dimen name="page_indicator_padding_top_bottom">8dp</dimen>
     <dimen name="page_indicator_width">16dp</dimen>
     <dimen name="swipe_up_negative_max">400dp</dimen>
     <dimen name="swipe_up_positive_max">100dp</dimen>
+    <dimen name="weather_font_text_size">24sp</dimen>
 
     <dimen name="widget_margin">0dp</dimen>
     <dimen name="qsb_connector_gradient_end_padding">20dp</dimen>

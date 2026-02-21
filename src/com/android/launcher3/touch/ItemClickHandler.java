@@ -15,9 +15,10 @@
  */
 package com.android.launcher3.touch;
 
-import static com.android.launcher3.Launcher.REQUEST_BIND_PENDING_APPWIDGET;
-import static com.android.launcher3.Launcher.REQUEST_RECONFIGURE_APPWIDGET;
+import static com.android.launcher3.LauncherConstants.ActivityCodes.REQUEST_BIND_PENDING_APPWIDGET;
+import static com.android.launcher3.LauncherConstants.ActivityCodes.REQUEST_RECONFIGURE_APPWIDGET;
 import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_FOLDER_OPEN;
+import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCHER_PRIVATE_SPACE_INSTALL_APP_BUTTON_TAP;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_BY_PUBLISHER;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_DISABLED_QUIET_USER;
@@ -32,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageInstaller.SessionInfo;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +41,9 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.BuildConfig;
+import com.android.launcher3.Flags;
+import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
@@ -50,6 +55,7 @@ import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.AppInfo;
+import com.android.launcher3.model.data.AppPairInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
@@ -59,17 +65,18 @@ import com.android.launcher3.pm.InstallSessionHelper;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
-import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.FloatingIconView;
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetAddFlowHandler;
 import com.android.launcher3.widget.WidgetManagerHelper;
-import com.saggitt.omega.data.AppTrackerRepository;
-import com.saggitt.omega.preferences.NeoPrefs;
-import com.saggitt.omega.util.Config;
+import com.neoapps.neolauncher.NeoLauncher;
+import com.neoapps.neolauncher.data.AppTrackerRepository;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
+import com.neoapps.neolauncher.util.Config;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -80,13 +87,13 @@ import java.util.function.Consumer;
  */
 public class ItemClickHandler {
 
-    private static final String TAG = ItemClickHandler.class.getSimpleName();
+    private static final String TAG = "ItemClickHandler";
+    private static final boolean DEBUG = true;
 
     /**
      * Instance used for click handling on items
      */
     public static final OnClickListener INSTANCE = ItemClickHandler::onClick;
-    public static final OnClickListener FOLDER_COVER_INSTANCE = ItemClickHandler::onClickFolderCover;
 
     private static void onClick(View v) {
         // Make sure that rogue clicks don't get through while allapps is launching, or after the
@@ -100,42 +107,29 @@ public class ItemClickHandler {
         if (tag instanceof WorkspaceItemInfo) {
             onClickAppShortcut(v, (WorkspaceItemInfo) tag, launcher);
         } else if (tag instanceof FolderInfo) {
-            if (v instanceof FolderIcon) {
-                onClickFolderIcon(v);
-            } else if (v instanceof AppPairIcon) {
-                onClickAppPairIcon(v);
-            }
+            onClickFolderIcon(v);
+        } else if (tag instanceof AppPairInfo) {
+            onClickAppPairIcon(v);
         } else if (tag instanceof AppInfo) {
             startAppShortcutOrInfoActivity(v, (AppInfo) tag, launcher);
-            MODEL_EXECUTOR.execute(() -> {
-                NeoPrefs prefs = NeoPrefs.getInstance();
-
-                if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
-                    prefs.getReloadGrid();
-                }
-            });
-
         } else if (tag instanceof LauncherAppWidgetInfo) {
             if (v instanceof PendingAppWidgetHostView) {
+                if (DEBUG) {
+                    String targetPackage = ((LauncherAppWidgetInfo) tag).getTargetPackage();
+                    Log.d(TAG, "onClick: PendingAppWidgetHostView clicked for"
+                            + " package=" + targetPackage);
+                }
                 onClickPendingWidget((PendingAppWidgetHostView) v, launcher);
+            } else {
+                if (DEBUG) {
+                    String targetPackage = ((LauncherAppWidgetInfo) tag).getTargetPackage();
+                    Log.d(TAG, "onClick: LauncherAppWidgetInfo clicked,"
+                            + " but not instance of PendingAppWidgetHostView. Returning."
+                            + " package=" + targetPackage);
+                }
             }
         } else if (tag instanceof ItemClickProxy) {
             ((ItemClickProxy) tag).onItemClicked(v);
-        }
-    }
-    private static void onClickFolderCover(View v) {
-        if (v.getWindowToken() == null) {
-            return;
-        }
-
-        Launcher launcher = Launcher.getLauncher(v.getContext());
-        if (!launcher.getWorkspace().isFinishedSwitchingState()) {
-            return;
-        }
-
-        Object tag = v.getTag();
-        if (tag instanceof FolderInfo) {
-            onClickAppShortcut(v, ((FolderInfo) tag).getCoverInfo(), launcher);
         }
     }
 
@@ -161,8 +155,40 @@ public class ItemClickHandler {
      */
     private static void onClickAppPairIcon(View v) {
         Launcher launcher = Launcher.getLauncher(v.getContext());
-        FolderInfo folderInfo = ((AppPairIcon) v).getInfo();
-        launcher.launchAppPair(folderInfo.contents.get(0), folderInfo.contents.get(1));
+        AppPairIcon icon = (AppPairIcon) v;
+        AppPairInfo info = icon.getInfo();
+        boolean isApp1Launchable = info.isLaunchable(launcher).getFirst(),
+                isApp2Launchable = info.isLaunchable(launcher).getSecond();
+        if (!isApp1Launchable || !isApp2Launchable) {
+            // App pair is unlaunchable due to screen size.
+            boolean isFoldable = InvariantDeviceProfile.INSTANCE.get(launcher)
+                    .supportedProfiles.stream().anyMatch(dp -> dp.getDeviceProperties().isTwoPanels());
+            Toast.makeText(launcher, isFoldable
+                            ? R.string.app_pair_needs_unfold
+                            : R.string.app_pair_unlaunchable_at_screen_size,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        } else if (info.isDisabled()) {
+            // App pair is disabled for another reason.
+            WorkspaceItemInfo app1 = info.getFirstApp();
+            WorkspaceItemInfo app2 = info.getSecondApp();
+            // Show the user why the app pair is disabled.
+            if (app1.isDisabled() && app2.isDisabled()) {
+                // Both apps are disabled, show generic "app pair is not available" toast.
+                Toast.makeText(launcher, R.string.app_pair_not_available, Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            } else if ((app1.isDisabled() && handleDisabledItemClicked(app1, launcher))
+                    || (app2.isDisabled() && handleDisabledItemClicked(app2, launcher))) {
+                // Only one is disabled, and handleDisabledItemClicked() showed a specific toast
+                // explaining why, so we are done.
+                return;
+            }
+        }
+
+        // Either the app pair is not disabled, or it is a disabled state that can be handled by
+        // framework directly (e.g. one app is paused), so go ahead and launch.
+        launcher.launchAppPair(icon);
     }
 
     /**
@@ -179,6 +205,9 @@ public class ItemClickHandler {
             LauncherAppWidgetProviderInfo appWidgetInfo = new WidgetManagerHelper(launcher)
                     .findProvider(info.providerName, info.user);
             if (appWidgetInfo == null) {
+                Log.e(TAG, "onClickPendingWidget: Pending widget ready for click setup,"
+                        + " but LauncherAppWidgetProviderInfo was null. Returning."
+                        + " component=" + info.getTargetComponent());
                 return;
             }
             WidgetAddFlowHandler addFlowHandler = new WidgetAddFlowHandler(appWidgetInfo);
@@ -186,12 +215,17 @@ public class ItemClickHandler {
             if (info.hasRestoreFlag(LauncherAppWidgetInfo.FLAG_ID_NOT_VALID)) {
                 if (!info.hasRestoreFlag(LauncherAppWidgetInfo.FLAG_ID_ALLOCATED)) {
                     // This should not happen, as we make sure that an Id is allocated during bind.
+                    Log.e(TAG, "onClickPendingWidget: Pending widget ready for click setup,"
+                            + " and LauncherAppWidgetProviderInfo was found. However,"
+                            + " no appWidgetId was allocated. Returning."
+                            + " component=" + info.getTargetComponent());
                     return;
                 }
                 addFlowHandler.startBindFlow(launcher, info.appWidgetId, info,
                         REQUEST_BIND_PENDING_APPWIDGET);
             } else {
-                addFlowHandler.startConfigActivity(launcher, info, REQUEST_RECONFIGURE_APPWIDGET);
+                addFlowHandler.startConfigActivityIfSupported(launcher, info,
+                        REQUEST_RECONFIGURE_APPWIDGET);
             }
         } else {
             final String packageName = info.providerName.getPackageName();
@@ -202,17 +236,12 @@ public class ItemClickHandler {
     private static void onClickPendingAppItem(View v, Launcher launcher, String packageName,
             boolean downloadStarted) {
         ItemInfo item = (ItemInfo) v.getTag();
-        CompletableFuture<SessionInfo> siFuture;
-        if (Utilities.ATLEAST_Q) {
-            siFuture = CompletableFuture.supplyAsync(() ->
-                    InstallSessionHelper.INSTANCE.get(launcher)
-                            .getActiveSessionInfo(item.user, packageName),
-                    UI_HELPER_EXECUTOR);
-        } else {
-            siFuture = CompletableFuture.completedFuture(null);
-        }
+        CompletableFuture<SessionInfo> siFuture = CompletableFuture.supplyAsync(() ->
+                        InstallSessionHelper.INSTANCE.get(launcher)
+                                .getActiveSessionInfo(item.user, packageName),
+                UI_HELPER_EXECUTOR);
         Consumer<SessionInfo> marketLaunchAction = sessionInfo -> {
-            if (sessionInfo != null && Utilities.ATLEAST_Q) {
+            if (sessionInfo != null) {
                 LauncherApps launcherApps = launcher.getSystemService(LauncherApps.class);
                 try {
                     launcherApps.startPackageInstallerSessionDetailsActivity(sessionInfo, null,
@@ -223,7 +252,8 @@ public class ItemClickHandler {
                 }
             }
             // Fallback to using custom market intent.
-            Intent intent = new PackageManagerHelper(launcher).getMarketIntent(packageName);
+            Intent intent = ApiWrapper.INSTANCE.get(launcher).getMarketSearchIntent(
+                    packageName, item.user);
             launcher.startActivitySafely(v, intent, item);
         };
 
@@ -333,10 +363,9 @@ public class ItemClickHandler {
         }
 
         // Check for abandoned promise
-        if ((v instanceof BubbleTextView) && shortcut.hasPromiseIconUi()) {
-            String packageName = shortcut.getIntent().getComponent() != null
-                    ? shortcut.getIntent().getComponent().getPackageName()
-                    : shortcut.getIntent().getPackage();
+        if ((v instanceof BubbleTextView) && shortcut.hasPromiseIconUi()
+                && (!Flags.enableSupportForArchiving() || !shortcut.isArchived())) {
+            String packageName = shortcut.getTargetPackage();
             if (!TextUtils.isEmpty(packageName)) {
                 onClickPendingAppItem(
                         v,
@@ -355,20 +384,28 @@ public class ItemClickHandler {
     private static void startAppShortcutOrInfoActivity(View v, ItemInfo item, Launcher launcher) {
         TestLogging.recordEvent(
                 TestProtocol.SEQUENCE_MAIN, "start: startAppShortcutOrInfoActivity");
-        Intent intent;
-        if (item instanceof ItemInfoWithIcon
-                && (((ItemInfoWithIcon) item).runtimeStatusFlags
-                & ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE) != 0) {
-            ItemInfoWithIcon appInfo = (ItemInfoWithIcon) item;
-            intent = new PackageManagerHelper(launcher)
-                    .getMarketIntent(appInfo.getTargetComponent().getPackageName());
-        } else {
-            intent = item.getIntent();
+        Intent intent = item.getIntent();
+        if (item instanceof ItemInfoWithIcon itemInfoWithIcon) {
+            if ((itemInfoWithIcon.runtimeStatusFlags
+                    & ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE) != 0) {
+                intent = ApiWrapper.INSTANCE.get(launcher).getAppMarketActivityIntent(
+                        itemInfoWithIcon.getTargetComponent().getPackageName(),
+                        Process.myUserHandle());
+            } else if (itemInfoWithIcon.itemType
+                    == LauncherSettings.Favorites.ITEM_TYPE_PRIVATE_SPACE_INSTALL_APP_BUTTON) {
+                intent = ApiWrapper.INSTANCE.get(launcher).getAppMarketActivityIntent(
+                        BuildConfig.APPLICATION_ID,
+                        launcher.getAppsView().getPrivateProfileManager().getProfileUser());
+                launcher.getStatsLogManager().logger().log(
+                        LAUNCHER_PRIVATE_SPACE_INSTALL_APP_BUTTON_TAP);
+            }
         }
         if (intent == null) {
             throw new IllegalArgumentException("Input must have a valid intent");
         }
         boolean isProtected = false;
+        NeoLauncher myLauncher = (NeoLauncher) launcher;
+        NeoPrefs prefs = NeoPrefs.getInstance();
         if (item instanceof WorkspaceItemInfo) {
             WorkspaceItemInfo si = (WorkspaceItemInfo) item;
             if (si.hasStatusFlag(WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI)
@@ -380,11 +417,9 @@ public class ItemClickHandler {
                 intent = new Intent(intent);
                 intent.setPackage(null);
             }
-
             isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
                     new ComponentKey(si.getTargetComponent(), si.user)) &&
-                    Utilities.getNeoPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().getValue();
-
+                    prefs.getDrawerEnableProtectedApps().getValue();
             if ((si.options & WorkspaceItemInfo.FLAG_START_FOR_RESULT) != 0) {
                 launcher.startActivityForResult(item.getIntent(), 0);
                 InstanceId instanceId = new InstanceIdSequence().newInstanceId();
@@ -392,21 +427,26 @@ public class ItemClickHandler {
                 return;
             }
         }
+        if (item instanceof AppInfo) {
+            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
+                    ((AppInfo) item).toComponentKey()) &&
+                    prefs.getDrawerEnableProtectedApps().getValue();
+            MODEL_EXECUTOR.execute(() -> {
+                if (prefs.getDrawerSortMode().getValue() == Config.SORT_MOST_USED) {
+                    AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
+                    assert ((AppInfo) item).componentName != null;
+                    repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
+                    prefs.getReloadGrid().invoke();
+                }
+            });
+        }
         if (v != null && launcher.supportsAdaptiveIconAnimation(v)
                 && !item.shouldUseBackgroundAnimation()) {
             // Preload the icon to reduce latency b/w swapping the floating view with the original.
             FloatingIconView.fetchIcon(launcher, v, item, true /* isOpening */);
         }
-        if (item instanceof AppInfo) {
-            AppTrackerRepository repository = AppTrackerRepository.Companion.getINSTANCE().get(launcher.getApplicationContext());
-            repository.updateAppCount(((AppInfo) item).componentName.getPackageName());
-
-            isProtected = Config.Companion.isAppProtected(launcher.getApplicationContext(),
-                    ((AppInfo) item).toComponentKey()) &&
-                    Utilities.getNeoPrefs(launcher.getApplicationContext()).getDrawerEnableProtectedApps().getValue();
-        }
         if (isProtected && Utilities.ATLEAST_R) {
-            launcher.startActivitySafelyAuth(v, intent, item);
+            myLauncher.startActivitySafelyAuth(v, intent, item);
         } else {
             launcher.startActivitySafely(v, intent, item);
         }

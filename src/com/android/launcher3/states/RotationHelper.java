@@ -18,6 +18,7 @@ package com.android.launcher3.states;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LOCKED;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE;
 import static android.util.DisplayMetrics.DENSITY_DEVICE_STABLE;
 
 import static com.android.launcher3.LauncherPrefs.ALLOW_ROTATION;
@@ -25,24 +26,26 @@ import static com.android.launcher3.Utilities.dpiFromPx;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 import static com.android.launcher3.util.window.WindowManagerProxy.MIN_TABLET_WIDTH;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.BaseActivity;
+import com.android.launcher3.DeviceProfile;
+import com.android.launcher3.LauncherPrefChangeListener;
 import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.util.ContextTracker;
 import com.android.launcher3.util.DisplayController;
 
 /**
  * Utility class to manage launcher rotation
  */
-public class RotationHelper implements OnSharedPreferenceChangeListener,
+public class RotationHelper implements LauncherPrefChangeListener,
+        DeviceProfile.OnDeviceProfileChangeListener,
         DisplayController.DisplayInfoChangeListener {
 
     public static final String ALLOW_ROTATION_PREFERENCE_KEY = "pref_allowRotation";
@@ -62,8 +65,10 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
     public static final int REQUEST_ROTATE = 1;
     public static final int REQUEST_LOCK = 2;
 
-    @Nullable
-    private BaseActivity mActivity;
+    private boolean mIsFixedLandscape = false;
+
+    @NonNull
+    private final BaseActivity mActivity;
     private final Handler mRequestOrientationHandler;
 
     private boolean mIgnoreAutoRotateSettings;
@@ -72,7 +77,7 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
 
     /**
      * Rotation request made by
-     * {@link com.android.launcher3.util.ActivityTracker.SchedulerCallback}.
+     * {@link ContextTracker.SchedulerCallback}.
      * This supersedes any other request.
      */
     private int mStateHandlerRequest = REQUEST_NONE;
@@ -92,14 +97,14 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
     // Initialize mLastActivityFlags to a value not used by SCREEN_ORIENTATION flags
     private int mLastActivityFlags = -999;
 
-    public RotationHelper(BaseActivity activity) {
+    public RotationHelper(@NonNull BaseActivity activity) {
         mActivity = activity;
         mRequestOrientationHandler =
                 new Handler(UI_HELPER_EXECUTOR.getLooper(), this::setOrientationAsync);
     }
 
-    private void setIgnoreAutoRotateSettings(boolean ignoreAutoRotateSettings,
-            DisplayController.Info info) {
+    private void setIgnoreAutoRotateSettings(boolean ignoreAutoRotateSettings) {
+        if (mDestroyed) return;
         // On large devices we do not handle auto-rotate differently.
         mIgnoreAutoRotateSettings = ignoreAutoRotateSettings;
         if (!mIgnoreAutoRotateSettings) {
@@ -111,7 +116,7 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    public void onPrefChanged(String s) {
         if (mDestroyed || mIgnoreAutoRotateSettings) return;
         boolean wasRotationEnabled = mHomeRotationEnabled;
         mHomeRotationEnabled = LauncherPrefs.get(mActivity).get(ALLOW_ROTATION);
@@ -120,60 +125,84 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
         }
     }
 
+    /**
+     * Listening to both onDisplayInfoChanged and onDeviceProfileChanged to reduce delay. While
+     * onDeviceProfileChanged is triggered earlier, it only receives callback when Launcher is in
+     * the foreground. When in the background, we can still rely on onDisplayInfoChanged to update,
+     * assuming that the delay is tolerable since it takes time to change to foreground.
+     */
     @Override
     public void onDisplayInfoChanged(Context context, DisplayController.Info info, int flags) {
-        boolean ignoreAutoRotateSettings = info.isTablet(info.realBounds);
+        onIgnoreAutoRotateChanged(info.isTablet(info.realBounds));
+    }
+
+    @Override
+    public void onDeviceProfileChanged(DeviceProfile dp) {
+        onIgnoreAutoRotateChanged(dp.getDeviceProperties().isTablet());
+    }
+
+    private void onIgnoreAutoRotateChanged(boolean ignoreAutoRotateSettings) {
+        if (mDestroyed) return;
         if (mIgnoreAutoRotateSettings != ignoreAutoRotateSettings) {
-            setIgnoreAutoRotateSettings(ignoreAutoRotateSettings, info);
+            setIgnoreAutoRotateSettings(ignoreAutoRotateSettings);
             notifyChange();
         }
     }
 
     public void setStateHandlerRequest(int request) {
-        if (mStateHandlerRequest != request) {
-            mStateHandlerRequest = request;
-            notifyChange();
-        }
+        if (mDestroyed || mStateHandlerRequest == request) return;
+        mStateHandlerRequest = request;
+        notifyChange();
     }
 
     public void setCurrentTransitionRequest(int request) {
-        if (mCurrentTransitionRequest != request) {
-            mCurrentTransitionRequest = request;
-            notifyChange();
-        }
+        if (mDestroyed || mCurrentTransitionRequest == request) return;
+        mCurrentTransitionRequest = request;
+        notifyChange();
     }
 
     public void setCurrentStateRequest(int request) {
-        if (mCurrentStateRequest != request) {
-            mCurrentStateRequest = request;
-            notifyChange();
-        }
+        if (mDestroyed || mCurrentStateRequest == request) return;
+        mCurrentStateRequest = request;
+        notifyChange();
+    }
+
+    public boolean isFixedLandscape() {
+        return mIsFixedLandscape;
+    }
+
+    /**
+     * If fixedLandscape is true then the Launcher become landscape until set false..
+     */
+    public void setFixedLandscape(boolean fixedLandscape) {
+        mIsFixedLandscape = fixedLandscape;
+        notifyChange();
     }
 
     // Used by tests only.
     public void forceAllowRotationForTesting(boolean allowRotation) {
+        if (mDestroyed) return;
         mForceAllowRotationForTesting = allowRotation;
         notifyChange();
     }
 
     public void initialize() {
-        if (!mInitialized) {
-            mInitialized = true;
-            DisplayController displayController = DisplayController.INSTANCE.get(mActivity);
-            DisplayController.Info info = displayController.getInfo();
-            setIgnoreAutoRotateSettings(info.isTablet(info.realBounds), info);
-            displayController.addChangeListener(this);
-            notifyChange();
-        }
+        if (mInitialized) return;
+        mInitialized = true;
+        DisplayController displayController = DisplayController.INSTANCE.get(mActivity);
+        DisplayController.Info info = displayController.getInfo();
+        setIgnoreAutoRotateSettings(info.isTablet(info.realBounds));
+        displayController.addChangeListener(this);
+        mActivity.addOnDeviceProfileChangeListener(this);
+        notifyChange();
     }
 
     public void destroy() {
-        if (!mDestroyed) {
-            mDestroyed = true;
-            DisplayController.INSTANCE.get(mActivity).removeChangeListener(this);
-            LauncherPrefs.get(mActivity).removeListener(this, ALLOW_ROTATION);
-            mActivity = null;
-        }
+        if (mDestroyed) return;
+        mDestroyed = true;
+        mActivity.removeOnDeviceProfileChangeListener(this);
+        DisplayController.INSTANCE.get(mActivity).removeChangeListener(this);
+        LauncherPrefs.get(mActivity).removeListener(this, ALLOW_ROTATION);
     }
 
     private void notifyChange() {
@@ -182,7 +211,9 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
         }
 
         final int activityFlags;
-        if (mStateHandlerRequest != REQUEST_NONE) {
+        if (mIsFixedLandscape) {
+            activityFlags = SCREEN_ORIENTATION_USER_LANDSCAPE;
+        } else if (mStateHandlerRequest != REQUEST_NONE) {
             activityFlags = mStateHandlerRequest == REQUEST_LOCK ?
                     SCREEN_ORIENTATION_LOCKED : SCREEN_ORIENTATION_UNSPECIFIED;
         } else if (mCurrentTransitionRequest != REQUEST_NONE) {
@@ -200,16 +231,15 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
         }
         if (activityFlags != mLastActivityFlags) {
             mLastActivityFlags = activityFlags;
+            Log.d("b/380940677", toString());
             mRequestOrientationHandler.sendEmptyMessage(activityFlags);
         }
     }
 
     @WorkerThread
     private boolean setOrientationAsync(Message msg) {
-        Activity activity = mActivity;
-        if (activity != null) {
-            activity.setRequestedOrientation(msg.what);
-        }
+        if (mDestroyed) return true;
+        mActivity.setRequestedOrientation(msg.what);
         return true;
     }
 
@@ -228,8 +258,10 @@ public class RotationHelper implements OnSharedPreferenceChangeListener,
     public String toString() {
         return String.format("[mStateHandlerRequest=%d, mCurrentStateRequest=%d, "
                         + "mLastActivityFlags=%d, mIgnoreAutoRotateSettings=%b, "
-                        + "mHomeRotationEnabled=%b, mForceAllowRotationForTesting=%b]",
+                        + "mHomeRotationEnabled=%b, mForceAllowRotationForTesting=%b,"
+                        + " mDestroyed=%b, mIsFixedLandscape=%b]",
                 mStateHandlerRequest, mCurrentStateRequest, mLastActivityFlags,
-                mIgnoreAutoRotateSettings, mHomeRotationEnabled, mForceAllowRotationForTesting);
+                mIgnoreAutoRotateSettings, mHomeRotationEnabled, mForceAllowRotationForTesting,
+                mDestroyed, mIsFixedLandscape);
     }
 }

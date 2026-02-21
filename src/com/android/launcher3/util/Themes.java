@@ -34,15 +34,12 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.views.ActivityContext;
-import com.saggitt.omega.preferences.NeoPrefs;
 
 /**
  * Various utility methods associated with theming.
  */
 @SuppressWarnings("NewApi")
 public class Themes {
-
-    public static final String KEY_THEMED_ICONS = "themed_icons";
 
     /** Gets the WallpaperColorHints and then uses those to get the correct activity theme res. */
     public static int getActivityThemeRes(Context context) {
@@ -62,13 +59,6 @@ public class Themes {
             return supportsDarkText ? R.style.AppTheme_DarkText
                     : isMainColorDark ? R.style.AppTheme_DarkMainColor : R.style.AppTheme;
         }
-    }
-
-    /**
-     * Returns true if workspace icon theming is enabled
-     */
-    public static boolean isThemedIconEnabled(Context context) {
-        return NeoPrefs.Companion.getInstance().getProfileThemedIcons().getValue();
     }
 
     public static String getDefaultBodyFont(Context context) {

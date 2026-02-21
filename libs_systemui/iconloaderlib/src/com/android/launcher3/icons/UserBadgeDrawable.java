@@ -63,7 +63,6 @@ public class UserBadgeDrawable extends DrawableWrapper {
 
     public UserBadgeDrawable(Context context, int badgeRes, int colorRes, boolean isThemed) {
         super(context.getDrawable(badgeRes));
-
         mIsThemed = isThemed;
         if (isThemed) {
             mutate();
@@ -95,10 +94,8 @@ public class UserBadgeDrawable extends DrawableWrapper {
 
             mPaint.setColor(blendDrawableAlpha(SHADOW_COLOR));
             canvas.drawCircle(CENTER, CENTER + SHADOW_OFFSET_Y, SHADOW_RADIUS, mPaint);
-
             mPaint.setColor(blendDrawableAlpha(mBgColor));
             canvas.drawCircle(CENTER, CENTER, BG_RADIUS, mPaint);
-
             canvas.restoreToCount(saveCount);
         }
         super.draw(canvas);

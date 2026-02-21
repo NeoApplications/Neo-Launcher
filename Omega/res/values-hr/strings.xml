@@ -6,7 +6,6 @@
     <string name="pref_category__others">Ostalo</string>
     <string name="pref_category__inputs">Geste i pretraga</string>
     <string name="pref_category__interfaces">Korisničko sučelje</string>
-    <string name="summary__general_about">Više informacija o Neo Launcheru</string>
     <string name="summary__general_advanced">Jezik, sigurnosna kopija, postavljanje postavki</string>
     <string name="summary__general_notifications">Broj bedževa, boja bedža, geste</string>
     <string name="summary__general_smartspace">Datum, vrijeme, programčić za početni ekran</string>
@@ -182,7 +181,6 @@
     <string name="backup_share_text">Neo Launcher datoteka sigurnosne kopije</string>
     <string name="summary__dev_restart">Može biti korisno ako neke postavke nisu ispravno primijenjene</string>
     <string name="title__about_changelog">Dnevnik promjena</string>
-    <string name="about_copyright">Autorska prava © 2020. – 2021.</string>
     <string name="wallpaper_pick">Odaberi sliku pozadine</string>
     <string name="dash_all_apps_title">Otvori sve programe</string>
     <string name="backups">Sigurnosne kopije</string>
@@ -407,7 +405,6 @@
     <string name="summary_app_categorization_enable">Stvori kartice ili mape</string>
     <string name="dialog_message_change_sort">Promijeniti na abecedno razvrstavanje programa\?</string>
     <string name="title_app_categorization_enable">Aktiviraj kategorije programa</string>
-    <string name="title_drawer_vertical_list">Okomiti popis</string>
     <string name="cat_desktop_grid">Mreža i raspored</string>
     <string name="title_disable_suggestions_prompt">Isključi prijedloge za programe</string>
     <string name="title_drawer_paged">Pojedinačni prikaz</string>
@@ -415,8 +412,7 @@
     <string name="cat_drawer_icons">Ikone</string>
     <string name="pref_appcategorization_flowerpot_title">Kategorija programa</string>
     <string name="pref_appcategorization_style_text">Stil</string>
-    <string name="title_app_categorize">Kategoriziraj programe</string>
-    <string name="summary_app_categorize">Odaberi između kartica ili mapa</string>
+
     <string name="app_categorization_tabs">Kartice</string>
     <string name="title_white_only_treatment">Zamijeni bijele pozadine</string>
     <string name="title_smartspace_time">Prikaži vrijeme</string>
@@ -503,7 +499,6 @@
     <string name="title_themed_background">Transparentna pozadina ikone</string>
     <string name="title_desktop_free_scrolling">Slobodno klizanje</string>
     <string name="web_search_perplexity">Perplexity (web)</string>
-    <string name="web_search_phind">Phind (web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (web)</string>
     <string name="hotseat_accessibility_expand">Traka za brzi pristup rasklopljena</string>
     <string name="about_community_matrix">Zajednica na Matrixu</string>
@@ -516,7 +511,6 @@
     <string name="title_drawer_horizontal">Vodoravno</string>
     <string name="title_drawer_categorized">Kategorizirano</string>
     <string name="gesture_press_recents">Gub za nedavne</string>
-    <string name="title_drawer_custom_categories">Prilagođene kategorije</string>
     <string name="web_search_you">You (web)</string>
     <string name="web_search_provider">Pružatelj usluge web pretrage</string>
     <string name="search_provider">Pružatelj usluge pretrage</string>

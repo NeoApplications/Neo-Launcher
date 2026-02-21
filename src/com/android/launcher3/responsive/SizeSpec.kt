@@ -57,11 +57,16 @@ data class SizeSpec(
     /**
      * Calculates the [SizeSpec] value when remainder space value is defined. If no remainderSpace
      * is 0, returns a default value.
+     *
+     * @param remainderSpace The remainder space to be used for the calculation
+     * @param defaultValue The default value to be returned when no ofRemainderSpace is defined
+     * @param factor A number to divide the remainder space. The default value is 1. This property
+     *   is used to split equally the remainder space by the number of cells and gutters.
      */
-    fun getRemainderSpaceValue(remainderSpace: Int, defaultValue: Int): Int {
+    fun getRemainderSpaceValue(remainderSpace: Int, defaultValue: Int, factor: Int = 1): Int {
         val remainderSpaceValue =
             if (ofRemainderSpace > 0) {
-                (ofRemainderSpace * remainderSpace).roundToInt()
+                (ofRemainderSpace * remainderSpace / factor).roundToInt()
             } else {
                 defaultValue
             }
@@ -121,6 +126,10 @@ data class SizeSpec(
         const val GUTTER = "gutter"
         const val CELL_SIZE = "cellSize"
         const val HOTSEAT_QSB_SPACE = "hotseatQsbSpace"
+        const val EDGE_PADDING = "edgePadding"
+        const val ICON_SIZE = "iconSize"
+        const val ICON_TEXT_SIZE = "iconTextSize"
+        const val ICON_DRAWABLE_PADDING = "iconDrawablePadding"
     }
 
     companion object {

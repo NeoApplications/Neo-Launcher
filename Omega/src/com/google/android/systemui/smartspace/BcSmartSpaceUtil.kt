@@ -13,7 +13,7 @@ import android.util.Log
 import android.view.View
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
-import com.saggitt.omega.NeoLauncher
+import com.neoapps.neolauncher.NeoLauncher
 import com.saulhdev.smartspace.SmartspaceAction
 
 object BcSmartSpaceUtil {
@@ -82,6 +82,7 @@ object BcSmartSpaceUtil {
             0
         }
     }
+
     private fun intentClickListener(intent: Intent?) = View.OnClickListener { v ->
         if (intent == null) return@OnClickListener
         val launcher = NeoLauncher.getLauncher(v.context)
@@ -92,10 +93,11 @@ object BcSmartSpaceUtil {
         }
     }
 
-    private fun pendingIntentClickListener(pendingIntent: PendingIntent?)= View.OnClickListener { v ->
+    private fun pendingIntentClickListener(pendingIntent: PendingIntent?) =
+        View.OnClickListener { v ->
             if (pendingIntent == null) return@OnClickListener
             val launcher = NeoLauncher.getLauncher(v.context)
-            val opts = launcher.getActivityLaunchOptionsAsBundle(v)
+            val opts = launcher.getActivityLaunchOptions(v, null).toBundle()
             try {
                 launcher.startIntentSender(
                     pendingIntent.intentSender, null,

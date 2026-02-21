@@ -22,7 +22,6 @@
     <string name="pref_category__others">Annet</string>
     <string name="pref_category__inputs">Grensesnitt og søk</string>
     <string name="pref_category__interfaces">Brukergrensesnitt</string>
-    <string name="summary__general_about">Mer om Neo-oppstarteren</string>
     <string name="summary__general_advanced">Språk, sikkerhetskopi, innstillingssøk</string>
     <string name="title__dock_colored_icons">Fargede ikoner</string>
     <string name="title__drawer_hide_icon_labels">Skjul programnavn</string>
@@ -31,7 +30,6 @@
     <string name="title__drawer_sort">Programsortering</string>
     <string name="app_categorization_folders">Mapper</string>
     <string name="pref_appcategorization_style_text">Stil</string>
-    <string name="title_app_categorize">Kategoriser programmer</string>
     <string name="pref_appcategorization_flowerpot_title">Programkategori</string>
     <string name="label_turn_off_suggestions">Skru av</string>
     <string name="msg_disable_suggestions_prompt">Bruksdata vil bli slettet.</string>
@@ -360,7 +358,6 @@
     <string name="gesture_press_home">Trykk på hjemmeknappen</string>
     <string name="dialog_message_change_sort">Endre programrekkefølge til alfabetisk\?</string>
     <string name="title_drawer_paged">Sideinndelt</string>
-    <string name="title_drawer_vertical_list">Loddrett liste</string>
     <string name="title_drawer_vertical">Loddrett</string>
     <string name="title_drawer_layout">Visningsmodus</string>
     <string name="notification_custom_color">Bruk egendefinert farge</string>
@@ -401,7 +398,6 @@
     <string name="dash_wifi_summary">Wi-Fi-tilstand og tilkobling</string>
     <string name="modify_system_settings">Endre systeminnstilinger</string>
     <string name="modify_system_settings_message">Innvilg tilgang til å endre systeminnstillinger for at dette skal virke</string>
-    <string name="about_copyright">Opphavsrett © 2020–2021</string>
     <string name="pref_desktop_mode">Skrivebordsmodus</string>
     <string name="pref_desktop_mode_summary">Aktiver Android sitt skrivebordsmodus</string>
     <string name="pref_desktop_mode_settings">Innstillinger for skrivebordsmodus</string>
@@ -416,7 +412,7 @@
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
     <string name="enabled_events">Påskrudd</string>
     <string name="cat_desktop_grid">Rutenett og visning</string>
-    <string name="summary_app_categorize">Velg mellom faner og mapper</string>
+
     <string name="title_app_categorization_enable">Skru på programkategorier</string>
     <string name="summary_app_categorization_enable">Opprett faner eller mapper</string>
     <string name="summary_app_suggestions">For alle programmer og hjemmeskjermen</string>

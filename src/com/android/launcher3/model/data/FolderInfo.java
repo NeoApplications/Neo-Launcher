@@ -17,65 +17,39 @@
 package com.android.launcher3.model.data;
 
 import static android.text.TextUtils.isEmpty;
+
 import static androidx.core.util.Preconditions.checkNotNull;
-import static com.android.launcher3.folder.FolderIcon.inflateIcon;
+
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR;
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.EMPTY_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.MANUAL_LABEL;
 import static com.android.launcher3.logger.LauncherAtom.Attribute.SUGGESTED_LABEL;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Process;
-import android.text.TextUtils;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderNameInfos;
-import com.android.launcher3.icons.BitmapRenderer;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.Attribute;
 import com.android.launcher3.logger.LauncherAtom.FolderIcon;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
 import com.android.launcher3.model.ModelWriter;
-import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
-import com.saggitt.omega.data.GestureItemInfoRepository;
-import com.saggitt.omega.data.models.GestureItemInfo;
-import com.saggitt.omega.folder.FirstItemProvider;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 /**
  * Represents a folder containing shortcuts or apps.
  */
-public class FolderInfo extends ItemInfo {
-
-    public static final int NO_FLAGS = 0x00000000;
-
-    /**
-     * The folder is locked in sorted mode
-     */
-    public static final int FLAG_ITEMS_SORTED = 0x00000001;
-
-    /**
-     * It is a work folder
-     */
-    public static final int FLAG_WORK_FOLDER = 0x00000002;
+public class FolderInfo extends CollectionInfo {
 
     /**
      * The multi-page animation has run for this folder
@@ -83,8 +57,6 @@ public class FolderInfo extends ItemInfo {
     public static final int FLAG_MULTI_PAGE_ANIMATION = 0x00000004;
 
     public static final int FLAG_MANUAL_FOLDER_NAME = 0x00000008;
-
-    public static final int FLAG_COVER_MODE = 0x00000010;
 
     /**
      * Different states of folder label.
@@ -110,8 +82,6 @@ public class FolderInfo extends ItemInfo {
         }
     }
 
-    public static final String EXTRA_FOLDER_SUGGESTIONS = "suggest";
-
     public int options;
 
     public FolderNameInfos suggestedFolderNames;
@@ -119,101 +89,52 @@ public class FolderInfo extends ItemInfo {
     /**
      * The apps and shortcuts
      */
-    public ArrayList<WorkspaceItemInfo> contents = new ArrayList<>();
-
-    private ArrayList<FolderListener> mListeners = new ArrayList<>();
-    public String swipeUpAction;
-    public FirstItemProvider firstItemProvider = new FirstItemProvider(this);
+    private final ArrayList<ItemInfo> contents = new ArrayList<>();
 
     public FolderInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
-        user = Process.myUserHandle();
-
-        swipeUpAction = "";
     }
 
-    /**
-     * Create an app pair, a type of app collection that launches multiple apps into split screen
-     */
-    public static FolderInfo createAppPair(WorkspaceItemInfo app1, WorkspaceItemInfo app2) {
-        FolderInfo newAppPair = new FolderInfo();
-        newAppPair.itemType = LauncherSettings.Favorites.ITEM_TYPE_APP_PAIR;
-        newAppPair.add(app1, /* animate */ false);
-        newAppPair.add(app2, /* animate */ false);
-        return newAppPair;
-    }
-
-    /**
-     * Add an app or shortcut
-     *
-     * @param item
-     */
-    public void add(WorkspaceItemInfo item, boolean animate) {
-        add(item, contents.size(), animate);
-    }
-
-    /**
-     * Add an app or shortcut for a specified rank.
-     */
-    public void add(WorkspaceItemInfo item, int rank, boolean animate) {
-        rank = Utilities.boundToRange(rank, 0, contents.size());
-        contents.add(rank, item);
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onAdd(item, rank);
+    @Override
+    public void add(@NonNull ItemInfo item) {
+        if (!willAcceptItemType(item.itemType)) {
+            throw new RuntimeException("tried to add an illegal type into a folder");
         }
-        itemsChanged(animate);
+        getContents().add(item);
     }
 
     /**
-     * Remove an app or shortcut. Does not change the DB.
-     *
-     * @param item
+     * Returns the folder's contents as an unsorted ArrayList of {@link ItemInfo}. Includes
+     * {@link WorkspaceItemInfo} and {@link AppPairInfo}s.
      */
-    public void remove(WorkspaceItemInfo item, boolean animate) {
-        removeAll(Collections.singletonList(item), animate);
+    @NonNull
+    @Override
+    public ArrayList<ItemInfo> getContents() {
+        return contents;
     }
 
     /**
-     * Remove all matching app or shortcut. Does not change the DB.
+     * Returns the folder's contents as an ArrayList of {@link WorkspaceItemInfo}. Note: Does not
+     * return any {@link AppPairInfo}s contained in the folder, instead collects *their* contents
+     * and adds them to the ArrayList.
      */
-    public void removeAll(List<WorkspaceItemInfo> items, boolean animate) {
-        contents.removeAll(items);
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onRemove(items);
+    @Override
+    public ArrayList<WorkspaceItemInfo> getAppContents()  {
+        ArrayList<WorkspaceItemInfo> workspaceItemInfos = new ArrayList<>();
+        for (ItemInfo item : contents) {
+            if (item instanceof WorkspaceItemInfo wii) {
+                workspaceItemInfos.add(wii);
+            } else if (item instanceof AppPairInfo api) {
+                workspaceItemInfos.addAll(api.getAppContents());
+            }
         }
-        itemsChanged(animate);
+        return workspaceItemInfos;
     }
 
     @Override
     public void onAddToDatabase(@NonNull ContentWriter writer) {
         super.onAddToDatabase(writer);
-        writer.put(LauncherSettings.Favorites.TITLE, title)
-                .put(LauncherSettings.Favorites.OPTIONS, options);
-    }
-
-    public void addListener(FolderListener listener) {
-        mListeners.add(listener);
-    }
-
-    public void removeListener(FolderListener listener) {
-        mListeners.remove(listener);
-    }
-
-    public void itemsChanged(boolean animate) {
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onItemsChanged(animate);
-        }
-    }
-
-    public interface FolderListener {
-        void onAdd(WorkspaceItemInfo item, int rank);
-        void onRemove(List<WorkspaceItemInfo> item);
-        void onItemsChanged(boolean animate);
-        void onTitleChanged(CharSequence title);
-
-        default void onIconChanged() {
-            // do nothing
-        }
+        writer.put(LauncherSettings.Favorites.OPTIONS, options);
     }
 
     public boolean hasOption(int optionFlag) {
@@ -237,62 +158,6 @@ public class FolderInfo extends ItemInfo {
         }
     }
 
-    public boolean isCoverMode() {
-        return hasOption(FLAG_COVER_MODE);
-    }
-
-    public boolean isInDrawer() {
-        return container == ItemInfo.NO_ID;
-    }
-
-    public void setCoverMode(boolean enable, ModelWriter modelWriter) {
-        setOption(FLAG_COVER_MODE, enable, modelWriter);
-        onIconChanged();
-    }
-
-    public WorkspaceItemInfo getCoverInfo() {
-        return firstItemProvider.getFirstItem();
-    }
-
-    public void setSwipeUpAction(@NonNull Context context, @Nullable String action) {
-        swipeUpAction = action;
-        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
-        GestureItemInfo gestureItemInfo = repository.find(toComponentKey());
-        if (gestureItemInfo != null && gestureItemInfo.getSwipeUp() != null) {
-            gestureItemInfo.setSwipeUp(swipeUpAction);
-            repository.update(gestureItemInfo);
-        } else {
-            gestureItemInfo = new GestureItemInfo(toComponentKey(), swipeUpAction, "");
-            repository.insert(gestureItemInfo);
-        }
-    }
-
-    public CharSequence getIconTitle(Folder folder) {
-        if (!isCoverMode()) {
-            if (!TextUtils.equals(folder.getDefaultFolderName(), title)) {
-                return title;
-            } else {
-                return folder.getDefaultFolderName();
-            }
-        } else {
-            WorkspaceItemInfo info = getCoverInfo();
-            if (info.customTitle != null) {
-                return info.customTitle;
-            }
-            return info.title;
-        }
-    }
-
-    public ComponentKey toComponentKey() {
-        return new ComponentKey(new ComponentName("com.saulhdev.neolauncher.folder", String.valueOf(id)), Process.myUserHandle());
-    }
-
-    public void onIconChanged() {
-        for (FolderListener listener : mListeners) {
-            listener.onIconChanged();
-        }
-    }
-
     @Override
     protected String dumpProperties() {
         return String.format("%s; labelState=%s", super.dumpProperties(), getLabelState());
@@ -300,13 +165,13 @@ public class FolderInfo extends ItemInfo {
 
     @NonNull
     @Override
-    public LauncherAtom.ItemInfo buildProto(@Nullable FolderInfo fInfo) {
+    public LauncherAtom.ItemInfo buildProto(@Nullable CollectionInfo cInfo, Context context) {
         FolderIcon.Builder folderIcon = FolderIcon.newBuilder()
-                .setCardinality(contents.size());
+                .setCardinality(getContents().size());
         if (LabelState.SUGGESTED.equals(getLabelState())) {
             folderIcon.setLabelInfo(title.toString());
         }
-        return getDefaultItemInfoBuilder()
+        return getDefaultItemInfoBuilder(context)
                 .setFolderIcon(folderIcon)
                 .setRank(rank)
                 .addItemAttributes(getLabelState().mLogAttribute)
@@ -314,14 +179,6 @@ public class FolderInfo extends ItemInfo {
                 .build();
     }
 
-    public void setTitle(CharSequence title) {
-        this.title = title;
-        for (int i = 0; i < mListeners.size(); i++) {
-            mListeners.get(i).onTitleChanged(title);
-        }
-    }
-
-    @Override
     public void setTitle(@Nullable CharSequence title, ModelWriter modelWriter) {
         // Updating label from null to empty is considered as false touch.
         // Retaining null title(ie., UNLABELED state) allows auto-labeling when new items added.
@@ -366,17 +223,15 @@ public class FolderInfo extends ItemInfo {
     public ItemInfo makeShallowCopy() {
         FolderInfo folderInfo = new FolderInfo();
         folderInfo.copyFrom(this);
-        folderInfo.contents = this.contents;
         return folderInfo;
     }
 
-    /**
-     * Returns {@link LauncherAtom.FolderIcon} wrapped as {@link LauncherAtom.ItemInfo} for logging.
-     */
-    @NonNull
     @Override
-    public LauncherAtom.ItemInfo buildProto() {
-        return buildProto(null);
+    public void copyFrom(@NonNull ItemInfo info) {
+        super.copyFrom(info);
+        if (info instanceof FolderInfo fi) {
+            contents.addAll(fi.getContents());
+        }
     }
 
     /**
@@ -460,31 +315,12 @@ public class FolderInfo extends ItemInfo {
         return LauncherAtom.ToState.TO_STATE_UNSPECIFIED;
     }
 
-    public boolean useIconMode(Context context) {
-        return isCoverMode();
-    }
-
-    public boolean usingCustomIcon(Context context) {
-        return !isCoverMode();
-    }
-
-    public Drawable getIcon(Context context) {
-        Launcher launcher = Launcher.getLauncher(context);
-        if (isCoverMode()) return getCoverInfo().newIcon(context);
-        return getFolderIcon(launcher);
-    }
-
-    public Drawable getFolderIcon(Launcher launcher) {
-        int iconSize = launcher.getDeviceProfile().iconSizePx;
-        LinearLayout dummy = new LinearLayout(launcher, null);
-        com.android.launcher3.folder.FolderIcon icon =  inflateIcon(R.layout.folder_icon, launcher, dummy, this);
-        icon.isCustomIcon = false;
-        icon.getFolderBackground().setStartOpacity(1f);
-        Bitmap b = BitmapRenderer.createHardwareBitmap(iconSize, iconSize, out -> {
-            out.translate(iconSize / 2f, 0);
-            icon.draw(out);
-        });
-        icon.unbind();
-        return new BitmapDrawable(launcher.getResources(), b);
+    /**
+     * Checks if {@code itemType} is a type that can be placed in folders.
+     */
+    public static boolean willAcceptItemType(int itemType) {
+        return itemType == ITEM_TYPE_APPLICATION
+                || itemType == ITEM_TYPE_DEEP_SHORTCUT
+                || itemType == ITEM_TYPE_APP_PAIR;
     }
 }

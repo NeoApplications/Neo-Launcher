@@ -16,10 +16,11 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.saggitt.omega.allapps.search.ComposeSearchLayout
+<com.neoapps.neolauncher.allapps.search.ComposeSearchLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_container_all_apps"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
-    android:padding="4dp"/>
+    android:background="@drawable/bg_all_apps_searchbox"
+    android:padding="2dp" />

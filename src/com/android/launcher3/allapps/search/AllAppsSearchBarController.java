@@ -20,9 +20,8 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.SuggestionSpan;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -30,7 +29,6 @@ import android.widget.TextView.OnEditorActionListener;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.search.SearchAlgorithm;
 import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.views.ActivityContext;
@@ -39,9 +37,9 @@ import com.android.launcher3.views.ActivityContext;
  * An interface to a search box that AllApps can command.
  */
 public class AllAppsSearchBarController
-        implements TextWatcher, OnEditorActionListener, ExtendedEditText.OnBackKeyListener,
-        OnFocusChangeListener {
+        implements TextWatcher, OnEditorActionListener, ExtendedEditText.OnBackKeyListener {
 
+    private static final String TAG = "AllAppsSearchBarController";
     protected ActivityContext mLauncher;
     protected SearchCallback<AdapterItem> mCallback;
     protected ExtendedEditText mInput;
@@ -51,7 +49,7 @@ public class AllAppsSearchBarController
     protected SearchAlgorithm<AdapterItem> mSearchAlgorithm;
 
     public void setVisibility(int visibility) {
-        if (mInput != null) mInput.setVisibility(visibility);
+        mInput.setVisibility(visibility);
     }
 
     /**
@@ -68,7 +66,6 @@ public class AllAppsSearchBarController
             mInput.addTextChangedListener(this);
             mInput.setOnEditorActionListener(this);
             mInput.setOnBackKeyListener(this);
-            mInput.addOnFocusChangeListener(this);
         }
         mSearchAlgorithm = searchAlgorithm;
     }
@@ -123,7 +120,14 @@ public class AllAppsSearchBarController
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-        if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_GO) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_GO || (
+                actionId == EditorInfo.IME_NULL && event != null
+                        && event.getAction() == KeyEvent.ACTION_DOWN)) {
+            if (actionId == EditorInfo.IME_NULL) {
+                Log.i(TAG, "User pressed ENTER key");
+            } else {
+                Log.i(TAG, "User tapped ime search button");
+            }
             // selectFocusedView should return SearchTargetEvent that is passed onto onClick
             return mLauncher.getAppsView().getMainAdapterProvider().launchHighlightedItem();
         }
@@ -141,34 +145,28 @@ public class AllAppsSearchBarController
         return false;
     }
 
-    @Override
-    public void onFocusChange(View view, boolean hasFocus) {
-        if (!hasFocus && !FeatureFlags.ENABLE_DEVICE_SEARCH.get()) {
-            if (mInput != null) mInput.hideKeyboard();
-        }
-    }
-
     /**
      * Resets the search bar state.
      */
     public void reset() {
         mCallback.clearSearchResult();
-        if (mInput != null) mInput.reset();
+        mInput.reset();
+        mInput.clearFocus();
+        mInput.hideKeyboard();
         mQuery = null;
-        if (mInput != null) mInput.removeOnFocusChangeListener(this);
     }
 
     /**
      * Focuses the search field to handle key events.
      */
     public void focusSearchField() {
-        if (mInput != null) mInput.showKeyboard(true /* shouldFocus */);
+        mInput.showKeyboard();
     }
 
     /**
      * Returns whether the search field is focused.
      */
     public boolean isSearchFieldFocused() {
-        return mInput != null && mInput.isFocused();
+        return mInput.isFocused();
     }
 }

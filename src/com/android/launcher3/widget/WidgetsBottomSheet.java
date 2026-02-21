@@ -17,21 +17,21 @@
 package com.android.launcher3.widget;
 
 import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_BOTTOM_WIDGETS_TRAY;
+import static com.android.launcher3.widget.picker.model.data.WidgetPickerDataUtils.findAllWidgetsForPackageUser;
 
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.IntProperty;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.Interpolator;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
@@ -41,6 +41,7 @@ import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.model.WidgetItem;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.PackageUserKey;
+import com.android.launcher3.widget.picker.model.data.WidgetPickerData;
 import com.android.launcher3.widget.util.WidgetsTableUtils;
 
 import java.util.List;
@@ -49,56 +50,10 @@ import java.util.List;
  * Bottom sheet for the "Widgets" system shortcut in the long-press popup.
  */
 public class WidgetsBottomSheet extends BaseWidgetSheet {
-    private static final String TAG = "WidgetsBottomSheet";
-
-    private static final IntProperty<View> PADDING_BOTTOM =
-            new IntProperty<View>("paddingBottom") {
-                @Override
-                public void setValue(View view, int paddingBottom) {
-                    view.setPadding(view.getPaddingLeft(), view.getPaddingTop(),
-                            view.getPaddingRight(), paddingBottom);
-                }
-
-                @Override
-                public Integer get(View view) {
-                    return view.getPaddingBottom();
-                }
-            };
-
     private static final int DEFAULT_CLOSE_DURATION = 200;
-    private static final long EDUCATION_TIP_DELAY_MS = 300;
 
     private ItemInfo mOriginalItemInfo;
     @Px private int mMaxHorizontalSpan;
-
-    private final OnLayoutChangeListener mLayoutChangeListenerToShowTips =
-            new OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    if (hasSeenEducationTip()) {
-                        removeOnLayoutChangeListener(this);
-                        return;
-                    }
-                    // Widgets are loaded asynchronously, We are adding a delay because we only want
-                    // to show the tip when the widget preview has finished loading and rendering in
-                    // this view.
-                    removeCallbacks(mShowEducationTipTask);
-                    postDelayed(mShowEducationTipTask, EDUCATION_TIP_DELAY_MS);
-                }
-            };
-
-    private final Runnable mShowEducationTipTask = () -> {
-        if (hasSeenEducationTip()) {
-            removeOnLayoutChangeListener(mLayoutChangeListenerToShowTips);
-            return;
-        }
-        View viewForTip = ((ViewGroup) ((TableLayout) findViewById(R.id.widgets_table))
-                                    .getChildAt(0)).getChildAt(0);
-        if (showEducationTipOnViewIfPossible(viewForTip) != null) {
-            removeOnLayoutChangeListener(mLayoutChangeListenerToShowTips);
-        }
-    };
 
     public WidgetsBottomSheet(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -107,9 +62,6 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
     public WidgetsBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setWillNotDraw(false);
-        if (!hasSeenEducationTip()) {
-            addOnLayoutChangeListener(mLayoutChangeListenerToShowTips);
-        }
     }
 
     @Override
@@ -174,10 +126,10 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
 
     @Override
     public void onWidgetsBound() {
-        List<WidgetItem> widgets = mActivityContext.getPopupDataProvider().getWidgetsForPackageUser(
-                new PackageUserKey(
-                        mOriginalItemInfo.getTargetComponent().getPackageName(),
-                        mOriginalItemInfo.user));
+        final WidgetPickerData data = mActivityContext.getWidgetPickerDataProvider().get();
+        final PackageUserKey packageUserKey = PackageUserKey.fromItemInfo(mOriginalItemInfo);
+        List<WidgetItem> widgets = packageUserKey != null ? findAllWidgetsForPackageUser(data,
+                packageUserKey) : List.of();
 
         TableLayout widgetsTable = findViewById(R.id.widgets_table);
         widgetsTable.removeAllViews();
@@ -186,11 +138,15 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
                 mActivityContext.getDeviceProfile(), mMaxHorizontalSpan,
                 mWidgetCellHorizontalPadding)
                 .forEach(row -> {
-                    TableRow tableRow = new TableRow(getContext());
+                    WidgetTableRow tableRow = new WidgetTableRow(getContext());
                     tableRow.setGravity(Gravity.TOP);
+                    tableRow.setupRow(row.size(), /*resizeDelayMs=*/ 0);
                     row.forEach(widgetItem -> {
                         WidgetCell widget = addItemCell(tableRow);
                         widget.applyFromCellItem(widgetItem);
+                        if (widget.matchesItem(getLastSelectedWidgetItem())) {
+                            widget.callOnClick();
+                        }
                     });
                     widgetsTable.addView(tableRow);
                 });
@@ -209,9 +165,11 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
         return super.onControllerInterceptTouchEvent(ev);
     }
 
-    protected WidgetCell addItemCell(ViewGroup parent) {
+    protected WidgetCell addItemCell(WidgetTableRow parent) {
         WidgetCell widget = (WidgetCell) LayoutInflater.from(getContext())
                 .inflate(R.layout.widget_cell, parent, false);
+        widget.addPreviewReadyListener(parent);
+        widget.setOnClickListener(this);
 
         View previewContainer = widget.findViewById(R.id.widget_preview_container);
         previewContainer.setOnClickListener(this);
@@ -277,6 +235,21 @@ public class WidgetsBottomSheet extends BaseWidgetSheet {
     @Override
     public void addHintCloseAnim(
             float distanceToMove, Interpolator interpolator, PendingAnimation target) {
-        target.setInt(this, PADDING_BOTTOM, (int) (distanceToMove + mInsets.bottom), interpolator);
+        target.addAnimatedFloat(mSwipeToDismissProgress, 0f, 1f, interpolator);
     }
+
+    @Override
+    protected void scrollCellContainerByY(WidgetCell wc, int scrollByY) {
+        for (ViewParent parent = wc.getParent(); parent != null; parent = parent.getParent()) {
+            if (parent instanceof ScrollView scrollView) {
+                scrollView.smoothScrollBy(0, scrollByY);
+                return;
+            } else if (parent == this) {
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onRecommendedWidgetsBound() {} // no op
 }

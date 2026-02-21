@@ -1,52 +1,55 @@
-plugins {
+plugins{
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 android {
-    namespace = "com.android.launcher3.animation"
-    compileSdk = 34
+    compileSdk = 36
+    namespace = "com.android.systemui.animationlib"
+    testNamespace = "com.android.systemui.animationlib.test"
 
     defaultConfig {
-        minSdk = 26
-    }
-
-    buildTypes {
-        create("neo") {
-            isMinifyEnabled = false
-        }
+        minSdk = 30
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets {
-        named("main") {
-            java.srcDirs(listOf("src", "src_full_lib"))
+        getByName("main") {
+            java.directories.add("src")
+            kotlin.directories.add("src")
+            res.directories.add("res")
             manifest.srcFile("AndroidManifest.xml")
-            res.srcDirs(listOf("res"))
+        }
+        getByName("androidTest") {
+            java.directories.addAll(listOf("test/src", "test/robolectric/src"))
+            manifest.srcFile("test/AndroidManifest.xml")
         }
     }
 
-    lint {
-        abortOnError = false
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
     }
-
-    tasks.withType<JavaCompile> {
-        options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    
+    buildFeatures {
+        viewBinding = true
     }
 }
 
-dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.animation)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.rules)
+dependencies{
+    implementation(project(":flags"))
+    implementation(libs.core.animation)
+    implementation(libs.core.ktx)
+    implementation(libs.kotlin.stdlib.jdk7)
+    androidTestImplementation (libs.junit)
+    androidTestImplementation (libs.rules)
 }

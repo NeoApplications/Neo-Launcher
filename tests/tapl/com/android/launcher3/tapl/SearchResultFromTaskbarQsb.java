@@ -22,8 +22,12 @@ import androidx.test.uiautomator.UiObject2;
  */
 public class SearchResultFromTaskbarQsb extends SearchResultFromQsb {
 
-    SearchResultFromTaskbarQsb(LauncherInstrumentation launcher) {
+    private final Taskbar.TaskbarLocation mTaskbarLocation;
+
+    SearchResultFromTaskbarQsb(LauncherInstrumentation launcher,
+            Taskbar.TaskbarLocation taskbarLocation) {
         super(launcher);
+        mTaskbarLocation = taskbarLocation;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class SearchResultFromTaskbarQsb extends SearchResultFromQsb {
 
     @Override
     protected TaskbarAppIcon createAppIcon(UiObject2 icon) {
-        return new TaskbarAppIcon(mLauncher, icon);
+        return new TaskbarAppIcon(mLauncher, icon, mTaskbarLocation, true);
     }
 
     @Override
@@ -44,5 +48,15 @@ public class SearchResultFromTaskbarQsb extends SearchResultFromQsb {
     @Override
     protected TaskbarSearchWebSuggestion createWebSuggestion(UiObject2 webSuggestion) {
         return new TaskbarSearchWebSuggestion(mLauncher, webSuggestion);
+    }
+
+    @Override
+    protected void verifyVisibleContainerOnDismiss() {
+        mLauncher.getLaunchedAppState().assertTaskbarVisible();
+    }
+
+    @Override
+    protected void tapOutside(boolean tapRight, UiObject2 allAppsBottomSheet) {
+        mLauncher.touchOutsideContainer(allAppsBottomSheet, tapRight);
     }
 }

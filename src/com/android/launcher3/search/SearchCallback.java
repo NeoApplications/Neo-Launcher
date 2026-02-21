@@ -16,8 +16,6 @@
 package com.android.launcher3.search;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * An interface for receiving search results.
@@ -36,8 +34,7 @@ public interface SearchCallback<T> {
      *
      * @param items list of search results
      */
-    //void onSearchResult(String query, ArrayList<T> items);
-    void onSearchResult(String query, ArrayList<T> items, List<String> suggestions);
+    void onSearchResult(String query, ArrayList<T> items);
 
     /**
      * Called when the search from primary source is complete.
@@ -47,19 +44,26 @@ public interface SearchCallback<T> {
      *                         since we can get search results from multiple sources.
      */
     default void onSearchResult(String query, ArrayList<T> items, int searchResultCode) {
-        onSearchResult(query, items, Collections.emptyList());
+        onSearchResult(query, items);
     }
+
+    default void onSearchResult(String query, ArrayList<T> items, ArrayList<String> suggestions) {
+    }
+
+    ;
 
     /**
      * Called when the search results should be cleared.
      */
     void clearSearchResult();
 
-    /**
-     * Called when the user presses enter/search on their keyboard
-     *
-     * @return whether the event was handled
-     */
-    boolean onSubmitSearch(String query);
+    default boolean showWebResults() {
+        return false;
+    }
+
+    default void setShowWebResults(boolean showWebResults) {
+    }
+
+    ;
 }
 

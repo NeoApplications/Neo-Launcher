@@ -16,6 +16,8 @@
 
 package com.android.launcher3.widget;
 
+import static com.android.launcher3.Flags.useSystemRadiusForAppWidgets;
+
 import android.appwidget.AppWidgetHostView;
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,8 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
-import com.saggitt.omega.preferences.NeoPrefs;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,13 +69,8 @@ public class RoundedCornerEnforcement {
     /**
      * Check whether the app widget has opted out of the enforcement.
      */
-    public static boolean hasAppWidgetOptedOut(@NonNull View appWidget, @NonNull View background) {
+    public static boolean hasAppWidgetOptedOut(@NonNull View background) {
         return background.getId() == android.R.id.background && background.getClipToOutline();
-    }
-
-    /** Check if the app widget is in the deny list. */
-    public static boolean isRoundedCornerEnabled() {
-        return Utilities.ATLEAST_S && FeatureFlags.ENABLE_ENFORCED_ROUNDED_CORNERS.get();
     }
 
     /**
@@ -98,14 +94,15 @@ public class RoundedCornerEnforcement {
         }
     }
 
+    // Edited
     /**
      * Computes the radius of the rounded rectangle that should be applied to a widget expanded
      * in the given context.
      */
     public static float computeEnforcedRadius(@NonNull Context context) {
-        NeoPrefs prefs = Utilities.getNeoPrefs(context);
-        if (prefs.getDesktopWidgetCornerRadius().getValue() >= 0) {
-            return prefs.getDesktopWidgetCornerRadius().getValue();
+        NeoPrefs prefs = NeoPrefs.getInstance();
+        if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
+            return prefs.getProfileWindowCornerRadius().getValue();
         } else {
             if (prefs.getProfileWindowCornerRadius().getValue() >= 0) {
                 return prefs.getProfileWindowCornerRadius().getValue();
@@ -115,6 +112,10 @@ public class RoundedCornerEnforcement {
                 }
                 Resources res = context.getResources();
                 float systemRadius = res.getDimension(android.R.dimen.system_app_widget_background_radius);
+                if (useSystemRadiusForAppWidgets()) {
+                    return systemRadius;
+                }
+
                 float defaultRadius = res.getDimension(R.dimen.enforced_rounded_corner_max_radius);
                 return Math.min(defaultRadius, systemRadius);
             }

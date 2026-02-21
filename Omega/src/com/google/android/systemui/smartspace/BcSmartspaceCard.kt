@@ -7,13 +7,13 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.android.launcher3.R
-import com.saggitt.omega.smartspace.provider.MediaListener
+import com.neoapps.neolauncher.smartspace.provider.MediaListener
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import com.saulhdev.smartspace.hasIntent
@@ -22,7 +22,7 @@ import java.util.UUID
 
 class BcSmartspaceCard @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : LinearLayout(context, attrs) {
+) : ConstraintLayout(context, attrs) {
 
     private var baseActionIconSubtitleView: DoubleShadowTextView? = null
     private var dateView: IcuDateTextView? = null
@@ -127,11 +127,11 @@ class BcSmartspaceCard @JvmOverloads constructor(
                 BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
             }
 
-            baseAction.hasIntent   -> {
+            baseAction.hasIntent -> {
                 BcSmartSpaceUtil.setOnClickListener(this, baseAction, "BcSmartspaceCard")
             }
 
-            else                   -> {
+            else -> {
                 BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
             }
         }
@@ -225,7 +225,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
         val icon = iconDrawable ?: return
         when (target.featureType) {
             SmartspaceTarget.FEATURE_WEATHER -> icon.setTintList(null)
-            else                             -> icon.setTint(iconTintColor)
+            else -> icon.setTint(iconTintColor)
         }
     }
 

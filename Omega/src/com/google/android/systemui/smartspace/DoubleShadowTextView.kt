@@ -22,19 +22,18 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.TextView
-import com.android.launcher3.views.DoubleShadowBubbleTextView.ShadowInfo
+import com.android.launcher3.views.ShadowInfo
 import kotlin.math.max
 
 open class DoubleShadowTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = android.R.attr.textViewStyle
 ) :
     TextView(context, attrs, defStyleAttr) {
-    private val mShadowInfo: ShadowInfo
+    private val mShadowInfo: ShadowInfo = ShadowInfo.fromContext(context, attrs, defStyleAttr)
 
     init {
-        mShadowInfo = ShadowInfo(context, attrs, defStyleAttr)
         setShadowLayer(
             max(
                 mShadowInfo.keyShadowBlur + mShadowInfo.keyShadowOffsetX,

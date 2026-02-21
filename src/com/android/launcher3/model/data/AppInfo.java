@@ -21,12 +21,9 @@ import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_ALL_APP
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherActivityInfo;
-import android.os.Build;
-import android.os.Process;
 import android.os.UserHandle;
-import android.os.UserManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,17 +31,24 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableKt;
 import androidx.palette.graphics.Palette;
 
+import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.pm.PackageInstallInfo;
+import com.android.launcher3.pm.UserCache;
+import com.android.launcher3.pm.UserCache.CachedUserInfo;
+import com.android.launcher3.util.ApiWrapper;
+import com.android.launcher3.util.ApplicationInfoWrapper;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
+import com.android.launcher3.util.UserIconInfo;
 
 import java.util.Comparator;
 
 /**
  * Represents an app in AllAppsView.
  */
+@SuppressWarnings("NewApi")
 public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
 
     public static final AppInfo[] EMPTY_ARRAY = new AppInfo[0];
@@ -53,12 +57,16 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         return uc != 0 ? uc : a.componentName.compareTo(b.componentName);
     };
 
+    public static final Comparator<AppInfo> PACKAGE_KEY_COMPARATOR = Comparator.comparingInt(
+            (AppInfo a) -> a.user.hashCode()).thenComparing(ItemInfo::getTargetPackage);
+
     /**
      * The intent used to start the application.
      */
     public Intent intent;
 
-    @NonNull
+    // componentName for the Private Space Install App button can be null
+    @Nullable
     public ComponentName componentName;
 
     // Section name used for indexing.
@@ -70,7 +78,7 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
      * ID (multiple applications can have the same uid).
      */
     public int uid = -1;
-
+    public int iconColor;
     public AppInfo() {
         itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
     }
@@ -85,20 +93,23 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
      * Must not hold the Context.
      */
     public AppInfo(Context context, LauncherActivityInfo info, UserHandle user) {
-        this(info, user, context.getSystemService(UserManager.class).isQuietModeEnabled(user));
+        this(info, UserCache.INSTANCE.get(context).getUserManagerState().getCachedInfo(user),
+                ApiWrapper.INSTANCE.get(context), PackageManagerHelper.INSTANCE.get(context));
     }
 
-    public AppInfo(LauncherActivityInfo info, UserHandle user, boolean quietModeEnabled) {
+    public AppInfo(LauncherActivityInfo info, CachedUserInfo cachedUserInfo,
+                   ApiWrapper apiWrapper, PackageManagerHelper pmHelper) {
         this.componentName = info.getComponentName();
         this.container = CONTAINER_ALL_APPS;
-        this.user = user;
+        this.user = cachedUserInfo.getIconInfo().user;
         intent = makeLaunchIntent(info);
 
-        if (quietModeEnabled) {
+        if (cachedUserInfo.isQuietModeEnabled()) {
             runtimeStatusFlags |= FLAG_DISABLED_QUIET_USER;
         }
         uid = info.getApplicationInfo().uid;
-        updateRuntimeFlagsForActivityTarget(this, info);
+        updateRuntimeFlagsForActivityTarget(
+                this, info, cachedUserInfo.getIconInfo(), apiWrapper, pmHelper);
         this.iconColor = Palette.from(DrawableKt.toBitmap(info.getIcon(46), 46, 46, null))
                 .generate()
                 .getDominantColor(0);
@@ -120,17 +131,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         this.title = title;
         this.user = user;
         this.intent = intent;
-    }
-
-    public AppInfo(@NonNull PackageInstallInfo installInfo) {
-        componentName = installInfo.componentName;
-        intent = new Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_LAUNCHER)
-            .setComponent(componentName)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        setProgressLevel(installInfo);
-        user = installInfo.user;
     }
 
     @Override
@@ -179,25 +179,55 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         return componentName;
     }
 
-    public static void updateRuntimeFlagsForActivityTarget(
-            ItemInfoWithIcon info, LauncherActivityInfo lai) {
-        ApplicationInfo appInfo = lai.getApplicationInfo();
-        if (PackageManagerHelper.isAppSuspended(appInfo)) {
+    /**
+     * Updates the runtime status flags for the given info based on the state of the specified
+     * activity.
+     */
+    public static boolean updateRuntimeFlagsForActivityTarget(
+            ItemInfoWithIcon info, LauncherActivityInfo lai, UserIconInfo userIconInfo,
+            ApiWrapper apiWrapper, PackageManagerHelper pmHelper) {
+        final int oldProgressLevel = info.getProgressLevel();
+        final int oldRuntimeStatusFlags = info.runtimeStatusFlags;
+        final ActivityInfo activityInfo = lai.getActivityInfo();
+        ApplicationInfoWrapper appInfo = new ApplicationInfoWrapper(lai.getApplicationInfo());
+        if (appInfo.isSuspended()) {
             info.runtimeStatusFlags |= FLAG_DISABLED_SUSPENDED;
+        } else {
+            info.runtimeStatusFlags &= ~FLAG_DISABLED_SUSPENDED;
         }
-        info.runtimeStatusFlags |= (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
-                ? FLAG_SYSTEM_NO : FLAG_SYSTEM_YES;
+        if (Flags.enableSupportForArchiving()) {
+            /*if (activityInfo.isArchived) {
+                info.runtimeStatusFlags |= FLAG_ARCHIVED;
+            } else {
+                info.runtimeStatusFlags &= ~FLAG_ARCHIVED;
+            }*/
 
-        if (appInfo.targetSdkVersion >= Build.VERSION_CODES.O
-                && Process.myUserHandle().equals(lai.getUser())) {
-            // The icon for a non-primary user is badged, hence it's not exactly an adaptive icon.
-            info.runtimeStatusFlags |= FLAG_ADAPTIVE_ICON;
+            info.runtimeStatusFlags &= ~FLAG_ARCHIVED;
+        }
+        info.runtimeStatusFlags |= appInfo.isSystem() ? FLAG_SYSTEM_YES : FLAG_SYSTEM_NO;
+
+        if (Flags.privateSpaceRestrictAccessibilityDrag()) {
+            if (userIconInfo.isPrivate()) {
+                info.runtimeStatusFlags |= FLAG_NOT_PINNABLE;
+            } else {
+                info.runtimeStatusFlags &= ~FLAG_NOT_PINNABLE;
+            }
         }
 
         // Sets the progress level, installation and incremental download flags.
         info.setProgressLevel(
                 PackageManagerHelper.getLoadingProgress(lai),
                 PackageInstallInfo.STATUS_INSTALLED_DOWNLOADING);
+        if (activityInfo.targetActivity != null) {
+            info.setTargetActivityComponentName(
+                    new ComponentName(activityInfo.packageName, activityInfo.targetActivity));
+        } else {
+            info.setTargetActivityComponentName(null);
+        }
+        info.setNonResizeable(apiWrapper.isNonResizeableActivity(lai));
+        info.setSupportsMultiInstance(apiWrapper.supportsMultiInstance(lai));
+        return (oldProgressLevel != info.getProgressLevel())
+                || (oldRuntimeStatusFlags != info.runtimeStatusFlags);
     }
 
     @Override

@@ -34,7 +34,6 @@
     <string name="app_categorization_tabs">Tabbar</string>
     <string name="pref_appcategorization_tabs_summary">Svep mellan grupper.</string>
     <string name="summary__general_advanced">Språk, säkerhetskopia, inställningssökning</string>
-    <string name="summary__general_about">Mer om Neo Launcher</string>
     <string name="pref_category__interfaces">Användargränssnitt</string>
     <string name="pref_category__inputs">Gester och Sök</string>
     <string name="pref_category__others">Övriga</string>
@@ -102,7 +101,6 @@
     <string name="title_all_apps_hide_scrollbar">Dölj rullningslist</string>
     <string name="title_disable_suggestions_prompt">Stäng av appförslag</string>
     <string name="title_drawer_layout">Utseendeläge</string>
-    <string name="title_drawer_vertical_list">Vertikal Lista</string>
     <string name="tab_type_smart">Automatisk</string>
     <string name="hide_app_reset">Återställ dolda appar</string>
     <string name="title__theme_blur">Oskärpa</string>
@@ -144,11 +142,9 @@
     <string name="title_all_apps_search">Appsidans sökfält</string>
     <string name="title_all_apps_google_search">Webbresultat</string>
     <string name="summary_fuzzy_search">Ungefärlig matchning för appsökning.</string>
-    <string name="title_app_categorize">Kategorisera Appar</string>
     <string name="summary_app_categorization_enable">Skapa flikar eller mappar</string>
     <string name="title_drawer_vertical">Vertikal</string>
     <string name="title_drawer_horizontal">Horisental</string>
-    <string name="title_drawer_custom_categories">Anpassade Kategorier</string>
     <string name="pref_appcategorization_flowerpot_summary">Välj genvägar automatiskt.</string>
     <string name="add_new_tab">Lägg till</string>
     <string name="app_reset">Återställ Selektion</string>
@@ -189,7 +185,7 @@
     <string name="weather_city">Stad</string>
     <string name="title__drawer_rows">Antal rader</string>
     <string name="title_drawer_enable_background">Använd anpassad bakgrundsfärg</string>
-    <string name="summary_app_categorize">Välj mellan Flikar eller Mappar</string>
+
     <string name="summary__drawer_hide_apps">Dölj app från appsidan</string>
     <string name="label_search">Sök</string>
     <string name="cat_dock_search">docka</string>

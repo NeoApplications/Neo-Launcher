@@ -8,7 +8,6 @@
     <string name="summary__general_dock">Значки гарячих клавіш, панель пошуку</string>
     <string name="summary__general_search">Провайдер пошуку, стиль та значки</string>
     <string name="summary__general_notifications">Кількість і колір значків, жести</string>
-    <string name="summary__general_about">Детальніше про Neo Launcher</string>
     <string name="pref_category__inputs">Жести та пошук</string>
     <string name="pref_category__others">Інше</string>
     <string name="title_desktop_full_width_widgets">Віджети на всю ширину</string>
@@ -71,7 +70,6 @@
     <string name="title__sort_by_color">За кольором</string>
     <string name="title_all_apps_google_search">Веб-результати</string>
     <string name="title_all_apps_keep_scroll_state">Запам\'ятати позицію</string>
-    <string name="title_app_categorize">Категоризація застосунків</string>
     <string name="summary_search_hidden_apps">Показувати приховані ярлики в результатах.</string>
     <string name="summary_all_apps_google_search">Пошук веб-результатів і застосунків</string>
     <string name="summary__drawer_hide_apps">Приховати застосунок із шухляди</string>
@@ -108,7 +106,7 @@
     <string name="title_search_hidden_apps">Знайти приховані застосунки</string>
     <string name="summary_fuzzy_search">Приблизна відповідність для пошуку застосунків.</string>
     <string name="title__drawer_icon_size">Розмір значків усіх застосунків</string>
-    <string name="summary_app_categorize">Вибрати між вкладками чи теками</string>
+
     <string name="dialog_message_change_sort">Установити сортування застосунків за абеткою\?</string>
     <string name="cat_desktop_grid">Сітка та макет</string>
     <string name="icon_shape_squircle">Закруглений квадрат</string>
@@ -185,7 +183,6 @@
     <string name="feed_add_widget">Додати віджет</string>
     <string name="feed_widget">Віджети</string>
     <string name="title__about_changelog">Історія змін</string>
-    <string name="about_copyright">Авторське право © 2020–2021</string>
     <string name="about_team">Учасники команди</string>
     <string name="about_translators_group">Учасники та перекладачі</string>
     <string name="dash_mobile_network_title">Мобільна мережа</string>
@@ -348,7 +345,6 @@
     <string name="pref_desktop_mode">Настільний режим</string>
     <string name="summary_dock_search">Показати в нижній панелі</string>
     <string name="title_drawer_vertical">Вертикальний</string>
-    <string name="title_drawer_vertical_list">Вертикальний список</string>
     <string name="title_drawer_paged">Посторінковий</string>
     <string name="hide_app_selected">Приховані застосунки (%1$d)</string>
     <string name="hide_app_reset">Скинути приховані застосунки</string>
@@ -493,7 +489,6 @@
     <string name="web_search_you">You (Веб)</string>
     <string name="web_search_neeva">Neeva (Веб)</string>
     <string name="color_wallpaper_secondary">Вторинні Шпалери</string>
-    <string name="web_search_phind">Phind (Веб)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Веб)</string>
     <string name="title_smartspace_time_format">Формат часу</string>
     <string name="title_smartspace_calendar">Виберіть Календар</string>

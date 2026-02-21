@@ -13,9 +13,9 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_motion",
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
-
 
 android_library {
     name: "animationlib",
@@ -29,15 +29,46 @@ android_library {
     ],
     srcs: [
         "src/**/*.java",
-        "src/**/*.kt"
+        "src/**/*.kt",
     ],
     resource_dirs: [
-        "res"
+        "res",
     ],
     kotlincflags: ["-Xjvm-default=all"],
-    // This library is meant to access only public APIs
-    // do not flip this flag to true
-    platform_apis: false
+}
+
+android_library {
+    name: "animationlib-tests-base",
+    libs: [
+        "android.test.base.stubs.system",
+        "androidx.test.core",
+    ],
+    static_libs: [
+        "animationlib",
+        "androidx.test.ext.junit",
+        "androidx.test.rules",
+        "testables",
+    ],
+}
+
+android_app {
+    name: "TestAnimationLibApp",
+    platform_apis: true,
+    static_libs: [
+        "animationlib-tests-base",
+    ],
+}
+
+android_robolectric_test {
+    enabled: true,
+    name: "animationlib_robo_tests",
+    srcs: [
+        "tests/src/**/*.kt",
+        "tests/robolectric/src/**/*.kt",
+    ],
+    java_resource_dirs: ["tests/robolectric/config"],
+    instrumentation_for: "TestAnimationLibApp",
+    strict_mode: false,
 }
 
 android_test {
@@ -45,17 +76,11 @@ android_test {
     manifest: "tests/AndroidManifest.xml",
 
     static_libs: [
-        "animationlib",
-        "androidx.test.ext.junit",
-        "androidx.test.rules",
-        "testables",
-    ],
-    libs: [
-        "android.test.base",
+        "animationlib-tests-base",
     ],
     srcs: [
-        "**/*.java",
-        "**/*.kt"
+        "tests/src/**/*.java",
+        "tests/src/**/*.kt",
     ],
     kotlincflags: ["-Xjvm-default=all"],
     test_suites: ["general-tests"],

@@ -16,6 +16,9 @@
 
 package com.android.launcher3.tapl;
 
+
+import android.graphics.Point;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,13 +39,42 @@ public abstract class AppIcon extends Launchable {
         super(launcher, icon);
     }
 
+    /**
+     * Find an app icon with the given name.
+     *
+     * @param appName app icon to look for
+     */
+    static BySelector getAppIconSelector(String appName) {
+        // focusable=true to avoid matching folder labels
+        return By.clazz(TextView.class).text(makeMultilinePattern(appName)).focusable(true);
+    }
+
+    /**
+     * Find an app icon with the given name.
+     *
+     * @param appName  app icon to look for
+     * @param launcher (optional) - only match ui elements from Launcher's package
+     */
     static BySelector getAppIconSelector(String appName, LauncherInstrumentation launcher) {
-        return By.clazz(TextView.class).desc(makeMultilinePattern(appName))
-                .pkg(launcher.getLauncherPackageName());
+        return getAppIconSelector(appName).pkg(launcher.getLauncherPackageName());
     }
 
     static BySelector getMenuItemSelector(String text, LauncherInstrumentation launcher) {
         return By.clazz(TextView.class).text(text).pkg(launcher.getLauncherPackageName());
+    }
+
+    /**
+     * Creates a {@link BySelector} to find a menu shortcut with specified
+     * {@link UiObject2#getContentDescription()}.
+     * <p>
+     * This is used for menu items that are represented by an icon without text.
+     *
+     * @param desc the {@link UiObject2#getContentDescription()}
+     * @param launcher the {@link LauncherInstrumentation}
+     * @return the {@link BySelector} to find the shortcut
+     */
+    static BySelector getMenuShortcutSelector(String desc, LauncherInstrumentation launcher) {
+        return By.clazz(ImageView.class).desc(desc).pkg(launcher.getLauncherPackageName());
     }
 
     static BySelector getAnyAppIconSelector() {
@@ -104,18 +136,29 @@ public abstract class AppIcon extends Launchable {
      * get the name of an app where the text of it is multiline.
      */
     @NonNull
-    String getAppName() {
+    public String getAppName() {
         return getObject().getContentDescription();
     }
 
     /**
-     * Create a regular expression pattern that matches strings starting with the app name, where
-     * spaces in the app name are replaced with zero or more occurrences of the "\s" character
-     * (which represents a whitespace character in regular expressions), followed by any characters
-     * after the app name.
+     * @return the center coordinates of the icon
+     */
+    @NonNull
+    public Point getVisibleCenter() {
+        return getObject().getVisibleCenter();
+    }
+
+    /**
+     * Create a regular expression pattern that matches strings containing all of the non-whitespace
+     * characters of the app name, with any amount of whitespace added between characters (e.g.
+     * newline for multiline app labels).
      */
     static Pattern makeMultilinePattern(String appName) {
-        return Pattern.compile(appName.replaceAll("\\s+", "\\\\s*") + ".*",
-                Pattern.DOTALL);
+        // Remove any existing whitespace.
+        appName = appName.replaceAll("\\s", "");
+        // Allow whitespace between characters, e.g. newline for 2 line app label.
+        StringBuilder regexBuldier = new StringBuilder("\\s*");
+        appName.chars().forEach(letter -> regexBuldier.append((char) letter).append("\\s*"));
+        return Pattern.compile(regexBuldier.toString());
     }
 }

@@ -4,7 +4,7 @@
     android:minHeight="40dp"
     android:updatePeriodMillis="0"
     android:description="@string/home_widget"
-    android:configure="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
+    android:configure="com.neoapps.neolauncher.smartspace.SmartSpacePreferencesShortcut"
     android:initialLayout="@layout/smartspace_widget_placeholder"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />

@@ -14,9 +14,9 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.android.launcher3.R
-import com.saggitt.omega.preferences.NeoPrefs
-import com.saggitt.omega.smartspace.provider.SmartspaceProvider
-import com.saggitt.omega.util.repeatOnAttached
+import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.smartspace.provider.SmartspaceProvider
+import com.neoapps.neolauncher.util.repeatOnAttached
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +100,7 @@ class BcSmartspaceView @JvmOverloads constructor(
         val height = MeasureSpec.getSize(heightMeasureSpec)
         val smartspaceHeight =
             context.resources.getDimensionPixelSize(R.dimen.enhanced_smartspace_height)
-        if (height <= 0 || height >= smartspaceHeight) {
+        if (height !in 1..<smartspaceHeight) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
             scaleX = 1f
             scaleY = 1f

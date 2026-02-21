@@ -20,20 +20,36 @@ import android.content.Intent
 import android.os.Process
 import android.os.UserManager
 import androidx.annotation.VisibleForTesting
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppComponent
+import com.android.launcher3.dagger.LauncherAppSingleton
+import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
+import com.android.launcher3.util.SimpleBroadcastReceiver.Companion.actionsFilter
+import javax.inject.Inject
 
-class LockedUserState(private val mContext: Context) : SafeCloseable {
+@LauncherAppSingleton
+class LockedUserState
+@Inject
+constructor(@ApplicationContext private val context: Context, lifeCycle: DaggerSingletonTracker) {
     val isUserUnlockedAtLauncherStartup: Boolean
-    var isUserUnlocked: Boolean
-        private set
+    var isUserUnlocked = false
+        private set(value) {
+            field = value
+            if (value) {
+                notifyUserUnlocked()
+            }
+        }
+
     private val mUserUnlockedActions: RunnableList = RunnableList()
 
     @VisibleForTesting
-    val mUserUnlockedReceiver = SimpleBroadcastReceiver {
-        if (Intent.ACTION_USER_UNLOCKED == it.action) {
-            isUserUnlocked = true
-            notifyUserUnlocked()
+    val userUnlockedReceiver =
+        SimpleBroadcastReceiver(context, UI_HELPER_EXECUTOR, MAIN_EXECUTOR) {
+            if (Intent.ACTION_USER_UNLOCKED == it.action) {
+                isUserUnlocked = true
+            }
         }
-    }
 
     init {
         // 1) when user reboots devices, launcher process starts at lock screen and both
@@ -42,26 +58,26 @@ class LockedUserState(private val mContext: Context) : SafeCloseable {
         // yet isUserUnlockedAtLauncherStartup will remains as false.
         // 2) when launcher process restarts after user has unlocked screen, both variable are
         // init as true and will not change.
-        isUserUnlocked =
-            mContext
-                .getSystemService(UserManager::class.java)!!
-                .isUserUnlocked(Process.myUserHandle())
+        isUserUnlocked = checkIsUserUnlocked()
         isUserUnlockedAtLauncherStartup = isUserUnlocked
-        if (isUserUnlocked) {
-            notifyUserUnlocked()
-        } else {
-            mUserUnlockedReceiver.register(mContext, Intent.ACTION_USER_UNLOCKED)
+        if (!isUserUnlocked) {
+            userUnlockedReceiver.register(actionsFilter(Intent.ACTION_USER_UNLOCKED)) {
+                // If user is unlocked while registering broadcast receiver, we should update
+                // [isUserUnlocked], which will call [notifyUserUnlocked] in setter
+                if (checkIsUserUnlocked()) {
+                    MAIN_EXECUTOR.execute { isUserUnlocked = true }
+                }
+            }
         }
+        lifeCycle.addCloseable(userUnlockedReceiver)
     }
+
+    private fun checkIsUserUnlocked() =
+        context.getSystemService(UserManager::class.java)!!.isUserUnlocked(Process.myUserHandle())
 
     private fun notifyUserUnlocked() {
         mUserUnlockedActions.executeAllAndDestroy()
-        mUserUnlockedReceiver.unregisterReceiverSafely(mContext)
-    }
-
-    /** Stops the receiver from listening for ACTION_USER_UNLOCK broadcasts. */
-    override fun close() {
-        mUserUnlockedReceiver.unregisterReceiverSafely(mContext)
+        userUnlockedReceiver.close()
     }
 
     /**
@@ -72,10 +88,15 @@ class LockedUserState(private val mContext: Context) : SafeCloseable {
         mUserUnlockedActions.add(action)
     }
 
+    /** Removes a previously queued `Runnable` to be run when the user is unlocked. */
+    fun removeOnUserUnlockedRunnable(action: Runnable) {
+        mUserUnlockedActions.remove(action)
+    }
+
     companion object {
         @VisibleForTesting
         @JvmField
-        val INSTANCE = MainThreadInitializedObject { LockedUserState(it) }
+        val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getLockedUserState)
 
         @JvmStatic fun get(context: Context): LockedUserState = INSTANCE.get(context)
     }

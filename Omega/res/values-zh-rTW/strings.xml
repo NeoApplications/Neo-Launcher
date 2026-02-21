@@ -17,7 +17,6 @@
     <string name="summary__general_smartspace">日期、時間、主頁小工具</string>
     <string name="summary__general_notifications">徽章數量、徽章顏色、手勢</string>
     <string name="summary__general_advanced">語言、備份、設定搜尋</string>
-    <string name="summary__general_about">更多關於 Neo Launcher</string>
     <string name="pref_category__interfaces">使用者介面</string>
     <string name="pref_category__features">功能</string>
     <string name="pref_category__inputs">手勢與搜尋</string>
@@ -259,7 +258,6 @@
     <string name="theme_dark_theme_mode_follow_daylight">跟隨日照</string>
     <string name="num_hotseat_icons_pref_title">圖示數量</string>
     <string name="title_drawer_layout">配置模式</string>
-    <string name="title_drawer_vertical_list">垂直列表</string>
     <string name="pref_appcategorization_tabs_summary">在群組之間滑動。</string>
     <string name="add_new_tab">新增</string>
     <string name="grid_size_height">高度</string>
@@ -478,7 +476,6 @@
     <string name="wallpaper_pick_summary">開啟桌布選擇器</string>
     <string name="summary__dev_restart">若有些設定未正確套用，此功能可能有所幫助</string>
     <string name="title__about_donate">捐款</string>
-    <string name="about_copyright">版權所有 © 2020–2021</string>
     <string name="contributor_role">貢獻者</string>
     <string name="dash_location_summary">更改位置設定</string>
     <string name="category__about_licenses">授權</string>
@@ -496,7 +493,6 @@
     <string name="tab_color">標籤顏色</string>
     <string name="tab_manage_apps">管理應用程式</string>
     <string name="none">無</string>
-    <string name="web_search_phind">Phind（網頁）</string>
     <string name="web_search_perplexity">Perplexity（網頁）</string>
     <string name="web_search_searx">Searx（網頁）</string>
     <string name="hotseat_accessibility_expand">展開快速啟動列</string>
@@ -510,7 +506,6 @@
     </plurals>
     <string name="title_smartspace_background">顯示主題背景</string>
     <string name="title_drawer_horizontal">水平</string>
-    <string name="title_drawer_custom_categories">自訂類別</string>
     <string name="color_wallpaper_tertiary">次要桌布</string>
     <string name="title_themed_background">透明圖示背景</string>
     <string name="web_search_provider">網頁搜尋提供者</string>

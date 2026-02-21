@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.states;
 
+import static com.android.launcher3.Flags.enableScalingRevealHomeAnimation;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_HOME;
 
 import android.content.Context;
@@ -23,6 +24,7 @@ import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.Workspace;
+import com.android.launcher3.views.ActivityContext;
 
 /**
  * Definition for spring loaded state used during drag and drop.
@@ -33,12 +35,14 @@ public class SpringLoadedState extends LauncherState {
             | FLAG_WORKSPACE_INACCESSIBLE | FLAG_DISABLE_RESTORE
             | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED | FLAG_WORKSPACE_HAS_BACKGROUNDS;
 
+    public static final float DEPTH_15_PERCENT = 0.15f;
+
     public SpringLoadedState(int id) {
         super(id, LAUNCHER_STATE_HOME, STATE_FLAGS);
     }
 
     @Override
-    public int getTransitionDuration(Context context, boolean isToState) {
+    public int getTransitionDuration(ActivityContext context, boolean isToState) {
         return 150;
     }
 
@@ -62,7 +66,11 @@ public class SpringLoadedState extends LauncherState {
 
     @Override
     protected float getDepthUnchecked(Context context) {
-        return 0.5f;
+        if (enableScalingRevealHomeAnimation()) {
+            return DEPTH_15_PERCENT;
+        } else {
+            return 0.5f;
+        }
     }
 
     @Override

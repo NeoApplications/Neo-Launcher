@@ -72,6 +72,10 @@ public class PackageUserKey {
         return false;
     }
 
+    public boolean updateFromNotification(StatusBarNotification sbn) {
+        update(sbn.getPackageName(), sbn.getUser());
+        return true;
+    }
     @Override
     public int hashCode() {
         return mHashCode;

@@ -18,7 +18,6 @@
     <string name="pref_category__others">Kita</string>
     <string name="pref_category__inputs">Gestai ir paieška</string>
     <string name="pref_category__interfaces">Vartotojo sąsaja</string>
-    <string name="summary__general_about">Daugiau apie Neo Launcher</string>
     <string name="summary__general_advanced">Kalba, atsarginė kopija, paieškos nustatymas</string>
     <string name="summary__general_notifications">Ženklelių skaičius, ženklelio spalva, gestai</string>
     <string name="summary__general_search">Paieškos teikėjas, stilius, piktogramos</string>
@@ -49,11 +48,9 @@
     <string name="pref_appcategorization_folders_summary">Bakstelėkite, kad atidarytumėte iššokantį langą.</string>
     <string name="app_categorization_folders">Aplankai</string>
     <string name="pref_appcategorization_style_text">Stilius</string>
-    <string name="title_app_categorize">Programėlių skirstymas į kategorijas</string>
     <string name="cat_drawer_icons">Piktogramos</string>
     <string name="cat_drawer_grid">Tinklelis</string>
     <string name="title_drawer_paged">Puslapiai</string>
-    <string name="title_drawer_vertical_list">Vertikalus sąrašas</string>
     <string name="title_drawer_vertical">Vertikalus</string>
     <string name="title_drawer_layout">Išdėstymo režimas</string>
     <string name="title_text_color">Teksto spalva</string>
@@ -404,7 +401,7 @@
     <string name="about_channel">Kanalas</string>
     <string name="about_open_source">Atvirojo kodo bibliotekos</string>
     <string name="folder_name">Aplanko pavadinimas</string>
-    <string name="summary_app_categorize">Pasirinkite skirtukus arba aplankus</string>
+
     <string name="title_fuzzy_search">Fuzzy paieška</string>
     <string name="summary_app_suggestions">Visoms programėlėms ir pagrindiniam ekranui</string>
     <string name="title__general_widgets_notifications">Valdikliai ir pranešimai</string>
@@ -452,7 +449,6 @@
     <string name="pref_desktop_mode_summary">Suaktyvinkite „Android“ darbalaukio režimą</string>
     <string name="summary_colored_backgrounds">Adaptyvių piktogramų fonams.</string>
     <string name="tab_launcher">Paleidimo priemonė</string>
-    <string name="about_copyright">Autorių teisės © 2020–2021</string>
     <string name="enabled_events">Įjungta</string>
     <string name="web_search_metager">Metager (žiniatinklis)</string>
     <string name="web_search_searx">Searx (žiniatinklis)</string>

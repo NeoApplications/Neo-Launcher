@@ -44,7 +44,7 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <application
-        android:name="com.saggitt.omega.NeoApp"
+        android:name="com.neoapps.neolauncher.NeoApp"
         android:backupAgent="com.android.launcher3.LauncherBackupAgent"
         android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
@@ -68,7 +68,7 @@
             attributes and intent filters the same
             -->
         <activity
-            android:name="com.saggitt.omega.NeoLauncher"
+            android:name="com.neoapps.neolauncher.NeoLauncher"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|mcc|mnc|navigation|orientation|screenSize|screenLayout|smallestScreenSize|density"
             android:enabled="true"
@@ -104,7 +104,7 @@
             android:exported="true"
             tools:node="remove" />
         <activity
-            android:name="com.saggitt.omega.preferences.PreferenceActivity"
+            android:name="com.neoapps.neolauncher.preferences.PreferenceActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true"
             android:label="@string/settings_button_text"
@@ -116,11 +116,11 @@
         </activity>
 
         <activity
-            android:name="com.saggitt.omega.smartspace.SmartSpacePreferencesShortcut"
+            android:name="com.neoapps.neolauncher.smartspace.SmartSpacePreferencesShortcut"
             android:theme="@style/Theme.Transparent" />
 
         <activity
-            android:name="com.saggitt.omega.FakeLauncher"
+            android:name="com.neoapps.neolauncher.FakeLauncher"
             android:enabled="false"
             android:exported="true">
             <intent-filter>
@@ -133,11 +133,11 @@
 
         <!-- DT2S using screen timeout -->
         <activity
-            android:name="com.saggitt.omega.gestures.handlers.SleepTimeoutActivity"
+            android:name="com.neoapps.neolauncher.gestures.handlers.SleepTimeoutActivity"
             android:theme="@style/SleepTimeoutTheme" />
 
         <activity
-            android:name="com.saggitt.omega.gestures.AssistantGestureReceiver"
+            android:name="com.neoapps.neolauncher.gestures.AssistantGestureReceiver"
             android:exported="true"
             android:theme="@style/SettingsTheme.Black">
             <intent-filter>
@@ -150,7 +150,7 @@
 
         <!-- DT2S using device admin -->
         <receiver
-            android:name="com.saggitt.omega.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
+            android:name="com.neoapps.neolauncher.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
             android:description="@string/dt2s_admin_hint"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -164,7 +164,7 @@
         </receiver>
 
         <service
-            android:name="com.saggitt.omega.OmegaAccessibilityService"
+            android:name="com.neoapps.neolauncher.OmegaAccessibilityService"
             android:exported="true"
             android:label="@string/derived_app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -174,7 +174,7 @@
         </service>
 
         <receiver
-            android:name="com.saggitt.omega.smartspace.SmartSpaceAppWidgetProvider"
+            android:name="com.neoapps.neolauncher.smartspace.SmartSpaceAppWidgetProvider"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -24,12 +24,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.FloatProperty;
 import android.util.IntProperty;
+import android.util.Property;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.launcher3.util.MultiScalePropertyFactory;
+import com.android.launcher3.views.ScrimColors;
+import com.android.launcher3.views.ScrimView;
 
 public class LauncherAnimUtils {
     /**
@@ -201,6 +204,19 @@ public class LauncherAnimUtils {
                 }
             };
 
+    public static final Property<ScrimView, ScrimColors> SCRIM_COLORS =
+            new Property<ScrimView, ScrimColors>(ScrimColors.class, "scrimColors") {
+                @Override
+                public void set(ScrimView scrimView, ScrimColors scrimColors) {
+                    scrimView.setScrimColors(scrimColors);
+                }
+
+                @Override
+                public ScrimColors get(ScrimView scrimView) {
+                    return scrimView.getScrimColors();
+                }
+            };
+
     public static final FloatProperty<ImageView> ROTATION_DRAWABLE_PERCENT =
             new FloatProperty<ImageView>("drawableRotationPercent") {
                 // RotateDrawable linearly interpolates the rotation degrees between fromDegrees
@@ -220,17 +236,28 @@ public class LauncherAnimUtils {
 
     /**
      * Utility method to create an {@link AnimatorListener} which executes a callback on animation
-     * cancel.
+     * cancel. Once the cancel has been dispatched, this listener will no longer be called.
      */
-    public static AnimatorListener newCancelListener(Runnable callback) {
-        return new AnimatorListenerAdapter() {
+    public static AnimatorListener newSingleUseCancelListener(Runnable callback) {
+        return newCancelListener(callback, true);
+    }
 
+    /**
+     * Utility method to create an {@link AnimatorListener} which executes a callback on animation
+     * cancel.
+     *
+     * @param isSingleUse {@code true} means the callback will be called at most once
+     */
+    public static AnimatorListener newCancelListener(Runnable callback, boolean isSingleUse) {
+        return new AnimatorListenerAdapter() {
             boolean mDispatched = false;
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 if (!mDispatched) {
-                    mDispatched = true;
+                    if (isSingleUse) {
+                        mDispatched = true;
+                    }
                     callback.run();
                 }
             }

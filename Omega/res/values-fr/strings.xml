@@ -10,7 +10,6 @@
     <string name="icon_pack_external_picker">Ouvrir un sélecteur externe</string>
     <string name="pref_appcategorization_flowerpot_summary">Sélectionner les raccourcis automatiquement.</string>
     <string name="tab_type_custom_desc">Sélectionner les raccourcis manuellement.</string>
-    <string name="title_app_categorize">Catégoriser les applications</string>
     <string name="reset_custom_icons_confirmation">Réinitialiser les icônes de ce pack \? Cela ne peut pas être annulé.</string>
     <string name="reset_custom_icons">Supprimer les icônes personnalisées</string>
     <string name="loading">Chargement…</string>
@@ -180,7 +179,6 @@
     <string name="pref_category__others">Autres</string>
     <string name="pref_category__inputs">Gestes et recherche</string>
     <string name="pref_category__interfaces">Interface utilisateur</string>
-    <string name="summary__general_about">Plus d\'infos sur Neo Launcher</string>
     <string name="summary__general_advanced">Langue, sauvegarde, configuration de la recherche</string>
     <string name="summary__general_notifications">Compteur du badge, couleur du badge, gestes</string>
     <string name="summary__general_smartspace">Date, heure, widget d\'accueil</string>
@@ -392,8 +390,6 @@
     <string name="notification_custom_color">Utiliser une couleur personnalisée</string>
     <string name="cat_drawer_grid">Grille</string>
     <string name="cat_drawer_icons">Icônes</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
-    <string name="title_drawer_vertical_list">Liste verticale</string>
     <string name="dialog_message_change_sort">Changer l\'ordre des applications en alphabétique \?</string>
     <string name="trust_apps_manager_name">Applications cachées et protégées</string>
     <string name="disable_protected_apps">Désactiver les applications protégées</string>
@@ -429,7 +425,7 @@
     <string name="backup_create_new">Créer une nouvelle sauvegarde</string>
     <string name="permission_denied">Autorisation de lecture refusée !</string>
     <string name="enabled_events">Activé</string>
-    <string name="summary_app_categorize">Choisir entre Onglets et Répertoires</string>
+
     <string name="summary_app_categorization_enable">Créer des onglets ou répertoires</string>
     <string name="cat_desktop_grid">Grille et disposition</string>
     <string name="title_app_categorization_enable">Activer les catégories d\'apps</string>
@@ -481,7 +477,6 @@
     <string name="title_drawer_all_apps">Tout</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Catégorisé</string>
-    <string name="title_drawer_custom_categories">Catégories personnalisée</string>
     <string name="color_wallpaper_tertiary">Troisième fond d\'écran</string>
     <string name="show_top_shadow">Afficher l\'ombre en haut du bureau</string>
     <string name="title_calendar_gregorian">Grégorien</string>

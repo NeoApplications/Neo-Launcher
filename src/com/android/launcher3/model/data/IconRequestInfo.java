@@ -24,7 +24,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.icons.BaseIconFactory;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.LauncherIcons;
+import com.android.launcher3.icons.cache.CacheLookupFlag;
 
 /**
  * Class representing one request for an icon to be queried in a sql database.
@@ -39,52 +42,74 @@ public class IconRequestInfo<T extends ItemInfoWithIcon> {
     @NonNull public final T itemInfo;
     @Nullable public final LauncherActivityInfo launcherActivityInfo;
     @Nullable public final byte[] iconBlob;
-    public final boolean useLowResIcon;
+    public final boolean isBlobFullBleed;
+    public final CacheLookupFlag lookupFlag;
 
     public IconRequestInfo(
             @NonNull T itemInfo,
             @Nullable LauncherActivityInfo launcherActivityInfo,
-            boolean useLowResIcon) {
+            CacheLookupFlag lookupFlag) {
         this(
                 itemInfo,
                 launcherActivityInfo,
                 /* iconBlob= */ null,
-                useLowResIcon);
+                /* isBlobFullBleed= */ false,
+                lookupFlag);
     }
 
     public IconRequestInfo(
             @NonNull T itemInfo,
             @Nullable LauncherActivityInfo launcherActivityInfo,
             @Nullable byte[] iconBlob,
-            boolean useLowResIcon) {
+            boolean isBlobFullBleed,
+            CacheLookupFlag lookupFlag) {
         this.itemInfo = itemInfo;
         this.launcherActivityInfo = launcherActivityInfo;
         this.iconBlob = iconBlob;
-        this.useLowResIcon = useLowResIcon;
+        this.isBlobFullBleed = isBlobFullBleed;
+        this.lookupFlag = lookupFlag;
     }
 
     /**
-     * Loads this request's item info's title. This method should only be used on IconRequestInfos
-     * for WorkspaceItemInfos.
+     * Loads this request's item info's title and icon from given iconBlob from Launcher.db.
+     * Generally used for restoring Promise Icons and pre-archived icons from backup.
+     * This method should only be used on {@link IconRequestInfo} for {@link WorkspaceItemInfo}
+     *  or {@link AppInfo}.
      */
-    public boolean loadWorkspaceIcon(Context context) {
-        if (!(itemInfo instanceof WorkspaceItemInfo)) {
+    public boolean loadIconFromDbBlob(Context context) {
+        if (!(itemInfo instanceof WorkspaceItemInfo) && !(itemInfo instanceof AppInfo)) {
             throw new IllegalStateException(
-                    "loadWorkspaceIcon should only be use for a WorkspaceItemInfos: " + itemInfo);
+                    "loadIconFromDb should only be used for either WorkspaceItemInfo or AppInfo: "
+                            + itemInfo);
         }
 
         try (LauncherIcons li = LauncherIcons.obtain(context)) {
-            WorkspaceItemInfo info = (WorkspaceItemInfo) itemInfo;
-            // Failed to load from resource, try loading from DB.
-            if (iconBlob == null) {
+            BitmapInfo bitmap = parseIconBlob(li);
+            ItemInfoWithIcon info = itemInfo;
+            if (bitmap == null) {
+                Log.d(TAG, "loadIconFromDb: icon blob null, returning. Component="
+                        + info.getTargetComponent());
                 return false;
             }
-            info.bitmap = li.createIconBitmap(decodeByteArray(
-                    iconBlob, 0, iconBlob.length));
+            info.bitmap = bitmap;
             return true;
+        }
+    }
+
+    /**
+     * Tries to parse the icon from blob, or null on failure
+     */
+    @Nullable
+    public BitmapInfo parseIconBlob(BaseIconFactory iconFactory) {
+        try {
+            return iconBlob == null ? null
+                    : iconFactory.createIconBitmap(
+                    decodeByteArray(iconBlob, 0, iconBlob.length),
+                    /* isFullBleed **/ isBlobFullBleed
+            );
         } catch (Exception e) {
             Log.e(TAG, "Failed to decode byte array for info " + itemInfo, e);
-            return false;
+            return null;
         }
     }
 }

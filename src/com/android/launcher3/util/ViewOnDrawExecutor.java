@@ -16,9 +16,12 @@
 
 package com.android.launcher3.util;
 
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewTreeObserver.OnDrawListener;
+
+import androidx.annotation.NonNull;
 
 import com.android.launcher3.Launcher;
 
@@ -30,27 +33,25 @@ import java.util.function.Consumer;
 public class ViewOnDrawExecutor implements OnDrawListener, Runnable,
         OnAttachStateChangeListener {
 
+    private static final String TAG = "ViewOnDrawExecutor";
     private final RunnableList mTasks;
-
-    private Consumer<ViewOnDrawExecutor> mOnClearCallback;
+    private final Consumer<ViewOnDrawExecutor> mOnClearCallback;
     private View mAttachedView;
     private boolean mCompleted;
 
-    private boolean mLoadAnimationCompleted;
     private boolean mFirstDrawCompleted;
 
     private boolean mCancelled;
 
-    public ViewOnDrawExecutor(RunnableList tasks) {
+    public ViewOnDrawExecutor(RunnableList tasks,
+                              @NonNull Consumer<ViewOnDrawExecutor> onClearCallback) {
         mTasks = tasks;
+        mOnClearCallback = onClearCallback;
     }
 
     public void attachTo(Launcher launcher) {
-        mOnClearCallback = launcher::clearPendingExecutor;
         mAttachedView = launcher.getWorkspace();
-
         mAttachedView.addOnAttachStateChangeListener(this);
-
         if (mAttachedView.isAttachedToWindow()) {
             attachObserver();
         }
@@ -77,17 +78,10 @@ public class ViewOnDrawExecutor implements OnDrawListener, Runnable,
         mAttachedView.post(this);
     }
 
-    public void onLoadAnimationCompleted() {
-        mLoadAnimationCompleted = true;
-        if (mAttachedView != null) {
-            mAttachedView.post(this);
-        }
-    }
-
     @Override
     public void run() {
-        // Post the pending tasks after both onDraw and onLoadAnimationCompleted have been called.
-        if (mLoadAnimationCompleted && mFirstDrawCompleted && !mCompleted) {
+        // Post the pending tasks after first draw
+        if (mFirstDrawCompleted && !mCompleted) {
             markCompleted();
         }
     }
@@ -96,7 +90,10 @@ public class ViewOnDrawExecutor implements OnDrawListener, Runnable,
      * Executes all tasks immediately
      */
     public void markCompleted() {
-        if (!mCancelled) {
+        if (mCancelled) {
+            Log.d(TAG, "markCompleted ignored: cancelled");
+        } else {
+            Log.d(TAG, "markCompleted: executing tasks");
             mTasks.executeAllAndDestroy();
         }
         mCompleted = true;
@@ -104,12 +101,12 @@ public class ViewOnDrawExecutor implements OnDrawListener, Runnable,
             mAttachedView.getViewTreeObserver().removeOnDrawListener(this);
             mAttachedView.removeOnAttachStateChangeListener(this);
         }
-        if (mOnClearCallback != null) {
-            mOnClearCallback.accept(this);
-        }
+
+        mOnClearCallback.accept(this);
     }
 
     public void cancel() {
+        Log.d(TAG, "Cancelling tasks");
         mCancelled = true;
         markCompleted();
     }

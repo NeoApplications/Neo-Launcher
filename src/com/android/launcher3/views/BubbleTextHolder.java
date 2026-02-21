@@ -20,7 +20,7 @@ import com.android.launcher3.BubbleTextView;
 /**
  * Views that contain {@link BubbleTextView} should implement this interface.
  */
-public interface BubbleTextHolder extends IconLabelDotView {
+public interface BubbleTextHolder extends FloatingIconViewCompanion {
     BubbleTextView getBubbleText();
 
     @Override

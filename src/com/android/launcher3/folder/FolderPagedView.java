@@ -18,12 +18,14 @@ package com.android.launcher3.folder;
 
 import static com.android.launcher3.AbstractFloatingView.TYPE_ALL;
 import static com.android.launcher3.AbstractFloatingView.TYPE_FOLDER;
+import static com.android.launcher3.Flags.enableLauncherVisualRefresh;
+import static com.android.launcher3.folder.FolderGridOrganizer.createFolderGridOrganizer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
-import android.graphics.drawable.Drawable;
+import android.graphics.Point;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -37,14 +39,14 @@ import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
-import com.android.launcher3.InvariantDeviceProfile;
-import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.PagedView;
 import com.android.launcher3.R;
 import com.android.launcher3.ShortcutAndWidgetContainer;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.celllayout.CellLayoutLayoutParams;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
+import com.android.launcher3.model.data.AppPairInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
@@ -99,16 +102,30 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     // animating or is open.
     private boolean mViewsBound = false;
 
+    private boolean mCanAnnouncePageDescription;
+
     public FolderPagedView(Context context, AttributeSet attrs) {
+        this(
+                context,
+                attrs,
+                createFolderGridOrganizer(ActivityContext.lookupContext(context).getDeviceProfile())
+        );
+    }
+
+    public FolderPagedView(
+            Context context,
+            AttributeSet attrs,
+            FolderGridOrganizer folderGridOrganizer
+    ) {
         super(context, attrs);
-        InvariantDeviceProfile profile = LauncherAppState.getIDP(context);
-        mOrganizer = new FolderGridOrganizer(profile);
+        ActivityContext activityContext = ActivityContext.lookupContext(context);
+        mOrganizer = folderGridOrganizer;
 
         mIsRtl = Utilities.isRtl(getResources());
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
         mFocusIndicatorHelper = new ViewGroupFocusHelper(this);
-        mViewCache = ActivityContext.lookupContext(context).getViewCache();
+        mViewCache = activityContext.getViewCache();
     }
 
     public void setFolder(Folder folder) {
@@ -149,12 +166,25 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     /**
      * Binds items to the layout.
      */
-    public void bindItems(List<WorkspaceItemInfo> items) {
+    public void bindItems(List<ItemInfo> items) {
         if (mViewsBound) {
             unbindItems();
         }
         arrangeChildren(items.stream().map(this::createNewView).collect(Collectors.toList()));
         mViewsBound = true;
+    }
+
+    void setCanAnnouncePageDescriptionForFolder(boolean canAnnounce) {
+        mCanAnnouncePageDescription = canAnnounce;
+    }
+
+    private boolean canAnnouncePageDescriptionForFolder() {
+        return mCanAnnouncePageDescription;
+    }
+
+    @Override
+    protected boolean canAnnouncePageDescription() {
+        return super.canAnnouncePageDescription() && canAnnouncePageDescriptionForFolder();
     }
 
     /**
@@ -165,8 +195,11 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
             CellLayout page = (CellLayout) getChildAt(i);
             ShortcutAndWidgetContainer container = page.getShortcutsAndWidgets();
             for (int j = container.getChildCount() - 1; j >= 0; j--) {
-                container.getChildAt(j).setVisibility(View.VISIBLE);
-                mViewCache.recycleView(R.layout.folder_application, container.getChildAt(j));
+                View iconView = container.getChildAt(j);
+                iconView.setVisibility(View.VISIBLE);
+                if (iconView instanceof BubbleTextView) {
+                    mViewCache.recycleView(R.layout.folder_application, iconView);
+                }
             }
             page.removeAllViews();
             mViewCache.recycleView(R.layout.folder_page, page);
@@ -186,7 +219,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
      * Creates and adds an icon corresponding to the provided rank
      * @return the created icon
      */
-    public View createAndAddViewForRank(WorkspaceItemInfo item, int rank) {
+    public View createAndAddViewForRank(ItemInfo item, int rank) {
         View icon = createNewView(item);
         if (!mViewsBound) {
             return icon;
@@ -201,7 +234,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
      * Adds the {@param view} to the layout based on {@param rank} and updated the position
      * related attributes. It assumes that {@param item} is already attached to the view.
      */
-    public void addViewForRank(View view, WorkspaceItemInfo item, int rank) {
+    public void addViewForRank(View view, ItemInfo item, int rank) {
         int pageNo = rank / mOrganizer.getMaxItemsPerPage();
 
         CellLayoutLayoutParams lp = (CellLayoutLayoutParams) view.getLayoutParams();
@@ -210,26 +243,35 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     }
 
     @SuppressLint("InflateParams")
-    public View createNewView(WorkspaceItemInfo item) {
+    public View createNewView(ItemInfo item) {
         if (item == null) {
             return null;
         }
-        final BubbleTextView textView = mViewCache.getView(
-                R.layout.folder_application, getContext(), null);
-        textView.applyFromWorkspaceItem(item);
-        textView.setOnClickListener(mFolder.mActivityContext.getItemOnClickListener());
-        textView.setOnLongClickListener(mFolder);
-        textView.setOnFocusChangeListener(mFocusIndicatorHelper);
-        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) textView.getLayoutParams();
-        if (lp == null) {
-            textView.setLayoutParams(new CellLayoutLayoutParams(
-                    item.cellX, item.cellY, item.spanX, item.spanY));
+
+        final View icon;
+        if (item instanceof AppPairInfo api) {
+            // TODO (b/332607759): Make view cache work with app pair icons
+            icon = AppPairIcon.inflateIcon(R.layout.folder_app_pair, ActivityContext.lookupContext(
+                    getContext()), null , api, BubbleTextView.DISPLAY_FOLDER);
         } else {
-            lp.setCellX(item.cellX);
-            lp.setCellY(item.cellY);
+            icon = mViewCache.getView(R.layout.folder_application, getContext(), null);
+            ((BubbleTextView) icon).applyFromWorkspaceItem((WorkspaceItemInfo) item);
+        }
+
+        icon.setOnClickListener(mFolder.mActivityContext.getItemOnClickListener());
+        icon.setOnLongClickListener(mFolder);
+        icon.setOnFocusChangeListener(mFocusIndicatorHelper);
+
+        CellLayoutLayoutParams lp = (CellLayoutLayoutParams) icon.getLayoutParams();
+        Point pos = mOrganizer.getPosForRank(item.rank);
+        if (lp == null) {
+            icon.setLayoutParams(new CellLayoutLayoutParams(pos.x, pos.y, 1, 1));
+        } else {
+            lp.setCellXY(pos);
             lp.cellHSpan = lp.cellVSpan = 1;
         }
-        return textView;
+
+        return icon;
     }
 
     @Nullable
@@ -246,7 +288,8 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     private CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
-        page.setCellDimensions(grid.folderCellWidthPx, grid.folderCellHeightPx);
+        page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
+                grid.getFolderProfile().getCellHeightPx());
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         page.setInvertIfRtl(true);
         page.setGridSize(mGridCountX, mGridCountY);
@@ -346,9 +389,13 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
 
         // Update footer
         mPageIndicator.setVisibility(getPageCount() > 1 ? View.VISIBLE : View.GONE);
+        if (enableLauncherVisualRefresh()) {
+            mFolder.onIndicatorVisibilityChanged();
+        }
         // Set the gravity as LEFT or RIGHT instead of START, as START depends on the actual text.
-        mFolder.mFolderName.setGravity(getPageCount() > 1 ?
-                (mIsRtl ? Gravity.RIGHT : Gravity.LEFT) : Gravity.CENTER_HORIZONTAL);
+        int horizontalGravity = getPageCount() > 1
+                ? (mIsRtl ? Gravity.RIGHT : Gravity.LEFT) : Gravity.CENTER_HORIZONTAL;
+        mFolder.getFolderName().setGravity(horizontalGravity | Gravity.CENTER_VERTICAL);
     }
 
     public int getDesiredWidth() {
@@ -440,6 +487,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         super.notifyPageSwitchListener(prevPage);
         if (mFolder != null) {
             mFolder.updateTextViewFocus();
+            mFolder.updateArrowAlphas();
         }
     }
 
@@ -490,6 +538,16 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         verifyVisibleHighResIcons(getCurrentPage() + 1);
     }
 
+    int getTotalChildCount() {
+        AtomicInteger count = new AtomicInteger();
+        iterateOverItems((i, v) -> {
+            count.getAndIncrement();
+            return false;
+        });
+
+        return count.get();
+    }
+
     /**
      * Ensures that all the icons on the given page are of high-res
      */
@@ -498,13 +556,11 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         if (page != null) {
             ShortcutAndWidgetContainer parent = page.getShortcutsAndWidgets();
             for (int i = parent.getChildCount() - 1; i >= 0; i--) {
-                BubbleTextView icon = ((BubbleTextView) parent.getChildAt(i));
-                icon.verifyHighRes();
-                // Set the callback back to the actual icon, in case
-                // it was captured by the FolderIcon
-                Drawable d = icon.getIcon();
-                if (d != null) {
-                    d.setCallback(icon);
+                View iconView = parent.getChildAt(i);
+                if (iconView instanceof BubbleTextView btv) {
+                    btv.verifyHighRes();
+                } else if (iconView instanceof AppPairIcon api) {
+                    api.verifyHighRes();
                 }
             }
         }
@@ -596,7 +652,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
             if (v != null) {
                 if (pageToAnimate != p) {
                     page.removeView(v);
-                    addViewForRank(v, (WorkspaceItemInfo) v.getTag(), moveStart);
+                    addViewForRank(v, (ItemInfo) v.getTag(), moveStart);
                 } else {
                     // Do a fake animation before removing it.
                     final int newRank = moveStart;
@@ -609,7 +665,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
                             mPendingAnimations.remove(v);
                             v.setTranslationX(oldTranslateX);
                             ((CellLayout) v.getParent().getParent()).removeView(v);
-                            addViewForRank(v, (WorkspaceItemInfo) v.getTag(), newRank);
+                            addViewForRank(v, (ItemInfo) v.getTag(), newRank);
                         }
                     };
                     v.animate()

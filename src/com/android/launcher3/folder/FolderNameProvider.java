@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.folder;
 
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_FOLDER;
+
 import android.annotation.SuppressLint;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -28,13 +30,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel.ModelUpdateTask;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.model.AllAppsList;
-import com.android.launcher3.model.BaseModelUpdateTask;
 import com.android.launcher3.model.BgDataModel;
+import com.android.launcher3.model.ModelTaskController;
 import com.android.launcher3.model.StringCache;
 import com.android.launcher3.model.data.AppInfo;
+import com.android.launcher3.model.data.CollectionInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 import com.android.launcher3.util.IntSparseArrayMap;
@@ -62,7 +66,7 @@ public class FolderNameProvider implements ResourceBasedOverride {
      * name edit box can also be used to provide suggestion.
      */
     public static final int SUGGEST_MAX = 4;
-    protected IntSparseArrayMap<FolderInfo> mFolderInfos;
+    protected IntSparseArrayMap<CollectionInfo> mCollectionInfos;
     protected List<AppInfo> mAppInfos;
 
     /**
@@ -79,7 +83,7 @@ public class FolderNameProvider implements ResourceBasedOverride {
     }
 
     public static FolderNameProvider newInstance(Context context, List<AppInfo> appInfos,
-            IntSparseArrayMap<FolderInfo> folderInfos) {
+            IntSparseArrayMap<CollectionInfo> folderInfos) {
         Preconditions.assertWorkerThread();
         FolderNameProvider fnp = Overrides.getObject(FolderNameProvider.class,
                 context.getApplicationContext(), R.string.folder_name_provider_class);
@@ -93,9 +97,9 @@ public class FolderNameProvider implements ResourceBasedOverride {
                 new FolderNameWorker());
     }
 
-    private void load(List<AppInfo> appInfos, IntSparseArrayMap<FolderInfo> folderInfos) {
+    public void load(List<AppInfo> appInfos, IntSparseArrayMap<CollectionInfo> folderInfos) {
         mAppInfos = appInfos;
-        mFolderInfos = folderInfos;
+        mCollectionInfos = folderInfos;
     }
 
     /**
@@ -191,13 +195,23 @@ public class FolderNameProvider implements ResourceBasedOverride {
         nameInfos.setLabel(labels.length - 1, label, 1.0f);
     }
 
-    private class FolderNameWorker extends BaseModelUpdateTask {
+    private class FolderNameWorker implements ModelUpdateTask {
+
         @Override
-        public void execute(@NonNull final LauncherAppState app,
-                @NonNull final BgDataModel dataModel, @NonNull final AllAppsList apps) {
-            mFolderInfos = dataModel.folders.clone();
+        public void execute(@NonNull ModelTaskController taskController,
+                            @NonNull BgDataModel dataModel, @NonNull AllAppsList apps) {
+            mCollectionInfos = getCollectionForSuggestions(dataModel);
             mAppInfos = Arrays.asList(apps.copyData());
         }
+    }
+
+    public static IntSparseArrayMap<CollectionInfo> getCollectionForSuggestions(
+            BgDataModel dataModel) {
+        IntSparseArrayMap<CollectionInfo> result = new IntSparseArrayMap<>();
+        dataModel.itemsIdMap.stream()
+                .filter(item -> item.itemType == ITEM_TYPE_FOLDER)
+                .forEach(item -> result.put(item.id, (FolderInfo) item));
+        return result;
     }
 
 }

@@ -19,8 +19,9 @@ package com.android.launcher3.folder;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 
 import android.graphics.Point;
+import android.util.Log;
 
-import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
 
@@ -41,21 +42,33 @@ public class FolderGridOrganizer {
     private int mCountX;
     private int mCountY;
     private boolean mDisplayingUpperLeftQuadrant = false;
+    private static final int PREVIEW_MAX_ROWS = 2;
+    private static final int PREVIEW_MAX_COLUMNS = 2;
 
     /**
      * Note: must call {@link #setFolderInfo(FolderInfo)} manually for verifier to work.
      */
-    public FolderGridOrganizer(InvariantDeviceProfile profile) {
-        mMaxCountX = profile.numFolderColumns;
-        mMaxCountY = profile.numFolderRows;
+    public FolderGridOrganizer(int maxCountX, int maxCountY) {
+        mMaxCountX = maxCountX;
+        mMaxCountY = maxCountY;
         mMaxItemsPerPage = mMaxCountX * mMaxCountY;
+    }
+
+    /**
+     * Creates a FolderGridOrganizer for the given DeviceProfile
+     */
+    public static FolderGridOrganizer createFolderGridOrganizer(DeviceProfile profile) {
+        return new FolderGridOrganizer(
+                profile.getFolderProfile().getNumColumns(),
+                profile.getFolderProfile().getNumRows()
+        );
     }
 
     /**
      * Updates the organizer with the provided folder info
      */
     public FolderGridOrganizer setFolderInfo(FolderInfo info) {
-        return setContentSize(info.contents.size());
+        return setContentSize(info.getContents().size());
     }
 
     /**
@@ -127,14 +140,12 @@ public class FolderGridOrganizer {
 
     /**
      * Updates the item's cellX, cellY and rank corresponding to the provided rank.
+     *
      * @return true if there was any change
      */
     public boolean updateRankAndPos(ItemInfo item, int rank) {
-        Point pos = getPosForRank(rank);
-        if (!pos.equals(item.cellX, item.cellY) || rank != item.rank) {
+        if (rank != item.rank) {
             item.rank = rank;
-            item.cellX = pos.x;
-            item.cellY = pos.y;
             return true;
         }
         return false;
@@ -145,8 +156,13 @@ public class FolderGridOrganizer {
      */
     public Point getPosForRank(int rank) {
         int pagePos = rank % mMaxItemsPerPage;
-        mPoint.x = pagePos % mCountX;
-        mPoint.y = pagePos / mCountX;
+        if (mCountX == 0) {
+            mPoint.x = 0;
+            mPoint.y = 0;
+        } else {
+            mPoint.x = pagePos % mCountX;
+            mPoint.y = pagePos / mCountX;
+        }
         return mPoint;
     }
 
@@ -167,6 +183,14 @@ public class FolderGridOrganizer {
             if (result.size() == MAX_NUM_ITEMS_IN_PREVIEW) {
                 break;
             }
+        }
+
+        if (result.isEmpty()) {
+            // Log specifics since we are getting empty result
+            Log.d("b/383526431", "previewItemsForPage: "
+                    + "mCountX = " + mCountX
+                    + ", mCountY = " + mCountY
+                    + ", content size = " + contents.size());
         }
         return result;
     }
@@ -189,8 +213,9 @@ public class FolderGridOrganizer {
         if (page > 0 || mDisplayingUpperLeftQuadrant) {
             int col = rank % mCountX;
             int row = rank / mCountX;
-            return col < 2 && row < 2;
+            return col < PREVIEW_MAX_COLUMNS && row < PREVIEW_MAX_ROWS;
         }
+        // If we have less than 4 items do this
         return rank < MAX_NUM_ITEMS_IN_PREVIEW;
     }
 }

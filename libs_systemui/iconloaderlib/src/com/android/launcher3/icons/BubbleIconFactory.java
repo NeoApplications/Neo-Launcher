@@ -6,12 +6,14 @@ import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.UserHandle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +38,7 @@ public class BubbleIconFactory extends BaseIconFactory {
      * @param ringWidth the width of the ring optionally shown around the badge.
      */
     public BubbleIconFactory(Context context, int iconSize, int badgeSize, int ringColor,
-            int ringWidth) {
+                             int ringWidth) {
         super(context, context.getResources().getConfiguration().densityDpi, iconSize);
         mRingColor = ringColor;
         mRingWidth = ringWidth;
@@ -50,7 +52,7 @@ public class BubbleIconFactory extends BaseIconFactory {
      * Returns the drawable that the developer has provided to display in the bubble.
      */
     public Drawable getBubbleDrawable(@NonNull final Context context,
-            @Nullable final ShortcutInfo shortcutInfo, @Nullable final Icon ic) {
+                                      @Nullable final ShortcutInfo shortcutInfo, @Nullable final Icon ic) {
         if (shortcutInfo != null) {
             LauncherApps launcherApps = context.getSystemService(LauncherApps.class);
             int density = context.getResources().getConfiguration().densityDpi;
@@ -73,32 +75,32 @@ public class BubbleIconFactory extends BaseIconFactory {
      * Creates the bitmap for the provided drawable and returns the scale used for
      * drawing the actual drawable. This is used for the larger icon shown for the bubble.
      */
-    public Bitmap getBubbleBitmap(@NonNull Drawable icon, float[] outScale) {
-        if (outScale == null) {
-            outScale = new float[1];
-        }
-        icon = normalizeAndWrapToAdaptiveIcon(icon,
-                null /* outscale */,
-                outScale);
-        return createIconBitmap(icon, outScale[0], MODE_WITH_SHADOW);
+    public Bitmap getBubbleBitmap(@NonNull Drawable icon) {
+        return createBadgedIconBitmap(
+                icon, new IconOptions()
+                        .setBitmapGenerationMode(MODE_WITH_SHADOW)
+                        // We do not care about extracted color
+                        .setExtractedColor(Color.TRANSPARENT)).icon;
     }
 
     /**
      * Returns a {@link BitmapInfo} for the app-badge that is shown on top of each bubble. This
      * will include the workprofile indicator on the badge if appropriate.
      */
-    public BitmapInfo getBadgeBitmap(Drawable userBadgedAppIcon, boolean isImportantConversation) {
-        if (userBadgedAppIcon instanceof AdaptiveIconDrawable) {
-            AdaptiveIconDrawable ad = (AdaptiveIconDrawable) userBadgedAppIcon;
-            userBadgedAppIcon = new CircularAdaptiveIcon(ad.getBackground(),
-                    ad.getForeground());
+    public BitmapInfo getBadgeBitmap(Drawable appIcon, UserHandle user,
+                                     boolean isImportantConversation) {
+        if (appIcon instanceof AdaptiveIconDrawable ad) {
+            appIcon = new CircularAdaptiveIcon(ad.getBackground(), ad.getForeground());
         }
         if (isImportantConversation) {
-            userBadgedAppIcon = new CircularRingDrawable(userBadgedAppIcon);
+            appIcon = new CircularRingDrawable(appIcon);
         }
-        Bitmap userBadgedBitmap = mBadgeFactory.createIconBitmap(
-                userBadgedAppIcon, 1, MODE_WITH_SHADOW);
-        return mBadgeFactory.createIconBitmap(userBadgedBitmap);
+        return mBadgeFactory.createBadgedIconBitmap(
+                appIcon,
+                new IconOptions()
+                        .setBitmapGenerationMode(MODE_WITH_SHADOW)
+                        .setWrapNonAdaptiveIcon(false)
+                        .setUser(user));
     }
 
     private class CircularRingDrawable extends CircularAdaptiveIcon {

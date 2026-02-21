@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.library'
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+android {
+    namespace 'com.neoapps.hiddenapi'
+    compileSdk 36
+    buildFeatures {
+        aidl true
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            res.srcDirs = ['res']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
+        }
+    }
+
+    gradle.projectsEvaluated {
+        def frameworkJar = fileTree(dir: 'libs', include: ['framework-15.jar']).files.singleFile
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile).configureEach {
+                classpath = files(frameworkJar, classpath)
+            }
+            tasks.withType(KotlinCompile).configureEach {
+                libraries.from(files(frameworkJar))
+            }
+        }
+
+        dependencies {
+            implementation fileTree(dir: 'libs', include: ['framework-15.jar'])
+        }
+    }
+}
+
+dependencies {
+    implementation libs.annotation
+    compileOnly fileTree(dir: 'libs', include: ['framework-15.jar'])
+}

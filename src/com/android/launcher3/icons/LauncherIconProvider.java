@@ -24,46 +24,59 @@ import android.util.Log;
 
 import com.android.launcher3.R;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.dagger.ApplicationContext;
+import com.android.launcher3.dagger.LauncherAppSingleton;
+import com.android.launcher3.graphics.ThemeManager;
 
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.Collections;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * Extension of {@link IconProvider} with support for overriding theme icons
  */
+@LauncherAppSingleton
 public class LauncherIconProvider extends IconProvider {
 
-    private static final String TAG_ICON = "icon";
-    private static final String ATTR_PACKAGE = "package";
-    private static final String ATTR_DRAWABLE = "drawable";
+    public static final String TAG_ICON = "icon";
+    public static final String ATTR_PACKAGE = "package";
+    public static final String ATTR_DRAWABLE = "drawable";
 
     private static final String TAG = "LIconProvider";
-    private static final Map<String, ThemedIconDrawable.ThemeData> DISABLED_MAP = Collections.emptyMap();
+    public static final Map<String, ThemeData> DISABLED_MAP = Collections.emptyMap();
 
-    private Map<String, ThemedIconDrawable.ThemeData> mThemedIconMap;
-    private boolean mSupportsIconTheme;
+    private Map<String, ThemeData> mThemedIconMap;
 
-    public LauncherIconProvider(Context context, boolean supportsIconTheme) {
-        super(context, supportsIconTheme);
-        setIconThemeSupported(supportsIconTheme);
+    public final ThemeManager mThemeManager;
+
+    @Inject
+    public LauncherIconProvider(
+            @ApplicationContext Context context,
+            ThemeManager themeManager) {
+        super(context);
+        mThemeManager = themeManager;
+        mThemedIconMap = FeatureFlags.USE_LOCAL_ICON_OVERRIDES.get() ? null : DISABLED_MAP;
     }
 
-    /**
-     * Enables or disables icon theme support
-     */
-    public void setIconThemeSupported(boolean isSupported) {
-        mSupportsIconTheme = isSupported;
-        mThemedIconMap = isSupported && FeatureFlags.USE_LOCAL_ICON_OVERRIDES.get()
-                ? null : DISABLED_MAP;
+    @Override
+    protected ThemeData getThemeDataForPackage(String packageName) {
+        return getThemedIconMap().get(packageName);
     }
 
-    private Map<String, ThemedIconDrawable.ThemeData> getThemedIconMap() {
+    @Override
+    public void updateSystemState() {
+        super.updateSystemState();
+        mSystemState += "," + mThemeManager.getIconState().toUniqueId();
+    }
+
+    public Map<String, ThemeData> getThemedIconMap() {
         if (mThemedIconMap != null) {
             return mThemedIconMap;
         }
-        ArrayMap<String, ThemedIconDrawable.ThemeData> map = new ArrayMap<>();
+        ArrayMap<String, ThemeData> map = new ArrayMap<>();
         Resources res = mContext.getResources();
         try (XmlResourceParser parser = res.getXml(R.xml.grayscale_icon_map)) {
             final int depth = parser.getDepth();
@@ -80,7 +93,7 @@ public class LauncherIconProvider extends IconProvider {
                     String pkg = parser.getAttributeValue(null, ATTR_PACKAGE);
                     int iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0);
                     if (iconId != 0 && !TextUtils.isEmpty(pkg)) {
-                        map.put(pkg, new ThemedIconDrawable.ThemeData(res, pkg, iconId));
+                        map.put(pkg, new ThemeData(res, iconId));
                     }
                 }
             }

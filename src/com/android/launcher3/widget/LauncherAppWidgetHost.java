@@ -16,106 +16,48 @@
 
 package com.android.launcher3.widget;
 
-import static com.android.launcher3.widget.LauncherWidgetHolder.APPWIDGET_HOST_ID;
-
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.android.launcher3.LauncherAppState;
-
-import java.util.ArrayList;
-import java.util.function.IntConsumer;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Specific {@link AppWidgetHost} that creates our {@link LauncherAppWidgetHostView}
  * which correctly captures all long-press events. This ensures that users can
  * always pick up and move widgets.
  */
-class LauncherAppWidgetHost extends AppWidgetHost {
-    @NonNull
-    private final ArrayList<LauncherWidgetHolder.ProviderChangedListener>
-            mProviderChangeListeners = new ArrayList<>();
-
-    @NonNull
-    private final Context mContext;
+class LauncherAppWidgetHost extends ListenableAppWidgetHost {
 
     @Nullable
-    private final IntConsumer mAppWidgetRemovedCallback;
+    private ListenableHostView mViewToRecycle;
 
-    @NonNull
-    private final LauncherWidgetHolder mHolder;
-
-    public LauncherAppWidgetHost(@NonNull Context context,
-            @Nullable IntConsumer appWidgetRemovedCallback, @NonNull LauncherWidgetHolder holder) {
-        super(context, APPWIDGET_HOST_ID);
-        mContext = context;
-        mAppWidgetRemovedCallback = appWidgetRemovedCallback;
-        mHolder = holder;
+    LauncherAppWidgetHost(@NonNull Context context, int appWidgetId) {
+        super(context, appWidgetId);
     }
 
     /**
-     * Add a listener that is triggered when the providers of the widgets are changed
-     * @param listener The listener that notifies when the providers changed
+     * Sets the view to be recycled for the next widget creation.
      */
-    public void addProviderChangeListener(
-            @NonNull LauncherWidgetHolder.ProviderChangedListener listener) {
-        mProviderChangeListeners.add(listener);
+    public void recycleViewForNextCreation(ListenableHostView viewToRecycle) {
+        mViewToRecycle = viewToRecycle;
     }
 
-    /**
-     * Remove the specified listener from the host
-     * @param listener The listener that is to be removed from the host
-     */
-    public void removeProviderChangeListener(
-            LauncherWidgetHolder.ProviderChangedListener listener) {
-        mProviderChangeListeners.remove(listener);
-    }
-
-    @Override
-    protected void onProvidersChanged() {
-        if (!mProviderChangeListeners.isEmpty()) {
-            for (LauncherWidgetHolder.ProviderChangedListener callback :
-                    new ArrayList<>(mProviderChangeListeners)) {
-                callback.notifyWidgetProvidersChanged();
-            }
-        }
+    @VisibleForTesting
+    @Nullable ListenableHostView getViewToRecycle() {
+        return mViewToRecycle;
     }
 
     @Override
     @NonNull
     public LauncherAppWidgetHostView onCreateView(Context context, int appWidgetId,
             AppWidgetProviderInfo appWidget) {
-        return mHolder.onCreateView(context, appWidgetId, appWidget);
-    }
-
-    /**
-     * Called when the AppWidget provider for a AppWidget has been upgraded to a new apk.
-     */
-    @Override
-    protected void onProviderChanged(int appWidgetId, @NonNull AppWidgetProviderInfo appWidget) {
-        LauncherAppWidgetProviderInfo info = LauncherAppWidgetProviderInfo.fromProviderInfo(
-                mContext, appWidget);
-        super.onProviderChanged(appWidgetId, info);
-        // The super method updates the dimensions of the providerInfo. Update the
-        // launcher spans accordingly.
-        info.initSpans(mContext, LauncherAppState.getIDP(mContext));
-    }
-
-    /**
-     * Called on an appWidget is removed for a widgetId
-     *
-     * @param appWidgetId TODO: make this override when SDK is updated
-     */
-    @Override
-    public void onAppWidgetRemoved(int appWidgetId) {
-        if (mAppWidgetRemovedCallback == null) {
-            return;
-        }
-        mAppWidgetRemovedCallback.accept(appWidgetId);
+        ListenableHostView result =
+                mViewToRecycle != null ? mViewToRecycle : new ListenableHostView(context);
+        mViewToRecycle = null;
+        return result;
     }
 
     /**
@@ -125,5 +67,4 @@ class LauncherAppWidgetHost extends AppWidgetHost {
     public void clearViews() {
         super.clearViews();
     }
-
 }

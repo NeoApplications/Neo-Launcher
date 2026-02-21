@@ -3,23 +3,23 @@ package com.android.app.animation
 import android.annotation.InterpolatorRes
 import android.content.Context
 import android.view.animation.AnimationUtils
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
 @SmallTest
-@RunWith(JUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class InterpolatorResourcesTest {
 
     private lateinit var context: Context
 
     @Before
     fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
+        context = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
     @Test

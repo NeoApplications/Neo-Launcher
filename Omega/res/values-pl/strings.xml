@@ -8,7 +8,6 @@
     <string name="title__general_desktop">Pulpit</string>
     <string name="summary__general_theme">Zmień kolory, pakiet ikon, kształt ikon</string>
     <string name="summary__general_search">Dostawca wyszukiwania, styl, ikony</string>
-    <string name="summary__general_about">Więcej o Neo Launcher</string>
     <string name="pref_category__interfaces">Interfejs użytkownika</string>
     <string name="pref_category__inputs">Gesty i wyszukiwanie</string>
     <string name="summary__general_desktop">Dostosuj pulpit</string>
@@ -133,7 +132,6 @@
     <string name="pref_appcategorization_flowerpot_title">Kategorie aplikacji</string>
     <string name="icon_shape_override_label">Zmień kształt ikon</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
-    <string name="title_app_categorize">Kategoryzuj aplikacje</string>
     <string name="cat_drawer_grid">Siatka</string>
     <string name="tab_type_custom_desc">Wybierz skróty ręcznie.</string>
     <string name="title_theme_icon_packs">Pakiety ikon</string>
@@ -142,7 +140,7 @@
     <string name="summary__general_advanced">Język, kopia zapasowa, ustawienia wyszukiwania</string>
     <string name="title_drawer_enable_background">Użyj własnego koloru tła</string>
     <string name="pref_appcategorization_flowerpot_summary">Wybieraj skróty automatycznie.</string>
-    <string name="summary_app_categorize">Wybierz pomiędzy zakładkami a folderami</string>
+
     <string name="theme_dark_theme_mode_follow_daylight">Podążaj za światłem dziennym</string>
     <string name="title__dock_colored_icons">Kolorowe ikony</string>
     <string name="reset_custom_icons">Usuń niestandardowe ikony</string>
@@ -176,7 +174,6 @@
     <string name="label_search">Wyszukiwanie</string>
     <string name="title_drawer_row_height">Wysokość wiersza</string>
     <string name="title_disable_suggestions_prompt">Wyłącz sugestie aplikacji</string>
-    <string name="title_drawer_vertical_list">Lista pionowa</string>
     <string name="pref_app_groups_edit_tip">Stuknij, aby edytować, przeciągnij, aby zmienić kolejność.</string>
     <string name="trust_apps_no_lock_error">Proszę skonfigurować bezpieczny ekran blokady, aby ograniczyć dostęp do aplikacji</string>
     <string name="title__theme_accent_color">Kolor akcentu</string>
@@ -349,7 +346,6 @@
     <string name="permission_denied">Odmowa uprawnień do odczytu!</string>
     <string name="theme_auto_black">Podążaj za tapetą (czarny)</string>
     <string name="title_colored_backgrounds">Kolorowe tła</string>
-    <string name="about_copyright">Copyright © 2020-2021</string>
     <string name="dash_location_summary">Zmiana ustawień lokalizacji</string>
     <string name="drag_to_enable_packs">Przeciągnij w górę, aby włączyć</string>
     <string name="title__general_profile">Profil</string>
@@ -500,7 +496,6 @@
     <string name="gesture_press_recents">Przycisk ostatnich działań</string>
     <string name="about_community_telegram">Społeczność na Telegramie</string>
     <string name="about_community_matrix">Społeczność na Matrix</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
@@ -511,7 +506,6 @@
     <string name="title_all_apps_hide_scrollbar">Ukryj pasek przewijania</string>
     <string name="title_themed_background">Przezroczyste tło ikony</string>
     <string name="title_expandable_dock">Rozszerzalny pasek szybkiego dostępu</string>
-    <string name="title_drawer_custom_categories">Własny podział na kategorie</string>
     <string name="title_desktop_free_scrolling">Przewijanie bez końca</string>
     <string name="title_drawer_all_apps">Wszystkie</string>
     <string name="title_drawer_horizontal">Poziomo</string>

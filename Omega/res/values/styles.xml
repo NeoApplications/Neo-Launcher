@@ -26,8 +26,6 @@
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
         <item name="backgroundColor">@color/grey_100</item>
-        <item name="popupColorBackground">@color/grey_200</item>
-        <item name="workspaceStatusBarScrim">@null</item>
         <item name="widgetPickerSelectedTabTextColor">
             @color/widget_picker_selected_tab_text_color_light
         </item>
@@ -41,8 +39,6 @@
         <item name="allAppsAlternateTextColor">?android:textColorSecondary</item>
         <item name="widgetsTheme">@style/NeoWidgetContainerTheme.Dark</item>
         <item name="backgroundColor">@color/grey_800</item>
-        <item name="popupColorBackground">@color/grey_700</item>
-        <item name="workspaceStatusBarScrim">@null</item>
         <item name="widgetPickerSelectedTabTextColor">
             @color/widget_picker_selected_tab_text_color_dark
         </item>
@@ -58,8 +54,6 @@
         <item name="alertDialogTheme">@style/AlertDialog.Black</item>
         <item name="folderBackgroundColor">@android:color/black</item>
         <item name="backgroundColor">@android:color/black</item>
-        <item name="popupColorBackground">@color/grey_900</item>
-        <item name="workspaceStatusBarScrim">@null</item>
     </style>
 
     <style name="NeoTheme.Light.DarkMainColor" parent="AppTheme.DarkMainColor">
@@ -69,7 +63,6 @@
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
-        <item name="popupColorBackground">@color/grey_200</item>
     </style>
 
     <style name="NeoTheme.Light.DarkText" parent="AppTheme.DarkText">
@@ -79,7 +72,6 @@
         <item name="alertDialogTheme">@style/AlertDialog.Light</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
         <item name="folderBackgroundColor">@color/folder_background_light</item>
-        <item name="popupColorBackground">@color/grey_200</item>
     </style>
 
     <style name="NeoTheme.Dark.DarkMainColor" parent="AppTheme.Dark.DarkMainColor">
@@ -89,7 +81,6 @@
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
         <item name="folderBackgroundColor">@color/folder_background_dark</item>
-        <item name="popupColorBackground">@color/grey_800</item>
     </style>
 
     <style name="NeoTheme.Dark.DarkText" parent="AppTheme.Dark.DarkText">
@@ -99,8 +90,6 @@
         <item name="alertDialogTheme">@style/AlertDialog.Dark</item>
         <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Dark</item>
         <item name="folderBackgroundColor">@color/folder_background_dark</item>
-        <item name="workspaceStatusBarScrim">@null</item>
-        <item name="popupColorBackground">@color/grey_800</item>
     </style>
 
     <style name="SettingsTheme.Light" parent="Theme.Material3.Light.NoActionBar">
@@ -221,6 +210,11 @@
         <item name="android:shadowColor">#33000000</item>
     </style>
 
+    <style name="DateWeatherText" parent="@style/EnhancedSmartspaceTextTitle">
+        <item name="android:textSize">?attr/smartspaceSubtitleTextSize</item>
+        <item name="android:fontFamily">google-sans-text</item>
+    </style>
+
     <style name="SmartspaceTextTitle" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textColor">?attr/workspaceTextColor</item>
         <item name="android:letterSpacing">@dimen/smartspace_letter_spacing</item>
@@ -229,6 +223,7 @@
         <item name="keyShadowBlur">@dimen/smartspaceKeyShadowBlur</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/smartspaceKeyShadowOffset</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
     <style name="SmartspaceTextHeadline">
@@ -239,6 +234,7 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
     <style name="EnhancedSmartspaceTextSubtitle" parent="@android:style/TextAppearance.Material.Title">
@@ -254,9 +250,10 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
 
-    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/TextAppearance.Material.Headline">
+    <style name="EnhancedSmartspaceTextTitle" parent="@android:style/Theme.DeviceDefault.DayNight">
         <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0</item>
         <item name="lineHeight">26sp</item>
@@ -271,6 +268,8 @@
         <item name="keyShadowBlur">@dimen/enhanced_smartspace_icon_inset</item>
         <item name="keyShadowColor">?attr/workspaceKeyShadowColor</item>
         <item name="keyShadowOffsetX">@dimen/key_text_shadow_radius</item>
+        <item name="keyShadowOffsetY">@dimen/key_text_shadow_radius</item>
     </style>
+
 </resources>
 

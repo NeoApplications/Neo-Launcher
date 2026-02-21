@@ -17,28 +17,19 @@ package com.android.launcher3.model;
 
 import androidx.annotation.NonNull;
 
-import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel.ModelUpdateTask;
 
 /**
  * Handles updates due to changes in Device Policy Management resources triggered by
  * {@link android.app.admin.DevicePolicyManager#ACTION_DEVICE_POLICY_RESOURCE_UPDATED}.
  */
-public class ReloadStringCacheTask extends BaseModelUpdateTask {
-
-    @NonNull
-    private ModelDelegate mModelDelegate;
-
-    public ReloadStringCacheTask(@NonNull final ModelDelegate modelDelegate) {
-        mModelDelegate = modelDelegate;
-    }
+public class ReloadStringCacheTask implements ModelUpdateTask {
 
     @Override
-    public void execute(@NonNull final LauncherAppState app, @NonNull final BgDataModel dataModel,
-            @NonNull final AllAppsList appsList) {
-        synchronized (dataModel) {
-            mModelDelegate.loadStringCache(dataModel.stringCache);
-            StringCache cloneSC = dataModel.stringCache.clone();
-            scheduleCallbackTask(c -> c.bindStringCache(cloneSC));
-        }
+    public void execute(@NonNull ModelTaskController taskController, @NonNull BgDataModel dataModel,
+                        @NonNull AllAppsList apps) {
+        dataModel.updateStringCache(taskController.getContext());
+        StringCache cloneSC = dataModel.getStringCache();
+        taskController.scheduleCallbackTask(c -> c.bindStringCache(cloneSC));
     }
 }

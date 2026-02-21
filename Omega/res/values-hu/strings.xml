@@ -141,7 +141,6 @@
     <string name="summary__general_search">Keresőszolgáltató, stílus, ikonok</string>
     <string name="summary__general_theme">Színek módosítása, ikoncsomagok, ikonformák</string>
     <string name="summary__general_advanced">Nyelv, biztonsági mentés, beállításkeresés</string>
-    <string name="summary__general_about">Több információ a Neo Launcherről</string>
     <string name="pref_category__interfaces">Felhasználói felület</string>
     <string name="pref_category__features">Funkciók</string>
     <string name="pref_category__inputs">Mozdulatok és keresés</string>
@@ -209,8 +208,7 @@
     <string name="title_fuzzy_search">Fuzzy keresés</string>
     <string name="summary_fuzzy_search">Közelítő egyezés az alkalmazáskeresésekhez.</string>
     <string name="summary_all_apps_google_search">Keresés a világhálón és az alkalmazások között</string>
-    <string name="title_app_categorize">Alkalmazások kategorizálása</string>
-    <string name="summary_app_categorize">Lapok vagy mappák közötti választás</string>
+
     <string name="summary__drawer_hide_apps">Alkalmazás elrejtése az alkalmazástárból</string>
     <string name="summary_app_categorization_enable">Lapok vagy mappák létrehozása</string>
     <string name="summary_app_suggestions">Összes alkalmazáshoz és a kezdőképernyőhöz</string>
@@ -222,8 +220,6 @@
     <string name="title_drawer_vertical">Függőleges</string>
     <string name="title_drawer_categorized">Kategorizált</string>
     <string name="title_drawer_horizontal">Vízszintes</string>
-    <string name="title_drawer_custom_categories">Egyéni kategóriák</string>
-    <string name="title_drawer_vertical_list">Függőleges lista</string>
     <string name="app_categorization_folders">Mappák</string>
     <string name="pref_appcategorization_folders_summary">Koppintás a felugró ablak megnyitásához.</string>
     <string name="app_categorization_tabs">Lapok</string>
@@ -378,7 +374,6 @@
     <string name="about_build_information">Összeállítási információk</string>
     <string name="title__about_donate">Adományozás</string>
     <string name="title__about_changelog">Változásnapló</string>
-    <string name="about_copyright">Copyright © 2020–2021</string>
     <string name="about_team">Csapattagok</string>
     <string name="about_translators_group">Közreműködők és fordítók</string>
     <string name="about_translators">Fordítók</string>
@@ -489,7 +484,6 @@
     <string name="drag_to_disable_packs">Húzza lefelé a kikapcsoláshoz</string>
     <string name="tap_to_enable">Koppintson az elemre az engedélyezéséhez</string>
     <string name="enabled_events">Engedélyezve</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="title_override_corner_radius_value">Globális saroksugár</string>
     <string name="web_search_searx">Searx (Web)</string>
     <string name="dash_line_size">Pontozott vonal mérete</string>

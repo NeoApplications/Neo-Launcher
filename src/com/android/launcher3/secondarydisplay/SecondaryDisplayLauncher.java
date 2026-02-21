@@ -15,33 +15,42 @@
  */
 package com.android.launcher3.secondarydisplay;
 
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_ALL_APPS_PREDICTION;
+import static com.android.launcher3.util.WallpaperThemeManager.setWallpaperDependentTheme;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityOptions;
+import android.app.WallpaperColors;
+import android.app.WallpaperManager;
+import android.app.WallpaperManager.OnColorsChangedListener;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewAnimationUtils;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.core.view.WindowCompat;
 
 import com.android.launcher3.AbstractFloatingView;
-import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.BaseActivity;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.DragSource;
 import com.android.launcher3.DropTarget;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
-import com.android.launcher3.LauncherPrefs;
-import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
 import com.android.launcher3.allapps.AllAppsStore;
+import com.android.launcher3.deviceprofile.AllAppsProfile;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.dragndrop.DraggableView;
@@ -52,24 +61,22 @@ import com.android.launcher3.model.StringCache;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
+import com.android.launcher3.model.data.PredictedContainerInfo;
+import com.android.launcher3.model.data.WorkspaceData;
 import com.android.launcher3.popup.PopupContainerWithArrow;
-import com.android.launcher3.popup.PopupDataProvider;
 import com.android.launcher3.touch.ItemClickHandler.ItemClickProxy;
-import com.android.launcher3.util.ComponentKey;
-import com.android.launcher3.util.IntSet;
-import com.android.launcher3.util.OnboardingPrefs;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Launcher activity for secondary displays
  */
-public class SecondaryDisplayLauncher extends BaseDraggingActivity
+public class SecondaryDisplayLauncher extends BaseActivity
         implements BgDataModel.Callbacks, DragController.DragListener {
 
     private LauncherModel mModel;
@@ -78,66 +85,72 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     private ActivityAllAppsContainerView<SecondaryDisplayLauncher> mAppsView;
     private View mAppsButton;
 
-    private PopupDataProvider mPopupDataProvider;
-
     private boolean mAppDrawerShown = false;
 
     private StringCache mStringCache;
-    private OnboardingPrefs<?> mOnboardingPrefs;
-    private boolean mBindingItems = false;
-    private SecondaryDisplayPredictions mSecondaryDisplayPredictions;
+    private SecondaryDisplayDelegate mSecondaryDisplayDelegate;
+
+    private WallpaperManager mWallpaperManager = null;
+
+    private final OnColorsChangedListener mWallpaperColorsListener = new OnColorsChangedListener() {
+        @Override
+        public void onColorsChanged(WallpaperColors colors, int which) {
+            updateStatusBarIconColors(colors);
+        }
+    };
 
     private final int[] mTempXY = new int[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setWallpaperDependentTheme(this);
         mModel = LauncherAppState.getInstance(this).getModel();
         mDragController = new SecondaryDragController(this);
-        mOnboardingPrefs = new OnboardingPrefs<>(this, LauncherPrefs.getPrefs(this));
-        mSecondaryDisplayPredictions = SecondaryDisplayPredictions.newInstance(this);
-        if (getWindow().getDecorView().isAttachedToWindow()) {
-            initUi();
-        }
-    }
+        mSecondaryDisplayDelegate = getActivityComponent().getSecondaryDisplayDelegate();
 
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        initUi();
-    }
-
-    @Override
-    public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        this.getDragController().removeDragListener(this);
-    }
-
-    private void initUi() {
-        if (mDragLayer != null) {
-            return;
-        }
-        InvariantDeviceProfile currentDisplayIdp = new InvariantDeviceProfile(
-                this, getWindow().getDecorView().getDisplay());
-
-        // Disable transpose layout and use multi-window mode so that the icons are scaled properly
-        mDeviceProfile = currentDisplayIdp.getDeviceProfile(this)
-                .toBuilder(this)
-                .setMultiWindowMode(true)
-                .setTransposeLayoutWithOrientation(false)
-                .build();
-        mDeviceProfile.autoResizeAllAppsCells();
+        mDeviceProfile = InvariantDeviceProfile.INSTANCE.get(this)
+                .createDeviceProfileForSecondaryDisplay(this);
+        // TODO(b/420948290) Remove this!
+        mDeviceProfile.setAllAppsProfile(AllAppsProfile
+                .Factory
+                .autoResizeAllAppsCells(mDeviceProfile.getAllAppsProfile()));
 
         setContentView(R.layout.secondary_launcher);
         mDragLayer = findViewById(R.id.drag_layer);
         mAppsView = findViewById(R.id.apps_view);
         mAppsButton = findViewById(R.id.all_apps_button);
+        if (mSecondaryDisplayDelegate.enableTaskbarConnectedDisplays()) {
+            mAppsButton.setVisibility(View.INVISIBLE);
+        }
 
         mDragController.addDragListener(this);
-        mPopupDataProvider = new PopupDataProvider(
-                mAppsView.getAppsStore()::updateNotificationDots);
 
         mModel.addCallbacksAndLoad(this);
+
+        // Update status bar icon color on wallpaper changes.
+        mWallpaperManager = getSystemService(WallpaperManager.class);
+        mWallpaperManager.addOnColorsChangedListener(mWallpaperColorsListener, null);
+
+        // Set the initial color of status bar icons on activity creation.
+        updateStatusBarIconColors(
+                mWallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
+        );
+
+        mSecondaryDisplayDelegate.onCreate();
+    }
+
+    /**
+     * Set the status bar icon colours depending on wallpaper hint.
+     */
+    private void updateStatusBarIconColors(WallpaperColors wallpaperColors) {
+        if (wallpaperColors != null) {
+            int colorHints = wallpaperColors.getColorHints();
+            Window window = getWindow();
+            Boolean setLightBars = (colorHints & WallpaperColors.HINT_SUPPORTS_DARK_TEXT) != 0;
+            WindowCompat.getInsetsController(window, window.getDecorView())
+                    .setAppearanceLightStatusBars(setLightBars);
+        }
     }
 
     @Override
@@ -167,6 +180,10 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
         return mDragController;
     }
 
+    public SecondaryDisplayDelegate getSecondaryDisplayDelegate() {
+        return mSecondaryDisplayDelegate;
+    }
+
     @Override
     public void onBackPressed() {
         if (finishAutoCancelActionMode()) {
@@ -192,7 +209,9 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSecondaryDisplayDelegate.onDestroy();
         mModel.removeCallbacks(this);
+        mWallpaperManager.removeOnColorsChangedListener(mWallpaperColorsListener);
     }
 
     public boolean isAppDrawerShown() {
@@ -202,25 +221,6 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     @Override
     public ActivityAllAppsContainerView<SecondaryDisplayLauncher> getAppsView() {
         return mAppsView;
-    }
-
-    @Override
-    public <T extends View> T getOverviewPanel() {
-        return null;
-    }
-
-    @Override
-    public View getRootView() {
-        return mDragLayer;
-    }
-
-    @Override
-    public ActivityOptions getActivityLaunchOptions(View v) {
-        return null;
-    }
-
-    @Override
-    protected void reapplyUi() {
     }
 
     @Override
@@ -263,14 +263,17 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
             mAppDrawerShown = true;
             mAppsView.setVisibility(View.VISIBLE);
             mAppsButton.setVisibility(View.INVISIBLE);
-            mSecondaryDisplayPredictions.updateAppDivider();
+            mSecondaryDisplayDelegate.updateAppDivider();
         } else {
             mAppDrawerShown = false;
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mAppsView.setVisibility(View.INVISIBLE);
-                    mAppsButton.setVisibility(View.VISIBLE);
+                    mAppsButton.setVisibility(
+                            mSecondaryDisplayDelegate.enableTaskbarConnectedDisplays()
+                                    ? View.INVISIBLE
+                                    : View.VISIBLE);
                     mAppsView.getSearchUiManager().resetSearch();
                 }
             });
@@ -278,46 +281,31 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
         animator.start();
     }
 
-    @Override
-    public OnboardingPrefs<?> getOnboardingPrefs() {
-        return mOnboardingPrefs;
-    }
-
-    @Override
-    public void startBinding() {
-        mBindingItems = true;
-        mDragController.cancelDrag();
-    }
-
-    @Override
-    public boolean isBindingItems() {
-        return mBindingItems;
-    }
-
-    @Override
-    public void finishBindingItems(IntSet pagesBoundFirst) {
-        mBindingItems = false;
-    }
-
-    @Override
-    public void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) {
-        mPopupDataProvider.setDeepShortcutMap(deepShortcutMap);
-    }
-
     @UiThread
     @Override
     public void bindAllApplications(AppInfo[] apps, int flags,
             Map<PackageUserKey, Integer> packageUserKeytoUidMap) {
         Preconditions.assertUIThread();
-        AllAppsStore<SecondaryDisplayLauncher> appsStore = mAppsView.getAppsStore();
+        AllAppsStore appsStore = mAppsView.getAppsStore();
         appsStore.setApps(apps, flags, packageUserKeytoUidMap);
         PopupContainerWithArrow.dismissInvalidPopup(this);
     }
 
     @Override
-    public void bindExtraContainerItems(BgDataModel.FixedContainerItems item) {
-        if (item.containerId == LauncherSettings.Favorites.CONTAINER_PREDICTION) {
-            mSecondaryDisplayPredictions.setPredictedApps(item);
+    public void bindCompleteModel(
+            @NonNull WorkspaceData itemIdMap, boolean isBindingSync) {
+        if (itemIdMap.get(CONTAINER_ALL_APPS_PREDICTION) instanceof PredictedContainerInfo pci) {
+            mSecondaryDisplayDelegate.setPredictedApps(pci);
+        }
+    }
+
+    @Override
+    public void bindItemsUpdated(@NonNull Set<ItemInfo> updates) {
+        for (ItemInfo updatedItem : updates) {
+            if (updatedItem.container == CONTAINER_ALL_APPS_PREDICTION
+                    && updatedItem instanceof PredictedContainerInfo pci) {
+                mSecondaryDisplayDelegate.setPredictedApps(pci);
+            }
         }
     }
 
@@ -329,10 +317,6 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     @Override
     public void bindStringCache(StringCache cache) {
         mStringCache = cache;
-    }
-
-    public PopupDataProvider getPopupDataProvider() {
-        return mPopupDataProvider;
     }
 
     @Override
@@ -362,7 +346,7 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
                 ItemInfoWithIcon appInfo = (ItemInfoWithIcon) item;
                 intent = appInfo.getMarketIntent(this);
             } else {
-                intent = item.getIntent();
+                intent = new Intent(item.getIntent());
             }
             if (intent == null) {
                 throw new IllegalArgumentException("Input must have a valid intent");
@@ -472,5 +456,21 @@ public class SecondaryDisplayLauncher extends BaseDraggingActivity
     public void onDragStart(DropTarget.DragObject dragObject, DragOptions options) { }
 
     @Override
-    public void onDragEnd() { }
+    public void onDragEnd() {
+    }
+
+    @Override
+    protected void onActivityFlagsChanged(int changeBits) {
+        super.onActivityFlagsChanged(changeBits);
+
+        if (mDisplayId != Display.DEFAULT_DISPLAY && (changeBits & ACTIVITY_STATE_RESUMED) != 0) {
+            mSecondaryDisplayDelegate.updateStashControllerStateFlags(mDisplayId, hasBeenResumed());
+        }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return mSecondaryDisplayDelegate.dispatchKeyEvent(event)
+                || super.dispatchKeyEvent(event);
+    }
 }

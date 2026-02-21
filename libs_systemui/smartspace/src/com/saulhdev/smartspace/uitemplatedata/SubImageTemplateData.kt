@@ -2,7 +2,7 @@ package com.saulhdev.smartspace.uitemplatedata
 
 import com.saulhdev.smartspace.SmartspaceTarget
 
-class SubImageTemplateData(
+public class SubImageTemplateData(
     @SmartspaceTarget.UiTemplateType override val templateType: Int,
     override val primaryItem: SubItemInfo,
     override val subtitleItem: SubItemInfo,

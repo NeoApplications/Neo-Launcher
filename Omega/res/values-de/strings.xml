@@ -100,7 +100,6 @@
     <string name="pref_appcategorization_folders_summary">Antippen, um das Dialogfenster zu öffnen.</string>
     <string name="app_categorization_folders">Ordner</string>
     <string name="pref_appcategorization_style_text">Stil</string>
-    <string name="title_app_categorize">Apps kategorisieren</string>
     <string name="pref_appcategorization_flowerpot_title">App Kategorie</string>
     <string name="title_text_color">Textfarbe</string>
     <string name="label_turn_off_suggestions">Deaktivieren</string>
@@ -161,7 +160,6 @@
     <string name="pref_category__others">Sonstiges</string>
     <string name="pref_category__inputs">Gesten und Suche</string>
     <string name="pref_category__interfaces">Benutzeroberfläche</string>
-    <string name="summary__general_about">Mehr über den Neo Launcher</string>
     <string name="summary__general_advanced">Sprache, Sicherung, Einstellungssuche</string>
     <string name="summary__general_notifications">Abzeichen-Anzahl, Abzeichen-Farbe, Gesten</string>
     <string name="summary__general_smartspace">Datum, Uhrzeit, Home-Widget</string>
@@ -371,7 +369,6 @@
     <string name="cat_drawer_icons">Symbole</string>
     <string name="cat_drawer_grid">Gitter</string>
     <string name="dialog_message_change_sort">Wechseln zu alphabetischer App-Sortierung\?</string>
-    <string name="title_drawer_vertical_list">Vertikale Liste</string>
     <string name="title_drawer_vertical">Vertikal</string>
     <string name="title_drawer_layout">Layout-Modus</string>
     <string name="title_dock_two_row">Zweite Reihe anzeigen</string>
@@ -384,7 +381,6 @@
     <string name="title_smartspace">Smartspace anzeigen</string>
     <string name="summary_legacy_treatment">Adaptive Symbole für alle Shortcuts erstellen.</string>
     <string name="dash_torch_summary">Taschenlampe ein-/ausschalten.</string>
-    <string name="about_copyright">Copyright © 2020-2021</string>
     <string name="dash_volume_title">Lautstärkedialog</string>
     <string name="pref_desktop_mode_summary">Androids Desktop-Modus aktivieren</string>
     <string name="folder_name_format">Ordner: <xliff:g example="Games" id="name">%1$s</xliff:g></string>
@@ -424,7 +420,7 @@
     <string name="dash_location">Standort</string>
     <string name="dash_location_summary">Standorteinstellungen ändern</string>
     <string name="dash_auto_rotation">Automatisch drehen</string>
-    <string name="summary_app_categorize">Wähle zwischen Tabs und Ordnern</string>
+
     <string name="cat_desktop_grid">Raster und Layout</string>
     <string name="title_app_categorization_enable">Aktivieren von App-Kategorien</string>
     <string name="summary_app_categorization_enable">Erstelle Tabs oder Ordner</string>
@@ -495,7 +491,6 @@
     <string name="web_search_neeva">Neeva (Web)</string>
     <string name="color_wallpaper_secondary">Sekundäre Hintergrundfarbe</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha (Web)</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="title_smartspace_calendar">Kalender auswählen</string>
     <string name="title_calendar_gregorian">Gregorianisch</string>

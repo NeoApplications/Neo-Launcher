@@ -15,9 +15,12 @@
  */
 package com.android.launcher3.tapl;
 
+import static android.view.KeyEvent.KEYCODE_META_RIGHT;
+
+import static com.android.launcher3.tapl.LauncherInstrumentation.KEYBOARD_QUICK_SWITCH_RES_ID;
+import static com.android.launcher3.tapl.LauncherInstrumentation.TASKBAR_DIVIDER_CONTENT_DESCRIPTION;
+import static com.android.launcher3.tapl.LauncherInstrumentation.TASKBAR_PINNING_SWITCH_RES_ID;
 import static com.android.launcher3.tapl.LauncherInstrumentation.TASKBAR_RES_ID;
-import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_DISABLE_MANUAL_TASKBAR_STASHING;
-import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_ENABLE_MANUAL_TASKBAR_STASHING;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -31,6 +34,8 @@ import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiObject2;
 
+import org.junit.Assert;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,10 +44,29 @@ import java.util.stream.Collectors;
  */
 public final class Taskbar {
 
-    private final LauncherInstrumentation mLauncher;
+    /** The TaskbarLocation */
+    enum TaskbarLocation {
+        /** Launched application. */
+        LAUNCHED_APP,
+        /** Overview screen with recent apps. */
+        OVERVIEW,
+    }
 
-    Taskbar(LauncherInstrumentation launcher) {
+    private final LauncherInstrumentation mLauncher;
+    private final TaskbarLocation mTaskbarLocation;
+
+    Taskbar(LauncherInstrumentation launcher, TaskbarLocation taskbarLocation) {
         mLauncher = launcher;
+        mTaskbarLocation = taskbarLocation;
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "expect new taskbar to be visible")) {
+            mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
+        }
+
+        if (!mLauncher.isTransientTaskbar()) {
+            Assert.assertEquals("Persistent taskbar should fill screen width",
+                    mLauncher.getRealDisplaySize().x, getVisibleBounds().width());
+        }
     }
 
     /**
@@ -54,45 +78,59 @@ public final class Taskbar {
                 "want to get a taskbar icon")) {
             return new TaskbarAppIcon(mLauncher, mLauncher.waitForObjectInContainer(
                     mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID),
-                    AppIcon.getAppIconSelector(appName, mLauncher)));
+                    AppIcon.getAppIconSelector(appName, mLauncher)), mTaskbarLocation, true);
         }
     }
 
     /**
-     * Hides this taskbar.
-     *
-     * The taskbar must already be visible when calling this method.
+     * Returns an app icon with the given name. This fails if the icon is not found.
+     * Should be used for app icons which when launched do not create a new activity - for example,
+     * icons that represent running tasks.
      */
-    public void hide() {
-        mLauncher.getTestInfo(REQUEST_ENABLE_MANUAL_TASKBAR_STASHING);
+    @NonNull
+    public TaskbarAppIcon getAppIconForRunningApp(String appName) {
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "want to get a taskbar icon")) {
+            return new TaskbarAppIcon(mLauncher, mLauncher.waitForObjectInContainer(
+                    mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID),
+                    AppIcon.getAppIconSelector(appName, mLauncher)), mTaskbarLocation, false);
+        }
+    }
+
+    /**
+     * Stashes this taskbar.
+     * <p>
+     * The taskbar must already be unstashed and in transient mode when calling this method.
+     */
+    public void swipeDownToStash() {
+        mLauncher.assertTrue("Taskbar is not transient, swipe down not supported",
+                mLauncher.isTransientTaskbar());
 
         try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                 "want to hide the taskbar");
              LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
             mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
 
-            final long downTime = SystemClock.uptimeMillis();
-            Point stashTarget = new Point(
-                    mLauncher.getRealDisplaySize().x - 1, mLauncher.getRealDisplaySize().y - 1);
+            Rect taskbarBounds = getVisibleBounds();
+            int startX = taskbarBounds.centerX();
+            int startY = taskbarBounds.centerY();
+            int endX = startX;
+            int endY = mLauncher.getRealDisplaySize().y - 1;
 
-            mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, stashTarget,
+            mLauncher.linearGesture(startX, startY, endX, endY, 10, false,
                     LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
-            LauncherInstrumentation.log("hideTaskbar: sent down");
-
-            try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer("pressed down")) {
+            LauncherInstrumentation.log("swipeDownToStash: sent linear swipe down gesture");
+            try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
+                    "expect transient taskbar to be hidden after swipe down")) {
                 mLauncher.waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
-                mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_UP, stashTarget,
-                        LauncherInstrumentation.GestureScope.DONT_EXPECT_PILFER);
             }
-        } finally {
-            mLauncher.getTestInfo(REQUEST_DISABLE_MANUAL_TASKBAR_STASHING);
         }
     }
 
     /**
      * Opens the Taskbar all apps page.
      */
-    public AllAppsFromTaskbar openAllApps() {
+    public TaskbarAllApps openAllApps() {
         try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                 "want to open taskbar all apps");
              LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
@@ -101,7 +139,92 @@ public final class Taskbar {
                     mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID),
                     getAllAppsButtonSelector()));
 
-            return new AllAppsFromTaskbar(mLauncher);
+            return getAllApps();
+        }
+    }
+
+    /**
+     * Toggles always show taskbar option
+     */
+    public void toggleAlwaysShowTaskbarOption() {
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "want to open taskbar divider menu and toggle always show taskbar option");
+             LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
+            mLauncher.waitForObjectInContainer(
+                    mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID),
+                    getDividerButtonSelector()).longClick();
+            mLauncher.waitForLauncherObject(TASKBAR_PINNING_SWITCH_RES_ID).click();
+        }
+    }
+
+    /**
+     *  Opens the Home all apps page by clicking the taskbar all apps icon. To be used to open all
+     *  apps when taskbar is visible on home.
+     */
+    public HomeAllApps openAllAppsOnHome() {
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "want to open home all apps from taskbar");
+             LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
+
+            mLauncher.clickLauncherObject(mLauncher.waitForObjectInContainer(
+                    mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID),
+                    getAllAppsButtonSelector()));
+
+            return mLauncher.getAllApps();
+        }
+    }
+
+    /**
+     * Opens taskbar overflow UI by clicking the taskbar overflow icon, and then opens a task in
+     * overflow UI at the provided index.
+     * Assumes that taskbar is currently visible, and in overflow (i.e. that the taskbar overflow
+     * icon is shown).
+     */
+    public LaunchedAppState launchTaskFromTaskbarOverflowByRecencyIndex(int index) {
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "Click on taskbar overflow button");
+             LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
+            UiObject2 taskbarOverflowButton = mLauncher.waitForSystemLauncherObject(
+                    "taskbar_overflow_view");
+            mLauncher.clickLauncherObject(taskbarOverflowButton);
+
+            UiObject2 kqs = mLauncher.waitForSystemLauncherObject(KEYBOARD_QUICK_SWITCH_RES_ID);
+
+            List<UiObject2> overflownApps =
+                    mLauncher.waitForObjectsInContainer(kqs,
+                            mLauncher.getLauncherObjectSelector("thumbnail_1"));
+            mLauncher.assertTrue("Task index out of bounds " + overflownApps.size() + " " + index,
+                    overflownApps.size() > index);
+            UiObject2 task = overflownApps.get(overflownApps.size() - 1 - index);
+
+            if (mLauncher.isLauncherActivityStarted()) {
+                mLauncher.executeAndWaitForLauncherStop(() -> mLauncher.clickLauncherObject(task),
+                        "clicking a task in overflow");
+            } else {
+                mLauncher.clickLauncherObject(task);
+            }
+
+            mLauncher.waitUntilLauncherObjectGone(KEYBOARD_QUICK_SWITCH_RES_ID);
+            return new LaunchedAppState(mLauncher);
+        }
+    }
+
+    /** Opens the Taskbar all apps page with the meta keyboard shortcut. */
+    public TaskbarAllApps openAllAppsFromKeyboardShortcut() {
+        try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck()) {
+            mLauncher.getDevice().pressKeyCode(KEYCODE_META_RIGHT);
+            try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                    "pressed meta key")) {
+                return getAllApps();
+            }
+        }
+    }
+
+    /** Returns {@link TaskbarAllApps} if it is open, otherwise fails. */
+    public TaskbarAllApps getAllApps() {
+        try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                "want to get taskbar all apps object")) {
+            return new TaskbarAllApps(mLauncher, mTaskbarLocation);
         }
     }
 
@@ -124,7 +247,12 @@ public final class Taskbar {
         return By.clazz(TextView.class).text("");
     }
 
-    private Rect getVisibleBounds() {
+    private static BySelector getDividerButtonSelector() {
+        // Look for an icon with no content description
+        return By.clazz(TextView.class).desc(TASKBAR_DIVIDER_CONTENT_DESCRIPTION);
+    }
+
+    public Rect getVisibleBounds() {
         return mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID).getVisibleBounds();
     }
 

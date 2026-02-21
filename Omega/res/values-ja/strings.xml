@@ -9,7 +9,6 @@
     <string name="summary__general_theme">色の変更、アイコンパック、アイコンの形</string>
     <string name="summary__general_search">検索プロバイダー、スタイル、アイコン</string>
     <string name="summary__general_advanced">言語、バックアップ、設定の検索</string>
-    <string name="summary__general_about">Neo Launcherについて</string>
     <string name="pref_category__inputs">ジェスチャーと検索</string>
     <string name="pref_category__others">その他</string>
     <string name="title_desktop_full_width_widgets">最大幅のウィジェット</string>
@@ -333,8 +332,7 @@
     <string name="title__general_widgets_notifications">ウィジェット &amp; 通知</string>
     <string name="title__general_search_feed">検索 &amp; フィード</string>
     <string name="title__general_smartspace">ホームウィジェット</string>
-    <string name="title_app_categorize">アプリのカテゴリ化</string>
-    <string name="summary_app_categorize">タブまたはフォルダのどちらかを選択</string>
+
     <string name="section_web">Web</string>
     <string name="tab_type_smart">自動</string>
     <string name="pref_appcategorization_flowerpot_summary">ショートカットを自動的に選択する。</string>
@@ -344,7 +342,6 @@
     <string name="title_dock_search">ドックの検索バー</string>
     <string name="title_drawer_layout">レイアウトのモード</string>
     <string name="title_drawer_paged">ページ</string>
-    <string name="title_drawer_vertical_list">垂直リスト</string>
     <string name="title_drawer_vertical">垂直</string>
     <string name="pref_app_groups_edit_tip">タップで編集、ドラッグで並べ替え。</string>
     <string name="tab_type_custom_desc">ショートカットを手動で選択する。</string>

@@ -40,8 +40,19 @@ public class StateAnimationConfig {
     public static final int SKIP_DEPTH_CONTROLLER = 1 << 2;
     public static final int SKIP_SCRIM = 1 << 3;
 
+    @IntDef(flag = true, value = {
+            USER_CONTROLLED,
+            HANDLE_STATE_APPLY
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AnimationPropertyFlags {}
+    // Indicates that the animation is controlled by the user
+    public static final int USER_CONTROLLED = 1 << 0;
+    // Indicates that he animation can survive state UI resets due to inset or config changes
+    public static final int HANDLE_STATE_APPLY = 1 << 1;
+
     public long duration;
-    public boolean userControlled;
+    public @AnimationPropertyFlags int animProps = 0;
     public @AnimationFlags int animFlags = 0;
 
 
@@ -66,7 +77,6 @@ public class StateAnimationConfig {
             ANIM_WORKSPACE_PAGE_TRANSLATE_X,
             ANIM_OVERVIEW_SPLIT_SELECT_FLOATING_TASK_TRANSLATE_OFFSCREEN,
             ANIM_OVERVIEW_SPLIT_SELECT_INSTRUCTIONS_FADE,
-            ANIM_ALL_APPS_BOTTOM_SHEET_FADE,
             ANIM_ALL_APPS_KEYBOARD_FADE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -90,8 +100,7 @@ public class StateAnimationConfig {
     public static final int ANIM_WORKSPACE_PAGE_TRANSLATE_X = 15;
     public static final int ANIM_OVERVIEW_SPLIT_SELECT_FLOATING_TASK_TRANSLATE_OFFSCREEN = 17;
     public static final int ANIM_OVERVIEW_SPLIT_SELECT_INSTRUCTIONS_FADE = 18;
-    public static final int ANIM_ALL_APPS_BOTTOM_SHEET_FADE = 19;
-    public static final int ANIM_ALL_APPS_KEYBOARD_FADE = 20;
+    public static final int ANIM_ALL_APPS_KEYBOARD_FADE = 19;
 
     private static final int ANIM_TYPES_COUNT = 21;
 
@@ -105,10 +114,14 @@ public class StateAnimationConfig {
     public void copyTo(StateAnimationConfig target) {
         target.duration = duration;
         target.animFlags = animFlags;
-        target.userControlled = userControlled;
+        target.animProps = animProps;
         for (int i = 0; i < ANIM_TYPES_COUNT; i++) {
             target.mInterpolators[i] = mInterpolators[i];
         }
+    }
+
+    public boolean isUserControlled() {
+        return (animProps & USER_CONTROLLED) != 0;
     }
 
     /**

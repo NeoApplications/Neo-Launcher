@@ -38,7 +38,7 @@ public class FragmentWithPreview extends Fragment {
         return mPreviewContext != null ? mPreviewContext : getActivity();
     }
 
-    void enterPreviewMode(Context context) {
+    public void enterPreviewMode(Context context) {
         mPreviewContext = context;
     }
 

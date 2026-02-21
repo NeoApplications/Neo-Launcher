@@ -23,6 +23,7 @@ import android.view.View;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.R;
 import com.android.launcher3.accessibility.BaseAccessibilityDelegate.DragType;
+import com.android.launcher3.folder.Folder;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.FolderInfo;
 import com.android.launcher3.model.data.ItemInfo;
@@ -113,11 +114,9 @@ public class WorkspaceAccessibilityHelper extends DragAndDropAccessibilityDelega
         LauncherAccessibilityDelegate.DragInfo dragInfo = mDelegate.getDragInfo();
 
         View child = mView.getChildAt(x, y);
-        if (child == null || child == dragInfo.item) {
-            return mContext.getString(R.string.item_moved);
-        } else {
+        if (child != null && child != dragInfo.item) {
             ItemInfo info = (ItemInfo) child.getTag();
-            if (info instanceof AppInfo || info instanceof WorkspaceItemInfo) {
+            if (Folder.willAccept(info)) {
                 return mContext.getString(R.string.folder_created);
 
             } else if (info instanceof FolderInfo) {
@@ -148,8 +147,8 @@ public class WorkspaceAccessibilityHelper extends DragAndDropAccessibilityDelega
             if (TextUtils.isEmpty(info.title)) {
                 // Find the first item in the folder.
                 FolderInfo folder = (FolderInfo) info;
-                WorkspaceItemInfo firstItem = null;
-                for (WorkspaceItemInfo shortcut : folder.contents) {
+                ItemInfo firstItem = null;
+                for (ItemInfo shortcut : folder.getContents()) {
                     if (firstItem == null || firstItem.rank > shortcut.rank) {
                         firstItem = shortcut;
                     }

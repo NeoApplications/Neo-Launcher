@@ -18,22 +18,20 @@ package com.android.launcher3.statemanager;
 import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
 import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
 
-import static com.android.launcher3.LauncherState.FLAG_CLOSE_POPUPS;
 import static com.android.launcher3.LauncherState.FLAG_NON_INTERACTIVE;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Trace;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
 
-import com.android.launcher3.AbstractFloatingView;
-import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.BaseActivity;
 import com.android.launcher3.LauncherRootView;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.statemanager.StateManager.AtomicAnimationFactory;
 import com.android.launcher3.statemanager.StateManager.StateHandler;
 import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.launcher3.views.BaseDragLayer;
@@ -45,7 +43,7 @@ import java.util.List;
  * @param <STATE_TYPE> Type of state object
  */
 public abstract class StatefulActivity<STATE_TYPE extends BaseState<STATE_TYPE>>
-        extends BaseDraggingActivity {
+        extends BaseActivity implements StatefulContainer<STATE_TYPE> {
 
     public final Handler mHandler = new Handler();
     private final Runnable mHandleDeferredResume = this::handleDeferredResume;
@@ -67,19 +65,9 @@ public abstract class StatefulActivity<STATE_TYPE extends BaseState<STATE_TYPE>>
     /**
      * Create handlers to control the property changes for this activity
      */
-    protected abstract void collectStateHandlers(List<StateHandler> out);
 
-    /**
-     * Returns true if the activity is in the provided state
-     */
-    public boolean isInState(STATE_TYPE state) {
-        return getStateManager().getState() == state;
-    }
-
-    /**
-     * Returns the state manager for this activity
-     */
-    public abstract StateManager<STATE_TYPE> getStateManager();
+    @Override
+    public abstract void collectStateHandlers(List<StateHandler<STATE_TYPE>> out);
 
     protected void inflateRootView(int layoutId) {
         mRootView = (LauncherRootView) LayoutInflater.from(this).inflate(layoutId, null);
@@ -106,36 +94,18 @@ public abstract class StatefulActivity<STATE_TYPE extends BaseState<STATE_TYPE>>
         if (mDeferredResumePending) {
             handleDeferredResume();
         }
-
-        if (state.hasFlag(FLAG_CLOSE_POPUPS)) {
-            AbstractFloatingView.closeAllOpenViews(this, !state.hasFlag(FLAG_NON_INTERACTIVE));
-        }
+        StatefulContainer.super.onStateSetStart(state);
     }
 
-    /**
-     * Called when transition to state ends
-     */
-    public void onStateSetEnd(STATE_TYPE state) { }
-
-    /**
-     * Creates a factory for atomic state animations
-     */
-    public AtomicAnimationFactory<STATE_TYPE> createAtomicAnimationFactory() {
-        return new AtomicAnimationFactory(0);
+    @Override
+    public boolean shouldAnimateStateChange() {
+        return !isForceInvisible() && isStarted();
     }
 
     @Override
     public void reapplyUi() {
-        reapplyUi(true /* cancelCurrentAnimation */);
-    }
-
-    /**
-     * Re-applies if any state transition is not running, optionally cancelling
-     * the transition if requested.
-     */
-    public void reapplyUi(boolean cancelCurrentAnimation) {
         getRootView().dispatchInsets();
-        getStateManager().reapplyState(cancelCurrentAnimation);
+        getStateManager().reapplyState(true /* cancelCurrentAnimation */);
     }
 
     @Override
@@ -206,8 +176,10 @@ public abstract class StatefulActivity<STATE_TYPE extends BaseState<STATE_TYPE>>
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        Trace.beginSection("statefulActivity#onConfigurationChanged");
         handleConfigurationChanged(newConfig);
         super.onConfigurationChanged(newConfig);
+        Trace.endSection();
     }
 
     /**
@@ -232,9 +204,4 @@ public abstract class StatefulActivity<STATE_TYPE extends BaseState<STATE_TYPE>>
      */
     protected abstract void onHandleConfigurationChanged();
 
-    /**
-     * Enter staged split directly from the current running app.
-     * @param leftOrTop if the staged split will be positioned left or top.
-     */
-    public void enterStageSplitFromRunningApp(boolean leftOrTop) { }
 }

@@ -20,24 +20,28 @@ import static com.android.launcher3.tapl.LauncherInstrumentation.DEFAULT_POLL_IN
 import static com.android.launcher3.tapl.LauncherInstrumentation.TASKBAR_RES_ID;
 import static com.android.launcher3.tapl.LauncherInstrumentation.WAIT_TIME_MS;
 import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_DISABLE_BLOCK_TIMEOUT;
-import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_DISABLE_MANUAL_TASKBAR_STASHING;
 import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_ENABLE_BLOCK_TIMEOUT;
-import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_ENABLE_MANUAL_TASKBAR_STASHING;
 import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_SHELL_DRAG_READY;
-import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_STASHED_TASKBAR_HEIGHT;
 import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_STASHED_TASKBAR_SCALE;
+import static com.android.launcher3.testing.shared.TestProtocol.REQUEST_TASKBAR_FROM_NAV_THRESHOLD;
+import static com.android.launcher3.testing.shared.TestProtocol.TEST_INFO_RESPONSE_FIELD;
 
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import androidx.annotation.NonNull;
 import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.Condition;
 import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 
+import com.android.launcher3.tapl.Taskbar.TaskbarLocation;
 import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.testing.shared.TestProtocol;
 
@@ -47,29 +51,58 @@ import com.android.launcher3.testing.shared.TestProtocol;
 public final class LaunchedAppState extends Background {
 
     // More drag steps than Launchables to give the window manager time to register the drag.
-    private static final int DEFAULT_DRAG_STEPS = 35;
+    static final int DEFAULT_DRAG_STEPS = 35;
 
     // UNSTASHED_TASKBAR_HANDLE_HINT_SCALE value from TaskbarStashController.
     private static final float UNSTASHED_TASKBAR_HANDLE_HINT_SCALE = 1.1f;
 
     private static final int STASHED_TASKBAR_BOTTOM_EDGE_DP = 1;
 
+    private static final String DESKTOP_WINDOW_SPECIFIC_VIEW_RES_ID = "close_window";
+
     private final Condition<UiDevice, Boolean> mStashedTaskbarHintScaleCondition =
-            device -> mLauncher.getTestInfo(REQUEST_STASHED_TASKBAR_SCALE).getFloat(
-                    TestProtocol.TEST_INFO_RESPONSE_FIELD) - UNSTASHED_TASKBAR_HANDLE_HINT_SCALE
+            device -> Math.abs(mLauncher.getTestInfo(REQUEST_STASHED_TASKBAR_SCALE).getFloat(
+                    TestProtocol.TEST_INFO_RESPONSE_FIELD) - UNSTASHED_TASKBAR_HANDLE_HINT_SCALE)
                     < 0.00001f;
 
     private final Condition<UiDevice, Boolean> mStashedTaskbarDefaultScaleCondition =
-            device -> mLauncher.getTestInfo(REQUEST_STASHED_TASKBAR_SCALE).getFloat(
-                    TestProtocol.TEST_INFO_RESPONSE_FIELD) - 1f < 0.00001f;
+            device -> Math.abs(mLauncher.getTestInfo(REQUEST_STASHED_TASKBAR_SCALE).getFloat(
+                    TestProtocol.TEST_INFO_RESPONSE_FIELD) - 1f) < 0.00001f;
 
     LaunchedAppState(LauncherInstrumentation launcher) {
+        this(launcher, /* inDesktopMode= */ false);
+    }
+
+    LaunchedAppState(LauncherInstrumentation launcher, boolean inDesktopMode) {
         super(launcher);
+        if (inDesktopMode) {
+            mLauncher.assertTrue("Taskbar should be persistent in desktop mode",
+                    !mLauncher.isTransientTaskbar());
+        }
     }
 
     @Override
     protected LauncherInstrumentation.ContainerType getContainerType() {
         return LauncherInstrumentation.ContainerType.LAUNCHED_APP;
+    }
+
+    @Override
+    public boolean isHomeState() {
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public BaseOverview switchToOverview() {
+        try (LauncherInstrumentation.Closable ignored = mLauncher.eventsCheck();
+             LauncherInstrumentation.Closable ignored1 = mLauncher.addContextLayer(
+                     "want to switch from LaunchedAppState to overview")) {
+            verifyActiveContainer();
+            goToOverviewUnchecked();
+            return mLauncher.is3PLauncher()
+                    ? new BaseOverview(mLauncher, /*launchedFromApp=*/true)
+                    : new Overview(mLauncher, /*launchedFromApp=*/true);
+        }
     }
 
     /**
@@ -80,10 +113,16 @@ public final class LaunchedAppState extends Background {
     public Taskbar getTaskbar() {
         try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                 "want to get the taskbar")) {
-            mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
-
-            return new Taskbar(mLauncher);
+            return new Taskbar(mLauncher, TaskbarLocation.LAUNCHED_APP);
         }
+    }
+
+    /**
+     * Returns the bubble bar.
+     * The bubble bar must already be visible when calling this method.
+     */
+    public BubbleBar getBubbleBar() {
+        return mLauncher.getBubbleBar();
     }
 
     /**
@@ -109,38 +148,92 @@ public final class LaunchedAppState extends Background {
     /**
      * Returns the Taskbar in a visible state.
      *
-     * The taskbar must already be hidden when calling this method.
+     * The taskbar must already be hidden and in transient mode when calling this method.
      */
-    public Taskbar showTaskbar() {
-        mLauncher.getTestInfo(REQUEST_ENABLE_MANUAL_TASKBAR_STASHING);
+    public Taskbar swipeUpToUnstashTaskbar() {
+        mLauncher.assertTrue("Taskbar is not transient, swipe up not supported",
+                mLauncher.isTransientTaskbar());
+
         mLauncher.getTestInfo(REQUEST_ENABLE_BLOCK_TIMEOUT);
 
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
              LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
-                     "want to show the taskbar")) {
+                     "want to swipe up to unstash the taskbar")) {
             mLauncher.waitUntilSystemLauncherObjectGone(TASKBAR_RES_ID);
 
-            final long downTime = SystemClock.uptimeMillis();
-            final int unstashTargetY = mLauncher.getRealDisplaySize().y
-                    - (mLauncher.getTestInfo(REQUEST_STASHED_TASKBAR_HEIGHT)
-                            .getInt(TestProtocol.TEST_INFO_RESPONSE_FIELD) / 2);
-            final Point unstashTarget = new Point(
-                    mLauncher.getRealDisplaySize().x / 2, unstashTargetY);
+            int taskbarFromNavThreshold = mLauncher.getTestInfo(REQUEST_TASKBAR_FROM_NAV_THRESHOLD)
+                    .getInt(TEST_INFO_RESPONSE_FIELD);
+            int startX = mLauncher.getRealDisplaySize().x / 2;
+            int startY = mLauncher.getRealDisplaySize().y - 1;
+            int endX = startX;
+            int endY = startY - taskbarFromNavThreshold;
 
-            mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_DOWN, unstashTarget,
-                    LauncherInstrumentation.GestureScope.EXPECT_PILFER);
-            LauncherInstrumentation.log("showTaskbar: sent down");
+            mLauncher.executeAndWaitForLauncherStop(
+                    () -> mLauncher.linearGesture(startX, startY, endX, endY, 10,
+                            /* slowDown= */ true,
+                            LauncherInstrumentation.GestureScope.EXPECT_PILFER),
+                    "swiping");
+            LauncherInstrumentation.log("swipeUpToUnstashTaskbar: sent linear swipe up gesture");
 
-            try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer("pressed down")) {
-                mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
-                mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_UP, unstashTarget,
-                        LauncherInstrumentation.GestureScope.EXPECT_PILFER);
-
-                return new Taskbar(mLauncher);
-            }
+            return new Taskbar(mLauncher, TaskbarLocation.LAUNCHED_APP);
         } finally {
-            mLauncher.getTestInfo(REQUEST_DISABLE_MANUAL_TASKBAR_STASHING);
             mLauncher.getTestInfo(REQUEST_DISABLE_BLOCK_TIMEOUT);
+        }
+    }
+
+    /**
+     * Uses keyboard shortcut to move focused desktop task to fullscreen.
+     * <p>
+     * Expects that the target activity - identified by the package name and text it contains, is
+     * initially visible, and that the window with desktop mode caption exists.
+     * <p>
+     * After keyboard shortcut is triggered, verifies that desktop mode caption disappears, and the
+     * target activity is still visible.
+     *
+     * @param packageName Identifies the package name of the activity expected to be focused.
+     * @param activityText Identifies text content of the activity expected to be focused.
+     */
+    public void moveFocusedActivityToFullscreen(String packageName, String activityText) {
+        BySelector activitySelector = By.pkg(packageName).text(activityText);
+        try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
+                "Verify test activity active")) {
+            waitForFreeformWindow(activitySelector);
+        }
+
+        try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer(
+                "Move focused activity to fullscreen")) {
+            mLauncher.pressAndHoldKeyCode(KeyEvent.KEYCODE_DPAD_UP,
+                    KeyEvent.META_CTRL_ON | KeyEvent.META_META_ON);
+            mLauncher.unpressKeyCode(KeyEvent.KEYCODE_DPAD_UP,
+                    KeyEvent.META_CTRL_ON | KeyEvent.META_META_ON);
+
+            waitForFullscreenWindow(activitySelector);
+        }
+    }
+
+    private void waitForFreeformWindow(BySelector activitySelector) {
+        mLauncher.waitForObjectBySelector(activitySelector);
+        mLauncher.waitForSystemUiObject(DESKTOP_WINDOW_SPECIFIC_VIEW_RES_ID);
+    }
+
+    private void waitForFullscreenWindow(BySelector activitySelector) {
+        mLauncher.waitForObjectBySelector(activitySelector);
+        mLauncher.waitUntilSystemUiObjectGone(DESKTOP_WINDOW_SPECIFIC_VIEW_RES_ID);
+    }
+
+    /**
+     * Verifies that a desktop mode caption object exists, indicating that desktop mode window is
+     * shown, and that an activity with the provided package name has focus.
+     * @param expectedFocusedPackageName The package name of the activity expected to have focus.
+     */
+    public void assertAppInDesktop(String expectedFocusedPackageName) {
+        try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
+                "Wait for desktop mode caption")) {
+            mLauncher.waitForSystemUiObject("desktop_mode_caption");
+        }
+        try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer(
+                "Verify expected package has focus")) {
+            mLauncher.waitForObjectBySelector(By.pkg(expectedFocusedPackageName).focused(true));
         }
     }
 
@@ -200,8 +293,8 @@ public final class LaunchedAppState extends Background {
 
                     try (LauncherInstrumentation.Closable c4 = launcher.addContextLayer(
                             "dropped item")) {
-                        launchable.assertAppLaunched(By.pkg(expectedNewPackageName));
-                        launchable.assertAppLaunched(By.pkg(expectedExistingPackageName));
+                        launcher.assertAppLaunched(expectedNewPackageName);
+                        launcher.assertAppLaunched(expectedExistingPackageName);
                     }
                 }
             }
@@ -214,26 +307,56 @@ public final class LaunchedAppState extends Background {
      * <p>This unstashing occurs when not actively hovering the taskbar.
      */
     public Taskbar hoverScreenBottomEdgeToUnstashTaskbar() {
+        return hoverScreenBottomEdgeToTryUnstashTaskbar(/* leftEdge= */
+                (mLauncher.getRealDisplaySize().x - mLauncher.getTaskbarUnstashInputArea()) / 2
+                        - 1);
+    }
+
+    /**
+     * Emulate the cursor hovering the screen edge outside of action corner area to unstash the
+     * taskbar.
+     */
+    public Taskbar hoverScreenBottomEdgeOutsideActionCornerToUnstashTaskbar() {
+        return hoverScreenBottomEdgeToTryUnstashTaskbar(/* leftEdge= */
+                getLauncher().getActionCornerPadding());
+    }
+
+    /**
+     * Emulate the cursor hovering the screen edge in action corner padding to try unstashing the
+     * taskbar.
+     */
+    public Taskbar hoverScreenBottomCornerToTryUnstashTaskbar() {
+        // Add 1 pixel to avoid triggering action corner which will affect test result
+        return hoverScreenBottomEdgeToTryUnstashTaskbar(
+                mLauncher.getDisplayBottomCornerRadius() + 1);
+    }
+
+    private Taskbar hoverScreenBottomEdgeToTryUnstashTaskbar(int leftEdge) {
         try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
              LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
-                     "cursor hover entering screen edge to unstash taskbar")) {
+                     "cursor hover entering screen edge to try unstashing taskbar")) {
             mLauncher.getDevice().wait(mStashedTaskbarDefaultScaleCondition,
                     ViewConfiguration.DEFAULT_LONG_PRESS_TIMEOUT);
 
             long downTime = SystemClock.uptimeMillis();
-            int leftEdge = 10;
             Point taskbarUnstashArea = new Point(leftEdge, mLauncher.getRealDisplaySize().y - 1);
             mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_HOVER_ENTER,
                     new Point(taskbarUnstashArea.x, taskbarUnstashArea.y), null,
                     InputDevice.SOURCE_MOUSE);
 
-            mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
+            UiObject2 taskbar = mLauncher.tryWaitForLauncherObject(
+                    mLauncher.getLauncherObjectSelector(TASKBAR_RES_ID),
+                    WAIT_TIME_MS);
 
             mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_HOVER_EXIT,
                     new Point(taskbarUnstashArea.x, taskbarUnstashArea.y), null,
                     InputDevice.SOURCE_MOUSE);
 
-            return new Taskbar(mLauncher);
+            if (taskbar == null) {
+                return null;
+            } else {
+                return new Taskbar(mLauncher, TaskbarLocation.LAUNCHED_APP);
+            }
         }
     }
 
@@ -264,7 +387,7 @@ public final class LaunchedAppState extends Background {
                         InputDevice.SOURCE_MOUSE);
 
                 mLauncher.waitForSystemLauncherObject(TASKBAR_RES_ID);
-                return new Taskbar(mLauncher);
+                return new Taskbar(mLauncher, TaskbarLocation.LAUNCHED_APP);
             }
         }
     }
@@ -280,7 +403,8 @@ public final class LaunchedAppState extends Background {
             Point stashedTaskbarHintArea = new Point(mLauncher.getRealDisplaySize().x / 2,
                     mLauncher.getRealDisplaySize().y - 1);
             mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_HOVER_ENTER,
-                    new Point(stashedTaskbarHintArea.x, stashedTaskbarHintArea.y), null);
+                    new Point(stashedTaskbarHintArea.x, stashedTaskbarHintArea.y), null,
+                    InputDevice.SOURCE_MOUSE);
 
             mLauncher.getDevice().wait(mStashedTaskbarHintScaleCondition,
                     LauncherInstrumentation.WAIT_TIME_MS);
@@ -292,7 +416,7 @@ public final class LaunchedAppState extends Background {
                         mLauncher.getRealDisplaySize().y - 500);
                 mLauncher.sendPointer(downTime, downTime, MotionEvent.ACTION_HOVER_EXIT,
                         new Point(outsideStashedTaskbarHintArea.x, outsideStashedTaskbarHintArea.y),
-                        null);
+                        null, InputDevice.SOURCE_MOUSE);
 
                 mLauncher.getDevice().wait(mStashedTaskbarDefaultScaleCondition,
                         LauncherInstrumentation.WAIT_TIME_MS);
@@ -341,6 +465,23 @@ public final class LaunchedAppState extends Background {
 
                 return mLauncher.getWorkspace();
             }
+        }
+    }
+
+    /** Send the "back" gesture to go to workspace. */
+    public Workspace pressBackToWorkspace() {
+        try (LauncherInstrumentation.Closable e = mLauncher.eventsCheck();
+             LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
+                     "want to press back from launched app to workspace")) {
+            if (mLauncher.isLauncher3()) {
+                mLauncher.pressBackImpl();
+            } else {
+                mLauncher.executeAndWaitForWallpaperAnimation(
+                        () -> mLauncher.pressBackImpl(),
+                        "pressing back"
+                );
+            }
+            return new Workspace(mLauncher);
         }
     }
 }

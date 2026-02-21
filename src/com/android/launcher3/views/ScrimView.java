@@ -20,16 +20,15 @@ import static com.android.launcher3.util.SystemUiController.UI_STATE_SCRIM_VIEW;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.core.graphics.ColorUtils;
 
-import com.android.launcher3.BaseActivity;
 import com.android.launcher3.Insettable;
 import com.android.launcher3.util.SystemUiController;
 
@@ -55,8 +54,7 @@ public class ScrimView extends View implements Insettable {
     }
 
     @Override
-    public void setInsets(Rect insets) {
-    }
+    public void setInsets(Rect insets) {}
 
     @Override
     public boolean hasOverlappingRendering() {
@@ -116,7 +114,7 @@ public class ScrimView extends View implements Insettable {
         updateSysUiColors();
     }
 
-    public void updateSysUiColors() {
+    private void updateSysUiColors() {
         // Use a light system UI (dark icons) if all apps is behind at least half of the
         // status bar.
         final float threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD;
@@ -143,7 +141,8 @@ public class ScrimView extends View implements Insettable {
 
     public SystemUiController getSystemUiController() {
         if (mSystemUiController == null) {
-            mSystemUiController = BaseActivity.fromContext(getContext()).getSystemUiController();
+            mSystemUiController =
+                    ActivityContext.lookupContext(getContext()).getSystemUiController();
         }
         return mSystemUiController;
     }
@@ -184,16 +183,52 @@ public class ScrimView extends View implements Insettable {
         mOpaquenessListeners.remove(listener);
     }
 
-    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, Paint paint) {
+    /**
+     * Set foreground and background color to this ScrimView
+     */
+    public void setScrimColors(ScrimColors scrimColors) {
+        this.setBackgroundColor(scrimColors.getBackgroundColor());
+        setForeground(new ColorDrawable(scrimColors.getForegroundColor()));
+    }
+
+    /**
+     * returns foreground and background color of this ScrimView
+     */
+    public ScrimColors getScrimColors() {
+        int backgroundColor;
+        if (getBackground() instanceof ColorDrawable colorDrawable) {
+            backgroundColor = colorDrawable.getColor();
+        } else {
+            backgroundColor = Color.TRANSPARENT;
+        }
+
+        int foregroundColor;
+        if (getForeground() instanceof ColorDrawable colorDrawable) {
+            foregroundColor = colorDrawable.getColor();
+        } else {
+            foregroundColor = Color.TRANSPARENT;
+        }
+
+        return new ScrimColors(backgroundColor, foregroundColor);
     }
 
     /**
      * A Utility interface allowing for other surfaces to draw on ScrimView
      */
     public interface ScrimDrawingController {
-        /**
-         * Called inside ScrimView#OnDraw
-         */
-        void drawOnScrimWithScale(Canvas canvas, float scale);
+
+        /** Draw scrim view on canvas with scale. */
+        default void drawOnScrimWithScale(Canvas canvas, float scale) {
+            drawOnScrimWithScaleAndBottomOffset(canvas, scale, 0);
+        }
+
+        /** Draw scrim view on canvas with bottomOffset. */
+        default void drawOnScrimWithBottomOffset(Canvas canvas, @Px int bottomOffsetPx) {
+            drawOnScrimWithScaleAndBottomOffset(canvas, 1f, bottomOffsetPx);
+        }
+
+        /** Draw scrim view on canvas with scale and bottomOffset. */
+        void drawOnScrimWithScaleAndBottomOffset(
+                Canvas canvas, float scale, @Px int bottomOffsetPx);
     }
 }

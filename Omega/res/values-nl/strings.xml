@@ -11,7 +11,6 @@
     <string name="summary__general_search">Zoekfunctie-aanbieder, stijl, pictogrammen</string>
     <string name="title__general_notifications">Gebaren en Meldingen</string>
     <string name="summary__general_smartspace">Datum, tijd, thuiswidget</string>
-    <string name="summary__general_about">Meer over Neo Launcher</string>
     <string name="pref_category__interfaces">Gebruikersinterface</string>
     <string name="pref_category__inputs">Gebaren en Zoeken</string>
     <string name="pref_category__others">Overige</string>
@@ -58,8 +57,7 @@
     <string name="title_separate_work_apps">Tweede tabblad voor werkapps</string>
     <string name="num_hotseat_icons_pref_title">Aantal pictogrammen</string>
     <string name="summary_fuzzy_search">Geschatte overeenkomst voor app-zoekopdrachten.</string>
-    <string name="summary_app_categorize">Kies tussen Tabbladen en Mappen</string>
-    <string name="title_app_categorize">Apps categoriseren</string>
+
     <string name="title_drawer_layout">Lay-outmodus</string>
     <string name="title_drawer_vertical">Verticaal</string>
     <string name="hide_app_selected">Verborgen apps (%1$d)</string>
@@ -199,7 +197,6 @@
     <string name="show_top_shadow">Bovenschaduw weergeven</string>
     <string name="title_disable_suggestions_prompt">Suggesties voor apps uitschakelen</string>
     <string name="msg_disable_suggestions_prompt">Gebruiksgegevens worden verwijderd.</string>
-    <string name="title_drawer_vertical_list">Verticale Lijst</string>
     <string name="dialog_message_change_sort">Wisselen naar alfabetische sortering?</string>
     <string name="summary__drawer_hide_apps">App in de app-lade verbergen</string>
     <string name="label_turn_off_suggestions">Uitschakelen</string>
@@ -238,7 +235,6 @@
     <string name="feed_add_widget">Widget toevoegen</string>
     <string name="feed_widget">Widgets</string>
     <string name="title__about_donate">Doneren</string>
-    <string name="about_copyright">Auteursrecht © 2020–2024</string>
     <string name="about_translators">Vertalingen</string>
     <string name="about_translators_group">Bijdragen en vertalingen</string>
     <string name="about_source">Broncode</string>
@@ -311,7 +307,6 @@
     <string name="title_drawer_all_apps">Alle</string>
     <string name="title_drawer_horizontal">Horizontaal</string>
     <string name="title_drawer_categorized">Gecategoriseerd</string>
-    <string name="title_drawer_custom_categories">Aangepaste categorieën</string>
     <string name="color_wallpaper_tertiary">Tertiaire kleur van de achtergrond</string>
     <string name="title_themed_background">Transparante pictogramachtergrond</string>
     <string name="icon_picker_default_category">Pictogrammen</string>
@@ -513,7 +508,6 @@
     <string name="app_widget_name">Klok-widget</string>
     <string name="web_search_metager">Metager (Web)</string>
     <string name="web_search_searx">Searx (Web)</string>
-    <string name="web_search_phind">Phind (Web)</string>
     <string name="web_search_perplexity">Perplexity (Web)</string>
     <string name="web_search_you">You (Web)</string>
     <string name="web_search_neeva">Neeva (Web)</string>

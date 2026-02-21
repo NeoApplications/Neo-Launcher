@@ -1,27 +1,36 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 android {
-    namespace = "com.saulhdev.smartspace"
-    compileSdk = 34
+    namespace = "android.app.smartspace"
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 26
-    }
-
-    buildTypes {
-        create("neo") {
-            isMinifyEnabled = false
-        }
+        minSdk = 30
     }
 
     sourceSets {
         named("main") {
-            java.srcDirs(listOf("src"))
+            java.directories.add("src")
+            kotlin.directories.add("src")
             manifest.srcFile("AndroidManifest.xml")
-            res.srcDirs(listOf("res"))
+            res.directories.add("res")
+        }
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+        }
+        release {
         }
     }
 
@@ -32,20 +41,11 @@ android {
     tasks.withType<JavaCompile> {
         options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation"))
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
 }
 
 dependencies {
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.palette)
+    implementation(libs.core.ktx)
+    implementation(libs.palette.ktx)
     implementation(libs.kotlin.stdlib)
-    implementation(libs.androidx.annotation)
+    implementation(libs.annotation)
 }

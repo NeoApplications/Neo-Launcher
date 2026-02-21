@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.util;
 
+import static android.os.VibrationEffect.Composition.PRIMITIVE_LOW_TICK;
 import static android.os.VibrationEffect.createPredefined;
 import static android.provider.Settings.System.HAPTIC_FEEDBACK_ENABLED;
 
@@ -22,32 +23,29 @@ import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.ContentObserver;
 import android.media.AudioAttributes;
-import android.os.Build;
-import android.os.SystemClock;
+import android.net.Uri;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import com.android.launcher3.Utilities;
-import com.android.launcher3.anim.PendingAnimation;
+import com.android.launcher3.dagger.ApplicationContext;
+import com.android.launcher3.dagger.LauncherAppSingleton;
+import com.android.launcher3.dagger.LauncherBaseAppComponent;
 
-import java.util.function.Consumer;
+import javax.inject.Inject;
 
 /**
  * Wrapper around {@link Vibrator} to easily perform haptic feedback where necessary.
  */
-@TargetApi(Build.VERSION_CODES.Q)
+@LauncherAppSingleton
 public class VibratorWrapper {
 
-    public static final MainThreadInitializedObject<VibratorWrapper> INSTANCE =
-            new MainThreadInitializedObject<>(VibratorWrapper::new);
+    public static final DaggerSingletonObject<VibratorWrapper> INSTANCE =
+            new DaggerSingletonObject<>(LauncherBaseAppComponent::getVibratorWrapper);
 
     public static final AudioAttributes VIBRATION_ATTRS = new AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
@@ -56,24 +54,10 @@ public class VibratorWrapper {
 
     public static final VibrationEffect EFFECT_CLICK =
             createPredefined(VibrationEffect.EFFECT_CLICK);
+    @VisibleForTesting
+    static final Uri HAPTIC_FEEDBACK_URI = Settings.System.getUriFor(HAPTIC_FEEDBACK_ENABLED);
 
-    private static final float DRAG_TEXTURE_SCALE = 0.03f;
-    private static final float DRAG_COMMIT_SCALE = 0.5f;
-    private static final float DRAG_BUMP_SCALE = 0.4f;
-    private static final int DRAG_TEXTURE_EFFECT_SIZE = 200;
-
-    @Nullable
-    private final VibrationEffect mDragEffect;
-    @Nullable
-    private final VibrationEffect mCommitEffect;
-    @Nullable
-    private final VibrationEffect mBumpEffect;
-
-    @Nullable
-    private final VibrationEffect mAssistEffect;
-
-    private long mLastDragTime;
-    private final int mThresholdUntilNextDragCallMillis;
+    @VisibleForTesting static final float LOW_TICK_SCALE = 0.9f;
 
     /**
      * Haptic when entering overview.
@@ -83,128 +67,35 @@ public class VibratorWrapper {
     private final Vibrator mVibrator;
     private final boolean mHasVibrator;
 
+    @VisibleForTesting
+    final SettingsCache.OnChangeListener mHapticChangeListener =
+            isEnabled -> mIsHapticFeedbackEnabled = isEnabled;
+
     private boolean mIsHapticFeedbackEnabled;
 
-    private VibratorWrapper(Context context) {
+    @Inject
+    public VibratorWrapper(@ApplicationContext Context context, SettingsCache settingsCache,
+                           DaggerSingletonTracker tracker) {
+
         mVibrator = context.getSystemService(Vibrator.class);
         mHasVibrator = mVibrator.hasVibrator();
         if (mHasVibrator) {
-            final ContentResolver resolver = context.getContentResolver();
-            mIsHapticFeedbackEnabled = isHapticFeedbackEnabled(resolver);
-            final ContentObserver observer = new ContentObserver(MAIN_EXECUTOR.getHandler()) {
-                @Override
-                public void onChange(boolean selfChange) {
-                    mIsHapticFeedbackEnabled = isHapticFeedbackEnabled(resolver);
-                }
-            };
-            resolver.registerContentObserver(Settings.System.getUriFor(HAPTIC_FEEDBACK_ENABLED),
-                    false /* notifyForDescendants */, observer);
+            MAIN_EXECUTOR.execute(
+                    () -> settingsCache.register(HAPTIC_FEEDBACK_URI, mHapticChangeListener));
+            mIsHapticFeedbackEnabled = settingsCache.getValue(HAPTIC_FEEDBACK_URI, 0);
+            tracker.addCloseable(
+                    () -> settingsCache.unregister(HAPTIC_FEEDBACK_URI, mHapticChangeListener));
         } else {
             mIsHapticFeedbackEnabled = false;
-        }
-
-        if (Utilities.ATLEAST_S && mVibrator.areAllPrimitivesSupported(
-                VibrationEffect.Composition.PRIMITIVE_LOW_TICK)) {
-
-            // Drag texture, Commit, and Bump should only be used for premium phones.
-            // Before using these haptics make sure check if the device can use it
-            VibrationEffect.Composition dragEffect = VibrationEffect.startComposition();
-            for (int i = 0; i < DRAG_TEXTURE_EFFECT_SIZE; i++) {
-                dragEffect.addPrimitive(
-                        VibrationEffect.Composition.PRIMITIVE_LOW_TICK, DRAG_TEXTURE_SCALE);
-            }
-            mDragEffect = dragEffect.compose();
-            mCommitEffect = VibrationEffect.startComposition().addPrimitive(
-                    VibrationEffect.Composition.PRIMITIVE_TICK, DRAG_COMMIT_SCALE).compose();
-            mBumpEffect = VibrationEffect.startComposition().addPrimitive(
-                    VibrationEffect.Composition.PRIMITIVE_LOW_TICK, DRAG_BUMP_SCALE).compose();
-            int primitiveDuration = mVibrator.getPrimitiveDurations(
-                    VibrationEffect.Composition.PRIMITIVE_LOW_TICK)[0];
-
-            mThresholdUntilNextDragCallMillis =
-                    DRAG_TEXTURE_EFFECT_SIZE * primitiveDuration + 100;
-        } else {
-            mDragEffect = null;
-            mCommitEffect = null;
-            mBumpEffect = null;
-            mThresholdUntilNextDragCallMillis = 0;
-        }
-
-        if (Utilities.ATLEAST_R && mVibrator.areAllPrimitivesSupported(
-                VibrationEffect.Composition.PRIMITIVE_QUICK_RISE,
-                VibrationEffect.Composition.PRIMITIVE_TICK)) {
-            // quiet ramp, short pause, then sharp tick
-            mAssistEffect = VibrationEffect.startComposition()
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_QUICK_RISE, 0.25f)
-                    .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 1f, 50)
-                    .compose();
-        } else {
-            // fallback for devices without composition support
-            mAssistEffect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK);
-        }
-    }
-
-    /**
-     * This is called when the user swipes to/from all apps. This is meant to be used in between
-     * long animation progresses so that it gives a dragging texture effect. For a better
-     * experience, this should be used in combination with vibrateForDragCommit().
-     */
-    public void vibrateForDragTexture() {
-        if (mDragEffect == null) {
-            return;
-        }
-        long currentTime = SystemClock.elapsedRealtime();
-        long elapsedTimeSinceDrag = currentTime - mLastDragTime;
-        if (elapsedTimeSinceDrag >= mThresholdUntilNextDragCallMillis) {
-            vibrate(mDragEffect);
-            mLastDragTime = currentTime;
-        }
-    }
-
-    /**
-     * This is used when user reaches the commit threshold when swiping to/from from all apps.
-     */
-    public void vibrateForDragCommit() {
-        if (mCommitEffect != null) {
-            vibrate(mCommitEffect);
-        }
-        // resetting dragTexture timestamp to be able to play dragTexture again
-        mLastDragTime = 0;
-    }
-
-    /**
-     * The bump haptic is used to be called at the end of a swipe and only if it the gesture is a
-     * FLING going to/from all apps. Client can just call this method elsewhere just for the
-     * effect.
-     */
-    public void vibrateForDragBump() {
-        if (mBumpEffect != null) {
-            vibrate(mBumpEffect);
-        }
-    }
-
-    /**
-     * The assist haptic is used to be called when an assistant is invoked
-     */
-    public void vibrateForAssist() {
-        if (mAssistEffect != null) {
-            vibrate(mAssistEffect);
         }
     }
 
     /**
      * This should be used to cancel a haptic in case where the haptic shouldn't be vibrating. For
-     * example, when no animation is happening but a vibrator happens to be vibrating still. Need
-     * boolean parameter for {@link PendingAnimation#addEndListener(Consumer)}.
+     * example, when no animation is happening but a vibrator happens to be vibrating still.
      */
-    public void cancelVibrate(boolean unused) {
+    public void cancelVibrate() {
         UI_HELPER_EXECUTOR.execute(mVibrator::cancel);
-        // reset dragTexture timestamp to be able to play dragTexture again whenever cancelled
-        mLastDragTime = 0;
-    }
-
-    private boolean isHapticFeedbackEnabled(ContentResolver resolver) {
-        return Settings.System.getInt(resolver, HAPTIC_FEEDBACK_ENABLED, 0) == 1;
     }
 
     /** Vibrates with the given effect if haptic feedback is available and enabled. */
@@ -222,8 +113,7 @@ public class VibratorWrapper {
     public void vibrate(int primitiveId, float primitiveScale, VibrationEffect fallbackEffect) {
         if (mHasVibrator && mIsHapticFeedbackEnabled) {
             UI_HELPER_EXECUTOR.execute(() -> {
-                if (Utilities.ATLEAST_R && primitiveId >= 0
-                        && mVibrator.areAllPrimitivesSupported(primitiveId)) {
+                if (primitiveId >= 0 && mVibrator.areAllPrimitivesSupported(primitiveId)) {
                     mVibrator.vibrate(VibrationEffect.startComposition()
                             .addPrimitive(primitiveId, primitiveScale)
                             .compose(), VIBRATION_ATTRS);
@@ -231,6 +121,18 @@ public class VibratorWrapper {
                     mVibrator.vibrate(fallbackEffect, VIBRATION_ATTRS);
                 }
             });
+        }
+    }
+
+    /** Indicates that Taskbar has been invoked. */
+    public void vibrateForTaskbarUnstash() {
+        if (mVibrator.areAllPrimitivesSupported(PRIMITIVE_LOW_TICK)) {
+            VibrationEffect primitiveLowTickEffect = VibrationEffect
+                    .startComposition()
+                    .addPrimitive(PRIMITIVE_LOW_TICK, LOW_TICK_SCALE)
+                    .compose();
+
+            vibrate(primitiveLowTickEffect);
         }
     }
 }

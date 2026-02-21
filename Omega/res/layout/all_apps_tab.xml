@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.saggitt.omega.views.ColoredButton xmlns:android="http://schemas.android.com/apk/res/android"
+<com.neoapps.neolauncher.views.ColoredButton xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:theme="@style/Theme.Material3.DayNight"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="4dp"
-    android:padding="8dp"
+    android:layout_marginHorizontal="1dp"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="4dp"
+    app:iconPadding="0dp"
     android:textAllCaps="false"
     android:textColor="@color/all_apps_tab_text"
     android:textSize="14sp"

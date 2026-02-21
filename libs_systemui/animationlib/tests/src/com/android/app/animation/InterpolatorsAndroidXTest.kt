@@ -16,18 +16,18 @@
 
 package com.android.app.animation
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import java.lang.reflect.Modifier
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
 private const val ANDROIDX_ANIM_PACKAGE_NAME = "androidx.core.animation."
 private const val ANDROID_ANIM_PACKAGE_NAME = "android.view.animation."
 
 @SmallTest
-@RunWith(JUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class InterpolatorsAndroidXTest {
 
     @Test

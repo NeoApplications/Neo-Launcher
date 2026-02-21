@@ -2,14 +2,12 @@ package com.android.launcher3.model;
 
 import static com.android.launcher3.Utilities.ATLEAST_S;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.icons.BitmapInfo;
 import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.pm.ShortcutConfigActivityInfo;
 import com.android.launcher3.util.ComponentKey;
@@ -25,12 +23,14 @@ public class WidgetItem extends ComponentKey {
     public final LauncherAppWidgetProviderInfo widgetInfo;
     public final ShortcutConfigActivityInfo activityInfo;
 
+    public BitmapInfo bitmap = BitmapInfo.LOW_RES_INFO;
     public final String label;
     public final CharSequence description;
     public final int spanX, spanY;
 
+    // Edited
     public WidgetItem(LauncherAppWidgetProviderInfo info,
-            InvariantDeviceProfile idp, IconCache iconCache, Context context) {
+                      InvariantDeviceProfile idp, IconCache iconCache, Context context) {
         super(info.provider, info.getProfile());
 
         label = iconCache.getTitleNoCache(info);
@@ -42,10 +42,10 @@ public class WidgetItem extends ComponentKey {
         spanY = Math.min(info.spanY, idp.numRows);
     }
 
-    public WidgetItem(ShortcutConfigActivityInfo info, IconCache iconCache, PackageManager pm) {
+    public WidgetItem(ShortcutConfigActivityInfo info, IconCache iconCache) {
         super(info.getComponent(), info.getUser());
         label = info.isPersistable() ? iconCache.getTitleNoCache(info) :
-                Utilities.trim(info.getLabel(pm));
+                Utilities.trim(info.getLabel());
         description = null;
         widgetInfo = null;
         activityInfo = info;
@@ -66,12 +66,6 @@ public class WidgetItem extends ComponentKey {
             return true;
         }
         return false;
-    }
-
-    /** Returns whether this {@link WidgetItem} has a preview layout that can be used. */
-    @SuppressLint("NewApi") // Already added API check.
-    public boolean hasPreviewLayout() {
-        return ATLEAST_S && widgetInfo != null && widgetInfo.previewLayout != Resources.ID_NULL;
     }
 
     /** Returns whether this {@link WidgetItem} is for a shortcut rather than an app widget. */

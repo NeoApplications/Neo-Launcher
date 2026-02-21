@@ -34,8 +34,8 @@ import com.android.launcher3.views.ActivityContext;
  */
 public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageIndicator {
     private final boolean mIsAlignOnIcon;
-    public OnActivePageChangedListener mOnActivePageChangedListener;
-    public int mLastActivePage = 0;
+    private OnActivePageChangedListener mOnActivePageChangedListener;
+    private int mLastActivePage = 0;
 
     public PersonalWorkSlidingTabStrip(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -98,7 +98,8 @@ public class PersonalWorkSlidingTabStrip extends LinearLayout implements PageInd
      */
     public static int getTabWidth(Context context, int totalWidth) {
         DeviceProfile grid = ActivityContext.lookupContext(context).getDeviceProfile();
-        int iconPadding = totalWidth / grid.numShownAllAppsColumns - grid.allAppsIconSizePx;
+        int iconPadding = totalWidth / grid.numShownAllAppsColumns
+                - grid.getAllAppsProfile().getIconSizePx();
         return totalWidth - iconPadding;
     }
 

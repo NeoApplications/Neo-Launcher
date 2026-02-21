@@ -16,6 +16,8 @@
 
 package com.android.launcher3.util;
 
+import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE;
+
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,8 +30,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,22 +43,31 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.PendingAddItemInfo;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.dagger.ApplicationContext;
+import com.android.launcher3.dagger.LauncherAppSingleton;
+import com.android.launcher3.dagger.LauncherBaseAppComponent;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 /**
  * Utility methods using package manager
  */
+@LauncherAppSingleton
 public class PackageManagerHelper {
 
     private static final String TAG = "PackageManagerHelper";
+
+    @NonNull
+    public static DaggerSingletonObject<PackageManagerHelper> INSTANCE =
+            new DaggerSingletonObject<>(LauncherBaseAppComponent::getPackageManagerHelper);
 
     @NonNull
     private final Context mContext;
@@ -67,38 +78,18 @@ public class PackageManagerHelper {
     @NonNull
     private final LauncherApps mLauncherApps;
 
-    public PackageManagerHelper(@NonNull final Context context) {
+    @Inject
+    public PackageManagerHelper(@ApplicationContext final Context context) {
         mContext = context;
         mPm = context.getPackageManager();
         mLauncherApps = Objects.requireNonNull(context.getSystemService(LauncherApps.class));
     }
 
     /**
-     * Returns true if the app can possibly be on the SDCard. This is just a workaround and doesn't
-     * guarantee that the app is on SD card.
-     */
-    public boolean isAppOnSdcard(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
-        final ApplicationInfo info = getApplicationInfo(
-                packageName, user, PackageManager.MATCH_UNINSTALLED_PACKAGES);
-        return info != null && (info.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0;
-    }
-
-    /**
-     * Returns whether the target app is suspended for a given user as per
-     * {@link android.app.admin.DevicePolicyManager#isPackageSuspended}.
-     */
-    public boolean isAppSuspended(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
-        final ApplicationInfo info = getApplicationInfo(packageName, user, 0);
-        return info != null && isAppSuspended(info);
-    }
-
-    /**
      * Returns whether the target app is installed for a given user
      */
     public boolean isAppInstalled(@NonNull final String packageName,
-            @NonNull final UserHandle user) {
+                                  @NonNull final UserHandle user) {
         final ApplicationInfo info = getApplicationInfo(packageName, user, 0);
         return info != null;
     }
@@ -108,7 +99,7 @@ public class PackageManagerHelper {
      */
     @Nullable
     public ApplicationInfo getApplicationInfo(@NonNull final String packageName,
-            @NonNull final UserHandle user, final int flags) {
+                                              @NonNull final UserHandle user, final int flags) {
         try {
             ApplicationInfo info = mLauncherApps.getApplicationInfo(packageName, flags, user);
             return (info.flags & ApplicationInfo.FLAG_INSTALLED) == 0 || !info.enabled
@@ -118,62 +109,46 @@ public class PackageManagerHelper {
         }
     }
 
-    public boolean isSafeMode() {
-        return mPm.isSafeMode();
+    /**
+     * Returns the installing app package for the given package
+     */
+    public String getAppInstallerPackage(@NonNull final String packageName) {
+        try {
+            return mPm.getInstallSourceInfo(packageName).getInstallingPackageName();
+        } catch (NameNotFoundException e) {
+            Log.e(TAG, "Failed to get installer package for app package:" + packageName, e);
+            return null;
+        }
     }
 
+    /**
+     * Returns the preferred launch activity intent for a given package.
+     */
     @Nullable
     public Intent getAppLaunchIntent(@Nullable final String pkg, @NonNull final UserHandle user) {
+        LauncherActivityInfo info = getAppLaunchInfo(pkg, user);
+        return info != null ? AppInfo.makeLaunchIntent(info) : null;
+    }
+
+    /**
+     * Returns the preferred launch activity for a given package.
+     */
+    @Nullable
+    public LauncherActivityInfo getAppLaunchInfo(@Nullable final String pkg,
+                                                 @NonNull final UserHandle user) {
         List<LauncherActivityInfo> activities = mLauncherApps.getActivityList(pkg, user);
-        return activities.isEmpty() ? null :
-                AppInfo.makeLaunchIntent(activities.get(0));
-    }
-
-    /**
-     * Returns whether an application is suspended as per
-     * {@link android.app.admin.DevicePolicyManager#isPackageSuspended}.
-     */
-    public static boolean isAppSuspended(ApplicationInfo info) {
-        return (info.flags & ApplicationInfo.FLAG_SUSPENDED) != 0;
-    }
-
-    public Intent getMarketIntent(String packageName) {
-        return new Intent(Intent.ACTION_VIEW)
-                .setData(new Uri.Builder()
-                        .scheme("market")
-                        .authority("details")
-                        .appendQueryParameter("id", packageName)
-                        .build())
-                .putExtra(Intent.EXTRA_REFERRER, new Uri.Builder().scheme("android-app")
-                        .authority(mContext.getPackageName()).build());
-    }
-
-    /**
-     * Creates a new market search intent.
-     */
-    public static Intent getMarketSearchIntent(Context context, String query) {
-        try {
-            Intent intent = Intent.parseUri(context.getString(R.string.market_search_intent), 0);
-            if (!TextUtils.isEmpty(query)) {
-                intent.setData(
-                        intent.getData().buildUpon().appendQueryParameter("q", query).build());
-            }
-            return intent;
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        return activities.isEmpty() ? null : activities.get(0);
     }
 
     /**
      * Starts the details activity for {@code info}
      */
-    public void startDetailsActivityForInfo(ItemInfo info, Rect sourceBounds, Bundle opts) {
-        if (info instanceof ItemInfoWithIcon
-                && (((ItemInfoWithIcon) info).runtimeStatusFlags
-                    & ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE) != 0) {
-            ItemInfoWithIcon appInfo = (ItemInfoWithIcon) info;
-            mContext.startActivity(new PackageManagerHelper(mContext)
-                    .getMarketIntent(appInfo.getTargetComponent().getPackageName()));
+    public static void startDetailsActivityForInfo(Context context, ItemInfo info,
+                                                   Rect sourceBounds, Bundle opts) {
+        if (info instanceof ItemInfoWithIcon appInfo
+                && (appInfo.runtimeStatusFlags & FLAG_INSTALL_SESSION_ACTIVE) != 0) {
+            context.startActivity(ApiWrapper.INSTANCE.get(context).getAppMarketActivityIntent(
+                    appInfo.getTargetComponent().getPackageName(), Process.myUserHandle()), opts);
             return;
         }
         ComponentName componentName = null;
@@ -188,30 +163,37 @@ public class PackageManagerHelper {
         }
         if (componentName != null) {
             try {
-                mLauncherApps.startAppDetailsActivity(componentName, info.user, sourceBounds, opts);
+                context.getSystemService(LauncherApps.class).startAppDetailsActivity(componentName,
+                        info.user, sourceBounds, opts);
             } catch (SecurityException | ActivityNotFoundException e) {
-                Toast.makeText(mContext, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "Unable to launch settings", e);
             }
         }
     }
 
     public static boolean isSystemApp(@NonNull final Context context,
-            @NonNull final Intent intent) {
+                                      @NonNull final Intent intent) {
         PackageManager pm = context.getPackageManager();
-        ComponentName cn = intent.getComponent();
+        // Get the package name for intent
         String packageName = null;
-        if (cn == null) {
-            ResolveInfo info = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            if ((info != null) && (info.activityInfo != null)) {
-                packageName = info.activityInfo.packageName;
+        if (intent != null) {
+            ComponentName cn = intent.getComponent();
+            if (cn == null) {
+                ResolveInfo info = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                if ((info != null) && (info.activityInfo != null)) {
+                    packageName = info.activityInfo.packageName;
+                }
+            } else {
+                packageName = cn.getPackageName();
             }
-        } else {
-            packageName = cn.getPackageName();
         }
-        if (packageName == null) {
-            packageName = intent.getPackage();
-        }
+        return isSystemApp(context, packageName);
+    }
+
+    public static boolean isSystemApp(Context context, String packageName) {
+        PackageManager pm = context.getPackageManager();
+        // Check if the provided package is a system app.
         if (packageName != null) {
             try {
                 PackageInfo info = pm.getPackageInfo(packageName, 0);
@@ -249,6 +231,7 @@ public class PackageManagerHelper {
 
     /**
      * Returns true if Launcher has the permission to access shortcuts.
+     *
      * @see LauncherApps#hasShortcutHostPermission()
      */
     public static boolean hasShortcutsPermission(Context context) {
@@ -260,11 +243,22 @@ public class PackageManagerHelper {
         return false;
     }
 
+    // Edited
     /** Returns the incremental download progress for the given shortcut's app. */
     public static int getLoadingProgress(LauncherActivityInfo info) {
         if (Utilities.ATLEAST_S) {
             return (int) (100 * info.getLoadingProgress());
         }
         return 100;
+    }
+
+    /**
+     * Returns whether two apps should be considered the same for multi-instance purposes, which
+     * requires additional checks to ensure they can be started as multiple instances.
+     */
+    public static boolean isSameAppForMultiInstance(@NonNull ItemInfo app1,
+                                                    @NonNull ItemInfo app2) {
+        return app1.getTargetPackage().equals(app2.getTargetPackage())
+                && app1.user.equals(app2.user);
     }
 }

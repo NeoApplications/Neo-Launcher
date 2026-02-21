@@ -47,9 +47,10 @@ public class OverviewActions {
             mLauncher.clickLauncherObject(screenshot);
             try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
                     "clicked screenshot button")) {
-                UiObject2 closeScreenshot = mLauncher.waitForSystemUiObject(
-                        "screenshot_dismiss_image");
-                closeScreenshot.click();
+                mLauncher.waitForSystemUiObject("screenshot_preview");
+                // dismiss the screenshot; we don't expect to receive the back event because it's
+                // consumed by the screenshot process
+                mLauncher.pressBackImpl(false);
                 try (LauncherInstrumentation.Closable c2 = mLauncher.addContextLayer(
                         "dismissed screenshot")) {
                     return new Overview(mLauncher);
@@ -89,8 +90,7 @@ public class OverviewActions {
     private SelectModeButtons getSelectModeButtons() {
         try (LauncherInstrumentation.Closable c = mLauncher.addContextLayer(
                 "want to get select mode buttons")) {
-            UiObject2 selectModeButtons = mLauncher.waitForLauncherObject("select_mode_buttons");
-            return new SelectModeButtons(selectModeButtons, mLauncher);
+            return new SelectModeButtons(mLauncher);
         }
     }
 

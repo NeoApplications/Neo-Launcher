@@ -51,7 +51,7 @@
             android:fillViewport="true"
             android:scrollbars="none">
 
-            <com.saggitt.omega.allapps.AllAppsTabItem
+            <com.neoapps.neolauncher.allapps.AllAppsTabItem
                 android:id="@+id/tabs"
                 style="@style/TextHeadline"
                 android:layout_width="wrap_content"

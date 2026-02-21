@@ -22,9 +22,12 @@ import com.android.launcher3.tapl.LauncherInstrumentation.ContainerType;
  * Overview pane.
  */
 public class Overview extends BaseOverview {
-
     Overview(LauncherInstrumentation launcher) {
-        super(launcher);
+        this(launcher, /*launchedFromApp=*/false);
+    }
+
+    Overview(LauncherInstrumentation launcher, boolean launchedFromApp) {
+        super(launcher, launchedFromApp);
     }
 
     @Override
@@ -37,7 +40,11 @@ public class Overview extends BaseOverview {
         super.dismissAllTasks();
         try (LauncherInstrumentation.Closable c1 = mLauncher.addContextLayer(
                 "dismissed all tasks")) {
-            new Workspace(mLauncher);
+            if (mLauncher.isInDesktopFirstMode()) {
+                new Overview(mLauncher);
+            } else {
+                new Workspace(mLauncher);
+            }
         }
     }
 }

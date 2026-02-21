@@ -1,7 +1,9 @@
 package com.android.launcher3.util;
 
 import static android.content.Intent.ACTION_WALLPAPER_CHANGED;
+
 import static com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR;
+import static com.android.launcher3.util.SimpleBroadcastReceiver.actionsFilter;
 
 import android.app.WallpaperManager;
 import android.content.Context;
@@ -13,11 +15,11 @@ import android.util.Log;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.WorkerThread;
 
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.Workspace;
-import com.saggitt.omega.blur.BlurWallpaperProvider;
 
 /**
  * Utility class to handle wallpaper scrolling along with workspace.
@@ -31,8 +33,8 @@ public class WallpaperOffsetInterpolator {
     // Don't use all the wallpaper for parallax until you have at least this many pages
     private static final int MIN_PARALLAX_PAGE_SPAN = 4;
 
-    private final SimpleBroadcastReceiver mWallpaperChangeReceiver =
-            new SimpleBroadcastReceiver(i -> onWallpaperChanged());
+    private final SimpleBroadcastReceiver mWallpaperChangeReceiver;
+    private final Context mContext;
     private final Workspace<?> mWorkspace;
     private final boolean mIsRtl;
     private final Handler mHandler;
@@ -45,7 +47,10 @@ public class WallpaperOffsetInterpolator {
     private int mNumScreens;
 
     public WallpaperOffsetInterpolator(Workspace<?> workspace) {
+        mContext = workspace.getContext();
         mWorkspace = workspace;
+        mWallpaperChangeReceiver = new SimpleBroadcastReceiver(
+                workspace.getContext(), UI_HELPER_EXECUTOR, i -> onWallpaperChanged());
         mIsRtl = Utilities.isRtl(workspace.getResources());
         mHandler = new OffsetHandler(workspace.getContext());
     }
@@ -79,7 +84,7 @@ public class WallpaperOffsetInterpolator {
         // Distribute the wallpaper parallax over a minimum of MIN_PARALLAX_PAGE_SPAN workspace
         // screens, not including the custom screen, and empty screens (if > MIN_PARALLAX_PAGE_SPAN)
         int numScreensForWallpaperParallax = mWallpaperIsLiveWallpaper ? numScrollableScreens :
-                        Math.max(MIN_PARALLAX_PAGE_SPAN, numScrollableScreens);
+                Math.max(MIN_PARALLAX_PAGE_SPAN, numScrollableScreens);
 
         // Offset by the custom screen
 
@@ -198,24 +203,24 @@ public class WallpaperOffsetInterpolator {
     public void setWindowToken(IBinder token) {
         mWindowToken = token;
         if (mWindowToken == null && mRegistered) {
-            mWallpaperChangeReceiver.unregisterReceiverSafely(mWorkspace.getContext());
+            mWallpaperChangeReceiver.close();
             mRegistered = false;
         } else if (mWindowToken != null && !mRegistered) {
-            mWallpaperChangeReceiver.register(mWorkspace.getContext(), ACTION_WALLPAPER_CHANGED);
-            onWallpaperChanged();
-            BlurWallpaperProvider.Companion.getInstance(mWorkspace.getContext()).updateAsync();
+            mWallpaperChangeReceiver.register(
+                    actionsFilter(ACTION_WALLPAPER_CHANGED),
+                    0 /* flags */,
+                    null /* permission */,
+                    this::onWallpaperChanged);
             mRegistered = true;
         }
     }
 
+    @WorkerThread
     private void onWallpaperChanged() {
-        UI_HELPER_EXECUTOR.execute(() -> {
-            // Updating the boolean on a background thread is fine as the assignments are atomic
-            mWallpaperIsLiveWallpaper = WallpaperManager.getInstance(mWorkspace.getContext())
-                    .getWallpaperInfo() != null;
-            BlurWallpaperProvider.Companion.getInstance(mWorkspace.getContext()).updateAsync();
-            updateOffset();
-        });
+        // Updating the boolean on a background thread is fine as the assignments are atomic
+        mWallpaperIsLiveWallpaper = WallpaperManager.getInstance(mContext)
+                .getWallpaperInfo() != null;
+        updateOffset();
     }
 
     private static final int MSG_START_ANIMATION = 1;
@@ -236,13 +241,11 @@ public class WallpaperOffsetInterpolator {
 
         private float mFinalOffset;
         private float mOffsetX;
-        private final Context mContext;
 
         public OffsetHandler(Context context) {
             super(UI_HELPER_EXECUTOR.getLooper());
             mInterpolator = Interpolators.DECELERATE_1_5;
             mWM = WallpaperManager.getInstance(context);
-            mContext = context;
         }
 
         @Override
@@ -308,8 +311,6 @@ public class WallpaperOffsetInterpolator {
         private void setOffsetSafely(IBinder token) {
             try {
                 mWM.setWallpaperOffsets(token, mCurrentOffset, 0.5f);
-                BlurWallpaperProvider.Companion.getInstance(mContext)
-                        .setWallpaperOffset(mCurrentOffset);
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Error updating wallpaper offset: " + e);
             }

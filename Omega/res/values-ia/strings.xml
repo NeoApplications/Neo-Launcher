@@ -9,7 +9,7 @@
     <string name="title__general_theme">Thema</string>
     <string name="pref_appcategorization_tabs_summary">Glissar inter le gruppos.</string>
     <string name="title_desktop_hide_statusbar">Celar barra de stato</string>
-    <string name="summary_app_categorize">Seliger inter schedas o dossieres</string>
+
     <string name="title__drawer_categorization">Categorias</string>
     <string name="title__dock_icon_size">Dimension de icone</string>
     <string name="title__general_search">Recerca e dossieres</string>
@@ -62,7 +62,6 @@
     <string name="selected_count">%1$d seligite</string>
     <string name="title_theme_customize_icons">Personalisar le icones</string>
     <string name="title_default">Predeterminate</string>
-    <string name="summary__general_about">Plus de information super Neo Launcher</string>
     <string name="title_drawer_vertical">Vertical</string>
     <string name="pref_category__interfaces">Interfacie de usator</string>
     <string name="title_dock_fill">Monstrar fundo</string>

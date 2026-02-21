@@ -14,8 +14,8 @@
      limitations under the License.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="@dimen/profile_badge_size"
-    android:height="@dimen/profile_badge_size"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
     android:tint="@color/badge_tint_clone">
@@ -23,10 +23,10 @@
     <group android:scaleX=".6" android:scaleY=".6" android:pivotX="12" android:pivotY="12">
       <path
         android:pathData="M22,9.5C22,13.642 18.642,17 14.5,17C10.358,17 7,13.642 7,9.5C7,5.358 10.358,2 14.5,2C18.642,2 22,5.358 22,9.5Z"
-          android:fillColor="#FFFFFFFF" />
-        <path
+        android:fillColor="#FFFFFFFF"/>
+      <path
         android:pathData="M9.5,20.333C12.722,20.333 15.333,17.722 15.333,14.5C15.333,11.278 12.722,8.667 9.5,8.667C6.278,8.667 3.667,11.278 3.667,14.5C3.667,17.722 6.278,20.333 9.5,20.333ZM9.5,22C13.642,22 17,18.642 17,14.5C17,10.358 13.642,7 9.5,7C5.358,7 2,10.358 2,14.5C2,18.642 5.358,22 9.5,22Z"
-            android:fillColor="#FFFFFFFF"
+        android:fillColor="#FFFFFFFF"
         android:fillType="evenOdd"/>
     </group>
 </vector>

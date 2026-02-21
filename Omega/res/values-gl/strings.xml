@@ -15,8 +15,6 @@
     <string name="summary__general_smartspace">Data, hora, widget de inicio</string>
     <string name="summary__general_notifications">Número e cor das insignias, xestos</string>
     <string name="summary__general_advanced">Idioma, copia de apoiio, config da busca</string>
-    <string name="summary__general_about">Máis acerca de Neo Launcher</string>
-    <string name="pref_category__interfaces">Interface de usuaria</string>
     <string name="pref_category__others">Outros</string>
     <string name="pref_category__incubating">Incubando</string>
     <string name="title_desktop_full_width_widgets">Widgets de ancho completo</string>
@@ -64,12 +62,10 @@
     <string name="summary_search_hidden_apps">Mostra nos resultados os atallos agochados.</string>
     <string name="title_drawer_layout">Disposición</string>
     <string name="title_drawer_vertical">Vertical</string>
-    <string name="title_drawer_vertical_list">Lista vertical</string>
     <string name="title_drawer_paged">Paxinada</string>
     <string name="dialog_message_change_sort">Cambiar á orde alfabética das apps\?</string>
     <string name="cat_drawer_grid">Grella</string>
     <string name="cat_drawer_icons">Iconas</string>
-    <string name="title_app_categorize">Categorizar Apps</string>
     <string name="pref_appcategorization_style_text">Estilo</string>
     <string name="app_categorization_folders">Cartafoles</string>
     <string name="pref_app_groups_edit_tip">Toca para editar, arrastra para reordenar.</string>

@@ -15,48 +15,48 @@
  */
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.config.FeatureFlags.ENABLE_ALL_APPS_RV_PREINFLATION;
 import static com.android.launcher3.model.data.AppInfo.COMPONENT_KEY_COMPARATOR;
 import static com.android.launcher3.model.data.AppInfo.EMPTY_ARRAY;
-import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_SHOW_DOWNLOAD_PROGRESS_MASK;
 
-import android.content.Context;
+import android.content.ComponentName;
 import android.os.UserHandle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 
 import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.dagger.ActivityContextSingleton;
+import com.android.launcher3.icons.FastBitmapDrawable;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
-import com.android.launcher3.recyclerview.AllAppsRecyclerViewPool;
+import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageUserKey;
-import com.android.launcher3.views.ActivityContext;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import javax.inject.Inject;
+
 /**
  * A utility class to maintain the collection of all apps.
- *
- * @param <T> The type of the context.
  */
-public class AllAppsStore<T extends Context & ActivityContext> {
+@ActivityContextSingleton
+public class AllAppsStore {
 
+    private static final String TAG = "AllAppsStore";
     // Defer updates flag used to defer all apps updates to the next draw.
     public static final int DEFER_UPDATES_NEXT_DRAW = 1 << 0;
     // Defer updates flag used to defer all apps updates by a test's request.
@@ -71,41 +71,32 @@ public class AllAppsStore<T extends Context & ActivityContext> {
     private final ArrayList<ViewGroup> mIconContainers = new ArrayList<>();
     private Map<PackageUserKey, Integer> mPackageUserKeytoUidMap = Collections.emptyMap();
     private int mModelFlags;
-    private final Set<FolderIcon> mFolderIcons = Collections.newSetFromMap(new WeakHashMap<>());
     private int mDeferUpdatesFlags = 0;
     private boolean mUpdatePending = false;
-    private final AllAppsRecyclerViewPool mAllAppsRecyclerViewPool = new AllAppsRecyclerViewPool();
 
-    private final T mContext;
 
     public AppInfo[] getApps() {
         return mApps;
     }
 
-    public AllAppsStore(@NonNull T context) {
-        mContext = context;
+    @Inject
+    AllAppsStore() {
     }
 
     /**
      * Sets the current set of apps and sets mapping for {@link PackageUserKey} to Uid for
      * the current set of apps.
+     *
+     * <p>Param: apps are required to be sorted using the comparator COMPONENT_KEY_COMPARATOR
+     * in order to enable binary search on the mApps store
      */
-    public void setApps(@Nullable AppInfo[] apps, int flags, Map<PackageUserKey, Integer> map)  {
+    public void setApps(@Nullable AppInfo[] apps, int flags, Map<PackageUserKey, Integer> map) {
         mApps = apps == null ? EMPTY_ARRAY : apps;
+        Log.d(TAG, "setApps: apps.length=" + mApps.length);
         mModelFlags = flags;
         notifyUpdate();
         mPackageUserKeytoUidMap = map;
-        // Preinflate all apps RV when apps has changed, which can happen after unlocking screen,
-        // rotating screen, or downloading/upgrading apps.
-        if (ENABLE_ALL_APPS_RV_PREINFLATION.get()) {
-            mAllAppsRecyclerViewPool.preInflateAllAppsViewHolders(mContext);
-        }
     }
-
-    RecycledViewPool getRecyclerViewPool() {
-        return mAllAppsRecyclerViewPool;
-    }
-
     /**
      * Look up for Uid using package name and user handle for the current set of apps.
      */
@@ -114,9 +105,11 @@ public class AllAppsStore<T extends Context & ActivityContext> {
     }
 
     /**
-     * @see com.android.launcher3.model.BgDataModel.Callbacks#FLAG_QUIET_MODE_ENABLED
-     * @see com.android.launcher3.model.BgDataModel.Callbacks#FLAG_HAS_SHORTCUT_PERMISSION
-     * @see com.android.launcher3.model.BgDataModel.Callbacks#FLAG_QUIET_MODE_CHANGE_PERMISSION
+     * @see com.android.launcher3.model.data.AppsListData#FLAG_QUIET_MODE_ENABLED
+     * @see com.android.launcher3.model.data.AppsListData#FLAG_HAS_SHORTCUT_PERMISSION
+     * @see com.android.launcher3.model.data.AppsListData#FLAG_QUIET_MODE_CHANGE_PERMISSION
+     * @see com.android.launcher3.model.data.AppsListData#FLAG_WORK_PROFILE_QUIET_MODE_ENABLED
+     * @see com.android.launcher3.model.data.AppsListData#FLAG_PRIVATE_PROFILE_QUIET_MODE_ENABLED
      */
     public boolean hasModelFlag(int mask) {
         return (mModelFlags & mask) != 0;
@@ -125,21 +118,33 @@ public class AllAppsStore<T extends Context & ActivityContext> {
     /**
      * Returns {@link AppInfo} if any apps matches with provided {@link ComponentKey}, otherwise
      * null.
+     *
+     * Uses {@link AppInfo#COMPONENT_KEY_COMPARATOR} as a default comparator.
      */
     @Nullable
     public AppInfo getApp(ComponentKey key) {
+        return getApp(key, COMPONENT_KEY_COMPARATOR);
+    }
+
+    /**
+     * Generic version of {@link #getApp(ComponentKey)} that allows comparator to be specified.
+     */
+    @Nullable
+    public AppInfo getApp(ComponentKey key, Comparator<AppInfo> comparator) {
         mTempInfo.componentName = key.componentName;
         mTempInfo.user = key.user;
-        int index = Arrays.binarySearch(mApps, mTempInfo, COMPONENT_KEY_COMPARATOR);
+        int index = Arrays.binarySearch(mApps, mTempInfo, comparator);
         return index < 0 ? null : mApps[index];
     }
 
     public void enableDeferUpdates(int flag) {
         mDeferUpdatesFlags |= flag;
+        Log.d(TAG, "enableDeferUpdates: " + flag + " mDeferUpdatesFlags=" + mDeferUpdatesFlags);
     }
 
     public void disableDeferUpdates(int flag) {
         mDeferUpdatesFlags &= ~flag;
+        Log.d(TAG, "disableDeferUpdates: " + flag + " mDeferUpdatesFlags=" + mDeferUpdatesFlags);
         if (mDeferUpdatesFlags == 0 && mUpdatePending) {
             notifyUpdate();
             mUpdatePending = false;
@@ -148,17 +153,22 @@ public class AllAppsStore<T extends Context & ActivityContext> {
 
     public void disableDeferUpdatesSilently(int flag) {
         mDeferUpdatesFlags &= ~flag;
+        Log.d(TAG, "disableDeferUpdatesSilently: " + flag
+                + " mDeferUpdatesFlags=" + mDeferUpdatesFlags);
+
     }
 
     public int getDeferUpdatesFlags() {
         return mDeferUpdatesFlags;
     }
 
-    private void notifyUpdate() {
+    public void notifyUpdate() {
         if (mDeferUpdatesFlags != 0) {
+            Log.d(TAG, "notifyUpdate: deferring update");
             mUpdatePending = true;
             return;
         }
+        Log.d(TAG, "notifyUpdate: notifying listeners");
         for (OnUpdateListener listener : mUpdateListeners) {
             listener.onAppsUpdated();
         }
@@ -191,23 +201,6 @@ public class AllAppsStore<T extends Context & ActivityContext> {
                 }
             }
         });
-
-        Set<FolderIcon> foldersToUpdate = new HashSet<>();
-        for (FolderIcon folderIcon : mFolderIcons) {
-            folderIcon.getFolder().iterateOverItems((info, view) -> {
-                if (mTempKey.updateFromItemInfo(info) && updatedDots.test(mTempKey)) {
-                    if (view instanceof BubbleTextView) {
-                        ((BubbleTextView) view).applyDotState(info, true);
-                    }
-                    foldersToUpdate.add(folderIcon);
-                }
-                return false;
-            });
-        }
-
-        for (FolderIcon folderIcon : foldersToUpdate) {
-            folderIcon.updateIconDots(updatedDots, mTempKey);
-        }
     }
 
     /**
@@ -222,11 +215,7 @@ public class AllAppsStore<T extends Context & ActivityContext> {
     public void updateProgressBar(AppInfo app) {
         updateAllIcons((child) -> {
             if (child.getTag() == app) {
-                if ((app.runtimeStatusFlags & FLAG_SHOW_DOWNLOAD_PROGRESS_MASK) == 0) {
-                    child.applyFromApplicationInfo(app);
-                } else {
-                    child.applyProgressLevel();
-                }
+                child.applyFromApplicationInfo(app);
             }
         });
     }
@@ -245,11 +234,27 @@ public class AllAppsStore<T extends Context & ActivityContext> {
         }
     }
 
-    public void registerFolderIcon(FolderIcon icon) {
-        mFolderIcons.add(icon);
-    }
-
     public interface OnUpdateListener {
         void onAppsUpdated();
+    }
+
+    /** Generate a dumpsys for each app package name and position in the apps list */
+    public void dump(String prefix, PrintWriter writer) {
+        writer.println(prefix + "\tAllAppsStore Apps[] size: " + mApps.length);
+        writer.println(prefix + "\tAll registered icons");
+        updateAllIcons(btv -> {
+            FastBitmapDrawable icon = btv.getIcon();
+            ItemInfoWithIcon info = btv.getTag() instanceof ItemInfoWithIcon iiwi ? iiwi : null;
+            ComponentName cn = info != null ? info.getTargetComponent() : null;
+            if (icon != null && cn != null) {
+                writer.println(String.format(Locale.getDefault(),
+                        "%s\tTarget: %s, description: %s, bitmap flag: %s, icon-flags: %s",
+                        prefix,
+                        cn.toShortString(),
+                        info.contentDescription,
+                        Integer.toBinaryString(info.bitmap.getFlags()),
+                        Integer.toBinaryString(icon.creationFlags)));
+            }
+        });
     }
 }
