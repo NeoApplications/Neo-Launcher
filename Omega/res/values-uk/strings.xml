@@ -508,4 +508,27 @@
     <string name="title_desktop_free_scrolling">Вільна прокрутка</string>
     <string name="title_all_apps_hide_scrollbar">Сховати смугу прокручування</string>
     <string name="title_themed_background">Прозорий фон іконки</string>
+    <string name="hotseat_show_dots_page_indicator">Показувати індикатор сторінки з точками замість ліній</string>
+    <string name="title_drawer_all_apps">Усі</string>
+    <string name="title_drawer_layout_categories">Категорії макетів</string>
+    <string name="title_drawer_horizontal">Горизонтальний</string>
+    <string name="title_drawer_categorized">Категоризовано</string>
+    <string name="title_drawer_custom_categories">Користувацькі категорії</string>
+    <plurals name="hidden_apps_count">
+        <item quantity="one">%1$d Приховано</item>
+        <item quantity="few">%1$d Приховано</item>
+        <item quantity="many">%1$d Приховано</item>
+        <item quantity="other">%1$d Приховано</item>
+    </plurals>
+    <string name="color_wallpaper_tertiary">Шпалери третинного рівня</string>
+    <string name="title_smartspace_background">Показати тематичний фон</string>
+    <string name="search_provider">Постачальник пошуку</string>
+    <string name="web_search_provider">Постачальник веб-пошуку</string>
+    <string name="title_search_providers">Пошукові служби</string>
+    <string name="edit_search_summary">Вибір та сортування активних пошукових систем</string>
+    <string name="add_search_provider">Додати постачальника</string>
+    <string name="edit_search_provider">Редагувати пошукову службу</string>
+    <string name="search_provider_search_url">URL-адреса пошуку</string>
+    <string name="search_provider_suggestion_url">URL-адреса пропозиції</string>
+    <string name="search_provider_url_hint">Використовуйте %s замість пошукового терміна</string>
 </resources>

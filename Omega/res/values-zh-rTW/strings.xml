@@ -8,7 +8,7 @@
     <string name="title__general_drawer">抽屜</string>
     <string name="title__general_theme">主題</string>
     <string name="title__general_smartspace">主頁小工具</string>
-    <string name="title__general_gestures_dash">手勢與 Dash</string>
+    <string name="title__general_gestures_dash">手勢與儀表板</string>
     <string name="title__general_search_feed">搜尋與資訊</string>
     <string name="title__general_widgets_notifications">小工具與通知</string>
     <string name="summary__general_drawer">客製化您的抽屜</string>
@@ -30,7 +30,7 @@
     <string name="title_desktop_text_size">文字大小</string>
     <string name="summary_full_width_widgets">允許小工具跨越整個寬度而不需留白</string>
     <string name="title_dock_background_color">背景顏色</string>
-    <string name="title__dock_hide_labels">隱藏標籤</string>
+    <string name="title__dock_hide_labels">隱藏名稱</string>
     <string name="title__dock_colored_icons">彩色圖示</string>
     <string name="title__dock_hotseat_icons">圖示數量</string>
     <string name="title__dock_show_arrow">顯示箭頭</string>
@@ -45,7 +45,7 @@
     <string name="title_all_apps_keep_scroll_state">記住位置</string>
     <string name="title_search_hidden_apps">尋找隱藏的應用程式</string>
     <string name="title_fuzzy_search">模糊搜尋</string>
-    <string name="summary_fuzzy_search">為應用程式搜尋進行近似匹配。</string>
+    <string name="summary_fuzzy_search">以近似比對搜尋應用程式。</string>
     <string name="title_app_categorize">分類應用程式</string>
     <string name="summary_app_categorize">選擇分頁或資料夾</string>
     <string name="summary_search_hidden_apps">在結果中顯示隱藏的捷徑。</string>
@@ -56,7 +56,7 @@
     <string name="title_disable_suggestions_prompt">關閉應用程式建議</string>
     <string name="msg_disable_suggestions_prompt">使用數據將被刪除。</string>
     <string name="label_turn_off_suggestions">關閉</string>
-    <string name="cat_desktop_grid">網格與配置</string>
+    <string name="cat_desktop_grid">網格與版面</string>
     <string name="cat_drawer_grid">網格</string>
     <string name="cat_drawer_icons">圖示</string>
     <string name="pref_appcategorization_flowerpot_title">應用程式分類</string>
@@ -109,7 +109,7 @@
     <string name="import_as_adaptive">作為適應性圖示</string>
     <string name="reset_custom_icon">移除自訂圖示</string>
     <string name="reset_custom_icons">移除自訂圖示</string>
-    <string name="reset_custom_icons_confirmation">恢復此圖示套件的預設圖示？這個操作無法撤銷。</string>
+    <string name="reset_custom_icons_confirmation">要將圖示還原為現有套件預設值嗎？這項動作無法復原。</string>
     <string name="color_presets">預設色彩</string>
     <string name="color_dynamic">動態</string>
     <string name="title_adaptify_pack">為圖示套件建立適應性圖示</string>
@@ -126,7 +126,7 @@
     <string name="smartspace_in_time">%1$s 後</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
-    <string name="smartspace_provider_bridge">無根像素橋</string>
+    <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
     <string name="resuable_text_alarm">鬧鐘</string>
     <string name="name_provider_alarm_events">即將響起的鬧鐘</string>
     <string name="smartspace_widget_provider_not_found">取得 Google 應用程式。</string>
@@ -151,7 +151,7 @@
     <string name="title__gesture_swipe_down">向下滑動</string>
     <string name="pref_category__notifications">通知</string>
     <string name="pref_category__gestures">手勢</string>
-    <string name="pref_category__dash">Dash</string>
+    <string name="pref_category__dash">儀表板</string>
     <string name="action_none">不執行任何操作</string>
     <string name="action_open_drawer_or_recents">開啟最近使用的應用程式/應用程式抽屜</string>
     <string name="omega_actions">操作</string>
@@ -181,7 +181,7 @@
     <string name="title__dev_show_Dev">在設定中顯示</string>
     <string name="about_translators">翻譯人員</string>
     <string name="accessibility_undo">復原</string>
-    <string name="edit_dash">編輯 Dash</string>
+    <string name="edit_dash">編輯儀表板</string>
     <string name="wallpaper_pick">選擇桌布</string>
     <string name="dash_all_apps_title">開啟所有應用程式</string>
     <string name="dash_device_settings_title">裝置設定</string>
@@ -250,7 +250,7 @@
     <string name="title_desktop_widget_corner_radius">小工具圓角半徑</string>
     <string name="title_desktop_overlap_placement">允許小工具重疊</string>
     <string name="title_desktop_lock_desktop">鎖定桌面</string>
-    <string name="allow_rotation_blocked_desc">當前的顯示設定不允許旋轉</string>
+    <string name="allow_rotation_blocked_desc">目前顯示設定無法旋轉螢幕</string>
     <string name="title__desktop_icon_size">圖示大小</string>
     <string name="title_dock_two_row">顯示第二列</string>
     <string name="title__sort_alphabetical_az">A→Z</string>
@@ -302,7 +302,7 @@
     <string name="icon_shape_override_label">更改圖示形狀</string>
     <string name="title_colored_backgrounds">彩色背景</string>
     <string name="battery_full">已充滿電</string>
-    <string name="dialog_message_change_sort">更改為按字母排序的應用程式？</string>
+    <string name="dialog_message_change_sort">要依據字母排序應用程式嗎？</string>
     <string name="tab_type_custom_desc">手動選擇捷徑。</string>
     <string name="disable_protected_apps_message">關閉需要驗證的受保護的應用程式</string>
     <string name="icon_shape_override_progress">正在套用圖示形狀變更</string>
@@ -420,7 +420,7 @@
     <string name="debug_options_title">偵錯資訊</string>
     <string name="title_feed_provider">資訊來源提供者</string>
     <string name="about_team">團隊成員</string>
-    <string name="action_open_dash">開啟 Dash</string>
+    <string name="action_open_dash">開啟儀表板</string>
     <string name="action_open_widgets">開啟小工具抽屜</string>
     <string name="action_overlay">開啟 Google 提示</string>
     <string name="action_sleep">休眠</string>
@@ -499,9 +499,9 @@
     <string name="web_search_phind">Phind（網頁）</string>
     <string name="web_search_perplexity">Perplexity（網頁）</string>
     <string name="web_search_searx">Searx（網頁）</string>
-    <string name="hotseat_accessibility_expand">Dock 展開</string>
-    <string name="hotseat_accessibility_collapse">Dock 收起</string>
-    <string name="title_expandable_dock">擴展 Dock</string>
+    <string name="hotseat_accessibility_expand">展開快速啟動列</string>
+    <string name="hotseat_accessibility_collapse">收合快速啟動列</string>
+    <string name="title_expandable_dock">展開快速啟動列</string>
     <string name="title_desktop_free_scrolling">自由滾動</string>
     <string name="title_drawer_all_apps">全部</string>
     <string name="title_all_apps_hide_scrollbar">隱藏捲軸</string>
@@ -517,4 +517,12 @@
     <string name="search_provider">搜尋提供者</string>
     <string name="hotseat_show_dots_page_indicator">顯示點狀頁面指示器而非線條</string>
     <string name="title_drawer_categorized">已分類</string>
+    <string name="title_search_providers">搜尋提供者</string>
+    <string name="search_provider_url_hint">請在網址內插入「 %s」作為關鍵字位置</string>
+    <string name="title_drawer_layout_categories">版面類型</string>
+    <string name="search_provider_search_url">搜尋 URL</string>
+    <string name="search_provider_suggestion_url">建議的 URL</string>
+    <string name="edit_search_summary">管理啟用的搜尋提供者</string>
+    <string name="add_search_provider">新增提供者</string>
+    <string name="edit_search_provider">編輯搜尋提供者</string>
 </resources>
