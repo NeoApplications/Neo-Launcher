@@ -71,7 +71,7 @@ fun IconShapePage() {
             IconShape.Teardrop,
         )
         val listItems = iconShapes.distinctBy { it.getMaskPath() }.map { ShapeModel(it.toString()) }
-        val iconPrefs = listOfNotNull(
+        val iconPrefs = listOf(
             prefs.profileIconAdaptify,
             prefs.profileIconColoredBackground
         )

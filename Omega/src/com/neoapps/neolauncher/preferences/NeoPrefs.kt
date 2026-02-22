@@ -910,6 +910,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.NOTIFICATION_DOTS_COUNT,
         titleId = R.string.title__notification_count,
         defaultValue = false,
+        onChange = { reloadModel() }
     )
 
     val notificationCustomColor = BooleanPref(
