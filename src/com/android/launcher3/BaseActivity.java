@@ -47,6 +47,7 @@ import com.android.launcher3.dagger.ActivityContextComponent;
 import com.android.launcher3.dagger.LauncherComponentProvider;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
+import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.testing.TestInformationHandler;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
@@ -271,6 +272,9 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
     protected void onStart() {
         addActivityFlags(ACTIVITY_STATE_STARTED);
         super.onStart();
+        // Keep popup data provider in sync with notification changes for dots.
+        NotificationListener.addNotificationsChangedListener(
+                getActivityComponent().getPopupDataProvider());
         mEventCallbacks[EVENT_STARTED].executeAllAndClear();
     }
 
@@ -292,6 +296,8 @@ public abstract class BaseActivity extends Activity implements ActivityContext,
         removeActivityFlags(ACTIVITY_STATE_STARTED | ACTIVITY_STATE_USER_ACTIVE);
         mForceInvisible = 0;
         super.onStop();
+        NotificationListener.removeNotificationsChangedListener(
+                getActivityComponent().getPopupDataProvider());
         mEventCallbacks[EVENT_STOPPED].executeAllAndClear();
 
 

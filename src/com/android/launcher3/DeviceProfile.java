@@ -31,7 +31,6 @@ import static com.android.launcher3.util.OverviewReleaseFlags.enableGridOnlyOver
 import static com.android.wm.shell.Flags.enableBubbleBar;
 import static com.android.wm.shell.Flags.enableBubbleBarOnPhones;
 import static com.android.wm.shell.Flags.enableTinyTaskbar;
-
 import static java.lang.Math.max;
 
 import android.annotation.SuppressLint;
@@ -77,6 +76,7 @@ import com.android.launcher3.util.IconSizeSteps;
 import com.android.launcher3.util.ResourceHelper;
 import com.android.launcher3.util.WindowBounds;
 import com.android.launcher3.util.window.WindowManagerProxy;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.io.PrintWriter;
 import java.util.Locale;
@@ -614,8 +614,10 @@ public class DeviceProfile {
     private static DotRenderer createDotRenderer(
             int size, @NonNull SparseArray<DotRenderer> cache) {
         DotRenderer renderer = cache.get(size);
+        NeoPrefs prefs = NeoPrefs.getInstance();
+
         if (renderer == null) {
-            renderer = new DotRenderer(size);
+            renderer = new DotRenderer(size, prefs.getNotificationCount().getValue());
             cache.put(size, renderer);
         }
         return renderer;

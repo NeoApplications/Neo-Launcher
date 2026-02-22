@@ -123,6 +123,7 @@ object AppModule {
 @DisableInstallInCheck
 object AppActivityContextModule {
     @Provides
+    @ActivityContextSingleton
     fun providePopupDataProvider(activityContext: ActivityContext): PopupDataProvider =
         PopupDataProvider(activityContext)
 }

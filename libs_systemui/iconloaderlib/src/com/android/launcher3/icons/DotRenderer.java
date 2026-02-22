@@ -44,14 +44,14 @@ public class DotRenderer {
     private static final String TAG = "DotRenderer";
 
     // The dot size is defined as a percentage of the app icon size.
-    private static final float SIZE_PERCENTAGE = 0.228f;
+    private static float SIZE_PERCENTAGE = 0.228f;
     // The black border needs a light notification dot color. This is for accessibility.
     private static final float LUMINENSCE_LIMIT = .70f;
 
     private final float mCircleRadius;
     private final Paint mCirclePaint = new Paint(ANTI_ALIAS_FLAG | FILTER_BITMAP_FLAG);
 
-    private final Bitmap mBackgroundWithShadow;
+    private Bitmap mBackgroundWithShadow;
     private final float mBitmapOffset;
 
     private static final int MIN_DOT_SIZE = 1;
@@ -60,9 +60,18 @@ public class DotRenderer {
     private static final float TEXT_SIZE_PERCENTAGE = 0.26f;
     private final int mTextHeight;
     private final Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    private static final float STACK_OFFSET_PERCENTAGE_X = 0.05f;
+    private static final float STACK_OFFSET_PERCENTAGE_Y = 0.06f;
+    private static final float OFFSET_PERCENTAGE = 0.02f;
+    private int size;
+    private final int mStackOffsetX;
+    private final int mStackOffsetY;
+    private final int mOffset;
 
-    public DotRenderer(int iconSizePx) {
-        int size = Math.round(SIZE_PERCENTAGE * iconSizePx);
+    public DotRenderer(int iconSizePx, boolean showCount) {
+        if (showCount)
+            SIZE_PERCENTAGE = 0.38f;
+        size = Math.round(SIZE_PERCENTAGE * iconSizePx);
         if (size <= 0) {
             size = MIN_DOT_SIZE;
         }
@@ -72,6 +81,10 @@ public class DotRenderer {
         mCircleRadius = builder.radius;
 
         mBitmapOffset = -mBackgroundWithShadow.getHeight() * 0.5f; // Same as width.
+
+        mStackOffsetX = (int) (STACK_OFFSET_PERCENTAGE_X * iconSizePx);
+        mStackOffsetY = (int) (STACK_OFFSET_PERCENTAGE_Y * iconSizePx);
+        mOffset = (int) (OFFSET_PERCENTAGE * iconSizePx);
 
         // Measure the text height.
         Rect tempTextHeight = new Rect();
@@ -124,15 +137,27 @@ public class DotRenderer {
         // We draw the dot relative to its center.
         canvas.translate(dotCenterX + offsetX, dotCenterY + offsetY);
         canvas.scale(params.scale, params.scale);
-
-        // Draw Background Shadow
-        mCirclePaint.setColor(Color.BLACK);
+        mTextPaint.setColor(Color.WHITE);
+        boolean isText = params.showCount && params.count != 0;
+        String count = String.valueOf(params.count);
         canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
 
-        boolean isText = params.showCount && params.count != 0;
         int backgroundWithShadowSize = mBackgroundWithShadow.getHeight(); // Same as width.
-        String count = String.valueOf(params.count);
+        boolean shouldStack = isText && params.notificationKeys > 1;
 
+        ShadowGenerator.Builder builder = new ShadowGenerator.Builder(params.mDotColor);
+        mBackgroundWithShadow = builder.setupBlurForSize(size).createPill(size, size);
+        if (shouldStack) {
+            int offsetDiffX = mStackOffsetX - mOffset;
+            int offsetDiffY = mStackOffsetY - mOffset;
+            canvas.translate(offsetDiffX, offsetDiffY);
+            Paint paint2 = mBackgroundPaint;
+            paint2.setAlpha(105);
+
+            canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f,
+                    -backgroundWithShadowSize / 2f, paint2);
+            canvas.translate(-offsetDiffX, -offsetDiffY);
+        }
         if (isText) {
             mBackgroundPaint.setColor(params.mDotColor);
             canvas.drawBitmap(mBackgroundWithShadow, -backgroundWithShadowSize / 2f, -backgroundWithShadowSize / 2f, mBackgroundPaint);
