@@ -27,8 +27,7 @@ import com.android.launcher3.icons.BaseIconFactory.IconOptions
 import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.IconProvider
 
-object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
-    const val TAG = "LauncherActivityCachingLogic"
+open class LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
 
     override fun getComponent(info: LauncherActivityInfo): ComponentName = info.componentName
 
@@ -73,4 +72,8 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
         item: LauncherActivityInfo,
         provider: IconProvider,
     ): String? = provider.getStateForApp(getApplicationInfo(item))
+
+    companion object{
+        const val TAG = "LauncherActivityCachingLogic"
+    }
 }
