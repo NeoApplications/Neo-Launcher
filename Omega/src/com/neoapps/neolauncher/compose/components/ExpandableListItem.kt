@@ -19,7 +19,9 @@ package com.neoapps.neolauncher.compose.components
 
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,12 +40,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
+import com.neoapps.neolauncher.theme.GroupItemShape
 
 @Composable
 fun ExpandableListItem(
@@ -51,38 +55,43 @@ fun ExpandableListItem(
     title: String,
     icon: Bitmap,
     onClick: () -> Unit = {},
+    index: Int = 1,
+    groupSize: Int = 1,
     content: @Composable (ColumnScope.() -> Unit),
 ) {
     var isContentVisible by rememberSaveable { mutableStateOf(false) }
+
+    val boxShape = GroupItemShape(index, groupSize - 1)
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isContentVisible) MaterialTheme.colorScheme.surfaceVariant
+        else Color.Transparent,
+        label = "expandableBackground"
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clip(boxShape)
+            .background(backgroundColor)
             .clickable {
                 onClick()
                 isContentVisible = !isContentVisible
             },
         verticalArrangement = Arrangement.Center
     ) {
-        ListItem(
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent,
-            ),
-            leadingContent = {
+        ListItemWithIcon(
+            modifier = Modifier
+                .clip(GroupItemShape(index, if (isContentVisible) groupSize else groupSize - 1)),
+            title = title,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            startIcon = {
                 Image(
                     bitmap = icon.asImageBitmap(),
                     contentDescription = title,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(40.dp),
                 )
             },
-            headlineContent = {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            },
-            trailingContent = {
+            endCheckbox = {
                 val arrow = if (isContentVisible) R.drawable.ic_expand_less
                 else R.drawable.ic_expand_more
                 Image(
@@ -91,12 +100,14 @@ fun ExpandableListItem(
                     modifier = Modifier.size(32.dp)
                 )
             },
+            index = index,
+            groupSize = groupSize
         )
         AnimatedVisibility(visible = isContentVisible) {
-            Box(Modifier.padding(8.dp)) {
-                Column {
-                    content()
-                }
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                content()
             }
         }
     }

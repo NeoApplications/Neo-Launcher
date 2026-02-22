@@ -107,6 +107,10 @@ import com.android.launcher3.util.ShortcutUtil;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.FloatingIconViewCompanion;
+import com.neoapps.neolauncher.gestures.BlankGestureHandler;
+import com.neoapps.neolauncher.gestures.GestureController;
+import com.neoapps.neolauncher.gestures.GestureHandler;
+import com.neoapps.neolauncher.gestures.handlers.ViewSwipeUpGestureHandler;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.text.NumberFormat;
@@ -146,6 +150,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     private IntArray mBreakPointsIntArray;
     private CharSequence mLastOriginalText;
     private CharSequence mLastModifiedText;
+
+    private GestureHandler mSwipeUpHandler;
 
     private static final Property<BubbleTextView, Float> DOT_SCALE_PROPERTY
             = new Property<BubbleTextView, Float>(Float.TYPE, "dotScale") {
@@ -680,6 +686,16 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     @VisibleForTesting
     public void setDisplay(int display) {
         mDisplay = display;
+    }
+
+    private void applySwipeUpAction(WorkspaceItemInfo info) {
+        GestureHandler handler = GestureController.Companion.createGestureHandler(
+                getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
+        if (handler instanceof BlankGestureHandler) {
+            mSwipeUpHandler = null;
+        } else {
+            mSwipeUpHandler = new ViewSwipeUpGestureHandler(this, handler);
+        }
     }
 
     /**

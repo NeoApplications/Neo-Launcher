@@ -38,6 +38,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
@@ -48,6 +50,8 @@ import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
 import com.android.launcher3.util.TouchUtil;
+import com.neoapps.neolauncher.NeoLauncher;
+import com.neoapps.neolauncher.gestures.GestureController;
 
 /**
  * Helper class to handle touch on empty space in workspace and show options popup on long press
@@ -75,6 +79,7 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
     private int mLongPressState = STATE_CANCELLED;
 
     private final GestureDetector mGestureDetector;
+    private final GestureController mGestureController;
 
     public WorkspaceTouchListener(Launcher launcher, Workspace<?> workspace) {
         mLauncher = launcher;
@@ -83,6 +88,7 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
         // likely to cause movement.
         mTouchSlop = 2 * ViewConfiguration.get(launcher).getScaledTouchSlop();
         mGestureDetector = new GestureDetector(workspace.getContext(), this);
+        mGestureController = ((NeoLauncher) launcher).getGestureController();
     }
 
     @Override
@@ -110,6 +116,7 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
             if (handleLongPress) {
                 mLongPressState = STATE_REQUESTED;
                 mTouchDownPoint.set(ev.getX(), ev.getY());
+                mGestureController.setTouchDownPoint(mTouchDownPoint);
                 // Mouse right button's ACTION_DOWN should immediately show menu
                 if (TouchUtil.isMouseRightClickDownOrMove(ev)) {
                     maybeShowMenu();
@@ -203,6 +210,12 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
         maybeShowMenu();
     }
 
+    @Override
+    public boolean onDoubleTap(@NonNull MotionEvent e) {
+        mGestureController.onDoubleTap();
+        return true;
+    }
+
     private void maybeShowMenu() {
         if (mLongPressState == STATE_REQUESTED) {
             TestLogging.recordEvent(TestProtocol.SEQUENCE_MAIN, "Workspace.longPress");
@@ -214,6 +227,7 @@ public class WorkspaceTouchListener extends GestureDetector.SimpleOnGestureListe
                         HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
                 mLauncher.getStatsLogManager().logger().log(LAUNCHER_WORKSPACE_LONGPRESS);
                 mLauncher.showDefaultOptions(mTouchDownPoint.x, mTouchDownPoint.y);
+                mGestureController.onLongPress();
                 if (mLauncher.isSplitSelectionActive()) {
                     mLauncher.dismissSplitSelection(LAUNCHER_SPLIT_SELECTION_EXIT_INTERRUPTED);
                 }

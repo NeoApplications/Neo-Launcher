@@ -30,7 +30,6 @@ import com.neoapps.neolauncher.gestures.GestureHandler
 import com.neoapps.neolauncher.neoApp
 import org.json.JSONObject
 @Keep
-@TargetApi(Build.VERSION_CODES.P)
 open class PressBackGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 

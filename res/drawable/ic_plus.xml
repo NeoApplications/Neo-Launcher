@@ -16,9 +16,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="@dimen/widget_cell_add_button_drawable_width"
     android:height="18dp"
+    android:tint="#FFFFFF"
     android:viewportWidth="19"
     android:viewportHeight="18">
   <path
-      android:pathData="M15.5,9.75H10.25V15H8.75V9.75H3.5V8.25H8.75V3H10.25V8.25H15.5V9.75Z"
-      android:fillColor="#ffffff"/>
+      android:fillColor="#FF000000"
+      android:pathData="M15.5,9.75H10.25V15H8.75V9.75H3.5V8.25H8.75V3H10.25V8.25H15.5V9.75Z" />
 </vector>

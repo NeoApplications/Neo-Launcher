@@ -18,9 +18,8 @@ Copyright (C) 2018 The Android Open Source Project
     android:height="80dp"
     android:viewportWidth="92.0"
     android:viewportHeight="80.0"
-    android:tint="?android:attr/textColorPrimary">
-    <path
-        android:fillColor="#AAFFFFFF"
+    android:tint="@android:color/white">
+    <path android:fillColor="#FF000000"
         android:pathData="M18,6H2C0.9,6,0,6.9,0,8v64c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C20,6.9,19.1,6,18,6z M16,69.25
         c0,0.41-0.34,0.75-0.75,0.75H4.75C4.34,70,4,69.66,4,69.25v-58.5C4,10.34,4.34,10,4.75,10h10.5c0.41,0,0.75,0.34,0.75,0.75V69.25
         z M90,6H74c-1.1,0-2,0.9-2,2v64c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C92,6.9,91.1,6,90,6z M88,69.25c0,0.41-0.34,0.75-0.75,0.75

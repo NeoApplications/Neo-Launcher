@@ -266,6 +266,7 @@ import com.android.systemui.plugins.LauncherOverlayPlugin;
 import com.android.systemui.plugins.PluginListener;
 import com.android.systemui.plugins.shared.LauncherOverlayManager;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
+import com.neoapps.neolauncher.NeoLauncher;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -1552,6 +1553,7 @@ public class Launcher extends StatefulActivity<LauncherState>
                 && AbstractFloatingView.getTopOpenView(this) == null;
         boolean isActionMain = Intent.ACTION_MAIN.equals(intent.getAction());
         boolean internalStateHandled = ACTIVITY_TRACKER.handleNewIntent(this);
+        boolean handled = false;
 
         logOnNewIntent(alreadyOnHome, shouldMoveToDefaultScreen, intent.getAction(),
                 internalStateHandled);
@@ -1570,16 +1572,21 @@ public class Launcher extends StatefulActivity<LauncherState>
                     // Only change state, if not already the same. This prevents cancelling any
                     // animations running as part of resume
                     mStateManager.goToState(NORMAL, mStateManager.shouldAnimateStateChange());
+                    handled = true;
                 }
 
                 // Reset the apps view
                 if (!alreadyOnHome) {
                     mAppsView.reset(mStateManager.shouldAnimateStateChange() /* animate */,
                             false /* clearScrim */);
+                    handled = true;
                 }
 
                 if (shouldMoveToDefaultScreen && !mWorkspace.isHandlingTouch()) {
                     mWorkspace.post(mWorkspace::moveToDefaultScreen);
+                }
+                if (!handled && this instanceof NeoLauncher) {
+                    ((NeoLauncher) this).getGestureController().onPressHome();
                 }
             }
 
@@ -2073,11 +2080,23 @@ public class Launcher extends StatefulActivity<LauncherState>
         return super.dispatchTouchEvent(ev);
     }
 
-    @SuppressLint("GestureBackNavigation")
     @Override
-    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void onBackPressed() {
-        getOnBackAnimationCallback().onBackInvoked();
+        if (Utilities.ATLEAST_U) {
+            getOnBackAnimationCallback().onBackInvoked();
+        } else {
+            AbstractFloatingView topView = AbstractFloatingView.getTopOpenView(this);
+            if (topView == null || !topView.onBackPressed()) {
+                // Not handled by the floating view.
+                if (!isInState(NORMAL)) {
+                    onStateBack();
+                } else {
+                    if (this instanceof NeoLauncher) {
+                        ((NeoLauncher) this).getGestureController().onPressBack();
+                    }
+                }
+            }
+        }
     }
 
     protected void onBackStarted() {

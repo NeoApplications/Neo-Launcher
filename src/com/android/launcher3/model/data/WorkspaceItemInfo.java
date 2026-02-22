@@ -36,8 +36,13 @@ import com.android.launcher3.icons.IconCache;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.ApiWrapper;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
 import com.android.wm.shell.shared.bubbles.BubbleAnythingFlagHelper;
+import com.neoapps.neolauncher.data.GestureItemInfoRepository;
+import com.neoapps.neolauncher.data.models.GestureItemInfo;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -105,6 +110,7 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @NonNull private String[] personKeys = Utilities.EMPTY_STRING_ARRAY;
 
     public int options;
+    public String swipeUpAction;
 
     @Nullable
     private ShortcutInfo mShortcutInfo = null;
@@ -270,5 +276,24 @@ public class WorkspaceItemInfo extends ItemInfoWithIcon {
     @Override
     public WorkspaceItemInfo clone() {
         return new WorkspaceItemInfo(this);
+    }
+
+
+
+    public String getSwipeUpAction(Context context) {
+        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
+        GestureItemInfo info = repository.find(new ComponentKey(getTargetComponent(), user));
+        if (info.getSwipeUp() != null) {
+            swipeUpAction = info.getSwipeUp();
+        }
+        return swipeUpAction;
+    }
+
+    public void setSwipeUpAction(@NotNull Context context, @Nullable String action) {
+        swipeUpAction = action;
+        GestureItemInfoRepository repository = new GestureItemInfoRepository(context);
+        ComponentKey key = new ComponentKey(getTargetComponent(), user);
+        GestureItemInfo info = new GestureItemInfo(key, swipeUpAction, "");
+        repository.insertOrUpdate(info);
     }
 }
