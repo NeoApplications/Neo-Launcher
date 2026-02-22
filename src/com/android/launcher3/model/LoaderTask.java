@@ -335,7 +335,7 @@ public class LoaderTask implements Runnable {
         IconCacheUpdateHandler updateHandler = mIconCache.getUpdateHandler();
         setIgnorePackages(updateHandler);
         updateHandler.updateIcons(allActivityList,
-                new CustomActivityCachingLogic(),
+                CustomActivityCachingLogic.INSTANCE.get(mContext),
                 mModel::onPackageIconsUpdated);
         logASplit("update AllApps icon cache finished");
 

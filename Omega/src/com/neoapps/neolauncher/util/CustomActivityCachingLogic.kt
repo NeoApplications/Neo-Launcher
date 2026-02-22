@@ -17,15 +17,22 @@
 
 package com.neoapps.neolauncher.util
 
+import android.content.Context
 import android.content.pm.LauncherActivityInfo
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppComponent
 import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.icons.cache.LauncherActivityCachingLogic
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.DaggerSingletonObject
 import com.android.launcher3.util.SafeCloseable
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import javax.inject.Inject
 
 @LauncherAppSingleton
-class CustomActivityCachingLogic : LauncherActivityCachingLogic() {
+class CustomActivityCachingLogic @Inject constructor(
+    @ApplicationContext private val context: Context,
+) : LauncherActivityCachingLogic() {
     private val prefs = NeoPrefs.getInstance()
 
     override fun getLabel(info: LauncherActivityInfo): CharSequence? {
@@ -35,5 +42,9 @@ class CustomActivityCachingLogic : LauncherActivityCachingLogic() {
             return customLabel
         }
         return super.getLabel(info)
+    }
+    companion object {
+        @JvmField
+        val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getCustomActivityCachingLogic)
     }
 }

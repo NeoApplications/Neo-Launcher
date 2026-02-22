@@ -71,6 +71,8 @@ import com.android.launcher3.util.window.WindowManagerProxy;
 import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactory;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.android.launcher3.widget.util.WidgetSizeHandler;
+import com.neoapps.neolauncher.data.IconOverrideRepository;
+import com.neoapps.neolauncher.util.CustomActivityCachingLogic;
 
 import dagger.BindsInstance;
 
@@ -177,6 +179,8 @@ public interface LauncherBaseAppComponent {
      * Tracker for any app icon changes
      */
     IconChangeTracker getIconChangeTracker();
+    IconOverrideRepository getIconOverrideRepository();
+    CustomActivityCachingLogic getCustomActivityCachingLogic();
 
     /** Builder for LauncherBaseAppComponent. */
     interface Builder {

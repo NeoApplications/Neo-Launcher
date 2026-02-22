@@ -2,6 +2,8 @@ package com.neoapps.neolauncher.data
 
 import android.content.Context
 import com.android.launcher3.LauncherAppState
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MainThreadInitializedObject
 import com.neoapps.neolauncher.data.models.IconOverride
@@ -13,8 +15,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.util.concurrent.ConcurrentLinkedQueue
+import javax.inject.Inject
 
-class IconOverrideRepository(private val context: Context) {
+@LauncherAppSingleton
+class IconOverrideRepository  @Inject constructor(@ApplicationContext private val context: Context,) {
 
     private val scope = MainScope() + CoroutineName("IconOverrideRepository")
     private val dao = NeoLauncherDb.INSTANCE.get(context).iconOverrideDao()
