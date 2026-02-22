@@ -76,6 +76,7 @@ import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.WidgetSections;
 import com.android.launcher3.widget.WidgetSections.WidgetSection;
 import com.neoapps.neolauncher.icons.CustomIconProvider;
+import com.neoapps.neolauncher.util.CustomActivityCachingLogic;
 
 import java.util.Collections;
 import java.util.List;
@@ -168,7 +169,7 @@ public class IconCache extends BaseIconCache {
         removeIconsForPkg(packageName, user);
         long userSerial = mUserManager.getSerialNumberForUser(user);
         for (LauncherActivityInfo app : apps) {
-            addIconToDBAndMemCache(app, LauncherActivityCachingLogic.INSTANCE, userSerial);
+            addIconToDBAndMemCache(app, new CustomActivityCachingLogic(), userSerial);
         }
     }
 
@@ -239,7 +240,7 @@ public class IconCache extends BaseIconCache {
      */
     public synchronized void updateTitleAndIcon(AppInfo application) {
         CacheEntry entry = cacheLocked(application.componentName,
-                application.user, () -> null, LauncherActivityCachingLogic.INSTANCE,
+                application.user, () -> null, new CustomActivityCachingLogic(),
                 application.getMatchingLookupFlag());
         if (entry.bitmap != null || !isDefaultIcon(entry.bitmap, application.user)) {
             applyCacheEntry(entry, application);
@@ -389,7 +390,7 @@ public class IconCache extends BaseIconCache {
             @NonNull Supplier<LauncherActivityInfo> activityInfoProvider,
             @NonNull CacheLookupFlag lookupFlag) {
         CacheEntry entry = cacheLocked(infoInOut.getTargetComponent(), infoInOut.user,
-                activityInfoProvider, LauncherActivityCachingLogic.INSTANCE, lookupFlag);
+                activityInfoProvider, new CustomActivityCachingLogic(), lookupFlag);
         applyCacheEntry(entry, infoInOut);
     }
 
@@ -490,7 +491,7 @@ public class IconCache extends BaseIconCache {
                                 cn,
                                 /* user = */ sectionKey.first,
                                 () -> duplicateIconRequests.get(0).launcherActivityInfo,
-                                LauncherActivityCachingLogic.INSTANCE,
+                                new CustomActivityCachingLogic(),
                                 sectionKey.second,
                                 c);
 
@@ -539,7 +540,7 @@ public class IconCache extends BaseIconCache {
                     loadFallbackIcon(
                             lai,
                             entry,
-                            LauncherActivityCachingLogic.INSTANCE,
+                            new CustomActivityCachingLogic(),
                             DEFAULT_LOOKUP_FLAG.withUsePackageIcon(false),
                             /* usePackageTitle= */ loadFallbackTitle,
                             cn,
@@ -549,7 +550,7 @@ public class IconCache extends BaseIconCache {
                     loadFallbackTitle(
                             lai,
                             entry,
-                            LauncherActivityCachingLogic.INSTANCE,
+                            new CustomActivityCachingLogic(),
                             sectionKey.first);
                 }
 
@@ -643,7 +644,7 @@ public class IconCache extends BaseIconCache {
     @VisibleForTesting
     synchronized boolean isItemInDb(ComponentKey cacheKey) {
         return getEntryFromDBLocked(cacheKey, new CacheEntry(), DEFAULT_LOOKUP_FLAG,
-                LauncherActivityCachingLogic.INSTANCE);
+                new CustomActivityCachingLogic());
     }
 
     /**

@@ -102,6 +102,7 @@ import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.util.UserIconInfo;
 import com.android.launcher3.widget.WidgetInflater;
 import com.android.launcher3.widget.util.WidgetSizeHandler;
+import com.neoapps.neolauncher.util.CustomActivityCachingLogic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -254,19 +255,23 @@ public class LoaderTask implements Runnable {
                         .collect(Collectors.toList());
         boolean shouldAttachArchivingExtras = mIsRestoreFromBackup
                 && !mSettingsCache.getValue(DISABLE_INSTALLED_APPS_BROADCAST);
-        if (Utilities.ATLEAST_V) {
-        List<FirstScreenBroadcastModel> broadcastModels =
-                mFirstScreenBroadcastHelper.createModelsForFirstScreenBroadcast(
-                        firstScreenItems,
-                        mInstallingPkgsCached,
-                        mBgDataModel.itemsIdMap.stream().filter(WIDGET_FILTER).collect(Collectors.toList()),
-                        shouldAttachArchivingExtras
-                );
-        logASplit("Sending first screen broadcast with shouldAttachArchivingExtras="
-                + shouldAttachArchivingExtras);
+        if (shouldAttachArchivingExtras) {
+            List<FirstScreenBroadcastModel> broadcastModels =
+                    mFirstScreenBroadcastHelper.createModelsForFirstScreenBroadcast(
+                            firstScreenItems,
+                            mInstallingPkgsCached,
+                            mBgDataModel.itemsIdMap.stream().filter(WIDGET_FILTER).collect(Collectors.toList()),
+                            shouldAttachArchivingExtras
+                    );
+            logASplit("Sending first screen broadcast with shouldAttachArchivingExtras="
+                    + shouldAttachArchivingExtras);
             broadcastModels.forEach(bm -> bm.sentBroadcast(mContext));
+        } else {
+            logASplit("Sending first screen broadcast");
+            //mFirstScreenBroadcastHelper.sendBroadcasts(mContext, firstScreenItems);
         }
     }
+
 
     private void loadAllSurfacesOrdered(
             LoaderMemoryLogger memoryLogger, LauncherRestoreEventLogger restoreEventLogger) {
@@ -330,7 +335,7 @@ public class LoaderTask implements Runnable {
         IconCacheUpdateHandler updateHandler = mIconCache.getUpdateHandler();
         setIgnorePackages(updateHandler);
         updateHandler.updateIcons(allActivityList,
-                LauncherActivityCachingLogic.INSTANCE,
+                new CustomActivityCachingLogic(),
                 mModel::onPackageIconsUpdated);
         logASplit("update AllApps icon cache finished");
 
