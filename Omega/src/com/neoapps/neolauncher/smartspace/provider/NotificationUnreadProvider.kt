@@ -100,8 +100,7 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
         val notif = sbn.notification
         val extras = notif.extras
         val titleText = extras.getString(Notification.EXTRA_TITLE) ?: ""
-        val bodyText =
-            extras.getString(Notification.EXTRA_TEXT)?.trim()?.split("\n")?.firstOrNull() ?: ""
+        val bodyText = extractNotificationText(extras)
 
         val splitted = splitTitle(titleText)
         val lines = mutableListOf<String>()
@@ -118,15 +117,27 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
 
         val primaryText = Text(fullText, TextUtils.TruncateAt.END, 3)
 
-        val smallIcon = sbn.notification.smallIcon
-        val iconBitmap = (smallIcon?.loadDrawable(context) as? BitmapDrawable)?.bitmap
-
-        val icon = if (iconBitmap != null) Icon(
-            android.graphics.drawable.Icon.createWithBitmap(iconBitmap),
-            null,
-            true
-        )
-        else null
+        val icon = try {
+            val smallIcon = sbn.notification.smallIcon
+            if (smallIcon != null) {
+                val drawable = smallIcon.loadDrawable(context)
+                if (drawable is BitmapDrawable) {
+                    Icon(
+                        android.graphics.drawable.Icon.createWithBitmap(drawable.bitmap),
+                        null,
+                        true
+                    )
+                } else if (drawable != null) {
+                    Icon(smallIcon, null, true)
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
 
         val clickIntent = sbn.notification.contentIntent
 
@@ -194,6 +205,48 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
             templateData = templateData,
             score = 100
         )
+    }
+
+    private fun extractNotificationText(extras: android.os.Bundle): String {
+        val candidates = mutableListOf<String?>()
+
+        candidates.add(extras.getString(Notification.EXTRA_TEXT))
+        candidates.add(extras.getCharSequence(Notification.EXTRA_TEXT)?.toString())
+        candidates.add(extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString())
+        candidates.add(extras.getString(Notification.EXTRA_BIG_TEXT))
+
+        candidates.add(extras.getString(Notification.EXTRA_SUB_TEXT))
+        candidates.add(extras.getCharSequence(Notification.EXTRA_SUB_TEXT)?.toString())
+        candidates.add(extras.getString(Notification.EXTRA_INFO_TEXT))
+        candidates.add(extras.getString(Notification.EXTRA_SUMMARY_TEXT))
+        candidates.add(extras.getCharSequence(Notification.EXTRA_SUMMARY_TEXT)?.toString())
+
+        try {
+            for (key in extras.keySet()) {
+                val value = extras.get(key)
+                if (value is String && value.isNotBlank() && !value.equals(
+                        extras.getString(Notification.EXTRA_TITLE),
+                        ignoreCase = true
+                    )
+                ) {
+                    candidates.add(value)
+                } else if (value is CharSequence && value.isNotBlank()) {
+                    candidates.add(value.toString())
+                }
+            }
+        } catch (e: Exception) {
+        }
+
+        for (candidate in candidates) {
+            if (candidate != null) {
+                val text = candidate.trim().split("\n").firstOrNull()?.trim()
+                if (!text.isNullOrBlank() && text.length > 3) {
+                    return text
+                }
+            }
+        }
+
+        return ""
     }
 
     private fun splitTitle(title: String): Array<String> {
