@@ -25,7 +25,7 @@ import com.android.launcher3.LauncherFiles
 class LegacyPreferences(context: Context) {
     private var sharedPreferences: SharedPreferences =
         context.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
-    var editor = sharedPreferences.edit()
+    var editor: SharedPreferences.Editor = sharedPreferences.edit()
 
     fun getStringPreference(key: String, default: String): String? {
         return sharedPreferences.getString(key, default)

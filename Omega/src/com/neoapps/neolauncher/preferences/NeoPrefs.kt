@@ -210,7 +210,7 @@ class NeoPrefs private constructor(val context: Context) {
         summaryId = R.string.summary_colored_backgrounds,
         defaultValue = false,
         onChange = {
-            legacyPrefs.savePreference(PrefKey.PROFILE_ICON_COLORED_BG.name, it)
+            legacyPrefs.savePreference("profile_icon_colored_background", it)
         }
     )
 
@@ -220,7 +220,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_adaptify_pack,
         defaultValue = false,
         onChange = {
-            legacyPrefs.savePreference(PrefKey.PROFILE_ICON_ADAPTIFY.name, it)
+            legacyPrefs.savePreference("profile_icon_adaptify", it)
         }
     )
 

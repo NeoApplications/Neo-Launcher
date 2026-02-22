@@ -32,6 +32,7 @@ import android.os.UserHandle
 import android.util.SparseArray
 import androidx.annotation.ColorInt
 import androidx.annotation.IntDef
+import androidx.annotation.NonNull
 import androidx.core.graphics.drawable.toDrawable
 import com.android.launcher3.icons.BitmapInfo.Extender
 import com.android.launcher3.icons.ColorExtractor.findDominantColorByHue
@@ -70,6 +71,7 @@ constructor(
 ) : AutoCloseable {
 
     private val cachedUserInfo = SparseArray<UserIconInfo>()
+    private val prefs = IconPreferences(context)
 
     private val shadowGenerator: ShadowGenerator by lazy { ShadowGenerator(iconBitmapSize) }
 
@@ -112,7 +114,7 @@ constructor(
             createBadgedIconBitmap(
                 icon.toDrawable(context.resources),
                 IconOptions()
-                    .setWrapNonAdaptiveIcon(false)
+                    .setWrapNonAdaptiveIcon(prefs.shouldWrapAdaptive())
                     .setIconScale(1f)
                     .assumeFullBleedIcon(isFullBleed && isIconFullBleed(icon))
                     .setDrawFullBleed(isFullBleed && isIconFullBleed(icon)),
@@ -140,18 +142,18 @@ constructor(
     fun normalizeAndWrapToAdaptiveIcon(
         icon: Drawable?,
         outScale: FloatArray
-    ): AdaptiveIconDrawable? {
+    ): Drawable? {
         if (icon == null) {
             return null
         }
         val isFromIconPack = icon.isFromIconPack
-        val shrinkNonAdaptiveIcons =
-            !isFromIconPack && IconPreferences(context).shouldWrapAdaptive()
+        val shouldWrapAdaptive = !isFromIconPack && IconPreferences(context).shouldWrapAdaptive()
+        val shrinkNonAdaptiveIcons = IconProvider.ATLEAST_OMR1 && shouldWrapAdaptive
+
         val scale: Float
         if (shrinkNonAdaptiveIcons && icon !is AdaptiveIconDrawable) {
             scale = IconNormalizer(iconBitmapSize).getScale(icon)
-            val wrapperBackgroundColor: Int =
-                IconPreferences(context).getWrapperBackgroundColor(icon)
+            val wrapperBackgroundColor: Int = IconPreferences(context).getWrapperBackgroundColor(icon)
             val foreground = FixedScaleDrawable()
             foreground.apply {
                 drawable = icon
@@ -162,8 +164,18 @@ constructor(
             outScale[0] = IconNormalizer(iconBitmapSize).getScale(wrapper)
             return wrapper
         } else {
-            outScale[0] = IconNormalizer(iconBitmapSize).getScale(icon)
-            return wrapToAdaptiveIcon(icon)
+            if (icon is AdaptiveIconDrawable) {
+                outScale[0] = ICON_VISIBLE_AREA_FACTOR
+                return icon
+            }
+            if (shouldWrapAdaptive) {
+                outScale[0] = ICON_VISIBLE_AREA_FACTOR
+                return wrapToAdaptiveIcon(icon)
+            } else {
+                scale = IconNormalizer(iconBitmapSize).getScale(icon)
+                outScale[0] = scale
+                return icon
+            }
         }
     }
 
@@ -179,7 +191,7 @@ constructor(
             icon,
             IconOptions()
                 .setBitmapGenerationMode(bitmapGenerationMode)
-                .setWrapNonAdaptiveIcon(false)
+                .setWrapNonAdaptiveIcon(prefs.shouldWrapAdaptive())
                 .setDrawFullBleed(isFullBleed)
                 .setIconScale(scale),
         )
@@ -221,7 +233,7 @@ constructor(
         }
 
         options.setWrapperBackgroundColor(IconPreferences(context).getWrapperBackgroundColor(icon))
-        if (options.wrapNonAdaptiveIcon) tempIcon = wrapToAdaptiveIcon(tempIcon, options)
+        if (prefs.shouldWrapAdaptive()) tempIcon = wrapToAdaptiveIcon(tempIcon, options)
 
         val drawFullBleed = options.drawFullBleed ?: drawFullBleedIcons
 
@@ -317,13 +329,35 @@ constructor(
 
     /** Wraps the provided icon in an adaptive icon drawable */
     @JvmOverloads
-    fun wrapToAdaptiveIcon(icon: Drawable, options: IconOptions? = null): AdaptiveIconDrawable =
-        icon as? AdaptiveIconDrawable
-            ?: AdaptiveIconDrawable(
-                (options?.wrapperBackgroundColor ?: DEFAULT_WRAPPER_BACKGROUND).toDrawable(),
-                icon.wrapIntoSquareDrawable(LEGACY_ICON_SCALE),
-            )
-                .apply { setBounds(0, 0, 1, 1) }
+    fun wrapToAdaptiveIcon(icon: Drawable, options: IconOptions? = null): AdaptiveIconDrawable
+    {
+        if(icon is AdaptiveIconDrawable) return icon
+        else{
+            val iconBackground = IconPreferences(context).getWrapperBackgroundColor(icon)
+            val scale = options?.iconScale ?: IconNormalizer(iconBitmapSize).getScale(icon)
+            val dr = CustomAdaptiveIconDrawable(
+                iconBackground.toDrawable(),
+                createScaledDrawable(icon, scale * LEGACY_ICON_SCALE))
+            dr.setBounds(0, 0, 1, 1)
+            return dr
+
+        }
+    }
+
+    private fun createScaledDrawable(@NonNull main: Drawable, scale: Float): Drawable {
+        val h = main.intrinsicHeight.toFloat()
+        val w = main.intrinsicWidth.toFloat()
+        var scaleX = scale
+        var scaleY = scale
+        if (h > w && w > 0) {
+            scaleX *= w / h
+        } else if (w > h && h > 0) {
+            scaleY *= h / w
+        }
+        scaleX = (1 - scaleX) / 2
+        scaleY = (1 - scaleY) / 2
+        return InsetDrawable(main, scaleX, scaleY, scaleX, scaleY)
+    }
 
     private fun drawableToBitmap(
         icon: Drawable,
@@ -405,6 +439,7 @@ constructor(
     }
 
     class IconOptions {
+
         internal var isInstantApp: Boolean = false
         internal var isFullBleed: Boolean = false
 

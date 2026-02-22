@@ -42,7 +42,7 @@ class IconPreferences(context: Context) {
     }
 
     fun getWrapperBackgroundColor(icon: Drawable): Int {
-        val lightness = prefs.getFloat("pref_coloredBackgroundLightness", 0.95f)
+        val lightness = prefs.getFloat("pref_coloredBackgroundLightness", 1f)
         val palette = Palette.Builder(drawableToBitmap(icon)).generate()
         val dominantColor = palette.getDominantColor(Color.WHITE)
         return setLightness(dominantColor, lightness)

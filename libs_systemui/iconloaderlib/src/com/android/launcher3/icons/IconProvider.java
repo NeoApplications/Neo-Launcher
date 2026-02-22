@@ -51,6 +51,7 @@ import java.util.Objects;
 public class IconProvider {
     private static final String TAG = "IconProvider";
     private static final boolean DEBUG = false;
+    public static final boolean ATLEAST_OMR1 = BuildCompat.isAtLeastOMR1();
     public static final boolean ATLEAST_T = BuildCompat.isAtLeastT();
     private static final String ICON_METADATA_KEY_PREFIX = ".dynamic_icons";
     private static final String SYSTEM_STATE_SEPARATOR = " ";
