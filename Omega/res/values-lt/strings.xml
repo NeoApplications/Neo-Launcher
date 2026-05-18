@@ -346,8 +346,8 @@
     <string name="hide_app_selected">Paslėptos programėlės (%1$d)</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d paslėpta</item>
-        <item quantity="few"></item>
-        <item quantity="other"></item>
+        <item quantity="few"/>
+        <item quantity="other"/>
     </plurals>
     <string name="selected_count">%1$d pasirinkta</string>
     <plurals name="tab_apps_count">
@@ -401,7 +401,6 @@
     <string name="about_channel">Kanalas</string>
     <string name="about_open_source">Atvirojo kodo bibliotekos</string>
     <string name="folder_name">Aplanko pavadinimas</string>
-
     <string name="title_fuzzy_search">Fuzzy paieška</string>
     <string name="summary_app_suggestions">Visoms programėlėms ir pagrindiniam ekranui</string>
     <string name="title__general_widgets_notifications">Valdikliai ir pranešimai</string>
