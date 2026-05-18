@@ -437,7 +437,6 @@
     <string name="title__general_widgets_notifications">Widgets e Notificações</string>
     <string name="pref_category__features">Recursos</string>
     <string name="title_fuzzy_search">Pesquisa aproximada</string>
-
     <string name="summary_app_suggestions">Para todos os apps e tela inicial</string>
     <string name="pref_category__dash">Painel</string>
     <string name="title__feed">Feed</string>
