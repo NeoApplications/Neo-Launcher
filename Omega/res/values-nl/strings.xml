@@ -96,7 +96,7 @@
     <string name="title__dock_icon_size_enforce">Aangepaste pictogramgrootte handhaven</string>
     <string name="title__dock_scale">Dokgrootte</string>
     <string name="title_dock_two_row">Tweede rij weergeven</string>
-    <string name="title__dock_hide">Dok verbergen</string>
+    <string name="title__dock_hide">Dok ingeschakeld</string>
     <string name="label_search">Zoeken</string>
     <string name="title__drawer_paged_apps">App-overzicht in pagina\'s</string>
     <string name="title__drawer_hide_icon_labels">App-namen verbergen</string>
