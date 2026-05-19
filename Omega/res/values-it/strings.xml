@@ -64,7 +64,7 @@
     <string name="title_drawer_row_height">Altezza riga</string>
     <string name="title__drawer_hide_apps">Scorciatoie app nascoste</string>
     <string name="title__drawer_sort">Ordinamento app</string>
-    <string name="title__dock_hide">Nascondi barra app</string>
+    <string name="title__dock_hide">Barra app abilitata</string>
     <string name="title_dock_fill">Mostra sfondo</string>
     <string name="title__dock_icon_size">Dimensione icona</string>
     <string name="summary_full_width_widgets">Consenti ai widget di estendersi su tutta la larghezza senza riempimento</string>
