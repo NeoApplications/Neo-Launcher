@@ -522,4 +522,28 @@
     <string name="edit_search_provider">Editar proveedor de búsqueda</string>
     <string name="search_provider_url_hint">Utilizar %s en lugar del término de búsqueda</string>
     <string name="title_drawer_layout_categories">Categorías de diseño</string>
+    <string name="hotseat_prediction_content_description">App prevista: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
+    <string name="hotseat_tip_gaps_filled">Sugerencias de apps agregadas al espacio vacío</string>
+    <string name="title_app_suggestions">Sugerencias de apps</string>
+    <string name="title_desktop_cycle_scrolling">Desplazamiento cíclico</string>
+    <string name="title_manage_tabs">Administrar pestañas</string>
+    <string name="summary_manage_tabs">Crear o editar pestañas</string>
+    <string name="title_drawer_tabs">Pestañas Horizontales</string>
+    <string name="category_art_and_design">Diseño</string>
+    <string name="category_business_and_productivity">Productividad</string>
+    <string name="category_communication">Comunicación</string>
+    <string name="category_entertainment">Entretenimiento</string>
+    <string name="category_game">Juegos</string>
+    <string name="category_health_and_fitness">Fitness</string>
+    <string name="category_lifestyle">Estilo de vida</string>
+    <string name="category_knowledge_and_reference">Conocimiento</string>
+    <string name="category_music">Música</string>
+    <string name="category_news">Noticias</string>
+    <string name="category_personalization">Personalización</string>
+    <string name="category_tools">Herramientas</string>
+    <string name="category_travel_and_navigation">Navegación</string>
+    <string name="trust_apps_unlock">Desbloquear</string>
+    <string name="trust_apps_message">Autenticación requerida para acceder a las apps protegidas</string>
+    <string name="title_enable_feed">Habilitar Feed</string>
+    <string name="title__about_acknowledgement">Reconocimiento</string>
 </resources>
