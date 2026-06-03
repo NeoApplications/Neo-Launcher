@@ -1,0 +1,12 @@
+* Mesclado android-11.0.0_r31
+* Adicionado: Preferência de ecrã vazio
+* Adicionado: Seletor de cores para guias
+* Adicionado: Controlos de traço adicionais
+* Adicionado: Dash de Personalização
+* Adicionado: Apoio QuickSwitch
+* Adicionado: FiveSecs KLWP
+* Adicionado: Provedor Searx
+* Adicionado: Assistente de Sono
+* Adicionado: Lista vertical de apps (experimental)
+* Corrigido: Tamanho do Dock em ecrãs longos
+* Corregido: Falha ao abrir o Assistente do Google
