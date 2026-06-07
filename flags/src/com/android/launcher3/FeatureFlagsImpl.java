@@ -201,64 +201,48 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enableGridMigrationFix() {
         return true;
     }
 
     @Override
-
-
     public boolean enableGridOnlyOverview() {
         return false;
     }
 
     @Override
-
-
     public boolean enableGrowthNudge() {
         return false;
     }
 
     @Override
-
-
     public boolean enableHandleDelayedGestureCallbacks() {
         return true;
     }
 
     @Override
-
-
     public boolean enableHomeTransitionListener() {
         return true;
     }
 
     @Override
-
-
     public boolean enableHoverOfChildElementsInTaskview() {
         return true;
     }
 
     @Override
-
-
     public boolean enableLargeDesktopWindowingTile() {
         return true;
     }
 
     @Override
-
-
     public boolean enableLauncherBrMetricsFixed() {
         return true;
     }
 
     @Override
     public boolean enableLauncherIconShapes() {
-        return false;
+        return true;
     }
 
     @Override
@@ -295,8 +279,6 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enableOverviewBackgroundWallpaperBlur() {
         return true;
     }
@@ -309,63 +291,46 @@ public final class FeatureFlagsImpl implements FeatureFlags {
     }
 
     @Override
-
-
     public boolean enableOverviewDesktopTileWallpaperBackground() {
         return false;
     }
 
     @Override
-
-
     public boolean enableOverviewIconMenu() {
         return false;
     }
 
     @Override
-
-
     public boolean enableOverviewOnConnectedDisplays() {
         return false;
     }
 
     @Override
-
-
     public boolean enablePinningAppWithContextMenu() {
-        return false;
+        return true;
     }
 
     @Override
-
-
     public boolean enablePredictiveBackGesture() {
         return true;
     }
 
     @Override
-
-
     public boolean enablePrivateSpace() {
         return true;
     }
 
     @Override
-
-
     public boolean enablePrivateSpaceInstallShortcut() {
         return true;
     }
 
     @Override
-
-
     public boolean enableRebootUnlockAnimation() {
         return false;
     }
 
     @Override
-
     public boolean enableRecentsInTaskbar() {
         return false;
     }
