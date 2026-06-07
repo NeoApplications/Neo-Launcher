@@ -72,11 +72,12 @@ import com.android.launcher3.widget.LauncherWidgetHolder.WidgetHolderFactory;
 import com.android.launcher3.widget.custom.CustomWidgetManager;
 import com.android.launcher3.widget.util.WidgetSizeHandler;
 import com.neoapps.neolauncher.data.IconOverrideRepository;
+import com.neoapps.neolauncher.icons.IconShapeManager;
 import com.neoapps.neolauncher.util.CustomActivityCachingLogic;
 
-import dagger.BindsInstance;
-
 import javax.inject.Named;
+
+import dagger.BindsInstance;
 
 /**
  * Launcher base component for Dagger injection.
@@ -181,6 +182,8 @@ public interface LauncherBaseAppComponent {
     IconChangeTracker getIconChangeTracker();
     IconOverrideRepository getIconOverrideRepository();
     CustomActivityCachingLogic getCustomActivityCachingLogic();
+
+    IconShapeManager getIconShapeManager();
 
     /** Builder for LauncherBaseAppComponent. */
     interface Builder {

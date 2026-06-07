@@ -22,11 +22,19 @@ import android.content.Context
 import android.graphics.Path
 import android.graphics.Region
 import android.graphics.drawable.AdaptiveIconDrawable
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppComponent
+import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.graphics.ThemeManager
 import com.android.launcher3.icons.GraphicsUtils
-import com.android.launcher3.util.MainThreadInitializedObject
+import com.android.launcher3.util.DaggerSingletonObject
+import com.android.launcher3.util.SafeCloseable
+import jakarta.inject.Inject
 
-class IconShapeManager(private val context: Context) {
+@LauncherAppSingleton
+class IconShapeManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+) : SafeCloseable {
     fun getSystemShape(): IconShape {
         val iconMask = AdaptiveIconDrawable(null, null).iconMask
         val systemShape = findNearestShape(iconMask)
@@ -80,10 +88,13 @@ class IconShapeManager(private val context: Context) {
             }!!
     }
 
-    companion object {
+    override fun close() {
+        TODO("Not yet implemented")
+    }
 
+    companion object {
         @JvmField
-        val INSTANCE = MainThreadInitializedObject(::IconShapeManager)
+        val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getIconShapeManager)
     }
 
 }
