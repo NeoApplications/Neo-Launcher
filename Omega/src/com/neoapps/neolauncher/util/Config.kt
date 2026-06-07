@@ -115,6 +115,20 @@ class Config(val context: Context) {
         const val BS_CREATE_GROUP = 1
         const val BS_EDIT_GROUP = 2
 
+        //ICON SHAPE
+        const val SHAPE_CIRCLE = "circle"
+        const val SHAPE_SQUARE = "square"
+        const val SHAPE_SHARP_SQUARE = "sharpSquare"
+        const val SHAPE_ROUNDED_SQUARE = "roundedSquare"
+        const val SHAPE_SQUIRCLE = "squircle"
+        const val SHAPE_SAMMY = "sammy"
+        const val SHAPE_TEARDROP = "teardrop"
+        const val SHAPE_CYLINDER = "cylinder"
+        const val SHAPE_CUPERTINO = "cupertino"
+        const val SHAPE_HEXAGON = "hexagon"
+        const val SHAPE_OCTAGON = "octagon"
+        const val SHAPE_EGG = "egg"
+
         val drawerSortOptions = mutableMapOf(
             SORT_AZ to R.string.title__sort_alphabetical_az,
             SORT_ZA to R.string.title__sort_alphabetical_za,

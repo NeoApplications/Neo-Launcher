@@ -27,6 +27,7 @@ import android.util.Log
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.shapes.IconShapeModel
+import com.neoapps.neolauncher.util.Config
 
 open class IconShape(
     private val topLeft: Corner,
@@ -424,21 +425,19 @@ open class IconShape(
         }
 
         fun fromString(value: String): IconShape = when (value) {
-            // TODO add constants instead of string literals
-            "circle"        -> Circle
-            "square"        -> Square
-            "sharpSquare"   -> SharpSquare
-            "roundedSquare" -> RoundedSquare
-            "squircle"      -> Squircle
-            "sammy"         -> Sammy
-            "teardrop"      -> Teardrop
-            "cylinder"      -> Cylinder
-            "cupertino"     -> Cupertino
-            "hexagon"       -> Hexagon
-            "octagon"       -> Octagon
-            "egg"           -> Egg
-            ""              -> Circle
-            else            -> runCatching { parseCustomShape(value) }.getOrDefault(Circle)
+            Config.SHAPE_CIRCLE -> Circle
+            Config.SHAPE_SQUARE -> Square
+            Config.SHAPE_SHARP_SQUARE -> SharpSquare
+            Config.SHAPE_ROUNDED_SQUARE -> RoundedSquare
+            Config.SHAPE_SQUIRCLE -> Squircle
+            Config.SHAPE_SAMMY -> Sammy
+            Config.SHAPE_TEARDROP -> Teardrop
+            Config.SHAPE_CYLINDER -> Cylinder
+            Config.SHAPE_CUPERTINO -> Cupertino
+            Config.SHAPE_HEXAGON -> Hexagon
+            Config.SHAPE_OCTAGON -> Octagon
+            Config.SHAPE_EGG -> Egg
+            else -> runCatching { parseCustomShape(value) }.getOrDefault(Circle)
         }
 
         private fun parseCustomShape(value: String): IconShape {
