@@ -55,16 +55,16 @@ fun IconShapePage() {
             systemShape,
             IconShape.Circle,
             IconShape.Cylinder,
-            IconShape.Cupertino,
-            IconShape.Egg,
+            IconShape.Teardrop,
             IconShape.Hexagon,
             IconShape.Octagon,
-            IconShape.RoundedSquare,
+            IconShape.Egg,
             IconShape.Sammy,
+            IconShape.Squircle,
             IconShape.SharpSquare,
             IconShape.Square,
-            IconShape.Squircle,
-            IconShape.Teardrop,
+            IconShape.Cupertino,
+            IconShape.RoundedSquare,
         )
         val listItems = iconShapes.distinctBy { it.getMaskPath() }.map { ShapeModel(it.toString()) }
 
