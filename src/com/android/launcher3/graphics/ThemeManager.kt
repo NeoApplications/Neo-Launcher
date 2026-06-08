@@ -18,6 +18,7 @@ package com.android.launcher3.graphics
 
 import android.content.Context
 import android.content.res.Resources
+import com.android.launcher3.EncryptionType
 import com.android.launcher3.LauncherPrefChangeListener
 import com.android.launcher3.LauncherPrefs
 import com.android.launcher3.LauncherPrefs.Companion.backedUpItem
@@ -46,31 +47,29 @@ import com.android.launcher3.util.SafeCloseable
 import com.android.launcher3.util.SimpleBroadcastReceiver
 import com.android.launcher3.util.SimpleBroadcastReceiver.Companion.packageFilter
 import java.util.concurrent.CopyOnWriteArrayList
-import javax.inject.Inject
 import javax.inject.Named
 
 /** Centralized class for managing Launcher icon theming */
 @LauncherAppSingleton
-class ThemeManager
-@Inject
+open class ThemeManager
 constructor(
-    @ApplicationContext private val context: Context,
-    @Ui private val uiExecutor: LooperExecutor,
-    private val prefs: LauncherPrefs,
-    private val themePreference: ThemePreference,
+    @ApplicationContext protected val context: Context,
+    @Ui protected val uiExecutor: LooperExecutor,
+    protected val prefs: LauncherPrefs,
+    protected val themePreference: ThemePreference,
     @Named(ICON_FACTORY_DAGGER_KEY)
-    private val iconThemeFactories: Map<String, @JvmSuppressWildcards IconThemeFactory>,
+    protected val iconThemeFactories: Map<String, @JvmSuppressWildcards IconThemeFactory>,
     @Ui mainExecutor: LooperExecutor,
     lifecycle: DaggerSingletonTracker,
 ) {
 
-    private val _iconShapeData = MutableListenableRef(IconShape.EMPTY)
+    val _iconShapeData = MutableListenableRef(IconShape.EMPTY)
 
     /** listenable value holder for current IconShape */
     val iconShapeData: ListenableRef<IconShape> = _iconShapeData.asListenable()
     /** Representation of the current icon state */
-    var iconState = parseIconState(null)
-        private set
+    open var iconState = parseIconState(null)
+        protected set
 
     @Deprecated("Use [ThemePreference] instead")
     var isMonoThemeEnabled
@@ -89,7 +88,7 @@ constructor(
     val folderShape
         get() = iconState.folderShape
 
-    private val listeners = CopyOnWriteArrayList<ThemeChangeListener>()
+    val listeners = CopyOnWriteArrayList<ThemeChangeListener>()
 
     init {
         val receiver = SimpleBroadcastReceiver(context, uiExecutor) { verifyIconState() }
@@ -107,7 +106,7 @@ constructor(
         }
     }
 
-    private fun verifyIconState() {
+    open fun verifyIconState() {
         val newState = parseIconState(iconState)
         if (newState == iconState) return
         val hasThemedChanged = newState.toUniqueId() != iconState.toUniqueId()
@@ -203,7 +202,7 @@ constructor(
         val folderShapeInfo = IconShapeInfo.fromPath(folderShape.getPath(), DEFAULT_PATH_SIZE_INT)
     }
 
-    private fun IconState.closeController() {
+    fun IconState.closeController() {
         if (themeController is SafeCloseable) {
             themeController.close()
         }
@@ -218,11 +217,14 @@ constructor(
 
         @JvmField val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getThemeManager)
 
-        @JvmField
-        val PREF_ICON_SHAPE = backedUpItem("icon_shape_model", "")
+        const val KEY_THEMED_ICONS = "themed_icons"
+        const val KEY_ICON_SHAPE = "icon_shape_model"
 
         @JvmField
-        val KEY_THEMED_ICONS = "themed_icons"
+        val THEMED_ICONS = backedUpItem(KEY_THEMED_ICONS, false, EncryptionType.ENCRYPTED)
+
+        @JvmField
+        val PREF_ICON_SHAPE = backedUpItem(KEY_ICON_SHAPE, "", EncryptionType.ENCRYPTED)
 
         @JvmField
         val DEFAULT_SHAPE_DELEGATE = pickBestShape(shapeStr = "")

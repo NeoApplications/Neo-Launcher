@@ -55,7 +55,6 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
-
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside this
  * package.
@@ -256,9 +255,7 @@ constructor(
             )
         if (icon is Extender) {
             info = icon.getUpdatedBitmapInfo(info, this)
-        }
-
-        if (IconProvider.ATLEAST_T && themeController != null) {
+        } else if (IconProvider.ATLEAST_T && themeController != null) {
             info =
                 info.copy(
                     themedBitmap =
@@ -340,7 +337,6 @@ constructor(
                 createScaledDrawable(icon, scale * LEGACY_ICON_SCALE))
             dr.setBounds(0, 0, 1, 1)
             return dr
-
         }
     }
 

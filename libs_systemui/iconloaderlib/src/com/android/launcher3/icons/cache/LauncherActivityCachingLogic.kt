@@ -19,6 +19,7 @@ package com.android.launcher3.icons.cache
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
+import android.os.Build
 import android.os.Build.VERSION
 import android.os.UserHandle
 import android.util.Log
@@ -42,6 +43,11 @@ open class LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
         cache: BaseIconCache,
         info: LauncherActivityInfo,
     ): BitmapInfo {
+        val activityInfo = if (VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            info.activityInfo
+        } else {
+            context.packageManager.getActivityInfo(info.componentName, 0)
+        }
         cache.iconFactory.use { li ->
             val iconOptions: IconOptions =
                 IconOptions()
@@ -50,11 +56,14 @@ open class LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
                         // b/358123888: Pre-archived apps can have BitmapDrawables without insets
                         useNewIconForArchivedApps() &&
                                 VERSION.SDK_INT >= 35 &&
-                                info.activityInfo.isArchived
+                                activityInfo.isArchived
                     )
                     .setSourceHint(getSourceHint(info, cache))
-            val iconDrawable = cache.iconProvider.getIcon(info.activityInfo, li.fullResIconDpi)
-            if (context.packageManager.isDefaultApplicationIcon(iconDrawable)) {
+            val iconDrawable = cache.iconProvider.getIcon(activityInfo, li.fullResIconDpi)
+            if (VERSION.SDK_INT >= 30 && context.packageManager.isDefaultApplicationIcon(
+                    iconDrawable
+                )
+            ) {
                 Log.w(
                     TAG,
                     "loadIcon: Default app icon returned from PackageManager." +

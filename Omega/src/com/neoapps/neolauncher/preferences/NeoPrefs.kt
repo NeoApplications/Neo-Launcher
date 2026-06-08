@@ -78,6 +78,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -1301,11 +1302,12 @@ class NeoPrefs private constructor(val context: Context) {
     init {
         initializeIconShape(IconShape.fromString(context, profileIconShape.getValue()))
         profileIconShape.get()
+            .drop(1)
             .distinctUntilChanged()
             .onEach { shape ->
                 val iconShape = IconShape.fromString(context, shape)
                 initializeIconShape(iconShape)
-                ThemeManager.INSTANCE.get(context)
+                ThemeManager.INSTANCE.get(context).verifyIconState()
                 LauncherAppState.getInstance(context).model.reloadIfActive()
             }
             .launchIn(scope)

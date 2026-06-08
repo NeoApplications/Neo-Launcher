@@ -132,6 +132,16 @@ constructor(
         }
     }
     fun getFullResIcon(info: ActivityInfo): Drawable? = iconProvider.getIcon(info, iconDpi)
+
+    fun getFullResIcon(packageName: String): Drawable? {
+        try {
+            val info = packageManager.getApplicationInfo(packageName, 0)
+            return iconProvider.getIcon(info, iconDpi)
+        } catch (e: NameNotFoundException) {
+            return null
+        }
+    }
+
     /** Remove any records for the supplied ComponentName. */
     @Synchronized
     fun remove(componentName: ComponentName, user: UserHandle) =

@@ -16,14 +16,13 @@
 
 package com.android.launcher3.shapes
 
-import com.android.launcher3.Flags as LauncherFlags
 import com.android.launcher3.R
 import com.android.systemui.shared.Flags
-import com.neoapps.neolauncher.icons.IconShape
+import com.android.launcher3.Flags as LauncherFlags
 
 object ShapesProvider {
-    private const val CIRCLE_PATH = "M50 0A50 50,0,1,1,50 100A50 50,0,1,1,50 0"
-    private const val SQUARE_PATH =
+    const val CIRCLE_PATH = "M50 0A50 50,0,1,1,50 100A50 50,0,1,1,50 0"
+    const val SQUARE_PATH =
         "M53.689 0.82 L53.689 .82 C67.434 .82 74.306 .82 79.758 2.978 87.649 6.103 93.897 12.351 97.022 20.242 99.18 25.694 99.18 32.566 99.18 46.311 V53.689 C99.18 67.434 99.18 74.306 97.022 79.758 93.897 87.649 87.649 93.897 79.758 97.022 74.306 99.18 67.434 99.18 53.689 99.18 H46.311 C32.566 99.18 25.694 99.18 20.242 97.022 12.351 93.897 6.103 87.649 2.978 79.758 .82 74.306 .82 67.434 .82 53.689 L.82 46.311 C.82 32.566 .82 25.694 2.978 20.242 6.103 12.351 12.351 6.103 20.242 2.978 25.694 .82 32.566 .82 46.311 .82Z"
     private const val FOUR_SIDED_COOKIE_PATH =
         "M39.888,4.517C46.338 7.319 53.662 7.319 60.112 4.517L63.605 3C84.733 -6.176 106.176 15.268 97 36.395L95.483 39.888C92.681 46.338 92.681 53.662 95.483 60.112L97 63.605C106.176 84.732 84.733 106.176 63.605 97L60.112 95.483C53.662 92.681 46.338 92.681 39.888 95.483L36.395 97C15.267 106.176 -6.176 84.732 3 63.605L4.517 60.112C7.319 53.662 7.319 46.338 4.517 39.888L3 36.395C -6.176 15.268 15.267 -6.176 36.395 3Z"
@@ -38,8 +37,7 @@ object ShapesProvider {
     const val ARCH_KEY = "arch"
 
     val iconShapes: Array<IconShapeModel> =
-        IconShape.getAllShapeModels()
-        /*if (Flags.newCustomizationPickerUi() && LauncherFlags.enableLauncherIconShapes()) {
+        if (Flags.newCustomizationPickerUi() && LauncherFlags.enableLauncherIconShapes()) {
             arrayOf(
                 IconShapeModel(
                     key = CIRCLE_KEY,
@@ -81,5 +79,5 @@ object ShapesProvider {
                     pathString = CIRCLE_PATH,
                 )
             )
-        }*/
+        }
 }

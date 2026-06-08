@@ -1,27 +1,30 @@
 package com.neoapps.neolauncher.iconpack
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import com.android.launcher3.R
+import com.android.launcher3.dagger.ApplicationContext
+import com.android.launcher3.dagger.LauncherAppComponent
+import com.android.launcher3.dagger.LauncherAppSingleton
 import com.android.launcher3.icons.ClockDrawableWrapper
-import com.android.launcher3.icons.IconProvider
-import com.android.launcher3.icons.mono.ThemedIconDrawable
-import com.android.launcher3.util.MainThreadInitializedObject
+import com.android.launcher3.util.DaggerSingletonObject
+import com.android.launcher3.util.SafeCloseable
 import com.neoapps.neolauncher.icons.ClockMetadata
 import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.minSDK
 import com.neoapps.neolauncher.util.prefs
+import jakarta.inject.Inject
 
-class IconPackProvider(private val context: Context) {
+@LauncherAppSingleton
+class IconPackProvider @Inject constructor(
+    @ApplicationContext private val context: Context,
+) : SafeCloseable {
     private val iconPacks = mutableMapOf<String, IconPack?>()
     private val systemIcon = CustomAdaptiveIconDrawable.wrapNonNull(
         ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)!!
@@ -109,40 +112,13 @@ class IconPackProvider(private val context: Context) {
         return drawable
     }
 
-    private fun wrapThemedData(
-        packageManager: PackageManager,
-        iconEntry: IconEntry,
-        drawable: Drawable,
-    ): Drawable {
-        if (iconEntry.packPackageName.isEmpty()) return drawable
-        val themedColors: IntArray = ThemedIconDrawable.getThemedColors(context)
-        return try {
-            val res = packageManager.getResourcesForApplication(iconEntry.packPackageName)
-
-            @SuppressLint("DiscouragedApi")
-            val resId = res.getIdentifier(iconEntry.name, "drawable", iconEntry.packPackageName)
-            val bg: Drawable = themedColors[0].toDrawable()
-            val td = IconProvider.ThemeData(res, resId)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                drawable is AdaptiveIconDrawable &&
-                drawable.monochrome == null
-            ) {
-                AdaptiveIconDrawable(
-                    bg,
-                    drawable.foreground,
-                    td.loadPaddedDrawable(),
-                )
-            } else {
-                drawable
-            }
-        } catch (_: PackageManager.NameNotFoundException) {
-            drawable
-        }
+    override fun close() {
+        TODO("Not yet implemented")
     }
 
     companion object {
         @JvmField
-        val INSTANCE = MainThreadInitializedObject(::IconPackProvider)
+        val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getIconPackProvider)
     }
 }
 

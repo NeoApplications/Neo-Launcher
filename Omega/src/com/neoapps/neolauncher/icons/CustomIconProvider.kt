@@ -18,13 +18,16 @@
 
 package com.neoapps.neolauncher.icons
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.content.pm.ComponentInfo
 import android.content.pm.PackageItemInfo
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
+import android.util.ArrayMap
+import android.util.Log
 import androidx.core.graphics.drawable.toDrawable
 import com.android.launcher3.R
 import com.android.launcher3.dagger.ApplicationContext
@@ -41,6 +44,8 @@ import com.neoapps.neolauncher.iconpack.IconType
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.Config.Companion.LAWNICONS_PACKAGE_NAME
 import com.neoapps.neolauncher.util.getPackageVersionCode
+import com.neoapps.neolauncher.util.isPackageInstalled
+import org.xmlpull.v1.XmlPullParser
 import javax.inject.Inject
 
 @LauncherAppSingleton
@@ -71,6 +76,9 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
             if (mThemedIconMap == null) {
                 mThemedIconMap = getThemedIconMap()
             }
+            if (themedIconPack != null && themeMapName == "") {
+                mThemedIconMap = super.getThemedIconMap()
+            }
             if (themedIconPack != null && themeMapName != themedIconPack!!.packPackageName) {
                 themeMapName = themedIconPack!!.packPackageName
                 mThemedIconMap = getThemedIconMap()
@@ -81,6 +89,61 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
 
     init {
         setIconThemeSupported(themeManager.isIconThemeEnabled && supportsIconTheme)
+    }
+
+    override fun getThemedIconMap(): MutableMap<String, ThemeData> {
+        val themedIconMap = ArrayMap<String, ThemeData>()
+
+        fun ArrayMap<String, ThemeData>.updateFromResources(
+            resources: Resources,
+            packageName: String,
+        ) {
+            try {
+                @SuppressLint("DiscouragedApi")
+                val xmlId = resources.getIdentifier("grayscale_icon_map", "xml", packageName)
+                if (xmlId != 0) {
+                    val parser = resources.getXml(xmlId)
+                    val depth = parser.depth
+                    var type: Int
+                    while (
+                        (
+                                parser.next()
+                                    .also {
+                                        type = it
+                                    } != XmlPullParser.END_TAG || parser.depth > depth
+                                ) &&
+                        type != XmlPullParser.END_DOCUMENT
+                    ) {
+                        if (type != XmlPullParser.START_TAG) continue
+                        if (TAG_ICON == parser.name) {
+                            val pkg = parser.getAttributeValue(null, ATTR_PACKAGE)
+                            val iconId = parser.getAttributeResourceValue(null, ATTR_DRAWABLE, 0)
+                            if (iconId != 0 && pkg.isNotEmpty()) {
+                                this[pkg] = ThemeData(resources, iconId)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Unable to parse icon map.", e)
+            }
+        }
+
+        // first, get Lawnchair's internal grayscale icon map
+        themedIconMap.updateFromResources(
+            resources = context.resources,
+            packageName = context.packageName,
+        )
+
+        if (context.packageManager.isPackageInstalled(packageName = themeMapName)) {
+            // get the grayscale icon map of the supported icon pack
+            themedIconMap.updateFromResources(
+                resources = context.packageManager.getResourcesForApplication(themeMapName),
+                packageName = themeMapName,
+            )
+        }
+
+        return themedIconMap
     }
 
     fun setIconThemeSupported(isSupported: Boolean) {
@@ -173,10 +236,6 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
         val iconPackIcon = iconPackEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
 
         return themedIcon ?: iconPackIcon ?: super.getIcon(info, appInfo, iconDpi)
-    }
-
-    override fun getIcon(info: ComponentInfo?): Drawable {
-        return CustomAdaptiveIconDrawable.wrapNonNull(super.getIcon(info))
     }
 
     companion object {
