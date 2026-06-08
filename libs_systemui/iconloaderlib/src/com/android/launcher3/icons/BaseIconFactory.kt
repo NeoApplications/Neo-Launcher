@@ -398,16 +398,21 @@ constructor(
                     icon.wrapIntoSquareDrawable(options.iconScale)
                 else icon
             iconToDraw.setBounds(0, 0, iconBitmapSize, iconBitmapSize)
-
+            val legacyBackground = prefs.getWrapperBackgroundColor(icon)
             return createBitmap(options) { canvas, bitmap ->
-                if (drawFullBleed) canvas.drawColor(Color.BLACK)
-                iconToDraw.draw(canvas)
+                if (prefs.coloredIconBackground() && prefs.coloredIconBackground()) {
+                    canvas.drawColor(legacyBackground)
+                } else {
+                    canvas.drawColor(Color.TRANSPARENT)
+                }
 
-                if (options.addShadows && bitmap != null && !drawFullBleed) {
+                if (options.addShadows && bitmap != null && !drawFullBleed && prefs.iconShadow()) {
                     // Shadow extraction only works in software mode
                     shadowGenerator.drawShadow(bitmap, canvas)
 
                     // Draw the icon again on top
+                    iconToDraw.draw(canvas)
+                } else {
                     iconToDraw.draw(canvas)
                 }
             }

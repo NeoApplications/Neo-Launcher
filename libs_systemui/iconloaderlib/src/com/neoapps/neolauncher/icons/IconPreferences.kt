@@ -36,6 +36,9 @@ class IconPreferences(context: Context) {
     fun shouldWrapAdaptive(): Boolean {
         return prefs.getBoolean("profile_icon_adaptify", false)
     }
+    fun iconShadow(): Boolean {
+        return prefs.getBoolean("profile_icon_shadow", false)
+    }
 
     fun coloredIconBackground(): Boolean {
         return prefs.getBoolean("profile_icon_colored_background", false)

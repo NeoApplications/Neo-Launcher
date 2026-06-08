@@ -273,6 +273,8 @@
     <string name="color_presets">Presets</string>
     <string name="color_dynamic">Dynamic</string>
     <string name="title_adaptify_pack">Create adaptive icons for icon pack</string>
+    <string name="title_show_icon_shadow">Show Icon Shadow</string>
+    <string name="summary_show_icon_shadow">Show shadow for non-adaptive icons.</string>
     <string name="title_force_shapeless">Force shapeless icons</string>
     <string name="title_themed_icons">Themed Icons</string>
     <string name="title_themed_background">Transparent icon background</string>

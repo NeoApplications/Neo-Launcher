@@ -75,6 +75,7 @@ fun ProfilePrefsPage() {
         prefs.profileIconShape,
         prefs.profileIconAdaptify,
         prefs.profileIconColoredBackground,
+        prefs.profileIconShadow,
         if (customIconsCount > 0) {
             prefs.profileResetCustomIcons
         } else {

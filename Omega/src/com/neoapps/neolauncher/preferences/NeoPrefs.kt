@@ -187,22 +187,6 @@ class NeoPrefs private constructor(val context: Context) {
         }
     )
 
-    var profileTransparentBgIcons = BooleanPref(
-        titleId = R.string.title_themed_background,
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_TRANSPARENT_BG,
-        defaultValue = false
-    )
-
-    var profileShapeLessIcon = BooleanPref(
-        titleId = R.string.title_force_shapeless,
-        summaryId = R.string.summary_force_shapeless,
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_ICON_SHAPE_LESS,
-        defaultValue = false,
-        onChange = { reloadModel() }
-    )
-
     var profileIconColoredBackground = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_COLORED_BG,
@@ -211,6 +195,17 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = true,
         onChange = {
             legacyPrefs.savePreference("profile_icon_colored_background", it)
+        }
+    )
+
+    var profileIconShadow = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_ICON_SHADOW,
+        titleId = R.string.title_show_icon_shadow,
+        summaryId = R.string.summary_show_icon_shadow,
+        defaultValue = false,
+        onChange = {
+            legacyPrefs.savePreference("profile_icon_shadow", it)
         }
     )
 
