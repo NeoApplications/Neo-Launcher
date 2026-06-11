@@ -561,4 +561,6 @@
     <string name="title_app_suggestions">Suggerimenti per le app</string>
     <string name="title_desktop_cycle_scrolling">Ciclo di scorrimento</string>
     <string name="title_enable_feed">Abilita feed</string>
+    <string name="title_show_icon_shadow">Mostra ombra icona</string>
+    <string name="summary_show_icon_shadow">Mostra l\'ombra per le icone non adattive.</string>
 </resources>
