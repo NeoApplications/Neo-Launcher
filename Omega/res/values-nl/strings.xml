@@ -545,4 +545,6 @@
     <string name="hotseat_tip_gaps_filled">Appsuggesties toegevoegd aan lege ruimte</string>
     <string name="hotseat_prediction_content_description">Voorspelde app: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
     <string name="title_desktop_cycle_scrolling">Cyclisch scrollen</string>
+    <string name="title_show_icon_shadow">Pictogramschaduw weergeven</string>
+    <string name="summary_show_icon_shadow">Schaduw weergeven voor niet-adaptieve pictogrammen.</string>
 </resources>
