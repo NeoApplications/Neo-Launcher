@@ -65,6 +65,7 @@ import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.widget.DatabaseWidgetPreviewLoader.WidgetPreviewInfo;
 import com.android.launcher3.widget.picker.util.WidgetPreviewContainerSize;
 import com.android.launcher3.widget.util.WidgetSizes;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /**
  * Represents the individual cell of the widget inside the widget tray. The preview is drawn
@@ -599,6 +600,7 @@ public class WidgetCell extends LinearLayout {
      * @param callback Callback to be set on the button.
      */
     public void showAddButton(View.OnClickListener callback) {
+        if (NeoPrefs.getInstance().getDesktopLock().getValue()) return;
         if (mIsShowingAddButton) return;
         mIsShowingAddButton = true;
 

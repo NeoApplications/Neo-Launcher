@@ -69,6 +69,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.DragAndDropPermissions;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -1805,6 +1806,19 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             if (popup != null) {
                 dragOptions.preDragCondition = popup.createPreDragCondition();
             }
+        }
+        boolean lockHomeScreen = prefs.getDesktopLock().getValue();
+        if (lockHomeScreen) {
+            child.setVisibility(View.VISIBLE);
+
+            if (dragOptions.preDragCondition != null) {
+                if (Flags.msdlFeedback()) {
+                    mMSDLPlayerWrapper.playToken(MSDLToken.LONG_PRESS);
+                } else {
+                    mLauncher.getDragLayer().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                }
+            }
+            return null;
         }
 
         if (dragOptions.preDragCondition != null) {
