@@ -20,10 +20,12 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.graphics.Rect;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.android.launcher3.Reorderable;
 import com.android.launcher3.dragndrop.DraggableView;
@@ -53,6 +55,16 @@ public abstract class NavigableAppWidgetHostView extends AppWidgetHostView
     protected final ActivityContext mActivity;
 
     private boolean mDisableSetPadding = false;
+
+    @Override
+    public FrameLayout.LayoutParams generateLayoutParams(AttributeSet attrs) {
+        return new FrameLayout.LayoutParams(getContext(), attrs);
+    }
+
+    // This method is called by some internal/hidden APIs or by mistake
+    public FrameLayout.LayoutParams generateLayoutParams(Context context, AttributeSet attrs) {
+        return generateLayoutParams(attrs);
+    }
 
     public NavigableAppWidgetHostView(Context context) {
         super(context);
