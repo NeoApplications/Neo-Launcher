@@ -18,6 +18,7 @@
 
 package com.neoapps.neolauncher.compose.pages
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -95,11 +96,14 @@ fun ColorSelectionDialog(
     ViewWithActionBar(
         title = stringResource(R.string.tab_color),
         showBackButton = false,
+        contentWindowInsets = WindowInsets(0.dp),
+        topBarWindowInsets = WindowInsets(0.dp),
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier
                     .fillMaxWidth(),
-                containerColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.background,
+                windowInsets = WindowInsets(0.dp),
             ) {
                 DialogNegativeButton(
                     onClick = {
@@ -136,7 +140,6 @@ fun ColorSelectionDialog(
                 pagerState = pagerState,
                 tabs = tabs,
                 modifier = Modifier
-                    .padding(paddingValues)
                     .blockBorder()
                     .fillMaxSize(),
                 enableScroll = false,

@@ -21,6 +21,7 @@ package com.neoapps.neolauncher.compose.components
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -47,6 +49,8 @@ fun ViewWithActionBar(
     actions: @Composable RowScope.() -> Unit = {},
     onBackAction: () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    topBarWindowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -80,7 +84,8 @@ fun ViewWithActionBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
+                ),
+                windowInsets = topBarWindowInsets,
             )
         },
         floatingActionButton = floatingActionButton,
@@ -88,5 +93,6 @@ fun ViewWithActionBar(
         bottomBar = bottomBar,
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
+        contentWindowInsets = contentWindowInsets,
     )
 }

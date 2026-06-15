@@ -21,6 +21,7 @@ package com.neoapps.neolauncher.compose.pages
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -211,29 +212,33 @@ fun CustomPage(
     onSelectColor: (String) -> Unit,
 ) {
     val current = rememberAlwanState(initialColor = initialColor)
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(12.dp),
     ) {
-        item {
-            Box(
-                modifier = Modifier
-                    .height(48.dp)
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(current.color),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = Integer.toHexString(current.color.hashCode()), color = Color.White)
-            }
+        Box(
+            modifier = Modifier
+                .height(48.dp)
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(current.color),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = Integer.toHexString(current.color.hashCode()), color = Color.White)
         }
-        item {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.TopCenter
+        ) {
             Alwan(
                 modifier = Modifier
-                    .widthIn(min = 500.dp)
-                    .padding(horizontal = 24.dp),
+                    .fillMaxWidth()
+                    .widthIn(max = 500.dp),
                 onColorChanged = {
                     onSelectColor("custom|#${Integer.toHexString(current.color.hashCode())}")
                 },
