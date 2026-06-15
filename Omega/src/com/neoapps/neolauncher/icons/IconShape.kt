@@ -408,7 +408,7 @@ open class IconShape(
         fun fromString(context: Context, value: String): IconShape {
             if (value == "system") {
                 runCatching {
-                    return IconShapeManager.INSTANCE.get(context).getSystemShape()
+                    return IconShapeManager.getSystemIconShape(context)
                 }
             }
             return fromString(value = value)

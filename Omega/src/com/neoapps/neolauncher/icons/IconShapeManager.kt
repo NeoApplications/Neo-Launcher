@@ -35,6 +35,9 @@ import jakarta.inject.Inject
 class IconShapeManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : SafeCloseable {
+
+    private val systemIconShape = getSystemShape()
+
     fun getSystemShape(): IconShape {
         val iconMask = AdaptiveIconDrawable(null, null).iconMask
         val systemShape = findNearestShape(iconMask)
@@ -67,12 +70,7 @@ class IconShapeManager @Inject constructor(
         return listOf(
             IconShape.Circle,
             IconShape.Square,
-            IconShape.SharpSquare,
-            IconShape.Egg,
-            IconShape.Hexagon,
-            IconShape.Octagon,
             IconShape.RoundedSquare,
-            IconShape.Cupertino,
             IconShape.Squircle,
             IconShape.Sammy,
             IconShape.Teardrop,
@@ -95,6 +93,9 @@ class IconShapeManager @Inject constructor(
     companion object {
         @JvmField
         val INSTANCE = DaggerSingletonObject(LauncherAppComponent::getIconShapeManager)
+
+        fun getSystemIconShape(context: Context) = INSTANCE.get(context).systemIconShape
+
     }
 
 }

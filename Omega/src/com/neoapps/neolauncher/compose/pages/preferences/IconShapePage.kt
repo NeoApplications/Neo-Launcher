@@ -50,7 +50,7 @@ fun IconShapePage() {
     val prefs: NeoPrefs = get(NeoPrefs::class.java)
     val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
-        val systemShape = IconShapeManager.INSTANCE.get(context).getSystemShape()
+        val systemShape = IconShapeManager.getSystemIconShape(context)
         val iconShapes = arrayListOf(
             systemShape,
             IconShape.Circle,
