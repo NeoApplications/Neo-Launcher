@@ -17,12 +17,12 @@ package com.android.launcher3.widget.util;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.Size;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
 import com.android.launcher3.model.WidgetItem;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /** A utility class for widget sizes related calculations. */
 public final class WidgetSizes {
@@ -35,11 +35,18 @@ public final class WidgetSizes {
                 * profile.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y;
 
         Point cellSize = profile.getWorkspaceIconProfile().getCellSize();
-        Rect padding = profile.widgetPadding;
+        boolean fullWidthWidgets = NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets()
+                .getValue();
+        int horizontalPadding = fullWidthWidgets
+                ? 0
+                : profile.widgetPadding.left + profile.widgetPadding.right;
+        int verticalPadding = fullWidthWidgets
+                ? 0
+                : profile.widgetPadding.top + profile.widgetPadding.bottom;
 
         return new Size(
-                (spanX * cellSize.x) + hBorderSpacing - padding.left - padding.right,
-                (spanY * cellSize.y) + vBorderSpacing - padding.top - padding.bottom);
+                (spanX * cellSize.x) + hBorderSpacing - horizontalPadding,
+                (spanY * cellSize.y) + vBorderSpacing - verticalPadding);
     }
 
     /**

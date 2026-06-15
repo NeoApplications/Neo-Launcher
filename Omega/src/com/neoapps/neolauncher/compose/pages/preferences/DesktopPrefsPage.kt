@@ -71,7 +71,7 @@ fun DesktopPrefsPage() {
     val gridPrefs = listOf(
         prefs.desktopGridSize,
         prefs.desktopIconAddInstalled,
-        //prefs.desktopAllowFullWidthWidgets,
+        prefs.desktopAllowFullWidthWidgets,
         //prefs.desktopWidgetCornerRadius
         prefs.desktopCycleScrolling
     )

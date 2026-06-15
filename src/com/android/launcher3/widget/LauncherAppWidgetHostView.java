@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.CheckLongPressHelper;
 import com.android.launcher3.Flags;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.popup.Poppable;
 import com.android.launcher3.popup.PoppableType;
@@ -113,7 +114,8 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     @Override
     public void setColorResources(@Nullable SparseIntArray colors) {
         if (colors == null) {
-            resetColorResources();
+            if (Utilities.ATLEAST_S)
+                resetColorResources();
         } else {
             super.setColorResources(colors);
         }
@@ -131,6 +133,9 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
     @Override
     public void setAppWidget(int appWidgetId, AppWidgetProviderInfo info) {
         super.setAppWidget(appWidgetId, info);
+        // AppWidgetHostView padding changes are blocked while super.setAppWidget() runs, so clear
+        // them once the framework call has finished.
+        setPadding(0, 0, 0, 0);
         if (!mTrackingWidgetUpdate && appWidgetId != INVALID_APPWIDGET_ID) {
             mTrackingWidgetUpdate = true;
             Trace.beginAsyncSection(TRACE_METHOD_NAME + info.provider, appWidgetId);

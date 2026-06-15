@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.UserHandle;
@@ -22,6 +21,7 @@ import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.icons.cache.BaseIconCache;
 import com.android.launcher3.icons.cache.CachedObject;
 import com.android.launcher3.model.data.LauncherAppWidgetInfo;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /**
  * This class is a thin wrapper around the framework AppWidgetProviderInfo class. This class affords
@@ -119,32 +119,39 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
             }
 
             cellSize = dp.getWorkspaceIconProfile().getCellSize();
-            Rect widgetPadding = dp.widgetPadding;
+            boolean fullWidthWidgets = NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets()
+                    .getValue();
+            int widgetPaddingX = fullWidthWidgets
+                    ? 0
+                    : dp.widgetPadding.left + dp.widgetPadding.right;
+            int widgetPaddingY = fullWidthWidgets
+                    ? 0
+                    : dp.widgetPadding.top + dp.widgetPadding.bottom;
 
             minSpanX = Math.max(minSpanX,
-                    getSpanX(widgetPadding, minResizeWidth,
+                    getSpanX(widgetPaddingX, minResizeWidth,
                             dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x,
                             cellSize.x));
             minSpanY = Math.max(minSpanY,
-                    getSpanY(widgetPadding, minResizeHeight,
+                    getSpanY(widgetPaddingY, minResizeHeight,
                             dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y,
                             cellSize.y));
 
             if (maxResizeWidth > 0) {
-                maxSpanX = Math.min(maxSpanX, getSpanX(widgetPadding, maxResizeWidth,
+                maxSpanX = Math.min(maxSpanX, getSpanX(widgetPaddingX, maxResizeWidth,
                         dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x, cellSize.x));
             }
             if (maxResizeHeight > 0) {
-                maxSpanY = Math.min(maxSpanY, getSpanY(widgetPadding, maxResizeHeight,
+                maxSpanY = Math.min(maxSpanY, getSpanY(widgetPaddingY, maxResizeHeight,
                         dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y, cellSize.y));
             }
 
             spanX = Math.max(spanX,
-                    getSpanX(widgetPadding, minWidth,
+                    getSpanX(widgetPaddingX, minWidth,
                             dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().x,
                             cellSize.x));
             spanY = Math.max(spanY,
-                    getSpanY(widgetPadding, minHeight,
+                    getSpanY(widgetPaddingY, minHeight,
                             dp.getWorkspaceIconProfile().getCellLayoutBorderSpacePx().y,
                             cellSize.y));
         }
@@ -184,14 +191,12 @@ public class LauncherAppWidgetProviderInfo extends AppWidgetProviderInfo impleme
         return mIsMinSizeFulfilled;
     }
 
-    private int getSpanX(Rect widgetPadding, int widgetWidth, int cellSpacing, float cellWidth) {
-        return getSpan(widgetPadding.left + widgetPadding.right,
-                widgetWidth, cellSpacing, cellWidth);
+    private int getSpanX(int widgetPadding, int widgetWidth, int cellSpacing, float cellWidth) {
+        return getSpan(widgetPadding, widgetWidth, cellSpacing, cellWidth);
     }
 
-    private int getSpanY(Rect widgetPadding, int widgetHeight, int cellSpacing, float cellHeight) {
-        return getSpan(widgetPadding.top + widgetPadding.bottom, widgetHeight,
-                cellSpacing, cellHeight);
+    private int getSpanY(int widgetPadding, int widgetHeight, int cellSpacing, float cellHeight) {
+        return getSpan(widgetPadding, widgetHeight, cellSpacing, cellHeight);
     }
 
     /**

@@ -285,7 +285,6 @@ class NeoPrefs private constructor(val context: Context) {
         }
     )
 
-    // TODO fix this
     val desktopLock = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_LOCK_CHANGES,
@@ -338,6 +337,7 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_desktop_full_width_widgets,
         summaryId = R.string.summary_full_width_widgets,
         defaultValue = false,
+        onChange = { reloadGrid() },
     )
 
     var desktopPopup = StringMultiSelectionPref(

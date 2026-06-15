@@ -44,6 +44,7 @@ import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.NavigableAppWidgetHostView;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.FolderIconParent {
     static final String TAG = "ShortcutAndWidgetContainer";
@@ -135,7 +136,8 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
             DeviceProfile profile = mActivity.getDeviceProfile();
             final PointF appWidgetScale = profile.getAppWidgetScale((ItemInfo) child.getTag());
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, mCountY,
-                    appWidgetScale.x, appWidgetScale.y, mBorderSpace, profile.widgetPadding);
+                    appWidgetScale.x, appWidgetScale.y, mBorderSpace, getWidgetInset(profile));
+            updateFullWidthWidgetLp(child, lp);
         } else {
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, mCountY,
                     mBorderSpace);
@@ -159,7 +161,8 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
         if (child instanceof NavigableAppWidgetHostView) {
             final PointF appWidgetScale = dp.getAppWidgetScale((ItemInfo) child.getTag());
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, mCountY,
-                    appWidgetScale.x, appWidgetScale.y, mBorderSpace, dp.widgetPadding);
+                    appWidgetScale.x, appWidgetScale.y, mBorderSpace, getWidgetInset(dp));
+            updateFullWidthWidgetLp(child, lp);
         } else if (isChildQsb(child)) {
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, mCountY,
                     mBorderSpace);
@@ -192,6 +195,36 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements FolderIcon.
         int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
         int childheightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
         child.measure(childWidthMeasureSpec, childheightMeasureSpec);
+    }
+
+    @Nullable
+    private Rect getWidgetInset(DeviceProfile profile) {
+        return isFullWidthWidgetsEnabled() ? null : profile.widgetPadding;
+    }
+
+    private void updateFullWidthWidgetLp(View child, CellLayoutLayoutParams lp) {
+        if (!isFullWidthWidget(child, lp) || !(getParent() instanceof CellLayout cellLayout)) {
+            return;
+        }
+
+        int horizontalInset = (int) Math.ceil(cellLayout.getUnusedHorizontalSpace() / 2f);
+        int leftOutset = cellLayout.getPaddingLeft() + horizontalInset;
+        int rightOutset = cellLayout.getPaddingRight() + horizontalInset;
+        lp.x -= leftOutset;
+        lp.width += leftOutset + rightOutset;
+    }
+
+    private boolean isFullWidthWidget(View child, CellLayoutLayoutParams lp) {
+        int cellX = lp.useTmpCoords ? lp.getTmpCellX() : lp.getCellX();
+        return mContainerType == WORKSPACE
+                && child instanceof NavigableAppWidgetHostView
+                && isFullWidthWidgetsEnabled()
+                && cellX == 0
+                && lp.cellHSpan >= mCountX;
+    }
+
+    private boolean isFullWidthWidgetsEnabled() {
+        return NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets().getValue();
     }
 
     private boolean isChildQsb(View child) {

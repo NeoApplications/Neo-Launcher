@@ -36,7 +36,6 @@ public class CustomAppWidgetProviderInfo extends LauncherAppWidgetProviderInfo
 
     public boolean noPadding;
 
-    // Edited
     protected CustomAppWidgetProviderInfo(Parcel parcel, boolean readSelf, boolean noPadding) {
         super(parcel);
         if (readSelf) {

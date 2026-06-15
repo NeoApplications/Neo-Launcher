@@ -455,6 +455,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             boolean isWidget = itemInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
 
             Rect r = estimateItemPosition(cl, 0, 0, itemInfo.spanX, itemInfo.spanY);
+            updateFullWidthWidgetRectIfNeeded(itemInfo, cl, 0, itemInfo.spanX, r);
 
             float scale = 1;
             if (isWidget) {
@@ -497,6 +498,21 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         Rect r = new Rect();
         cl.cellToRect(hCell, vCell, hSpan, vSpan, r);
         return r;
+    }
+
+    private boolean updateFullWidthWidgetRectIfNeeded(ItemInfo itemInfo, CellLayout cl,
+                                                      int hCell, int hSpan, Rect rect) {
+        if (itemInfo.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET
+                || !NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets().getValue()
+                || hCell != 0
+                || hSpan < cl.getCountX()) {
+            return false;
+        }
+
+        int horizontalInset = (int) Math.ceil(cl.getUnusedHorizontalSpace() / 2f);
+        rect.left -= cl.getPaddingLeft() + horizontalInset;
+        rect.right += cl.getPaddingRight() + horizontalInset;
+        return true;
     }
 
     @Override
@@ -3112,7 +3128,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         Rect r = estimateItemPosition(layout, targetCell[0], targetCell[1], spanX, spanY);
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET) {
             DeviceProfile profile = mLauncher.getDeviceProfile();
-            if (finalView instanceof NavigableAppWidgetHostView) {
+            if (finalView instanceof NavigableAppWidgetHostView
+                    && !updateFullWidthWidgetRectIfNeeded(info, layout, targetCell[0], spanX, r)) {
                 Rect widgetPadding = profile.widgetPadding;
                 r.left -= widgetPadding.left;
                 r.right += widgetPadding.right;

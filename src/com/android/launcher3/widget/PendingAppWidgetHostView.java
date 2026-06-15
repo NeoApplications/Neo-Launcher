@@ -19,10 +19,9 @@ package com.android.launcher3.widget;
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.graphics.Paint.DITHER_FLAG;
 import static android.graphics.Paint.FILTER_BITMAP_FLAG;
-
 import static com.android.launcher3.graphics.PreloadIconDelegate.newPendingIcon;
-import static com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY;
 import static com.android.launcher3.icons.cache.CacheLookupFlag.DEFAULT_LOOKUP_FLAG;
+import static com.android.launcher3.model.data.LauncherAppWidgetInfo.FLAG_PROVIDER_NOT_READY;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.appwidget.AppWidgetProviderInfo;
@@ -68,6 +67,7 @@ import com.android.launcher3.util.RunnableList;
 import com.android.launcher3.util.SafeCloseable;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.widget.ListenableAppWidgetHost.ProviderChangedListener;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.List;
 
@@ -142,7 +142,9 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
             int appWidgetId, @NonNull LauncherAppWidgetProviderInfo appWidget) {
         this(context, widgetHolder, new LauncherAppWidgetInfo(appWidgetId, appWidget.provider),
                 appWidget, appWidget.label, null);
-        getBackground().mutate().setAlpha(DEFERRED_ALPHA);
+        if (getBackground() != null) {
+            getBackground().mutate().setAlpha(DEFERRED_ALPHA);
+        }
 
         mCenterDrawable = new ColorDrawable(Color.TRANSPARENT);
         mDragFlags = FLAG_DRAW_LABEL;
@@ -155,7 +157,10 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
      * bitmap, we shouldn't draw background.
      */
     public void setPreviewBitmapAndUpdateBackground(@Nullable Bitmap previewBitmap) {
-        setBackgroundResource(previewBitmap != null ? 0 : R.drawable.pending_widget_bg);
+        setBackgroundResource(previewBitmap != null
+                || isFullWidthWidgetsEnabled()
+                ? 0
+                : R.drawable.pending_widget_bg);
         if (this.mPreviewBitmap == previewBitmap) {
             return;
         }
@@ -381,8 +386,9 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
 
-        int minPadding = getResources()
-                .getDimensionPixelSize(R.dimen.pending_widget_min_padding);
+        int minPadding = isFullWidthWidgetsEnabled()
+                ? 0
+                : getResources().getDimensionPixelSize(R.dimen.pending_widget_min_padding);
 
         int availableWidth = getWidth() - paddingLeft - paddingRight - 2 * minPadding;
         int availableHeight = getHeight() - paddingTop - paddingBottom - 2 * minPadding;
@@ -451,6 +457,10 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
             mRect.top = mCenterDrawable.getBounds().bottom
                     + grid.getWorkspaceIconProfile().getIconDrawablePaddingPx();
         }
+    }
+
+    private boolean isFullWidthWidgetsEnabled() {
+        return NeoPrefs.getInstance().getDesktopAllowFullWidthWidgets().getValue();
     }
 
     @Override
