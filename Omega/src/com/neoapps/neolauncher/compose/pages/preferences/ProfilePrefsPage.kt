@@ -66,8 +66,8 @@ fun ProfilePrefsPage() {
     val customIconsCount by remember { overrideRepo.observeCount() }.collectAsStateBlocking()
     val profilePrefs = listOfNotNull(
         prefs.profileLanguage,
-        /*prefs.profileTheme,
-        prefs.profileAccentColor,*/
+        /*prefs.profileTheme,*/
+        prefs.profileAccentColor
     )
 
     val iconPrefs = listOfNotNull(
