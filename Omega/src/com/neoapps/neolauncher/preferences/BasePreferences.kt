@@ -193,14 +193,12 @@ open class ColorIntPref(
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange) {
 
     fun getColor(): Int {
-        return runBlocking(Dispatchers.IO) {
-            AccentColorOption.Companion.fromString(getValue()).accentColor
-        }
+        return AccentColorOption.fromString(getValue()).accentColor
     }
 
     @Composable
     fun getColorFromState(): Int {
-        return AccentColorOption.Companion.fromString(getState().value).accentColor
+        return AccentColorOption.fromString(getState().value).accentColor
     }
 }
 

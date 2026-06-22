@@ -26,6 +26,7 @@ import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.NeoApp
 import com.neoapps.neolauncher.util.getColorAttr
 import com.neoapps.neolauncher.util.getSystemAccent
+import com.neoapps.neolauncher.wallpaper.WallpaperColorsCompat
 import com.neoapps.neolauncher.wallpaper.WallpaperManagerCompat
 
 sealed class AccentColorOption {
@@ -33,12 +34,21 @@ sealed class AccentColorOption {
     abstract val displayName: Int
     abstract val accentColor: Int
 
+    protected fun resolveWallpaperColor(selector: WallpaperColorsCompat.() -> Int?): Int {
+        val context = NeoApp.instance?.applicationContext ?: return LightPrimary.toArgb()
+        return WallpaperManagerCompat.INSTANCE.get(context)
+            .wallpaperColors
+            ?.selector()
+            ?: LightPrimary.toArgb()
+    }
+
     object SystemAccent : AccentColorOption() {
         override val isSupported = true
         override val displayName = R.string.icon_shape_system_default
 
         override val accentColor: Int
-            get() = NeoApp.instance?.applicationContext!!.getSystemAccent(false)
+            get() = NeoApp.instance?.applicationContext?.getSystemAccent(false)
+                ?: LightPrimary.toArgb()
 
         override fun toString() = "system_accent"
     }
@@ -47,8 +57,7 @@ sealed class AccentColorOption {
         override val isSupported = true
         override val displayName = R.string.theme_auto
         override val accentColor: Int
-            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
-                .wallpaperColors?.getPrimaryColor() ?: LightPrimary.toArgb()
+            get() = resolveWallpaperColor { getPrimaryColor() }
 
         override fun toString() = "wallpaper_primary"
     }
@@ -57,8 +66,7 @@ sealed class AccentColorOption {
         override val isSupported = true
         override val displayName = R.string.color_wallpaper_secondary
         override val accentColor: Int
-            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
-                .wallpaperColors?.getSecondaryColor() ?: LightPrimary.toArgb()
+            get() = resolveWallpaperColor { getSecondaryColor() }
 
         override fun toString() = "wallpaper_secondary"
     }
@@ -67,8 +75,7 @@ sealed class AccentColorOption {
         override val isSupported = true
         override val displayName = R.string.color_wallpaper_tertiary
         override val accentColor: Int
-            get() = WallpaperManagerCompat.INSTANCE.get(NeoApp.instance?.applicationContext)
-                .wallpaperColors?.getTertiaryColor() ?: LightPrimary.toArgb()
+            get() = resolveWallpaperColor { getTertiaryColor() }
 
         override fun toString() = "wallpaper_tertiary"
     }
@@ -90,7 +97,8 @@ sealed class AccentColorOption {
 
         override val displayName = -1
         override val accentColor: Int
-            get() = NeoApp.instance?.applicationContext!!.getColorAttr(colorAccent)
+            get() = NeoApp.instance?.applicationContext?.getColorAttr(colorAccent)
+                ?: LightPrimary.toArgb()
 
     }
 
