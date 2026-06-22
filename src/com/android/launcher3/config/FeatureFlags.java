@@ -123,11 +123,11 @@ public final class FeatureFlags {
     // TODO(Block 16): Clean up flags
     // When enabled the promise icon is visible in all apps while installation an app.
     public static final BooleanFlag PROMISE_APPS_IN_ALL_APPS = getDebugFlag(270390012,
-            "PROMISE_APPS_IN_ALL_APPS", DISABLED, "Add promise icon in all-apps");
+            "PROMISE_APPS_IN_ALL_APPS", ENABLED, "Add promise icon in all-apps");
 
     // Aconfig migration complete for ENABLE_EXPANDING_PAUSE_WORK_BUTTON.
     public static final BooleanFlag ENABLE_EXPANDING_PAUSE_WORK_BUTTON = getDebugFlag(270390779,
-            "ENABLE_EXPANDING_PAUSE_WORK_BUTTON", DISABLED,
+            "ENABLE_EXPANDING_PAUSE_WORK_BUTTON", ENABLED,
             "Expand and collapse pause work button while scrolling");
 
     public static final BooleanFlag INJECT_FALLBACK_APP_CORPUS_RESULTS = getReleaseFlag(270391706,
@@ -148,7 +148,7 @@ public final class FeatureFlags {
     // TODO(Block 20): Clean up flags
     // Aconfig migration complete for ENABLE_HOME_TRANSITION_LISTENER.
     public static final BooleanFlag ENABLE_HOME_TRANSITION_LISTENER = getDebugFlag(306053414,
-            "ENABLE_HOME_TRANSITION_LISTENER", DISABLED,
+            "ENABLE_HOME_TRANSITION_LISTENER", ENABLED,
             "Enables launcher to listen to all transitions that include home activity.");
 
     public static boolean enableHomeTransitionListener() {
@@ -205,7 +205,7 @@ public final class FeatureFlags {
     // Aconfig migration complete for ENABLE_RESPONSIVE_WORKSPACE.
     @VisibleForTesting
     public static final BooleanFlag ENABLE_RESPONSIVE_WORKSPACE = getDebugFlag(241386436,
-            "ENABLE_RESPONSIVE_WORKSPACE", DISABLED,
+            "ENABLE_RESPONSIVE_WORKSPACE", ENABLED,
             "Enables new workspace grid calculations method.");
     public static boolean enableResponsiveWorkspace() {
         return ENABLE_RESPONSIVE_WORKSPACE.get() || Flags.enableResponsiveWorkspace();

@@ -351,7 +351,7 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
     @Override
     public boolean enableResponsiveWorkspace() {
-        return false;
+        return true;
     }
 
     @Override
