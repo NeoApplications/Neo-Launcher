@@ -55,7 +55,6 @@ const val LAYOUT_CATEGORIES = 2
 const val LAYOUT_TABS = 3
 
 val desktopPopupOptions = mutableMapOf(
-    //PREFS_DESKTOP_POPUP_REMOVE to R.string.remove_drop_target_label,
     PREFS_DESKTOP_POPUP_EDIT to R.string.action_preferences,
     PREFS_DESKTOP_POPUP_UNINSTALL to R.string.uninstall_drop_target_label,
 )
