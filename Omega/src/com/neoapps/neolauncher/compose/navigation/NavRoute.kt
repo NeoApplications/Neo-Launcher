@@ -74,7 +74,13 @@ open class NavRoute : Parcelable {
     }
 
     @Serializable
-    class Backup : NavRoute()
+    open class Backup : NavRoute(){
+        @Serializable
+        class Create : Backup()
+
+        @Serializable
+        class Restore : Backup()
+    }
 
     @Serializable
     open class Dev : NavRoute() {

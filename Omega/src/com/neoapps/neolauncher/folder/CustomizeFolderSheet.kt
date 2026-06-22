@@ -172,7 +172,7 @@ fun CustomizeFolderView(
                 isChecked = folder.isCoverMode,
                 index = 0,
                 groupSize = 1,
-                onCheckedChange = { newValue ->
+                onChange = { newValue ->
                     folder.setCoverMode(newValue, launcher.modelWriter)
                     coverMode.value = newValue
                 }

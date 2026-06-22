@@ -168,7 +168,10 @@ object PrefKey {
     val DASH_TORCH_STATE = booleanPreferencesKey("dash_torch")
 
     //DEVELOPER
+    val BACKUP_CREATE = stringPreferencesKey("backup_create")
+    val BACKUP_RESTORE = stringPreferencesKey("restore_create")
     val SHOW_DEV_OPTIONS = booleanPreferencesKey("pref_show_dev_options")
     val KILL_LAUNCHER = stringPreferencesKey("pref_kill_launcher")
+    val PREFS_RESTORE_SUCCESS = booleanPreferencesKey("restore_success")
     val DEBUG_MODE = booleanPreferencesKey("pref_debug_mode")
 }

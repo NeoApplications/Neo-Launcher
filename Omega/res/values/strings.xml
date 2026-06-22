@@ -508,6 +508,8 @@
     <string name="title__advanced_language">Language</string>
     <!-- PREFERENCES BACKUP -->
     <string name="backups">Backups</string>
+    <string name="backup_create">Create backup</string>
+    <string name="backup_restore">Restore backup</string>
     <string name="backup_delete">Hide</string>
     <string name="backup_delete_failed">Something went wrong</string>
     <string name="backup_share">Share</string>
@@ -515,6 +517,7 @@
     <string name="title_create">Create</string>
     <string name="restore_backup">Restore</string>
     <string name="backup_homescreen">Homescreen</string>
+    <string name="backup_databases">Databases</string>
     <string name="backup_contents">Backup contents</string>
     <string name="backup_name">Backup name</string>
     <string name="backup_settings">Settings</string>
@@ -523,6 +526,7 @@
     <string name="backup_error_blank_contents">Content can not be empty</string>
     <string name="backup_create_new">Create new backup</string>
     <string name="backup_creating">Creating backup</string>
+    <string name="backup_created">Backup created</string>
     <string name="no_recent_backups">No recent backups</string>
     <string name="backup_invalid">Unavailable</string>
     <string name="backup_remove_from_recents">Remove from list</string>
@@ -541,6 +545,9 @@
     <string name="read_external_storage_required">Grant storage access to create a backup.</string>
     <string name="local_backups">In Storage</string>
     <string name="permission_denied">Read permission denied!</string>
+    <string name="backup_manage_storage_permission_title">All files access required</string>
+    <string name="backup_manage_storage_permission_summary">Grant Manage External Storage access before creating backups. The launcher will refresh this state automatically when you return from Settings.</string>
+    <string name="backup_grant_storage_permission">Grant storage access</string>
     <!-- DEVELOPER -->
     <string name="developer_options_enabled">Developer options on</string>
     <string name="search_menu">Find settings</string>

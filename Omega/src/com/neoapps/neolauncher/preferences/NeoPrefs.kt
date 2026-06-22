@@ -91,7 +91,7 @@ import kotlin.random.Random
 class NeoPrefs private constructor(val context: Context) {
     private val scope = MainScope()
     val publicScope = CoroutineScope(Dispatchers.IO) + CoroutineName("NeoPrefs")
-
+    var blockingEditing = false
     private val dataStore: DataStore<Preferences> by getKoin().inject()
     val legacyPrefs = LegacyPreferences(context)
 
@@ -1272,6 +1272,27 @@ class NeoPrefs private constructor(val context: Context) {
             override fun unflattenValue(value: String) = value
         }
 
+    var restoreSuccess = BooleanPref(
+        key = PrefKey.PREFS_RESTORE_SUCCESS,
+        titleId = R.string.restore_success,
+        dataStore = dataStore,
+        defaultValue = false
+    )
+
+    var backupCreate = NavigationPref(
+        dataStore = dataStore,
+        key = PrefKey.BACKUP_CREATE,
+        titleId = R.string.backup_create,
+        navRoute = NavRoute.Backup.Create()
+    )
+
+    var backupRestore = NavigationPref(
+        dataStore = dataStore,
+        key = PrefKey.BACKUP_RESTORE,
+        titleId = R.string.backup_restore,
+        navRoute = NavRoute.Backup.Restore()
+    )
+
     //Dev options
     var restartLauncher = StringPref(
         titleId = R.string.title__restart_launcher,
@@ -1329,7 +1350,19 @@ class NeoPrefs private constructor(val context: Context) {
         CustomAdaptiveIconDrawable.sMaskId = shape.getHashString()
         CustomAdaptiveIconDrawable.sMask = shape.getMaskPath()
     }
+    fun beginBlockingEdit() {
+        blockingEditing = true
+    }
 
+    fun endBlockingEdit() {
+        blockingEditing = false
+    }
+
+    inline fun blockingEdit(body: NeoPrefs.() -> Unit) {
+        beginBlockingEdit()
+        body(this)
+        endBlockingEdit()
+    }
     companion object {
         val prefsModule = module {
             single { NeoPrefs(get()) }

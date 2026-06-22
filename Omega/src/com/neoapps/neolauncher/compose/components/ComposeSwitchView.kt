@@ -46,7 +46,7 @@ import com.neoapps.neolauncher.util.addIf
 @Composable
 fun ComposeSwitchView(
     title: String,
-    onCheckedChange: ((Boolean) -> Unit),
+    onChange: ((Boolean) -> Unit),
     modifier: Modifier = Modifier,
     summary: String = "",
     iconId: Int = 0,
@@ -65,7 +65,7 @@ fun ComposeSwitchView(
             )
             .clickable(enabled = isEnabled) {
                 check(!checked)
-                onCheckedChange(!checked)
+                onChange(!checked)
             },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -111,7 +111,7 @@ fun ComposeSwitchView(
                 checked = checked,
                 onCheckedChange = {
                     check(it)
-                    onCheckedChange(it)
+                    onChange(it)
                 },
                 enabled = isEnabled,
             )

@@ -237,7 +237,7 @@ fun CustomizeIconView(
                     isChecked = hiddenApps.value.contains(stringKey),
                     index = 0,
                     groupSize = if (hasOverride || prefs.drawerTabs.isEnabled) 2 else 1,
-                    onCheckedChange = { newValue ->
+                    onChange = { newValue ->
                         val newSet = hiddenApps.value.toMutableSet()
                         if (newValue) newSet.add(stringKey) else newSet.remove(stringKey)
                         scope.launch {
