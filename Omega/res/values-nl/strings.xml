@@ -96,7 +96,7 @@
     <string name="title__dock_icon_size_enforce">Aangepaste pictogramgrootte handhaven</string>
     <string name="title__dock_scale">Dokgrootte</string>
     <string name="title_dock_two_row">Tweede rij weergeven</string>
-    <string name="title__dock_hide">Dok verbergen</string>
+    <string name="title__dock_hide">Dok ingeschakeld</string>
     <string name="label_search">Zoeken</string>
     <string name="title__drawer_paged_apps">App-overzicht in pagina\'s</string>
     <string name="title__drawer_hide_icon_labels">App-namen verbergen</string>
@@ -545,4 +545,6 @@
     <string name="hotseat_tip_gaps_filled">Appsuggesties toegevoegd aan lege ruimte</string>
     <string name="hotseat_prediction_content_description">Voorspelde app: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
     <string name="title_desktop_cycle_scrolling">Cyclisch scrollen</string>
+    <string name="title_show_icon_shadow">Pictogramschaduw weergeven</string>
+    <string name="summary_show_icon_shadow">Schaduw weergeven voor niet-adaptieve pictogrammen.</string>
 </resources>

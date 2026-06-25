@@ -64,7 +64,7 @@
     <string name="title_drawer_row_height">Altezza riga</string>
     <string name="title__drawer_hide_apps">Scorciatoie app nascoste</string>
     <string name="title__drawer_sort">Ordinamento app</string>
-    <string name="title__dock_hide">Nascondi barra app</string>
+    <string name="title__dock_hide">Barra app abilitata</string>
     <string name="title_dock_fill">Mostra sfondo</string>
     <string name="title__dock_icon_size">Dimensione icona</string>
     <string name="summary_full_width_widgets">Consenti ai widget di estendersi su tutta la larghezza senza riempimento</string>
@@ -561,4 +561,6 @@
     <string name="title_app_suggestions">Suggerimenti per le app</string>
     <string name="title_desktop_cycle_scrolling">Ciclo di scorrimento</string>
     <string name="title_enable_feed">Abilita feed</string>
+    <string name="title_show_icon_shadow">Mostra ombra icona</string>
+    <string name="summary_show_icon_shadow">Mostra l\'ombra per le icone non adattive.</string>
 </resources>

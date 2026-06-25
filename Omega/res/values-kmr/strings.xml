@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_folder_name">Peldanka nû</string>
+    <string name="title__general_theme">Rûkar</string>
+    <string name="title__general_profile">Profîl</string>
+    <string name="pref_category__features">Taybetmendî</string>
+    <string name="pref_category__others">Ên din</string>
+    <string name="title_opacity">Zelalî</string>
+    <string name="label_search">Bigere</string>
+</resources>

@@ -147,7 +147,7 @@
     <string name="title__theme_blur">Tilslør</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d skjulte</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d program</item>
@@ -412,7 +412,6 @@
     <string name="smartspace_pill_text_format">%1$s %2$s</string>
     <string name="enabled_events">Påskrudd</string>
     <string name="cat_desktop_grid">Rutenett og visning</string>
-
     <string name="title_app_categorization_enable">Skru på programkategorier</string>
     <string name="summary_app_categorization_enable">Opprett faner eller mapper</string>
     <string name="summary_app_suggestions">For alle programmer og hjemmeskjermen</string>
