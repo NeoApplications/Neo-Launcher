@@ -36,7 +36,7 @@ abstract class IconCornerShape {
 
     abstract class BaseBezierPath : IconCornerShape() {
 
-        protected val roundControlDistance = .447771526f
+        protected val roundControlDistance = 0.44777152f
         protected open val controlDistance = roundControlDistance
         protected open val controlDistanceX get() = controlDistance
         protected open val controlDistanceY get() = controlDistance

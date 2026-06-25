@@ -129,7 +129,6 @@ class CustomIconProvider @JvmOverloads @Inject constructor(
             }
         }
 
-        // first, get Lawnchair's internal grayscale icon map
         themedIconMap.updateFromResources(
             resources = context.resources,
             packageName = context.packageName,
