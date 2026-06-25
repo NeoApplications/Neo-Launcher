@@ -198,7 +198,7 @@ class BackupManager(val context: Context, val uri: Uri) {
             val cacheParent = contextWrapper.cacheDir.parent
             val settingsFile = File(cacheParent, "shared_prefs/${LauncherFiles.SHARED_PREFERENCES_KEY}.xml")
             val deviceSettingsFile = File(cacheParent, "shared_prefs/${LauncherFiles.DEVICE_PREFERENCES_KEY}.xml")
-            val datastoreFile = File(cacheParent, "datastore/neo_launcher.preferences_pb")
+            val datastoreFile = File(cacheParent, "files/datastore/neo_launcher.preferences_pb")
             context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
                 FileInputStream(pfd.fileDescriptor).use { fileInput ->
                     ZipInputStream(fileInput).use { zipInput ->
@@ -207,6 +207,10 @@ class BackupManager(val context: Context, val uri: Uri) {
                             val currentEntry = entry!!
                             val entryName = currentEntry.name
                             val targetFile = when {
+                                entryName == "neo_launcher.preferences_pb" -> {
+                                    if (!contents.hasFlag(INCLUDE_SETTINGS)) continue
+                                    datastoreFile
+                                }
                                 entryName.startsWith("launcher_") ||
                                         entryName == "NeoLauncher.db" ||
                                         entryName == "NeoLauncher.db-shm" ||
@@ -224,10 +228,6 @@ class BackupManager(val context: Context, val uri: Uri) {
                                     val bitmap = BitmapFactory.decodeStream(zipInput)
                                     WallpaperManager.getInstance(context).setBitmap(bitmap)
                                     continue
-                                }
-                                entryName.endsWith("preferences_pb") -> {
-                                    if (!contents.hasFlag(INCLUDE_SETTINGS)) continue
-                                    datastoreFile
                                 }
                                 entryName == "${LauncherFiles.SHARED_PREFERENCES_KEY}.xml" -> {
                                     if (!contents.hasFlag(INCLUDE_SETTINGS)) continue
