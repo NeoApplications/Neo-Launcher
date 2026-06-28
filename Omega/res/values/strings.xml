@@ -68,7 +68,7 @@
     <string name="title_desktop_keep_empty">Allow Empty Pages</string>
     <string name="title__multiline_labels">Multiline app names</string>
     <string name="title_desktop_free_scrolling">Free Scrolling</string>
-    <string name="title_desktop_cycle_scrolling">Cylce Scrolling</string>
+    <string name="title_desktop_cycle_scrolling">Cycle Scrolling</string>
     <string name="title_desktop_icon_popup_menu">Popup menu items</string>
     <string name="title_desktop_hide_statusbar">Hide status bar</string>
     <string name="title_desktop_text_size">Text Size</string>
@@ -492,6 +492,7 @@
     <string name="folder_background">Folder background color</string>
     <string name="folder_stroke_color">Folder stroke color</string>
     <string name="folder_radius">Folder corner radius</string>
+    <string name="folder_full_screen">Open folder in full screen</string>
     <string name="folder_rows">Folder Rows</string>
     <string name="folder_columns">Folder Columns</string>
     <string name="folder_opacity">Folder Icon Opacity</string>
