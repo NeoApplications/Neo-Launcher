@@ -103,8 +103,6 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
     val query = mutableStateOf("")
 
     init {
-        // Si la búsqueda en drawer está habilitada mostramos la vista, si no la ocultamos con GONE
-        // para que no deje espacio en el layout.
         visibility = if (prefs.searchDrawerEnabled.getValue()) {
             VISIBLE
         } else {
