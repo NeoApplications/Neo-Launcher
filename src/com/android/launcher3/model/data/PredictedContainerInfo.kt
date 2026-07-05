@@ -35,7 +35,7 @@ class PredictedContainerInfo(containerId: Int, private val items: List<ItemInfo>
     override fun getContents(): List<ItemInfo> = items
 
     override fun getAppContents(): List<WorkspaceItemInfo> =
-        items.mapNotNull { if (it is WorkspaceItemInfo) it else null }
+        items.filterIsInstance<WorkspaceItemInfo>()
 
     override fun onAddToDatabase(writer: ContentWriter) =
         throw RuntimeException("Persisting predicted items not supported")
