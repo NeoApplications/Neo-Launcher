@@ -20,6 +20,7 @@ import static com.android.launcher3.util.SystemUiController.UI_STATE_SCRIM_VIEW;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
@@ -114,7 +115,7 @@ public class ScrimView extends View implements Insettable {
         updateSysUiColors();
     }
 
-    private void updateSysUiColors() {
+    public void updateSysUiColors() {
         // Use a light system UI (dark icons) if all apps is behind at least half of the
         // status bar.
         final float threshold = STATUS_BAR_COLOR_FORCE_UPDATE_THRESHOLD;
@@ -210,6 +211,9 @@ public class ScrimView extends View implements Insettable {
         }
 
         return new ScrimColors(backgroundColor, foregroundColor);
+    }
+
+    protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, Paint paint) {
     }
 
     /**

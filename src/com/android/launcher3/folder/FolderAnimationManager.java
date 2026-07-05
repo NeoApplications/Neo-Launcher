@@ -138,6 +138,8 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         mIsOpening = isOpening;
         final BaseDragLayer.LayoutParams lp =
                 (BaseDragLayer.LayoutParams) mFolder.getLayoutParams();
+        final int folderWidth = lp.width == android.view.ViewGroup.LayoutParams.MATCH_PARENT ? mFolder.getWidth() : lp.width;
+        final int folderHeight = lp.height == android.view.ViewGroup.LayoutParams.MATCH_PARENT ? mFolder.getHeight() : lp.height;
         mFolderIcon.getPreviewItemManager().recomputePreviewDrawingParams();
         ClippedFolderIconLayoutRule rule = mFolderIcon.getLayoutRule();
         final List<View> itemsInPreview = getPreviewIconsOnPage(0);
@@ -171,7 +173,7 @@ public class FolderAnimationManager implements FolderAnimationCreator {
 
         int previewItemOffsetX = 0;
         if (Utilities.isRtl(mContext.getResources())) {
-            previewItemOffsetX = (int) (lp.width * initialScale - initialSize);
+            previewItemOffsetX = (int) (folderWidth * initialScale - initialSize);
         }
 
         final int paddingOffsetX = (int) (mContent.getPaddingLeft() * initialScale);
@@ -199,7 +201,7 @@ public class FolderAnimationManager implements FolderAnimationCreator {
                 paddingOffsetY,
                 Math.round((totalOffsetX + initialSize)),
                 Math.round((paddingOffsetY + initialSize)));
-        Rect endRect = new Rect(0, 0, lp.width, lp.height);
+        Rect endRect = new Rect(0, 0, folderWidth, folderHeight);
         float finalRadius = mFolderBackground.getCornerRadius();
 
         // Create the animators.
@@ -251,7 +253,7 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         if (Utilities.isRtl(mContext.getResources())) {
             page = (mContent.getPageCount() - 1) - page;
         }
-        int left = page * lp.width;
+        int left = page * folderWidth;
 
         int extraRadius = (int) ((mDeviceProfile.folderIconSizePx / initialScale)
                 * EXTRA_FOLDER_REVEAL_RADIUS_PERCENTAGE);
@@ -260,7 +262,7 @@ public class FolderAnimationManager implements FolderAnimationCreator {
                 (int) (startRect.top / initialScale) - extraRadius,
                 (int) (left + (startRect.right / initialScale)) + extraRadius,
                 (int) (startRect.bottom / initialScale) + extraRadius);
-        Rect contentEnd = new Rect(left, 0, left + lp.width, lp.height);
+        Rect contentEnd = new Rect(left, 0, left + folderWidth, folderHeight);
         // animated contents of folder with the folder background
         play(a, shapeDelegate.createRevealAnimator(
                 mFolder.getContent(), contentStart, contentEnd, finalRadius, !mIsOpening));

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.launcher3.folder.Folder xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="5dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.neoapps.neolauncher.blur.BlurScrimView
+            android:id="@+id/blur_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.neoapps.neolauncher.folder.FolderRootView
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:id="@+id/folder_content_parent_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/folder_full_screen_content" />
+        </com.neoapps.neolauncher.folder.FolderRootView>
+
+        <com.android.launcher3.pageindicators.PageIndicatorDots
+            android:layout_gravity="center"
+            android:id="@+id/folder_page_indicator_vertical"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:elevation="1dp" />
+    </FrameLayout>
+</com.android.launcher3.folder.Folder>

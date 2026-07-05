@@ -90,4 +90,9 @@
     <dimen name="all_apps_label_top_padding">16dp</dimen>
     <dimen name="all_apps_label_bottom_padding">8dp</dimen>
     <dimen name="all_apps_label_text_size">14sp</dimen>
+
+    <dimen name="folder_label_padding_bottom">10dp</dimen>
+    <dimen name="folder_label_padding_top">10dp</dimen>
+    <dimen name="folder_label_text_size">20sp</dimen>
+    <dimen name="folder_label_text_size_popup">12sp</dimen>
 </resources>

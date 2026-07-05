@@ -86,6 +86,12 @@ fun ProfilePrefsPage() {
     val others = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
+                prefs.profileBlurEnable,
+                if (prefs.profileBlurEnable.getValue()) {
+                    prefs.profileBlurRadius
+                } else {
+                    null
+                },
                 prefs.profileWindowCornerRadius,
                 prefs.profileAllowRotation,
                 //prefs.profileShowTopShadow
