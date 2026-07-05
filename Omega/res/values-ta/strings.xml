@@ -69,7 +69,6 @@
     <string name="summary__general_smartspace">தேதி, நேரம், வீட்டு விட்செட்</string>
     <string name="summary__general_notifications">ஒட்டு எண்ணிக்கை, ஒட்டு நிறம், சைகைகள்</string>
     <string name="summary__general_advanced">மொழி, காப்புப்பிரதி, தேடலை அமைத்தல்</string>
-    <string name="summary__general_about">நியோ துவக்கி பற்றி மேலும்</string>
     <string name="pref_category__interfaces">பயனர் இடைமுகம்</string>
     <string name="pref_category__features">நற்பொருத்தங்கள்</string>
     <string name="pref_category__inputs">சைகைகள் மற்றும் தேடல்</string>
@@ -139,8 +138,6 @@
     <string name="title_search_hidden_apps">மறைக்கப்பட்ட பயன்பாடுகளைக் கண்டறியவும்</string>
     <string name="title_fuzzy_search">தெளிவற்ற தேடல்</string>
     <string name="summary_fuzzy_search">பயன்பாட்டு தேடல்களுக்கான தோராயமான பொருத்தம்.</string>
-    <string name="title_app_categorize">பயன்பாடுகளை வகைப்படுத்தவும்</string>
-    <string name="summary_app_categorize">தாவல்கள் அல்லது கோப்புறைகளுக்கு இடையில் தேர்வு செய்யவும்</string>
     <string name="summary_search_hidden_apps">முடிவுகளில் மறைக்கப்பட்ட குறுக்குவழிகளைக் காட்டு.</string>
     <string name="summary_all_apps_google_search">வலை முடிவுகள் மற்றும் பயன்பாடுகளைக் கண்டறியவும்</string>
     <string name="summary__drawer_hide_apps">பயன்பாட்டு டிராயரில் இருந்து பயன்பாட்டை மறைக்கவும்</string>
@@ -155,8 +152,6 @@
     <string name="title_drawer_vertical">செங்குத்து</string>
     <string name="title_drawer_horizontal">கிடைமட்டமாக</string>
     <string name="title_drawer_categorized">வகைப்படுத்தப்பட்டது</string>
-    <string name="title_drawer_custom_categories">தனிப்பயன் வகைகள்</string>
-    <string name="title_drawer_vertical_list">செங்குத்து பட்டியல்</string>
     <string name="title_drawer_paged">பேச்</string>
     <string name="dialog_message_change_sort">அகரவரிசை பயன்பாட்டு வரிசையாக்கத்திற்கு மாற்றவா?</string>
     <string name="cat_desktop_grid">கட்டம் மற்றும் தளவமைப்பு</string>
@@ -458,7 +453,6 @@
     <string name="about_build_information">தகவலை உருவாக்குங்கள்</string>
     <string name="title__about_donate">நன்கொடை</string>
     <string name="title__about_changelog">மாற்றபதிவு</string>
-    <string name="about_copyright">பதிப்புரிமை © 2020–2021</string>
     <string name="about_team">குழு உறுப்பினர்கள்</string>
     <string name="about_translators_group">பங்களிப்பாளர்கள் மற்றும் மொழிபெயர்ப்பாளர்கள்</string>
     <string name="about_translators">மொழிபெயர்ப்பாளர்கள்</string>
@@ -513,7 +507,6 @@
     <string name="pref_desktop_mode_settings">டெச்க்டாப் பயன்முறை அமைப்புகள்</string>
     <string name="web_search_metager">மெட்டேசர் (வலை)</string>
     <string name="web_search_searx">Searx (வலை)</string>
-    <string name="web_search_phind">பைண்ட் (வலை)</string>
     <string name="web_search_perplexity">குழப்பம் (வலை)</string>
     <string name="web_search_you">நீங்கள் (வலை)</string>
     <string name="web_search_neeva">நெவா (வலை)</string>

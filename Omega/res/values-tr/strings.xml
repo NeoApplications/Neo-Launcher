@@ -520,7 +520,6 @@
     <string name="hotseat_accessibility_collapse">Rıhtım çöktü</string>
     <string name="web_search_neeva">Neeva(Web)</string>
     <string name="web_search_wolfram_alpha">Wolfram Alpha(Web)</string>
-    <string name="web_search_phind">Phind(Web)</string>
     <string name="hotseat_prediction_content_description">Tahmin edilen uygulama: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
     <string name="hotseat_tip_gaps_filled">Boş alana uygulama önerileri eklendi</string>
     <string name="title_app_suggestions">Uygulama önerileri</string>

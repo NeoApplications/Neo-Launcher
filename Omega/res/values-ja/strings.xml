@@ -397,7 +397,6 @@
     <string name="title_drawer_layout_categories">レイアウトカテゴリ</string>
     <string name="title_drawer_horizontal">水平</string>
     <string name="title_drawer_categorized">分類された</string>
-    <string name="title_drawer_custom_categories">カスタムカテゴリ</string>
     <string name="dialog_message_change_sort">アルファベット順のアプリ並べ替えに変更しますか？</string>
     <plurals name="hidden_apps_count">
         <item quantity="other">%1$d 非表示</item>
@@ -470,7 +469,6 @@
     <string name="about_build_information">ビルド情報</string>
     <string name="title__about_donate">寄付する</string>
     <string name="title__about_changelog">変更履歴</string>
-    <string name="about_copyright">著作権 © 2020–2021</string>
     <string name="about_team">チームメンバー</string>
     <string name="about_translators_group">寄稿者と翻訳者</string>
     <string name="about_translators">翻訳者</string>
@@ -507,7 +505,6 @@
     <string name="pref_desktop_mode_summary">Androidのデスクトップモードを有効にする</string>
     <string name="web_search_metager">Metager（Web）</string>
     <string name="web_search_searx">Searx （Web）</string>
-    <string name="web_search_phind">Phind（Web）</string>
     <string name="web_search_perplexity">Perplexity（Web）</string>
     <string name="web_search_you">You（Web）</string>
     <string name="web_search_neeva">Neeva（Web）</string>

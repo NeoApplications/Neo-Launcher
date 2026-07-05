@@ -95,8 +95,6 @@
     <string name="title_search_hidden_apps">Menemukan aplikasi tersembunyi</string>
     <string name="title_fuzzy_search">Penelusuran Fuzzy</string>
     <string name="summary_fuzzy_search">Approksimasi matching untuk penelusuran app.</string>
-    <string name="title_app_categorize">kategorisasi apps</string>
-    <string name="summary_app_categorize">Memilih antara Tabs atau Folders</string>
     <string name="summary_search_hidden_apps">Memperlihatkan shortcut tersembunyi dalam hasil.</string>
     <string name="summary_all_apps_google_search">Mencari hasil web dan apps</string>
     <string name="summary__drawer_hide_apps">Menyembunyikan app dari laci app</string>
@@ -111,8 +109,6 @@
     <string name="title_drawer_vertical">Vertikal</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Kategori Vertikal</string>
-    <string name="title_drawer_custom_categories">Kategori Custom</string>
-    <string name="title_drawer_vertical_list">Daftar Vertikal</string>
     <string name="title_drawer_paged">Berhalaman</string>
     <string name="dialog_message_change_sort">Ubah ke pengurutan aplikasi berdasarkan abjad?</string>
     <string name="cat_desktop_grid">Grid dan Layout</string>

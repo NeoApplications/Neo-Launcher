@@ -507,7 +507,6 @@
     <string name="title_drawer_layout_categories">Категорії макетів</string>
     <string name="title_drawer_horizontal">Горизонтальний</string>
     <string name="title_drawer_categorized">Категоризовано</string>
-    <string name="title_drawer_custom_categories">Користувацькі категорії</string>
     <plurals name="hidden_apps_count">
         <item quantity="one">%1$d Приховано</item>
         <item quantity="few">%1$d Приховано</item>

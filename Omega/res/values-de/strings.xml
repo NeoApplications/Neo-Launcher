@@ -506,7 +506,6 @@
     <string name="title_all_apps_hide_scrollbar">Laufleiste ausblenden</string>
     <string name="title_drawer_horizontal">Horizontal</string>
     <string name="title_drawer_categorized">Vertikale Kategorien</string>
-    <string name="title_drawer_custom_categories">Benutzerdefinierte Kategorien</string>
     <string name="title_smartspace_background">Zeige Farbschema-Hintergrund an</string>
     <string name="hotseat_show_dots_page_indicator">Seitenindikator mit Punkten anstelle von Linien anzeigen</string>
     <string name="search_provider_url_hint">Verwende %s anstatt des Suchbegriffs</string>
