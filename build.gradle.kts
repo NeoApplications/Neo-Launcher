@@ -51,7 +51,7 @@ allprojects {
 
             defaultConfig {
                 minSdk = 26
-                targetSdk = 36
+                targetSdk = 37
                 vectorDrawables.useSupportLibrary = true
             }
             compileOptions {
@@ -83,7 +83,7 @@ kotlin {
 
 android {
     namespace = "com.android.launcher3"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 30

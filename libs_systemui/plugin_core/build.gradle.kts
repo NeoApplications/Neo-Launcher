@@ -9,7 +9,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.android.systemui.plugin_core"
 
     defaultConfig {

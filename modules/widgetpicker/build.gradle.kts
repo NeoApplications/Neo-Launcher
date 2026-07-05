@@ -21,7 +21,7 @@ plugins {
 android.buildFeatures.compose = true
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.android.launcher3.widgetpicker"
     testNamespace = "com.android.launcher3.widgetpicker.tests"
 

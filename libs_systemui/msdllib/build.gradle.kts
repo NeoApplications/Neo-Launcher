@@ -6,7 +6,7 @@ plugins {
 
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.google.android.msdl"
     testNamespace = "com.google.android.msdl.tests"
     defaultConfig {

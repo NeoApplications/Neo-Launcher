@@ -10,7 +10,7 @@ kotlin {
 
 android {
     namespace = "com.android.systemui.shared"
-    compileSdk = 36
+    compileSdk = 37
     buildFeatures {
         aidl = true
     }

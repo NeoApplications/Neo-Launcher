@@ -9,7 +9,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "app.lawnchair.compatlib.twelve"
     buildFeatures {
         aidl = true

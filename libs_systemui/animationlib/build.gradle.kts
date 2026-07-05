@@ -7,7 +7,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.android.systemui.animationlib"
     testNamespace = "com.android.systemui.animationlib.test"
 

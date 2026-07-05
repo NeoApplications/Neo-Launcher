@@ -10,7 +10,7 @@ kotlin {
 
 android {
     namespace = "com.android.launcher3.flags"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         minSdk = 30
     }
