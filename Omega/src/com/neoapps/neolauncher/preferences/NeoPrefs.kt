@@ -452,6 +452,13 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadGrid() },
     )
 
+    val desktopFolderFullScreen = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_FOLDER_FULL_SCREEN,
+        titleId = R.string.folder_full_screen,
+        defaultValue = false
+    )
+
     val desktopFolderColumns = IntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_COLUMNS,

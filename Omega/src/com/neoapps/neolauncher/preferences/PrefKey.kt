@@ -62,6 +62,7 @@ object PrefKey {
     val DESKTOP_WIDGETS_FULL_WIDTH = booleanPreferencesKey("desktop_full_width_widgets")
     val DESKTOP_WIDGETS_CORNER_RADIUS = floatPreferencesKey("desktop_widget_corner_radius")
     val DESKTOP_EMPTY_SCREENS_ALLOW = booleanPreferencesKey("desktop_allow_empty_screens")
+    val DESKTOP_FOLDER_FULL_SCREEN = booleanPreferencesKey("desktop_folder_full_screen")
     val DESKTOP_FOLDER_CORNER_RADIUS = floatPreferencesKey("desktop_folder_corner_radius")
     val DESKTOP_FOLDER_COLUMNS = intPreferencesKey("desktop_folder_columns")
     val DESKTOP_FOLDER_ROWS = intPreferencesKey("desktop_folder_rows")

@@ -78,6 +78,8 @@ fun DesktopPrefsPage() {
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
+                prefs.desktopFolderFullScreen,
+                /*
                 prefs.desktopCustomFolderBackground,
                 if (prefs.desktopCustomFolderBackground.getValue()) {
                     prefs.desktopFolderBackgroundColor
@@ -86,7 +88,7 @@ fun DesktopPrefsPage() {
                 prefs.desktopFolderStroke,
                 if (prefs.desktopFolderStroke.getValue()) {
                     prefs.desktopFolderStrokeColor
-                } else null,
+                } else null,*/
             ).toTypedArray()
         )
     }
@@ -120,7 +122,8 @@ fun DesktopPrefsPage() {
                     prefs = gridPrefs,
                     onPrefDialog = onPrefDialog
                 )
-            }/*
+            }
+
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.app_categorization_folders),
@@ -128,7 +131,7 @@ fun DesktopPrefsPage() {
                     onPrefDialog = onPrefDialog
                 )
             }
-            */
+
             item {
                 PreferenceGroup(
                     stringResource(id = R.string.pref_category__others),
