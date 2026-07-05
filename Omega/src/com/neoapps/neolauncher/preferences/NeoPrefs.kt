@@ -107,6 +107,7 @@ class NeoPrefs private constructor(val context: Context) {
     val reloadGrid = { onChangeCallback?.reloadGrid() }
     val reloadAll = { reloadModel(); reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }
+    val updateBlur = { onChangeCallback?.updateBlur() }
 
     inline fun withChangeCallback(
         crossinline callback: (PreferencesChangeCallback) -> Unit,
@@ -217,6 +218,28 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = {
             legacyPrefs.savePreference("profile_icon_adaptify", it)
         }
+    )
+    var profileBlurEnable = BooleanPref(
+        titleId = R.string.title__theme_blur,
+        summaryId = R.string.summary__theme_blur,
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_BLUR_ENABLED,
+        defaultValue = false,
+        onChange = {
+            updateBlur.invoke()
+            pokeChange()
+        }
+    )
+
+    var profileBlurRadius = FloatPref(
+        key = PrefKey.PROFILE_BLUR_RADIUS,
+        titleId = R.string.title__theme_blur_radius,
+        dataStore = dataStore,
+        defaultValue = 0.75f,
+        maxValue = 1.5f,
+        minValue = 0.1f,
+        steps = 27,
+        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var profileWindowCornerRadius = FloatPref(

@@ -18,7 +18,7 @@ error-prone-annotations = "2.50.0"
 graphics-shapes = "1.1.0"
 guava = "33.6.0-android"
 gradle-toolchains = "1.0.0"
-hoko-blur = "1.5.3"
+hoko-blur = "1.5.5"
 immutables = "0.5.1"
 inject = "1"
 jakarta-inject = "2.0.1"
@@ -101,6 +101,7 @@ graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", versi
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
+hokofly-hokoblur = { module = "io.github.hokofly:hoko-blur", version.ref = "hoko-blur" }
 jakarta-inject = { group = "jakarta.inject", name = "jakarta.inject-api", version.ref = "jakarta-inject" }
 java-inject = { group = "javax.inject", name = "javax.inject", version.ref = "inject" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

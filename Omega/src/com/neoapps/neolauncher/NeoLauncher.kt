@@ -71,6 +71,7 @@ import com.android.launcher3.util.RunnableList
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
+import com.neoapps.neolauncher.blur.BlurBackgroundView
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -99,6 +100,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     val allApps = ArrayList<AppInfo>()
     private val hiddenApps = ArrayList<AppInfo>()
     val gestureController by lazy { GestureController(this) }
+    val background by lazy { findViewById<BlurBackgroundView>(R.id.blur_background)!! }
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }

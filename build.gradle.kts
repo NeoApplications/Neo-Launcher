@@ -312,6 +312,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.hilt.compiler)
     ksp(libs.hilt.android)
+    implementation(libs.hokofly.hokoblur)
     implementation(libs.koin.android)
     implementation(libs.koin.annotations)
     implementation(libs.kotlin.stdlib) {
