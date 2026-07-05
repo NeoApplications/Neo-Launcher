@@ -233,9 +233,7 @@ class ModelCallbacks(private var launcher: Launcher) : BgDataModel.Callbacks {
     }
 
     override fun bindExtraContainerItems(item: BgDataModel.FixedContainerItems) {
-        if (item is PredictedContainerInfo) {
-            launcher.bindPredictedContainerInfo(item)
-        }
+        //launcher.bindPredictedContainerInfo(item)
     }
 
     /** Returns the ids of the workspaces to bind. */
