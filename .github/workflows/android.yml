@@ -35,10 +35,10 @@ jobs:
           ARTIFACT_PATHNAME_APK=$(ls build/outputs/apk/aospOmega/debug/*.apk | head -n 1)
           ARTIFACT_NAME_APK=$(basename $ARTIFACT_PATHNAME_APK)
           echo "ARTIFACT_NAME_APK is ${ARTIFACT_NAME_APK}"
-          echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $GITHUB_ENV
-          echo "ARTIFACT_NAME_APK=${ARTIFACT_NAME_APK}" >> $GITHUB_ENV
+          echo "artifact_pathname_apk=${ARTIFACT_PATHNAME_APK}" >> $GITHUB_OUTPUT
+          echo "artifact_name_apk=${ARTIFACT_NAME_APK}" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ env.ARTIFACT_NAME_APK }}
-          path: ${{ env.ARTIFACT_PATHNAME_APK }}
+          name: ${{ steps.set-result-artifact.outputs.artifact_name_apk }}
+          path: ${{ steps.set-result-artifact.outputs.artifact_pathname_apk }}
