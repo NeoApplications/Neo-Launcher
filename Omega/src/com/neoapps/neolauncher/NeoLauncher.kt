@@ -71,7 +71,7 @@ import com.android.launcher3.util.RunnableList
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
-import com.neoapps.neolauncher.blur.BlurBackgroundView
+import com.neoapps.neolauncher.blur.WallpaperPermissionHelper
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -80,8 +80,7 @@ import com.neoapps.neolauncher.shortcuts.OmegaShortcuts
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
-import com.neoapps.neolauncher.util.Permissions
-import com.neoapps.neolauncher.util.hasStoragePermission
+import com.neoapps.neolauncher.util.hasWallpaperAccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,7 +99,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     val allApps = ArrayList<AppInfo>()
     private val hiddenApps = ArrayList<AppInfo>()
     val gestureController by lazy { GestureController(this) }
-    val background by lazy { findViewById<BlurBackgroundView>(R.id.blur_background)!! }
     private lateinit var themeOverride: ThemeOverride
     private val themeSet: ThemeOverride.ThemeSet get() = ThemeOverride.Settings()
     val optionsView by lazy { findViewById<OptionsPopupView<Launcher>>(R.id.options_view)!! }
@@ -116,12 +114,8 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     private lateinit var mHotseatPredictionController: HotseatPredictionController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (!this.hasStoragePermission) {
-            Permissions.requestPermission(
-                this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                Permissions.REQUEST_PERMISSION_STORAGE_ACCESS
-            )
+        if (!this.hasWallpaperAccess) {
+            WallpaperPermissionHelper.requestIfNeeded(this)
         }
 
         prefs.registerCallback(prefCallback)
@@ -148,6 +142,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             }
         }, null)
 
+        NeoApp.instance?.onLauncherAppStateCreated()
         themeOverride = ThemeOverride(themeSet, this)
         themeOverride.applyTheme(this)
         currentAccent = prefs.profileAccentColor.getColor()
@@ -185,11 +180,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             }
         }
     }
-
-    fun onItemPinnedFromContextMenu() {
-        mHotseatPredictionController.onItemPinnedFromContextMenu()
-    }
-
 
     override fun bindWorkspaceComponentsRemoved(matcher: Predicate<ItemInfo?>) {
         super.bindWorkspaceComponentsRemoved(matcher)

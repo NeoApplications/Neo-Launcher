@@ -20,11 +20,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.neoapps.neolauncher.blur.BlurBackgroundView
-        android:id="@+id/blur_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <com.android.launcher3.dragndrop.DragLayer
         android:id="@+id/drag_layer"
         android:layout_width="match_parent"
@@ -106,7 +101,7 @@
             android:id="@+id/drop_target_bar"
             layout="@layout/drop_target_bar" />
 
-        <com.android.launcher3.views.ScrimView
+        <com.neoapps.neolauncher.blur.BlurScrimView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/scrim_view"

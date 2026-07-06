@@ -26,8 +26,6 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.Path
-import android.os.Build
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
@@ -36,13 +34,13 @@ import androidx.core.graphics.scale
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
+import com.neoapps.neolauncher.neoApp
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.theme.AccentColorOption
 import com.neoapps.neolauncher.util.SingletonHolder
 import com.neoapps.neolauncher.util.ceilToInt
 import com.neoapps.neolauncher.util.ensureOnMainThread
-import com.neoapps.neolauncher.util.hasStoragePermission
-import com.neoapps.neolauncher.util.minSDK
+import com.neoapps.neolauncher.util.hasWallpaperAccess
 import com.neoapps.neolauncher.util.runOnMainThread
 import com.neoapps.neolauncher.util.safeForEach
 import com.neoapps.neolauncher.util.useApplicationContext
@@ -52,7 +50,7 @@ class BlurWallpaperProvider(val context: Context) {
     private val prefs = NeoPrefs.getInstance()
     private val mWallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
     private val mListeners = ArrayList<Listener>()
-    private val mDisplayMetrics = DisplayMetrics()
+
     var wallpaper: Bitmap? = null
         private set(value) {
             if (field != value) {
@@ -75,6 +73,7 @@ class BlurWallpaperProvider(val context: Context) {
     private val mPath = Path()
 
     private var mWallpaperWidth: Int = 0
+    private var mDisplayWidth: Int = 0
     private var mDisplayHeight: Int = 0
     var wallpaperYOffset: Float = 0f
         private set
@@ -103,8 +102,11 @@ class BlurWallpaperProvider(val context: Context) {
             updatePending = true
             return
         }
-        if (minSDK(Build.VERSION_CODES.O_MR1) && !context.hasStoragePermission) {
-            prefs.profileBlurEnable.setValue(false)
+        if (!context.hasWallpaperAccess) {
+            val activity = context.neoApp.activityHandler.foregroundActivity
+            if (activity != null) {
+                WallpaperPermissionHelper.requestIfNeeded(activity)
+            }
             return
         }
         val enabled = getEnabledStatus()
@@ -125,6 +127,12 @@ class BlurWallpaperProvider(val context: Context) {
 
         var wallpaper = try {
             Utilities.drawableToBitmap(mWallpaperManager.drawable, true) as Bitmap
+        } catch (e: SecurityException) {
+            val activity = context.neoApp.activityHandler.foregroundActivity
+            if (activity != null) {
+                WallpaperPermissionHelper.requestIfNeeded(activity)
+            }
+            return
         } catch (e: Exception) {
             prefs.profileBlurEnable.setValue(false)
             runOnMainThread {
@@ -178,11 +186,11 @@ class BlurWallpaperProvider(val context: Context) {
 
     private fun scaleToScreenSize(bitmap: Bitmap): Bitmap {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
-        display?.getRealMetrics(mDisplayMetrics)
-
-        val width = mDisplayMetrics.widthPixels
-        val height = mDisplayMetrics.heightPixels
+        val windowMetrics = wm.currentWindowMetrics
+        val bounds = windowMetrics.bounds
+        val width = bounds.width()
+        val height = bounds.height()
+        mDisplayWidth = width
         mDisplayHeight = height
 
         val widthFactor = width.toFloat() / bitmap.width
@@ -266,7 +274,7 @@ class BlurWallpaperProvider(val context: Context) {
         if (!isEnabled) return
         if (wallpaper == null) return
 
-        val availw = mDisplayMetrics.widthPixels - mWallpaperWidth
+        val availw = mDisplayWidth - mWallpaperWidth
         var xPixels = availw / 2
 
         if (availw < 0)
@@ -274,7 +282,7 @@ class BlurWallpaperProvider(val context: Context) {
 
         mOffset = Utilities.boundToRange(
             (-xPixels).toFloat(),
-            0f, (mWallpaperWidth - mDisplayMetrics.widthPixels).toFloat()
+            0f, (mWallpaperWidth - mDisplayWidth).toFloat()
         )
 
         for (listener in ArrayList(mListeners)) {

@@ -25,6 +25,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
@@ -46,9 +47,18 @@ fun Context.getLauncherOrNull(): Launcher? {
 fun Context.getIcon(): Drawable = packageManager.getApplicationIcon(applicationInfo)
 
 val Context.hasStoragePermission
-    get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-        this, Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
+            this, Manifest.permission.READ_MEDIA_IMAGES
+        )
+    } else {
+        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
+            this, Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
+
+val Context.hasWallpaperAccess
+    get() = hasStoragePermission
 
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }

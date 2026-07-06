@@ -87,6 +87,7 @@ open class CustomHotseat @JvmOverloads constructor(
     init {
         if (hotseatEnabled) {
             super.setVisibility(VISIBLE)
+            createBlurDrawable()
         } else {
             super.setVisibility(GONE)
         }
