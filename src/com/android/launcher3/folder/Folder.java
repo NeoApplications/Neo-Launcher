@@ -827,8 +827,24 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         Log.d("b/383526431", "animateOpen: content child count after cancelling"
                 + " animation: " + mContent.getTotalChildCount());
 
-        AnimatorSet animatorSet = getFolderAnimationManager()
-                .createAnimatorSet(/* isOpening */ true);
+        AnimatorSet animatorSet;
+        try {
+            animatorSet = getFolderAnimationManager()
+                    .createAnimatorSet(/* isOpening */ true);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create folder open animator, opening without animation", e);
+            mFolderIcon.setIconVisible(false);
+            mFolderIcon.drawLeaveBehindIfExists();
+            setState(STATE_OPEN);
+            announceAccessibilityChanges();
+            AccessibilityManagerCompat.sendTestProtocolEventToTest(getContext(),
+                    FOLDER_OPENED_MESSAGE);
+            mContent.setFocusOnFirstChild();
+            if (mPageIndicator != null) {
+                mPageIndicator.stopAllAnimations();
+            }
+            return;
+        }
 
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -896,12 +912,26 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         // {@link AnimatorListener} before it so that {@link AnimatorListener#onAnimationStart} can
         // be called to register mCurrentAnimator, which will be used to cancel animator
         addAnimationStartListeners(animatorSet);
-        // Because t=0 has the folder match the folder icon, we can skip the
-        // first frame and have the same movement one frame earlier.
-        Log.d("b/311077782", "Folder.animateOpen");
-        animatorSet.setCurrentPlayTime(Math.min(
-                getSingleFrameMs(getContext()), animatorSet.getTotalDuration()));
-        animatorSet.start();
+        try {
+            // Because t=0 has the folder match the folder icon, we can skip the
+            // first frame and have the same movement one frame earlier.
+            Log.d("b/311077782", "Folder.animateOpen");
+            animatorSet.setCurrentPlayTime(Math.min(
+                    getSingleFrameMs(getContext()), animatorSet.getTotalDuration()));
+            animatorSet.start();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to start folder open animation, opening without animation", e);
+            mFolderIcon.setIconVisible(false);
+            mFolderIcon.drawLeaveBehindIfExists();
+            setState(STATE_OPEN);
+            announceAccessibilityChanges();
+            AccessibilityManagerCompat.sendTestProtocolEventToTest(getContext(),
+                    FOLDER_OPENED_MESSAGE);
+            mContent.setFocusOnFirstChild();
+            if (mPageIndicator != null) {
+                mPageIndicator.stopAllAnimations();
+            }
+        }
 
 
         // Make sure the folder picks up the last drag move even if the finger doesn't move.

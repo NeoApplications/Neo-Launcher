@@ -72,18 +72,21 @@ data class ClipRevealData(
                 val pageStart = page * layoutParams.width
 
                 // Setup start and end area for revealing Folder Content
+                val safeInitialFolderScale = if (initialFolderScale > 0f && !initialFolderScale.isNaN()) {
+                    initialFolderScale
+                } else 1f
                 val extraRadius =
-                    ((deviceProfile.folderIconSizePx / initialFolderScale) *
+                    ((deviceProfile.folderIconSizePx / safeInitialFolderScale) *
                             EXTRA_FOLDER_REVEAL_RADIUS_PERCENTAGE)
                         .toInt()
                 val contentStart =
                     Rect(
-                        (pageStart + (backgroundStartRect.left / initialFolderScale)).toInt() -
+                        (pageStart + (backgroundStartRect.left / safeInitialFolderScale)).toInt() -
                                 extraRadius,
-                        (backgroundStartRect.top / initialFolderScale).toInt() - extraRadius,
-                        (pageStart + (backgroundStartRect.right / initialFolderScale)).toInt() +
+                        (backgroundStartRect.top / safeInitialFolderScale).toInt() - extraRadius,
+                        (pageStart + (backgroundStartRect.right / safeInitialFolderScale)).toInt() +
                                 extraRadius,
-                        (backgroundStartRect.bottom / initialFolderScale).toInt() + extraRadius,
+                        (backgroundStartRect.bottom / safeInitialFolderScale).toInt() + extraRadius,
                     )
                 val contentEnd =
                     Rect(pageStart, 0, pageStart + layoutParams.width, layoutParams.height)
