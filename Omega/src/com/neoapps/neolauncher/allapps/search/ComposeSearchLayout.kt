@@ -302,13 +302,16 @@ open class ComposeSearchLayout(context: Context, attrs: AttributeSet? = null) :
         mAppsView?.onClearSearchResult()
     }
 
-    fun startSearch() {
+    override fun startSearch() {
         startSearch("")
     }
 
     fun startSearch(searchQuery: String) {
         query.value = searchQuery.trim()
-        textFieldFocusRequester.requestFocus()
+        if (::textFieldFocusRequester.isInitialized) {
+            textFieldFocusRequester.requestFocus()
+            keyboardController?.show()
+        }
     }
 
     override fun getEditText(): ExtendedEditText? = null
