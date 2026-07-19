@@ -1152,8 +1152,8 @@ public class InvariantDeviceProfile {
         @GridType
         public final int gridType;
 
-        private final int[] numFolderRows = new int[COUNT_SIZES];
-        private final int[] numFolderColumns = new int[COUNT_SIZES];
+        public final int[] numFolderRows = new int[COUNT_SIZES];
+        public final int[] numFolderColumns = new int[COUNT_SIZES];
         private final @StyleRes int folderStyle;
         private final @StyleRes int cellStyle;
 

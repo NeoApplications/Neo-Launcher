@@ -138,8 +138,22 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         mIsOpening = isOpening;
         final BaseDragLayer.LayoutParams lp =
                 (BaseDragLayer.LayoutParams) mFolder.getLayoutParams();
-        final int folderWidth = lp.width == android.view.ViewGroup.LayoutParams.MATCH_PARENT ? mFolder.getWidth() : lp.width;
-        final int folderHeight = lp.height == android.view.ViewGroup.LayoutParams.MATCH_PARENT ? mFolder.getHeight() : lp.height;
+        int folderWidth = lp.width == android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                ? mFolder.getWidth() : lp.width;
+        int folderHeight = lp.height == android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                ? mFolder.getHeight() : lp.height;
+        if (folderWidth <= 0) {
+            folderWidth = mFolder.mActivityContext.getDragLayer().getWidth();
+        }
+        if (folderHeight <= 0) {
+            folderHeight = mFolder.mActivityContext.getDragLayer().getHeight();
+        }
+        if (folderWidth <= 0) {
+            folderWidth = mDeviceProfile.getDeviceProperties().getAvailableWidthPx();
+        }
+        if (folderHeight <= 0) {
+            folderHeight = mDeviceProfile.getDeviceProperties().getAvailableHeightPx();
+        }
         mFolderIcon.getPreviewItemManager().recomputePreviewDrawingParams();
         ClippedFolderIconLayoutRule rule = mFolderIcon.getLayoutRule();
         final List<View> itemsInPreview = getPreviewIconsOnPage(0);

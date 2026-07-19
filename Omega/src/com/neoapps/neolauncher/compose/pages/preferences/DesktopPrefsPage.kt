@@ -78,17 +78,15 @@ fun DesktopPrefsPage() {
     val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         mutableStateListOf(
             *listOfNotNull(
+                prefs.desktopFolderColumns,
+                prefs.desktopFolderRows,
                 prefs.desktopFolderFullScreen,
                 /*
                 prefs.desktopCustomFolderBackground,
                 if (prefs.desktopCustomFolderBackground.getValue()) {
                     prefs.desktopFolderBackgroundColor
                 } else null,
-                prefs.desktopFolderOpacity,
-                prefs.desktopFolderStroke,
-                if (prefs.desktopFolderStroke.getValue()) {
-                    prefs.desktopFolderStrokeColor
-                } else null,*/
+                prefs.desktopFolderOpacity,*/
             ).toTypedArray()
         )
     }

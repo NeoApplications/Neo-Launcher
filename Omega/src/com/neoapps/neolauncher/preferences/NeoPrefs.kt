@@ -28,6 +28,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.android.launcher3.InvariantDeviceProfile.INDEX_DEFAULT
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -479,27 +480,30 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_FULL_SCREEN,
         titleId = R.string.folder_full_screen,
-        defaultValue = false
+        defaultValue = false,
+        onChange = { reloadGrid() },
     )
 
-    val desktopFolderColumns = IntPref(
+    val desktopFolderColumns = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_COLUMNS,
         titleId = R.string.folder_columns,
-        defaultValue = 4,
-        minValue = 2,
-        maxValue = 5,
-        steps = 2,
+        selectDefaultValue = { numFolderColumns[INDEX_DEFAULT] },
+        minValue = 2f,
+        maxValue = 4f,
+        steps = 3,
+        onChange = { reloadGrid() }
     )
 
-    val desktopFolderRows = IntPref(
+    val desktopFolderRows = IdpIntPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_ROWS,
         titleId = R.string.folder_rows,
-        defaultValue = 4,
-        minValue = 2,
-        maxValue = 5,
-        steps = 2,
+        selectDefaultValue = { numFolderRows[INDEX_DEFAULT] },
+        minValue = 2f,
+        maxValue = 4f,
+        steps = 3,
+        onChange = { reloadGrid() }
     )
 
     val desktopFolderOpacity = FloatPref(

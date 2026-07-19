@@ -2,120 +2,116 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
-        android:id="@+id/folder_title_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="170dp">
+        android:layout_height="match_parent"
+        android:layout_margin="24dp">
 
-        <com.android.launcher3.folder.FolderNameEditText
-            android:textSize="@dimen/folder_label_text_size"
-            android:textStyle="bold"
-            android:id="@+id/folder_name"
-            android:tag="editTextColor|editTextHintColor"
-            android:background="@android:color/transparent"
-            android:paddingTop="@dimen/folder_label_padding_top"
-            android:paddingBottom="@dimen/folder_label_padding_bottom"
+        <RelativeLayout
+            android:id="@+id/folder_title_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            launcher:layout_constraintTop_toTopOf="parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="130dp">
+
+            <com.android.launcher3.folder.FolderNameEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/folder_label_text_size"
+                android:textStyle="bold"
+                android:id="@+id/folder_name"
+                android:tag="editTextColor|editTextHintColor"
+                android:background="@android:color/transparent"
+                android:paddingTop="@dimen/folder_label_padding_top"
+                android:paddingBottom="@dimen/folder_label_padding_bottom"
+                android:maxWidth="180dp"
+                android:minWidth="60dp"
+                android:hint="@string/folder_hint_text"
+                android:singleLine="true"
+                android:includeFontPadding="false"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:imeOptions="flagNoExtractUi"
+                android:fontFamily="sans-serif"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp" />
+
+            <ImageButton
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:background="?android:selectableItemBackgroundBorderless"
+                launcher:tint="?colorPrimary"
+                android:src="@drawable/ic_setting" />
+        </RelativeLayout>
+
+        <com.neoapps.neolauncher.folder.NeoFolderPagedView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="180dp"
-            android:minWidth="60dp"
-            android:hint="@string/folder_hint_text"
-            android:singleLine="true"
-            android:includeFontPadding="false"
-            android:layout_centerVertical="true"
-            android:imeOptions="flagNoExtractUi"
-            android:fontFamily="sans-serif"
-            android:paddingStart="3dp"
-            android:paddingEnd="3dp"
-            android:layout_alignParentStart="true" />
-
-        <View
-            android:id="@+id/folder_name_underline"
-            android:tag="backgroundColorEditTextUnderline"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_below="@+id/folder_name" />
-
-        <ImageView
-            android:id="@+id/button_add_folder"
-            android:tag="iconColorPrimary"
-            android:paddingTop="@dimen/folder_label_padding_top"
-            android:paddingBottom="@dimen/folder_label_padding_bottom"
-            android:layout_width="34dp"
-            android:layout_height="44dp"
-            android:layout_centerVertical="true"
-            android:contentDescription="Add apps"
-            android:paddingStart="10dp"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
-
-    <com.android.launcher3.folder.FolderPagedView
-        android:layout_gravity="center"
-        android:id="@+id/folder_content"
-        android:background="@android:color/transparent"
-        android:paddingTop="10dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        launcher:pageIndicator="@+id/folder_page_indicator" />
-
-    <LinearLayout
-        android:id="@+id/folder_footer"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/folder_footer_height_default"
-        android:clipChildren="false"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/folder_footer_horiz_padding"
-        android:paddingRight="@dimen/folder_footer_horiz_padding">
-
-        <com.android.launcher3.pageindicators.PaginationArrow
-            android:id="@+id/left_indicator_arrow"
-            android:layout_width="@dimen/folder_arrow_touchbox_length"
-            android:layout_height="@dimen/folder_arrow_touchbox_length"
-            android:foreground="@drawable/ic_chevron_left_rounded_700"
-            android:layout_gravity="center_vertical"
-            android:foregroundGravity="center"
-            android:contentDescription="@string/paginate_left"
-            android:visibility="gone"
-            android:elevation="1dp" />
-
-        <com.android.launcher3.pageindicators.PageIndicatorDots
+            launcher:layout_constraintTop_toBottomOf="@id/folder_title_view"
+            launcher:layout_constraintStart_toStartOf="parent"
+            launcher:layout_constraintEnd_toEndOf="parent"
             android:layout_gravity="center"
-            android:id="@+id/folder_page_indicator"
-            android:visibility="gone"
+            android:id="@+id/folder_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            launcher:pageIndicator="@+id/folder_page_indicator" />
+
+        <LinearLayout
+            android:id="@+id/folder_footer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:elevation="1dp" />
+            android:layout_height="@dimen/folder_footer_height_default"
+            launcher:layout_constraintTop_toBottomOf="@id/folder_content"
+            launcher:layout_constraintStart_toStartOf="parent"
+            launcher:layout_constraintEnd_toEndOf="parent"
+            android:clipChildren="false"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
 
-        <com.android.launcher3.pageindicators.PaginationArrow
-            android:id="@+id/right_indicator_arrow"
-            android:layout_width="@dimen/folder_arrow_touchbox_length"
-            android:layout_height="@dimen/folder_arrow_touchbox_length"
-            android:layout_gravity="center_vertical"
-            android:foreground="@drawable/ic_chevron_left_rounded_700"
-            android:rotation="180"
-            android:contentDescription="@string/paginate_right"
-            android:foregroundGravity="center"
-            android:visibility="gone"
-            android:elevation="1dp" />
+            <com.android.launcher3.pageindicators.PaginationArrow
+                android:layout_width="@dimen/folder_arrow_touchbox_length"
+                android:layout_height="@dimen/folder_arrow_touchbox_length"
+                android:id="@+id/left_indicator_arrow"
+                android:foreground="@drawable/ic_chevron_left_rounded_700"
+                android:foregroundTint="?colorPrimary"
+                android:layout_gravity="center_vertical"
+                android:foregroundGravity="center"
+                android:contentDescription="@string/paginate_left"
+                launcher:tint="?colorPrimary"
+                android:visibility="gone"
+                android:elevation="1dp" />
 
-        <FrameLayout
-            android:id="@+id/add_apps_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <com.android.launcher3.pageindicators.PageIndicatorDots
+                android:id="@+id/folder_page_indicator"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="1dp"
+                launcher:tint="?colorPrimary" />
 
-        <ImageButton
-            android:id="@+id/settings_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:layout_marginEnd="-8dp"
-            launcher:tint="?colorPrimary"
-            android:src="@drawable/dots_vertical" />
-    </LinearLayout>
+            <com.android.launcher3.pageindicators.PaginationArrow
+                android:layout_width="@dimen/folder_arrow_touchbox_length"
+                android:layout_height="@dimen/folder_arrow_touchbox_length"
+                android:id="@+id/right_indicator_arrow"
+                android:layout_gravity="center_vertical"
+                android:foreground="@drawable/ic_chevron_left_rounded_700"
+                android:foregroundTint="?colorPrimary"
+                android:rotation="180"
+                launcher:tint="?colorPrimary"
+                android:contentDescription="@string/paginate_right"
+                android:foregroundGravity="center"
+                android:visibility="gone"
+                android:elevation="1dp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

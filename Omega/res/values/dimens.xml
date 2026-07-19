@@ -25,7 +25,6 @@
     <dimen name="key_text_shadow_dy">0.5dip</dimen>
     <dimen name="key_text_shadow_radius">0.5dip</dimen>
 
-
     <dimen name="date_weather_view_height">24dp</dimen>
     <dimen name="enhanced_smartspace_base_action_icon_margin">8dp</dimen>
     <dimen name="enhanced_smartspace_base_action_icon_padding">4dp</dimen>
@@ -95,4 +94,10 @@
     <dimen name="folder_label_padding_top">10dp</dimen>
     <dimen name="folder_label_text_size">20sp</dimen>
     <dimen name="folder_label_text_size_popup">12sp</dimen>
+    <dimen name="folder_content_corner_radius">12dp</dimen>
+    <dimen name="folder_container_bottom_padding">12dp</dimen>
+    <dimen name="folder_container_landscape_horizontal_padding_scale">8dp</dimen>
+    <dimen name="folder_container_landscape_padding">20dp</dimen>
+    <dimen name="folder_container_horizontal_padding_scale">9dp</dimen>
+    <dimen name="folder_container_vertical_padding_scale">12dp</dimen>
 </resources>

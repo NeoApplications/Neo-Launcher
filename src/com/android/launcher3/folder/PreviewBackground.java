@@ -51,7 +51,9 @@ import com.android.launcher3.R;
 import com.android.launcher3.celllayout.DelegatedCellDrawing;
 import com.android.launcher3.graphics.ShapeDelegate;
 import com.android.launcher3.graphics.ThemeManager;
+import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /**
  * This object represents a FolderIcon preview background. It stores drawing / measurement
@@ -83,6 +85,7 @@ public class PreviewBackground extends DelegatedCellDrawing {
     private int mBgColor;
     private int mStrokeColor;
     private float mStrokeWidth;
+    private int mDotColor;
     private int mStrokeAlpha = MAX_BG_OPACITY;
     private int mShadowAlpha = 255;
     private View mInvalidateDelegate;
@@ -112,7 +115,6 @@ public class PreviewBackground extends DelegatedCellDrawing {
     @VisibleForTesting protected boolean mIsAccepting;
     @VisibleForTesting protected boolean mIsHovered;
     @VisibleForTesting protected boolean mIsHoveredOrAnimating;
-
     private static final Property<PreviewBackground, Integer> STROKE_ALPHA =
             new Property<PreviewBackground, Integer>(Integer.class, "strokeAlpha") {
                 @Override
@@ -169,9 +171,11 @@ public class PreviewBackground extends DelegatedCellDrawing {
     public void setup(Context context, ActivityContext activity, View invalidateDelegate,
                       int availableSpaceX, int topPadding) {
         mInvalidateDelegate = invalidateDelegate;
+        NeoPrefs prefs = NeoPrefs.getInstance();
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(R.styleable.FolderIconPreview);
         mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
+        mDotColor = Themes.getAttrColor(context, R.attr.notificationDotColor);
         mBgColor = ta.getColor(R.styleable.FolderIconPreview_folderPreviewColor, 0);
         ta.recycle();
 
@@ -250,6 +254,10 @@ public class PreviewBackground extends DelegatedCellDrawing {
 
     public int getBgColor() {
         return mBgColor;
+    }
+
+    public int getDotColor() {
+        return mDotColor;
     }
 
     public void drawBackground(Canvas canvas) {

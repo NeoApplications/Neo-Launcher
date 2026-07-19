@@ -16,22 +16,14 @@
             android:layout_height="match_parent" />
 
         <com.neoapps.neolauncher.folder.FolderRootView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/accent_ripple_color"
             android:layout_gravity="center_vertical"
             android:orientation="vertical"
-            android:id="@+id/folder_content_parent_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:id="@+id/folder_content_parent_view">
 
             <include layout="@layout/folder_full_screen_content" />
         </com.neoapps.neolauncher.folder.FolderRootView>
-
-        <com.android.launcher3.pageindicators.PageIndicatorDots
-            android:layout_gravity="center"
-            android:id="@+id/folder_page_indicator_vertical"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:elevation="1dp" />
     </FrameLayout>
 </com.android.launcher3.folder.Folder>

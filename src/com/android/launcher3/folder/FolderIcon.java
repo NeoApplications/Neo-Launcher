@@ -668,6 +668,11 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             // If we are animating to the accepting state, animate the dot out.
             NeoPrefs prefs = NeoPrefs.getInstance();
             mDotParams.scale = Math.max(0, mDotScale - mBackground.getAcceptScaleProgress());
+            if (prefs.getNotificationCustomColor().getValue()) {
+                mDotParams.setDotColor(prefs.getNotificationBackground().getColor());
+            } else {
+                mDotParams.setDotColor(mBackground.getDotColor());
+            }
             mDotParams.count = mDotInfo.getNotificationCount();
             if (prefs.getNotificationCount().getValue())
                 mDotParams.showCount = true;
