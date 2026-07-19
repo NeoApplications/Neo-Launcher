@@ -20,7 +20,6 @@ package com.neoapps.neolauncher.blur
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -223,21 +222,12 @@ class BlurScrimView @JvmOverloads constructor(
         postReInitUi()
     }
 
-    override fun onDrawRoundRect(
-        canvas: Canvas,
-        left: Float,
-        top: Float,
-        right: Float,
-        bottom: Float,
-        rx: Float,
-        ry: Float,
-        paint: Paint,
-    ) {
+    override fun onDraw(canvas: Canvas) {
         blurDrawable?.run {
-            setBlurBounds(left, top, right, bottom)
+            setBlurBounds(0f, 0f, width.toFloat(), height.toFloat())
             draw(canvas)
         }
-        super.onDrawRoundRect(canvas, left, top, right, bottom, rx, ry, paint)
+        super.onDraw(canvas)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {

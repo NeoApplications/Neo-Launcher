@@ -26,10 +26,10 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withTranslation
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.android.launcher3.Hotseat
 import com.android.launcher3.R
+import com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound
 import com.android.launcher3.icons.ShadowGenerator
 import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.blur.BlurDrawable
@@ -83,7 +83,23 @@ open class CustomHotseat @JvmOverloads constructor(
             }
         }
     }
+    private var viewAlpha = 1f
+        set(value) {
+            field = value
+            setBgColor()
+        }
 
+    private var bgColor = 0
+    private var bgAlpha = 0f
+        private set(value) {
+            field = value
+            setBgColor()
+        }
+    private var noAlphaBgColor = prefs.dockBackgroundColor
+        set(value) {
+            field = value
+            setBgColor()
+        }
     init {
         if (hotseatEnabled) {
             super.setVisibility(VISIBLE)
@@ -156,6 +172,7 @@ open class CustomHotseat @JvmOverloads constructor(
             blurScaleY = 1 / scaleY
             blurPivotX = pivotX
             blurPivotY = pivotY
+            alpha = (viewAlpha * 255).toInt()
             setBlurBounds(left, top, right, bottom)
             draw(canvas)
         }
@@ -168,9 +185,19 @@ open class CustomHotseat @JvmOverloads constructor(
                 right + shadowBlur,
                 bottom
             )
+            shadowHelper.paint.alpha = (viewAlpha * 255).toInt()
         }
     }
 
+    private fun setBgColor() {
+        bgColor =
+            setColorAlphaBound(
+                noAlphaBgColor.getColor(),
+                (bgAlpha * viewAlpha * 255).roundToInt()
+            )
+        paint.color = bgColor
+        invalidate()
+    }
     override fun setAlpha(alpha: Float) {
         shortcutsAndWidgets.alpha = alpha
     }
@@ -198,7 +225,7 @@ open class CustomHotseat @JvmOverloads constructor(
         return bitmap
     }
     private fun createBlurDrawable() {
-        blurDrawable = if (isVisible && BlurWallpaperProvider.isEnabled) {
+        blurDrawable = if (visibility == VISIBLE && BlurWallpaperProvider.isEnabled) {
             val drawable = blurDrawable ?: blurProvider.createDrawable(radius, radius)
             drawable.apply {
                 blurRadii = BlurDrawable.Radii(radius)
@@ -218,8 +245,13 @@ open class CustomHotseat @JvmOverloads constructor(
     }
 
     override fun onEnabledChanged() {
-        super.onEnabledChanged()
         createBlurDrawable()
         invalidate()
+    }
+
+    override fun onWallpaperChanged() {
+        if (blurDrawable != null) {
+            invalidate()
+        }
     }
 }

@@ -140,7 +140,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
                     }
                 }
             }
-        }, null)
+        }, Handler(Looper.getMainLooper()))
 
         NeoApp.instance?.onLauncherAppStateCreated()
         themeOverride = ThemeOverride(themeSet, this)
@@ -154,6 +154,19 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
                 packageName
             ), true
         )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == com.neoapps.neolauncher.util.Permissions.REQUEST_PERMISSION_WALLPAPER_ACCESS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                com.neoapps.neolauncher.blur.BlurWallpaperProvider.getInstance(this).updateAsync()
+            }
+        }
     }
 
     override fun setupViews() {
