@@ -250,7 +250,7 @@
     <string name="title__drawer_paged_apps">Sayfalı Uygulamalar görünümü</string>
     <string name="title_separate_work_apps">İş Uygulamaları için İkinci Sekme</string>
     <string name="title__drawer_all_apps">Tüm Uygulamaları Göster etiketi</string>
-    <string name="title__dock_hide">Alt Paneli Gizle</string>
+    <string name="title__dock_hide">Alt Panel Etkin</string>
     <string name="title__dock_scale">Alt panel ölçeği</string>
     <string name="title__theme_blur_radius">Bulanıklık Yoğunluğu</string>
     <string name="title__theme_blur">Bulanık</string>
@@ -544,4 +544,6 @@
     <string name="trust_apps_message">Korumalı uygulamalara erişim için kimlik doğrulama gereklidir</string>
     <string name="title_enable_feed">Beslemeyi Etkinleştir</string>
     <string name="title__about_acknowledgement">Teşekkürler</string>
+    <string name="title_show_icon_shadow">Simge Gölgesini Göster</string>
+    <string name="summary_show_icon_shadow">Uyarlanamayan simgeler için gölge göster.</string>
 </resources>
