@@ -546,4 +546,12 @@
     <string name="title_desktop_cycle_scrolling">Cyclisch scrollen</string>
     <string name="title_show_icon_shadow">Pictogramschaduw weergeven</string>
     <string name="summary_show_icon_shadow">Schaduw weergeven voor niet-adaptieve pictogrammen.</string>
+    <string name="folder_full_screen">Map openen in volledig scherm</string>
+    <string name="backup_create">Back-up maken</string>
+    <string name="backup_restore">Back-up herstellen</string>
+    <string name="backup_databases">Databank</string>
+    <string name="backup_created">Back-up gemaakt</string>
+    <string name="backup_manage_storage_permission_title">Toegang tot alle bestanden vereist</string>
+    <string name="backup_manage_storage_permission_summary">Geef \'Externe opslag beheren\' toegang voordat je back-ups maakt. De launcher vernieuwt deze status automatisch wanneer je terugkeert vanuit de instellingen.</string>
+    <string name="backup_grant_storage_permission">Toegang tot opslag verlenen</string>
 </resources>
