@@ -19,8 +19,8 @@
 package com.neoapps.neolauncher.theme
 
 import android.R.attr.colorAccent
-import android.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.toColorInt
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.NeoApp
@@ -115,7 +115,7 @@ sealed class AccentColorOption {
         private fun instantiateCustomColor(stringValue: String): AccentColorOption {
             try {
                 if (stringValue.startsWith("custom")) {
-                    val color = Color.parseColor(stringValue.substring(7))
+                    val color = stringValue.substring(7).toColorInt()
                     return CustomColor(color)
                 }
             } catch (_: IllegalArgumentException) {
