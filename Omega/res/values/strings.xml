@@ -76,6 +76,7 @@
     <string name="grid_size_height">Height</string>
     <string name="grid_size_width">Width</string>
     <string name="show_top_shadow">Show Top Shadow</string>
+    <string name="folder_icon_shape">Folder icon shape</string>
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_icon_size_enforce">Enforce custom icon size</string>
     <string name="title__dock_icon_size">Icon size</string>

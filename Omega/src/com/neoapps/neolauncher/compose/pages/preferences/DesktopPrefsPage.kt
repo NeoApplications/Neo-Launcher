@@ -87,6 +87,7 @@ fun DesktopPrefsPage() {
                     prefs.desktopFolderBackgroundColor
                 } else null,
                 prefs.desktopFolderOpacity,*/
+                prefs.desktopFolderIconShape
             ).toTypedArray()
         )
     }

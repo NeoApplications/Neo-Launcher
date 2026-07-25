@@ -54,22 +54,21 @@ constructor(
         )
     }
 
-    private fun parseIconStateV2(oldState: ThemeManager.IconState?): ThemeManager.IconState {
+    private fun parseIconStateV2(oldState: IconState?): IconState {
         val neoPrefs = NeoPrefs.getInstance()
 
         val currentAppShape: IconShape = try {
             IconShape.fromString(neoPrefs.profileIconShape.getValue())
         } catch (e: Exception) {
             Log.d(TAG, "Error getting icon shape", e)
-            IconShape.Circle
+            IconShape.RoundedSquare
         }
 
         val currentFolderShape: IconShape = try {
-            //TODO: Create folder shape preference
-            IconShape.fromString(neoPrefs.profileIconShape.getValue())
+            IconShape.fromString(neoPrefs.desktopFolderIconShape.getValue())
         } catch (e: Exception) {
             Log.d(TAG, "Error getting icon shape", e)
-            IconShape.Circle
+            IconShape.RoundedSquare
         }
 
         val appShapeKey = currentAppShape.getHashString()

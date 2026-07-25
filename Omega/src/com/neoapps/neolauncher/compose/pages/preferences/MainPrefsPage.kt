@@ -193,7 +193,7 @@ fun MainPrefsPage() {
                 AnimatedPane {
                     when (it) {
                         is NavRoute.Profile.IconShape
-                            -> IconShapePage()
+                            -> IconShapePage(it.shapeOption)
 
                         is NavRoute.Profile.AccentColor
                             -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)

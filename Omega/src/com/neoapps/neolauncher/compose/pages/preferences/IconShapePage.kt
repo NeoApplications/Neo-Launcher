@@ -45,10 +45,16 @@ import com.neoapps.neolauncher.preferences.NeoPrefs
 import org.koin.java.KoinJavaComponent.get
 
 @Composable
-fun IconShapePage() {
+fun IconShapePage(shapeOption: String = "icon") {
     val context = LocalContext.current
     val prefs: NeoPrefs = get(NeoPrefs::class.java)
-    val currentShape = remember { mutableStateOf(prefs.profileIconShape.getValue()) }
+
+    val currentShape = if (shapeOption == "icon") {
+        remember(shapeOption) { mutableStateOf(prefs.profileIconShape.getValue()) }
+    } else {
+        remember(shapeOption) { mutableStateOf(prefs.desktopFolderIconShape.getValue()) }
+    }
+
     ViewWithActionBar(title = stringResource(id = R.string.title_theme_customize_icons)) { paddingValues ->
         val systemShape = IconShapeManager.getSystemIconShape(context)
         val iconShapes = arrayListOf(
@@ -101,9 +107,13 @@ fun IconShapePage() {
         }
     }
 
-    DisposableEffect(key1 = null) {
+    DisposableEffect(shapeOption) {
         onDispose {
-            prefs.profileIconShape.setValue(currentShape.value)
+            if (shapeOption == "icon") {
+                prefs.profileIconShape.setValue(currentShape.value)
+            } else {
+                prefs.desktopFolderIconShape.setValue(currentShape.value)
+            }
         }
     }
 }

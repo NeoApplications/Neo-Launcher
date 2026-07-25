@@ -39,7 +39,6 @@ import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.settings.SettingsActivity
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SettingsCache
-import com.android.launcher3.util.Themes
 import com.neoapps.neolauncher.DeviceProfileOverrides
 import com.neoapps.neolauncher.compose.navigation.NavRoute
 import com.neoapps.neolauncher.compose.views.IconShapeIcon
@@ -153,7 +152,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.PROFILE_ICON_SHAPE,
         defaultValue = "system",
-        navRoute = NavRoute.Profile.IconShape(),
+        navRoute = NavRoute.Profile.IconShape(shapeOption = "icon"),
         endIcon = {
             IconShapeIcon(
                 iconShape = IconShape.fromString(context, it)
@@ -437,19 +436,17 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_BG_CUSTOM,
         titleId = R.string.folder_custom_background,
         defaultValue = false,
-        onChange = { reloadGrid() },
+        onChange = {
+            reloadGrid()
+            pokeChange()
+        },
     )
 
     val desktopFolderBackgroundColor = ColorIntPref(
         titleId = R.string.folder_background,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
-        defaultValue = "custom|#${
-            Themes.getAttrColor(
-                context,
-                com.android.internal.R.attr.colorSurface
-            )
-        }",
+        defaultValue = "system_accent",
         navRoute = NavRoute.Desktop.FolderBG(),
         onChange = { reloadGrid() },
     )
@@ -459,21 +456,33 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_FOLDER_STROKE,
         titleId = R.string.folder_draw_stroke,
         defaultValue = false,
-        onChange = { reloadGrid() },
+        onChange = {
+            reloadGrid()
+            pokeChange()
+        },
     )
 
     val desktopFolderStrokeColor = ColorIntPref(
         titleId = R.string.folder_stroke_color,
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
-        defaultValue = "custom|#${
-            Themes.getAttrColor(
-                context,
-                com.google.android.material.R.attr.colorSurface
-            )
-        }",
+        defaultValue = "system_accent",
         navRoute = NavRoute.Desktop.FolderStroke(),
         onChange = { reloadGrid() },
+    )
+
+    var desktopFolderIconShape = NavigationPref(
+        titleId = R.string.folder_icon_shape,
+        dataStore = dataStore,
+        key = PrefKey.FOLDER_ICON_SHAPE,
+        defaultValue = "system",
+        navRoute = NavRoute.Profile.IconShape(shapeOption = "folder"),
+        endIcon = {
+            IconShapeIcon(
+                iconShape = IconShape.fromString(context, it)
+            )
+        },
+        onChange = { }
     )
 
     val desktopFolderFullScreen = BooleanPref(
@@ -488,10 +497,10 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_COLUMNS,
         titleId = R.string.folder_columns,
-        selectDefaultValue = { numFolderColumns[INDEX_DEFAULT] },
+        selectDefaultValue = { if (numFolderColumns[INDEX_DEFAULT] == 0) 3 else numFolderColumns[INDEX_DEFAULT] },
         minValue = 2f,
-        maxValue = 4f,
-        steps = 3,
+        maxValue = 5f,
+        steps = 2,
         onChange = { reloadGrid() }
     )
 
@@ -499,10 +508,10 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_ROWS,
         titleId = R.string.folder_rows,
-        selectDefaultValue = { numFolderRows[INDEX_DEFAULT] },
+        selectDefaultValue = { if (numFolderRows[INDEX_DEFAULT] == 0) 3 else numFolderRows[INDEX_DEFAULT] },
         minValue = 2f,
-        maxValue = 4f,
-        steps = 3,
+        maxValue = 5f,
+        steps = 2,
         onChange = { reloadGrid() }
     )
 

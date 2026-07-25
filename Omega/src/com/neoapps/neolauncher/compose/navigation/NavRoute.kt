@@ -13,7 +13,7 @@ open class NavRoute : Parcelable {
     @Serializable
     open class Profile : NavRoute() {
         @Serializable
-        class IconShape : Profile()
+        data class IconShape(val shapeOption: String = "icon") : Profile()
 
         @Serializable
         class AccentColor : Profile()
