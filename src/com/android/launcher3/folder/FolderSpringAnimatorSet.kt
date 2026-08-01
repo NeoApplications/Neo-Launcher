@@ -32,12 +32,14 @@ import androidx.dynamicanimation.animation.DynamicAnimation.MIN_VISIBLE_CHANGE_S
 import com.android.launcher3.BubbleTextView
 import com.android.launcher3.LauncherAnimUtils
 import com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY
+import com.android.launcher3.LauncherState.ALL_APPS
 import com.android.launcher3.R
 import com.android.launcher3.Utilities.isDarkTheme
 import com.android.launcher3.anim.SpringAnimationBuilder
 import com.android.launcher3.apppairs.AppPairIcon
 import com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW
 import com.android.launcher3.util.Themes
+import com.neoapps.neolauncher.groups.category.DrawerFolderInfo
 
 /** Holder for Animators created from [FolderAnimationSpringBuilderManager] */
 class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
@@ -74,6 +76,7 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
             addClipRevealAnimators(folder, animatorSet, clipRevealData)
             addAlphaAndColorAnimators(folder, animatorSet, folderAnimData)
             addScrimAnimators(
+                folder,
                 folder.context,
                 animatorSet,
                 folderAnimData.isOpening,
@@ -322,12 +325,16 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
         }
 
         private fun addScrimAnimators(
+            folder: Folder,
             context: Context,
             animatorSet: AnimatorSet,
             isOpening: Boolean,
             launcherDelegate: LauncherDelegate,
         ) {
             val launcher = launcherDelegate.launcher ?: return
+            if (launcher.isInState(ALL_APPS) || folder.info is DrawerFolderInfo) {
+                return
+            }
             val scrimView = launcher.scrimView
             val workspace = launcher.workspace
             val hotseat = launcher.hotseat
