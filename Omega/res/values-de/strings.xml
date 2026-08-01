@@ -138,7 +138,7 @@
     <string name="title__dock_hotseat_icons">Anzahl der Symbole</string>
     <string name="title__dock_colored_icons">Farbige Symbole</string>
     <string name="title__dock_hide_labels">Beschriftungen ausblenden</string>
-    <string name="title__dock_hide">Dock ausblenden</string>
+    <string name="title__dock_hide">Dock aktiviert</string>
     <string name="title_dock_background_color">Hintergrundfarbe</string>
     <string name="title_dock_fill">Hintergrund anzeigen</string>
     <string name="title__dock_scale">Dockskalierung</string>
@@ -538,4 +538,10 @@
     <string name="trust_apps_message">Für den Zugriff auf geschützte Apps ist eine Authentifizierung erforderlich</string>
     <string name="title__about_acknowledgement">Danksagung</string>
     <string name="category_art_and_design">Design</string>
+    <string name="backup_databases">Datenbanken</string>
+    <string name="title_app_suggestions">App-Vorschläge</string>
+    <string name="category_lifestyle">Lebensstil</string>
+    <string name="title_show_icon_shadow">Symbolschatten anzeigen</string>
+    <string name="summary_show_icon_shadow">Schatten für nicht-adaptive Symbole anzeigen.</string>
+    <string name="folder_full_screen">Ordner in Vollbild öffnen</string>
 </resources>
