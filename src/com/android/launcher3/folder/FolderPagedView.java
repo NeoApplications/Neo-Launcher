@@ -100,9 +100,10 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
 
     // If the views are attached to the folder or not. A folder should be bound when its
     // animating or is open.
-    private boolean mViewsBound = false;
+    public boolean mViewsBound = false;
 
     private boolean mCanAnnouncePageDescription;
+    protected DeviceProfile deviceProfile;
 
     public FolderPagedView(Context context, AttributeSet attrs) {
         this(
@@ -119,6 +120,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     ) {
         super(context, attrs);
         ActivityContext activityContext = ActivityContext.lookupContext(context);
+        deviceProfile = activityContext.getDeviceProfile();
         mOrganizer = folderGridOrganizer;
 
         mIsRtl = Utilities.isRtl(getResources());
@@ -285,7 +287,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
         return getPageAt(getNextPage());
     }
 
-    private CellLayout createAndAddNewPage() {
+    protected CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
         page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
@@ -429,6 +431,10 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
 
     public View getLastItem() {
         return getViewInCurrentPage(c -> c.getChildCount() - 1);
+    }
+
+    public Folder getFolder() {
+        return this.mFolder;
     }
 
     private View getViewInCurrentPage(ToIntFunction<ShortcutAndWidgetContainer> rankProvider) {

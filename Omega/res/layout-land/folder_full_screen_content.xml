@@ -17,7 +17,7 @@
             android:layout_marginEnd="24dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:layout_marginTop="120dp">
+            android:layout_marginTop="40dp">
 
             <com.android.launcher3.folder.FolderNameEditText
                 android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
                 android:includeFontPadding="false"
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
-                android:imeOptions="flagNoExtractUi"
+                android:imeOptions="normal|flagNoExtractUi"
                 android:fontFamily="sans-serif"
                 android:paddingStart="3dp"
                 android:paddingEnd="3dp" />
@@ -54,38 +54,40 @@
         </RelativeLayout>
 
         <com.neoapps.neolauncher.folder.NeoFolderPagedView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             launcher:layout_constraintTop_toBottomOf="@id/folder_title_view"
-            launcher:layout_constraintBottom_toTopOf="@id/folder_footer"
+            launcher:layout_constraintBottom_toBottomOf="parent"
             launcher:layout_constraintStart_toStartOf="parent"
-            launcher:layout_constraintEnd_toEndOf="parent"
+            launcher:layout_constraintEnd_toStartOf="@id/folder_footer"
             android:layout_gravity="center"
             android:id="@+id/folder_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             launcher:pageIndicator="@+id/folder_page_indicator" />
 
         <LinearLayout
             android:id="@+id/folder_footer"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/folder_footer_height_default"
-            android:gravity="center"
-            launcher:layout_constraintTop_toBottomOf="@id/folder_content"
-            launcher:layout_constraintBottom_toBottomOf="parent"
-            launcher:layout_constraintStart_toStartOf="parent"
+            android:layout_width="@dimen/folder_arrow_touchbox_length"
+            android:layout_height="0dp"
+            launcher:layout_constraintTop_toTopOf="@id/folder_content"
+            launcher:layout_constraintStart_toEndOf="@id/folder_content"
             launcher:layout_constraintEnd_toEndOf="parent"
+            launcher:layout_constraintBottom_toBottomOf="@id/folder_content"
+            android:gravity="center"
             android:clipChildren="false"
-            android:orientation="horizontal"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp">
+            android:orientation="vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp">
 
             <com.android.launcher3.pageindicators.PaginationArrow
                 android:layout_width="@dimen/folder_arrow_touchbox_length"
                 android:layout_height="@dimen/folder_arrow_touchbox_length"
                 android:id="@+id/left_indicator_arrow"
                 android:foreground="@drawable/ic_chevron_left_rounded_700"
+                android:rotation="270"
                 android:foregroundTint="?colorPrimary"
                 android:layout_gravity="center_vertical"
                 android:foregroundGravity="center"
@@ -109,7 +111,7 @@
                 android:layout_gravity="center_vertical"
                 android:foreground="@drawable/ic_chevron_left_rounded_700"
                 android:foregroundTint="?colorPrimary"
-                android:rotation="180"
+                android:rotation="90"
                 launcher:tint="?colorPrimary"
                 android:contentDescription="@string/paginate_right"
                 android:foregroundGravity="center"

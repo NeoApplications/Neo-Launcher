@@ -1203,6 +1203,9 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         clearDragInfo();
         setState(STATE_CLOSED);
         mContent.setCurrentPage(0);
+        if (mInfo instanceof DrawerFolderInfo) {
+            ((DrawerFolderInfo) mInfo).onCloseComplete();
+        }
     }
 
     @Override
@@ -1539,22 +1542,12 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             int measuredHeight = Math.max(MeasureSpec.getSize(heightMeasureSpec), getMeasuredHeight());
             setMeasuredDimension(measuredWidth, measuredHeight);
 
-            int titleHeight = 0;
-            View titleView = findViewById(R.id.folder_title_view);
-            if (titleView != null) {
-                titleHeight = titleView.getMeasuredHeight();
-            }
+            int availableContentWidth = Math.max(mContent.getMeasuredWidth(), MIN_CONTENT_DIMEN);
+            int availableContentHeight = Math.max(mContent.getMeasuredHeight(), MIN_CONTENT_DIMEN);
 
-            int maxContentWidth = Math.max(measuredWidth - getPaddingLeft() - getPaddingRight(),
-                    MIN_CONTENT_DIMEN);
-            int measuredFooterHeight = mFooter != null ? mFooter.getMeasuredHeight() : mFooterHeight;
-            int maxContentHeight = Math.max(measuredHeight - getPaddingTop() - getPaddingBottom()
-                    - titleHeight - measuredFooterHeight, MIN_CONTENT_DIMEN);
-
-            int contentWidth = Math.min(Math.max(mContent.getDesiredWidth(), MIN_CONTENT_DIMEN),
-                    maxContentWidth);
+            int contentWidth = availableContentWidth;
             int contentHeight = Math.min(Math.max(mContent.getDesiredHeight(), MIN_CONTENT_DIMEN),
-                    maxContentHeight);
+                    availableContentHeight);
 
             mContent.setFixedSize(contentWidth, contentHeight);
             mContent.measure(
