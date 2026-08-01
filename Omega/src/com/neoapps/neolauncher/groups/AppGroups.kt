@@ -22,6 +22,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.ComponentKey
+import com.neoapps.neolauncher.groups.category.DrawerFolders
 import com.neoapps.neolauncher.preferences.PreferencesChangeCallback
 import com.neoapps.neolauncher.preferences.StringPref
 import com.neoapps.neolauncher.util.asMap
@@ -79,7 +80,8 @@ abstract class AppGroups<T : AppGroups.Group>(
         groupsDataJson.setValue(obj.toString())
     }
 
-    fun getGroups(): List<T> {
+    fun getGroups(isFolder: Boolean = false): List<T> {
+        if (isFolder) return groups.filter { it is DrawerFolders.Folder }
         if (!isEnabled) {
             return defaultGroups
         }

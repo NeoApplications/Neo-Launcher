@@ -222,6 +222,9 @@ fun MainPrefsPage() {
                         is NavRoute.Drawer.Categorize
                             -> AppCategoriesPage()
 
+                        is NavRoute.Drawer.Folders
+                            -> DrawerFolderPage()
+
                         is NavRoute.Drawer.HiddenApps
                             -> HiddenAppsPage()
 

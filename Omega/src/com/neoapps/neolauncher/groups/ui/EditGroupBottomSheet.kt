@@ -280,7 +280,7 @@ fun EditGroupBottomSheet(
                             }
                         }
 
-                        else                                            -> { // AppGroupsManager.Category.FLOWERPOT
+                        else -> {
                             BasePreference(
                                 titleId = R.string.pref_appcategorization_flowerpot_title,
                                 summary = flowerpotManager.getAllPots()

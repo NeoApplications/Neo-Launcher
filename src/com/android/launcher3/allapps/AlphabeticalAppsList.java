@@ -259,6 +259,13 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                 info -> !isPrivateSpaceApp(info));
         Stream<AppInfo> privateAppStream = Stream.of(mAllAppsStore.getApps());
 
+        if (prefs.getDrawerEnableFolders().getValue()) {
+            Set<ComponentKey> folderFilteredApps = getFolderFilteredApps();
+            if (!folderFilteredApps.isEmpty()) {
+                appSteam = appSteam.filter(info -> !folderFilteredApps.contains(info.toComponentKey()));
+            }
+        }
+
         if (!hasSearchResults() && mItemFilter != null) {
             appSteam = appSteam.filter(mItemFilter);
             if (mPrivateProviderManager != null) {
@@ -324,6 +331,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                                     R.string.work_profile_edu_section), 0));
                     Log.d(TAG, "Adding FastScrollSection for work edu card.");
                 }
+                position = addFolders(position);
                 position = addAppsWithSections(mApps, position);
             }
             if (Flags.enablePrivateSpace()) {
@@ -374,11 +382,37 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         }
     }
 
+    private int addFolders(int startPosition) {
+        List<DrawerFolderInfo> folderInfos = getFolderInfos();
+        if (folderInfos.isEmpty()) {
+            return startPosition;
+        }
+        int position = startPosition;
+        String sectionName = "#";
+        mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
+        int folderIndex = 0;
+        for (DrawerFolderInfo info : folderInfos) {
+            assert getAllAppsStore() != null;
+            info.setAppsStore(getAllAppsStore());
+            AdapterItem appItem = AdapterItem.asFolder(position++, sectionName, info, folderIndex++);
+            mAdapterItems.add(appItem);
+        }
+        return position;
+    }
+
     public List<AppInfo> getApps() {
         return mApps;
     }
 
+    @Nullable
+    public AllAppsStore getAllAppsStore() {
+        return mAllAppsStore;
+    }
+
     private List<DrawerFolderInfo> getFolderInfos() {
+        if (!prefs.getDrawerEnableFolders().getValue()) {
+            return java.util.Collections.emptyList();
+        }
         LauncherAppState app = LauncherAppState.getInstance(mActivityContext.asContext());
         LauncherModel model = app.getModel();
         ModelWriter modelWriter = model.getWriter(false, CellPosMapper.DEFAULT, null);
@@ -392,6 +426,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                 .getDrawerFolders()
                 .getHiddenComponents();
     }
+
     int addPrivateSpaceItems(int position) {
         if (mPrivateProviderManager != null
                 && !mPrivateProviderManager.isPrivateSpaceHidden()
@@ -493,6 +528,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                     allMatch(mPrivateProviderManager.getItemInfoMatcher());
         }
         Log.d(TAG, "Adding apps with sections. HasPrivateApps: " + hasPrivateApps);
+
         for (int i = 0; i < appList.size(); i++) {
             AppInfo info = appList.get(i);
             // Apply decorator to private apps.
@@ -519,6 +555,8 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
             }
             position++;
         }
+
+
         return position;
     }
 

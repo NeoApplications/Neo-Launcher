@@ -86,6 +86,7 @@ constructor(
         }
         targetPoolSize = targetCount
         setMaxRecycledViews(BaseAllAppsAdapter.VIEW_TYPE_ICON, targetPoolSize)
+        setMaxRecycledViews(BaseAllAppsAdapter.VIEW_TYPE_FOLDER, targetPoolSize)
         if (preInflateAllApps) {
             schedulePreInflation()
         }

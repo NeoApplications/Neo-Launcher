@@ -873,14 +873,6 @@ class NeoPrefs private constructor(val context: Context) {
         specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
-    var drawerAppGroups = NavigationPref(
-        dataStore = dataStore,
-        key = PrefKey.DRAWER_CATEGORIZATION,
-        titleId = R.string.title_manage_tabs,
-        summaryId = R.string.summary_manage_tabs,
-        navRoute = NavRoute.Drawer.Categorize(),
-    )
-
     val drawerLayout = IntSelectionPref(
         dataStore = dataStore,
         key = PrefKey.DRAWER_LAYOUT,
@@ -910,6 +902,21 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.title_manage_tabs,
         summaryId = R.string.summary_manage_tabs,
         navRoute = NavRoute.Drawer.Categorize(),
+    )
+
+    var drawerFolderManager = NavigationPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_FOLDERS,
+        titleId = R.string.title_manage_folders,
+        summaryId = R.string.summary_manage_folders,
+        navRoute = NavRoute.Drawer.Folders(),
+    )
+
+    val drawerEnableFolders = BooleanPref(
+        dataStore = dataStore,
+        key = PrefKey.DRAWER_ENABLE_FOLDERS,
+        titleId = R.string.title_enable_folders,
+        defaultValue = false
     )
 
     // Notifications & Widgets/Smartspace

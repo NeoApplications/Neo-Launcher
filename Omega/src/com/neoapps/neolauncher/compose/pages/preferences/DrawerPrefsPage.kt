@@ -91,6 +91,7 @@ fun DrawerPrefsPage() {
                 /*
                 prefs.drawerAppGroups,
                 prefs.drawerCellHeightMultiplier,*/
+                prefs.drawerFolderManager,
                 prefs.drawerSaveScrollPosition,
                 prefs.drawerHideScrollbar
             ).toTypedArray()

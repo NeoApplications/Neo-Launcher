@@ -80,8 +80,7 @@ fun DesktopPrefsPage() {
             *listOfNotNull(
                 prefs.desktopFolderColumns,
                 prefs.desktopFolderRows,
-                prefs.desktopFolderFullScreen,
-                /*
+                /*prefs.desktopFolderFullScreen,
                 prefs.desktopCustomFolderBackground,
                 if (prefs.desktopCustomFolderBackground.getValue()) {
                     prefs.desktopFolderBackgroundColor

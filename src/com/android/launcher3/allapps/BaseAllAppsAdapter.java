@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,11 +38,15 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.search.SearchAdapterProvider;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.views.ActivityContext;
+import com.neoapps.neolauncher.groups.DrawerFolderItem;
+import com.neoapps.neolauncher.groups.category.DrawerFolderInfo;
 
 /**
  * Adapter for all the apps.
@@ -64,11 +69,11 @@ public abstract class BaseAllAppsAdapter
     public static final int VIEW_TYPE_PRIVATE_SPACE_SYS_APPS_DIVIDER = 1 << 7;
     public static final int VIEW_TYPE_BOTTOM_VIEW_TO_SCROLL_TO = 1 << 8;
     public static final int VIEW_TYPE_PRIVATE_SPACE_APP_ICON = 1 << 9;
-    public static final int NEXT_ID = 10;
+    public static final int VIEW_TYPE_FOLDER = 1 << 10;
 
     // Common view type masks
     public static final int VIEW_TYPE_MASK_DIVIDER = VIEW_TYPE_ALL_APPS_DIVIDER;
-    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_PRIVATE_SPACE_APP_ICON;
+    public static final int VIEW_TYPE_MASK_ICON = VIEW_TYPE_ICON | VIEW_TYPE_PRIVATE_SPACE_APP_ICON | VIEW_TYPE_FOLDER;
 
     public static final int VIEW_TYPE_MASK_PRIVATE_SPACE_HEADER =
             VIEW_TYPE_PRIVATE_SPACE_HEADER;
@@ -106,6 +111,7 @@ public abstract class BaseAllAppsAdapter
         public AppInfo itemInfo = null;
         // Private App Decorator
         public SectionDecorationInfo decorationInfo = null;
+        public DrawerFolderItem folderItem = null;
         public AdapterItem(int viewType) {
             this.viewType = viewType;
         }
@@ -119,6 +125,12 @@ public abstract class BaseAllAppsAdapter
             return item;
         }
 
+        public static AdapterItem asFolder(int pos, String sectionName, DrawerFolderInfo folderInfo, int folderIndex) {
+            AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
+            item.folderItem = new DrawerFolderItem(folderInfo);
+            return item;
+        }
+
         public static AdapterItem asAppWithDecorationInfo(AppInfo appInfo,
                                                           SectionDecorationInfo decorationInfo, boolean isPrivateSpaceApp) {
             AdapterItem item = new AdapterItem(isPrivateSpaceApp ? VIEW_TYPE_PRIVATE_SPACE_APP_ICON
@@ -129,14 +141,23 @@ public abstract class BaseAllAppsAdapter
         }
 
         protected boolean isCountedForAccessibility() {
-            return viewType == VIEW_TYPE_ICON;
+            return viewType == VIEW_TYPE_ICON || viewType == VIEW_TYPE_FOLDER;
         }
 
         /**
          * Returns true if the items represent the same object
          */
         public boolean isSameAs(AdapterItem other) {
-            return (other.viewType == viewType) && (other.getClass() == getClass());
+            if (other.viewType != viewType || other.getClass() != getClass()) {
+                return false;
+            }
+            if (itemInfo != null && other.itemInfo != null) {
+                return java.util.Objects.equals(itemInfo.toComponentKey(), other.itemInfo.toComponentKey());
+            }
+            if (folderItem != null && other.folderItem != null) {
+                return folderItem.getInfo().id == other.folderItem.getInfo().id;
+            }
+            return itemInfo == null && other.itemInfo == null && folderItem == null && other.folderItem == null;
         }
 
         /**
@@ -144,7 +165,13 @@ public abstract class BaseAllAppsAdapter
          * as well. Returning true will prevent redrawing of thee item.
          */
         public boolean isContentSame(AdapterItem other) {
-            return itemInfo == null && other.itemInfo == null;
+            if (itemInfo != null && other.itemInfo != null) {
+                return itemInfo == other.itemInfo;
+            }
+            if (folderItem != null && other.folderItem != null) {
+                return folderItem == other.folderItem;
+            }
+            return itemInfo == null && other.itemInfo == null && folderItem == null && other.folderItem == null;
         }
 
         @Nullable
@@ -226,6 +253,13 @@ public abstract class BaseAllAppsAdapter
                     return true;
                 });
                 return new ViewHolder(icon);
+            case VIEW_TYPE_FOLDER:
+                FrameLayout layout = new FrameLayout(mActivityContext.asContext());
+                ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        mActivityContext.getDeviceProfile().getAllAppsProfile().getCellHeightPx());
+                layout.setLayoutParams(lp);
+                return new ViewHolder(layout);
             case VIEW_TYPE_EMPTY_SEARCH:
                 return new ViewHolder(mLayoutInflater.inflate(R.layout.all_apps_empty_search,
                         parent, false));
@@ -308,6 +342,14 @@ public abstract class BaseAllAppsAdapter
                 }
                 break;
             }
+            case VIEW_TYPE_FOLDER:
+                ViewGroup container = (ViewGroup) holder.itemView;
+                FolderIcon folderIcon = mApps.getAdapterItems().get(position)
+                        .folderItem.getFolderIcon((Launcher) mActivityContext.asContext(), container);
+
+                container.removeAllViews();
+                container.addView(folderIcon);
+                break;
             case VIEW_TYPE_PRIVATE_SPACE_HEADER:
                 RelativeLayout psHeaderLayout = holder.itemView.findViewById(
                         R.id.ps_header_layout);

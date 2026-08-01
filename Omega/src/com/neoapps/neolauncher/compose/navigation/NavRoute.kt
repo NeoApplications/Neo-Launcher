@@ -49,6 +49,9 @@ open class NavRoute : Parcelable {
         class Categorize : Drawer()
 
         @Serializable
+        class Folders : Drawer()
+
+        @Serializable
         class BG : Drawer()
     }
 

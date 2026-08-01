@@ -33,6 +33,7 @@ object Routes {
     const val PREFS_SEARCH = "prefs_search"
     const val EDIT_ICON = "edit_icon"
     const val CATEGORIZE_APPS = "categorize_apps"
+    const val DRAWER_FOLDERS = "drawer_folders"
     const val EDIT_DASH = "edit_dash"
 }
 

@@ -44,6 +44,7 @@ public class SearchRecyclerView extends AllAppsRecyclerView {
     protected void updatePoolSize() {
         RecycledViewPool pool = getRecycledViewPool();
         pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_ICON, mNumAppsPerRow);
+        pool.setMaxRecycledViews(AllAppsGridAdapter.VIEW_TYPE_FOLDER, mNumAppsPerRow);
         // TODO(b/206905515): Add maxes for other View types.
     }
 

@@ -64,24 +64,29 @@ class DrawerFolders(val manager: AppGroupsManager) :
         return emptyList()
     }
 
-    fun getFolderInfos(apps: AlphabeticalAppsList, modelWriter: ModelWriter) =
-        getFolderInfos(buildAppsMap(apps)::get, modelWriter)
-
-    private fun buildAppsMap(apps: AlphabeticalAppsList): Map<ComponentKey, AppInfo> {
-        // Copy the list before accessing it to prevent concurrent list access
-        return apps.apps.toList().associateBy { it.toComponentKey() }
+    fun getFolderInfos(
+        apps: AlphabeticalAppsList,
+        modelWriter: ModelWriter
+    ): List<DrawerFolderInfo> {
+        val appsStore = apps.allAppsStore
+        val getAppInfo: (ComponentKey) -> AppInfo? = { key ->
+            appsStore?.getApp(key)
+                ?: appsStore?.apps?.find { it.toComponentKey() == key }
+                ?: apps.apps.find { it.toComponentKey() == key }
+        }
+        return getFolderInfos(getAppInfo, modelWriter)
     }
 
 
     private fun getFolderInfos(
         getAppInfo: (ComponentKey) -> AppInfo?, modelWriter: ModelWriter,
-    ): List<DrawerFolderInfo> = getGroups()
+    ): List<DrawerFolderInfo> = getGroups(isFolder = true)
         .asSequence()
         .filter { !it.isEmpty }
         .map { it.toFolderInfo(getAppInfo, modelWriter) }
         .toList()
 
-    fun getHiddenComponents() = getGroups()
+    fun getHiddenComponents() = getGroups(isFolder = true)
         .asSequence()
         .filterIsInstance<CustomFolder>()
         .filter { it.hideFromAllApps.value() }
@@ -98,12 +103,10 @@ class DrawerFolders(val manager: AppGroupsManager) :
         }
 
         open fun toFolderInfo(getAppInfo: (ComponentKey) -> AppInfo?, modelWriter: ModelWriter) =
-            DrawerFolderInfo(
-                this
-            ).apply {
+            DrawerFolderInfo(this).apply {
                 setTitle(this@Folder.title, modelWriter)
                 id = this@Folder.id.value().toInt()
-                //contents = ArrayList()
+                contents = ArrayList()
             }
     }
 

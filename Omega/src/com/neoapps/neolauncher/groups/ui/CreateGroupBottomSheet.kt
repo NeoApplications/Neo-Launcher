@@ -100,7 +100,7 @@ fun CreateGroupBottomSheet(
             FlowerpotTabs.FlowerpotTab(context)
         }
 
-        else -> { // AppGroupsManager.Category.FOLDER.key
+        else -> {
             DrawerFolders.CustomFolder(context)
         }
     }
