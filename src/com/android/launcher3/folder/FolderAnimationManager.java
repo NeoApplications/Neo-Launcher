@@ -149,15 +149,26 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         float scaleRelativeToDragLayer = mFolder.mActivityContext.getDragLayer()
                 .getDescendantRectRelativeToSelf(mFolderIcon, folderIconPos);
         int scaledRadius = mPreviewBackground.getScaledRadius();
-        float initialSize = (scaledRadius * 2) * scaleRelativeToDragLayer;
 
         // Match size/scale of icons in the preview
         float previewScale = rule.scaleForItem(itemsInPreview.size(), 0);
         float previewSize = rule.getIconSize() * previewScale;
         float baseIconSize = getBubbleTextView(itemsInPreview.get(0)).getIconSize();
-        float initialScale = previewSize / baseIconSize * scaleRelativeToDragLayer;
+        // Guard against unlaid-out icons (can happen when an overlay window triggers
+        // a premature layout), which would otherwise produce NaN/Inf scale values.
+        float safeScaleRelativeToDragLayer = (scaleRelativeToDragLayer > 0f && !Float.isNaN(scaleRelativeToDragLayer))
+                ? scaleRelativeToDragLayer : 1f;
+        float safeBaseIconSize = (baseIconSize > 0f && !Float.isNaN(baseIconSize))
+                ? baseIconSize : ((previewSize > 0f && !Float.isNaN(previewSize)) ? previewSize : 1f);
+        float safePreviewSize = (previewSize > 0f && !Float.isNaN(previewSize))
+                ? previewSize : safeBaseIconSize;
+        float initialScale = safePreviewSize / safeBaseIconSize * safeScaleRelativeToDragLayer;
+        if (initialScale <= 0f || Float.isNaN(initialScale)) {
+            initialScale = 1f;
+        }
+        float initialSize = (scaledRadius * 2) * safeScaleRelativeToDragLayer;
         final float finalScale = 1f;
-        float scale = mIsOpening ? initialScale : finalScale;
+        float scale = sanitizeFloat(mIsOpening ? initialScale : finalScale);
         mFolder.setPivotX(0);
         mFolder.setPivotY(0);
 
@@ -180,10 +191,10 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         final int paddingOffsetY = (int) (mContent.getPaddingTop() * initialScale);
 
         int initialX = folderIconPos.left + mFolder.getPaddingLeft()
-                + Math.round(mPreviewBackground.getOffsetX() * scaleRelativeToDragLayer)
+                + Math.round(mPreviewBackground.getOffsetX() * safeScaleRelativeToDragLayer)
                 - paddingOffsetX - previewItemOffsetX;
         int initialY = folderIconPos.top + mFolder.getPaddingTop()
-                + Math.round(mPreviewBackground.getOffsetY() * scaleRelativeToDragLayer)
+                + Math.round(mPreviewBackground.getOffsetY() * safeScaleRelativeToDragLayer)
                 - paddingOffsetY;
         final float xDistance = initialX - lp.x;
         final float yDistance = initialY - lp.y;
@@ -352,10 +363,10 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         }
 
         int radiusDiff = scaledRadius - mPreviewBackground.getRadius();
-        addPreviewItemAnimators(a, initialScale / scaleRelativeToDragLayer,
+        addPreviewItemAnimators(a, sanitizeFloat(initialScale / safeScaleRelativeToDragLayer),
                 // Background can have a scaled radius in drag and drop mode, so we need to add the
                 // difference to keep the preview items centered.
-                (int) (previewItemOffsetX / scaleRelativeToDragLayer) + radiusDiff, radiusDiff);
+                (int) (previewItemOffsetX / safeScaleRelativeToDragLayer) + radiusDiff, radiusDiff);
         return a;
     }
 
@@ -516,5 +527,9 @@ public class FolderAnimationManager implements FolderAnimationCreator {
         return v instanceof AppPairIcon
                 ? ((AppPairIcon) v).getTitleTextView()
                 : (BubbleTextView) v;
+    }
+
+    private static float sanitizeFloat(float value) {
+        return (value > 0f && !Float.isNaN(value) && value != Float.POSITIVE_INFINITY && value != Float.NEGATIVE_INFINITY) ? value : 1f;
     }
 }

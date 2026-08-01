@@ -104,6 +104,14 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                     .setEndValue(if (isOpening) endValue else startValue)
                     .setMinimumVisibleChange(minVisibleChange)
 
+            if (!startValue.isFinite() || !endValue.isFinite()) {
+                android.util.Log.e(
+                    "FolderSpringAnimatorSet",
+                    "playSpringAnimation non-finite value for view=$view " +
+                        "property=${property.name} startValue=$startValue endValue=$endValue"
+                )
+            }
+
             val animator =
                 animatorBuilder.build(view, property as FloatProperty<View>).apply {
                     setStartDelay(startDelay.toLong())
@@ -117,15 +125,20 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                 pivotX = 0f
                 pivotY = 0f
             }
+            val startScale = folderAnimationData.startScale.sanitize()
+            android.util.Log.e(
+                "FolderSpringAnimatorSet",
+                "setupFolder startScaleRaw=${folderAnimationData.startScale} startScaleSafe=$startScale"
+            )
             folder.content.apply {
-                scaleX = folderAnimationData.startScale
-                scaleY = folderAnimationData.startScale
+                scaleX = startScale
+                scaleY = startScale
                 pivotX = 0f
                 pivotY = 0f
             }
             folder.mFooter.apply {
-                scaleX = folderAnimationData.startScale
-                scaleY = folderAnimationData.startScale
+                scaleX = startScale
+                scaleY = startScale
                 pivotX = 0f
                 pivotY = 0f
             }
@@ -163,6 +176,11 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                 property = View.TRANSLATION_Y,
                 view = folder,
             )
+            val sanitizedInitialFolderScale = animationData.initialFolderScale.sanitize()
+            android.util.Log.e(
+                "FolderSpringAnimatorSet",
+                "addFolderScale initialFolderScaleRaw=${animationData.initialFolderScale} safe=$sanitizedInitialFolderScale"
+            )
             playSpringAnimation(
                 context = folder.context,
                 animatorSet = animatorSet,
@@ -170,7 +188,7 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                 startDelay = 0,
                 stiffness = STIFFNESS_SHAPE_POSITION,
                 damping = DAMPING_SHAPE_POSITION,
-                startValue = animationData.initialFolderScale,
+                startValue = sanitizedInitialFolderScale,
                 endValue = 1f,
                 minVisibleChange = MIN_VISIBLE_CHANGE_SCALE,
                 property = SCALE_PROPERTY,
@@ -183,7 +201,7 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                 startDelay = 0,
                 stiffness = STIFFNESS_SHAPE_POSITION,
                 damping = DAMPING_SHAPE_POSITION,
-                startValue = animationData.initialFolderScale,
+                startValue = sanitizedInitialFolderScale,
                 endValue = 1f,
                 minVisibleChange = MIN_VISIBLE_CHANGE_SCALE,
                 property = SCALE_PROPERTY,
@@ -440,6 +458,10 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                     property = View.TRANSLATION_Y,
                     view = icon,
                 )
+                android.util.Log.e(
+                    "FolderSpringAnimatorSet",
+                    "iconScale icon=$icon initialIconScale=$initialIconScale"
+                )
                 playSpringAnimation(
                     context = context,
                     animatorSet = animatorSet,
@@ -500,5 +522,8 @@ class FolderSpringAnimatorSet(val animatorSet: AnimatorSet) {
                     }
                 }
             }
+
+        private fun Float.sanitize(): Float =
+            if (this > 0f && !this.isNaN() && this != Float.POSITIVE_INFINITY && this != Float.NEGATIVE_INFINITY) this else 1f
     }
 }

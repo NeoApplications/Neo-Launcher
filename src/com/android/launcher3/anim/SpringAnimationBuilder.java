@@ -21,6 +21,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.FloatProperty;
+import android.util.Log;
 
 import androidx.annotation.FloatRange;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -32,6 +33,8 @@ import com.android.launcher3.util.window.RefreshRateTracker;
  * an underdamped spring.
  */
 public class SpringAnimationBuilder {
+
+    private static final String TAG = "SpringAnimationBuilder";
 
     private final Context mContext;
 
@@ -134,6 +137,26 @@ public class SpringAnimationBuilder {
     }
 
     public SpringAnimationBuilder computeParams() {
+        if (!Float.isFinite(mStartValue) || !Float.isFinite(mEndValue)) {
+            throw new IllegalArgumentException("Start/End values must be finite. start="
+                    + mStartValue + " end=" + mEndValue);
+        }
+        if (!Float.isFinite(mStiffness) || mStiffness <= 0) {
+            throw new IllegalArgumentException("Stiffness must be finite and positive: "
+                    + mStiffness);
+        }
+        if (!Float.isFinite(mDampingRatio) || mDampingRatio <= 0 || mDampingRatio >= 1) {
+            throw new IllegalArgumentException("Damping ratio must be finite and in (0,1): "
+                    + mDampingRatio);
+        }
+        if (!Float.isFinite(mMinVisibleChange) || mMinVisibleChange <= 0) {
+            throw new IllegalArgumentException("Minimum visible change must be finite and positive: "
+                    + mMinVisibleChange);
+        }
+        if (!Float.isFinite(mVelocity)) {
+            throw new IllegalArgumentException("Start velocity must be finite: " + mVelocity);
+        }
+
         int singleFrameMs = RefreshRateTracker.getSingleFrameMs(mContext);
         double naturalFreq = Math.sqrt(mStiffness);
         double dampedFreq = naturalFreq * Math.sqrt(1 - mDampingRatio * mDampingRatio);
@@ -194,8 +217,29 @@ public class SpringAnimationBuilder {
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, mDuration);
         animator.setDuration(getDuration()).setInterpolator(LINEAR);
-        animator.addUpdateListener(anim ->
-                property.set(target, getInterpolatedValue(anim.getAnimatedFraction())));
+        animator.addUpdateListener(anim -> {
+            float fraction = anim.getAnimatedFraction();
+            if (Float.isNaN(fraction)) {
+                // Skip updates before the animator has a valid fraction (can happen for
+                // zero-duration children inside an AnimatorSet when setCurrentPlayTime is called).
+                return;
+            }
+            float value = getInterpolatedValue(fraction);
+            if (!Float.isFinite(value)) {
+                Log.e(TAG, "Non-finite spring value for target=" + target.getClass().getName()
+                        + " property=" + property.getName()
+                        + " start=" + mStartValue
+                        + " end=" + mEndValue
+                        + " stiffness=" + mStiffness
+                        + " damping=" + mDampingRatio
+                        + " minVisibleChange=" + mMinVisibleChange
+                        + " velocity=" + mVelocity
+                        + " fraction=" + fraction
+                        + " value=" + value);
+                value = mEndValue;
+            }
+            property.set(target, value);
+        });
         animator.addListener(new AnimationSuccessListener() {
             @Override
             public void onAnimationSuccess(Animator animation) {

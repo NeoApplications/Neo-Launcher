@@ -141,6 +141,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
@@ -1638,10 +1639,27 @@ public class Launcher extends StatefulActivity<LauncherState>
                     new AnimationSuccessListener() {
                         @Override
                         public void onAnimationSuccess(Animator animator) {
-                            if (focusSearch
-                                    && mAppsView.getSearchUiManager().getEditText() != null) {
-                                mAppsView.getSearchUiManager().getEditText().requestFocus();
+                            if (!focusSearch) {
+                                return;
                             }
+                            if (hasWindowFocus()) {
+                                mAppsView.getSearchUiManager().startSearch();
+                                return;
+                            }
+                            ViewTreeObserver.OnWindowFocusChangeListener listener =
+                                    new ViewTreeObserver.OnWindowFocusChangeListener() {
+                                        @Override
+                                        public void onWindowFocusChanged(boolean hasFocus) {
+                                            if (hasFocus) {
+                                                mAppsView.getSearchUiManager().startSearch();
+                                                getWindow().getDecorView()
+                                                        .getViewTreeObserver()
+                                                        .removeOnWindowFocusChangeListener(this);
+                                            }
+                                        }
+                                    };
+                            getWindow().getDecorView().getViewTreeObserver()
+                                    .addOnWindowFocusChangeListener(listener);
                         }
                     });
         }

@@ -77,10 +77,23 @@ data class IconAnimationData(
                 val previewIconScale = layoutRule.scaleForItem(numItemsOnPage, page)
                 val previewIconSize = layoutRule.iconSize * previewIconScale
                 val baseIconSize = getBubbleTextView(currentIcon).iconSize.toFloat()
-                val iconScale = previewIconSize / baseIconSize
+                // Guard against unlaid-out icons producing NaN scale values.
+                val safeBaseIconSize = if (baseIconSize > 0f && !baseIconSize.isNaN()) baseIconSize else 1f
+                val safePreviewIconSize = if (previewIconSize > 0f && !previewIconSize.isNaN()) previewIconSize else safeBaseIconSize
+                val iconScale = safePreviewIconSize / safeBaseIconSize
 
                 // Scale when folder closed
-                val initialIconScale = iconScale / folderAnimationData.folderScale
+                val safeFolderScale = if (folderAnimationData.folderScale > 0f && !folderAnimationData.folderScale.isNaN()) {
+                    folderAnimationData.folderScale
+                } else 1f
+                val initialIconScale = (iconScale / safeFolderScale).let {
+                    if (it > 0f && !it.isNaN()) it else 1f
+                }
+                android.util.Log.e(
+                    "IconAnimationData",
+                    "icon=$currentIcon baseIconSize=$baseIconSize previewIconSize=$previewIconSize " +
+                            "iconScale=$iconScale safeFolderScale=$safeFolderScale initialIconScale=$initialIconScale"
+                )
                 // Scale when folder open
                 val finalIconScale = 1f
                 // Scale to start with in Animation

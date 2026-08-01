@@ -192,4 +192,9 @@ public class AppsSearchContainerLayout extends ExtendedEditText
     public ExtendedEditText getEditText() {
         return this;
     }
+
+    @Override
+    public void startSearch() {
+        mSearchBarController.focusSearchField();
+    }
 }

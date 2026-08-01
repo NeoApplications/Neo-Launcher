@@ -75,8 +75,33 @@ data class FolderAnimationData(
                 )
             val scaledFolderRadius: Int = previewBackground.scaledRadius
             val baseIconSize: Float = getBubbleTextView(itemsInPreview[0]).iconSize.toFloat()
-            val initialFolderSize = (scaledFolderRadius * 2) * scaleRelativeToDragLayer
-            val initialFolderScale = previewSize / baseIconSize * scaleRelativeToDragLayer
+            // Guard against unlaid-out icons (can happen when an overlay window triggers
+            // a premature layout), which would otherwise produce NaN/Inf scale values.
+            val safeScaleRelativeToDragLayer =
+                if (scaleRelativeToDragLayer > 0f && !scaleRelativeToDragLayer.isNaN()) {
+                    scaleRelativeToDragLayer
+                } else 1f
+            val safeBaseIconSize = when {
+                baseIconSize > 0f && !baseIconSize.isNaN() -> baseIconSize
+                previewSize > 0f && !previewSize.isNaN() -> previewSize
+                else -> 1f
+            }
+            val safePreviewSize = when {
+                previewSize > 0f && !previewSize.isNaN() -> previewSize
+                safeBaseIconSize > 0f -> safeBaseIconSize
+                else -> 1f
+            }
+            val initialFolderSize = (scaledFolderRadius * 2) * safeScaleRelativeToDragLayer
+            val initialFolderScale =
+                (safePreviewSize / safeBaseIconSize * safeScaleRelativeToDragLayer).let {
+                    if (it > 0f && !it.isNaN()) it else 1f
+                }
+            android.util.Log.e(
+                "FolderAnimationData",
+                "baseIconSize=$baseIconSize previewSize=$previewSize scaleRelativeToDragLayer=$scaleRelativeToDragLayer " +
+                        "safeScale=$safeScaleRelativeToDragLayer safeBase=$safeBaseIconSize safePreview=$safePreviewSize " +
+                        "initialFolderScale=$initialFolderScale"
+            )
 
             // Get offsets for Previews and Content
             val initialPreviewItemOffsetX =
@@ -90,13 +115,13 @@ data class FolderAnimationData(
             val initialX =
                 ((folderIconWorkspacePosition.left +
                         paddingLeft +
-                        Math.round(previewBackground.offsetX * scaleRelativeToDragLayer)) -
+                        Math.round(previewBackground.offsetX * safeScaleRelativeToDragLayer)) -
                         contentOffsetX -
                         initialPreviewItemOffsetX)
             val initialY =
                 ((folderIconWorkspacePosition.top +
                         paddingTop +
-                        Math.round(previewBackground.offsetY * scaleRelativeToDragLayer)) -
+                        Math.round(previewBackground.offsetY * safeScaleRelativeToDragLayer)) -
                         contentOffsetY)
 
             // Get scaled height of content and radius of background
@@ -110,7 +135,7 @@ data class FolderAnimationData(
             return FolderAnimationData(
                 isOpening = isOpening,
                 startScale = if (isOpening) initialFolderScale else 1f,
-                folderScale = initialFolderScale / scaleRelativeToDragLayer,
+                folderScale = initialFolderScale / safeScaleRelativeToDragLayer,
                 xDistance = (initialX - layoutParams.x).toFloat(),
                 yDistance = (initialY - layoutParams.y).toFloat(),
                 contentHeightDifference = contentHeightDifference,
@@ -119,7 +144,7 @@ data class FolderAnimationData(
                 initialFolderSize = initialFolderSize,
                 previewOffsetX = initialPreviewItemOffsetX + contentOffsetX,
                 scaledPreviewOffsetX =
-                    (initialPreviewItemOffsetX / scaleRelativeToDragLayer).toInt() +
+                    (initialPreviewItemOffsetX / safeScaleRelativeToDragLayer).toInt() +
                             folderRadiusDifference,
                 contentOffsetY = contentOffsetY,
                 defaultDuration =
