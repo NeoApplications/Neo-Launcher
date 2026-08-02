@@ -143,8 +143,14 @@ public class PreviewBackground extends DelegatedCellDrawing {
                 }
             };
 
+    private boolean isInDrawer;
     public PreviewBackground(Context context) {
+        this(context, false);
+    }
+
+    public PreviewBackground(Context context, boolean inDrawer) {
         mContext = context;
+        isInDrawer = inDrawer;
     }
 
     /**
@@ -180,10 +186,11 @@ public class PreviewBackground extends DelegatedCellDrawing {
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
-        previewSize = grid.folderIconSizePx;
+        previewSize = isInDrawer ? grid.getAllAppsProfile().getIconSizePx() - 10 : grid.folderIconSizePx;
 
         basePreviewOffsetX = (availableSpaceX - previewSize) / 2;
-        basePreviewOffsetY = topPadding + grid.folderIconOffsetYPx;
+        basePreviewOffsetY = topPadding + (isInDrawer ? grid.allAppsFolderIconOffsetYPx : grid.folderIconOffsetYPx);
+
 
         // Stroke width is 1dp
         mStrokeWidth = context.getResources().getDisplayMetrics().density;

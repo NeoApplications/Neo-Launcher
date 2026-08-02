@@ -134,6 +134,7 @@ public class DeviceProfile {
     private final FolderProfile mFolderProfile;
     public int folderIconSizePx;
     public int folderIconOffsetYPx;
+    public int allAppsFolderIconOffsetYPx;
 
     // Hotseat
     private final HotseatProfile hotseatProfile;
@@ -886,6 +887,8 @@ public class DeviceProfile {
         folderIconSizePx = Math.round(
                 getWorkspaceIconProfile().getIconSizePx() * ICON_VISIBLE_AREA_FACTOR);
         folderIconOffsetYPx = (getWorkspaceIconProfile().getIconSizePx() - folderIconSizePx) / 2;
+        int AllAppsFolderIconSizePx = Math.round(mAllAppsProfile.getIconSizePx() * ICON_VISIBLE_AREA_FACTOR);
+        allAppsFolderIconOffsetYPx = (mAllAppsProfile.getIconSizePx() - AllAppsFolderIconSizePx) / 2;
 
         // Update widget padding:
         float minSpacing = pxFromDp(MIN_WIDGET_PADDING_DP, mMetrics);
