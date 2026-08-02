@@ -1797,10 +1797,16 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         return switch (type) {
             case AdapterHolder.MAIN -> new AdapterHolder(AdapterHolder.MAIN,
                     new AlphabeticalAppsList(mActivityContext, mAllAppsStore, null, null));
-            case AdapterHolder.WORK -> new AdapterHolder(AdapterHolder.WORK,
-                    new AlphabeticalAppsList(mActivityContext, mAllAppsStore, mWorkManager, null));
-            case AdapterHolder.SEARCH -> new AdapterHolder(SEARCH,
-                    new AlphabeticalAppsList(mActivityContext, null, null, null));
+            case AdapterHolder.WORK -> {
+                AlphabeticalAppsList workApps = new AlphabeticalAppsList(mActivityContext, mAllAppsStore, mWorkManager, null);
+                workApps.setAllowFolders(false);
+                yield new AdapterHolder(AdapterHolder.WORK, workApps);
+            }
+            case AdapterHolder.SEARCH -> {
+                AlphabeticalAppsList searchApps = new AlphabeticalAppsList(mActivityContext, null, null, null);
+                searchApps.setAllowFolders(false);
+                yield new AdapterHolder(SEARCH, searchApps);
+            }
             default -> throw new RuntimeException("Unexpected adapter type");
         };
     }
@@ -1823,7 +1829,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         private int mType;
         public final BaseAllAppsAdapter mAdapter;
         final RecyclerView.LayoutManager mLayoutManager;
-        final AlphabeticalAppsList mAppsList;
+        public final AlphabeticalAppsList mAppsList;
         public final Rect mPadding = new Rect();
         public AllAppsRecyclerView mRecyclerView;
         private OnFocusChangeListener mOnFocusChangeListener;

@@ -28,20 +28,15 @@ class AllAppsTabsController<T : BaseActivity>(
     private var bottomPadding = 0
 
     fun createHolders(): AdapterHolders {
-        for (tab in tabs) {
-            if (tab.isWork) {
-                holders.add(container.createHolder(WORK).apply {
-                    mPadding.bottom = bottomPadding
-                    mPadding.left = horizontalPadding
-                    mPadding.right = horizontalPadding
-                })
-            } else {
-                holders.add(container.createHolder(MAIN).apply {
-                    mPadding.bottom = bottomPadding
-                    mPadding.left = horizontalPadding
-                    mPadding.right = horizontalPadding
-                })
-            }
+        holders.clear()
+        tabs.forEachIndexed { index, tab ->
+            val type = if (tab.isWork) WORK else MAIN
+            val holder = container.createHolder(type)
+            holder.mAppsList.allowFolders = (index == 0)
+            holder.mPadding.bottom = bottomPadding
+            holder.mPadding.left = horizontalPadding
+            holder.mPadding.right = horizontalPadding
+            holders.add(holder)
         }
         return holders
     }
@@ -61,6 +56,7 @@ class AllAppsTabsController<T : BaseActivity>(
     fun setup(pagedView: AllAppsPagedView) {
         tabs.forEachIndexed { index, tab ->
             holders[index].setIsWork(tab.isWork)
+            holders[index].mAppsList.allowFolders = (index == 0)
             holders[index].setup(pagedView.getChildAt(index), tab.matcher)
         }
     }

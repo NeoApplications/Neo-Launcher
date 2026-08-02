@@ -124,6 +124,19 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
     private final NeoPrefs prefs;
+    private boolean mAllowFolders = true;
+
+    public void setAllowFolders(boolean allowFolders) {
+        if (mAllowFolders != allowFolders) {
+            mAllowFolders = allowFolders;
+            onAppsUpdated();
+        }
+    }
+
+    public boolean getAllowFolders() {
+        return mAllowFolders;
+    }
+
     public AlphabeticalAppsList(ActivityContext activityContext, @Nullable AllAppsStore appsStore,
                                 WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
         mAllAppsStore = appsStore;
@@ -384,7 +397,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
 
     private int addFolders(int startPosition) {
         int position = startPosition;
-        if (getAllAppsStore() == null) {
+        if (!mAllowFolders || getAllAppsStore() == null) {
             return position;
         }
         List<DrawerFolderInfo> folderInfos = getFolderInfos();
