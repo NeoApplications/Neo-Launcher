@@ -383,6 +383,9 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     }
 
     private int addFolders(int startPosition) {
+        if (getAllAppsStore() == null) {
+            return startPosition;
+        }
         List<DrawerFolderInfo> folderInfos = getFolderInfos();
         if (folderInfos.isEmpty()) {
             return startPosition;
@@ -392,7 +395,6 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
         int folderIndex = 0;
         for (DrawerFolderInfo info : folderInfos) {
-            assert getAllAppsStore() != null;
             info.setAppsStore(getAllAppsStore());
             AdapterItem appItem = AdapterItem.asFolder(position++, sectionName, info, folderIndex++);
             mAdapterItems.add(appItem);
