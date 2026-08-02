@@ -71,7 +71,7 @@ class IconPackProvider @Inject constructor(
             IconPackInfo(
                 context.getString(R.string.title_themed_icons),
                 context.getString(R.string.icon_packs_intent_name),
-                ContextCompat.getDrawable(context, R.drawable.ic_launcher)!!,
+                ContextCompat.getDrawable(context, R.mipmap.ic_launcher)!!,
         ) else null
         return listOfNotNull(
             defaultIconPack,
