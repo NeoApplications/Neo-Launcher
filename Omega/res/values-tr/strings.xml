@@ -554,4 +554,8 @@
     <string name="backup_manage_storage_permission_title">Tüm dosyalar erişimi gerekli</string>
     <string name="backup_manage_storage_permission_summary">Yedeklemeleri oluşturmadan önce Harici Depolama Yönetimi erişimine izin verin. Ayarlar menüsünden geri döndüğünüzde, başlatıcı bu durumu otomatik yenileyecektir.</string>
     <string name="backup_grant_storage_permission">Depolama erişimi ver</string>
+    <string name="folder_icon_shape">Klasör simge şekli</string>
+    <string name="title_enable_folders">Çekmecede klasörleri etkinleştir</string>
+    <string name="title_manage_folders">Klasörleri Yönet</string>
+    <string name="summary_manage_folders">Klasör oluştur veya düzenle</string>
 </resources>
