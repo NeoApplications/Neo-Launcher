@@ -559,8 +559,16 @@
     <string name="hotseat_prediction_content_description">App prevista: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
     <string name="hotseat_tip_gaps_filled">Suggerimenti per app aggiunti allo spazio vuoto</string>
     <string name="title_app_suggestions">Suggerimenti per le app</string>
-    <string name="title_desktop_cycle_scrolling">Ciclo di scorrimento</string>
+    <string name="title_desktop_cycle_scrolling">Scorrimento ciclico</string>
     <string name="title_enable_feed">Abilita feed</string>
     <string name="title_show_icon_shadow">Mostra ombra icona</string>
     <string name="summary_show_icon_shadow">Mostra l\'ombra per le icone non adattive.</string>
+    <string name="folder_full_screen">Apri cartella a schermo intero</string>
+    <string name="backup_create">Crea backup</string>
+    <string name="backup_restore">Ripristina backup</string>
+    <string name="backup_databases">Database</string>
+    <string name="backup_created">Backup creato</string>
+    <string name="backup_manage_storage_permission_title">Accesso richiesto a tutti i file</string>
+    <string name="backup_manage_storage_permission_summary">Concedi l\'accesso a Gestisci archiviazione esterna prima di creare i backup. Il launcher aggiornerà automaticamente questa impostazione al tuo ritorno dalle Impostazioni.</string>
+    <string name="backup_grant_storage_permission">Concedi accesso spazio di archiviazione</string>
 </resources>
