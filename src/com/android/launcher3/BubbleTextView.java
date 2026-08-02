@@ -131,6 +131,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     public static final int DISPLAY_WORKSPACE = 0;
     public static final int DISPLAY_ALL_APPS = 1;
     public static final int DISPLAY_FOLDER = 2;
+    public static final int DISPLAY_DRAWER_FOLDER = 3;
     public static final int DISPLAY_TASKBAR = 5;
     public static final int DISPLAY_SEARCH_RESULT = 6;
     public static final int DISPLAY_SEARCH_RESULT_SMALL = 7;
@@ -310,6 +311,13 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     mDeviceProfile.getFolderProfile().getChildDrawablePaddingPx());
             defaultIconSize = mDeviceProfile.getFolderProfile().getChildIconSizePx();
             mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
+        } else if (mDisplay == DISPLAY_DRAWER_FOLDER) {
+            setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    mDeviceProfile.getFolderProfile().getChildTextSizePx());
+            setCompoundDrawablePadding(
+                    mDeviceProfile.getAllAppsProfile().getIconDrawablePaddingPx());
+            defaultIconSize = mDeviceProfile.getAllAppsProfile().getIconSizePx();
+            mShouldShowLabel = !prefs.getDrawerHideLabels().getValue();
         } else if (mDisplay == DISPLAY_SEARCH_RESULT) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mDeviceProfile.getAllAppsProfile().getIconTextSizePx());
@@ -1497,12 +1505,22 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     @Override
     public void getWorkspaceVisualDragBounds(Rect bounds) {
-        getIconBounds(mIconSize, bounds);
+        getIconBounds(getIconSizeForDisplay(mDisplay), bounds);
     }
 
     public void getSourceVisualDragBounds(Rect bounds) {
-        getIconBounds(mIconSize, bounds);
+        getIconBounds(getIconSizeForDisplay(mDisplay), bounds);
     }
+
+    private int getIconSizeForDisplay(int display) {
+        DeviceProfile grid = mActivity.getDeviceProfile();
+        return switch (display) {
+            case DISPLAY_ALL_APPS, DISPLAY_DRAWER_FOLDER ->
+                    grid.getAllAppsProfile().getIconSizePx();
+            default -> grid.getWorkspaceIconProfile().getIconSizePx();
+        };
+    }
+
 
     @Override
     public SafeCloseable prepareDrawDragView() {

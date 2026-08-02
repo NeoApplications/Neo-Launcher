@@ -180,8 +180,7 @@ public class PreviewItemManager {
     }
 
     private PreviewItemDrawingParams getFinalIconParams(PreviewItemDrawingParams params) {
-        float iconSize = mIcon.mActivity.getDeviceProfile().getWorkspaceIconProfile().getIconSizePx();
-
+        float iconSize = mIcon.isInAppDrawer() ? mIcon.mActivity.getDeviceProfile().getAllAppsProfile().getIconSizePx() : mIcon.mActivity.getDeviceProfile().getWorkspaceIconProfile().getIconSizePx();
         final float scale = iconSize / mReferenceDrawable.getIntrinsicWidth();
         final float trans = (mIcon.mBackground.previewSize - iconSize) / 2;
 

@@ -383,21 +383,21 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     }
 
     private int addFolders(int startPosition) {
+        int position = startPosition;
         if (getAllAppsStore() == null) {
-            return startPosition;
+            return position;
         }
         List<DrawerFolderInfo> folderInfos = getFolderInfos();
         if (folderInfos.isEmpty()) {
-            return startPosition;
+            return position;
         }
-        int position = startPosition;
         String sectionName = "#";
         mFastScrollerSections.add(new FastScrollSectionInfo(sectionName, position));
-        int folderIndex = 0;
         for (DrawerFolderInfo info : folderInfos) {
             info.setAppsStore(getAllAppsStore());
-            AdapterItem appItem = AdapterItem.asFolder(position++, sectionName, info, folderIndex++);
+            AdapterItem appItem = AdapterItem.asFolder(info);
             mAdapterItems.add(appItem);
+            position++;
         }
         return position;
     }

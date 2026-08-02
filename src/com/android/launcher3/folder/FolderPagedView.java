@@ -256,7 +256,9 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
             icon = AppPairIcon.inflateIcon(R.layout.folder_app_pair, ActivityContext.lookupContext(
                     getContext()), null , api, BubbleTextView.DISPLAY_FOLDER);
         } else {
-            icon = mViewCache.getView(R.layout.folder_application, getContext(), null);
+            int layout = mFolder.isInAppDrawer() ? R.layout.all_apps_folder_application
+                    : R.layout.folder_application;
+            icon = mViewCache.getView(layout, getContext(), null);
             ((BubbleTextView) icon).applyFromWorkspaceItem((WorkspaceItemInfo) item);
         }
 
@@ -290,8 +292,15 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     protected CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
-        page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
-                grid.getFolderProfile().getCellHeightPx());
+        if (mFolder.isInAppDrawer()) {
+            page.setCellDimensions(grid.getAllAppsProfile().getCellWidthPx(), grid.getAllAppsProfile().getCellHeightPx());
+        } else {
+            ;
+            page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
+                    grid.getFolderProfile().getCellHeightPx());
+        }
+
+
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);
         page.setInvertIfRtl(true);
         page.setGridSize(mGridCountX, mGridCountY);

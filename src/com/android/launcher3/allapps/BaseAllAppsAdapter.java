@@ -125,7 +125,7 @@ public abstract class BaseAllAppsAdapter
             return item;
         }
 
-        public static AdapterItem asFolder(int pos, String sectionName, DrawerFolderInfo folderInfo, int folderIndex) {
+        public static AdapterItem asFolder(DrawerFolderInfo folderInfo) {
             AdapterItem item = new AdapterItem(VIEW_TYPE_FOLDER);
             item.folderItem = new DrawerFolderItem(folderInfo);
             return item;
