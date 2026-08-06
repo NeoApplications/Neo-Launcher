@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title__general_desktop">Skrivbord</string>
-    <string name="title__general_search">Sök och Mappar</string>
     <string name="title__general_advanced">Avancerade Inställningar</string>
     <string name="summary__general_desktop">Anpassa ditt skrivbord</string>
     <string name="default_folder_name">Ny Mapp</string>
@@ -33,7 +32,6 @@
     <string name="pref_appcategorization_style_text">Stil</string>
     <string name="app_categorization_tabs">Tabbar</string>
     <string name="pref_appcategorization_tabs_summary">Svep mellan grupper.</string>
-    <string name="summary__general_advanced">Språk, säkerhetskopia, inställningssökning</string>
     <string name="pref_category__interfaces">Användargränssnitt</string>
     <string name="pref_category__inputs">Gester och Sök</string>
     <string name="pref_category__others">Övriga</string>

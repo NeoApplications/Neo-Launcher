@@ -28,7 +28,6 @@
     <string name="grid_size_width">প্রস্থ</string>
     <string name="grid_size_height">উচ্চতা</string>
     <string name="pref_category__others">অন্যান্য</string>
-    <string name="title__general_search">অনুসন্ধান</string>
     <string name="title__general_theme">রঙ</string>
     <string name="title__general_drawer">ড্রয়ার</string>
     <string name="pref_category__interfaces">ইন্টারফেস</string>

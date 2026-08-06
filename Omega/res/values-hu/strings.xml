@@ -5,7 +5,6 @@
     <string name="title__general_dock">Dokk</string>
     <string name="title__general_drawer">Alkalmazástár</string>
     <string name="title__general_theme">Téma</string>
-    <string name="title__general_search">Keresés és mappák</string>
     <string name="title__general_advanced">Speciális beállítások</string>
     <string name="title__general_profile">Profil</string>
     <string name="title__general_gestures_dash">Mozdulatok és műszerfal</string>
@@ -140,7 +139,6 @@
     <string name="summary__general_smartspace">Dátum, idő, asztalmodul</string>
     <string name="summary__general_search">Keresőszolgáltató, stílus, ikonok</string>
     <string name="summary__general_theme">Színek módosítása, ikoncsomagok, ikonformák</string>
-    <string name="summary__general_advanced">Nyelv, biztonsági mentés, beállításkeresés</string>
     <string name="pref_category__interfaces">Felhasználói felület</string>
     <string name="pref_category__features">Funkciók</string>
     <string name="pref_category__inputs">Mozdulatok és keresés</string>

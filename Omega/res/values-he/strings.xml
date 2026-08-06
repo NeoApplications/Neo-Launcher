@@ -43,7 +43,6 @@
     <string name="smartspace_setup_text">לחץ להגדרה</string>
     <string name="smartspace_preferences">העדפות</string>
     <string name="smartspace_now">עכשיו</string>
-    <string name="summary__general_advanced">שפה, גיבוי, הגדרות חיפוש</string>
     <string name="title__restart_launcher">הפעלה מחדש</string>
     <string name="icon_shape_corner_round">עגול</string>
     <string name="icon_shape_top_left">שמאל למעלה</string>
@@ -61,7 +60,6 @@
     <string name="title_dock_background_color">צבע רקע</string>
     <string name="title__desktop_icon_size">גודל אייקון</string>
     <string name="summary__general_search">מנוע חיפוש, עיצוב, אייקונים</string>
-    <string name="title__general_search">חיפוש</string>
     <string name="title__general_notifications">מחוות והתראות</string>
     <string name="title__general_smartspace">ווידג׳טים של דף הבית</string>
     <string name="summary__general_desktop">להתאים אישית שולחן עבודה שלך</string>

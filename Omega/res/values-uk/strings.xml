@@ -2,7 +2,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title__general_theme">Тема</string>
     <string name="default_folder_name">Нова тека</string>
-    <string name="title__general_search">Пошук і теки</string>
     <string name="title__general_desktop">Робочий стіл</string>
     <string name="summary__general_desktop">Налаштуйте свій робочий стіл</string>
     <string name="summary__general_dock">Значки гарячих клавіш, панель пошуку</string>
@@ -14,7 +13,6 @@
     <string name="title__desktop_icon_size">Розмір значка</string>
     <string name="title__desktop_grid_size">Розмір сітки</string>
     <string name="title__general_notifications">Жести та сповіщення</string>
-    <string name="summary__general_advanced">Мова, резервне копіювання та налаштування пошуку</string>
     <string name="title__general_smartspace">Домашній віджет</string>
     <string name="title__general_advanced">Розширені налаштування</string>
     <string name="summary__general_smartspace">Дата, час та домашній віджет</string>

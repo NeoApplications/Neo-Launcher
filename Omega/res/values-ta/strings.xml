@@ -53,7 +53,6 @@
     <string name="title__general_dock">கப்பல் கூடம்</string>
     <string name="title__general_drawer">டிராயர்</string>
     <string name="title__general_theme">கருப்பொருள்</string>
-    <string name="title__general_search">தேடல் மற்றும் கோப்புறைகள்</string>
     <string name="title__general_smartspace">வீட்டு விட்செட்</string>
     <string name="title__general_advanced">மேம்பட்ட அமைப்புகள்</string>
     <string name="title__general_notifications">சைகைகள் மற்றும் அறிவிப்புகள்</string>
@@ -68,7 +67,6 @@
     <string name="summary__general_search">தேடல் வழங்குநர், பாணி, சின்னங்கள்</string>
     <string name="summary__general_smartspace">தேதி, நேரம், வீட்டு விட்செட்</string>
     <string name="summary__general_notifications">ஒட்டு எண்ணிக்கை, ஒட்டு நிறம், சைகைகள்</string>
-    <string name="summary__general_advanced">மொழி, காப்புப்பிரதி, தேடலை அமைத்தல்</string>
     <string name="pref_category__interfaces">பயனர் இடைமுகம்</string>
     <string name="pref_category__features">நற்பொருத்தங்கள்</string>
     <string name="pref_category__inputs">சைகைகள் மற்றும் தேடல்</string>

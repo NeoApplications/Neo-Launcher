@@ -16,7 +16,6 @@
     <string name="summary__general_search">搜尋提供者、樣式、圖示</string>
     <string name="summary__general_smartspace">日期、時間、主頁小工具</string>
     <string name="summary__general_notifications">徽章數量、徽章顏色、手勢</string>
-    <string name="summary__general_advanced">語言、備份、設定搜尋</string>
     <string name="pref_category__interfaces">使用者介面</string>
     <string name="pref_category__features">功能</string>
     <string name="pref_category__inputs">手勢與搜尋</string>
@@ -234,7 +233,6 @@
     <string name="dash_line_size">Dash 線條大小</string>
     <string name="title__drawer_hide_icon_labels">隱藏應用程式名稱</string>
     <string name="title_drawer_enable_background">使用自訂背景顏色</string>
-    <string name="title__general_search">搜尋與資料夾</string>
     <string name="title__general_advanced">進階設定</string>
     <string name="title__general_profile">個人資料</string>
     <string name="title_legacy_treatment">建立適應性圖示</string>

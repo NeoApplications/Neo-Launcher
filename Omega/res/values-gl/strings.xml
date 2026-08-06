@@ -5,7 +5,6 @@
     <string name="title__general_desktop">Escritorio</string>
     <string name="title__general_dock">Barra</string>
     <string name="title__general_theme">Decorado</string>
-    <string name="title__general_search">Busca e Cartafoles</string>
     <string name="title__general_smartspace">Widget do Inicio</string>
     <string name="summary__general_desktop">Personaliza o escritorio</string>
     <string name="title__general_advanced">Axustes avanzados</string>
@@ -14,7 +13,6 @@
     <string name="summary__general_search">Provedor de busca, estilo, iconas</string>
     <string name="summary__general_smartspace">Data, hora, widget de inicio</string>
     <string name="summary__general_notifications">Número e cor das insignias, xestos</string>
-    <string name="summary__general_advanced">Idioma, copia de apoiio, config da busca</string>
     <string name="pref_category__others">Outros</string>
     <string name="pref_category__incubating">Incubando</string>
     <string name="title_desktop_full_width_widgets">Widgets de ancho completo</string>

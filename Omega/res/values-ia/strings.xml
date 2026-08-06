@@ -12,7 +12,6 @@
 
     <string name="title__drawer_categorization">Categorias</string>
     <string name="title__dock_icon_size">Dimension de icone</string>
-    <string name="title__general_search">Recerca e dossieres</string>
     <string name="title__drawer_hide_icon_labels">Celar le nomine del applicationes</string>
     <string name="title__desktop_icon_size">Dimension de icone</string>
     <string name="pref_appcategorization_flowerpot_title">Categoria del application</string>
@@ -66,7 +65,6 @@
     <string name="pref_category__interfaces">Interfacie de usator</string>
     <string name="title_dock_fill">Monstrar fundo</string>
     <string name="summary__general_smartspace">Data, hora, widget de initio</string>
-    <string name="summary__general_advanced">Lingua, copia de securitate, parametros de recerca</string>
     <string name="title_desktop_keep_empty">Permitter paginas vacue</string>
     <string name="title_desktop_icon_popup_menu">Elementos de menu emergente</string>
     <string name="num_hotseat_icons_pref_title">Quantitate de icones</string>

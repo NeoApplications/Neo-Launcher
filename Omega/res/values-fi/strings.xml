@@ -4,7 +4,6 @@
     <string name="title__general_desktop">Aloitusnäyttö</string>
     <string name="title__general_dock">Telakka</string>
     <string name="title__general_drawer">Sovellusvalikko</string>
-    <string name="title__general_search">Haku ja kansiot</string>
     <string name="title__general_smartspace">Koti-vimpain</string>
     <string name="title__general_advanced">Lisäasetukset</string>
     <string name="title__general_notifications">Eleet ja ilmoitukset</string>
@@ -15,7 +14,6 @@
     <string name="summary__general_search">Hakupalvelu, tyyli, kuvakkeet</string>
     <string name="summary__general_smartspace">Päivämäärä, aika, koti-vimpain</string>
     <string name="summary__general_notifications">Ilmoitusten laskuri, ilmoitusten väri, eleet</string>
-    <string name="summary__general_advanced">Kieli, varmuuskopiointi, asetusten haku</string>
     <string name="pref_category__interfaces">Käyttöliittymä</string>
     <string name="pref_category__inputs">Eleet ja haku</string>
     <string name="pref_category__others">Muut</string>

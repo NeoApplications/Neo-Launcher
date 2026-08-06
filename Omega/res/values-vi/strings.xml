@@ -22,14 +22,12 @@
     <string name="modify_system_settings_message">Cấp khả năng sửa đổi cài đặt hệ thống để tính năng này hoạt động</string>
     <string name="default_folder_name">Thư mục mới</string>
     <string name="title__general_notifications">Cử chỉ và thông báo</string>
-    <string name="summary__general_advanced">Ngôn ngữ, sao lưu, thiết lập tìm kiếm</string>
     <string name="pref_category__inputs">Cử chỉ và tìm kiếm</string>
     <string name="title__general_about">Về</string>
     <string name="title__general_drawer">Ngăn kéo</string>
     <string name="title__general_theme">Chủ đề</string>
     <string name="title__general_smartspace">Tiện ích Home</string>
     <string name="title__general_advanced">Cài đặt nâng cao</string>
-    <string name="title__general_search">Tìm kiếm và thư mục</string>
     <string name="summary__general_desktop">Tùy chỉnh màn hình của bạn</string>
     <string name="summary__general_dock">Biểu tượng Hotseat, thanh tìm kiếm</string>
     <string name="summary__general_drawer">Tùy chỉnh ngăn kéo của bạn</string>

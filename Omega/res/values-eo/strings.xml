@@ -69,7 +69,6 @@
     <string name="summary__general_search">Serĉilo, stilo, piktogramoj</string>
     <string name="summary__general_theme">Ŝanĝi kolorojn, piktogrampakaĵo, formo de piktogramoj</string>
     <string name="title__general_notifications">Gestoj kaj Sciigoj</string>
-    <string name="title__general_search">Serĉi</string>
     <string name="title__general_theme">Etoso</string>
     <string name="title__general_about">Pri</string>
     <string name="title__sort_most_used">Plej Uzataj</string>
@@ -88,7 +87,6 @@
     <string name="pref_category__others">Aliaj</string>
     <string name="pref_category__inputs">Gestoj kaj Ŝerĉo</string>
     <string name="pref_category__interfaces">Interfacoj</string>
-    <string name="summary__general_advanced">Lingvo, savkopio, agordserĉilo</string>
     <string name="summary__general_smartspace">Dato, tempo, hejmfenestraĵo</string>
     <string name="summary__general_desktop">Adapti vian labortablon</string>
     <string name="title__general_advanced">Altnivelaj Agordoj</string>

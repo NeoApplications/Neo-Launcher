@@ -179,7 +179,6 @@
     <string name="pref_category__others">Autres</string>
     <string name="pref_category__inputs">Gestes et recherche</string>
     <string name="pref_category__interfaces">Interface utilisateur</string>
-    <string name="summary__general_advanced">Langue, sauvegarde, configuration de la recherche</string>
     <string name="summary__general_notifications">Compteur du badge, couleur du badge, gestes</string>
     <string name="summary__general_smartspace">Date, heure, widget d\'accueil</string>
     <string name="summary__general_search">Fournisseur de recherche, style, icônes</string>
@@ -189,7 +188,6 @@
     <string name="title__general_notifications">Gestes et notifications</string>
     <string name="title__general_advanced">Paramètres avancés</string>
     <string name="title__general_smartspace">Widget d\'accueil</string>
-    <string name="title__general_search">Recherche et dossiers</string>
     <string name="title__general_theme">Thème</string>
     <string name="title__general_dock">Bandeau</string>
     <string name="title__general_desktop">Bureau</string>
