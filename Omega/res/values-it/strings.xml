@@ -569,4 +569,8 @@
     <string name="backup_manage_storage_permission_title">Accesso richiesto a tutti i file</string>
     <string name="backup_manage_storage_permission_summary">Concedi l\'accesso a Gestisci archiviazione esterna prima di creare i backup. Il launcher aggiornerà automaticamente questa impostazione al tuo ritorno dalle Impostazioni.</string>
     <string name="backup_grant_storage_permission">Concedi accesso spazio di archiviazione</string>
+    <string name="folder_icon_shape">Forma icona della cartella</string>
+    <string name="title_enable_folders">Abilita cartelle nel cassetto</string>
+    <string name="title_manage_folders">Gestisci cartelle</string>
+    <string name="summary_manage_folders">Crea o modifica cartelle</string>
 </resources>

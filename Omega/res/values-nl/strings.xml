@@ -552,4 +552,8 @@
     <string name="backup_manage_storage_permission_title">Toegang tot alle bestanden vereist</string>
     <string name="backup_manage_storage_permission_summary">Geef \'Externe opslag beheren\' toegang voordat je back-ups maakt. De launcher vernieuwt deze status automatisch wanneer je terugkeert vanuit de instellingen.</string>
     <string name="backup_grant_storage_permission">Toegang tot opslag verlenen</string>
+    <string name="folder_icon_shape">Pictogramvorm map</string>
+    <string name="title_enable_folders">Mappen in lade inschakelen</string>
+    <string name="title_manage_folders">Mappen beheren</string>
+    <string name="summary_manage_folders">Mappen maken of bewerken</string>
 </resources>
