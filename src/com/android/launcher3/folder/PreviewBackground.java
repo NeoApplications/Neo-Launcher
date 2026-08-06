@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
@@ -54,6 +55,7 @@ import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ActivityContext;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
+import com.neoapps.neolauncher.util.OmegaUtilsKt;
 
 /**
  * This object represents a FolderIcon preview background. It stores drawing / measurement
@@ -183,6 +185,8 @@ public class PreviewBackground extends DelegatedCellDrawing {
         mStrokeColor = ta.getColor(R.styleable.FolderIconPreview_folderIconBorderColor, 0);
         mDotColor = Themes.getAttrColor(context, R.attr.notificationDotColor);
         mBgColor = ta.getColor(R.styleable.FolderIconPreview_folderPreviewColor, 0);
+        mBgColor = ColorUtils.setAlphaComponent(mBgColor, OmegaUtilsKt.getFolderPreviewAlpha());
+
         ta.recycle();
 
         DeviceProfile grid = activity.getDeviceProfile();
