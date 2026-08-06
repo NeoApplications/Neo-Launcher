@@ -52,9 +52,12 @@ import com.android.launcher3.popup.ArrowPopup;
 import com.android.launcher3.shortcuts.DeepShortcutView;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
+import com.neoapps.neolauncher.util.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Popup shown on long pressing an empty space in launcher
@@ -206,31 +209,41 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
      * Returns the list of supported actions
      */
     public static ArrayList<OptionItem> getOptions(Launcher launcher) {
+
+        NeoPrefs prefs = NeoPrefs.getInstance();
+        Set<String> selectedOptions = prefs.getProfilePopupMenu().getValue();
+
         ArrayList<OptionItem> options = new ArrayList<>();
-        options.add(new OptionItem(launcher,
-                R.string.styles_wallpaper_button_text,
-                R.drawable.ic_palette,
-                IGNORE,
-                OptionsPopupView::startWallpaperPicker));
-        if (WIDGETS_ENABLED) {
+
+        if (selectedOptions.contains(Config.WALLPAPER_POPUP)) {
+            options.add(new OptionItem(launcher,
+                    R.string.styles_wallpaper_button_text,
+                    R.drawable.ic_palette,
+                    IGNORE,
+                    OptionsPopupView::startWallpaperPicker));
+
+        }
+        if (WIDGETS_ENABLED & selectedOptions.contains(Config.WIDGETS_POPUP)) {
             options.add(new OptionItem(launcher,
                     R.string.widget_button_text,
                     R.drawable.ic_widget,
                     LAUNCHER_WIDGETSTRAY_BUTTON_TAP_OR_LONGPRESS,
                     OptionsPopupView::onWidgetsClicked));
         }
-        if (MULTI_SELECT_EDIT_MODE.get()) {
+        if (MULTI_SELECT_EDIT_MODE.get() & selectedOptions.contains(Config.EDIT_HOME_POPUP)) {
             options.add(new OptionItem(launcher,
                     R.string.edit_home_screen,
                     R.drawable.enter_home_gardening_icon,
                     LAUNCHER_SETTINGS_BUTTON_TAP_OR_LONGPRESS,
                     OptionsPopupView::enterHomeGardening));
         }
-        options.add(new OptionItem(launcher,
+        if (selectedOptions.contains(Config.ALL_APPS_POPUP)) {
+            options.add(new OptionItem(launcher,
                 R.string.all_apps_button_label,
                 R.drawable.ic_apps,
                 LAUNCHER_ALL_APPS_TAP_OR_LONGPRESS,
                 OptionsPopupView::enterAllApps));
+        }
         options.add(new OptionItem(launcher,
                 R.string.settings_button_text,
                 R.drawable.ic_setting,

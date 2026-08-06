@@ -285,6 +285,12 @@ open class StringMultiSelectionPref(
         }
     }
 
+    override fun getValue(): Set<String> {
+        return runBlocking(Dispatchers.IO) {
+            get().firstOrNull() ?: defaultValue
+        }
+    }
+
     fun getAll(): List<String> = valueList
 
     fun setAll(value: List<String>) {
@@ -395,7 +401,7 @@ abstract class PrefDelegate<T : Any>(
     private val defaultValue: T,
     val onChange: (T) -> Unit
 ) {
-    fun getValue(): T {
+    open fun getValue(): T {
         return runBlocking(Dispatchers.IO) {
             get().firstOrNull() ?: defaultValue
         }

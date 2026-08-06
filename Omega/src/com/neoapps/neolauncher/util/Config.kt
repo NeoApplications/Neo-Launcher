@@ -129,6 +129,12 @@ class Config(val context: Context) {
         const val SHAPE_OCTAGON = "octagon"
         const val SHAPE_EGG = "egg"
 
+        //POPUP
+        const val ALL_APPS_POPUP = "ALL_APPS_POPUP"
+        const val WALLPAPER_POPUP = "WALLPAPER_POPUP"
+        const val WIDGETS_POPUP = "WIDGETS_POPUP"
+        const val EDIT_HOME_POPUP = "EDIT_HOME_POPUP"
+
         val drawerSortOptions = mutableMapOf(
             SORT_AZ to R.string.title__sort_alphabetical_az,
             SORT_ZA to R.string.title__sort_alphabetical_za,
@@ -177,6 +183,13 @@ class Config(val context: Context) {
             context.resources.getString(R.string.smartspace_calendar_persian) to context.resources.getString(
                 R.string.title_calendar_persian
             )
+        )
+
+        val popupOptions = mapOf(
+            WALLPAPER_POPUP to R.string.backup_wallpaper,
+            WIDGETS_POPUP to R.string.feed_widget,
+            ALL_APPS_POPUP to R.string.all_apps_button_label,
+            EDIT_HOME_POPUP to R.string.edit_home_screen
         )
 
         fun getCurrentTheme(context: Context): Int {

@@ -44,6 +44,7 @@ object PrefKey {
     val PROFILE_BLUR_ENABLED = booleanPreferencesKey("profile_blur_enabled")
     val PROFILE_BLUR_RADIUS = floatPreferencesKey("profile_blur_radius")
     val PROFILE_ICON_RESET_CUSTOM = stringPreferencesKey("profile_icon_reset_custom")
+    val PROFILE_POPUP_OPTIONS = stringSetPreferencesKey("profile_popup_options")
     val PROFILE_ICON_SHADOW = booleanPreferencesKey("profile_icon_shadow")
     val PROFILE_WINDOW_CORNER_RADIUS = floatPreferencesKey("profile_custom_window_corner_radius")
     val PROFILE_STATUSBAR_SHADOW = booleanPreferencesKey("profile_status_bar_shadow")

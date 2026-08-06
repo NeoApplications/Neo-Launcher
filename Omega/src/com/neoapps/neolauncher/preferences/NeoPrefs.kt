@@ -282,6 +282,20 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.PROFILE_ICON_RESET_CUSTOM
     )
 
+    var profilePopupMenu = StringMultiSelectionPref(
+        dataStore = dataStore,
+        key = PrefKey.PROFILE_POPUP_OPTIONS,
+        titleId = R.string.title_desktop_icon_popup_menu,
+        defaultValue = setOf(
+            Config.WALLPAPER_POPUP,
+            Config.WIDGETS_POPUP,
+            Config.ALL_APPS_POPUP,
+        ),
+        entries = Config.popupOptions,
+        withIcons = true,
+        onChange = { pokeChange() }
+    )
+
     // Desktop
     val desktopIconAddInstalled = BooleanPref(
         dataStore = dataStore,

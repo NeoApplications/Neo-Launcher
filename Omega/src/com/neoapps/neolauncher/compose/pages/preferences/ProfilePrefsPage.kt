@@ -94,6 +94,7 @@ fun ProfilePrefsPage() {
                 },
                 prefs.profileWindowCornerRadius,
                 prefs.profileAllowRotation,
+                prefs.profilePopupMenu
                 //prefs.profileShowTopShadow
             ).toTypedArray()
         )
