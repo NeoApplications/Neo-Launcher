@@ -675,8 +675,11 @@ public class DeviceProfile {
 
     /** Updates hotseatCellHeightPx and hotseatBarSizePx */
     private void updateHotseatSizes(int hotseatIconSizePx) {
+        NeoPrefs prefs = NeoPrefs.getInstance();
+
         // Ensure there is enough space for folder icons, which have a slightly larger radius.
         hotseatCellHeightPx = getIconSizeWithOverlap(hotseatIconSizePx);
+        hotseatBarBottomSpacePx *= prefs.getDockBottomPadding().getValue();
 
         if (isVerticalBarLayout()) {
             hotseatBarSizePx = hotseatIconSizePx + getHotseatProfile().getBarEdgePaddingPx()
@@ -691,7 +694,7 @@ public class DeviceProfile {
                     + hotseatBarBottomSpacePx;
         }
 
-        boolean dockEnabled = NeoPrefs.getInstance().getDockEnabled().getValue();
+        boolean dockEnabled = prefs.getDockEnabled().getValue();
         if (!dockEnabled) {
             hotseatBarSizePx = 0;
         }

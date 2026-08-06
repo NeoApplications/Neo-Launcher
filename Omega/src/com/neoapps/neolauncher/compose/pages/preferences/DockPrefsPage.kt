@@ -71,6 +71,7 @@ fun DockPrefsPage() {
                 /*prefs.dockShowPageIndicator,
                 prefs.dockDotsPageIndicator,
                 prefs.dockScale*/
+                prefs.dockBottomPadding
             ).toTypedArray()
         )
     }

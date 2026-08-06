@@ -591,6 +591,18 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { reloadGrid() }
     )
 
+    var dockBottomPadding = FloatPref(
+        dataStore = dataStore,
+        key = PrefKey.DOCK_BOTTOM_PADDING,
+        titleId = R.string.title_dock_bottom_padding,
+        defaultValue = 1f,
+        minValue = 0.1f,
+        maxValue = 1.6f,
+        steps = 100,
+        specialOutputs = { "${(it * 100).roundToInt()}%" },
+        onChange = { reloadGrid() }
+    )
+
     val dockCustomBackground = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DOCK_BG_CUSTOM,

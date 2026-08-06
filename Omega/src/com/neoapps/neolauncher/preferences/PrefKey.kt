@@ -86,6 +86,7 @@ object PrefKey {
     val DOCK_PAGE_INDICATOR = booleanPreferencesKey("dock_page_indicator")
     val DOCK_PAGE_INDICATOR_DOT = booleanPreferencesKey("dock_page_indicator_dot")
     val DOCK_SCALE = floatPreferencesKey("dock_scale")
+    val DOCK_BOTTOM_PADDING = floatPreferencesKey("dock_bottom_padding")
     val DOCK_ICON_SCALE = floatPreferencesKey("dock_icon_scale")
     val DOCK_COLUMNS = intPreferencesKey("dock_columns")
     val DOCK_ROWS = intPreferencesKey("dock_rows")
