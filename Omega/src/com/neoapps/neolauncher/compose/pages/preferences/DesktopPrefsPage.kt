@@ -25,9 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -75,21 +73,6 @@ fun DesktopPrefsPage() {
         //prefs.desktopWidgetCornerRadius
         prefs.desktopCycleScrolling
     )
-    val folderPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
-        mutableStateListOf(
-            *listOfNotNull(
-                prefs.desktopFolderColumns,
-                prefs.desktopFolderRows,
-                /*prefs.desktopFolderFullScreen,
-                prefs.desktopCustomFolderBackground,
-                if (prefs.desktopCustomFolderBackground.getValue()) {
-                    prefs.desktopFolderBackgroundColor
-                } else null,
-                prefs.desktopFolderOpacity,*/
-                prefs.desktopFolderIconShape
-            ).toTypedArray()
-        )
-    }
     val otherPrefs = listOfNotNull(
         //prefs.desktopHideStatusBar,
         prefs.desktopLock
@@ -118,14 +101,6 @@ fun DesktopPrefsPage() {
                 PreferenceGroup(
                     stringResource(id = R.string.cat_desktop_grid),
                     prefs = gridPrefs,
-                    onPrefDialog = onPrefDialog
-                )
-            }
-
-            item {
-                PreferenceGroup(
-                    stringResource(id = R.string.app_categorization_folders),
-                    prefs = folderPrefs,
                     onPrefDialog = onPrefDialog
                 )
             }

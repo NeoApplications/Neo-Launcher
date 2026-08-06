@@ -447,7 +447,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_BG_COLOR,
         defaultValue = "system_accent",
-        navRoute = NavRoute.Desktop.FolderBG(),
+        navRoute = NavRoute.Folder.FolderBG(),
         onChange = { reloadGrid() },
     )
 
@@ -467,7 +467,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.DESKTOP_FOLDER_STROKE_COLOR,
         defaultValue = "system_accent",
-        navRoute = NavRoute.Desktop.FolderStroke(),
+        navRoute = NavRoute.Folder.FolderStroke(),
         onChange = { reloadGrid() },
     )
 

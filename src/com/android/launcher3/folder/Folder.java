@@ -29,8 +29,10 @@ import static com.android.launcher3.logging.StatsLogManager.LauncherEvent.LAUNCH
 import static com.android.launcher3.model.data.FolderInfo.willAcceptItemType;
 import static com.android.launcher3.pageindicators.PaginationArrow.DISABLED_ARROW_OPACITY;
 import static com.android.launcher3.pageindicators.PaginationArrow.FULLY_OPAQUE;
+import static com.android.launcher3.testing.shared.ResourceUtils.pxFromDp;
 import static com.android.launcher3.testing.shared.TestProtocol.FOLDER_OPENED_MESSAGE;
 import static com.android.launcher3.util.window.RefreshRateTracker.getSingleFrameMs;
+import static java.lang.Math.round;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -270,7 +272,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     @Nullable
     private KeyboardInsetAnimationCallback mKeyboardInsetAnimationCallback;
 
-    private final @NonNull GradientDrawable mBackground;
+    private @NonNull GradientDrawable mBackground;
 
     private final NeoPrefs prefs;
     private final Launcher mLauncher;
@@ -295,12 +297,13 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         // click).
         setFocusableInTouchMode(true);
 
-        mBackground = (GradientDrawable) Objects.requireNonNull(
+        /*mBackground = (GradientDrawable) Objects.requireNonNull(
                 ResourcesCompat.getDrawable(getResources(),
                         R.drawable.round_rect_folder, getContext().getTheme()));
-        mBackground.setCallback(this);
+        mBackground.setCallback(this);*/
 
         prefs = NeoPrefs.getInstance();
+        customizeFolder();
         mLauncher = Launcher.getLauncher(context);
     }
 
@@ -374,6 +377,26 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
                 });
             }
         }
+    }
+
+    private void customizeFolder() {
+        if (prefs.getDesktopCustomFolderBackground().getValue()) {
+            int bgColor = prefs.getDesktopFolderBackgroundColor().getColor();
+            mBackground = new GradientDrawable();
+            mBackground.setShape(GradientDrawable.RECTANGLE);
+            mBackground.setColorFilter(bgColor, PorterDuff.Mode.SRC_OVER);
+        } else {
+            mBackground = (GradientDrawable) Objects.requireNonNull(
+                    ResourcesCompat.getDrawable(getResources(),
+                            R.drawable.round_rect_folder, getContext().getTheme()));
+        }
+        mBackground.setCallback(this);
+        mBackground.setCornerRadius(getCornerRadius());
+    }
+
+    public float getCornerRadius() {
+        return prefs.getProfileWindowCornerRadius().getValue() >= 0 ? round(prefs.getProfileWindowCornerRadius().getValue())
+                : pxFromDp(8, getResources().getDisplayMetrics());
     }
 
     /**

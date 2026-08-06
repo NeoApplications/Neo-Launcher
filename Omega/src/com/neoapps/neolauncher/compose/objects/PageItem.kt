@@ -10,6 +10,7 @@ import com.neoapps.neolauncher.compose.icons.phosphor.BracketsCurly
 import com.neoapps.neolauncher.compose.icons.phosphor.ClockCounterClockwise
 import com.neoapps.neolauncher.compose.icons.phosphor.Copyleft
 import com.neoapps.neolauncher.compose.icons.phosphor.DotsNine
+import com.neoapps.neolauncher.compose.icons.phosphor.Folder
 import com.neoapps.neolauncher.compose.icons.phosphor.Info
 import com.neoapps.neolauncher.compose.icons.phosphor.ListDashes
 import com.neoapps.neolauncher.compose.icons.phosphor.MagnifyingGlass
@@ -35,6 +36,12 @@ open class PageItem(
             titleId = R.string.title__general_desktop,
             icon = Phosphor.Monitor,
             route = NavRoute.Desktop()
+        )
+
+        val PrefsFolder = PageItem(
+            titleId = R.string.title_general_folder,
+            icon = Phosphor.Folder,
+            route = NavRoute.Folder()
         )
         val PrefsDock = PageItem(
             titleId = R.string.title__general_dock,

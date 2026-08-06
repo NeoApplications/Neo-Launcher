@@ -18,14 +18,17 @@ open class NavRoute : Parcelable {
         @Serializable
         class AccentColor : Profile()
     }
-
     @Serializable
     open class Desktop : NavRoute() {
+    }
+
+    @Serializable
+    open class Folder : NavRoute() {
         @Serializable
-        class FolderBG : Desktop()
+        class FolderBG : Folder()
 
         @Serializable
-        class FolderStroke : Desktop()
+        class FolderStroke : Folder()
     }
 
     @Serializable

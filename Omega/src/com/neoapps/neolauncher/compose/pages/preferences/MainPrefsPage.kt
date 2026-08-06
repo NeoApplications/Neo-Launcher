@@ -79,9 +79,10 @@ fun MainPrefsPage() {
 
     val uiPrefs = persistentListOf(
         PageItem.PrefsProfile,
+        PageItem.PrefsDrawer,
         PageItem.PrefsDesktop,
         PageItem.PrefsDock,
-        PageItem.PrefsDrawer
+        PageItem.PrefsFolder
     )
     val featuresPrefs = persistentListOf(
         PageItem.PrefsWidgetsNotifications,
@@ -201,15 +202,17 @@ fun MainPrefsPage() {
                         is NavRoute.Profile
                             -> ProfilePrefsPage()
 
-                        is NavRoute.Desktop.FolderBG
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
-
-                        is NavRoute.Desktop.FolderStroke
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
-
                         is NavRoute.Desktop
                             -> DesktopPrefsPage()
 
+                        is NavRoute.Folder.FolderBG
+                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
+
+                        is NavRoute.Folder.FolderStroke
+                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
+
+                        is NavRoute.Folder
+                            -> FolderPrefsPage()
                         is NavRoute.Dock.BG
                             -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
 
