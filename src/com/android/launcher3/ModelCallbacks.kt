@@ -38,6 +38,7 @@ import com.android.launcher3.util.RunnableList
 import com.android.launcher3.util.TraceHelper
 import com.android.launcher3.util.ViewOnDrawExecutor
 import com.android.launcher3.widget.model.WidgetsListBaseEntry
+import com.neoapps.neolauncher.preferences.NeoPrefs
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executor
@@ -146,7 +147,12 @@ class ModelCallbacks(private var launcher: Launcher) : BgDataModel.Callbacks {
         )
         launcher.viewCache.setCacheSize(R.layout.folder_page, 2)
         TraceHelper.INSTANCE.endSection()
-        launcher.workspace.removeExtraEmptyScreen(/* stripEmptyScreens= */ true)
+        val allowEmpty = NeoPrefs.getInstance().desktopAllowEmptyScreens.getValue()
+        launcher.workspace.removeExtraEmptyScreen(/* stripEmptyScreens= */ !allowEmpty)
+        // Re-insert any saved empty screens that AOSP's cleanup may have stripped,
+        // then persist the resulting screen order for the next restart.
+        launcher.workspace.restoreEmptyScreens()
+        launcher.workspace.persistScreenOrder()
         launcher.workspace.pageIndicator.setPauseScroll(
             /*pause=*/ false,
             deviceProfile.deviceProperties.isTwoPanels,
@@ -213,7 +219,9 @@ class ModelCallbacks(private var launcher: Launcher) : BgDataModel.Callbacks {
                     bindItems(it, false)
                 }
             }
-        workspace.stripEmptyScreens()
+        if (!NeoPrefs.getInstance().desktopAllowEmptyScreens.getValue()) {
+            workspace.stripEmptyScreens()
+        }
     }
 
     /**

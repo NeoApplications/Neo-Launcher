@@ -591,7 +591,9 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             public void onStateTransitionComplete(LauncherState finalState) {
                 if (finalState == NORMAL) {
                     if (!mDeferRemoveExtraEmptyScreen) {
-                        removeExtraEmptyScreen(true /* stripEmptyScreens */);
+                        boolean allowEmpty = NeoPrefs.getInstance()
+                                .getDesktopAllowEmptyScreens().getValue();
+                        removeExtraEmptyScreen(!allowEmpty /* stripEmptyScreens */);
                     }
                     stateManager.removeStateListener(this);
                 }
@@ -951,7 +953,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             showPageIndicatorAtCurrentScroll();
         }
 
-        if (stripEmptyScreens) {
+        if (stripEmptyScreens && !NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
             // This will remove all empty pages from the Workspace. If there are no more pages left,
             // it will add extra page(s) so that users can put items on at least one page.
             stripEmptyScreens();
@@ -986,6 +988,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         forEachExtraEmptyPageId(extraEmptyPageId ->
                 extraEmptyPageIds.add(commitExtraEmptyScreen(extraEmptyPageId)));
 
+        persistScreenOrder();
         return extraEmptyPageIds;
     }
 
@@ -1059,6 +1062,56 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
     public IntArray getScreenOrder() {
         return mScreenOrder;
+    }
+
+    /**
+     * Persists the current screen order to NeoPrefs so that empty pages survive a launcher restart.
+     * Only saves when {@code desktopAllowEmptyScreens} is enabled.
+     */
+    public void persistScreenOrder() {
+        if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
+            NeoPrefs.getInstance().getDesktopEmptyScreenIds().setValue("");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < mScreenOrder.size(); i++) {
+            int id = mScreenOrder.get(i);
+            if (id == EXTRA_EMPTY_SCREEN_ID || id == EXTRA_EMPTY_SCREEN_SECOND_ID) continue;
+            if (sb.length() > 0) sb.append(',');
+            sb.append(id);
+        }
+        NeoPrefs.getInstance().getDesktopEmptyScreenIds().setValue(sb.toString());
+    }
+
+    /**
+     * Re-inserts any saved empty screens that were stripped by AOSP's cleanup flow.
+     */
+    public void restoreEmptyScreens() {
+        if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) return;
+        String saved = NeoPrefs.getInstance().getDesktopEmptyScreenIds().getValue();
+        if (saved == null || saved.isEmpty()) return;
+
+        boolean changed = false;
+        for (String token : saved.split(",")) {
+            token = token.trim();
+            if (token.isEmpty()) continue;
+            try {
+                int screenId = Integer.parseInt(token);
+                if (screenId == EXTRA_EMPTY_SCREEN_ID
+                        || screenId == EXTRA_EMPTY_SCREEN_SECOND_ID) continue;
+                if (!mWorkspaceScreens.containsKey(screenId)) {
+                    // Insert before the extra-empty placeholder so page order is preserved.
+                    insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
+                    changed = true;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        if (changed) {
+            // Refresh the page indicator to reflect the newly added pages.
+            showPageIndicatorAtCurrentScroll();
+        }
     }
 
     /**
@@ -1318,7 +1371,9 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         }
 
         if (mStripScreensOnPageStopMoving) {
-            stripEmptyScreens();
+            if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
+                stripEmptyScreens();
+            }
             mStripScreensOnPageStopMoving = false;
         }
 
@@ -3499,7 +3554,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             }
         }
 
-        if (persistChanges) {
+        if (persistChanges && !NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
             stripEmptyScreens();
         }
     }

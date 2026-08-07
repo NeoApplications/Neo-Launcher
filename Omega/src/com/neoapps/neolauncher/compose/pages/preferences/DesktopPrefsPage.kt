@@ -75,6 +75,7 @@ fun DesktopPrefsPage() {
     )
     val otherPrefs = listOfNotNull(
         //prefs.desktopHideStatusBar,
+        prefs.desktopAllowEmptyScreens,
         prefs.desktopLock
     )
 

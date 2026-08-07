@@ -13,6 +13,7 @@ import com.android.launcher3.model.data.LauncherAppWidgetInfo
 import com.android.launcher3.util.IntSet
 import com.android.launcher3.util.PendingRequestArgs
 import com.android.launcher3.views.Snackbar
+import com.neoapps.neolauncher.preferences.NeoPrefs
 
 /**
  * Handler class for drop target actions that require modifying or interacting with launcher.
@@ -114,6 +115,8 @@ class DropTargetHandler(launcher: Launcher) {
         // because we already remove the drag view from the folder (if the drag originated from
         // a folder) in Folder.beginDrag()
         mLauncher.removeItem(view, item, true /* deleteFromDb */, "removed by accessibility drop")
-        mLauncher.workspace.stripEmptyScreens()
+        if (!NeoPrefs.getInstance().desktopAllowEmptyScreens.getValue()) {
+            mLauncher.workspace.stripEmptyScreens()
+        }
     }
 }

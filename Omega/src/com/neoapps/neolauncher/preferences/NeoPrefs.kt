@@ -337,12 +337,19 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    // TODO fix this
     var desktopAllowEmptyScreens = BooleanPref(
         dataStore = dataStore,
         key = PrefKey.DESKTOP_EMPTY_SCREENS_ALLOW,
         titleId = R.string.title_desktop_keep_empty,
         defaultValue = false
+    )
+
+    /** Internal pref — persists empty screen IDs so they survive a launcher restart. */
+    var desktopEmptyScreenIds = StringPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_EMPTY_SCREENS_IDS,
+        titleId = R.string.title_desktop_keep_empty,
+        defaultValue = "",
     )
 
     val desktopHideAppLabels = BooleanPref(
