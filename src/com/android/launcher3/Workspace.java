@@ -1123,44 +1123,52 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     }
 
     public void ensureAddPageScreen() {
+        ensureAddPageScreen(mLauncher.getStateManager().getState());
+    }
+
+    public void ensureAddPageScreen(LauncherState state) {
         if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
             removeAddPageScreen();
             return;
         }
-        if (!mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) {
-            CellLayout addPage = insertNewWorkspaceScreen(ADD_PAGE_SCREEN_ID, getChildCount());
-            setupAddPageButton(addPage);
+
+        boolean shouldShow = (state == EDIT_MODE || state == OVERVIEW || state == SPRING_LOADED);
+
+        if (shouldShow) {
+            if (!mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) {
+                CellLayout addPage = insertNewWorkspaceScreen(ADD_PAGE_SCREEN_ID, getChildCount());
+                setupAddPageButton(addPage);
+                addPage.setVisibility(View.VISIBLE);
+                updatePageScrollValues();
+                showPageIndicatorAtCurrentScroll();
+            } else {
+                int currentIndex = mScreenOrder.indexOf(ADD_PAGE_SCREEN_ID);
+                if (currentIndex != mScreenOrder.size() - 1 && currentIndex >= 0) {
+                    mScreenOrder.removeValue(ADD_PAGE_SCREEN_ID);
+                    mScreenOrder.add(ADD_PAGE_SCREEN_ID);
+                    CellLayout v = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
+                    if (v != null) {
+                        removeView(v);
+                        addView(v, getChildCount());
+                        updatePageScrollValues();
+                        showPageIndicatorAtCurrentScroll();
+                    }
+                }
+            }
         } else {
-            int currentIndex = mScreenOrder.indexOf(ADD_PAGE_SCREEN_ID);
-            if (currentIndex != mScreenOrder.size() - 1 && currentIndex >= 0) {
-                mScreenOrder.removeValue(ADD_PAGE_SCREEN_ID);
-                mScreenOrder.add(ADD_PAGE_SCREEN_ID);
-                CellLayout v = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
-                if (v != null) {
-                    removeView(v);
-                    addView(v, getChildCount());
+            if (mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) {
+                removeAddPageScreen();
+                updatePageScrollValues();
+                showPageIndicatorAtCurrentScroll();
+                if (getNextPage() >= getPageCount()) {
+                    snapToPage(Math.max(0, getPageCount() - 1));
                 }
             }
         }
-        updateAddPageScreenVisibility(mLauncher.getStateManager().getState());
     }
 
     public void updateAddPageScreenVisibility(LauncherState state) {
-        if (!mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) return;
-        CellLayout addPage = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
-        if (addPage == null) return;
-
-        boolean shouldShow = (state == EDIT_MODE || state == OVERVIEW || state == SPRING_LOADED);
-        int targetVisibility = shouldShow ? View.VISIBLE : View.GONE;
-
-        if (addPage.getVisibility() != targetVisibility) {
-            addPage.setVisibility(targetVisibility);
-            updatePageScrollValues();
-            showPageIndicatorAtCurrentScroll();
-            if (!shouldShow && getNextPage() >= getPageCount()) {
-                snapToPage(Math.max(0, getPageCount() - 1));
-            }
-        }
+        ensureAddPageScreen(state);
     }
 
     public void removeAddPageScreen() {
