@@ -1601,37 +1601,9 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         enableHwLayersOnVisiblePages();
     }
 
-    @Override
-    public int getPageCount() {
-        int count = 0;
-        final int childCount = getChildCount();
-        CellLayout addPage = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
-        for (int i = 0; i < childCount; i++) {
-            View child = getChildAt(i);
-            if (child.getVisibility() != GONE && child != addPage) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     public void showPageIndicatorAtCurrentScroll() {
         if (mPageIndicator != null) {
-            int maxWorkspaceScroll = 0;
-            if (getPageCount() > 0) {
-                for (int i = mScreenOrder.size() - 1; i >= 0; i--) {
-                    int id = mScreenOrder.get(i);
-                    if (id != ADD_PAGE_SCREEN_ID) {
-                        CellLayout cl = mWorkspaceScreens.get(id);
-                        if (cl != null && cl.getVisibility() != GONE) {
-                            int pageIndex = indexOfChild(cl);
-                            maxWorkspaceScroll = getScrollForPage(pageIndex);
-                            break;
-                        }
-                    }
-                }
-            }
-            mPageIndicator.setScroll(getScrollX(), maxWorkspaceScroll);
+            mPageIndicator.setScroll(getScrollX(), computeMaxScroll());
             boolean isDockEnabled = NeoPrefs.getInstance().getDockEnabled().getValue();
             mPageIndicator.setVisibility(isDockEnabled ? VISIBLE : INVISIBLE);
         }

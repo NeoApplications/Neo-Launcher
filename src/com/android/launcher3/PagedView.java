@@ -204,7 +204,7 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
     public void initParentViews(View parent) {
         if (mPageIndicatorViewId > -1) {
             mPageIndicator = parent.findViewById(mPageIndicatorViewId);
-            mPageIndicator.setMarkersCount(getPageCount() / getPanelCount());
+            mPageIndicator.setMarkersCount(getChildCount() / getPanelCount());
         }
     }
 
@@ -230,14 +230,7 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
     }
 
     public int getPageCount() {
-        int count = 0;
-        final int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            if (getChildAt(i).getVisibility() != GONE) {
-                count++;
-            }
-        }
-        return count;
+        return getChildCount();
     }
 
     public View getPageAt(int index) {
@@ -897,9 +890,9 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
     }
 
     protected int computeMaxScroll() {
-        int pageCount = getPageCount();
-        if (pageCount > 0) {
-            final int index = mIsRtl ? 0 : pageCount - 1;
+        int childCount = getChildCount();
+        if (childCount > 0) {
+            final int index = mIsRtl ? 0 : childCount - 1;
             return getScrollForPage(index);
         } else {
             return 0;
@@ -917,7 +910,7 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
 
     private void dispatchPageCountChanged() {
         if (mPageIndicator != null) {
-            mPageIndicator.setMarkersCount(getPageCount() / getPanelCount());
+            mPageIndicator.setMarkersCount(getChildCount() / getPanelCount());
         }
         // This ensures that when children are added, they get the correct transforms / alphas
         // in accordance with any scroll effects.
@@ -1451,14 +1444,14 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
                                 ? mCurrentPage : mCurrentPage - getPanelCount();
                         runOnPageScrollsInitialized(
                                 () -> snapToPageWithVelocity(finalPage, velocity));
-                    } else if (((isSignificantMove && isDeltaLeft && !isFling) || (isFling && isVelocityLeft)) && mCurrentPage < getPageCount() - 1) {
+                    } else if (((isSignificantMove && isDeltaLeft && !isFling) || (isFling && isVelocityLeft)) && mCurrentPage < getChildCount() - 1) {
                         finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage + getPanelCount();
                         runOnPageScrollsInitialized(() -> snapToPageWithVelocity(finalPage, velocity));
-                    } else if (mCurrentPage == getPageCount() - 1 && cycleScrolling) {
+                    } else if (mCurrentPage == getChildCount() - 1 && cycleScrolling) {
                         finalPage = returnToOriginalPage ? mCurrentPage : 0;
                         snapToPageWithVelocity(finalPage, velocity);
                     } else if (mCurrentPage == 0 && cycleScrolling && !feedEnabled) {
-                        finalPage = returnToOriginalPage ? mCurrentPage : getPageCount() - 1;
+                        finalPage = returnToOriginalPage ? mCurrentPage : getChildCount() - 1;
                         snapToPageWithVelocity(finalPage, velocity);
 
                     } else {
@@ -1830,7 +1823,7 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
     }
 
     public boolean scrollRight() {
-        if (getNextPage() < getPageCount() - 1) {
+        if (getNextPage() < getChildCount() - 1) {
             snapToPage(getNextPage() + getPanelCount());
             return true;
         }
@@ -1950,7 +1943,7 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
 
     protected String getCurrentPageDescription() {
         return getContext().getString(R.string.default_scroll_format,
-                getNextPage() + 1, getPageCount());
+                getNextPage() + 1, getChildCount());
     }
 
     protected float getDownMotionX() {
