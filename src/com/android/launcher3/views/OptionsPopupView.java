@@ -52,6 +52,7 @@ import com.android.launcher3.popup.ArrowPopup;
 import com.android.launcher3.shortcuts.DeepShortcutView;
 import com.android.launcher3.testing.TestLogging;
 import com.android.launcher3.testing.shared.TestProtocol;
+import com.neoapps.neolauncher.NeoLauncher;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
 import com.neoapps.neolauncher.util.Config;
 
@@ -236,6 +237,13 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
                     R.drawable.enter_home_gardening_icon,
                     LAUNCHER_SETTINGS_BUTTON_TAP_OR_LONGPRESS,
                     OptionsPopupView::enterHomeGardening));
+            if (selectedOptions.contains(Config.SET_HOME_POPUP)) {
+                options.add(new OptionItem(launcher,
+                        R.string.set_as_home_screen,
+                        R.drawable.ic_home_page_filled,
+                        LAUNCHER_SETTINGS_BUTTON_TAP_OR_LONGPRESS,
+                        OptionsPopupView::setAsHomeScreen));
+            }
         }
         if (selectedOptions.contains(Config.ALL_APPS_POPUP)) {
             options.add(new OptionItem(launcher,
@@ -266,6 +274,17 @@ public class OptionsPopupView<T extends Context & ActivityContext> extends Arrow
         Launcher launcher = Launcher.getLauncher(view.getContext());
         launcher.getStateManager().goToState(EDIT_MODE);
         return true;
+    }
+
+    public static boolean setAsHomeScreen(View view) {
+        Launcher launcher = Launcher.getLauncher(view.getContext());
+        if (launcher instanceof NeoLauncher) {
+            int currentPage = launcher.getWorkspace().getCurrentPage();
+            ((NeoLauncher) launcher).getPrefs().getDesktopDefaultPage().setValue(currentPage);
+            Toast.makeText(launcher, R.string.home_screen_set_toast, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 
     private static boolean onWidgetsClicked(View view) {

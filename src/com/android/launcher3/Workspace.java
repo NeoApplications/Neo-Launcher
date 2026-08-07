@@ -149,6 +149,7 @@ import com.android.launcher3.widget.util.WidgetSizeHandler;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
 import com.google.android.msdl.data.model.MSDLToken;
+import com.neoapps.neolauncher.NeoLauncher;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.ArrayList;
@@ -604,11 +605,21 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         mDragSourceInternal = null;
     }
 
+    public int getDefaultPage() {
+        if (mLauncher instanceof NeoLauncher) {
+            int page = ((NeoLauncher) mLauncher).getPrefs().getDesktopDefaultPage().getValue();
+            if (page >= 0 && page < getPageCount()) {
+                return page;
+            }
+        }
+        return DEFAULT_PAGE;
+    }
+
     /**
      * Initializes various states for this workspace.
      */
     protected void initWorkspace() {
-        mCurrentPage = DEFAULT_PAGE;
+        mCurrentPage = getDefaultPage();
         setClipToPadding(false);
 
         setupLayoutTransition();
@@ -3553,7 +3564,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
      * Calls {@link #snapToPage(int)} on the {@link #DEFAULT_PAGE}, then requests focus on it.
      */
     public void moveToDefaultScreen() {
-        int page = DEFAULT_PAGE;
+        int page = getDefaultPage();
         if (!workspaceInModalState() && getNextPage() != page) {
             snapToPage(page);
         }

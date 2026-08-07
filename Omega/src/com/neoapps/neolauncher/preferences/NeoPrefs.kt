@@ -567,6 +567,14 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { },
     )
 
+    val desktopDefaultPage = IntPref(
+        dataStore = dataStore,
+        key = PrefKey.DESKTOP_DEFAULT_PAGE,
+        titleId = R.string.default_home_screen,
+        defaultValue = 0,
+        onChange = { },
+    )
+
     // Dock
     var dockEnabled = BooleanPref(
         dataStore = dataStore,

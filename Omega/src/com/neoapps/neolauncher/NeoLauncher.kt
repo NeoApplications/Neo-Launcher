@@ -53,7 +53,9 @@ import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT_PREDIC
 import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_WIDGETS_PREDICTION
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPLICATION
 import com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT
+import com.android.launcher3.LauncherState
 import com.android.launcher3.LauncherState.ALL_APPS
+import com.android.launcher3.LauncherState.EDIT_MODE
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.appprediction.PredictionRowView
@@ -171,7 +173,54 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
 
     override fun setupViews() {
         super.setupViews()
-        mHotseatPredictionController = HotseatPredictionController(this);
+        mHotseatPredictionController = HotseatPredictionController(this)
+
+        val overview: ViewGroup? = getOverviewPanel()
+        val setHomeBtn = overview?.findViewById<View>(R.id.set_home_button)
+        setHomeBtn?.setOnClickListener {
+            val currentPage = workspace.currentPage
+            prefs.desktopDefaultPage.setValue(currentPage)
+            updateSetHomeButtonState()
+            android.widget.Toast.makeText(
+                this,
+                R.string.home_screen_set_toast,
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        workspace?.addPageSwitchListener {
+            updateSetHomeButtonState()
+        }
+    }
+
+    override fun onStateSetStart(state: LauncherState) {
+        super.onStateSetStart(state)
+        val overview: ViewGroup? = getOverviewPanel()
+        if (state == EDIT_MODE) {
+            overview?.visibility = View.VISIBLE
+            updateSetHomeButtonState()
+        } else {
+            overview?.visibility = View.GONE
+        }
+    }
+
+    fun updateSetHomeButtonState() {
+        val overview: ViewGroup? = getOverviewPanel() ?: return
+        val setHomeBtn = overview?.findViewById<View>(R.id.set_home_button) ?: return
+        val iconView = setHomeBtn.findViewById<android.widget.ImageView>(R.id.set_home_icon)
+        val textView = setHomeBtn.findViewById<android.widget.TextView>(R.id.set_home_text)
+        val currentPage = workspace?.currentPage ?: 0
+        val defaultPage = prefs.desktopDefaultPage.getValue()
+
+        if (currentPage == defaultPage) {
+            iconView?.setImageResource(R.drawable.ic_home_page_filled)
+            textView?.setText(R.string.default_home_screen)
+            setHomeBtn.isSelected = true
+        } else {
+            iconView?.setImageResource(R.drawable.ic_home_page)
+            textView?.setText(R.string.set_as_home_screen)
+            setHomeBtn.isSelected = false
+        }
     }
 
     override fun bindPredictedContainerInfo(info: PredictedContainerInfo?) {

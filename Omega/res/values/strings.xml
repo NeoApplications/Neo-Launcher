@@ -75,7 +75,22 @@
     <string name="grid_size_height">Height</string>
     <string name="grid_size_width">Width</string>
     <string name="show_top_shadow">Show Top Shadow</string>
+    <string name="set_as_home_screen">Set as Home Screen</string>
+    <string name="default_home_screen">Home Screen</string>
+    <string name="home_screen_set_toast">Home screen set</string>
+    <!-- PREFERENCES FOLDER -->
     <string name="folder_icon_shape">Folder icon shape</string>
+    <string name="pref_title_folder">Customize Folders</string>
+    <string name="pref_title_general">General</string>
+    <string name="folder_custom_background">Use custom folder background</string>
+    <string name="folder_draw_stroke">Draw Folder Stroke</string>
+    <string name="folder_background">Folder background color</string>
+    <string name="folder_stroke_color">Folder stroke color</string>
+    <string name="folder_radius">Folder corner radius</string>
+    <string name="folder_full_screen">Open folder in full screen</string>
+    <string name="folder_rows">Folder Rows</string>
+    <string name="folder_columns">Folder Columns</string>
+    <string name="folder_opacity">Folder Icon Opacity</string>
     <!-- PREFERENCES DOCK -->
     <string name="title__dock_icon_size_enforce">Enforce custom icon size</string>
     <string name="title__dock_icon_size">Icon size</string>
@@ -207,9 +222,6 @@
     <string name="enable_protected_apps">Turn on protected apps</string>
     <string name="disable_protected_apps">Turn off protected apps</string>
     <string name="disable_protected_apps_message">Turn off protected apps requiring authentication</string>
-    <!-- PREFERENCES FOLDER -->
-    <string name="pref_title_folder">Customize Folders</string>
-    <string name="pref_title_general">General</string>
     <!-- PREFERENCES THEME -->
     <string name="title__theme_accent_color">Accent Color</string>
     <string name="title__theme_blur">Blur</string>
@@ -494,15 +506,6 @@
     <string name="web_search_baidu" translatable="false">Baidu (web)</string>
     <string name="web_search_yahoo" translatable="false">Yahoo (web)</string>
     <string name="error_no_browser">Install an app to open URLs first</string>
-    <string name="folder_custom_background">Use custom folder background</string>
-    <string name="folder_draw_stroke">Draw Folder Stroke</string>
-    <string name="folder_background">Folder background color</string>
-    <string name="folder_stroke_color">Folder stroke color</string>
-    <string name="folder_radius">Folder corner radius</string>
-    <string name="folder_full_screen">Open folder in full screen</string>
-    <string name="folder_rows">Folder Rows</string>
-    <string name="folder_columns">Folder Columns</string>
-    <string name="folder_opacity">Folder Icon Opacity</string>
     <string name="section_apps">apps</string>
     <string name="section_web">Web</string>
     <string name="section_contacts">Contacts</string>

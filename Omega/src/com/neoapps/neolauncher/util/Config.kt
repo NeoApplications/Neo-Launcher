@@ -134,6 +134,7 @@ class Config(val context: Context) {
         const val WALLPAPER_POPUP = "WALLPAPER_POPUP"
         const val WIDGETS_POPUP = "WIDGETS_POPUP"
         const val EDIT_HOME_POPUP = "EDIT_HOME_POPUP"
+        const val SET_HOME_POPUP = "SET_HOME_POPUP"
 
         val drawerSortOptions = mutableMapOf(
             SORT_AZ to R.string.title__sort_alphabetical_az,
@@ -189,7 +190,8 @@ class Config(val context: Context) {
             WALLPAPER_POPUP to R.string.backup_wallpaper,
             WIDGETS_POPUP to R.string.feed_widget,
             ALL_APPS_POPUP to R.string.all_apps_button_label,
-            EDIT_HOME_POPUP to R.string.edit_home_screen
+            EDIT_HOME_POPUP to R.string.edit_home_screen,
+            SET_HOME_POPUP to R.string.set_as_home_screen
         )
 
         fun getCurrentTheme(context: Context): Int {
