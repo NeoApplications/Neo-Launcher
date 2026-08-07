@@ -36,6 +36,8 @@ public interface WorkspaceLayoutManager {
     int EXTRA_EMPTY_SCREEN_ID = -201;
     // The screen id used for the second empty screen always present at the end for two panel home.
     int EXTRA_EMPTY_SCREEN_SECOND_ID = -200;
+    // The screen id used for the trailing '+' add-page screen.
+    int ADD_PAGE_SCREEN_ID = -205;
     // The screen ids used for the empty screens at the end of the workspaces.
     IntSet EXTRA_EMPTY_SCREEN_IDS =
             IntSet.wrap(EXTRA_EMPTY_SCREEN_ID, EXTRA_EMPTY_SCREEN_SECOND_ID);
@@ -97,7 +99,7 @@ public interface WorkspaceLayoutManager {
                 return;
             }
         }
-        if (EXTRA_EMPTY_SCREEN_IDS.contains(screenId)) {
+        if (EXTRA_EMPTY_SCREEN_IDS.contains(screenId) || screenId == ADD_PAGE_SCREEN_ID) {
             // This should never happen
             throw new RuntimeException("Screen id should not be extra empty screen: " + screenId);
         }

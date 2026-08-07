@@ -7,37 +7,78 @@
     android:importantForAccessibility="no">
 
     <LinearLayout
-        android:id="@+id/set_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="36dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_overview_home_button"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="12dp"
-        android:elevation="6dp">
+        android:gravity="center">
 
-        <ImageView
-            android:id="@+id/set_home_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_home_page"
-            android:tint="?android:attr/textColorPrimary" />
-
-        <TextView
-            android:id="@+id/set_home_text"
+        <LinearLayout
+            android:id="@+id/set_home_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/set_as_home_screen"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-medium" />
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_overview_home_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:elevation="6dp">
+
+            <ImageView
+                android:id="@+id/set_home_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_home_page"
+                android:tint="?android:attr/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/set_home_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/set_as_home_screen"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/delete_page_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_overview_home_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:elevation="6dp">
+
+            <ImageView
+                android:id="@+id/delete_page_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_uninstall_no_shadow"
+                android:tint="?android:attr/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/delete_page_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/remove_page"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </FrameLayout>

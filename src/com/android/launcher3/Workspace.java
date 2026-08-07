@@ -33,6 +33,7 @@ import static com.android.launcher3.LauncherState.FLAG_WORKSPACE_ICONS_CAN_BE_DR
 import static com.android.launcher3.LauncherState.FLAG_WORKSPACE_INACCESSIBLE;
 import static com.android.launcher3.LauncherState.HINT_STATE;
 import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.OVERVIEW;
 import static com.android.launcher3.LauncherState.SPRING_LOADED;
 import static com.android.launcher3.MotionEventsUtils.isTrackpadMotionEvent;
 import static com.android.launcher3.MotionEventsUtils.isTrackpadMultiFingerSwipe;
@@ -726,9 +727,12 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     }
 
     public void insertNewWorkspaceScreenBeforeEmptyScreen(int screenId) {
-        // Find the index to insert this view into.  If the empty screen exists, then
+        // Find the index to insert this view into. If the empty screen exists, then
         // insert it before that.
         int insertIndex = mScreenOrder.indexOf(EXTRA_EMPTY_SCREEN_ID);
+        if (insertIndex < 0) {
+            insertIndex = mScreenOrder.indexOf(ADD_PAGE_SCREEN_ID);
+        }
         if (insertIndex < 0) {
             insertIndex = mScreenOrder.size();
         }
@@ -768,7 +772,15 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         return newScreen;
     }
 
-    private void addExtraEmptyScreenOnDrag(DragObject dragObject) {
+    private boolean canRemoveEmptyScreen(int screenId, CellLayout screen) {
+        // FIRST_SCREEN_ID and ADD_PAGE_SCREEN_ID can never be removed.
+        return screenId > FIRST_SCREEN_ID
+                && screenId != ADD_PAGE_SCREEN_ID
+                && screen.getShortcutsAndWidgets().getChildCount() == 0
+                && !screen.isDropPending();
+    }
+
+    void addExtraEmptyScreenOnDrag(DragObject dragObject) {
         boolean lastChildOnScreen = false;
         boolean childOnFinalScreen = false;
 
@@ -843,13 +855,6 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         if (isTwoPanelEnabled()) {
             callback.accept(EXTRA_EMPTY_SCREEN_SECOND_ID);
         }
-    }
-
-    private boolean canRemoveEmptyScreen(int screenId, CellLayout screen) {
-        // FIRST_SCREEN_ID can never be removed.
-        return screenId > FIRST_SCREEN_ID
-                && screen.getShortcutsAndWidgets().getChildCount() == 0
-                && !screen.isDropPending();
     }
 
     /**
@@ -1076,7 +1081,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mScreenOrder.size(); i++) {
             int id = mScreenOrder.get(i);
-            if (id == EXTRA_EMPTY_SCREEN_ID || id == EXTRA_EMPTY_SCREEN_SECOND_ID) continue;
+            if (id == EXTRA_EMPTY_SCREEN_ID || id == EXTRA_EMPTY_SCREEN_SECOND_ID || id == ADD_PAGE_SCREEN_ID)
+                continue;
             if (sb.length() > 0) sb.append(',');
             sb.append(id);
         }
@@ -1089,29 +1095,192 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     public void restoreEmptyScreens() {
         if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) return;
         String saved = NeoPrefs.getInstance().getDesktopEmptyScreenIds().getValue();
-        if (saved == null || saved.isEmpty()) return;
-
-        boolean changed = false;
-        for (String token : saved.split(",")) {
-            token = token.trim();
-            if (token.isEmpty()) continue;
-            try {
-                int screenId = Integer.parseInt(token);
-                if (screenId == EXTRA_EMPTY_SCREEN_ID
-                        || screenId == EXTRA_EMPTY_SCREEN_SECOND_ID) continue;
-                if (!mWorkspaceScreens.containsKey(screenId)) {
-                    // Insert before the extra-empty placeholder so page order is preserved.
-                    insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
-                    changed = true;
+        if (saved != null && !saved.isEmpty()) {
+            boolean changed = false;
+            for (String token : saved.split(",")) {
+                token = token.trim();
+                if (token.isEmpty()) continue;
+                try {
+                    int screenId = Integer.parseInt(token);
+                    if (screenId == EXTRA_EMPTY_SCREEN_ID
+                            || screenId == EXTRA_EMPTY_SCREEN_SECOND_ID
+                            || screenId == ADD_PAGE_SCREEN_ID) continue;
+                    if (!mWorkspaceScreens.containsKey(screenId)) {
+                        // Insert before the extra-empty placeholder so page order is preserved.
+                        insertNewWorkspaceScreenBeforeEmptyScreen(screenId);
+                        changed = true;
+                    }
+                } catch (NumberFormatException ignored) {
                 }
-            } catch (NumberFormatException ignored) {
+            }
+
+            if (changed) {
+                // Refresh the page indicator to reflect the newly added pages.
+                showPageIndicatorAtCurrentScroll();
             }
         }
+        ensureAddPageScreen();
+    }
 
-        if (changed) {
-            // Refresh the page indicator to reflect the newly added pages.
-            showPageIndicatorAtCurrentScroll();
+    public void ensureAddPageScreen() {
+        if (!NeoPrefs.getInstance().getDesktopAllowEmptyScreens().getValue()) {
+            removeAddPageScreen();
+            return;
         }
+        if (!mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) {
+            CellLayout addPage = insertNewWorkspaceScreen(ADD_PAGE_SCREEN_ID, getChildCount());
+            setupAddPageButton(addPage);
+        } else {
+            int currentIndex = mScreenOrder.indexOf(ADD_PAGE_SCREEN_ID);
+            if (currentIndex != mScreenOrder.size() - 1 && currentIndex >= 0) {
+                mScreenOrder.removeValue(ADD_PAGE_SCREEN_ID);
+                mScreenOrder.add(ADD_PAGE_SCREEN_ID);
+                CellLayout v = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
+                if (v != null) {
+                    removeView(v);
+                    addView(v, getChildCount());
+                }
+            }
+        }
+        updateAddPageScreenVisibility(mLauncher.getStateManager().getState());
+    }
+
+    public void updateAddPageScreenVisibility(LauncherState state) {
+        if (!mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) return;
+        CellLayout addPage = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
+        if (addPage == null) return;
+
+        boolean shouldShow = (state == EDIT_MODE || state == OVERVIEW || state == SPRING_LOADED);
+        int targetVisibility = shouldShow ? View.VISIBLE : View.GONE;
+
+        if (addPage.getVisibility() != targetVisibility) {
+            addPage.setVisibility(targetVisibility);
+            updatePageScrollValues();
+            showPageIndicatorAtCurrentScroll();
+            if (!shouldShow && getNextPage() >= getPageCount()) {
+                snapToPage(Math.max(0, getPageCount() - 1));
+            }
+        }
+    }
+
+    public void removeAddPageScreen() {
+        if (mWorkspaceScreens.containsKey(ADD_PAGE_SCREEN_ID)) {
+            CellLayout v = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
+            removeView(v);
+            mWorkspaceScreens.remove(ADD_PAGE_SCREEN_ID);
+            mScreenOrder.removeValue(ADD_PAGE_SCREEN_ID);
+        }
+    }
+
+    private void setupAddPageButton(CellLayout addPage) {
+        if (addPage == null) return;
+        ShortcutAndWidgetContainer container = addPage.getShortcutsAndWidgets();
+        if (container.findViewById(R.id.add_page_btn) != null) return;
+
+        View btnContainer = LayoutInflater.from(getContext())
+                .inflate(R.layout.add_page_screen_button, addPage, false);
+        View btn = btnContainer.findViewById(R.id.add_page_btn);
+        if (btn != null) {
+            btn.setOnClickListener(v -> addNewWorkspaceScreen());
+        }
+
+        CellLayoutLayoutParams lp = new CellLayoutLayoutParams(0, 0, addPage.getCountX(), addPage.getCountY());
+        lp.canReorder = false;
+        container.addView(btnContainer, lp);
+    }
+
+    public int addNewWorkspaceScreen() {
+        NeoPrefs.getInstance().getDesktopAllowEmptyScreens().setValue(true);
+
+        int newScreenId = LauncherAppState.getInstance(getContext())
+                .getModel().getModelDbController().getNewScreenId();
+        while (mWorkspaceScreens.containsKey(newScreenId)) {
+            newScreenId++;
+        }
+
+        int addPageIndex = mScreenOrder.indexOf(ADD_PAGE_SCREEN_ID);
+        if (addPageIndex < 0) {
+            addPageIndex = mScreenOrder.size();
+        }
+
+        insertNewWorkspaceScreen(newScreenId, addPageIndex);
+        persistScreenOrder();
+        snapToPage(addPageIndex);
+
+        return newScreenId;
+    }
+
+    public int convertAddPageScreenToRealScreen() {
+        CellLayout cl = mWorkspaceScreens.get(ADD_PAGE_SCREEN_ID);
+        if (cl == null) return -1;
+
+        ShortcutAndWidgetContainer container = cl.getShortcutsAndWidgets();
+        View btnContainer = container.findViewById(R.id.add_page_screen_container);
+        if (btnContainer != null) {
+            container.removeView(btnContainer);
+        }
+
+        mWorkspaceScreens.remove(ADD_PAGE_SCREEN_ID);
+        mScreenOrder.removeValue(ADD_PAGE_SCREEN_ID);
+
+        int newScreenId = LauncherAppState.getInstance(getContext())
+                .getModel().getModelDbController().getNewScreenId();
+        while (mWorkspaceScreens.containsKey(newScreenId)) {
+            newScreenId++;
+        }
+
+        mWorkspaceScreens.put(newScreenId, cl);
+        mScreenOrder.add(newScreenId);
+
+        ensureAddPageScreen();
+        persistScreenOrder();
+
+        return newScreenId;
+    }
+
+    /**
+     * Removes the currently visible workspace page, deleting its items from the database
+     * and removing its CellLayout. Does not allow removing the ADD_PAGE_SCREEN_ID or the last remaining screen.
+     */
+    public void removeCurrentPage() {
+        int currentPageIndex = getNextPage();
+        if (currentPageIndex < 0 || currentPageIndex >= mScreenOrder.size()) return;
+        int screenId = mScreenOrder.get(currentPageIndex);
+        if (screenId == ADD_PAGE_SCREEN_ID) return;
+
+        int realScreenCount = 0;
+        for (int i = 0; i < mScreenOrder.size(); i++) {
+            if (mScreenOrder.get(i) != ADD_PAGE_SCREEN_ID) {
+                realScreenCount++;
+            }
+        }
+        if (realScreenCount <= 1) return;
+
+        CellLayout cellLayout = mWorkspaceScreens.get(screenId);
+        if (cellLayout != null) {
+            ShortcutAndWidgetContainer container = cellLayout.getShortcutsAndWidgets();
+            for (int i = container.getChildCount() - 1; i >= 0; i--) {
+                View child = container.getChildAt(i);
+                Object tag = child.getTag();
+                if (tag instanceof ItemInfo) {
+                    mLauncher.getModelWriter().deleteItemFromDatabase((ItemInfo) tag, "Remove page");
+                }
+            }
+            removeView(cellLayout);
+        }
+        mWorkspaceScreens.remove(screenId);
+        mScreenOrder.removeValue(screenId);
+        persistScreenOrder();
+        updatePageScrollValues();
+
+        int defaultPage = NeoPrefs.getInstance().getDesktopDefaultPage().getValue();
+        int newRealCount = realScreenCount - 1;
+        if (defaultPage >= newRealCount) {
+            NeoPrefs.getInstance().getDesktopDefaultPage().setValue(Math.max(0, newRealCount - 1));
+        }
+
+        int targetPage = Math.min(currentPageIndex, getPageCount() - 1);
+        snapToPage(Math.max(0, targetPage));
     }
 
     /**
@@ -1716,6 +1885,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         onStartStateTransition();
         mLauncher.getStateManager().getState().onLeavingState(mLauncher, toState);
         mStateTransitionAnimation.setState(toState);
+        updateAddPageScreenVisibility(toState);
         onEndStateTransition();
     }
 
@@ -1728,6 +1898,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         StateTransitionListener listener = new StateTransitionListener();
         mLauncher.getStateManager().getState().onLeavingState(mLauncher, toState);
         mStateTransitionAnimation.setStateWithAnimation(toState, config, animation);
+        updateAddPageScreenVisibility(toState);
 
         // Invalidate the pages now, so that we have the visible pages before the
         // animation is started
@@ -2038,6 +2209,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         int screenId = getCellLayoutId(dropTargetLayout);
         if (Workspace.EXTRA_EMPTY_SCREEN_IDS.contains(screenId)) {
             commitExtraEmptyScreens();
+        } else if (screenId == ADD_PAGE_SCREEN_ID) {
+            convertAddPageScreenToRealScreen();
         }
 
         return true;

@@ -58,6 +58,7 @@ import com.android.launcher3.LauncherState.ALL_APPS
 import com.android.launcher3.LauncherState.EDIT_MODE
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.android.launcher3.WorkspaceLayoutManager.ADD_PAGE_SCREEN_ID
 import com.android.launcher3.appprediction.PredictionRowView
 import com.android.launcher3.hybridhotseat.HotseatPredictionController
 import com.android.launcher3.logging.InstanceId
@@ -188,6 +189,12 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             ).show()
         }
 
+        val deletePageBtn = overview?.findViewById<View>(R.id.delete_page_button)
+        deletePageBtn?.setOnClickListener {
+            workspace?.removeCurrentPage()
+            updateSetHomeButtonState()
+        }
+
         workspace?.addPageSwitchListener {
             updateSetHomeButtonState()
         }
@@ -207,9 +214,35 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     fun updateSetHomeButtonState() {
         val overview: ViewGroup? = getOverviewPanel() ?: return
         val setHomeBtn = overview?.findViewById<View>(R.id.set_home_button) ?: return
+        val deletePageBtn = overview?.findViewById<View>(R.id.delete_page_button)
+
+        val currentPage = workspace?.currentPage ?: 0
+        val currentScreenId = workspace?.getScreenIdForPageIndex(currentPage) ?: -1
+
+        val isAddPageScreen = currentScreenId == ADD_PAGE_SCREEN_ID
+
+        if (isAddPageScreen) {
+            setHomeBtn.visibility = View.GONE
+            deletePageBtn?.visibility = View.GONE
+            return
+        } else {
+            setHomeBtn.visibility = View.VISIBLE
+        }
+
+        val screenOrder = workspace?.screenOrder
+        var realScreenCount = 0
+        if (screenOrder != null) {
+            for (i in 0 until screenOrder.size()) {
+                if (screenOrder.get(i) != ADD_PAGE_SCREEN_ID) {
+                    realScreenCount++
+                }
+            }
+        }
+
+        deletePageBtn?.visibility = if (realScreenCount > 1) View.VISIBLE else View.GONE
+
         val iconView = setHomeBtn.findViewById<android.widget.ImageView>(R.id.set_home_icon)
         val textView = setHomeBtn.findViewById<android.widget.TextView>(R.id.set_home_text)
-        val currentPage = workspace?.currentPage ?: 0
         val defaultPage = prefs.desktopDefaultPage.getValue()
 
         if (currentPage == defaultPage) {

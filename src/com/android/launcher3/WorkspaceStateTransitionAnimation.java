@@ -220,6 +220,12 @@ public class WorkspaceStateTransitionAnimation {
     private void applyChildState(LauncherState state, CellLayout cl, int childIndex,
             PageAlphaProvider pageAlphaProvider, PropertySetter propertySetter,
             StateAnimationConfig config) {
+        if (cl == mWorkspace.getScreenWithId(WorkspaceLayoutManager.ADD_PAGE_SCREEN_ID)) {
+            boolean shouldShow = (state == LauncherState.EDIT_MODE
+                    || state == LauncherState.OVERVIEW
+                    || state == LauncherState.SPRING_LOADED);
+            cl.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        }
         float pageAlpha = pageAlphaProvider.getPageAlpha(childIndex);
         float springLoadedProgress =
                 (state instanceof  SpringLoadedState || state instanceof EditModeState) ? 1f : 0f;
