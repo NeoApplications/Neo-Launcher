@@ -792,7 +792,7 @@ class WorkspaceItemProcessor(
                             " available height: ${deviceProfile.deviceProperties.availableHeightPx}," +
                             " cellLayoutBorderSpacePx Horizontal: ${cellLayoutBorderSpacePx.x}," +
                             " cellLayoutBorderSpacePx Vertical: ${cellLayoutBorderSpacePx.y}," +
-                            " cellSize: ${deviceProfile.mWorkspaceProfile.cellSize}",
+                            " cellSize: ${deviceProfile.workspaceIconProfile.cellSize}",
                 )
             }
             val widgetDimension = StringBuilder()

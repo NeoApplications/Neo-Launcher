@@ -139,7 +139,7 @@ public class PinnedAppsAdapter extends BaseAdapter implements OnSharedPreference
             icon.setOnClickListener(mOnClickListener);
             icon.setOnLongClickListener(mOnLongClickListener);
             icon.setLongPressTimeoutFactor(1f);
-            int padding = mLauncher.getDeviceProfile().mWorkspaceProfile.getEdgeMarginPx();
+            int padding = mLauncher.getDeviceProfile().getWorkspaceIconProfile().getEdgeMarginPx();
             icon.setPadding(padding, padding, padding, padding);
         }
 

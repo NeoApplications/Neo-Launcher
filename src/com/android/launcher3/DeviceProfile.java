@@ -129,7 +129,7 @@ public class DeviceProfile {
     private CalculatedCellSpec mResponsiveWorkspaceCellSpec;
     private CalculatedCellSpec mResponsiveAllAppsCellSpec;
 
-    public WorkspaceProfile mWorkspaceProfile;
+    private WorkspaceProfile mWorkspaceProfile;
 
     private final FolderProfile mFolderProfile;
     public int folderIconSizePx;

@@ -378,19 +378,19 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
         mWorkspaceFadeInAdjacentScreens = grid.shouldFadeAdjacentWorkspaceScreens();
 
-        Rect padding = grid.mWorkspaceProfile.getWorkspacePadding();
+        Rect padding = grid.getWorkspaceIconProfile().getWorkspacePadding();
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
         mInsets.set(insets);
 
         if (mWorkspaceFadeInAdjacentScreens) {
             // In landscape mode the page spacing is set to the default.
-            setPageSpacing(grid.mWorkspaceProfile.getEdgeMarginPx());
+            setPageSpacing(grid.getWorkspaceIconProfile().getEdgeMarginPx());
         } else {
             // In portrait, we want the pages spaced such that there is no
             // overhang of the previous / next page into the current page viewport.
             // We assume symmetrical padding in portrait mode.
             int maxInsets = Math.max(insets.left, insets.right);
-            int maxPadding = Math.max(grid.mWorkspaceProfile.getEdgeMarginPx(), padding.left + 1);
+            int maxPadding = Math.max(grid.getWorkspaceIconProfile().getEdgeMarginPx(), padding.left + 1);
             setPageSpacing(Math.max(maxInsets, maxPadding));
         }
 
@@ -407,10 +407,10 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
                 (FrameLayout.LayoutParams) pageIndicatorContainer.getLayoutParams();
 
         // Set insets for page indicator
-        Rect padding = grid.mWorkspaceProfile.getWorkspacePadding();
+        Rect padding = grid.getWorkspaceIconProfile().getWorkspacePadding();
         if (grid.isVerticalBarLayout()) {
-            lp.leftMargin = padding.left + grid.mWorkspaceProfile.getWorkspaceCellPaddingXPx();
-            lp.rightMargin = padding.right + grid.mWorkspaceProfile.getWorkspaceCellPaddingXPx();
+            lp.leftMargin = padding.left + grid.getWorkspaceIconProfile().getWorkspaceCellPaddingXPx();
+            lp.rightMargin = padding.right + grid.getWorkspaceIconProfile().getWorkspaceCellPaddingXPx();
             lp.bottomMargin = padding.bottom;
         } else {
             lp.leftMargin = lp.rightMargin = 0;
@@ -421,7 +421,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     }
 
     private void updateCellLayoutMeasures() {
-        Rect padding = mLauncher.getDeviceProfile().mWorkspaceProfile.getCellLayoutPaddingPx();
+        Rect padding = mLauncher.getDeviceProfile().getWorkspaceIconProfile().getCellLayoutPaddingPx();
         mWorkspaceScreens.forEach(cellLayout -> {
             cellLayout.setPadding(padding.left, padding.top, padding.right, padding.bottom);
             cellLayout.setSpaceBetweenCellLayoutsPx(getPageSpacing() / 4);

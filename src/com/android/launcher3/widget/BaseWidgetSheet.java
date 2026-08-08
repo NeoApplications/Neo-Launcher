@@ -361,7 +361,7 @@ public abstract class BaseWidgetSheet extends AbstractSlideInView<BaseActivity>
         } else if (mInsets.bottom > 0) {
             widthUsed = mInsets.left + mInsets.right;
         } else {
-            Rect padding = deviceProfile.mWorkspaceProfile.getWorkspacePadding();
+            Rect padding = deviceProfile.getWorkspaceIconProfile().getWorkspacePadding();
             widthUsed = Math.max(padding.left + padding.right,
                     2 * (mInsets.left + mInsets.right));
         }

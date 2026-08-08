@@ -138,11 +138,11 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
             if (child == mAppsView) {
                 int horizontalPadding = (2 * grid.getWorkspaceIconProfile()
                         .getDesiredWorkspaceHorizontalMarginPx())
-                        + grid.mWorkspaceProfile.getCellLayoutPaddingPx().left
-                        + grid.mWorkspaceProfile.getCellLayoutPaddingPx().right;
+                        + grid.getWorkspaceIconProfile().getCellLayoutPaddingPx().left
+                        + grid.getWorkspaceIconProfile().getCellLayoutPaddingPx().right;
                 int verticalPadding =
-                        grid.mWorkspaceProfile.getCellLayoutPaddingPx().top
-                                + grid.mWorkspaceProfile.getCellLayoutPaddingPx().bottom;
+                        grid.getWorkspaceIconProfile().getCellLayoutPaddingPx().top
+                                + grid.getWorkspaceIconProfile().getCellLayoutPaddingPx().bottom;
 
                 int maxWidth =
                         grid.getAllAppsProfile().getCellWidthPx() * grid.numShownAllAppsColumns
@@ -164,7 +164,7 @@ public class SecondaryDragLayer extends BaseDragLayer<SecondaryDisplayLauncher> 
             } else if (child == mWorkspace) {
                 measureChildWithMargins(mWorkspace, widthMeasureSpec, 0, heightMeasureSpec,
                         grid.getWorkspaceIconProfile().getIconSizePx()
-                                + grid.mWorkspaceProfile.getEdgeMarginPx());
+                                + grid.getWorkspaceIconProfile().getEdgeMarginPx());
             } else {
                 measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
             }

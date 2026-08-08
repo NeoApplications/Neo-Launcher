@@ -64,7 +64,7 @@ public class AllAppsState extends LauncherState {
     @Override
     public ScaleAndTranslation getWorkspaceScaleAndTranslation(Launcher launcher) {
         return new ScaleAndTranslation(
-                launcher.getDeviceProfile().mWorkspaceProfile.getWorkspaceContentScale(),
+                launcher.getDeviceProfile().getWorkspaceIconProfile().getWorkspaceContentScale(),
                 NO_OFFSET,
                 NO_OFFSET
         );
@@ -78,7 +78,7 @@ public class AllAppsState extends LauncherState {
             ScaleAndTranslation overviewScaleAndTranslation = LauncherState.OVERVIEW
                     .getWorkspaceScaleAndTranslation(launcher);
             return new ScaleAndTranslation(
-                    launcher.getDeviceProfile().mWorkspaceProfile.getWorkspaceContentScale(),
+                    launcher.getDeviceProfile().getWorkspaceIconProfile().getWorkspaceContentScale(),
                     overviewScaleAndTranslation.translationX,
                     overviewScaleAndTranslation.translationY
             );
