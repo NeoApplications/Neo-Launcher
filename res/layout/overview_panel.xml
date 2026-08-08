@@ -15,6 +15,31 @@
         android:orientation="horizontal"
         android:gravity="center">
 
+        <!-- Move page left -->
+        <LinearLayout
+            android:id="@+id/move_page_left_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_overview_home_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:elevation="6dp"
+            android:contentDescription="@string/move_page_left"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_left_page"
+                android:tint="?android:attr/textColorPrimary" />
+        </LinearLayout>
+
+        <!-- Set as Home -->
         <LinearLayout
             android:id="@+id/set_home_button"
             android:layout_width="wrap_content"
@@ -47,11 +72,12 @@
                 android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
+        <!-- Delete page -->
         <LinearLayout
             android:id="@+id/delete_page_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
             android:background="@drawable/bg_overview_home_button"
             android:clickable="true"
             android:focusable="true"
@@ -66,6 +92,29 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_uninstall_no_shadow"
+                android:tint="?android:attr/textColorPrimary" />
+        </LinearLayout>
+
+        <!-- Move page right -->
+        <LinearLayout
+            android:id="@+id/move_page_right_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_overview_home_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:elevation="6dp"
+            android:contentDescription="@string/move_page_right"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_right_page"
                 android:tint="?android:attr/textColorPrimary" />
         </LinearLayout>
 

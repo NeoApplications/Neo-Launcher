@@ -1246,23 +1246,19 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         return newScreenId;
     }
 
-    /**
-     * Removes the currently visible workspace page, deleting its items from the database
-     * and removing its CellLayout. Does not allow removing the ADD_PAGE_SCREEN_ID or the last remaining screen.
-     */
     public void removeCurrentPage() {
         int currentPageIndex = getNextPage();
         if (currentPageIndex < 0 || currentPageIndex >= mScreenOrder.size()) return;
         int screenId = mScreenOrder.get(currentPageIndex);
         if (screenId == ADD_PAGE_SCREEN_ID) return;
 
-        int realScreenCount = 0;
+        int screenCount = 0;
         for (int i = 0; i < mScreenOrder.size(); i++) {
             if (mScreenOrder.get(i) != ADD_PAGE_SCREEN_ID) {
-                realScreenCount++;
+                screenCount++;
             }
         }
-        if (realScreenCount <= 1) return;
+        if (screenCount <= 1) return;
 
         CellLayout cellLayout = mWorkspaceScreens.get(screenId);
         if (cellLayout != null) {
@@ -1282,13 +1278,43 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         updatePageScrollValues();
 
         int defaultPage = NeoPrefs.getInstance().getDesktopDefaultPage().getValue();
-        int newRealCount = realScreenCount - 1;
+        int newRealCount = screenCount - 1;
         if (defaultPage >= newRealCount) {
             NeoPrefs.getInstance().getDesktopDefaultPage().setValue(Math.max(0, newRealCount - 1));
         }
 
         int targetPage = Math.min(currentPageIndex, getPageCount() - 1);
         snapToPage(Math.max(0, targetPage));
+    }
+
+    public boolean moveCurrentPage(int direction) {
+        int currentPageIndex = getNextPage();
+        if (currentPageIndex < 0 || currentPageIndex >= mScreenOrder.size()) return false;
+
+        int screenId = mScreenOrder.get(currentPageIndex);
+        if (screenId == ADD_PAGE_SCREEN_ID) return false;
+
+        int targetIndex = currentPageIndex + direction;
+        if (targetIndex < 0 || targetIndex >= mScreenOrder.size()) return false;
+
+        int neighborScreenId = mScreenOrder.get(targetIndex);
+        if (neighborScreenId == ADD_PAGE_SCREEN_ID) return false;
+
+        mScreenOrder.set(currentPageIndex, neighborScreenId);
+        mScreenOrder.set(targetIndex, screenId);
+
+        CellLayout currentLayout = mWorkspaceScreens.get(screenId);
+        CellLayout neighborLayout = mWorkspaceScreens.get(neighborScreenId);
+        if (currentLayout != null && neighborLayout != null) {
+            int neighborViewIndex = indexOfChild(neighborLayout);
+            removeView(currentLayout);
+            addView(currentLayout, neighborViewIndex);
+        }
+
+        persistScreenOrder();
+        updatePageScrollValues();
+        snapToPage(targetIndex);
+        return true;
     }
 
     /**

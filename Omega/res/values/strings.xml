@@ -79,6 +79,8 @@
     <string name="default_home_screen">Home Screen</string>
     <string name="home_screen_set_toast">Home screen set</string>
     <string name="remove_page">Remove Page</string>
+    <string name="move_page_left">Move page left</string>
+    <string name="move_page_right">Move page right</string>
     <!-- PREFERENCES FOLDER -->
     <string name="folder_icon_shape">Folder icon shape</string>
     <string name="pref_title_folder">Customize Folders</string>

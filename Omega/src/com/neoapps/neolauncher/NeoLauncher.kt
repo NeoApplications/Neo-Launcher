@@ -195,6 +195,18 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             updateSetHomeButtonState()
         }
 
+        val moveLeftBtn = overview?.findViewById<View>(R.id.move_page_left_button)
+        moveLeftBtn?.setOnClickListener {
+            workspace?.moveCurrentPage(-1)
+            updateSetHomeButtonState()
+        }
+
+        val moveRightBtn = overview?.findViewById<View>(R.id.move_page_right_button)
+        moveRightBtn?.setOnClickListener {
+            workspace?.moveCurrentPage(1)
+            updateSetHomeButtonState()
+        }
+
         workspace?.addPageSwitchListener {
             updateSetHomeButtonState()
         }
@@ -212,9 +224,11 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     }
 
     fun updateSetHomeButtonState() {
-        val overview: ViewGroup? = getOverviewPanel() ?: return
-        val setHomeBtn = overview?.findViewById<View>(R.id.set_home_button) ?: return
-        val deletePageBtn = overview?.findViewById<View>(R.id.delete_page_button)
+        val overview: ViewGroup = getOverviewPanel() ?: return
+        val setHomeBtn = overview.findViewById<View>(R.id.set_home_button) ?: return
+        val deletePageBtn = overview.findViewById<View>(R.id.delete_page_button)
+        val moveLeftBtn = overview.findViewById<View>(R.id.move_page_left_button)
+        val moveRightBtn = overview.findViewById<View>(R.id.move_page_right_button)
 
         val currentPage = workspace?.currentPage ?: 0
         val currentScreenId = workspace?.getScreenIdForPageIndex(currentPage) ?: -1
@@ -224,6 +238,8 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         if (isAddPageScreen) {
             setHomeBtn.visibility = View.GONE
             deletePageBtn?.visibility = View.GONE
+            moveLeftBtn?.visibility = View.GONE
+            moveRightBtn?.visibility = View.GONE
             return
         } else {
             setHomeBtn.visibility = View.VISIBLE
@@ -231,15 +247,25 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
 
         val screenOrder = workspace?.screenOrder
         var realScreenCount = 0
+        var currentRealIndex = -1
+        var realIdx = 0
         if (screenOrder != null) {
             for (i in 0 until screenOrder.size()) {
-                if (screenOrder.get(i) != ADD_PAGE_SCREEN_ID) {
+                val id = screenOrder.get(i)
+                if (id != ADD_PAGE_SCREEN_ID) {
+                    if (i == currentPage) currentRealIndex = realIdx
+                    realIdx++
                     realScreenCount++
                 }
             }
         }
 
         deletePageBtn?.visibility = if (realScreenCount > 1) View.VISIBLE else View.GONE
+
+        moveLeftBtn?.visibility =
+            if (realScreenCount > 1 && currentRealIndex > 0) View.VISIBLE else View.GONE
+        moveRightBtn?.visibility =
+            if (realScreenCount > 1 && currentRealIndex < realScreenCount - 1) View.VISIBLE else View.GONE
 
         val iconView = setHomeBtn.findViewById<android.widget.ImageView>(R.id.set_home_icon)
         val textView = setHomeBtn.findViewById<android.widget.TextView>(R.id.set_home_text)
