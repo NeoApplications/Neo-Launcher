@@ -34,6 +34,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.icons.GraphicsUtils;
 import com.android.launcher3.views.ActivityContext;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /**
  * Various utility methods associated with theming.
@@ -70,8 +71,12 @@ public class Themes {
     }
 
     public static float getDialogCornerRadius(Context context) {
-        return getDimension(context, android.R.attr.dialogCornerRadius,
-                context.getResources().getDimension(R.dimen.default_dialog_corner_radius));
+        NeoPrefs prefs = NeoPrefs.getInstance();
+        if (prefs.getProfileWindowCornerRadius().getValue() < 1) {
+            return context.getResources().getDimension(R.dimen.default_dialog_corner_radius);
+        } else {
+            return prefs.getProfileWindowCornerRadius().getValue();
+        }
     }
 
     public static float getDimension(Context context, int attr, float defaultValue) {
@@ -82,7 +87,9 @@ public class Themes {
     }
 
     public static int getColorAccent(Context context) {
-        return getAttrColor(context, android.R.attr.colorAccent);
+        //return getAttrColor(context, android.R.attr.colorAccent);
+        NeoPrefs prefs = NeoPrefs.getInstance();
+        return prefs.getProfileAccentColor().getColor();
     }
 
     /** Returns the background color attribute. */
