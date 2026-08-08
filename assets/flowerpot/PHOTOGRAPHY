@@ -1,3 +1,12 @@
+# generated at Sat Aug  8 12:55:44 2026 using merge.py
+# format: flowerpot-1 (azalea)
+# specs: https://del.dog/flowerpot
+$1
+# STATIC TEMPLATE
+&category|image
+:android.intent.category.APP_GALLERY
+:android.intent.category.CAMERA
+# PHOTOGRAPHY
 com.accordion.pro.camera
 photocreation.camera.blurcamera
 ai.hailuo.video
