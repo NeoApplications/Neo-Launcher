@@ -18,7 +18,7 @@ from requests_html import HTMLSession
 from bs4 import BeautifulSoup
 import json
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, urljoin  # <-- AÑADIDO urljoin
 
 # A script to scrape the play store for relevant apps from all categories
 # Note: This script is currently a huge mess and has just been hacked together until it worked as desired.
@@ -30,41 +30,27 @@ TOP_URL = f'{BASE_URL}top/category/'
 NEW_URL = f'{BASE_URL}new/category/'
 DETAIL_URL = f'{BASE_URL}details?id='
 CATEGORIES = [
-    'ART_AND_DESIGN',
-    'AUTO_AND_VEHICLES',
-    'BEAUTY',
+    'PERSONALIZATION',
     'BOOKS_AND_REFERENCE',
-    'BUSINESS',
-    'COMICS',
+    'SOCIAL',
     'COMMUNICATION',
-    'DATING',
-    'EDUCATION',
+    'TOOLS',
     'ENTERTAINMENT',
-    'EVENTS',
-    'FAMILY',
+    'EDUCATION',
     'FINANCE',
-    'FOOD_AND_DRINK',
-    'HEALTH_AND_FITNESS',
-    'HOUSE_AND_HOME',
-    'LIBRARIES_AND_DEMO',
+    'BUSINESS',
     'LIFESTYLE',
-    'MAPS_AND_NAVIGATION',
     'MEDICAL',
     'MUSIC_AND_AUDIO',
-    'NEWS_AND_MAGAZINES',
-    'PARENTING',
-    'PERSONALIZATION',
     'PHOTOGRAPHY',
-    'PRODUCTIVITY',
-    'SHOPPING',
-    'SOCIAL',
-    'SPORTS',
-    'TOOLS',
-    'TRAVEL_AND_LOCAL',
     'VIDEO_PLAYERS',
-    'ANDROID_WEAR',
-    'WEATHER',
-    'GAME'
+    'HEALTH_AND_FITNESS',
+    'NEWS_AND_MAGAZINES',
+    'BUSINESS',
+    'FOOD_AND_DRINK',
+    'MAPS_AND_NAVIGATION',
+    'TRAVEL_AND_LOCAL',
+    'SHOPPING'
 ]
 CATEGORIES_ = [
     'ART_AND_DESIGN',
@@ -78,7 +64,6 @@ CATEGORIES_ = [
     'EDUCATION',
     'ENTERTAINMENT',
     'EVENTS',
-    'FAMILY',
     'FINANCE',
     'FOOD_AND_DRINK',
     'HEALTH_AND_FITNESS',
@@ -114,7 +99,7 @@ PACKAGE_BLACKLIST = [
     r"hdtheme",
     r"com\.amber\.",
     r"com\.soko",
-    r"com\.andromo\.",  # App creator, not all apps with this are bad, but most of them are
+    r"com\.andromo\.", # App creator, not all apps with this are bad, but most of them are
     r"com\.jrj",
     r"live\.?wallpaper\.free",
     r"\.leafgreen\.",
@@ -210,6 +195,11 @@ ADDITIONAL_URLS = [
     BASE_URL,
     f"{BASE_URL}editors_choice",
     f"{BASE_URL}top",
+    f"{DETAIL_URL}ch.deletescape.lawnchair.plah",
+    f"{DETAIL_URL}amirz.rootless.nexuslauncher",
+    f"{DETAIL_URL}com.edzondm.linebit",
+    f"{DETAIL_URL}com.jndapp.line.x.iconpack",
+    f"{BASE_URL}dev?id=7714575631540799503"
 ]
 ID_MATCHER = r'\?id=(.*)'
 CATEGORY_MATCHER = f'/category/(.*)'
@@ -222,12 +212,13 @@ all_apps = []
 for category in CATEGORIES:
     category_to_apps[category] = []
     r = session.get(f'{TOP_URL}{category}')
-    clusters = list(dict.fromkeys(
-        [f'{CATEGORY_URL}{category}'] + list(filter(lambda l: "/cluster" in l, r.html.links))))
+    clusters = list(dict.fromkeys([f'{CATEGORY_URL}{category}'] + list(filter(lambda l: "/cluster" in l, r.html.links))))
     apps_ = []
+    base_url = r.url  # Guardamos la URL de la página de la categoría
     for cluster in clusters:
-        r = session.get(cluster)
-        if not 'cluster' in cluster:
+        cluster_full = urljoin(base_url, cluster)  # <-- FIX: convertir a URL absoluta
+        r = session.get(cluster_full)
+        if not 'cluster' in cluster_full:  # Nota: ahora usamos cluster_full
             try:
                 r.html.render()
             except Exception as e:
@@ -239,8 +230,7 @@ for category in CATEGORIES:
         m = re.search(ID_MATCHER, app)
         if m:
             id = m.group(1)
-            if len(id) < 45 and not any(
-                    re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
+            if len(id) < 45 and not any(re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
                 apps.append(id)
             else:
                 print(f'catched {id}')
@@ -256,16 +246,18 @@ for url in ADDITIONAL_URLS:
     r = session.get(url)
     clusters = list(filter(lambda l: "/cluster" in l, r.html.links))
     ids_ = []
+    base_url = r.url  # Guardamos la URL de la página actual
     for cluster in clusters:
-        r = session.get(cluster)
+        print(f'cluster: {cluster}')
+        cluster_full = urljoin(base_url, cluster)  # <-- FIX
+        r = session.get(cluster_full)
         ids_ += list(filter(lambda l: "/apps/details?" in l, r.html.links))
     ids = []
     for id in ids_:
         m = re.search(ID_MATCHER, id)
         if m:
             id = m.group(1)
-            if len(id) < 50 and not any(
-                    re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
+            if len(id) < 50 and not any(re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
                 ids.append(m.group(1))
             else:
                 print(f'catched {id}')
@@ -288,6 +280,7 @@ for url in ADDITIONAL_URLS:
             category = m.group(1)
             if category.startswith('GAME_'):
                 category = 'GAME'
+            #all_apps.append(id)
             if category not in category_to_apps:
                 category_to_apps[category] = []
             if id not in category_to_apps[category]:
@@ -298,6 +291,22 @@ for url in ADDITIONAL_URLS:
 
 for app in all_apps:
     r = session.get(f'{DETAIL_URL}{app}')
+    clusters = list(filter(lambda l: "/cluster" in l, r.html.links))
+    ids_ = []
+    base_url = r.url  # Guardamos la URL de la página de detalle
+    for cluster in clusters:
+        cluster_full = urljoin(base_url, cluster)  # <-- FIX
+        r = session.get(cluster_full)
+        ids_ += list(filter(lambda l: "/apps/details?" in l, r.html.links))
+    ids = []
+    for id in ids_:
+        m = re.search(ID_MATCHER, id)
+        if m:
+            id = m.group(1)
+            if len(id) < 45 and not any(re.search(filter, id.lower()) for filter in PACKAGE_BLACKLIST):
+                ids.append(m.group(1))
+            else:
+                print(f'catched {id}')
     ids = list(dict.fromkeys(ids))[:12]
     for id in ids:
         r = session.get(f'{DETAIL_URL}{id}')
@@ -317,6 +326,7 @@ for app in all_apps:
             category = m.group(1)
             if category.startswith('GAME_'):
                 category = 'GAME'
+            #all_apps.append(id)
             if category not in category_to_apps:
                 category_to_apps[category] = []
             if id not in category_to_apps[category]:
@@ -324,3 +334,9 @@ for app in all_apps:
                 with open(f'playstore/{category}', 'a+') as out:
                     out.write(f'{id}\n')
             print(category)
+
+# for category in CATEGORIES:
+#     apps = category_to_apps[category]
+#     with open(f'playstore/{category}', 'w') as out:
+#         out.write('\n'.join(apps))
+#     pprint(apps)
