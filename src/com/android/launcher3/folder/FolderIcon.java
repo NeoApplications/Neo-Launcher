@@ -692,7 +692,8 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             int drawablePadding = grid.getAllAppsProfile().getIconDrawablePaddingPx();
 
             Paint.FontMetrics fm = mFolderName.getPaint().getFontMetrics();
-            int cellHeightPx = mFolderName.getIconSize() + drawablePadding +
+            int iconSize = grid.getAllAppsProfile().getIconSizePx();
+            int cellHeightPx = iconSize + drawablePadding +
                     (int) Math.ceil(fm.bottom - fm.top);
             int height = MeasureSpec.getSize(heightMeasureSpec);
             setPadding(getPaddingLeft(), (height - cellHeightPx) / 2, getPaddingRight(),
@@ -701,7 +702,7 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
 
         boolean shouldCenterIcon = mActivity.getDeviceProfile().getWorkspaceIconProfile()
                 .getIconCenterVertically();
-        if (shouldCenterIcon) {
+        if (shouldCenterIcon && !isInAppDrawer()) {
             int iconSize = mActivity.getDeviceProfile().getWorkspaceIconProfile().getIconSizePx();
             Paint.FontMetrics fm = mFolderName.getPaint().getFontMetrics();
             int cellHeightPx = iconSize + mFolderName.getCompoundDrawablePadding()

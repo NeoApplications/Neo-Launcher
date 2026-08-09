@@ -200,7 +200,9 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
                 View iconView = container.getChildAt(j);
                 iconView.setVisibility(View.VISIBLE);
                 if (iconView instanceof BubbleTextView) {
-                    mViewCache.recycleView(R.layout.folder_application, iconView);
+                    int layout = mFolder.isInAppDrawer() ? R.layout.all_apps_folder_application
+                            : R.layout.folder_application;
+                    mViewCache.recycleView(layout, iconView);
                 }
             }
             page.removeAllViews();
@@ -292,13 +294,8 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> implements Cli
     protected CellLayout createAndAddNewPage() {
         DeviceProfile grid = mFolder.mActivityContext.getDeviceProfile();
         CellLayout page = mViewCache.getView(R.layout.folder_page, getContext(), this);
-        if (mFolder.isInAppDrawer()) {
-            page.setCellDimensions(grid.getAllAppsProfile().getCellWidthPx(), grid.getAllAppsProfile().getCellHeightPx());
-        } else {
-            ;
-            page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
-                    grid.getFolderProfile().getCellHeightPx());
-        }
+        page.setCellDimensions(grid.getFolderProfile().getCellWidthPx(),
+                grid.getFolderProfile().getCellHeightPx());
 
 
         page.getShortcutsAndWidgets().setMotionEventSplittingEnabled(false);

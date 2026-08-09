@@ -30,7 +30,7 @@ class DrawerFolderItem(val info: DrawerFolderInfo) {
     fun getFolderIcon(launcher: Launcher, container: ViewGroup): FolderIcon {
         if (icon == null) {
             icon = FolderIcon.inflateFolderAndIcon(
-                R.layout.folder_icon, launcher,
+                R.layout.all_apps_folder_icon, launcher,
                 container, info
             )
         }

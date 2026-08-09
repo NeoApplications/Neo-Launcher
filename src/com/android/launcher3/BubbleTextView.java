@@ -315,8 +315,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mDeviceProfile.getFolderProfile().getChildTextSizePx());
             setCompoundDrawablePadding(
-                    mDeviceProfile.getAllAppsProfile().getIconDrawablePaddingPx());
-            defaultIconSize = mDeviceProfile.getAllAppsProfile().getIconSizePx();
+                    mDeviceProfile.getFolderProfile().getChildDrawablePaddingPx());
+            defaultIconSize = mDeviceProfile.getFolderProfile().getChildIconSizePx();
             mShouldShowLabel = !prefs.getDrawerHideLabels().getValue();
         } else if (mDisplay == DISPLAY_SEARCH_RESULT) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -602,6 +602,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
 
     protected boolean shouldUseTheme() {
         return (mDisplay == DISPLAY_WORKSPACE || mDisplay == DISPLAY_FOLDER
+                || mDisplay == DISPLAY_DRAWER_FOLDER
                 || mDisplay == DISPLAY_TASKBAR || (mThemeAllAppsIcons
                 && (mDisplay == DISPLAY_ALL_APPS || mDisplay == DISPLAY_PREDICTION_ROW)))
                 && prefs.getProfileThemedIcons().getValue();
@@ -639,7 +640,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             case DISPLAY_WORKSPACE -> {
                 return mDeviceProfile.getWorkspaceIconProfile().getMaxIconTextLineCount();
             }
-            case DISPLAY_FOLDER -> {
+            case DISPLAY_FOLDER, DISPLAY_DRAWER_FOLDER -> {
                 return mDeviceProfile.getFolderProfile().getMaxChildTextLineCount();
             }
         }
@@ -1515,8 +1516,10 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
     private int getIconSizeForDisplay(int display) {
         DeviceProfile grid = mActivity.getDeviceProfile();
         return switch (display) {
-            case DISPLAY_ALL_APPS, DISPLAY_DRAWER_FOLDER ->
+            case DISPLAY_ALL_APPS ->
                     grid.getAllAppsProfile().getIconSizePx();
+            case DISPLAY_FOLDER, DISPLAY_DRAWER_FOLDER ->
+                    grid.getFolderProfile().getChildIconSizePx();
             default -> grid.getWorkspaceIconProfile().getIconSizePx();
         };
     }

@@ -17,9 +17,10 @@
   -->
 
 <com.android.launcher3.BubbleTextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/BaseIcon.AllApps"
+    xmlns:launcher="http://schemas.android.com/apk/res-auto"
+    style="@style/BaseIcon"
+    android:textColor="?attr/folderTextColor"
     android:includeFontPadding="false"
     android:hapticFeedbackEnabled="false"
-    app:iconDisplay="drawer_folder"
-    app:centerVertically="true" />
+    launcher:iconDisplay="drawer_folder"
+    launcher:centerVertically="true" />
