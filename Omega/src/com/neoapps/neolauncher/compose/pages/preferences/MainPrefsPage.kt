@@ -22,6 +22,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,6 +31,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -54,6 +58,10 @@ import com.neoapps.neolauncher.compose.components.OverflowMenu
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.plus
 import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
+import com.neoapps.neolauncher.compose.icons.Phosphor
+import com.neoapps.neolauncher.compose.icons.phosphor.Home
+import com.neoapps.neolauncher.compose.icons.phosphor.Infinity
+import com.neoapps.neolauncher.compose.icons.phosphor.Power
 import com.neoapps.neolauncher.compose.navigation.LocalPaneNavigator
 import com.neoapps.neolauncher.compose.navigation.NavRoute
 import com.neoapps.neolauncher.compose.objects.PageItem
@@ -137,7 +145,18 @@ fun MainPrefsPage() {
                                     (context as? Activity)?.finish()
                                     hideMenu()
                                 },
-                                text = { Text(text = stringResource(id = R.string.change_default_home)) }
+                                text = { Text(text = stringResource(id = R.string.change_default_home)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Phosphor.Home,
+                                        contentDescription = stringResource(id = R.string.home_screen),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.outline)
                             )
                         }
                         DropdownMenuItem(
@@ -145,7 +164,18 @@ fun MainPrefsPage() {
                                 Utilities.killLauncher()
                                 hideMenu()
                             },
-                            text = { Text(text = stringResource(id = R.string.title__restart_launcher)) }
+                            text = { Text(text = stringResource(id = R.string.title__restart_launcher)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Phosphor.Power,
+                                    contentDescription = stringResource(id = R.string.title__restart_launcher),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.outline)
                         )
                         DropdownMenuItem(
                             onClick = {
@@ -157,7 +187,14 @@ fun MainPrefsPage() {
                                     )
                                 }
                             },
-                            text = { Text(text = stringResource(id = R.string.developer_options_title)) }
+                            text = { Text(text = stringResource(id = R.string.developer_options_title)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Phosphor.Infinity,
+                                    contentDescription = stringResource(id = R.string.developer_options_title),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         )
                     }
                 }

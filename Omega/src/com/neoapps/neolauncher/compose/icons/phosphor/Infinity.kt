@@ -28,10 +28,10 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.compose.icons.Phosphor
 
-val Phosphor.Power: ImageVector
+val Phosphor.Infinity: ImageVector
     get() {
         return Builder(
-            name = "Power",
+            name = "Infinity",
             defaultWidth = 24.0.dp,
             defaultHeight = 24.0.dp,
             viewportWidth = 256.0f,
@@ -46,22 +46,24 @@ val Phosphor.Power: ImageVector
                 strokeLineMiter = 1f,
                 pathFillType = NonZero
             ) {
-                moveTo(120f, 128f)
-                verticalLineTo(48f)
-                arcToRelative(8f, 8f, 0f, false, true, 16f, 0f)
-                verticalLineTo(128f)
-                arcToRelative(8f, 8f, 0f, false, true, -16f, 0f)
-                close()
-
-                moveTo(180.37f, 49.3f)
-                arcToRelative(8f, 8f, 0f, false, false, -8.74f, 13.4f)
-                curveTo(194.74f, 77.77f, 208f, 101.57f, 208f, 128f)
-                arcToRelative(80f, 80f, 0f, false, true, -160f, 0f)
-                curveToRelative(0f, -26.43f, 13.26f, -50.23f, 36.37f, -65.3f)
-                arcToRelative(8f, 8f, 0f, false, false, -8.74f, -13.4f)
-                curveTo(47.9f, 67.38f, 32f, 96.06f, 32f, 128f)
-                arcToRelative(96f, 96f, 0f, false, false, 192f, 0f)
-                curveTo(224f, 96.06f, 208.1f, 67.38f, 180.37f, 49.3f)
+                moveTo(248f, 128f)
+                arcToRelative(56f, 56f, 0f, false, true, -95.6f, 39.6f)
+                lineToRelative(-0.33f, -0.35f)
+                lineTo(92.12f, 99.55f)
+                arcToRelative(40f, 40f, 0f, true, false, 0f, 56.9f)
+                lineToRelative(8.52f, -9.62f)
+                arcToRelative(8f, 8f, 0f, true, true, 12f, 10.61f)
+                lineToRelative(-8.69f, 9.81f)
+                lineToRelative(-0.33f, 0.35f)
+                arcToRelative(56f, 56f, 0f, true, true, 0f, -79.2f)
+                lineToRelative(0.33f, 0.35f)
+                lineToRelative(59.95f, 67.7f)
+                arcToRelative(40f, 40f, 0f, true, false, 0f, -56.9f)
+                lineToRelative(-8.52f, 9.62f)
+                arcToRelative(8f, 8f, 0f, true, true, -12f, -10.61f)
+                lineToRelative(8.69f, -9.81f)
+                lineToRelative(0.33f, -0.35f)
+                arcTo(56f, 56f, 0f, false, true, 248f, 128f)
                 close()
             }
         }

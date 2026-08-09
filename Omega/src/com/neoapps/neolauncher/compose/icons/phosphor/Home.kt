@@ -28,10 +28,10 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.compose.icons.Phosphor
 
-val Phosphor.Power: ImageVector
+val Phosphor.Home: ImageVector
     get() {
         return Builder(
-            name = "Power",
+            name = "Home",
             defaultWidth = 24.0.dp,
             defaultHeight = 24.0.dp,
             viewportWidth = 256.0f,
@@ -46,22 +46,21 @@ val Phosphor.Power: ImageVector
                 strokeLineMiter = 1f,
                 pathFillType = NonZero
             ) {
-                moveTo(120f, 128f)
-                verticalLineTo(48f)
-                arcToRelative(8f, 8f, 0f, false, true, 16f, 0f)
-                verticalLineTo(128f)
-                arcToRelative(8f, 8f, 0f, false, true, -16f, 0f)
-                close()
-
-                moveTo(180.37f, 49.3f)
-                arcToRelative(8f, 8f, 0f, false, false, -8.74f, 13.4f)
-                curveTo(194.74f, 77.77f, 208f, 101.57f, 208f, 128f)
-                arcToRelative(80f, 80f, 0f, false, true, -160f, 0f)
-                curveToRelative(0f, -26.43f, 13.26f, -50.23f, 36.37f, -65.3f)
-                arcToRelative(8f, 8f, 0f, false, false, -8.74f, -13.4f)
-                curveTo(47.9f, 67.38f, 32f, 96.06f, 32f, 128f)
-                arcToRelative(96f, 96f, 0f, false, false, 192f, 0f)
-                curveTo(224f, 96.06f, 208.1f, 67.38f, 180.37f, 49.3f)
+                moveTo(240f, 208f)
+                lineTo(224f, 208f)
+                lineTo(224f, 136f)
+                lineTo(226.34f, 138.34f)
+                arcTo(8f, 8f, 0f, false, false, 237.66f, 127f)
+                lineTo(139.31f, 28.68f)
+                arcTo(16f, 16f, 0f, false, false, 116.69f, 28.68f)
+                lineTo(18.34f, 127f)
+                arcTo(8f, 8f, 0f, false, false, 29.66f, 138.31f)
+                lineTo(32f, 136f)
+                lineTo(32f, 208f)
+                lineTo(16f, 208f)
+                arcTo(8f, 8f, 0f, false, false, 16f, 224f)
+                lineTo(240f, 224f)
+                arcTo(8f, 8f, 0f, false, false, 240f, 208f)
                 close()
             }
         }
