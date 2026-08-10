@@ -19,13 +19,7 @@
 package com.neoapps.neolauncher.compose.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,14 +31,11 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.neoapps.neolauncher.preferences.PREFS_DESKTOP_POPUP_EDIT
 import com.neoapps.neolauncher.preferences.iconIds
 import com.neoapps.neolauncher.theme.GroupItemShape
@@ -52,41 +43,65 @@ import com.neoapps.neolauncher.theme.GroupItemShape
 @Composable
 fun SingleSelectionListItem(
     modifier: Modifier = Modifier,
-    text: String,
+    title: String,
+    secondaryText: String? = null,
     isSelected: Boolean,
     isEnabled: Boolean = true,
+    index: Int = 1,
+    groupSize: Int = 1,
     endWidget: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clickable(onClick = onClick, enabled = isEnabled),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+
+    val startWidget: @Composable (() -> Unit) = {
         RadioButton(
             selected = isSelected,
             enabled = isEnabled,
-            onClick = onClick,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            onClick = { onClick() },
             colors = RadioButtonDefaults.colors(
                 selectedColor = MaterialTheme.colorScheme.primary,
                 unselectedColor = MaterialTheme.colorScheme.onSurface
-            )
+            ),
+            modifier = Modifier.size(24.dp)
         )
-        Text(
-            modifier = Modifier
-                .weight(1f),
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-        if (endWidget != null) {
-            Spacer(modifier = Modifier.width(8.dp))
-            endWidget()
-        }
     }
+    ListItem(
+        modifier = modifier
+            .clip(
+                GroupItemShape(index, groupSize - 1)
+            )
+            .clickable(
+                enabled = isEnabled,
+                onClick = { onClick() }
+            ),
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (!isEnabled) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                } else MaterialTheme.colorScheme.onSurface
+            )
+        },
+        supportingContent = if (secondaryText != null) {
+            {
+                Text(
+                    text = secondaryText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (!isEnabled) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    } else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else null,
+        leadingContent = startWidget,
+        trailingContent = endWidget,
+        colors = ListItemDefaults.colors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
+            } else MaterialTheme.colorScheme.onPrimary
+        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,5 +194,14 @@ fun MultiSelectionListItemPreview() {
         isChecked = true,
         withIcon = true,
         iconId = PREFS_DESKTOP_POPUP_EDIT
+    )
+}
+
+@Preview
+@Composable
+fun SingleSelectionListItemPreview() {
+    SingleSelectionListItem(
+        title = "Test",
+        isSelected = false
     )
 }

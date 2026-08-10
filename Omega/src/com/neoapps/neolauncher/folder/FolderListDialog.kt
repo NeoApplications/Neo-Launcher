@@ -118,7 +118,7 @@ fun FolderListDialogUI(
                     }
 
                     SingleSelectionListItem(
-                        text = it.displayName,
+                        title = it.displayName,
                         isSelected = isSelected.value
                     ) {
                         selected = it.javaClass.name.toString()

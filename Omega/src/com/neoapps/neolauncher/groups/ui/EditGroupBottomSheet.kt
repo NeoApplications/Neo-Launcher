@@ -233,11 +233,18 @@ fun EditGroupBottomSheet(
 
                     if (openDialog.value) {
                         BaseDialog(openDialogCustom = openDialog) {
-                            CategorySelectionDialogUI(selectedCategory = selectedCategory) {
+                            Card(
+                                shape = MaterialTheme.shapes.extraLarge,
+                                modifier = Modifier.padding(8.dp),
+                                elevation = CardDefaults.elevatedCardElevation(8.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+                            ) {
+                                FlowerpotCategoryPage(selectedCategory = selectedCategory) {
                                 selectedCategory = it
                                 (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
                                     it
                                 openDialog.value = false
+                            }
                             }
                         }
                     }

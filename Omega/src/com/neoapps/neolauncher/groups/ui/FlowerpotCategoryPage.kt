@@ -19,66 +19,72 @@
 package com.neoapps.neolauncher.groups.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ViewWithActionBar
+import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.flowerpot.Flowerpot
+import com.neoapps.neolauncher.theme.GroupItemShape
 
 @Composable
-fun CategorySelectionDialogUI(
+fun FlowerpotCategoryPage(
     selectedCategory: String,
     onSave: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val flowerpotManager = Flowerpot.Manager.getInstance(context)
+    val categories = flowerpotManager.getAllPots().toList()
+    var categoriesSize by remember { mutableIntStateOf(1) }
     var selected by remember { mutableStateOf(selectedCategory) }
+    DisposableEffect(categories.size) {
+        categoriesSize = categories.size
+        onDispose { }
+    }
 
-    Card(
-        shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.pref_appcategorization_flowerpot_title),
-                style = MaterialTheme.typography.titleLarge
-            )
+    ViewWithActionBar(
+        title = stringResource(id = R.string.pref_appcategorization_flowerpot_title),
+        actions = {},
+        onBackAction = {
+            onSave(selected)
+        }
+    ) { paddingValues ->
+        PreferenceGroup {
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
+                    .fillMaxSize()
+                    .padding(8.dp),
+                contentPadding = paddingValues,
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                items(items = flowerpotManager.getAllPots().toList()) {
+
+                itemsIndexed(categories) { index, it ->
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.name)
                     }
                     SingleSelectionListItem(
-                        text = it.displayName,
-                        isSelected = isSelected.value
+                        modifier = Modifier
+                            .clip(GroupItemShape(index, categoriesSize - 1)),
+                        title = it.displayName,
+                        isSelected = isSelected.value,
+                        index = index,
+                        groupSize = categoriesSize
                     ) {
                         selected = it.name
                         onSave(selected)
@@ -86,6 +92,7 @@ fun CategorySelectionDialogUI(
                 }
             }
         }
+
     }
 
     DisposableEffect(key1 = null) {

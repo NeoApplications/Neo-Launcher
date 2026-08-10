@@ -179,11 +179,18 @@ fun CreateGroupBottomSheet(
 
                 if (openDialog.value) {
                     BaseDialog(openDialogCustom = openDialog) {
-                        CategorySelectionDialogUI(selectedCategory = selectedCategory) {
-                            selectedCategory = it
-                            (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
-                                it
-                            openDialog.value = false
+                        Card(
+                            shape = MaterialTheme.shapes.extraLarge,
+                            modifier = Modifier.padding(8.dp),
+                            elevation = CardDefaults.elevatedCardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
+                        ) {
+                            FlowerpotCategoryPage(selectedCategory = selectedCategory) {
+                                selectedCategory = it
+                                (config[KEY_FLOWERPOT] as? AppGroups.StringCustomization)?.value =
+                                    it
+                                openDialog.value = false
+                            }
                         }
                     }
                 }
@@ -345,14 +352,14 @@ fun CreateGroupBottomSheet(
 
                                 AppGroupsManager.Category.TAB,
                                 AppGroupsManager.Category.FLOWERPOT,
-                                                                 -> {
+                                    -> {
                                     prefs.drawerTabs.apply {
                                         addGroup(group as DrawerTabs.Tab)
                                         saveToJson()
                                     }
                                 }
 
-                                else                             -> {}
+                                else -> {}
                             }
                         }
                         onClose(Config.BS_SELECT_TAB_TYPE)

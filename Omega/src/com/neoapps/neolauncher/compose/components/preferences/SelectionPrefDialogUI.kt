@@ -114,7 +114,7 @@ fun IntSelectionPrefDialogUI(
                         mutableStateOf(selected == it.first)
                     }
                     SingleSelectionListItem(
-                        text = stringResource(id = it.second),
+                        title = stringResource(id = it.second),
                         isSelected = isSelected.value
                     ) {
                         selected = it.first
@@ -193,7 +193,7 @@ fun LongSelectionPrefDialogUI(
                         mutableStateOf(selected == it.first)
                     }
                     SingleSelectionListItem(
-                        text = it.second,
+                        title = it.second,
                         isSelected = isSelected.value
                     ) {
                         selected = it.first
@@ -260,7 +260,7 @@ fun StringSelectionPrefDialogUI(
                         mutableStateOf(selected == it.first)
                     }
                     SingleSelectionListItem(
-                        text = it.second,
+                        title = it.second,
                         isSelected = isSelected.value
                     ) {
                         selected = it.first

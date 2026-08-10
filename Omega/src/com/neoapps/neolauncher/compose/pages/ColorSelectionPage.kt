@@ -262,7 +262,7 @@ fun DynamicPage(
     ) {
         itemsIndexed(dynamicColors) { _, option ->
             SingleSelectionListItem(
-                text = stringResource(id = option.displayName),
+                title = stringResource(id = option.displayName),
                 isSelected = isColorSelected(option.toString()),
                 endWidget = {
                     ColorItem(
