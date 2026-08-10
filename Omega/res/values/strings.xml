@@ -15,7 +15,8 @@
   ~
   ~  You should have received a copy of the GNU General Public License
   ~  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  --><resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="derived_app_name" translatable="false">Neo Launcher</string>
     <string name="app_version" translatable="false">Version</string>
     <string name="app_build" translatable="false">Build</string>
@@ -467,6 +468,10 @@
     <string name="dt2s_admin_warning">Double tap to sleep will be turned off.</string>
     <string name="notification_dots_missing_notification_access">To show Notification Dots, turn on app notifications access</string>
     <string name="notification_dots_disabled">To show Notification Dots, enable showing notification dots in settings</string>
+    <string name="permission_grant">Grant</string>
+    <string name="permission_wallpaper_title">Wallpaper Access</string>
+    <string name="permission_wallpaper_message">Neo Launcher needs access to your wallpaper to apply blur effects. Without this permission, the blur background will be disabled.</string>
+
     <!-- SEARCH -->
     <string name="title__search_bubble_searchbar">Show Two Bubbles</string>
     <string name="title__search_action_assistant">Open Assistant</string>

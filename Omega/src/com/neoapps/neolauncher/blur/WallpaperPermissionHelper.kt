@@ -20,6 +20,7 @@ package com.neoapps.neolauncher.blur
 import android.app.Activity
 import android.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import com.android.launcher3.R
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.hasWallpaperAccess
 
@@ -35,16 +36,13 @@ object WallpaperPermissionHelper {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             AlertDialog.Builder(activity)
-                .setTitle("Wallpaper Access")
-                .setMessage(
-                    "Neo Launcher needs access to your wallpaper to apply blur effects. " +
-                            "Without this permission, the blur background will be disabled."
-                )
-                .setPositiveButton("Grant") { dialog, _ ->
+                .setTitle(activity.resources.getString(R.string.permission_wallpaper_title))
+                .setMessage(activity.resources.getString(R.string.permission_wallpaper_message))
+                .setPositiveButton(activity.resources.getString(R.string.permission_grant)) { dialog, _ ->
                     dialog.dismiss()
                     Permissions.requestPermission(activity, permission, requestCode)
                 }
-                .setNegativeButton("Cancel") { dialog, _ ->
+                .setNegativeButton(activity.resources.getString(android.R.string.cancel)) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
