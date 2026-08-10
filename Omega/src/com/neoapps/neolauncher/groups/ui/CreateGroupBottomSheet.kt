@@ -115,7 +115,7 @@ fun CreateGroupBottomSheet(
     var selectedCategory by remember {
         mutableStateOf(
             AppGroups.StringCustomization(
-                FlowerpotTabs.KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
+                KEY_FLOWERPOT, AppGroups.KEY_FLOWERPOT_DEFAULT
             ).value ?: AppGroups.KEY_FLOWERPOT_DEFAULT
         )
     }
@@ -236,30 +236,32 @@ fun CreateGroupBottomSheet(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
-            BasePreference(
-                titleId = R.string.tab_hide_from_main,
-                startWidget = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.tab_hide_from_main),
-                        contentDescription = null,
-                    )
-                },
-                endWidget = {
-                    Switch(
-                        modifier = Modifier
-                            .height(24.dp),
-                        checked = isHidden,
-                        onCheckedChange = {
-                            isHidden = it
-                        }
-                    )
-                },
-                onClick = { isHidden = !isHidden },
-                index = 1,
-                groupSize = if (category != AppGroupsManager.Category.FOLDER) 3
-                else 2
-            )
+            if (category != AppGroupsManager.Category.FLOWERPOT) {
+                Spacer(modifier = Modifier.height(4.dp))
+                BasePreference(
+                    titleId = R.string.tab_hide_from_main,
+                    startWidget = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.tab_hide_from_main),
+                            contentDescription = null,
+                        )
+                    },
+                    endWidget = {
+                        Switch(
+                            modifier = Modifier
+                                .height(24.dp),
+                            checked = isHidden,
+                            onCheckedChange = {
+                                isHidden = it
+                            }
+                        )
+                    },
+                    onClick = { isHidden = !isHidden },
+                    index = 1,
+                    groupSize = if (category != AppGroupsManager.Category.FOLDER) 3
+                    else 2
+                )
+            }
             if (category != AppGroupsManager.Category.FOLDER) {
                 Spacer(modifier = Modifier.height(4.dp))
                 BasePreference(

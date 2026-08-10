@@ -32,7 +32,6 @@ import com.neoapps.neolauncher.preferences.PrefKey
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.util.drawerCategorizationOptions
 
-
 typealias CategoryKey = String
 
 class AppGroupsManager(val prefs: NeoPrefs, val dataStore: DataStore<Preferences>) {
