@@ -92,7 +92,7 @@ fun IntSelectionPrefDialogUI(
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
@@ -103,20 +103,23 @@ fun IntSelectionPrefDialogUI(
             LazyColumn(
                 modifier = Modifier
                     .blockShadow()
-                    .padding(start = 8.dp, end = 8.dp)
+                    .padding(all = 8.dp)
                     .weight(1f, false),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+                val groupSize = entryPairs.size
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
                     }
                     SingleSelectionListItem(
                         title = stringResource(id = it.second),
-                        isSelected = isSelected.value
+                        isSelected = isSelected.value,
+                        index = entryPairs.indexOf(it),
+                        groupSize = groupSize
                     ) {
                         selected = it.first
                     }
