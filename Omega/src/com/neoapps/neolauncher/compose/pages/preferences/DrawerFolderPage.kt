@@ -85,14 +85,13 @@ fun DrawerFolderPage() {
     val openDialog = remember { mutableStateOf(false) }
     var dialogPref by remember { mutableStateOf<Any?>(null) }
 
-    val manager by lazy { prefs.drawerAppGroupsManager }
+    val manager = remember { prefs.drawerAppGroupsManager }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    val groups =
-        remember(AppGroupsManager.Category.FOLDER, scaffoldState.bottomSheetState.currentValue) {
-            mutableStateListOf(*loadFolders(manager))
-        }
+    val groups = remember(AppGroupsManager.Category.FOLDER) {
+        mutableStateListOf(*loadFolders(manager))
+    }
 
     val editGroup = remember {
         mutableStateOf(groups.firstOrNull())
@@ -120,7 +119,6 @@ fun DrawerFolderPage() {
     val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         groups.move(from.index, to.index)
-        saveGroupPositions(manager, groups)
     }
 
     BottomSheetScaffold(
@@ -178,9 +176,6 @@ fun DrawerFolderPage() {
                         contentDescription = stringResource(id = R.string.title_create),
                     )
                 }
-            },
-            onBackAction = {
-                saveGroupPositions(manager, groups)
             }
         ) { paddingValues ->
             Column(
@@ -255,7 +250,6 @@ fun DrawerFolderPage() {
                                 },
                                 onRemoveClick = {
                                     groups.remove(item)
-                                    saveGroupPositions(manager, groups)
                                 },
                             )
                         }
@@ -279,9 +273,9 @@ fun DrawerFolderPage() {
             }
         }
 
-        DisposableEffect(key1 = null) {
+        DisposableEffect(Unit) {
             onDispose {
-                prefs.reloadGrid()
+                saveGroupPositions(manager, groups)
             }
         }
     }

@@ -88,7 +88,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun AppCategoriesPage() {
     val coroutineScope = rememberCoroutineScope()
     val prefs = NeoPrefs.getInstance()
-    val manager by lazy { prefs.drawerAppGroupsManager }
+    val manager = remember { prefs.drawerAppGroupsManager }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
     val hasWorkApps = Config.hasWorkApps(LocalContext.current)
@@ -98,7 +98,7 @@ fun AppCategoriesPage() {
 
     val selectedCategorizationKey by manager.categorizationType.getState()
 
-    val groups = remember(selectedCategorizationKey, scaffoldState.bottomSheetState.currentValue) {
+    val groups = remember(selectedCategorizationKey) {
         mutableStateListOf(*loadAppGroups(manager, hasWorkApps))
     }
 
@@ -135,7 +135,6 @@ fun AppCategoriesPage() {
     val lazyListState = rememberLazyListState()
     val reorderableListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         groups.move(from.index, to.index)
-        saveGroupPositions(manager, groups)
     }
 
     BottomSheetScaffold(
@@ -210,9 +209,6 @@ fun AppCategoriesPage() {
                         contentDescription = stringResource(id = R.string.title_create),
                     )
                 }
-            },
-            onBackAction = {
-                saveGroupPositions(manager, groups)
             }
         ) { paddingValues ->
             Column(
@@ -294,7 +290,6 @@ fun AppCategoriesPage() {
                                     },
                                     onRemoveClick = {
                                         groups.remove(item)
-                                        saveGroupPositions(manager, groups)
                                     },
                                 )
                             }
@@ -318,9 +313,9 @@ fun AppCategoriesPage() {
             }
         }
 
-        DisposableEffect(key1 = null) {
+        DisposableEffect(Unit) {
             onDispose {
-                prefs.reloadTabs()
+                saveGroupPositions(manager, groups)
             }
         }
     }
