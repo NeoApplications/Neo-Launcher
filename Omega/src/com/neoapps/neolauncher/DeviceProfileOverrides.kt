@@ -22,7 +22,7 @@ class DeviceProfileOverrides(context: Context) {
             .map { option ->
                 val gridInfo = DBGridInfo(
                     numHotseatIcons = option.numHotseatIcons,
-                    numHotseatRows = option.numHotseatIcons, //option.numHotseatRows TODO Fix
+                    numHotseatRows = 1, //option.numHotseatRows TODO Fix
                     numRows = option.numRows,
                     numColumns = option.numColumns
                 )
