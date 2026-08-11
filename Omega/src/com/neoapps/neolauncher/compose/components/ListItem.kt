@@ -180,8 +180,8 @@ fun MultiSelectionListItem(
         trailingContent = trailingContent,
         colors = ListItemDefaults.colors(
             containerColor = if (isChecked) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
-            } else MaterialTheme.colorScheme.surface
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
         )
     )
 }
