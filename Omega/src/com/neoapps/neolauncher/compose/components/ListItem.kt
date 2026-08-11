@@ -98,8 +98,8 @@ fun SingleSelectionListItem(
         trailingContent = endWidget,
         colors = ListItemDefaults.colors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.surfaceContainerHigh
-            } else MaterialTheme.colorScheme.surfaceContainerLow
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
         )
     )
 }
