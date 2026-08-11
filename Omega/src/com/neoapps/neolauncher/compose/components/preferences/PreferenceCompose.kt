@@ -95,6 +95,7 @@ fun BasePreference(
     @StringRes summaryId: Int = -1,
     summary: String? = null,
     isEnabled: Boolean = true,
+    isSelected: Boolean = false,
     index: Int = 1,
     groupSize: Int = 1,
     startWidget: (@Composable () -> Unit)? = null,
@@ -112,7 +113,9 @@ fun BasePreference(
                 clickable(enabled = isEnabled, onClick = onClick!!)
             },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
         ),
         leadingContent = startWidget,
         headlineContent = {
@@ -365,6 +368,7 @@ fun SwitchPreference(
         index = index,
         groupSize = groupSize,
         isEnabled = isEnabled,
+        isSelected = checked,
         onClick = {
             onToggle(!checked)
         },
