@@ -89,7 +89,7 @@ fun SingleSelectionListItem(
                     text = secondaryText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (!isEnabled) {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        MaterialTheme.colorScheme.onSurface
                     } else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -98,8 +98,8 @@ fun SingleSelectionListItem(
         trailingContent = endWidget,
         colors = ListItemDefaults.colors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f)
-            } else MaterialTheme.colorScheme.onPrimary
+                MaterialTheme.colorScheme.surfaceContainerHigh
+            } else MaterialTheme.colorScheme.surfaceContainerLow
         )
     )
 }

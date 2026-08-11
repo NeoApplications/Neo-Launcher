@@ -38,7 +38,7 @@ fun Modifier.blockShadow() =
     composed {
         this
             .shadow(elevation = 1.dp, shape = MaterialTheme.shapes.extraLarge)
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surface)
     }
 
 fun Modifier.vertical() =
