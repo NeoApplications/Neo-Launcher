@@ -116,4 +116,4 @@ The original AOSP Launcher3 code is licensed under the [Apache License, Version 
 
 Copyright © 2025 [Saul Henriquez](https://github.com/saulhdev), [Antonios Hazim](https://github.com/machiav3lli) and [contributors](https://github.com/NeoApplications/Neo-Launcher/graphs/contributors).
 
-![Star History Chart](https://api.star-history.com/svg?repos=NeoApplications/Neo-Launcher&type=Date)
+![Star History Chart](https://star-history.dera.page/svg?repos=NeoApplications/Neo-Launcher&type=Date)
