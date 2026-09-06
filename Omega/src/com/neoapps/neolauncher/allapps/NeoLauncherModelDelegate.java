@@ -81,8 +81,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 public class NeoLauncherModelDelegate extends ModelDelegate {
-    private static final int NUM_OF_RECOMMENDED_WIDGETS_PREDICATION = 20;
-
     private static final boolean IS_DEBUG = false;
     private static final String TAG = "QuickstepModelDelegate";
 
@@ -123,8 +121,6 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
         mAppEventProducer = new AppEventProducer(context, this::onAppTargetEvent);
         StatsLogCompatManager.LOGS_CONSUMER.add(mAppEventProducer);
 
-        // Only register for launcher snapshot logging if this is the primary ModelDelegate
-        // instance, as there will be additional instances that may be destroyed at any time.
         mStatsManager = TextUtils.isEmpty(dbFileName)
                 ? null : context.getSystemService(StatsManager.class);
     }
@@ -134,7 +130,6 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
         loadAndBindPredictedItems(mIDP.numShownHotseatIcons, mHotseatPredictionState, outLoadedItems);
         loadAndBindPredictedItems(mIDP.numAllAppsColumns, mAllPredictionAppsState, outLoadedItems);
 
-        // Widgets prediction isn't used frequently. And thus, it is not persisted on disk.
         PredictedContainerInfo widgetPredictionFCI = new PredictedContainerInfo(
                 mWidgetsRecommendationState.containerId, new ArrayList<>());
         outLoadedItems.put(mWidgetsRecommendationState.containerId, widgetPredictionFCI);
@@ -158,8 +153,6 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
     @Override
     public void workspaceLoadComplete() {
         super.workspaceLoadComplete();
-        // Initialize ContextualSearchStateManager.
-        //ContextualSearchStateManager.INSTANCE.get(mContext);
         recreatePredictors();
     }
 
@@ -168,10 +161,8 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
     public void modelLoadComplete() {
         super.modelLoadComplete();
 
-        // Log snapshot of the model
         LauncherPrefs prefs = LauncherPrefs.get(mContext);
         long lastSnapshotTimeMillis = prefs.get(LAST_SNAPSHOT_TIME_MILLIS);
-        // Log snapshot only if previous snapshot was older than a day
         long now = System.currentTimeMillis();
         if (now - lastSnapshotTimeMillis < DAY_IN_MILLIS) {
             if (IS_DEBUG) {
@@ -192,7 +183,6 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
             }
             prefs.put(LAST_SNAPSHOT_TIME_MILLIS, now);
         }
-
     }
 
     private static CollectionInfo getContainer(
