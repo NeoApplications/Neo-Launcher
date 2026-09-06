@@ -197,16 +197,17 @@
         <item quantity="other">%1$d Hidden</item>
     </plurals>
     <string name="protected_apps">Tap to open protected Apps</string>
-    <string name="category_art_and_design">Design</string>
     <string name="category_business_and_productivity">Productivity</string>
     <string name="category_communication">Communication</string>
     <string name="category_entertainment">Entertainment</string>
+    <string name="category_food_and_drink">Food &amp; Drink</string>">
     <string name="category_game">Games</string>
     <string name="category_health_and_fitness">Fitness</string>
     <string name="category_lifestyle">Lifestyle</string>
     <string name="category_knowledge_and_reference">Knowledge</string>
     <string name="category_music">Music</string>
     <string name="category_news">News</string>
+    <string name="category_photography">Photography</string>
     <string name="category_personalization">Personalization</string>
     <string name="category_tools">Tools</string>
     <string name="category_travel_and_navigation">Navigation</string>

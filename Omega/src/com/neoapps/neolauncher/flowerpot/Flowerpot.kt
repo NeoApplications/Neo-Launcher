@@ -18,6 +18,7 @@
 package com.neoapps.neolauncher.flowerpot
 
 import android.content.Context
+import android.util.Log
 import com.android.launcher3.R
 import com.neoapps.neolauncher.flowerpot.parser.FlowerpotReader
 import com.neoapps.neolauncher.flowerpot.rules.Rule
@@ -55,8 +56,10 @@ class Flowerpot(
         )
         if (id != 0)
             id
-        else
+        else {
+            Log.d("Flowerpot", "Loading flowerpot $name")
             R.string.app_name
+        }
     }
 
 
