@@ -434,12 +434,19 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         val predictionRowView =
             appsView.floatingHeaderView.findFixedRowByType(PredictionRowView::class.java)
         predictionRowView?.setPredictionUiUpdatePaused(true)
+        val horizontalAppsView =
+            appsView.findViewById<com.neoapps.neolauncher.allapps.HorizontalAppsView>(
+                R.id.horizontal_all_apps_view_container
+            )
+        horizontalAppsView?.setPredictionUiUpdatePaused(true)
         val result = super.startActivitySafely(v, intent, item)
         if (result == null) {
             predictionRowView?.setPredictionUiUpdatePaused(false)
+            horizontalAppsView?.setPredictionUiUpdatePaused(false)
         } else {
             result.add {
                 predictionRowView?.setPredictionUiUpdatePaused(false)
+                horizontalAppsView?.setPredictionUiUpdatePaused(false)
             }
         }
         return result

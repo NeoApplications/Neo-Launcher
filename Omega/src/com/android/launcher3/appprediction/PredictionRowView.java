@@ -19,6 +19,7 @@ package com.android.launcher3.appprediction;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 import static com.android.launcher3.Utilities.dpToPx;
 import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_CATEGORIES;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -44,6 +45,7 @@ import com.android.launcher3.allapps.FloatingHeaderView;
 import com.android.launcher3.anim.AlphaUpdateListener;
 import com.android.launcher3.keyboard.FocusIndicatorHelper;
 import com.android.launcher3.keyboard.FocusIndicatorHelper.SimpleFocusIndicatorHelper;
+import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
@@ -53,7 +55,6 @@ import com.neoapps.neolauncher.preferences.NeoPrefs;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PredictionRowView<T extends Context & ActivityContext>
         extends LinearLayout implements OnDeviceProfileChangeListener, FloatingHeaderRow {
@@ -168,7 +169,13 @@ public class PredictionRowView<T extends Context & ActivityContext>
 
     @Override
     public int getExpectedHeight() {
+        if (getVisibility() == GONE) {
+            return 0;
+        }
         DeviceProfile deviceProfile = mActivityContext.getDeviceProfile();
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            return deviceProfile.getAllAppsProfile().getCellHeightPx();
+        }
         int iconHeight = deviceProfile.getAllAppsProfile().getIconSizePx();
         int iconPadding = deviceProfile.getAllAppsProfile().getIconDrawablePaddingPx();
         int textHeight = Utilities.calculateTextHeight(deviceProfile.getAllAppsProfile().getIconTextSizePx());
@@ -178,7 +185,7 @@ public class PredictionRowView<T extends Context & ActivityContext>
         int extraHeight = deviceProfile.inv.enableTwoLinesInAllApps
                 ? (textHeight + mTopRowExtraHeight) : mTopRowExtraHeight;
         totalHeight += extraHeight;
-        return getVisibility() == GONE ? 0 : totalHeight + getPaddingTop() + getPaddingBottom();
+        return totalHeight + getPaddingTop() + getPaddingBottom();
     }
 
     @Override
@@ -216,9 +223,13 @@ public class PredictionRowView<T extends Context & ActivityContext>
 
     private void applyPredictedApps(List<ItemInfo> items) {
         mPredictedApps.clear();
-        mPredictedApps.addAll(items.stream()
-                .filter(itemInfo -> itemInfo instanceof WorkspaceItemInfo)
-                .map(itemInfo -> (WorkspaceItemInfo) itemInfo).collect(Collectors.toList()));
+        for (ItemInfo itemInfo : items) {
+            if (itemInfo instanceof WorkspaceItemInfo) {
+                mPredictedApps.add((WorkspaceItemInfo) itemInfo);
+            } else if (itemInfo instanceof AppInfo) {
+                mPredictedApps.add(((AppInfo) itemInfo).makeWorkspaceItem(getContext()));
+            }
+        }
         applyPredictionApps();
     }
 
@@ -247,7 +258,9 @@ public class PredictionRowView<T extends Context & ActivityContext>
             while (getChildCount() > mNumPredictedAppsPerRow) {
                 removeViewAt(0);
             }
-            LayoutInflater inflater = mActivityContext.getAppsView().getLayoutInflater();
+            LayoutInflater inflater = mActivityContext.getAppsView() != null
+                    ? mActivityContext.getAppsView().getLayoutInflater()
+                    : LayoutInflater.from(getContext());
             while (getChildCount() < mNumPredictedAppsPerRow) {
                 BubbleTextView icon = (BubbleTextView) inflater.inflate(
                         R.layout.all_apps_prediction_row_icon, this, false);
@@ -286,7 +299,9 @@ public class PredictionRowView<T extends Context & ActivityContext>
             }
         }
 
-        boolean predictionsEnabled = predictionCount > 0;
+        boolean predictionsEnabled = predictionCount > 0
+                || (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL
+                && prefs.getDrawerAppSuggestions().getValue());
         if (predictionsEnabled != mPredictionsEnabled) {
             mPredictionsEnabled = predictionsEnabled;
             updateVisibility();

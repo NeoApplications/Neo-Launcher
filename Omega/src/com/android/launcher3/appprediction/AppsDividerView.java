@@ -77,6 +77,7 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
     public AppsDividerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        mPaint.setAntiAlias(true);
         mDividerSize = new int[]{
                 getResources().getDimensionPixelSize(R.dimen.all_apps_divider_width),
                 getResources().getDimensionPixelSize(R.dimen.all_apps_divider_height)
@@ -126,30 +127,7 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
         return false;
     }
 
-    private void updateDividerType() {
-        final DividerType dividerType;
-        if (!mTabsHidden) {
-            dividerType = DividerType.NONE;
-        } else {
-            // Check how many sections above me.
-            int sectionCount = 0;
-            for (FloatingHeaderRow row : mRows) {
-                if (row == this) {
-                    break;
-                } else if (row.shouldDraw()) {
-                    sectionCount++;
-                }
-            }
-
-            if (mShowAllAppsLabel && sectionCount > 0) {
-                dividerType = DividerType.ALL_APPS_LABEL;
-            } else if (sectionCount == 1) {
-                dividerType = DividerType.LINE;
-            } else {
-                dividerType = DividerType.NONE;
-            }
-        }
-
+    public void setDividerType(DividerType dividerType) {
         if (mDividerType != dividerType) {
             mDividerType = dividerType;
             int topPadding;
@@ -183,6 +161,32 @@ public class AppsDividerView extends View implements FloatingHeaderRow {
                 mParent.onHeightUpdated();
             }
         }
+    }
+
+    private void updateDividerType() {
+        final DividerType dividerType;
+        if (!mTabsHidden) {
+            dividerType = DividerType.NONE;
+        } else {
+            // Check how many sections above me.
+            int sectionCount = 0;
+            for (FloatingHeaderRow row : mRows) {
+                if (row == this) {
+                    break;
+                } else if (row.shouldDraw()) {
+                    sectionCount++;
+                }
+            }
+
+            if (mShowAllAppsLabel && sectionCount > 0) {
+                dividerType = DividerType.ALL_APPS_LABEL;
+            } else if (sectionCount == 1) {
+                dividerType = DividerType.LINE;
+            } else {
+                dividerType = DividerType.NONE;
+            }
+        }
+        setDividerType(dividerType);
     }
 
     private void updateViewVisibility() {

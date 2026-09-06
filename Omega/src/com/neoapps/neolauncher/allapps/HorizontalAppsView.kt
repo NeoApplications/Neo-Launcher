@@ -177,19 +177,19 @@ class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(co
 
         pagerAdapter = AllAppViewPagerAdapter(context, store, searchAdapterProvider)
 
-        val launcher = ActivityContext.lookupContext(context) as? NeoLauncher
-        launcher?.allAppsPredictions?.getContents()?.let { predictions ->
-            if (predictions.isNotEmpty()) {
-                pagerAdapter?.setPredictedApps(predictions)
-            }
-        }
-
         val columns = dp.numShownAllAppsColumns
         val rows = calculateRows(dp)
         pagerAdapter?.setGridDimensions(columns, rows)
         pagerAdapter?.setMainAppsList(appsList)
         pagerAdapter?.setPagedView(pagedView)
         pagerAdapter?.setOnPageCountChanged { updatePageIndicator() }
+
+        val launcher = ActivityContext.lookupContext(context) as? NeoLauncher
+        launcher?.allAppsPredictions?.getContents()?.let { predictions ->
+            if (predictions.isNotEmpty()) {
+                pagerAdapter?.setPredictedApps(predictions)
+            }
+        }
 
         pagedView?.addPageSwitchListener {
             val page = pagedView?.let {
@@ -211,6 +211,10 @@ class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(co
 
     fun setPredictedApps(apps: List<ItemInfo>) {
         pagerAdapter?.setPredictedApps(apps)
+    }
+
+    fun setPredictionUiUpdatePaused(paused: Boolean) {
+        pagerAdapter?.setPredictionUiUpdatePaused(paused)
     }
 
     fun getRecyclerViewForCurrentPage(): AllAppsRecyclerView? {

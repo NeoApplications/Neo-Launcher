@@ -1503,7 +1503,11 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         } else {
             getSearchRecyclerView().setVisibility(GONE);
             getAppsRecyclerViewContainer().setVisibility(VISIBLE);
-            mHeader.setVisibility(VISIBLE);
+            if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+                mHeader.setVisibility(GONE);
+            } else {
+                mHeader.setVisibility(VISIBLE);
+            }
         }
         if (mHeader.isSetUp()) {
             mHeader.setActiveRV(getCurrentPage(), isSearching());

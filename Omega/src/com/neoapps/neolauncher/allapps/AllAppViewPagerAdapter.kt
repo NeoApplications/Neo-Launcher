@@ -29,12 +29,15 @@ import com.android.launcher3.allapps.AllAppsStore
 import com.android.launcher3.allapps.AlphabeticalAppsList
 import com.android.launcher3.allapps.BaseAllAppsAdapter
 import com.android.launcher3.allapps.search.SearchAdapterProvider
+import com.android.launcher3.appprediction.AppsDividerView
 import com.android.launcher3.appprediction.PredictionRowView
 import com.android.launcher3.model.data.AppInfo
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.pm.UserCache
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.views.ActivityContext
 import com.neoapps.neolauncher.NeoLauncher
+import com.neoapps.neolauncher.data.AppTrackerRepository
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import java.util.function.Predicate
 
@@ -81,16 +84,20 @@ class AllAppViewPagerAdapter(
         val hadPredictions = shouldShowPredictions()
         predictedApps = apps
         val hasPredictions = shouldShowPredictions()
-        if (hadPredictions != hasPredictions) {
+        if (hadPredictions != hasPredictions || currentPredictionRow == null) {
             recalculateAndUpdate()
         } else {
             currentPredictionRow?.setPredictedApps(apps)
         }
     }
 
+    fun setPredictionUiUpdatePaused(paused: Boolean) {
+        currentPredictionRow?.setPredictionUiUpdatePaused(paused)
+    }
+
     fun shouldShowPredictions(): Boolean {
         val prefs = NeoPrefs.getInstance()
-        return prefs.drawerAppSuggestions.getValue() && predictedApps.isNotEmpty() && rowCount > 1
+        return prefs.drawerAppSuggestions.getValue() && rowCount > 1
     }
 
     fun getAppsPerPage(): Int = appsPerPage
@@ -111,6 +118,35 @@ class AllAppViewPagerAdapter(
         }
 
         val appItems = getSortedAppInfos()
+        if (predictedApps.isEmpty() && shouldShowPredictions() && appItems.isNotEmpty()) {
+            try {
+                val repo = AppTrackerRepository.INSTANCE.get(context)
+                val recent = repo.getRecentApps(columnCount)
+                if (recent.isNotEmpty()) {
+                    val userCache = UserCache.INSTANCE.get(context)
+                    val recentItems = mutableListOf<ItemInfo>()
+                    for (tracker in recent) {
+                        val matchingApp = appItems.firstOrNull {
+                            it.componentName?.packageName == tracker.packageName &&
+                                    userCache.getSerialNumberForUser(it.user) == (tracker.userSerialNumber
+                                ?: 0L)
+                        }
+                        if (matchingApp != null) {
+                            recentItems.add(matchingApp.makeWorkspaceItem(context))
+                        }
+                    }
+                    if (recentItems.isNotEmpty()) {
+                        predictedApps = recentItems
+                    }
+                }
+            } catch (e: Exception) {
+                // Ignore
+            }
+            if (predictedApps.isEmpty()) {
+                predictedApps = appItems.take(columnCount).map { it.makeWorkspaceItem(context) }
+            }
+        }
+
         val totalApps = appItems.size
         val showPredictions = shouldShowPredictions()
         val page0Capacity =
@@ -230,10 +266,11 @@ class AllAppViewPagerAdapter(
                     clipToPadding = false
                 }
 
+                val cellHeight = activityContext.deviceProfile.allAppsProfile.cellHeightPx
                 val predictionRow = PredictionRowView<NeoLauncher>(context).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
+                        cellHeight
                     )
                     clipChildren = false
                     clipToPadding = false
@@ -243,6 +280,15 @@ class AllAppViewPagerAdapter(
                 allAppsStore.registerIconContainer(predictionRow)
 
                 pageContainer.addView(predictionRow)
+
+                val divider = AppsDividerView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    setDividerType(AppsDividerView.DividerType.LINE)
+                }
+                pageContainer.addView(divider)
 
                 val rvParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
