@@ -850,19 +850,33 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     lp.topMargin = 0;
                     lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 } else {
+                    lp.removeRule(RelativeLayout.BELOW);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                     lp.topMargin = mInsets.top;
                     lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 }
             }
+            rvContainer.setLayoutParams(lp);
             if (rvContainer instanceof HorizontalAppsView) {
                 ((HorizontalAppsView) rvContainer).setInsets(mInsets);
             }
-            if (searchVisible) {
-                layoutBelowSearchContainer(getSearchRecyclerView(), /* tabs= */ false);
+
+            RelativeLayout.LayoutParams searchLp = (LayoutParams) getSearchRecyclerView().getLayoutParams();
+            if (isSearchBarFloating()) {
+                alignParentTop(getSearchRecyclerView(), false);
             } else {
-                alignParentTop(getSearchRecyclerView(), /* tabs= */ false);
+                if (searchVisible) {
+                    searchLp.addRule(RelativeLayout.BELOW, R.id.search_container_all_apps);
+                    searchLp.topMargin = 0;
+                    searchLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                } else {
+                    searchLp.removeRule(RelativeLayout.BELOW);
+                    searchLp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    searchLp.topMargin = mInsets.top;
+                    searchLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                }
             }
+            getSearchRecyclerView().setLayoutParams(searchLp);
         } else if (isSearchBarFloating()) {
             alignParentTop(rvContainer, showTabs);
             alignParentTop(getSearchRecyclerView(), false);
@@ -894,6 +908,7 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     void setupHeader() {
         if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
             mHeader.setVisibility(View.GONE);
+            mSearchRecyclerView.setPadding(0, 0, 0, 0);
             return;
         }
         mAdditionalHeaderRows.forEach(row -> mHeader.onPluginDisconnected(row));
@@ -1451,14 +1466,44 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         HorizontalAppsView hv = findViewById(R.id.horizontal_all_apps_view_container);
         if (hv != null) {
             boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
-            if (!searchVisible && !isSearchBarFloating()) {
-                if (hv.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) hv.getLayoutParams();
-                    lp.topMargin = insets.top;
+            if (hv.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) hv.getLayoutParams();
+                if (!isSearchBarFloating()) {
+                    if (searchVisible) {
+                        lp.addRule(RelativeLayout.BELOW, R.id.search_container_all_apps);
+                        lp.topMargin = 0;
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    } else {
+                        lp.removeRule(RelativeLayout.BELOW);
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                        lp.topMargin = insets.top;
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    }
                     hv.setLayoutParams(lp);
                 }
             }
             hv.setInsets(insets);
+        }
+
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            SearchRecyclerView searchRV = getSearchRecyclerView();
+            if (searchRV != null && searchRV.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+                RelativeLayout.LayoutParams searchLp = (RelativeLayout.LayoutParams) searchRV.getLayoutParams();
+                boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
+                if (!isSearchBarFloating()) {
+                    if (searchVisible) {
+                        searchLp.addRule(RelativeLayout.BELOW, R.id.search_container_all_apps);
+                        searchLp.topMargin = 0;
+                        searchLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    } else {
+                        searchLp.removeRule(RelativeLayout.BELOW);
+                        searchLp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                        searchLp.topMargin = insets.top;
+                        searchLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    }
+                    searchRV.setLayoutParams(searchLp);
+                }
+            }
         }
     }
 

@@ -17,17 +17,18 @@
 package com.android.launcher3.allapps;
 
 import static android.view.View.VISIBLE;
-
 import static com.android.app.animation.Interpolators.DECELERATE_1_7;
 import static com.android.app.animation.Interpolators.INSTANT;
 import static com.android.app.animation.Interpolators.clampToProgress;
 import static com.android.launcher3.anim.AnimatorListeners.forSuccessCallback;
+import static com.neoapps.neolauncher.preferences.ConstantsKt.LAYOUT_HORIZONTAL;
 
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.animation.Interpolator;
 
 import com.android.launcher3.R;
+import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 /** Coordinates the transition between Search and A-Z in All Apps. */
 public class SearchTransitionController extends RecyclerViewAnimationController {
@@ -64,9 +65,11 @@ public class SearchTransitionController extends RecyclerViewAnimationController 
                 mAllAppsContainerView.getAppsRecyclerViewContainer().setTranslationY(0);
             }));
         }
-        mAllAppsContainerView.getFloatingHeaderView().setFloatingRowsCollapsed(true);
-        mAllAppsContainerView.getFloatingHeaderView().setVisibility(VISIBLE);
-        mAllAppsContainerView.getFloatingHeaderView().maybeSetTabVisibility(VISIBLE);
+        if (NeoPrefs.getInstance().getDrawerLayout().getValue() != LAYOUT_HORIZONTAL) {
+            mAllAppsContainerView.getFloatingHeaderView().setFloatingRowsCollapsed(true);
+            mAllAppsContainerView.getFloatingHeaderView().setVisibility(VISIBLE);
+            mAllAppsContainerView.getFloatingHeaderView().maybeSetTabVisibility(VISIBLE);
+        }
         mAllAppsContainerView.getAppsRecyclerViewContainer().setVisibility(VISIBLE);
         getRecyclerView().setVisibility(VISIBLE);
     }

@@ -60,6 +60,7 @@ class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(co
     private val dotSize = Utilities.dpToPx(8f)
     private val dotMargin = Utilities.dpToPx(4f)
     private val paginationHeight = Utilities.dpToPx(40f)
+    private val contentTopPadding = Utilities.dpToPx(8f)
     private val dotActiveAlpha = 255
     private val dotInactiveAlpha = 100
 
@@ -157,7 +158,7 @@ class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(co
     private fun updatePagedViewPadding() {
         val effective = getEffectiveBottomInset()
         val bottomReserved = effective + paginationHeight
-        val topPadding = 0
+        val topPadding = contentTopPadding
         pagedView?.setPadding(0, topPadding, 0, bottomReserved)
     }
 
@@ -258,7 +259,8 @@ class HorizontalAppsView(context: Context, attrs: AttributeSet) : FrameLayout(co
 
         val navBarHeight = getNavBarHeightIfVisible(dp)
 
-        val availableHeight = screenHeight - searchBarHeight - paginationHeight - navBarHeight
+        val availableHeight =
+            screenHeight - searchBarHeight - paginationHeight - navBarHeight - contentTopPadding
 
         val calculated = availableHeight / cellHeight
 
