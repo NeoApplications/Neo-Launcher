@@ -255,7 +255,7 @@ public class PredictionRowView<T extends Context & ActivityContext>
             return;
         }
         if (getChildCount() != mNumPredictedAppsPerRow) {
-            while (getChildCount() > mNumPredictedAppsPerRow) {
+            while (getChildCount() > mNumPredictedAppsPerRow && getChildCount() > 0) {
                 removeViewAt(0);
             }
             LayoutInflater inflater = mActivityContext.getAppsView() != null
