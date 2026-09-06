@@ -40,7 +40,7 @@ import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider.Companio
 import com.neoapps.neolauncher.smartspace.weather.icons.WeatherIconProvider
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.Permissions.REQUEST_PERMISSION_LOCATION_ACCESS
-import com.neoapps.neolauncher.util.checkLocationAccess
+import com.neoapps.neolauncher.util.Permissions.checkLocationAccess
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay

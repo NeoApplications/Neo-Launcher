@@ -23,7 +23,7 @@ import android.content.pm.PackageManager
 import android.service.notification.StatusBarNotification
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.neoapps.neolauncher.util.checkPackagePermission
+import com.neoapps.neolauncher.util.Permissions.checkPackagePermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow

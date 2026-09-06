@@ -18,23 +18,29 @@
 
 package com.neoapps.neolauncher.util
 
-import android.Manifest
 import android.R
+import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
+import android.content.ContextWrapper
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import java.util.Locale
+
+fun Context.findActivity(): Activity? {
+    var ctx = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
+}
 
 fun Context.getLauncherOrNull(): Launcher? {
     return try {
@@ -46,20 +52,6 @@ fun Context.getLauncherOrNull(): Launcher? {
 
 fun Context.getIcon(): Drawable = packageManager.getApplicationIcon(applicationInfo)
 
-val Context.hasStoragePermission
-    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-            this, Manifest.permission.READ_MEDIA_IMAGES
-        )
-    } else {
-        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-            this, Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-    }
-
-val Context.hasWallpaperAccess
-    get() = hasStoragePermission
-
 fun <T> useApplicationContext(creator: (Context) -> T): (Context) -> T {
     return { it -> creator(it.applicationContext) }
 }
@@ -70,23 +62,6 @@ val Context.locale: Locale
 val Context.prefs: NeoPrefs
     get() = NeoPrefs.getInstance()
 
-fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
-    try {
-        val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-        info.requestedPermissions!!.forEachIndexed { index, s ->
-            if (s == permissionName) {
-                return info.requestedPermissionsFlags?.get(index)!!.hasFlag(PackageInfo.REQUESTED_PERMISSION_GRANTED)
-            }
-        }
-    } catch (_: PackageManager.NameNotFoundException) {
-    }
-    return false
-}
-
-fun Context.checkLocationAccess(): Boolean {
-    return Permissions.hasPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
-            Permissions.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-}
 
 @ColorInt
 fun Context.getColorAttr(attr: Int): Int {
