@@ -460,6 +460,12 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
             return true;
         }
+
+        View categoriesBar = findViewById(R.id.categories_bar);
+        if (categoriesBar != null && categoriesBar.getVisibility() == VISIBLE
+                && dragLayer.isEventOverView(categoriesBar, ev)) {
+            return false;
+        }
         AllAppsRecyclerView rv = getActiveRecyclerView();
         if (rv == null) {
             return true;
