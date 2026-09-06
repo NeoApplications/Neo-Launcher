@@ -201,7 +201,7 @@ public class AllAppsRecyclerView extends FastScrollRecyclerView {
      */
     @Override
     public void onUpdateScrollbar(int dy) {
-        if (mApps == null) {
+        if (mApps == null || mScrollbar == null) {
             return;
         }
         List<AllAppsGridAdapter.AdapterItem> items = mApps.getAdapterItems();

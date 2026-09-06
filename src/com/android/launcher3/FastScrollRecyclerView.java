@@ -81,6 +81,9 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
      * Returns the height of the fast scroll bar
      */
     public int getScrollbarTrackHeight() {
+        if (mScrollbar == null) {
+            return 0;
+        }
         return mScrollbar.getHeight() - getScrollBarTop() - getScrollBarMarginBottom();
     }
 
@@ -100,6 +103,9 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
      *   AvailableScrollBarHeight = Total height of the visible view - thumb height
      */
     protected int getAvailableScrollBarHeight() {
+        if (mScrollbar == null) {
+            return 0;
+        }
         return getScrollbarTrackHeight() - mScrollbar.getThumbHeight();
     }
 
@@ -112,6 +118,9 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
      */
     protected void synchronizeScrollBarThumbOffsetToViewScroll(int scrollY,
             int availableScrollHeight) {
+        if (mScrollbar == null) {
+            return;
+        }
         // Only show the scrollbar if there is height to be scrolled
         if (availableScrollHeight <= 0) {
             mScrollbar.setThumbOffsetY(-1);
@@ -133,13 +142,15 @@ public abstract class FastScrollRecyclerView extends RecyclerView  {
      * @param ev MotionEvent in {@param eventSource}
      */
     public boolean shouldContainerScroll(MotionEvent ev, View eventSource) {
-        float[] point = new float[2];
-        point[0] = ev.getX();
-        point[1] = ev.getY();
-        Utilities.mapCoordInSelfToDescendant(mScrollbar, eventSource, point);
-        // IF the MotionEvent is inside the thumb, container should not be pulled down.
-        if (mScrollbar.shouldBlockIntercept((int) point[0], (int) point[1])) {
-            return false;
+        if (mScrollbar != null) {
+            float[] point = new float[2];
+            point[0] = ev.getX();
+            point[1] = ev.getY();
+            Utilities.mapCoordInSelfToDescendant(mScrollbar, eventSource, point);
+            // IF the MotionEvent is inside the thumb, container should not be pulled down.
+            if (mScrollbar.shouldBlockIntercept((int) point[0], (int) point[1])) {
+                return false;
+            }
         }
 
         // IF scroller is at the very top OR there is no scroll bar because there is probably not

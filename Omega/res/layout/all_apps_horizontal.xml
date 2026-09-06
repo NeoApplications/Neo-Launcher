@@ -2,8 +2,7 @@
 <com.neoapps.neolauncher.allapps.HorizontalAppsView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/horizontal_all_apps_view_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_below="@+id/all_apps_search_header_container">
+    android:layout_height="match_parent">
 
     <com.android.launcher3.allapps.AllAppsPagedView
         android:id="@+id/apps_paged_view"
@@ -11,5 +10,13 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false" />
+
+    <LinearLayout
+        android:id="@+id/page_indicator_dots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:orientation="horizontal"
+        android:gravity="center" />
 
 </com.neoapps.neolauncher.allapps.HorizontalAppsView>

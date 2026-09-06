@@ -289,7 +289,10 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             CONTAINER_ALL_APPS_PREDICTION -> {
                 allAppsPredictions = info
                 appsView.floatingHeaderView.findFixedRowByType(PredictionRowView::class.java)
-                    .setPredictedApps(info.getContents())
+                    ?.setPredictedApps(info.getContents())
+                appsView.findViewById<com.neoapps.neolauncher.allapps.HorizontalAppsView>(
+                    R.id.horizontal_all_apps_view_container
+                )?.setPredictedApps(info.getContents())
             }
 
             CONTAINER_HOTSEAT_PREDICTION -> {
@@ -430,13 +433,13 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     override fun startActivitySafely(v: View?, intent: Intent?, item: ItemInfo?): RunnableList? {
         val predictionRowView =
             appsView.floatingHeaderView.findFixedRowByType(PredictionRowView::class.java)
-        predictionRowView.setPredictionUiUpdatePaused(true)
+        predictionRowView?.setPredictionUiUpdatePaused(true)
         val result = super.startActivitySafely(v, intent, item)
         if (result == null) {
-            predictionRowView.setPredictionUiUpdatePaused(false)
+            predictionRowView?.setPredictionUiUpdatePaused(false)
         } else {
             result.add {
-                predictionRowView.setPredictionUiUpdatePaused(false)
+                predictionRowView?.setPredictionUiUpdatePaused(false)
             }
         }
         return result

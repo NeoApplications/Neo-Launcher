@@ -102,6 +102,7 @@ import com.android.systemui.plugins.AllAppsRow;
 import com.neoapps.neolauncher.allapps.AllAppsTabItem;
 import com.neoapps.neolauncher.allapps.AllAppsTabs;
 import com.neoapps.neolauncher.allapps.AllAppsTabsController;
+import com.neoapps.neolauncher.allapps.HorizontalAppsView;
 import com.neoapps.neolauncher.preferences.NeoPrefs;
 
 import java.util.ArrayList;
@@ -456,6 +457,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                 || dragLayer.isEventOverView(mBottomSheetHandleArea, ev)) {
             return true;
         }
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            return true;
+        }
         AllAppsRecyclerView rv = getActiveRecyclerView();
         if (rv == null) {
             return true;
@@ -501,7 +505,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
                     }
                 }
             }
-            mFastScroller.setVisibility(prefs.getDrawerHideScrollbar().getValue() ? INVISIBLE : VISIBLE);
+            boolean hideScrollbar = prefs.getDrawerHideScrollbar().getValue()
+                    || prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL;
+            mFastScroller.setVisibility(hideScrollbar ? GONE : VISIBLE);
             if (mTouchHandler != null) {
                 mTouchHandler.endFastScrolling();
             }
@@ -691,15 +697,42 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             if (mHeader.isSetUp()) {
                 onActivePageChanged(mViewPager.getNextPage());
             }
+        } else if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            // Horizontal paged view
+            HorizontalAppsView horizontalView = findViewById(R.id.horizontal_all_apps_view_container);
+            if (horizontalView != null) {
+                horizontalView.setInsets(mInsets);
+                AlphabeticalAppsList mainAppsList = mAH.get(AdapterHolder.MAIN).mAppsList;
+                mainAppsList.updateItemFilter(mPersonalMatcher);
+                horizontalView.setup(mainAppsList, mAllAppsStore,
+                        mActivityContext.getDeviceProfile(), mMainAdapterProvider);
+                mainRecyclerView = horizontalView.getRecyclerViewForCurrentPage();
+                if (mainRecyclerView != null) {
+                    mAH.get(AdapterHolder.MAIN).mRecyclerView = mainRecyclerView;
+                }
+            } else {
+                mainRecyclerView = findViewById(R.id.apps_list_view);
+                mAH.get(AdapterHolder.MAIN).setup(mainRecyclerView, mPersonalMatcher);
+            }
+            mAH.get(AdapterHolder.WORK).mRecyclerView = null;
+            if (mFastScroller != null) {
+                mFastScroller.setVisibility(GONE);
+            }
+            if (mFastScrollLetterLayout != null) {
+                mFastScrollLetterLayout.setVisibility(GONE);
+            }
+            mHeader.setVisibility(GONE);
         } else {
             mainRecyclerView = findViewById(R.id.apps_list_view);
             mAH.get(AdapterHolder.MAIN).setup(mainRecyclerView, mPersonalMatcher);
             mAH.get(AdapterHolder.WORK).mRecyclerView = null;
         }
-        setUpCustomRecyclerViewPool(
-                mainRecyclerView,
-                workRecyclerView,
-                mActivityContext.getActivityComponent().getSharedAppsPool());
+        if (mainRecyclerView != null) {
+            setUpCustomRecyclerViewPool(
+                    mainRecyclerView,
+                    workRecyclerView,
+                    mActivityContext.getActivityComponent().getSharedAppsPool());
+        }
         setupHeader();
 
         if (isSearchBarFloating()) {
@@ -756,6 +789,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         if (prefs.getDrawerLayout().getValue() == LAYOUT_VERTICAL) {
             showTabs = false;
         }
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            showTabs = false;
+        }
         int layout = switch (prefs.getDrawerLayout().getValue()) {
             case LAYOUT_HORIZONTAL -> R.layout.all_apps_horizontal;
             case LAYOUT_CATEGORIES -> R.layout.all_apps_categorized;
@@ -799,7 +835,35 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
         boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
 
-        if (isSearchBarFloating()) {
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            RelativeLayout.LayoutParams lp = (LayoutParams) rvContainer.getLayoutParams();
+            if (isSearchBarFloating()) {
+                alignParentTop(rvContainer, false);
+                if (searchVisible) {
+                    lp.addRule(RelativeLayout.ABOVE, R.id.search_container_all_apps);
+                } else {
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                }
+            } else {
+                if (searchVisible) {
+                    lp.addRule(RelativeLayout.BELOW, R.id.search_container_all_apps);
+                    lp.topMargin = 0;
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                } else {
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    lp.topMargin = mInsets.top;
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                }
+            }
+            if (rvContainer instanceof HorizontalAppsView) {
+                ((HorizontalAppsView) rvContainer).setInsets(mInsets);
+            }
+            if (searchVisible) {
+                layoutBelowSearchContainer(getSearchRecyclerView(), /* tabs= */ false);
+            } else {
+                alignParentTop(getSearchRecyclerView(), /* tabs= */ false);
+            }
+        } else if (isSearchBarFloating()) {
             alignParentTop(rvContainer, showTabs);
             alignParentTop(getSearchRecyclerView(), false);
         } else {
@@ -828,6 +892,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     void setupHeader() {
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            mHeader.setVisibility(View.GONE);
+            return;
+        }
         mAdditionalHeaderRows.forEach(row -> mHeader.onPluginDisconnected(row));
 
         mHeader.setVisibility(View.VISIBLE);
@@ -1041,8 +1109,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
 
         RelativeLayout.LayoutParams layoutParams = (LayoutParams) v.getLayoutParams();
         layoutParams.removeRule(RelativeLayout.ABOVE);
+        layoutParams.removeRule(RelativeLayout.BELOW);
         layoutParams.removeRule(RelativeLayout.ALIGN_TOP);
         layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+        layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
     }
 
     protected BaseAllAppsAdapter createAdapter(AlphabeticalAppsList appsList) {
@@ -1297,6 +1367,13 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
      * The current apps recycler view in the container.
      */
     private AllAppsRecyclerView getActiveAppsRecyclerView() {
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            HorizontalAppsView hv = findViewById(R.id.horizontal_all_apps_view_container);
+            if (hv != null) {
+                AllAppsRecyclerView rv = hv.getRecyclerViewForCurrentPage();
+                if (rv != null) return rv;
+            }
+        }
         if (!mUsingTabs || isPersonalTab()) {
             return mAH.get(AdapterHolder.MAIN).mRecyclerView;
         } else {
@@ -1309,6 +1386,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
      * hidden while searching.
      */
     public ViewGroup getAppsRecyclerViewContainer() {
+        if (prefs.getDrawerLayout().getValue() == LAYOUT_HORIZONTAL) {
+            View container = findViewById(R.id.horizontal_all_apps_view_container);
+            if (container instanceof ViewGroup) return (ViewGroup) container;
+        }
         return mViewPager != null ? mViewPager : findViewById(R.id.apps_list_view);
     }
 
@@ -1367,6 +1448,18 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             setPadding(grid.allAppsLeftRightMargin, topPadding, grid.allAppsLeftRightMargin, 0);
         }
         InsettableFrameLayout.dispatchInsets(this, insets);
+        HorizontalAppsView hv = findViewById(R.id.horizontal_all_apps_view_container);
+        if (hv != null) {
+            boolean searchVisible = mSearchContainer != null && mSearchContainer.getVisibility() == VISIBLE;
+            if (!searchVisible && !isSearchBarFloating()) {
+                if (hv.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) hv.getLayoutParams();
+                    lp.topMargin = insets.top;
+                    hv.setLayoutParams(lp);
+                }
+            }
+            hv.setInsets(insets);
+        }
     }
 
     /**
