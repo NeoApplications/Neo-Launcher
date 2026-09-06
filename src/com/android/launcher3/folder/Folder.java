@@ -935,9 +935,6 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
             return;
         }
 
-        AnimatorSet animatorSet = getFolderAnimationManager()
-                .createAnimatorSet(/* isOpening */ true);
-
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
