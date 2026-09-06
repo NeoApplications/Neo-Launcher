@@ -47,7 +47,7 @@ class IconPreferences(val context: Context) {
     fun accentColor(): Int {
         val res = context.resources
         return prefs.getInt(
-            "profile_accent_color",
+            "legacy_accent_color",
             res.getColor(R.color.themed_icon_background_color)
         )
     }

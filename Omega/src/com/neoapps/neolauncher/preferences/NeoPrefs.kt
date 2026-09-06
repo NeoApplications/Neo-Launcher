@@ -151,7 +151,7 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = {
             var color = AccentColorOption.fromString(it).accentColor
             val lighterColor = ColorUtils.blendARGB(color, Color.WHITE, 0.75f)
-            legacyPrefs.savePreference("profile_accent_color", lighterColor)
+            legacyPrefs.savePreference("legacy_accent_color", lighterColor)
         }
     )
 
