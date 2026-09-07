@@ -912,7 +912,7 @@ class NeoPrefs private constructor(val context: Context) {
         entries = drawerLayoutOptions,
         onChange = {
             pokeChange()
-            reloadGrid()
+            recreate()
         }
     )
 
