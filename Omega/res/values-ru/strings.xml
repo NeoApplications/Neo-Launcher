@@ -405,7 +405,7 @@
     <string name="title_desktop_widget_corner_radius">Радиус угла виджета</string>
     <string name="title__drawer_rows">Количество строк</string>
     <string name="summary_fuzzy_search">Приблизительное соответствие для поиска приложений.</string>
-    <string name="protected_apps">Защищенные приложения</string>
+    <string name="protected_apps">Нажмите, чтобы открыть защищенные приложения</string>
     <string name="title_smartspace">Показать Смартспейс</string>
     <string name="icon_picker_load_failed">Не удалось загрузить больше иконок.</string>
     <string name="title_use_pill_qsb">Показать ярлык поиска в стиле таблетки</string>
