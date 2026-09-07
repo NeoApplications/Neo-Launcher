@@ -3,16 +3,12 @@ package com.neoapps.neolauncher.util
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.provider.Settings
+import android.os.Environment
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object Permissions {
 
@@ -20,7 +16,6 @@ object Permissions {
     const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
     const val REQUEST_PERMISSION_READ_CONTACTS = 668
     const val REQUEST_PERMISSION_WALLPAPER_ACCESS = 669
-
 
     fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
         try {
@@ -41,18 +36,6 @@ object Permissions {
                 hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    val Context.hasStoragePermission
-        get() = if (Utilities.ATLEAST_T) {
-            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_MEDIA_IMAGES
-            )
-        } else {
-            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        }
-
-
     fun requestPermission(activity: Activity, permission: String, requestCode: Int) {
         ActivityCompat.requestPermissions(
             activity, arrayOf(permission),
@@ -69,69 +52,13 @@ object Permissions {
     }
 
     val Context.hasWallpaperAccess: Boolean
-        get() = if (Utilities.ATLEAST_R) {
-            android.os.Environment.isExternalStorageManager()
+        get() = if (Utilities.ATLEAST_T) {
+            hasPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+        } else if (Utilities.ATLEAST_R) {
+            hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    Environment.isExternalStorageManager()
         } else {
-            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_EXTERNAL_STORAGE
-            )
+            hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    /**
-     * Returns the appropriate permission for accessing wallpaper based on the API level.
-     * - API 33+: READ_MEDIA_IMAGES
-     * - API < 33: READ_EXTERNAL_STORAGE
-     */
-    fun getWallpaperPermission(
-        activity: Activity,
-        onGranted: () -> Unit = {},
-        onCancelled: () -> Unit = {}
-    ): Boolean {
-        if (activity.hasWallpaperAccess) {
-            onGranted()
-            return true
-        }
-
-        var actionTaken = false
-        val dialog = MaterialAlertDialogBuilder(activity)
-            .setTitle(R.string.permission_wallpaper_title)
-            .setMessage(R.string.permission_wallpaper_message)
-            .setPositiveButton(R.string.permission_grant) { dialogInterface, _ ->
-                actionTaken = true
-                dialogInterface.dismiss()
-                onGranted()
-                if (Utilities.ATLEAST_R) {
-                    try {
-                        val intent =
-                            Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                                data = "package:${activity.packageName}".toUri()
-                            }
-                        activity.startActivity(intent)
-                    } catch (e: Exception) {
-                        val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                        activity.startActivity(intent)
-                    }
-                } else {
-                    val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-                    val requestCode = REQUEST_PERMISSION_WALLPAPER_ACCESS
-                    requestPermission(activity, permission, requestCode)
-                }
-            }
-            .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
-                actionTaken = true
-                dialogInterface.dismiss()
-                onCancelled()
-            }
-            .setOnDismissListener {
-                if (!actionTaken) {
-                    onCancelled()
-                }
-            }
-            .create()
-
-        dialog.applyAccent()
-        dialog.show()
-
-        return false
-    }
 }

@@ -28,7 +28,6 @@ import android.provider.Settings
 import android.util.Log
 import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.Utilities
-import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 import com.neoapps.neolauncher.data.reposModule
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -74,7 +73,6 @@ class NeoApp : Application() {
     fun onLauncherAppStateCreated() {
         registerActivityLifecycleCallbacks(activityHandler)
         Flowerpot.Manager.getInstance(this)
-        BlurWallpaperProvider.getInstance(this)
     }
 
     fun restart(recreateLauncher: Boolean = true) {

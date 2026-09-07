@@ -35,6 +35,7 @@ import com.android.launcher3.LauncherFiles
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
 import com.neoapps.neolauncher.util.hasFlag
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -363,14 +364,20 @@ class BackupManager(val context: Context, val uri: Uri) {
             val metaEntry = ZipEntry(FileInfo.FILE_NAME)
             out.putNextEntry(metaEntry)
             out.write(getFileInfo(name, contents).toString().toByteArray())
-            if (contents.hasFlag(INCLUDE_WALLPAPER)) {
-                val wallpaperManager = WallpaperManager.getInstance(context)
-                val wallpaperDrawable = wallpaperManager.drawable
-                val wallpaperBitmap = Utilities.drawableToBitmap(wallpaperDrawable)
-                if (wallpaperBitmap != null) {
-                    val wallpaperEntry = ZipEntry(WALLPAPER_FILE_NAME)
-                    out.putNextEntry(wallpaperEntry)
-                    wallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            if (contents.hasFlag(INCLUDE_WALLPAPER) && context.hasWallpaperAccess) {
+                try {
+                    val wallpaperManager = WallpaperManager.getInstance(context)
+                    val wallpaperDrawable = wallpaperManager.drawable
+                    if (wallpaperDrawable != null) {
+                        val wallpaperBitmap = Utilities.drawableToBitmap(wallpaperDrawable)
+                        if (wallpaperBitmap != null) {
+                            val wallpaperEntry = ZipEntry(WALLPAPER_FILE_NAME)
+                            out.putNextEntry(wallpaperEntry)
+                            wallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to backup wallpaper", e)
                 }
             }
             files.forEach { file ->

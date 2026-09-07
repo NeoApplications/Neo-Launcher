@@ -24,7 +24,6 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.LauncherApps
-import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.hardware.camera2.CameraManager
 import android.os.Bundle
@@ -75,7 +74,6 @@ import com.android.launcher3.util.RunnableList
 import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
-import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -84,8 +82,6 @@ import com.neoapps.neolauncher.shortcuts.OmegaShortcuts
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
-import com.neoapps.neolauncher.util.Permissions
-import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,9 +118,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         prefs.registerCallback(prefCallback)
         super.onCreate(savedInstanceState)
         savedStateRegistryController.performRestore(savedInstanceState)
-        if (prefs.profileBlurEnable.getValue() && !this.hasWallpaperAccess) {
-            prefs.profileBlurEnable.setValue(false)
-        }
 
         MODEL_EXECUTOR.handler.postAtFrontOfQueue { loadHiddenApps(prefs.drawerHiddenAppSet.getValue()) }
 
@@ -160,20 +153,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         )
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == Permissions.REQUEST_PERMISSION_WALLPAPER_ACCESS) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                BlurWallpaperProvider.getInstance(this).updateAsync()
-            } else {
-                prefs.profileBlurEnable.setValue(false)
-            }
-        }
-    }
 
     override fun setupViews() {
         super.setupViews()
@@ -519,13 +498,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         super.onResume()
         // lifecycle handled by the Activity/Launcher base class
         restartIfPending()
-        if (prefs.profileBlurEnable.getValue()) {
-            if (hasWallpaperAccess) {
-                BlurWallpaperProvider.getInstance(this).updateAsync()
-            } else {
-                prefs.profileBlurEnable.setValue(false)
-            }
-        }
+
         dragLayer.viewTreeObserver.addOnDrawListener(object : ViewTreeObserver.OnDrawListener {
             private var handled = false
 
@@ -541,13 +514,6 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
             }
         })
         paused = false
-    }
-
-    override fun onAllAppsTransition(progress: Float) {
-        super.onAllAppsTransition(progress)
-        (scrimView as? com.neoapps.neolauncher.blur.BlurScrimView)?.setAllAppsTransitionProgress(
-            progress
-        )
     }
 
     override fun onPause() {

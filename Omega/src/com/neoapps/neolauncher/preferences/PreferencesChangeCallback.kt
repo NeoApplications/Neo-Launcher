@@ -20,7 +20,6 @@ package com.neoapps.neolauncher.preferences
 
 import com.android.launcher3.dagger.LauncherComponentProvider.appComponent
 import com.neoapps.neolauncher.NeoLauncher
-import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 
 class PreferencesChangeCallback(val launcher: NeoLauncher) {
 
@@ -42,9 +41,5 @@ class PreferencesChangeCallback(val launcher: NeoLauncher) {
 
     fun restart() {
         launcher.scheduleRestart()
-    }
-
-    fun updateBlur() {
-        BlurWallpaperProvider.getInstance(launcher).updateAsync()
     }
 }

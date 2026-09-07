@@ -29,7 +29,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.android.launcher3.InvariantDeviceProfile.INDEX_DEFAULT
 import com.android.launcher3.LauncherAppState
@@ -73,9 +72,6 @@ import com.neoapps.neolauncher.smartspace.weather.OWMWeatherProvider
 import com.neoapps.neolauncher.theme.AccentColorOption
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.CustomPreferencesMigration
-import com.neoapps.neolauncher.util.Permissions
-import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
-import com.neoapps.neolauncher.util.findActivity
 import com.neoapps.neolauncher.util.getFeedProviders
 import com.neoapps.neolauncher.util.languageOptions
 import kotlinx.coroutines.CoroutineName
@@ -114,7 +110,6 @@ class NeoPrefs private constructor(val context: Context) {
     val reloadGrid = { onChangeCallback?.reloadGrid() }
     val reloadAll = { reloadModel(); reloadGrid() }
     val reloadTabs = { onChangeCallback?.reloadTabs() }
-    val updateBlur = { onChangeCallback?.updateBlur() }
 
     inline fun withChangeCallback(
         crossinline callback: (PreferencesChangeCallback) -> Unit,
@@ -231,53 +226,6 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = {
             legacyPrefs.savePreference("profile_icon_adaptify", it)
         }
-    )
-    var profileBlurEnable: BooleanPref = BooleanPref(
-        titleId = R.string.title__theme_blur,
-        summaryId = R.string.summary__theme_blur,
-        dataStore = dataStore,
-        key = PrefKey.PROFILE_BLUR_ENABLED,
-        defaultValue = false,
-        confirmAction = { context, newValue, successRunnable ->
-            if (!newValue) {
-                successRunnable.run()
-            } else if (context.hasWallpaperAccess) {
-                successRunnable.run()
-            } else {
-                val activity = context.findActivity()
-                if (activity != null) {
-                    Permissions.getWallpaperPermission(
-                        activity = activity,
-                        onGranted = {
-                            successRunnable.run()
-                        },
-                        onCancelled = {
-                            scope.launch(Dispatchers.IO) {
-                                dataStore.edit { it[PrefKey.PROFILE_BLUR_ENABLED] = false }
-                            }
-                            pokeChange()
-                        }
-                    )
-                } else {
-                    successRunnable.run()
-                }
-            }
-        },
-        onChange = {
-            updateBlur.invoke()
-            pokeChange()
-        }
-    )
-
-    var profileBlurRadius = FloatPref(
-        key = PrefKey.PROFILE_BLUR_RADIUS,
-        titleId = R.string.title__theme_blur_radius,
-        dataStore = dataStore,
-        defaultValue = 0.75f,
-        maxValue = 1.5f,
-        minValue = 0.1f,
-        steps = 27,
-        specialOutputs = { "${(it * 100).roundToInt()}%" }
     )
 
     var profileWindowCornerRadius = FloatPref(

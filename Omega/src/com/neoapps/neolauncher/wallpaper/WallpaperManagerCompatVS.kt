@@ -24,6 +24,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.neoapps.neolauncher.wallpaper.WallpaperColorsCompat.Companion.HINT_SUPPORTS_DARK_TEXT
 import com.neoapps.neolauncher.wallpaper.WallpaperColorsCompat.Companion.HINT_SUPPORTS_DARK_THEME
@@ -42,7 +43,11 @@ internal class WallpaperManagerCompatVS(context: Context) : WallpaperManagerComp
             },
             Handler(Looper.getMainLooper())
         )
-        update(wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM))
+        try {
+            update(wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM))
+        } catch (e: Exception) {
+            Log.w("WallpaperManagerCompatVS", "Error getting wallpaper colors: ${e.message}")
+        }
     }
 
     private fun update(wallpaperColors: WallpaperColors?) {
@@ -50,9 +55,13 @@ internal class WallpaperManagerCompatVS(context: Context) : WallpaperManagerComp
             this.wallpaperColors = null
             return
         }
-        val platformHints = wallpaperManager
-            .getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
-            ?.colorHints ?: 0
+        val platformHints = try {
+            wallpaperManager
+                .getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
+                ?.colorHints ?: 0
+        } catch (_: Exception) {
+            0
+        }
         var hints = 0
         if ((platformHints and WallpaperColors.HINT_SUPPORTS_DARK_TEXT) != 0) {
             hints = hints or HINT_SUPPORTS_DARK_TEXT

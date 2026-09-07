@@ -24,7 +24,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withTranslation
 import androidx.lifecycle.lifecycleScope
@@ -33,8 +32,6 @@ import com.android.launcher3.R
 import com.android.launcher3.icons.GraphicsUtils.setColorAlphaBound
 import com.android.launcher3.icons.ShadowGenerator
 import com.neoapps.neolauncher.NeoLauncher
-import com.neoapps.neolauncher.blur.BlurDrawable
-import com.neoapps.neolauncher.blur.BlurWallpaperProvider
 import com.neoapps.neolauncher.graphics.NinePatchDrawHelper
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.theme.AccentColorOption
@@ -46,7 +43,7 @@ import kotlin.math.roundToInt
 
 open class CustomHotseat @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : Hotseat(context, attrs, defStyleAttr), BlurWallpaperProvider.Listener {
+) : Hotseat(context, attrs, defStyleAttr) {
 
     val launcher = NeoLauncher.getLauncher(context)
     val prefs by lazy { NeoPrefs.getInstance() }
@@ -64,17 +61,7 @@ open class CustomHotseat @JvmOverloads constructor(
     private val shadowBlur = resources.getDimension(R.dimen.all_apps_scrim_blur)
     private val shadowHelper = NinePatchDrawHelper()
     private var shadowBitmap = generateShadowBitmap()
-    private val blurProvider by lazy { BlurWallpaperProvider.getInstance(context) }
-    private var blurDrawable: BlurDrawable? = null
-        set(value) {
-            if (isAttachedToWindow) {
-                field?.stopListening()
-            }
-            field = value
-            if (isAttachedToWindow) {
-                field?.startListening()
-            }
-        }
+
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
             override fun unscheduleDrawable(who: Drawable, what: Runnable) {}
@@ -104,7 +91,6 @@ open class CustomHotseat @JvmOverloads constructor(
     init {
         if (hotseatEnabled) {
             super.setVisibility(VISIBLE)
-            createBlurDrawable()
         } else {
             super.setVisibility(GONE)
         }
@@ -113,9 +99,8 @@ open class CustomHotseat @JvmOverloads constructor(
             prefs.dockCustomBackground.get(),
             prefs.dockBackgroundColor.get(),
             prefs.dockEnabled.get(),
-            prefs.profileWindowCornerRadius.get(),
-            prefs.profileBlurEnable.get()
-        ) { customBackground, color, show, dockRadius, _ ->
+            prefs.profileWindowCornerRadius.get()
+        ) { customBackground, color, show, dockRadius ->
             backgroundEnable = customBackground
             backgroundColor = AccentColorOption.fromString(color).accentColor
             hotseatEnabled = show
@@ -125,39 +110,17 @@ open class CustomHotseat @JvmOverloads constructor(
             } else {
                 super.setVisibility(GONE)
             }
-            createBlurDrawable()
             reload()
         }.launchIn(launcher.lifecycleScope)
     }
 
     private fun reload() {
         shadowBitmap = generateShadowBitmap()
-        val shouldDraw =
-            (backgroundEnable || BlurWallpaperProvider.isEnabled) && !launcher.deviceProfile.isVerticalBarLayout
+        val shouldDraw = backgroundEnable && !launcher.deviceProfile.isVerticalBarLayout
         setWillNotDraw(!shouldDraw)
-        if (BlurWallpaperProvider.isEnabled) {
-            paint.color = if (backgroundEnable) {
-                ColorUtils.setAlphaComponent(backgroundColor, 128)
-            } else {
-                ColorUtils.setAlphaComponent(backgroundColor, 40)
-            }
-        } else {
-            paint.color = backgroundColor
-        }
+        paint.color = backgroundColor
+
         invalidate()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-
-        blurProvider.addListener(this)
-        blurDrawable?.startListening()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        blurProvider.removeListener(this)
-        blurDrawable?.stopListening()
     }
 
     override fun setVisibility(visibility: Int) {
@@ -167,7 +130,7 @@ open class CustomHotseat @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
-        if (backgroundEnable || BlurWallpaperProvider.isEnabled) {
+        if (backgroundEnable) {
             drawBackground(canvas)
         }
         super.draw(canvas)
@@ -180,19 +143,9 @@ open class CustomHotseat @JvmOverloads constructor(
         val top = -radius + adjustmentY
         val right = width.toFloat() + adjustmentX
         val bottom = height * 2f + adjustmentY
-        if (BlurWallpaperProvider.isEnabled) {
-            blurDrawable?.run {
-                blurScaleX = 1 / scaleX
-                blurScaleY = 1 / scaleY
-                blurPivotX = pivotX
-                blurPivotY = pivotY
-                alpha = (viewAlpha * 255).toInt()
-                setBlurBounds(left, top, right, bottom)
-                draw(canvas)
-            }
-        }
         canvas.withTranslation(-adjustmentX, -adjustmentY) {
             drawRoundRect(left, top, right, bottom, radius, radius, paint)
+            shadowHelper.paint.alpha = (viewAlpha * 255).toInt()
             shadowHelper.drawVerticallyStretched(
                 shadowBitmap, this,
                 left - shadowBlur,
@@ -200,7 +153,6 @@ open class CustomHotseat @JvmOverloads constructor(
                 right + shadowBlur,
                 bottom
             )
-            shadowHelper.paint.alpha = (viewAlpha * 255).toInt()
         }
     }
 
@@ -222,11 +174,6 @@ open class CustomHotseat @JvmOverloads constructor(
         return shortcutsAndWidgets.alpha
     }
 
-    override fun setTranslationX(translationX: Float) {
-        super.setTranslationX(translationX)
-        invalidateBlur()
-    }
-
     private fun generateShadowBitmap(): Bitmap {
         val tmp = radius + shadowBlur
         val builder = ShadowGenerator.Builder(0)
@@ -239,34 +186,5 @@ open class CustomHotseat @JvmOverloads constructor(
         builder.drawShadow(Canvas(bitmap))
         return bitmap
     }
-    private fun createBlurDrawable() {
-        blurDrawable = if (visibility == VISIBLE && BlurWallpaperProvider.isEnabled) {
-            val drawable = blurDrawable ?: blurProvider.createDrawable(radius, radius)
-            drawable.apply {
-                blurRadii = BlurDrawable.Radii(radius)
-                callback = blurDrawableCallback
-                setBounds(left, top, right, bottom)
-                if (isAttachedToWindow) startListening()
-            }
-        } else {
-            null
-        }
-    }
 
-    private fun invalidateBlur() {
-        if (blurDrawable != null) {
-            invalidate()
-        }
-    }
-
-    override fun onEnabledChanged() {
-        createBlurDrawable()
-        reload()
-    }
-
-    override fun onWallpaperChanged() {
-        if (blurDrawable != null) {
-            invalidate()
-        }
-    }
 }

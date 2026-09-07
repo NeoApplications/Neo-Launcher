@@ -23,7 +23,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
+import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
 import com.neoapps.neolauncher.wallpaper.WallpaperColorsCompat.Companion.HINT_SUPPORTS_DARK_TEXT
 import com.neoapps.neolauncher.wallpaper.WallpaperColorsCompat.Companion.HINT_SUPPORTS_DARK_THEME
 
@@ -50,18 +52,20 @@ class WallpaperManagerCompatVW(context: Context) : WallpaperManagerCompat(contex
 
     private fun extractColors() {
         try {
-            val drawable = wallpaperManager.drawable
-            if (drawable != null) {
-                update(WallpaperColors.fromDrawable(drawable))
-            } else {
-                update(wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM))
+            if (context.hasWallpaperAccess) {
+                val drawable = wallpaperManager.drawable
+                if (drawable != null) {
+                    update(WallpaperColors.fromDrawable(drawable))
+                    return
+                }
             }
+            update(wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w("WallpaperManagerCompatVW", "Error extracting colors: ${e.message}")
             try {
                 update(wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM))
             } catch (ex: Exception) {
-                ex.printStackTrace()
+                Log.w("WallpaperManagerCompatVW", "Error in fallback extract colors: ${ex.message}")
             }
         }
     }

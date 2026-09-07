@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.neoapps.neolauncher.blur.BlurScrimView
+        <com.android.launcher3.views.ScrimView
             android:id="@+id/blur_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

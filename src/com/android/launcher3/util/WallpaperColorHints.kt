@@ -21,6 +21,7 @@ import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_SYSTEM
 import android.app.WallpaperManager.OnColorsChangedListener
 import android.content.Context
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
 import com.android.launcher3.Utilities
@@ -49,7 +50,12 @@ constructor(@ApplicationContext private val context: Context, tracker: DaggerSin
 
     init {
         if (Utilities.ATLEAST_S) {
-            hints = wallpaperManager.getWallpaperColors(FLAG_SYSTEM)?.colorHints ?: 0
+            hints = try {
+                wallpaperManager.getWallpaperColors(FLAG_SYSTEM)?.colorHints ?: 0
+            } catch (e: Exception) {
+                Log.w("WallpaperColorHints", "Error getting wallpaper colors: ${e.message}")
+                0
+            }
             val onColorsChangedListener = OnColorsChangedListener { colors, which ->
                 onColorsChanged(colors, which)
             }
