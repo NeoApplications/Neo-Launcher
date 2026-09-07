@@ -37,6 +37,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -70,6 +72,10 @@ fun TwoStatePreference(
     val context = LocalContext.current
     val paneNavigator = LocalPaneNavigator.current
     val (checked, check) = remember(pref) { mutableStateOf(pref.getValue()) }
+    val prefState by pref.getState()
+    LaunchedEffect(prefState) {
+        check(prefState)
+    }
 
     val onToggle = { newValue: Boolean ->
         val update = {

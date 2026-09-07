@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -344,6 +345,10 @@ fun SwitchPreference(
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
     val (checked, check) = remember(pref) { mutableStateOf(pref.getValue()) }
+    val prefState by pref.getState()
+    LaunchedEffect(prefState) {
+        check(prefState)
+    }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 

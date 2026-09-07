@@ -2,7 +2,6 @@ package com.neoapps.neolauncher.util
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -13,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object Permissions {
 
@@ -37,8 +37,8 @@ object Permissions {
     }
 
     fun Context.checkLocationAccess(): Boolean {
-        return Permissions.hasPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
-                Permissions.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        return hasPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     val Context.hasStoragePermission
@@ -92,15 +92,15 @@ object Permissions {
             return true
         }
 
-        if (Utilities.ATLEAST_R) {
-            var actionTaken = false
-            val dialog = AlertDialog.Builder(activity)
-                .setTitle(activity.resources.getString(R.string.permission_wallpaper_title))
-                .setMessage(activity.resources.getString(R.string.permission_wallpaper_message))
-                .setPositiveButton(activity.resources.getString(R.string.permission_grant)) { dialogInterface, _ ->
-                    actionTaken = true
-                    dialogInterface.dismiss()
-                    onGranted()
+        var actionTaken = false
+        val dialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.permission_wallpaper_title)
+            .setMessage(R.string.permission_wallpaper_message)
+            .setPositiveButton(R.string.permission_grant) { dialogInterface, _ ->
+                actionTaken = true
+                dialogInterface.dismiss()
+                onGranted()
+                if (Utilities.ATLEAST_R) {
                     try {
                         val intent =
                             Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
@@ -111,46 +111,26 @@ object Permissions {
                         val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                         activity.startActivity(intent)
                     }
+                } else {
+                    val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+                    val requestCode = REQUEST_PERMISSION_WALLPAPER_ACCESS
+                    requestPermission(activity, permission, requestCode)
                 }
-                .setNegativeButton(activity.resources.getString(android.R.string.cancel)) { dialogInterface, _ ->
-                    actionTaken = true
-                    dialogInterface.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+                actionTaken = true
+                dialogInterface.dismiss()
+                onCancelled()
+            }
+            .setOnDismissListener {
+                if (!actionTaken) {
                     onCancelled()
                 }
-                .setOnDismissListener {
-                    if (!actionTaken) {
-                        onCancelled()
-                    }
-                }
-                .create()
-            dialog.show()
-        } else {
-            val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-            val requestCode = Permissions.REQUEST_PERMISSION_WALLPAPER_ACCESS
+            }
+            .create()
 
-            var actionTaken = false
-            val dialog = AlertDialog.Builder(activity)
-                .setTitle(activity.resources.getString(R.string.permission_wallpaper_title))
-                .setMessage(activity.resources.getString(R.string.permission_wallpaper_message))
-                .setPositiveButton(activity.resources.getString(R.string.permission_grant)) { dialogInterface, _ ->
-                    actionTaken = true
-                    dialogInterface.dismiss()
-                    onGranted()
-                    Permissions.requestPermission(activity, permission, requestCode)
-                }
-                .setNegativeButton(activity.resources.getString(android.R.string.cancel)) { dialogInterface, _ ->
-                    actionTaken = true
-                    dialogInterface.dismiss()
-                    onCancelled()
-                }
-                .setOnDismissListener {
-                    if (!actionTaken) {
-                        onCancelled()
-                    }
-                }
-                .create()
-            dialog.show()
-        }
+        dialog.applyAccent()
+        dialog.show()
 
         return false
     }

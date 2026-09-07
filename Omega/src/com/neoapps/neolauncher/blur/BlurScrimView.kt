@@ -37,6 +37,7 @@ import com.android.launcher3.util.Themes
 import com.android.launcher3.views.ScrimView
 import com.neoapps.neolauncher.launcher
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.util.dpToPx
 import com.neoapps.neolauncher.util.runOnMainThread
 import kotlin.math.roundToInt
 
@@ -48,6 +49,7 @@ class BlurScrimView @JvmOverloads constructor(
     private val prefs = NeoPrefs.getInstance()
     private var drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
     private var radius = prefs.profileBlurRadius.getValue()
+    private var cornerRadius = 0f
     private var mLauncher = context.launcher
 
     private val blurDrawableCallback by lazy {
@@ -99,7 +101,7 @@ class BlurScrimView @JvmOverloads constructor(
     private fun createBlurDrawable(): BlurDrawable? {
         blurDrawable?.let { if (isAttachedToWindow) it.stopListening() }
         return if (BlurWallpaperProvider.isEnabled) {
-            provider.createDrawable(radius, 0f).apply {
+            provider.createDrawable(cornerRadius, 0f).apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()
@@ -109,23 +111,28 @@ class BlurScrimView @JvmOverloads constructor(
         }
     }
 
+    fun setAllAppsTransitionProgress(allAppsProgress: Float) {
+        mProgress = 1f - allAppsProgress
+        updateColors()
+        invalidate()
+    }
+
     private fun reInitUi() {
         drawerOpacity = prefs.drawerBackgroundOpacity.getValue()
-        radius = prefs.profileBlurRadius.getValue()
+        cornerRadius =
+            dpToPx(prefs.profileWindowCornerRadius.getValue().let { if (it > -1) it else 24f })
         blurDrawable = createBlurDrawable()
-        blurDrawable?.alpha = 0
         rebuildColors()
         updateColors()
     }
 
     private fun updateColors() {
-        val alpha = when {
-            useFlatColor -> ((1 - mProgress) * 255).toInt()
-            mProgress >= fullBlurProgress -> (255 * ACCELERATE_2.getInterpolation(
-                0f.coerceAtLeast(1 - mProgress) / (1 - fullBlurProgress)
-            )).roundToInt()
-
-            else -> 255
+        val baseAlpha = (drawerOpacity * 255).roundToInt()
+        val transitionFactor = (1f - mProgress).coerceIn(0f, 1f)
+        val alpha = if (useFlatColor) {
+            (baseAlpha * transitionFactor).roundToInt()
+        } else {
+            (baseAlpha * ACCELERATE_2.getInterpolation(transitionFactor)).roundToInt()
         }
         blurDrawable?.alpha = alpha
 

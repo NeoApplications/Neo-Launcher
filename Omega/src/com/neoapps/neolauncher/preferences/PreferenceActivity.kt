@@ -21,6 +21,7 @@ package com.neoapps.neolauncher.preferences
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -42,6 +43,8 @@ import com.neoapps.neolauncher.compose.navigation.PrefsComposeView
 import com.neoapps.neolauncher.theme.OmegaAppTheme
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
+import com.neoapps.neolauncher.util.Permissions
+import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
 import com.neoapps.neolauncher.util.prefs
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.MainScope
@@ -88,6 +91,32 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
             OmegaAppTheme {
                 navController = rememberNavController()
                 PrefsComposeView(navController, paneNavigator)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (prefs.profileBlurEnable.getValue()) {
+            if (hasWallpaperAccess) {
+                com.neoapps.neolauncher.blur.BlurWallpaperProvider.getInstance(this).updateAsync()
+            } else {
+                prefs.profileBlurEnable.setValue(false)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == Permissions.REQUEST_PERMISSION_WALLPAPER_ACCESS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                com.neoapps.neolauncher.blur.BlurWallpaperProvider.getInstance(this).updateAsync()
+            } else {
+                prefs.profileBlurEnable.setValue(false)
             }
         }
     }

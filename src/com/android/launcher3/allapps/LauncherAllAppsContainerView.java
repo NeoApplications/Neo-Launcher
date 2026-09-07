@@ -22,6 +22,7 @@ import android.view.WindowInsets;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.statemanager.StateManager;
+import com.neoapps.neolauncher.util.OmegaUtilsKt;
 
 /**
  * AllAppsContainerView with launcher specific callbacks
@@ -38,6 +39,11 @@ public class LauncherAllAppsContainerView extends ActivityAllAppsContainerView<L
 
     public LauncherAllAppsContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    int getBottomSheetBackgroundColor() {
+        return OmegaUtilsKt.getAllAppsScrimColor(mActivityContext);
     }
 
     @Override

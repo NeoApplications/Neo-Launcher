@@ -24,6 +24,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withTranslation
 import androidx.lifecycle.lifecycleScope
@@ -112,8 +113,9 @@ open class CustomHotseat @JvmOverloads constructor(
             prefs.dockCustomBackground.get(),
             prefs.dockBackgroundColor.get(),
             prefs.dockEnabled.get(),
-            prefs.profileWindowCornerRadius.get()
-        ) { customBackground, color, show, dockRadius ->
+            prefs.profileWindowCornerRadius.get(),
+            prefs.profileBlurEnable.get()
+        ) { customBackground, color, show, dockRadius, _ ->
             backgroundEnable = customBackground
             backgroundColor = AccentColorOption.fromString(color).accentColor
             hotseatEnabled = show
@@ -123,14 +125,25 @@ open class CustomHotseat @JvmOverloads constructor(
             } else {
                 super.setVisibility(GONE)
             }
+            createBlurDrawable()
             reload()
         }.launchIn(launcher.lifecycleScope)
     }
 
     private fun reload() {
         shadowBitmap = generateShadowBitmap()
-        setWillNotDraw(!backgroundEnable || launcher.deviceProfile.isVerticalBarLayout)
-        paint.color = backgroundColor
+        val shouldDraw =
+            (backgroundEnable || BlurWallpaperProvider.isEnabled) && !launcher.deviceProfile.isVerticalBarLayout
+        setWillNotDraw(!shouldDraw)
+        if (BlurWallpaperProvider.isEnabled) {
+            paint.color = if (backgroundEnable) {
+                ColorUtils.setAlphaComponent(backgroundColor, 128)
+            } else {
+                ColorUtils.setAlphaComponent(backgroundColor, 40)
+            }
+        } else {
+            paint.color = backgroundColor
+        }
         invalidate()
     }
 
@@ -154,7 +167,7 @@ open class CustomHotseat @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
-        if (backgroundEnable) {
+        if (backgroundEnable || BlurWallpaperProvider.isEnabled) {
             drawBackground(canvas)
         }
         super.draw(canvas)
@@ -167,14 +180,16 @@ open class CustomHotseat @JvmOverloads constructor(
         val top = -radius + adjustmentY
         val right = width.toFloat() + adjustmentX
         val bottom = height * 2f + adjustmentY
-        blurDrawable?.run {
-            blurScaleX = 1 / scaleX
-            blurScaleY = 1 / scaleY
-            blurPivotX = pivotX
-            blurPivotY = pivotY
-            alpha = (viewAlpha * 255).toInt()
-            setBlurBounds(left, top, right, bottom)
-            draw(canvas)
+        if (BlurWallpaperProvider.isEnabled) {
+            blurDrawable?.run {
+                blurScaleX = 1 / scaleX
+                blurScaleY = 1 / scaleY
+                blurPivotX = pivotX
+                blurPivotY = pivotY
+                alpha = (viewAlpha * 255).toInt()
+                setBlurBounds(left, top, right, bottom)
+                draw(canvas)
+            }
         }
         canvas.withTranslation(-adjustmentX, -adjustmentY) {
             drawRoundRect(left, top, right, bottom, radius, radius, paint)
@@ -246,7 +261,7 @@ open class CustomHotseat @JvmOverloads constructor(
 
     override fun onEnabledChanged() {
         createBlurDrawable()
-        invalidate()
+        reload()
     }
 
     override fun onWallpaperChanged() {

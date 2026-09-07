@@ -34,13 +34,12 @@ import androidx.core.graphics.scale
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.neoapps.neolauncher.neoApp
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.theme.AccentColorOption
+import com.neoapps.neolauncher.util.Permissions.hasWallpaperAccess
 import com.neoapps.neolauncher.util.SingletonHolder
 import com.neoapps.neolauncher.util.ceilToInt
 import com.neoapps.neolauncher.util.ensureOnMainThread
-import com.neoapps.neolauncher.util.hasWallpaperAccess
 import com.neoapps.neolauncher.util.runOnMainThread
 import com.neoapps.neolauncher.util.safeForEach
 import com.neoapps.neolauncher.util.useApplicationContext
@@ -102,13 +101,7 @@ class BlurWallpaperProvider(val context: Context) {
             updatePending = true
             return
         }
-        if (!context.hasWallpaperAccess) {
-            val activity = context.neoApp.activityHandler.foregroundActivity
-            if (activity != null) {
-                WallpaperPermissionHelper.requestIfNeeded(activity)
-            }
-            return
-        }
+
         val enabled = getEnabledStatus()
         if (enabled != isEnabled) {
             isEnabled = enabled
@@ -125,24 +118,31 @@ class BlurWallpaperProvider(val context: Context) {
 
         wallpaperFilter.applyPrefs(prefs)
 
-        var wallpaper = try {
-            Utilities.drawableToBitmap(mWallpaperManager.drawable, true) as Bitmap
-        } catch (e: SecurityException) {
-            val activity = context.neoApp.activityHandler.foregroundActivity
-            if (activity != null) {
-                WallpaperPermissionHelper.requestIfNeeded(activity)
+        var wallpaper: Bitmap? = null
+        if (context.hasWallpaperAccess) {
+            wallpaper = try {
+                val drawable = mWallpaperManager.drawable
+                if (drawable != null) {
+                    Utilities.drawableToBitmap(drawable, true) as? Bitmap
+                } else null
+            } catch (e: SecurityException) {
+                Log.w("BWP", "SecurityException retrieving wallpaper", e)
+                null
+            } catch (e: Exception) {
+                Log.w("BWP", "Error retrieving wallpaper: ${e.message}")
+                null
             }
-            return
-        } catch (e: Exception) {
-            prefs.profileBlurEnable.setValue(false)
-            runOnMainThread {
-                val msg = "${context.getString(R.string.failed)}: ${e.message}"
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                notifyWallpaperChanged()
-            }
-            return
         }
-        wallpaper = scaleToScreenSize(wallpaper)
+
+        var isFallback = false
+        if (wallpaper == null) {
+            wallpaper = createFallbackWallpaper()
+            isFallback = true
+        }
+
+        if (!isFallback) {
+            wallpaper = scaleToScreenSize(wallpaper)
+        }
         val wallpaperHeight = wallpaper.height
         wallpaperYOffset = if (wallpaperHeight > mDisplayHeight) {
             (wallpaperHeight - mDisplayHeight) * 0.5f
@@ -153,8 +153,10 @@ class BlurWallpaperProvider(val context: Context) {
         mWallpaperWidth = wallpaper.width
 
         placeholder = createPlaceholder(wallpaper.width, wallpaper.height)
-        wallpaper = applyVibrancy(wallpaper)
-        Log.d("BWP", "starting blur")
+        if (!isFallback) {
+            wallpaper = applyVibrancy(wallpaper)
+        }
+        Log.d("BWP", "starting blur (fallback=$isFallback)")
 
         applyTask = wallpaperFilter.apply(wallpaper).setCallback { result, error ->
             if (error == null) {
@@ -221,8 +223,16 @@ class BlurWallpaperProvider(val context: Context) {
         return bitmap
     }
 
-    private val tintColor =
-        AccentColorOption.fromString(prefs.profileAccentColor.getValue()).accentColor
+    private val tintColor
+        get() = AccentColorOption.fromString(prefs.profileAccentColor.getValue()).accentColor
+
+    private fun createFallbackWallpaper(): Bitmap {
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val bounds = wm.currentWindowMetrics.bounds
+        mDisplayWidth = bounds.width().coerceAtLeast(1)
+        mDisplayHeight = bounds.height().coerceAtLeast(1)
+        return createPlaceholder(mDisplayWidth, mDisplayHeight)
+    }
 
     fun updateAsync() {
         MAIN_EXECUTOR.execute(mUpdateRunnable)

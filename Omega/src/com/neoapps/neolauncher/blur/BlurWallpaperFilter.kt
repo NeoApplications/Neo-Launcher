@@ -22,15 +22,15 @@ import android.graphics.Bitmap
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.task.AsyncBlurTask
 import com.neoapps.neolauncher.preferences.NeoPrefs
+import kotlin.math.roundToInt
 
 class BlurWallpaperFilter(private val context: Context) : WallpaperFilter {
 
     private var blurRadius = 25
 
     override fun applyPrefs(prefs: NeoPrefs) {
-        blurRadius = (prefs.profileBlurRadius.getValue() / BlurWallpaperProvider.DOWN_SAMPLE_FACTOR)
-            .toInt()
-        blurRadius = blurRadius.coerceAtLeast(1).coerceAtMost(25)
+        val factor = prefs.profileBlurRadius.getValue()
+        blurRadius = (factor * 25).roundToInt().coerceIn(1, 25)
     }
 
     override fun apply(wallpaper: Bitmap): WallpaperFilter.ApplyTask {
