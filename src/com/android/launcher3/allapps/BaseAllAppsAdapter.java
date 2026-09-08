@@ -152,7 +152,10 @@ public abstract class BaseAllAppsAdapter
                 return false;
             }
             if (itemInfo != null && other.itemInfo != null) {
-                return java.util.Objects.equals(itemInfo.toComponentKey(), other.itemInfo.toComponentKey());
+                if (itemInfo.componentName != null && other.itemInfo.componentName != null) {
+                    return java.util.Objects.equals(itemInfo.toComponentKey(), other.itemInfo.toComponentKey());
+                }
+                return false;
             }
             if (folderItem != null && other.folderItem != null) {
                 return folderItem.getInfo().id == other.folderItem.getInfo().id;
