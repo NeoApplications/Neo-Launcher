@@ -573,4 +573,6 @@
     <string name="permission_grant">Разрешить</string>
     <string name="permission_wallpaper_title">Доступ к обоям</string>
     <string name="permission_wallpaper_message">Neo Launcher нужен доступ к вашим обоям, чтобы применить эффект размытия. Без этого разрешения, эффект размытия будет недоступен.</string>
+    <string name="category_food_and_drink">Еда и напитки</string>"&gt;
+    <string name="category_photography">Фотография</string>
 </resources>
