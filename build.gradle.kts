@@ -87,12 +87,12 @@ android {
 
     defaultConfig {
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 37
         applicationId = "com.saggitt.omega"
         javaCompileOptions.annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
             "true"
-        versionName = "1.0.1"
-        versionCode = 1007
+        versionName = "1.0.2"
+        versionCode = 1008
         buildConfigField("String", "BUILD_DATE", "\"${getBuildDate()}\"")
         buildConfigField("boolean", "ENABLE_AUTO_INSTALLS_LAYOUT", "false")
         buildConfigField("boolean", "IS_DEBUG_DEVICE", "false")
