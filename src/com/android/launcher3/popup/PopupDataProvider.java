@@ -170,7 +170,20 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         }
 
         Integer count = mDeepShortcutMap.get(new ComponentKey(component, info.user));
-        return count == null ? 0 : count;
+        if (count != null && count > 0) {
+            return count;
+        }
+
+        // Fallback: search by package name if target component activity name differs from shortcut activity
+        String pkg = component.getPackageName();
+        int packageCount = 0;
+        for (Map.Entry<ComponentKey, Integer> entry : mDeepShortcutMap.entrySet()) {
+            if (entry.getKey().user.equals(info.user)
+                    && pkg.equals(entry.getKey().componentName.getPackageName())) {
+                packageCount += entry.getValue();
+            }
+        }
+        return packageCount;
     }
 
     public @Nullable DotInfo getDotInfoForItem(@NonNull ItemInfo info) {

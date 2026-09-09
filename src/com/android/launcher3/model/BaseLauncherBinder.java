@@ -30,18 +30,20 @@ import com.android.launcher3.model.BgDataModel.Callbacks;
 import com.android.launcher3.model.BgDataModel.FixedContainerItems;
 import com.android.launcher3.model.data.AppsListData;
 import com.android.launcher3.model.data.WorkspaceData;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LooperExecutor;
 import com.android.launcher3.util.LooperIdleLock;
 import com.android.launcher3.widget.model.WidgetsListBaseEntriesBuilder;
 import com.android.launcher3.widget.model.WidgetsListBaseEntry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Executor;
+
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * Binds the results of {@link com.android.launcher3.model.LoaderTask} to the Callbacks objects.
@@ -133,6 +135,20 @@ public class BaseLauncherBinder {
                 .build(mBgDataModel.widgetsModel.getWidgetsByPackageItemForPicker());
         mBgDataModel.notifyWidgetsUpdate(widgets);
         executeCallbacksTask(c -> c.bindAllWidgets(widgets), mUiExecutor);
+    }
+
+    /**
+     * Binds the deep shortcuts from BgDataModel to the callbacks UX.
+     */
+    public void bindDeepShortcuts() {
+        if (!WIDGETS_ENABLED) {
+            return;
+        }
+        final HashMap<ComponentKey, Integer> shortcutMapCopy;
+        synchronized (mBgDataModel) {
+            shortcutMapCopy = new HashMap<>(mBgDataModel.getDeepShortcutMap());
+        }
+        executeCallbacksTask(c -> c.bindDeepShortcutMap(shortcutMapCopy), mUiExecutor);
     }
 
     protected void executeCallbacksTask(CallbackTask task, Executor executor) {

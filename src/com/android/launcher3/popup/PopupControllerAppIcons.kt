@@ -21,6 +21,8 @@ import android.view.View
 import com.android.launcher3.BubbleTextView
 import com.android.launcher3.Launcher
 import com.android.launcher3.model.data.ItemInfo
+import com.android.launcher3.shortcuts.ShortcutRequest
+import com.android.launcher3.util.PackageManagerHelper
 import com.android.launcher3.util.PackageUserKey
 import com.android.launcher3.util.ShortcutUtil
 import com.android.launcher3.views.ActivityContext
@@ -44,7 +46,18 @@ class PopupControllerForAppIcon<T> : PopupController<T> where T : Context, T : A
             return null
         }
         val popupDataProvider = launcher.activityComponent.popupDataProvider
-        val deepShortcutCount = popupDataProvider.getShortcutCountForItem(item)
+        var deepShortcutCount = popupDataProvider.getShortcutCountForItem(item)
+        if (deepShortcutCount == 0 && PackageManagerHelper.hasShortcutsPermission(launcher)
+            && ShortcutUtil.supportsDeepShortcuts(item)
+        ) {
+            val targetPkg = item.targetPackage
+            if (targetPkg != null) {
+                val published = ShortcutRequest(launcher, item.user)
+                    .forPackage(targetPkg)
+                    .query(ShortcutRequest.PUBLISHED)
+                deepShortcutCount = published.size.coerceAtMost(PopupPopulator.MAX_SHORTCUTS)
+            }
+        }
         val systemShortcuts =
             launcher
                 .getSupportedShortcuts(item)

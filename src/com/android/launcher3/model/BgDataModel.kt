@@ -15,6 +15,7 @@
  */
 package com.android.launcher3.model
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherApps
 import android.content.pm.LauncherApps.ShortcutQuery
@@ -116,6 +117,11 @@ constructor(
     fun clear() {
         deepShortcutMap = emptyMap()
         extraItems.clear()
+    }
+
+    @Synchronized
+    fun clearDeepShortcutMap() {
+        deepShortcutMap = emptyMap()
     }
 
     @Synchronized
@@ -356,19 +362,22 @@ constructor(
         shortcuts: List<ShortcutInfo>,
         keysToRemove: ((ComponentKey) -> Boolean)? = null,
     ) {
-        if (keysToRemove != null) {
-            deepShortcutMap = deepShortcutMap.filterKeys { !keysToRemove.invoke(it) }
+        val map = if (keysToRemove != null) {
+            deepShortcutMap.filterKeys { !keysToRemove.invoke(it) }.toMutableMap()
+        } else {
+            deepShortcutMap.toMutableMap()
         }
 
         // Now add the new shortcuts to the map.
-        deepShortcutMap +=
-            shortcuts
-                .asSequence()
-                .filter {
-                    it.isEnabled && (it.isDeclaredInManifest || it.isDynamic) && it.activity != null
-                }
-                .groupingBy { ComponentKey(it.activity, it.userHandle) }
-                .eachCount()
+        for (shortcut in shortcuts) {
+            if (shortcut.isEnabled && (shortcut.isDeclaredInManifest || shortcut.isDynamic)) {
+                val act = shortcut.activity ?: ComponentName(shortcut.getPackage(), "")
+                val key = ComponentKey(act, shortcut.userHandle)
+                val prev = map[key] ?: 0
+                map[key] = prev + 1
+            }
+        }
+        deepShortcutMap = map
     }
 
     /**
@@ -455,6 +464,8 @@ constructor(
 
         /** Binds the cache of string resources */
         fun bindStringCache(cache: StringCache) {}
+
+        fun bindDeepShortcutMap(deepShortcutMap: HashMap<ComponentKey, Int>) {}
     }
 
     companion object {

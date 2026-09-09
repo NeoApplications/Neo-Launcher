@@ -86,6 +86,7 @@ public class ShortcutRequest {
             if (activity == null) {
                 mFailed = true;
             } else {
+                mQuery.setPackage(activity.getPackageName());
                 mQuery.setActivity(activity);
             }
         }

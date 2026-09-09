@@ -26,6 +26,7 @@ import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.PredictedContainerInfo
 import com.android.launcher3.model.data.WorkspaceData
 import com.android.launcher3.popup.PopupContainer
+import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.Executors
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
 import com.android.launcher3.util.Executors.UI_HELPER_EXECUTOR
@@ -380,6 +381,10 @@ class ModelCallbacks(private var launcher: Launcher) : BgDataModel.Callbacks {
     override fun bindStringCache(cache: StringCache) {
         stringCache = cache
         launcher.appsView.updateWorkUI()
+    }
+
+    override fun bindDeepShortcutMap(deepShortcutMap: HashMap<ComponentKey, Int>) {
+        launcher.activityComponent.popupDataProvider.setDeepShortcutMap(deepShortcutMap)
     }
 
     /** Bind the items start-end from the list. */

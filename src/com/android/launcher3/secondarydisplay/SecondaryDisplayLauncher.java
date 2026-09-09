@@ -65,11 +65,13 @@ import com.android.launcher3.model.data.PredictedContainerInfo;
 import com.android.launcher3.model.data.WorkspaceData;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.touch.ItemClickHandler.ItemClickProxy;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.BaseDragLayer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -317,6 +319,11 @@ public class SecondaryDisplayLauncher extends BaseActivity
     @Override
     public void bindStringCache(StringCache cache) {
         mStringCache = cache;
+    }
+
+    @Override
+    public void bindDeepShortcutMap(HashMap<ComponentKey, Integer> deepShortcutMap) {
+        getActivityComponent().getPopupDataProvider().setDeepShortcutMap(deepShortcutMap);
     }
 
     @Override

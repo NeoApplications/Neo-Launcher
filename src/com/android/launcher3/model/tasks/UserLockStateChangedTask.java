@@ -115,5 +115,6 @@ public class UserLockStateChangedTask implements ModelUpdateTask {
                         ? new ShortcutRequest(context, mUser).query(ShortcutRequest.ALL)
                         : Collections.emptyList(),
                 key -> key.user.equals(mUser));
+        taskController.bindDeepShortcuts(dataModel);
     }
 }

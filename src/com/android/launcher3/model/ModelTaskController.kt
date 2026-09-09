@@ -100,4 +100,9 @@ constructor(
             }
         }
     }
+
+    fun bindDeepShortcuts(dataModel: BgDataModel) {
+        val shortcutMapCopy = synchronized(dataModel) { HashMap(dataModel.deepShortcutMap) }
+        scheduleCallbackTask { it.bindDeepShortcutMap(shortcutMapCopy) }
+    }
 }

@@ -115,6 +115,7 @@ class ShortcutsChangedTask(
             dataModel.updateDeepShortcutCounts(shortcuts) {
                 it.componentName.packageName == packageName && it.user == user
             }
+            taskController.bindDeepShortcuts(dataModel)
         }
     }
 }

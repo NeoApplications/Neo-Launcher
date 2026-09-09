@@ -273,6 +273,7 @@ constructor(
                     // issues that arise from that.
                     launcherBinder.bindAllApps()
                     launcherBinder.bindWidgets()
+                    launcherBinder.bindDeepShortcuts()
 
                     if (Flags.simplifiedLauncherModelBinding())
                         installQueue.resumeModelPush(ItemInstallQueue.FLAG_LOADER_RUNNING)

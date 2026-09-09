@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.pm.ShortcutInfo;
 import android.os.Handler;
 import android.os.UserHandle;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -122,17 +123,28 @@ public class PopupPopulator {
             List<ShortcutInfo> shortcuts = new ShortcutRequest(context, user)
                     .withContainer(activity)
                     .query(ShortcutRequest.PUBLISHED);
+            if (shortcuts.isEmpty() && targetPackage != null) {
+                shortcuts = new ShortcutRequest(context, user)
+                        .forPackage(targetPackage)
+                        .query(ShortcutRequest.PUBLISHED);
+            }
             shortcuts = PopupPopulator.sortAndFilterShortcuts(shortcuts);
             IconCache cache = LauncherAppState.getInstance(context).getIconCache();
-            for (int i = 0; i < shortcuts.size() && i < shortcutViews.size(); i++) {
-                final ShortcutInfo shortcut = shortcuts.get(i);
-                final WorkspaceItemInfo si = new WorkspaceItemInfo(shortcut, context);
-                cache.getShortcutIcon(si, shortcut, infoWrapper);
-                si.rank = i;
-                si.container = CONTAINER_SHORTCUTS;
-
+            for (int i = 0; i < shortcutViews.size(); i++) {
                 final DeepShortcutView view = shortcutViews.get(i);
-                uiHandler.post(() -> view.applyShortcutInfo(si, shortcut, container, context));
+                if (i < shortcuts.size()) {
+                    final ShortcutInfo shortcut = shortcuts.get(i);
+                    final WorkspaceItemInfo si = new WorkspaceItemInfo(shortcut, context);
+                    cache.getShortcutIcon(si, shortcut, infoWrapper);
+                    si.rank = i;
+                    si.container = CONTAINER_SHORTCUTS;
+                    uiHandler.post(() -> {
+                        view.setVisibility(View.VISIBLE);
+                        view.applyShortcutInfo(si, shortcut, container, context);
+                    });
+                } else {
+                    uiHandler.post(() -> view.setVisibility(View.GONE));
+                }
             }
         };
     }
