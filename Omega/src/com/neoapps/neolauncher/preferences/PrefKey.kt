@@ -130,6 +130,8 @@ object PrefKey {
     val WIDGETS_SMARTSPACE_EVENTS_PROVIDER =
         stringSetPreferencesKey("widgets_smartspace_events_provider")
     val WIDGETS_SMARTSPACE_WEATHER_UNIT = stringPreferencesKey("widgets_smartspace_weather_unit")
+    val WIDGETS_SMARTSPACE_WEATHER_ENABLED =
+        booleanPreferencesKey("widgets_smartspace_weather_enabled")
     val WIDGETS_SMARTSPACE_WEATHER_PROVIDER =
         stringPreferencesKey("widgets_smartspace_weather_provider")
     val WIDGETS_SMARTSPACE_WEATHER_API_KEY = stringPreferencesKey("widgets_smartspace_weather_api")

@@ -64,7 +64,7 @@ fun WidgetsPrefsPage() {
     }
     val smartspacePrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {
         val isOwm =
-            prefs.smartspaceWeatherProvider.getValue() == OWMWeatherProvider::class.java.name
+            prefs.smartspaceWeatherProvider.getStringValue() == OWMWeatherProvider::class.java.name
         mutableStateListOf(
             *listOfNotNull(
                 prefs.smartspaceEnable,

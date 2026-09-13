@@ -41,8 +41,9 @@ class WeatherIconProvider(private val context: Context) {
         const val CONDITION_FEW_CLOUDS = "02"
         const val CONDITION_CLOUDS = "03"
         const val CONDITION_MOST_CLOUDS = "04"
-        const val CONDITION_SHOWERS = "09"
+        const val CONDITION_DRIZZLE = "09"
         const val CONDITION_RAIN = "10"
+        const val CONDITION_HEAVY_RAIN = "08"
         const val CONDITION_STORM = "11"
         const val CONDITION_SNOW = "13"
         const val CONDITION_MIST = "50"
@@ -56,10 +57,12 @@ class WeatherIconProvider(private val context: Context) {
             "${CONDITION_CLOUDS}n" to R.drawable.weather_03n,
             "${CONDITION_MOST_CLOUDS}d" to R.drawable.weather_04,
             "${CONDITION_MOST_CLOUDS}n" to R.drawable.weather_04n,
-            "${CONDITION_SHOWERS}d" to R.drawable.weather_09,
-            "${CONDITION_SHOWERS}n" to R.drawable.weather_09,
-            "${CONDITION_RAIN}d" to R.drawable.weather_10,
-            "${CONDITION_RAIN}n" to R.drawable.weather_10n,
+            "${CONDITION_DRIZZLE}d" to R.drawable.weather_10,
+            "${CONDITION_DRIZZLE}n" to R.drawable.weather_10n,
+            "${CONDITION_RAIN}d" to R.drawable.weather_09,
+            "${CONDITION_RAIN}n" to R.drawable.weather_09,
+            "${CONDITION_HEAVY_RAIN}d" to R.drawable.weather_08,
+            "${CONDITION_HEAVY_RAIN}n" to R.drawable.weather_08,
             "${CONDITION_STORM}d" to R.drawable.weather_11,
             "${CONDITION_STORM}n" to R.drawable.weather_11,
             "${CONDITION_SNOW}d" to R.drawable.weather_13,

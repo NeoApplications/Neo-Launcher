@@ -717,10 +717,10 @@ class NeoPrefs private constructor(val context: Context) {
 
     var drawerEnableProtectedApps = TwoStatePref(
         dataStore = dataStore,
-        key = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
+        key1 = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
         titleId = R.string.enable_protected_apps,
         summaryId = R.string.protected_apps,
-        defaultValue = false,
+        defaultValue1 = false,
         navRoute = NavRoute.Drawer.ProtectedApps(),
         confirmAction = { context, newValue, successRunnable ->
             if (!newValue) {
@@ -944,11 +944,11 @@ class NeoPrefs private constructor(val context: Context) {
 
     var drawerFolderManager = TwoStatePref(
         dataStore = dataStore,
-        key = PrefKey.DRAWER_ENABLE_FOLDERS,
-        defaultValue = true,
+        key1 = PrefKey.DRAWER_ENABLE_FOLDERS,
+        defaultValue1 = true,
         titleId = R.string.title_enable_folders,
         summaryId = R.string.summary_manage_folders,
-        navRoute = NavRoute.Drawer.Folders(),
+        navRoute = NavRoute.Drawer.Folders()
     )
 
     // Notifications & Widgets/Smartspace
@@ -1108,18 +1108,19 @@ class NeoPrefs private constructor(val context: Context) {
         onChange = { recreate() }
     )
 
-    var smartspaceWeatherProvider = StringSelectionPref(
+    var smartspaceWeatherProvider = TwoStatePref(
         dataStore = dataStore,
-        key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
-        titleId = R.string.title_smartspace_widget_provider,
-        defaultValue = OWMWeatherProvider::class.java.name,
+        key1 = PrefKey.WIDGETS_SMARTSPACE_WEATHER_ENABLED,
+        key2 = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
+        titleId = R.string.title_smartspace_widget_enable,
+        summaryId = R.string.title_smartspace_widget_provider,
+        defaultValue1 = true,
+        defaultValue2 = OWMWeatherProvider::class.java.name,
         entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
         onChange = {
-            pokeChange()
             recreate()
         }
     )
-
 
     var smartspaceEventProviders = StringMultiSelectionPref(
         dataStore = dataStore,

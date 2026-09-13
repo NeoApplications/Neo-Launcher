@@ -47,7 +47,6 @@ import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
 import com.neoapps.neolauncher.smartspace.provider.CalendarEventProvider
 import com.neoapps.neolauncher.smartspace.provider.NotificationUnreadProvider
 import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
-import com.neoapps.neolauncher.smartspace.weather.BlankWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.OWMWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.PixelWeatherProvider
@@ -166,14 +165,13 @@ class Config(val context: Context) {
             NotificationUnreadProvider::class.java.name to R.string.event_provider_unread_notifications,
         )
 
-        fun smartspaceWeatherProviders(context: Context) = mapOf(
-            BlankWeatherProvider::class.java.name to context.resources.getString(R.string.title_disabled),
+        fun smartspaceWeatherProviders(context: Context) = mapOf<String, String>(
             GoogleWeatherProvider::class.java.name to context.resources.getString(R.string.google),
             OWMWeatherProvider::class.java.name to context.resources.getString(R.string.weather_provider_owm),
             if (PixelWeatherProvider.isAvailable(context))
                 PixelWeatherProvider::class.java.name to context.resources.getString(R.string.weather_provider_pe)
             else {
-                "none" to "none"
+                "none" to context.resources.getString(R.string.none)
             }
         )
 

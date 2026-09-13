@@ -326,7 +326,8 @@
     <string name="title_smartspace_date">Show Date</string>
     <string name="title_smartspace_calendar">Select Calendar</string>
     <string name="title_smartspace_time_above">Show Large Clock</string>
-    <string name="title_smartspace_widget_provider">Weather source</string>
+    <string name="title_smartspace_widget_enable">Enable weather</string>
+    <string name="title_smartspace_widget_provider">%1$s. Tap to change</string>
     <string name="title_smartspace_weather_units">Temperature unit</string>
     <string name="title_smartspace_event_providers">Events sources</string>
     <string name="category__behavior_weather">Weather</string>

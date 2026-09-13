@@ -2,6 +2,7 @@ package com.neoapps.neolauncher.smartspace.provider
 
 import android.app.Activity
 import android.content.Context
+import com.android.launcher3.R
 import com.neoapps.neolauncher.util.prefs
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +25,10 @@ abstract class SmartspaceDataSource(
     open val disabledTargets: List<SmartspaceTarget> = emptyList()
 
     private val restartSignal = MutableStateFlow(0)
+
+    var latitude: Double = 13.6989
+    var longitude: Double = -89.1910
+    var cityName: String = context.getString(R.string.default_city)
 
     private val enabledTargets
         get() = internalTargets

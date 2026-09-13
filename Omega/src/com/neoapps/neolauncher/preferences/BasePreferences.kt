@@ -33,6 +33,7 @@ import com.neoapps.neolauncher.theme.AccentColorOption
 import com.neoapps.neolauncher.util.runOnMainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -136,7 +137,7 @@ open class IntSelectionPref(
 open class LongSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
-    val dataStore: DataStore<Preferences>,
+    dataStore: DataStore<Preferences>,
     val key: Preferences.Key<Long>,
     val defaultValue: Long = 0,
     val entries: () -> Map<Long, String>,
@@ -146,7 +147,7 @@ open class LongSelectionPref(
 open class LongMultiSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
-    private val dataStore: DataStore<Preferences>,
+    dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<Long> = emptySet(),
     val entries: () -> Map<Long, String>,
@@ -269,7 +270,7 @@ open class StringSetPref(
 open class StringMultiSelectionPref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
-    private val dataStore: DataStore<Preferences>,
+    dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<Set<String>>,
     val defaultValue: Set<String> = emptySet(),
     val withIcons: Boolean = false,
@@ -329,12 +330,37 @@ class TwoStatePref(
     @StringRes titleId: Int,
     @StringRes summaryId: Int = -1,
     dataStore: DataStore<Preferences>,
-    key: Preferences.Key<Boolean>,
-    val navRoute: NavRoute,
-    val defaultValue: Boolean = false,
+    key1: Preferences.Key<Boolean>,
+    val key2: Preferences.Key<String>? = null,
+    var navRoute: NavRoute? = null,
+    val defaultValue1: Boolean = false,
+    val defaultValue2: String = "",
     val confirmAction: ((Context, Boolean, Runnable) -> Unit)? = null,
+    val entries: Map<String, String> = emptyMap(),
     onChange: (Boolean) -> Unit = {}
-) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key, defaultValue, onChange)
+) : PrefDelegate<Boolean>(titleId, summaryId, dataStore, key1, defaultValue1, onChange) {
+    fun getStringValue(): String {
+        return runBlocking(Dispatchers.IO) {
+            getStringFlow().firstOrNull() ?: defaultValue2
+        }
+    }
+
+    suspend fun setStringValue(value: String) {
+        if (key2 == null) return
+        dataStore.edit { it[key2] = value }
+    }
+
+    fun getStringFlow(): Flow<String> {
+        if (key2 != null) {
+            return dataStore.data.map { it[key2] ?: defaultValue2 }
+        } else return emptyFlow()
+    }
+
+    @Composable
+    fun getStringState(): State<String> {
+        return getStringFlow().collectAsState(initial = defaultValue2)
+    }
+}
 
 abstract class MutableMapPref<K, V>(
     context: Context,
@@ -407,7 +433,7 @@ class ResettableLazy<out T : Any>(private val create: () -> T) {
 abstract class PrefDelegate<T : Any>(
     @StringRes var titleId: Int,
     @StringRes var summaryId: Int = -1,
-    private val dataStore: DataStore<Preferences>,
+    val dataStore: DataStore<Preferences>,
     private val key: Preferences.Key<T>,
     private val defaultValue: T,
     val onChange: (T) -> Unit
