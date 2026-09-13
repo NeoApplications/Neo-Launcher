@@ -122,18 +122,14 @@ class BcSmartspaceCard @JvmOverloads constructor(
             BcSmartSpaceUtil.setOnClickListener(it, calendarAction, "BcSmartspaceCard")
         }
 
-        when {
-            headerAction.hasIntent -> {
-                BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
-            }
-
-            baseAction.hasIntent -> {
-                BcSmartSpaceUtil.setOnClickListener(this, baseAction, "BcSmartspaceCard")
-            }
-
-            else -> {
-                BcSmartSpaceUtil.setOnClickListener(this, headerAction, "BcSmartspaceCard")
-            }
+        val primaryAction = when {
+            headerAction.hasIntent -> headerAction
+            baseAction.hasIntent -> baseAction
+            else -> headerAction
+        }
+        BcSmartSpaceUtil.setOnClickListener(this, primaryAction, "BcSmartspaceCard")
+        subtitleTextView?.let {
+            BcSmartSpaceUtil.setOnClickListener(it, primaryAction, "BcSmartspaceCard")
         }
     }
 

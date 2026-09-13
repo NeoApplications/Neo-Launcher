@@ -372,8 +372,20 @@
     <string name="onboarding_swipe_up">Swipe up to open the drawer.</string>
     <string name="weather_provider_testing">Debug</string>
     <string name="weather_provider_owm" translatable="true">OpenWeatherMap</string>
+    <string name="weather_code_clear">Clear sky</string>
+    <string name="weather_code_mainly_clear">Mainly clear</string>
+    <string name="weather_code_overcast">Overcast</string>
+    <string name="weather_code_partly_cloudy">Partly cloudy</string>
+    <string name="weather_code_fog">Fog</string>
+    <string name="weather_code_drizzle">Drizzle</string>
+    <string name="weather_code_rain">Rain</string>
+    <string name="weather_code_heavy_rain">Heavy rain</string>
+    <string name="weather_code_snow">Snow</string>
+    <string name="weather_code_thunderstorm">Thunderstorm</string>
     <string name="weather_provider_pe">Pixel Experience</string>
     <string name="weather_provider_oneplus_weather">OnePlus Weather</string>
+    <string name="weather_feels_like">Feels like %1$s</string>
+    <string name="weather_forecast_hourly">Hourly forecast</string>
     <string name="event_provider_now_playing">Now Playing</string>
     <string name="event_provider_unread_notifications">Notifications</string>
     <string name="battery_status">Battery Status</string>

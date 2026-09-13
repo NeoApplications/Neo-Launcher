@@ -25,7 +25,7 @@ data class WeatherInfo(
     val cityName: String,
     val temperature: Double,
     val apparentTemperature: Double,
-    val weatherCode: Long,
+    val weatherCode: Int,
     val humidity: Double,
     val windSpeed: Double,
     val precipitation: Double,

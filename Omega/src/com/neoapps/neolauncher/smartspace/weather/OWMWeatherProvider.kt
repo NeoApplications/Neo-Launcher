@@ -36,6 +36,7 @@ import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
 import com.neoapps.neolauncher.smartspace.model.WeatherData
 import com.neoapps.neolauncher.smartspace.provider.SmartspaceDataSource
+import com.neoapps.neolauncher.smartspace.showWeatherDetailsDialog
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.neoapps.neolauncher.smartspace.weather.icons.WeatherIconProvider
 import com.neoapps.neolauncher.util.Permissions
@@ -47,8 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -58,44 +58,53 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.milliseconds
 
 class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     context, R.string.weather_provider_owm
 ), CurrentWeatherCallback {
     override val isAvailable = true
     override val disabledTargets = listOf(dummyTarget)
-    override var internalTargets: Flow<List<SmartspaceTarget>> = flowOf(disabledTargets)
+    private val _internalTargets = MutableStateFlow(disabledTargets)
+    override var internalTargets: Flow<List<SmartspaceTarget>> = _internalTargets
 
     private val owm by lazy { OpenWeatherMapHelper(prefs.smartspaceWeatherApiKey.getValue()) }
     private val iconProvider by lazy { WeatherIconProvider(context) }
     private var weatherData: WeatherData? = null
     val scope = CoroutineScope(Dispatchers.IO)
     private val locationAccess get() = context.checkLocationAccess()
+    private val currentCity = prefs.smartspaceWeatherCity.getValue()
     var weatherInfo: WeatherInfo? = null
 
     init {
         updateData()
-        internalTargets = flow {
+        scope.launch {
             while (true) {
+                delay(TimeUnit.MINUTES.toMillis(25))
                 updateData()
-                emit(updateWeatherData())
-                delay(TimeUnit.MINUTES.toMillis(25).milliseconds)
             }
         }
     }
 
     private fun updateWeatherData(): List<SmartspaceTarget> {
-        if (weatherData != null) {
-            Log.d("OWM", "Updating weather data " + weatherData?.getTitle())
+        val currentWeatherData = weatherData
+        if (currentWeatherData != null) {
+            Log.d("OWM", "Updating weather data " + currentWeatherData.getTitle())
             val target = SmartspaceTarget(
                 smartspaceTargetId = "OWMWeatherMap",
                 headerAction = SmartspaceAction(
                     id = "OWMWeatherMap",
-                    icon = Icon.createWithBitmap(weatherData!!.icon),
+                    icon = Icon.createWithBitmap(currentWeatherData.icon),
                     title = "",
-                    subtitle = weatherData?.getTitle(Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())),
-                    pendingIntent = weatherData?.pendingIntent
+                    subtitle = currentWeatherData.getTitle(Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())),
+                    pendingIntent = currentWeatherData.pendingIntent,
+                    onClick = { view ->
+                        val info = weatherInfo
+                        if (info != null) {
+                            showWeatherDetailsDialog(view.context, info)
+                        } else {
+                            updateData()
+                        }
+                    }
                 ),
                 score = SmartspaceScores.SCORE_WEATHER,
                 featureType = SmartspaceTarget.FEATURE_WEATHER,
@@ -110,19 +119,27 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         val hourlyList = mutableListOf<HourlyWeather>()
 
         val client: OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .build()
         val apiKey = prefs.smartspaceWeatherApiKey.getValue().trim()
-        val isFahrenheit = prefs.smartspaceWeatherUnit.getValue() == "fahrenheit"
+        val isFahrenheit = prefs.smartspaceWeatherUnit.getValue() == "imperial" ||
+                prefs.smartspaceWeatherUnit.getValue() == "fahrenheit"
         val units = if (isFahrenheit) "imperial" else "metric"
         val lang = Locale.getDefault().language
 
         try {
-            val forecastUrl = "https://api.openweathermap.org/data/4.0/forecast?" +
+            var forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?" +
                     "lat=$latitude&lon=$longitude&units=$units&lang=$lang&appid=$apiKey"
+            if (currentCity != "##Auto") {
+                forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?" +
+                        "q=$currentCity&units=$units&lang=$lang&appid=$apiKey"
+            }
+
+            Log.d("OWM", "Forecast URL: $forecastUrl")
             val forecastReq = Request.Builder().url(forecastUrl).build()
             client.newCall(forecastReq).execute().use { fResponse ->
+                Log.d("OWM", "Forecast response code: ${fResponse.code}")
                 if (fResponse.isSuccessful) {
                     val fJson = JSONObject(fResponse.body.string())
                     val list = fJson.optJSONArray("list")
@@ -160,22 +177,38 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         } catch (_: Exception) {
         }
 
+        val targetUnit = Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())
+        val owmId = currentWeather.weather.getOrNull(0)?.id?.toInt() ?: 800
+
+        val tempKelvin = (currentWeather.main?.temp ?: 273.15).roundToInt()
+        val feelsLikeKelvin = (currentWeather.main?.feelsLike ?: 273.15).roundToInt()
+        val maxTempKelvin = (currentWeather.main?.tempMax ?: 273.15).roundToInt()
+        val minTempKelvin = (currentWeather.main?.tempMin ?: 273.15).roundToInt()
+
+        val tempConverted =
+            Temperature(tempKelvin, Temperature.Unit.Kelvin).inUnit(targetUnit).toDouble()
+        val feelsLikeConverted =
+            Temperature(feelsLikeKelvin, Temperature.Unit.Kelvin).inUnit(targetUnit).toDouble()
+        val maxTempConverted =
+            Temperature(maxTempKelvin, Temperature.Unit.Kelvin).inUnit(targetUnit).toDouble()
+        val minTempConverted =
+            Temperature(minTempKelvin, Temperature.Unit.Kelvin).inUnit(targetUnit).toDouble()
+
         weatherInfo = WeatherInfo(
-            cityName = currentWeather.name,
-            temperature = currentWeather.main?.temp ?: 0.0,
-            apparentTemperature = currentWeather.main?.feelsLike ?: 0.0,
-            weatherCode = currentWeather.weather.getOrNull(0)?.id ?: 0,
+            cityName = currentWeather.name ?: cityName,
+            temperature = tempConverted,
+            apparentTemperature = feelsLikeConverted,
+            weatherCode = mapOwmToWmoCode(owmId),
             humidity = currentWeather.main?.humidity ?: 0.0,
             windSpeed = currentWeather.wind?.speed ?: 0.0,
             precipitation = currentWeather.rain?.oneHour ?: 0.0,
             isDay = currentWeather.weather.getOrNull(0)?.icon?.contains("d") ?: true,
-            maxTemp = currentWeather.main?.tempMax ?: 0.0,
-            minTemp = currentWeather.main?.tempMin ?: 0.0,
-            unit = Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue()).name,
+            maxTemp = maxTempConverted,
+            minTemp = minTempConverted,
+            unit = targetUnit.suffix,
             hourly = hourlyList,
             lastUpdatedMillis = System.currentTimeMillis()
         )
-
     }
 
     private fun mapOwmToWmoCode(owmId: Int): Int {
@@ -200,7 +233,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
 
     @SuppressLint("MissingPermission")
     fun updateData() {
-        if (prefs.smartspaceWeatherCity.getValue() == "##Auto") {
+        if (currentCity == "##Auto") {
             if (!locationAccess) {
                 Permissions.requestPermission(
                     context.neoApp.activityHandler.foregroundActivity!!,
@@ -212,6 +245,8 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                 scope.launch {
                     val resolvedLoc = LocationHelper(context).getCurrentOrLastLocation()
                     if (resolvedLoc != null) {
+                        latitude = resolvedLoc.latitude
+                        longitude = resolvedLoc.longitude
                         owm.getCurrentWeatherByGeoCoordinates(
                             resolvedLoc.latitude,
                             resolvedLoc.longitude,
@@ -237,8 +272,13 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
             ),
             "https://openweathermap.org/city/${currentWeather.id}"
         )
-        updateWeatherData()
-        updateWeatherInfo(currentWeather)
+        currentWeather.coord?.lat?.let { latitude = it }
+        currentWeather.coord?.lon?.let { longitude = it }
+        _internalTargets.value = updateWeatherData()
+        scope.launch {
+            updateWeatherInfo(currentWeather)
+            _internalTargets.value = updateWeatherData()
+        }
     }
 
     override fun onFailure(throwable: Throwable?) {
@@ -252,7 +292,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
             Log.d("OWM", "Updating weather data failed", throwable)
             Toast.makeText(context, throwable.message, Toast.LENGTH_LONG).show()
         }
-        updateWeatherData()
+        _internalTargets.value = updateWeatherData()
     }
 
     companion object {
