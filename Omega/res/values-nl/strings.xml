@@ -569,4 +569,6 @@
     <string name="permission_grant">Verlenen</string>
     <string name="permission_wallpaper_title">Achtergrondtoegang</string>
     <string name="permission_wallpaper_message">Neo Launcher heeft toegang tot je achtergrondafbeelding nodig om vervagingseffecten toe te passen. Zonder deze toestemming wordt de vervaagde achtergrond uitgeschakeld.</string>
+    <string name="category_food_and_drink">Eten &amp; Drinken</string>"&gt;
+    <string name="category_photography">Fotografie</string>
 </resources>
