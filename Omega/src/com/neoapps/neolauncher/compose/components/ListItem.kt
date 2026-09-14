@@ -18,10 +18,11 @@
 
 package com.neoapps.neolauncher.compose.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -31,9 +32,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.preferences.PREFS_DESKTOP_POPUP_EDIT
@@ -53,6 +58,15 @@ fun SingleSelectionListItem(
     onClick: () -> Unit = {}
 ) {
 
+    val containerColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        },
+        label = "containerColor"
+    )
+
     val startWidget: @Composable (() -> Unit) = {
         RadioButton(
             selected = isSelected,
@@ -60,11 +74,14 @@ fun SingleSelectionListItem(
             onClick = { onClick() },
             colors = RadioButtonDefaults.colors(
                 selectedColor = MaterialTheme.colorScheme.primary,
-                unselectedColor = MaterialTheme.colorScheme.onSurface
+                unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSelectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                disabledUnselectedColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             ),
             modifier = Modifier.size(24.dp)
         )
     }
+
     ListItem(
         modifier = modifier
             .clip(
@@ -89,7 +106,7 @@ fun SingleSelectionListItem(
                     text = secondaryText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (!isEnabled) {
-                        MaterialTheme.colorScheme.onSurface
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                     } else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -97,9 +114,11 @@ fun SingleSelectionListItem(
         leadingContent = startWidget,
         trailingContent = endWidget,
         colors = ListItemDefaults.colors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+            containerColor = containerColor,
+            headlineColor = MaterialTheme.colorScheme.onSurface,
+            supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     )
 }
@@ -124,10 +143,11 @@ fun MultiSelectionListItem(
                 Icon(
                     painter = painterResource(id = iconResId),
                     contentDescription = null,
-                    tint = if (isEnabled) {
-                        if (isChecked) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    } else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    tint = when {
+                        !isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        isChecked -> MaterialTheme.colorScheme.onSecondaryContainer
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
         }
@@ -137,51 +157,52 @@ fun MultiSelectionListItem(
         Checkbox(
             checked = isChecked,
             enabled = isEnabled,
-            onCheckedChange = onClick,
-            colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.primary,
-                uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                checkmarkColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            modifier = Modifier.size(24.dp)
+            onCheckedChange = null,
+            modifier = Modifier.clearAndSetSemantics {}
         )
     }
 
     ListItem(
         modifier = modifier
-            .clip(
-                GroupItemShape(index, groupSize - 1)
-            )
-            .clickable(
+            .clip(GroupItemShape(index, groupSize - 1))
+            .toggleable(
+                value = isChecked,
                 enabled = isEnabled,
-                onClick = { onClick(!isChecked) }
+                role = Role.Checkbox,
+                onValueChange = onClick
             ),
         headlineContent = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.titleMedium,
-                color = if (!isEnabled) {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                } else MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.bodyLarge,
+                color = when {
+                    !isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    isChecked -> MaterialTheme.colorScheme.onSecondaryContainer
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
             )
         },
-        supportingContent = if (secondaryText != null) {
+        supportingContent = secondaryText?.let { supporting ->
             {
                 Text(
-                    text = secondaryText,
+                    text = supporting,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (!isEnabled) {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    } else MaterialTheme.colorScheme.onSurfaceVariant
+                    color = when {
+                        !isEnabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        isChecked -> MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
-        } else null,
+        },
         leadingContent = leadingContent,
         trailingContent = trailingContent,
         colors = ListItemDefaults.colors(
             containerColor = if (isChecked) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-            } else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                Color.Transparent
+            }
         )
     )
 }
