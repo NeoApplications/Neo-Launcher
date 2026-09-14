@@ -50,7 +50,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,10 +88,17 @@ fun TwoStatePreference(
     val (checked, check) = remember(pref) { mutableStateOf(pref.getValue()) }
     val openDialog = remember { mutableStateOf(false) }
     val selectedValue2 by pref.getStringState()
-    val summaryText = remember { mutableStateOf(pref.entries[selectedValue2] ?: "") }
+    var selectedKeyOverride by remember(pref) { mutableStateOf<String?>(null) }
+    val currentSelectedKey = selectedKeyOverride ?: selectedValue2
+    val summaryText = pref.entries[currentSelectedKey]
+        ?: (if (pref.entries.isNotEmpty()) pref.entries.values.firstOrNull() else null)
+        ?: ""
     val prefState by pref.getState()
     LaunchedEffect(prefState) {
         check(prefState)
+    }
+    LaunchedEffect(selectedValue2) {
+        selectedKeyOverride = null
     }
 
     val onToggle = { newValue: Boolean ->
@@ -136,7 +142,7 @@ fun TwoStatePreference(
         isEnabled = isEnabled,
         isChecked = checked,
         summary = pref.summaryId,
-        summaryText = summaryText.value,
+        summaryText = summaryText,
         index = index,
         groupSize = groupSize,
         onclick = {
@@ -152,9 +158,10 @@ fun TwoStatePreference(
             TwoStatePrefDialogUI(
                 titleId = pref.titleId,
                 entries = pref.entries,
-                selectedValue = selectedValue2,
+                selectedValue = currentSelectedKey,
                 openDialogCustom = openDialog,
                 onConfirm = { selectedKey ->
+                    selectedKeyOverride = selectedKey
                     coroutineScope.launch {
                         pref.setStringValue(selectedKey)
                     }
@@ -187,13 +194,21 @@ fun TwoStatePreference(
             )
         },
         supportingContent = {
-            if (summary != -1) {
+            if (summary != -1 || summaryText.isNotEmpty()) {
                 Text(
                     modifier = Modifier
                         .addIf(!isEnabled) {
                             alpha(0.3f)
                         },
-                    text = stringResource(id = summary, summaryText),
+                    text = if (summary != -1) {
+                        if (summaryText.isNotEmpty()) {
+                            stringResource(id = summary, summaryText)
+                        } else {
+                            stringResource(id = summary)
+                        }
+                    } else {
+                        summaryText
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -292,12 +307,9 @@ fun TwoStatePrefDialogUI(
             ) {
                 val groupSize = entryPairs.size
                 items(items = entryPairs, key = { it.first }) { item ->
-                    val isSelected = rememberSaveable(selected) {
-                        mutableStateOf(selected == item.first)
-                    }
                     SingleSelectionListItem(
                         title = item.second,
-                        isSelected = isSelected.value,
+                        isSelected = selected == item.first,
                         index = entryPairs.indexOf(item),
                         groupSize = groupSize
                     ) {
