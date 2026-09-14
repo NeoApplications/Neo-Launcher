@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.DialogPositiveButton
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -75,15 +76,29 @@ fun StringTextPrefDialogUI(
                 modifier = Modifier.fillMaxWidth()
             )
             Row(
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                DialogNegativeButton(
-                    cornerRadius = cornerRadius,
-                    onClick = { openDialogCustom.value = false }
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DialogNegativeButton(
+                        cornerRadius = cornerRadius,
+                        onClick = { openDialogCustom.value = false }
+                    )
+                    if (pref.autoValue.isNotEmpty()) {
+                        DialogNegativeButton(
+                            textId = R.string.title_default,
+                            cornerRadius = cornerRadius,
+                            onClick = {
+                                pref.setValue(pref.autoValue)
+                                openDialogCustom.value = false
+                            }
+                        )
+                    }
+                }
+
                 DialogPositiveButton(
                     cornerRadius = cornerRadius,
                     onClick = {

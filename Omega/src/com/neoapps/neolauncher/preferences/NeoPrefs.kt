@@ -1093,7 +1093,8 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_CITY,
         titleId = R.string.weather_city,
-        defaultValue = context.getString(R.string.default_city),
+        defaultValue = "##Auto",
+        autoValue = "##Auto",
         onChange = {
             pokeChange()
         }

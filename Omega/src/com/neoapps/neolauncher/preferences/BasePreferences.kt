@@ -243,6 +243,7 @@ open class StringTextPref(
     dataStore: DataStore<Preferences>,
     key: Preferences.Key<String>,
     val defaultValue: String = "",
+    val autoValue: String = "",
     val predicate: (String) -> Boolean = { true },
     onChange: (String) -> Unit = {}
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue, onChange)
