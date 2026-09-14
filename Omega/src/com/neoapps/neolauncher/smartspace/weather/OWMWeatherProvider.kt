@@ -312,8 +312,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
 
     override fun onFailure(throwable: Throwable?) {
         if ((prefs.smartspaceWeatherApiKey.getValue() == context.getString(R.string.default_owm_key)
-                    && !BuildConfig.APPLICATION_ID.contains("debug")
-                    && !BuildConfig.APPLICATION_ID.contains("alpha"))
+                    && !BuildConfig.APPLICATION_ID.contains("debug"))
             || throwable?.message == apiKeyError
         ) {
             Toast.makeText(context, R.string.owm_get_your_own_key, Toast.LENGTH_LONG).show()
