@@ -107,9 +107,6 @@ fun IntSelectionPrefDialogUI(
                     .weight(1f, false),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
                 val groupSize = entryPairs.size
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
@@ -123,9 +120,6 @@ fun IntSelectionPrefDialogUI(
                     ) {
                         selected = it.first
                     }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
 
@@ -261,9 +255,6 @@ fun StringSelectionPrefDialogUI(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 val groupSize = entryPairs.size
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
                 items(items = entryPairs) {
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
@@ -276,9 +267,6 @@ fun StringSelectionPrefDialogUI(
                     ) {
                         selected = it.first
                     }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
 

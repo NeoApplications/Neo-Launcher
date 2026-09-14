@@ -50,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -268,7 +269,6 @@ fun TwoStatePrefDialogUI(
         )
     }
     val entryPairs = remember(entries) { entries.toList() }
-
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.padding(8.dp),
@@ -285,14 +285,21 @@ fun TwoStatePrefDialogUI(
             )
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
-                    .blockShadow(),
+                    .blockShadow()
+                    .padding(all = 8.dp)
+                    .weight(1f, false),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
+                val groupSize = entryPairs.size
                 items(items = entryPairs, key = { it.first }) { item ->
+                    val isSelected = rememberSaveable(selected) {
+                        mutableStateOf(selected == item.first)
+                    }
                     SingleSelectionListItem(
                         title = item.second,
-                        isSelected = selected == item.first
+                        isSelected = isSelected.value,
+                        index = entryPairs.indexOf(item),
+                        groupSize = groupSize
                     ) {
                         selected = item.first
                     }
