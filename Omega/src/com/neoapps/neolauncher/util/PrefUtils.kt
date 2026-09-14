@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.android.launcher3.BuildConfig
-import com.android.launcher3.R
 import com.android.launcher3.qsb.OSEManager
 import com.neoapps.neolauncher.groups.AppGroupsManager
 import com.neoapps.neolauncher.preferences.PREFS_LANGUAGE_DEFAULT_CODE
@@ -80,9 +79,7 @@ private fun summarizeLocale(locale: Locale, localeAndroidCode: String): String {
 }
 
 fun Context.getFeedProviders(): Map<String, String> {
-    val feeds = listOf(
-        ProviderInfo(getString(R.string.none), "", getIcon())
-    ) + availableFeedProviders().map {
+    val feeds = availableFeedProviders().map {
         ProviderInfo(
             it.loadLabel(packageManager).toString(),
             it.packageName,

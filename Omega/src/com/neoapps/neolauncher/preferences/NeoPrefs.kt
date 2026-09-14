@@ -1238,11 +1238,14 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
     )
 
-    var feedProvider = StringSelectionPref(
+    var feedProvider = TwoStatePref(
         dataStore = dataStore,
-        key = PrefKey.FEED_PROVIDER,
+        key1 = PrefKey.FEED_ENABLE,
+        key2 = PrefKey.FEED_PROVIDER,
         titleId = R.string.title_feed_provider,
-        defaultValue = "",
+        summaryId = R.string.title_smartspace_widget_provider,
+        defaultValue1 = false,
+        defaultValue2 = "",
         entries = context.getFeedProviders(),
         onChange = { reloadModel() }
     )

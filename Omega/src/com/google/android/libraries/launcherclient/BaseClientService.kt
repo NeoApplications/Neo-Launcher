@@ -33,7 +33,7 @@ open class BaseClientService(val context: Context, flags: Int) : ServiceConnecti
     fun connect(): Boolean {
         if (!isConnected) {
             try {
-                isEnabled = prefs.feedProvider.getValue() != ""
+                isEnabled = prefs.feedProvider.getValue()
                 if (isEnabled) {
                     isConnected = context.bindService(
                         LauncherClient.getIntent(context, false),

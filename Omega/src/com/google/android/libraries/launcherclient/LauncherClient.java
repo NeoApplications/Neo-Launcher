@@ -429,7 +429,7 @@ public class LauncherClient {
         String pkg = context.getPackageName();
         NeoPrefs prefs = NeoPrefs.getInstance();
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
-                .setPackage(prefs.getFeedProvider().getValue())
+                .setPackage(prefs.getFeedProvider().getStringValue())
                 .setData(Uri.parse("app://" +
                                 pkg +
                                 ":" +

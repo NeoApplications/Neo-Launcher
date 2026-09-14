@@ -50,8 +50,8 @@ class OverlayCallbackImpl(val launcher: Launcher) : LauncherOverlayTouchProxy,
 
     init {
         job = prefs.feedProvider.get()
-            .onEach { provider ->
-                setEnableFeed(provider.isNotEmpty())
+            .onEach {
+                setEnableFeed(prefs.feedProvider.getValue())
             }
             .launchIn(launcher.lifecycleScope)
 
