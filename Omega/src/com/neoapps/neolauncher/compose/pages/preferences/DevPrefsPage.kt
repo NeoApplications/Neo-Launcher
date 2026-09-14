@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.preferences.IntSelectionPref
 import com.neoapps.neolauncher.preferences.NeoPrefs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DevPrefsPage() {
     val prefs = NeoPrefs.getInstance()

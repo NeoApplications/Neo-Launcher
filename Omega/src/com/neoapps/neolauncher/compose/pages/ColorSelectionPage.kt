@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -73,7 +74,7 @@ import com.raedapps.alwan.ui.Alwan
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ColorSelectionPage(prefKey: Preferences.Key<String>) {
     val scope = rememberCoroutineScope()

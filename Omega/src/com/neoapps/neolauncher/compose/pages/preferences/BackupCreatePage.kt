@@ -17,9 +17,9 @@
  */
 package com.neoapps.neolauncher.compose.pages.preferences
 
-import android.provider.Settings
 import android.content.Intent
 import android.os.Environment
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,17 +51,17 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.android.launcher3.R
+import com.neoapps.neolauncher.backup.BackupManager
+import com.neoapps.neolauncher.compose.components.ComposeSwitchView
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.plus
 import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.compose.components.preferences.PreferenceItem
-import androidx.core.net.toUri
-import com.neoapps.neolauncher.backup.BackupManager
-import com.neoapps.neolauncher.compose.components.ComposeSwitchView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,6 +69,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupCreatePage(){
     val context = LocalContext.current

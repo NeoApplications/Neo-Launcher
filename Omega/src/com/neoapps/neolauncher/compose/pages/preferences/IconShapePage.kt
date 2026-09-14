@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import com.neoapps.neolauncher.icons.ShapeModel
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import org.koin.java.KoinJavaComponent.get
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IconShapePage(shapeOption: String = "icon") {
     val context = LocalContext.current

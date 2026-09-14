@@ -18,7 +18,6 @@
 
 package com.neoapps.neolauncher.compose.pages
 
-import SearchTextField
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.LauncherApps
@@ -81,6 +80,7 @@ import com.neoapps.neolauncher.compose.components.ElevatedIcon
 import com.neoapps.neolauncher.compose.components.ListItemWithIcon
 import com.neoapps.neolauncher.compose.components.OverflowMenu
 import com.neoapps.neolauncher.compose.components.SearchBarUI
+import com.neoapps.neolauncher.compose.components.SearchTextField
 import com.neoapps.neolauncher.data.IconOverrideRepository
 import com.neoapps.neolauncher.data.models.IconPickerItem
 import com.neoapps.neolauncher.iconpack.CustomIconPack

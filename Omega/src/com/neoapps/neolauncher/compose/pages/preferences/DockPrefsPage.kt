@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,6 +48,7 @@ import com.neoapps.neolauncher.preferences.StringMultiSelectionPref
 import com.neoapps.neolauncher.preferences.StringSelectionPref
 import com.neoapps.neolauncher.util.prefs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DockPrefsPage() {
     val context = LocalContext.current

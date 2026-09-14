@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -74,6 +75,7 @@ import com.neoapps.neolauncher.theme.kaushanScript
 import com.neoapps.neolauncher.util.Config
 import java.io.InputStream
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutPrefPage() {
     ViewWithActionBar(
@@ -245,6 +247,7 @@ private val developers = listOf(
     )
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicenseScreen() {
     ViewWithActionBar(
@@ -261,6 +264,7 @@ fun LicenseScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AcknowledgementScreen() {
     ViewWithActionBar(
@@ -278,6 +282,7 @@ fun AcknowledgementScreen() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangelogScreen() {
     ViewWithActionBar(
@@ -294,6 +299,7 @@ fun ChangelogScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TranslatorsScreen() {
     ViewWithActionBar(
