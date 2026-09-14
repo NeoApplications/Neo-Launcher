@@ -586,4 +586,6 @@
     <string name="permission_wallpaper_message">Neo Launcher necessita dell\'accesso allo sfondo per applicare gli effetti di sfocatura. Senza questa autorizzazione, lo sfondo sfocato verrà disabilitato.</string>
     <string name="permission_grant">Concedi</string>
     <string name="title_dock_bottom_padding">Margine inferiore barra app</string>
+    <string name="category_food_and_drink">Cibo e bevande</string>"&gt;
+    <string name="category_photography">Fotografia</string>
 </resources>
