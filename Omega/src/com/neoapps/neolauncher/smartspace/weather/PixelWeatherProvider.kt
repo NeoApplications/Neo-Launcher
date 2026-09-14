@@ -39,27 +39,37 @@ import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import java.util.concurrent.TimeUnit
 
 class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
     context, R.string.weather_provider_pe
 ) {
-    override val isAvailable: Boolean
+    override val isAvailable: Boolean = isAvailable(context)
     override val disabledTargets = listOf(dummyTarget)
     override lateinit var internalTargets: Flow<List<SmartspaceTarget>>
     private val contentResolver = context.contentResolver
     private var weatherData: WeatherData? = null
 
     init {
-        isAvailable = isAvailable(context)
         internalTargets = if (isAvailable) {
-            flow {
-                while (true) {
-                    updateData()
-                    emit(updateWeatherData())
-                    delay(TimeUnit.MINUTES.toMillis(30))
-                }
+            combine(
+                flow {
+                    while (true) {
+                        updateData()
+                        emit(System.currentTimeMillis())
+                        val delayTime = if (weatherData != null) {
+                            UPDATE_INTERVAL_MILLIS
+                        } else {
+                            TimeUnit.MINUTES.toMillis(1)
+                        }
+                        delay(delayTime)
+                    }
+                },
+                prefs.smartspaceWeatherUnit.get()
+            ) { _, _ ->
+                updateWeatherData()
             }
         } else {
             listOf(disabledTargets).asFlow()
@@ -138,6 +148,8 @@ class PixelWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     companion object {
+        private const val UPDATE_INTERVAL_MINUTES = 30L
+        private val UPDATE_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(UPDATE_INTERVAL_MINUTES)
         private const val authority = "org.pixelexperience.weather.client.provider"
         private val weatherUri = Uri.parse("content://$authority/weather")!!
 

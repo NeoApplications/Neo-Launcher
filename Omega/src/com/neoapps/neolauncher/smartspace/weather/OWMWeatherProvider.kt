@@ -49,6 +49,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -65,23 +68,43 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     override val isAvailable = true
     override val disabledTargets = listOf(dummyTarget)
     private val _internalTargets = MutableStateFlow(disabledTargets)
-    override var internalTargets: Flow<List<SmartspaceTarget>> = _internalTargets
+    private var lastUpdatedMillis = 0L
 
-    private val owm by lazy { OpenWeatherMapHelper(prefs.smartspaceWeatherApiKey.getValue()) }
+    override var internalTargets: Flow<List<SmartspaceTarget>> = _internalTargets.onStart {
+        if (System.currentTimeMillis() - lastUpdatedMillis >= UPDATE_INTERVAL_MILLIS || weatherData == null) {
+            updateData()
+        }
+    }
+
+    private fun getOwmHelper(): OpenWeatherMapHelper {
+        return OpenWeatherMapHelper(prefs.smartspaceWeatherApiKey.getValue().trim())
+    }
+
     private val iconProvider by lazy { WeatherIconProvider(context) }
     private var weatherData: WeatherData? = null
     val scope = CoroutineScope(Dispatchers.IO)
     private val locationAccess get() = context.checkLocationAccess()
-    private val currentCity = prefs.smartspaceWeatherCity.getValue()
+    private val currentCity get() = prefs.smartspaceWeatherCity.getValue()
     var weatherInfo: WeatherInfo? = null
 
     init {
         updateData()
         scope.launch {
             while (true) {
-                delay(TimeUnit.MINUTES.toMillis(25))
+                delay(UPDATE_INTERVAL_MILLIS)
                 updateData()
             }
+        }
+        scope.launch {
+            combine(
+                prefs.smartspaceWeatherCity.get(),
+                prefs.smartspaceWeatherUnit.get(),
+                prefs.smartspaceWeatherApiKey.get()
+            ) { _, _, _ -> }
+                .drop(1)
+                .collect {
+                    updateData()
+                }
         }
     }
 
@@ -101,6 +124,9 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                         val info = weatherInfo
                         if (info != null) {
                             showWeatherDetailsDialog(view.context, info)
+                            if (System.currentTimeMillis() - lastUpdatedMillis >= UPDATE_INTERVAL_MILLIS) {
+                                updateData()
+                            }
                         } else {
                             updateData()
                         }
@@ -233,7 +259,8 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
 
     @SuppressLint("MissingPermission")
     fun updateData() {
-        if (currentCity == "##Auto") {
+        val city = currentCity
+        if (city == "##Auto") {
             if (!locationAccess) {
                 Permissions.requestPermission(
                     context.neoApp.activityHandler.foregroundActivity!!,
@@ -247,23 +274,25 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                     if (resolvedLoc != null) {
                         latitude = resolvedLoc.latitude
                         longitude = resolvedLoc.longitude
-                        owm.getCurrentWeatherByGeoCoordinates(
-                            resolvedLoc.latitude,
-                            resolvedLoc.longitude,
-                            this@OWMWeatherProvider
-                        )
+                        cityName = resolvedLoc.cityName
                     }
+                    getOwmHelper().getCurrentWeatherByGeoCoordinates(
+                        latitude,
+                        longitude,
+                        this@OWMWeatherProvider
+                    )
                 }
             }
         } else {
-            Log.d("OWM", "Updating weather data for " + prefs.smartspaceWeatherCity.getValue())
-            owm.getCurrentWeatherByCityName(prefs.smartspaceWeatherCity.getValue(), this)
+            Log.d("OWM", "Updating weather data for $city")
+            getOwmHelper().getCurrentWeatherByCityName(city, this)
         }
     }
 
     override fun onSuccess(currentWeather: CurrentWeather) {
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
+        lastUpdatedMillis = System.currentTimeMillis()
         weatherData = WeatherData(
             iconProvider.getIcon(icon),
             Temperature(
@@ -296,7 +325,8 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     companion object {
-
+        private const val UPDATE_INTERVAL_MINUTES = 30L
+        private val UPDATE_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(UPDATE_INTERVAL_MINUTES)
         private const val apiKeyError = "UnAuthorized. Please set a valid OpenWeatherMap API KEY" +
                 " by using the setApiKey method."
     }

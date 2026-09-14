@@ -23,12 +23,15 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import androidx.core.content.ContextCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.util.Permissions.checkLocationAccess
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -73,6 +76,29 @@ class LocationHelper(private val context: Context) {
             }
         }
 
+        if (bestLocation == null && Utilities.ATLEAST_R) {
+            try {
+                bestLocation = withTimeoutOrNull(3000L) {
+                    suspendCancellableCoroutine { cont ->
+                        val cancellationSignal = android.os.CancellationSignal()
+                        cont.invokeOnCancellation { cancellationSignal.cancel() }
+                        try {
+                            locationManager.getCurrentLocation(
+                                LocationManager.NETWORK_PROVIDER,
+                                cancellationSignal,
+                                ContextCompat.getMainExecutor(context)
+                            ) { loc ->
+                                if (cont.isActive) cont.resume(loc, onCancellation = null)
+                            }
+                        } catch (e: Exception) {
+                            if (cont.isActive) cont.resume(null, onCancellation = null)
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+            }
+        }
+
         val location = bestLocation ?: return@withContext null
         val cityName = reverseGeocode(location.latitude, location.longitude)
             ?: "${String.format(Locale.US, "%.2f", location.latitude)}, ${
@@ -92,28 +118,31 @@ class LocationHelper(private val context: Context) {
 
     suspend fun reverseGeocode(latitude: Double, longitude: Double): String? =
         withContext(Dispatchers.IO) {
-            try {
-                if (!Geocoder.isPresent()) return@withContext null
-                val geocoder = Geocoder(context, Locale.getDefault())
-                if (Utilities.ATLEAST_T) {
-                    var result: String? = null
-                    val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-                    if (!addresses.isNullOrEmpty()) {
-                        val address = addresses[0]
-                        result = address.locality ?: address.subAdminArea ?: address.adminArea
+            withTimeoutOrNull(3000L) {
+                try {
+                    if (!Geocoder.isPresent()) return@withTimeoutOrNull null
+                    val geocoder = Geocoder(context, Locale.getDefault())
+                    if (Utilities.ATLEAST_T) {
+                        var result: String? = null
+                        val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                        if (!addresses.isNullOrEmpty()) {
+                            val address = addresses[0]
+                            result = address.locality ?: address.subAdminArea ?: address.adminArea
+                        }
+                        result
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val addresses: List<Address>? =
+                            geocoder.getFromLocation(latitude, longitude, 1)
+                        if (!addresses.isNullOrEmpty()) {
+                            val address = addresses[0]
+                            address.locality ?: address.subAdminArea ?: address.adminArea
+                        } else null
                     }
-                    result
-                } else {
-                    @Suppress("DEPRECATION")
-                    val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
-                    if (!addresses.isNullOrEmpty()) {
-                        val address = addresses[0]
-                        address.locality ?: address.subAdminArea ?: address.adminArea
-                    } else null
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
             }
         }
 
