@@ -1,3 +1,5 @@
+package com.neoapps.neolauncher.compose.components
+
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions

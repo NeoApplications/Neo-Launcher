@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -34,12 +35,14 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.android.launcher3.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ViewWithActionBar(
     modifier: Modifier = Modifier,
@@ -51,14 +54,21 @@ fun ViewWithActionBar(
     bottomBar: @Composable () -> Unit = {},
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     topBarWindowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    scrollBehavior: TopAppBarScrollBehavior? = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.let {
+            if (scrollBehavior != null) {
+                it.nestedScroll(scrollBehavior.nestedScrollConnection)
+            } else {
+                it
+            }
+        },
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = title, style = MaterialTheme.typography.titleLarge)
+                    Text(text = title, style = MaterialTheme.typography.titleLargeEmphasized)
                 },
                 navigationIcon = {
                     if (showBackButton) {
@@ -86,6 +96,7 @@ fun ViewWithActionBar(
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 windowInsets = topBarWindowInsets,
+                scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = floatingActionButton,
