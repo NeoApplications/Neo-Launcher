@@ -315,6 +315,7 @@ fun TwoStatePrefDialogUI(
                 DialogNegativeButton(
                     onClick = { openDialogCustom.value = false }
                 )
+                Spacer(Modifier.weight(1f))
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     onClick = {
