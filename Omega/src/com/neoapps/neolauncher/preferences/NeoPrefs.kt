@@ -278,7 +278,6 @@ class NeoPrefs private constructor(val context: Context) {
             Config.ALL_APPS_POPUP,
         ),
         entries = Config.popupOptions,
-        withIcons = true,
         onChange = { pokeChange() }
     )
 
@@ -375,8 +374,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DESKTOP_POPUP_OPTIONS,
         titleId = R.string.title_desktop_icon_popup_menu,
         defaultValue = setOf(PREFS_DESKTOP_POPUP_EDIT),
-        entries = desktopPopupOptions,
-        withIcons = true,
+        entries = desktopPopupOptions
     )
 
     val desktopPopupEdit: Boolean
@@ -765,8 +763,7 @@ class NeoPrefs private constructor(val context: Context) {
         key = PrefKey.DRAWER_POPUP_OPTIONS,
         titleId = R.string.title__drawer_icon_popup_menu,
         defaultValue = setOf(PREFS_DRAWER_POPUP_EDIT),
-        entries = drawerPopupOptions,
-        withIcons = true,
+        entries = drawerPopupOptions
     )
     val drawerPopupUninstall: Boolean
         get() = drawerPopup.getValue().contains(PREFS_DRAWER_POPUP_UNINSTALL)
@@ -1133,7 +1130,6 @@ class NeoPrefs private constructor(val context: Context) {
             NowPlayingProvider::class.java.name
         ),
         entries = Config.smartspaceEventProviders,
-        withIcons = true,
         onChange = { pokeChange() }
     )
 
@@ -1330,8 +1326,7 @@ class NeoPrefs private constructor(val context: Context) {
             ManageVolume::class.java.name,
             EditDash::class.java.name,
         ),
-        entries = dashProviderOptions,
-        withIcons = true,
+        entries = dashProviderOptions
     )
 
     var dashEdit = NavigationPref(

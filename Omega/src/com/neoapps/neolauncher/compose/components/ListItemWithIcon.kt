@@ -207,7 +207,6 @@ fun ListItemWithCheckbox(
     enabled: Boolean = true,
     onCheck: ((Boolean) -> Unit)? = null,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor),
     startIcon: (@Composable () -> Unit)? = null,
     onClick: (Boolean) -> Unit = {}
 ) {

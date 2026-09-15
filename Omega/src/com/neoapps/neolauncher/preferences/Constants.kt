@@ -19,6 +19,11 @@ import com.neoapps.neolauncher.dash.controlprovider.MobileData
 import com.neoapps.neolauncher.dash.controlprovider.Sync
 import com.neoapps.neolauncher.dash.controlprovider.Wifi
 import com.neoapps.neolauncher.smartspace.Temperature
+import com.neoapps.neolauncher.smartspace.provider.AlarmEventProvider
+import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
+import com.neoapps.neolauncher.smartspace.provider.CalendarEventProvider
+import com.neoapps.neolauncher.smartspace.provider.NotificationUnreadProvider
+import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
 
 const val PREFS_LANGUAGE_DEFAULT_NAME = "System"
 const val PREFS_LANGUAGE_DEFAULT_CODE = "en"
@@ -87,6 +92,12 @@ val temperatureUnitOptions = listOfNotNull(
 
 
 val iconIds = mapOf(
+    //Events
+    BatteryStatusProvider::class.java.name to R.drawable.ic_battery_low,
+    NowPlayingProvider::class.java.name to R.drawable.ic_music_play,
+    CalendarEventProvider::class.java.name to R.drawable.ic_calendar,
+    AlarmEventProvider::class.java.name to R.drawable.ic_alarm_on_black_24dp,
+    NotificationUnreadProvider::class.java.name to R.drawable.ic_smartspace_preferences,
     // Desktop Popup
     PREFS_DESKTOP_POPUP_EDIT to R.drawable.ic_edit_no_shadow,
     PREFS_DESKTOP_POPUP_UNINSTALL to R.drawable.ic_uninstall_no_shadow,
