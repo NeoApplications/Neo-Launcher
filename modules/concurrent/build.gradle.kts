@@ -1,10 +1,11 @@
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.library)
 }
 
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "com.android.launcher3.concurrent"
 

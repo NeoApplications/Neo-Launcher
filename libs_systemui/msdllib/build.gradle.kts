@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -5,7 +6,7 @@ plugins {
 }
 
 
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "com.google.android.msdl"
     testNamespace = "com.google.android.msdl.tests"

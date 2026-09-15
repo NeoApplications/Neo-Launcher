@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins{
     alias(libs.plugins.android.library)
 }
@@ -6,7 +8,7 @@ kotlin {
     jvmToolchain(21)
 }
 
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "com.android.systemui.animationlib"
     testNamespace = "com.android.systemui.animationlib.test"

@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -8,7 +9,7 @@ kotlin {
     jvmToolchain(21)
 }
 
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "app.lawnchair.compatlib.fourteen"
     buildFeatures {

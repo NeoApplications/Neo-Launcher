@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,15 +8,12 @@ plugins {
 kotlin {
     jvmToolchain(21)
 }
-
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "app.lawnchair.compatlib"
-
     defaultConfig {
-        minSdk = 30
+        minSdk = 21
     }
-
     sourceSets {
         getByName("main") {
             kotlin.directories.add("src/main/java")
@@ -38,9 +36,7 @@ android {
     buildFeatures {
         aidl = true
     }
-
 }
-
 
 val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"
 val addFrameworkJar = { name: String ->

@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.LibraryExtension
+
 /*
  * Copyright (C) 2025 The Android Open Source Project
  *
@@ -20,7 +22,7 @@ plugins {
 }
 android.buildFeatures.compose = true
 
-android {
+extensions.configure<LibraryExtension> {
     compileSdk = 37
     namespace = "com.android.launcher3.widgetpicker"
     testNamespace = "com.android.launcher3.widgetpicker.tests"
