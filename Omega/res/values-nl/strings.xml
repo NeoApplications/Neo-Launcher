@@ -313,7 +313,7 @@
     <string name="title_smartspace">Smartspace weergeven</string>
     <string name="title_smartspace_time">Tijd weergeven</string>
     <string name="title_smartspace_time_above">Grote klok weergeven</string>
-    <string name="title_smartspace_widget_provider">Bron voor weergegevens</string>
+    <string name="title_smartspace_widget_provider">%1$s. Tik om te wijzigen</string>
     <string name="title_smartspace_event_providers">Bronnen voor evenementen</string>
     <string name="units_kelvin">Kelvin</string>
     <string name="units_reaumur">Réaumur</string>
@@ -372,7 +372,7 @@
     <string name="title_smartspace_time_format">Tijdsformaat</string>
     <string name="name_provider_alarm_events">Aankomende alarmen</string>
     <string name="battery_status">Batterijstatus</string>
-    <string name="title_feed_provider">Feed-aanbieder</string>
+    <string name="title_feed_provider">Feed-aanbieder inschakelen</string>
     <string name="tab_shortcuts">Snelkoppelingen</string>
     <string name="button_organize_screens">Pagina\'s ordenen</string>
     <string name="pref_desktop_mode_summary">Android desktop-modus activeren</string>
@@ -571,4 +571,17 @@
     <string name="permission_wallpaper_message">Neo Launcher heeft toegang tot je achtergrondafbeelding nodig om vervagingseffecten toe te passen. Zonder deze toestemming wordt de vervaagde achtergrond uitgeschakeld.</string>
     <string name="category_food_and_drink">Eten &amp; Drinken</string>"&gt;
     <string name="category_photography">Fotografie</string>
+    <string name="title_smartspace_widget_enable">Weer inschakelen</string>
+    <string name="weather_code_overcast">Bewolkt</string>
+    <string name="weather_code_partly_cloudy">Deels bewolkt</string>
+    <string name="weather_code_fog">Mist</string>
+    <string name="weather_code_drizzle">Motregen</string>
+    <string name="weather_code_rain">Regen</string>
+    <string name="weather_code_heavy_rain">Zware regen</string>
+    <string name="weather_code_snow">Sneeuw</string>
+    <string name="weather_code_thunderstorm">Onweer</string>
+    <string name="weather_feels_like">Voelt als %1$s</string>
+    <string name="weather_forecast_hourly">Uurlijkse verwachting</string>
+    <string name="weather_code_clear">Onbewolkt</string>
+    <string name="weather_code_mainly_clear">Overwegend helder</string>
 </resources>
