@@ -46,7 +46,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -67,7 +66,6 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditDashPage() {
-    val context = LocalContext.current
     val dashProvidersItems = NeoPrefs.getInstance().dashProvidersItems
     val iconList = iconIds
 
@@ -101,7 +99,7 @@ fun EditDashPage() {
         }
     ) { paddingValues ->
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -146,6 +144,8 @@ fun EditDashPage() {
                             },
                         containerColor = bgColor,
                         title = stringResource(id = item.titleResId),
+                        index = subIndex,
+                        groupSize = enabledItems.size,
                         startIcon = {
                             Icon(
                                 painter = painterResource(
@@ -191,6 +191,8 @@ fun EditDashPage() {
                         )
                     },
                     icon = Phosphor.Plus,
+                    index = subIndex,
+                    groupSize = disabledItems.size
                 )
             }
 
