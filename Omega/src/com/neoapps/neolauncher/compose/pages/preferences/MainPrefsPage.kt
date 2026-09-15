@@ -22,7 +22,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import androidx.compose.foundation.background
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +34,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,7 +80,11 @@ import com.neoapps.neolauncher.preferences.PrefKey
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3AdaptiveApi::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun MainPrefsPage() {
     val context = LocalContext.current
@@ -85,6 +92,8 @@ fun MainPrefsPage() {
     val prefs = NeoPrefs.getInstance()
     val showDev by prefs.developerOptionsEnabled.get().collectAsState(false)
     val scope = rememberCoroutineScope()
+
+    val motionScheme = MaterialTheme.motionScheme
 
     val uiPrefs = persistentListOf(
         PageItem.PrefsProfile,
@@ -100,8 +109,7 @@ fun MainPrefsPage() {
     )
     val otherPrefs: List<PageItem> = listOfNotNull(
         PageItem.PrefsBackup,
-        if (showDev) PageItem.PrefsDeveloper
-        else null,
+        if (showDev) PageItem.PrefsDeveloper else null,
         PageItem.PrefsAbout
     )
     val gesturesMap = listOf(
@@ -121,11 +129,7 @@ fun MainPrefsPage() {
             .addCategory(Intent.CATEGORY_HOME)
         val info: ResolveInfo? = context.packageManager
             .resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        return if (info?.activityInfo != null) {
-            info.activityInfo.packageName
-        } else {
-            null
-        }
+        return info?.activityInfo?.packageName
     }
 
     NavigableListDetailPaneScaffold(
@@ -156,8 +160,7 @@ fun MainPrefsPage() {
                                 }
                             )
                             HorizontalDivider(
-                                modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.outline)
+                                color = MaterialTheme.colorScheme.outlineVariant
                             )
                         }
                         DropdownMenuItem(
@@ -174,10 +177,7 @@ fun MainPrefsPage() {
                                 )
                             }
                         )
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.outline)
-                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         DropdownMenuItem(
                             onClick = {
                                 hideMenu()
@@ -205,7 +205,7 @@ fun MainPrefsPage() {
                         .verticalScroll(rememberScrollState())
                         .fillMaxSize()
                         .padding(paddingValues + PaddingValues(8.dp)),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__interfaces),
@@ -216,6 +216,7 @@ fun MainPrefsPage() {
                         heading = stringResource(id = R.string.pref_category__features),
                         prefs = featuresPrefs
                     )
+
                     PreferenceGroup(
                         heading = stringResource(id = R.string.pref_category__others),
                         prefs = otherPrefs
@@ -228,102 +229,55 @@ fun MainPrefsPage() {
                 ?.takeIf { it.pane == this.paneRole }?.contentKey
                 ?.let { it as? NavRoute }
 
-            pageData.value?.let {
-                AnimatedPane {
-                    when (it) {
-                        is NavRoute.Profile.IconShape
-                            -> IconShapePage(it.shapeOption)
+            pageData.value?.let { route ->
+                AnimatedPane(
+                    enterTransition = fadeIn(motionScheme.defaultSpatialSpec()) +
+                            scaleIn(motionScheme.defaultSpatialSpec(), initialScale = 0.95f),
+                    exitTransition = fadeOut(motionScheme.fastSpatialSpec())
+                ) {
+                    when (route) {
+                        is NavRoute.Profile.IconShape -> IconShapePage(route.shapeOption)
+                        is NavRoute.Profile.AccentColor -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
+                        is NavRoute.Profile -> ProfilePrefsPage()
 
-                        is NavRoute.Profile.AccentColor
-                            -> ColorSelectionPage(PrefKey.PROFILE_ACCENT_COLOR)
+                        is NavRoute.Desktop -> DesktopPrefsPage()
 
-                        is NavRoute.Profile
-                            -> ProfilePrefsPage()
+                        is NavRoute.Folder.FolderBG -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
+                        is NavRoute.Folder.FolderStroke -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
+                        is NavRoute.Folder -> FolderPrefsPage()
 
-                        is NavRoute.Desktop
-                            -> DesktopPrefsPage()
+                        is NavRoute.Dock.BG -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
+                        is NavRoute.Dock -> DockPrefsPage()
 
-                        is NavRoute.Folder.FolderBG
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_BG_COLOR)
+                        is NavRoute.Drawer.BG -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
+                        is NavRoute.Drawer.Categorize -> AppCategoriesPage()
+                        is NavRoute.Drawer.Folders -> DrawerFolderPage()
+                        is NavRoute.Drawer.HiddenApps -> HiddenAppsPage()
+                        is NavRoute.Drawer.ProtectedApps -> ProtectedAppsPage()
+                        is NavRoute.Drawer.ProtectedAppsView -> ProtectedAppsView()
+                        is NavRoute.Drawer -> DrawerPrefsPage()
 
-                        is NavRoute.Folder.FolderStroke
-                            -> ColorSelectionPage(PrefKey.DESKTOP_FOLDER_STROKE_COLOR)
+                        is NavRoute.Widgets.NotificationDots -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
+                        is NavRoute.Widgets -> WidgetsPrefsPage()
 
-                        is NavRoute.Folder
-                            -> FolderPrefsPage()
-                        is NavRoute.Dock.BG
-                            -> ColorSelectionPage(PrefKey.DOCK_BG_COLOR)
+                        is NavRoute.Search.SearchProviders -> SearchProvidersPage()
+                        is NavRoute.Search -> SearchPrefsPage()
 
-                        is NavRoute.Dock
-                            -> DockPrefsPage()
+                        is NavRoute.Gestures.EditDash -> EditDashPage()
+                        is NavRoute.Gestures.Gesture -> GestureSelectorPage(gesturesMap[route.key]!!)
+                        is NavRoute.Gestures -> GesturesPrefsPage()
 
-                        is NavRoute.Drawer.BG
-                            -> ColorSelectionPage(PrefKey.DRAWER_BG_COLOR)
+                        is NavRoute.Backup.Create -> BackupCreatePage()
+                        is NavRoute.Backup.Restore -> BackupRestorePage()
+                        is NavRoute.Backup -> BackupMainPage()
 
-                        is NavRoute.Drawer.Categorize
-                            -> AppCategoriesPage()
+                        is NavRoute.Dev -> DevPrefsPage()
 
-                        is NavRoute.Drawer.Folders
-                            -> DrawerFolderPage()
-
-                        is NavRoute.Drawer.HiddenApps
-                            -> HiddenAppsPage()
-
-                        is NavRoute.Drawer.ProtectedApps
-                            -> ProtectedAppsPage()
-
-                        is NavRoute.Drawer.ProtectedAppsView
-                            -> ProtectedAppsView()
-
-                        is NavRoute.Drawer
-                            -> DrawerPrefsPage()
-
-                        is NavRoute.Widgets.NotificationDots
-                            -> ColorSelectionPage(PrefKey.NOTIFICATION_DOTS_COLOR)
-
-                        is NavRoute.Widgets
-                            -> WidgetsPrefsPage()
-
-                        is NavRoute.Search.SearchProviders
-                            -> SearchProvidersPage()
-
-                        is NavRoute.Search
-                            -> SearchPrefsPage()
-
-                        is NavRoute.Gestures.EditDash
-                            -> EditDashPage()
-
-                        is NavRoute.Gestures.Gesture
-                            -> GestureSelectorPage(gesturesMap[it.key]!!)
-
-                        is NavRoute.Gestures
-                            -> GesturesPrefsPage()
-
-                        is NavRoute.Backup.Create
-                            -> BackupCreatePage()
-
-                        is NavRoute.Backup.Restore
-                            -> BackupRestorePage()
-
-                        is NavRoute.Backup
-                            -> BackupMainPage()
-
-                        is NavRoute.Dev
-                            -> DevPrefsPage()
-
-                        is NavRoute.About.License
-                            -> LicenseScreen()
-
-                        is NavRoute.About.Translators
-                            -> TranslatorsScreen()
-
-                        is NavRoute.About.Changelog
-                            -> ChangelogScreen()
-                        is NavRoute.About.Acknowledgement
-                            -> AcknowledgementScreen()
-
-                        is NavRoute.About
-                            -> AboutPrefPage()
+                        is NavRoute.About.License -> LicenseScreen()
+                        is NavRoute.About.Translators -> TranslatorsScreen()
+                        is NavRoute.About.Changelog -> ChangelogScreen()
+                        is NavRoute.About.Acknowledgement -> AcknowledgementScreen()
+                        is NavRoute.About -> AboutPrefPage()
 
                         else -> {}
                     }
