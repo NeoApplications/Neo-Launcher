@@ -167,34 +167,37 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
             client.newCall(forecastReq).execute().use { fResponse ->
                 Log.d("OWM", "Forecast response code: ${fResponse.code}")
                 if (fResponse.isSuccessful) {
-                    val fJson = JSONObject(fResponse.body.string())
-                    val list = fJson.optJSONArray("list")
-                    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val nowSec = System.currentTimeMillis() / 1000 - 3600
+                    val bodyString = fResponse.body.string()
+                    if (bodyString.isNotEmpty()) {
+                        val fJson = JSONObject(bodyString)
+                        val list = fJson.optJSONArray("list")
+                        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                        val nowSec = System.currentTimeMillis() / 1000 - 3600
 
-                    if (list != null) {
-                        var count = 0
-                        for (i in 0 until list.length()) {
-                            if (count >= 12) break
-                            val item = list.getJSONObject(i)
-                            val dt = item.optLong("dt", 0L)
-                            if (dt >= nowSec) {
-                                val hMain = item.getJSONObject("main")
-                                val hTemp = hMain.optDouble("temp", 0.0)
-                                val hWeatherArr = item.optJSONArray("weather")
-                                val hFirst = hWeatherArr?.optJSONObject(0)
-                                val hOwmId = hFirst?.optInt("id", 800) ?: 800
-                                val hIcon = hFirst?.optString("icon", "01d") ?: "01d"
+                        if (list != null) {
+                            var count = 0
+                            for (i in 0 until list.length()) {
+                                if (count >= 12) break
+                                val item = list.getJSONObject(i)
+                                val dt = item.optLong("dt", 0L)
+                                if (dt >= nowSec) {
+                                    val hMain = item.optJSONObject("main")
+                                    val hTemp = hMain?.optDouble("temp", 0.0) ?: 0.0
+                                    val hWeatherArr = item.optJSONArray("weather")
+                                    val hFirst = hWeatherArr?.optJSONObject(0)
+                                    val hOwmId = hFirst?.optInt("id", 800) ?: 800
+                                    val hIcon = hFirst?.optString("icon", "01d") ?: "01d"
 
-                                hourlyList.add(
-                                    HourlyWeather(
-                                        time = timeFormat.format(Date(dt * 1000)),
-                                        temperature = hTemp,
-                                        weatherCode = mapOwmToWmoCode(hOwmId),
-                                        isDay = hIcon.endsWith("d")
+                                    hourlyList.add(
+                                        HourlyWeather(
+                                            time = timeFormat.format(Date(dt * 1000)),
+                                            temperature = hTemp,
+                                            weatherCode = mapOwmToWmoCode(hOwmId),
+                                            isDay = hIcon.endsWith("d")
+                                        )
                                     )
-                                )
-                                count++
+                                    count++
+                                }
                             }
                         }
                     }
@@ -204,7 +207,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         }
 
         val targetUnit = Temperature.unitFromString(prefs.smartspaceWeatherUnit.getValue())
-        val owmId = currentWeather.weather.getOrNull(0)?.id?.toInt() ?: 800
+        val owmId = currentWeather.weather?.getOrNull(0)?.id?.toInt() ?: 800
 
         val tempKelvin = (currentWeather.main?.temp ?: 273.15).roundToInt()
         val feelsLikeKelvin = (currentWeather.main?.feelsLike ?: 273.15).roundToInt()
@@ -228,7 +231,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
             humidity = currentWeather.main?.humidity ?: 0.0,
             windSpeed = currentWeather.wind?.speed ?: 0.0,
             precipitation = currentWeather.rain?.oneHour ?: 0.0,
-            isDay = currentWeather.weather.getOrNull(0)?.icon?.contains("d") ?: true,
+            isDay = currentWeather.weather?.getOrNull(0)?.icon?.contains("d") ?: true,
             maxTemp = maxTempConverted,
             minTemp = minTempConverted,
             unit = targetUnit.suffix,
@@ -262,11 +265,14 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         val city = currentCity
         if (city == "##Auto") {
             if (!locationAccess) {
-                Permissions.requestPermission(
-                    context.neoApp.activityHandler.foregroundActivity!!,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    REQUEST_PERMISSION_LOCATION_ACCESS
-                )
+                val activity = context.neoApp.activityHandler.foregroundActivity
+                if (activity != null) {
+                    Permissions.requestPermission(
+                        activity,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        REQUEST_PERMISSION_LOCATION_ACCESS
+                    )
+                }
                 return
             } else {
                 scope.launch {
@@ -289,9 +295,10 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         }
     }
 
-    override fun onSuccess(currentWeather: CurrentWeather) {
+    override fun onSuccess(currentWeather: CurrentWeather?) {
+        if (currentWeather == null) return
         val temp = currentWeather.main?.temp ?: return
-        val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
+        val icon = currentWeather.weather?.getOrNull(0)?.icon ?: return
         lastUpdatedMillis = System.currentTimeMillis()
         weatherData = WeatherData(
             iconProvider.getIcon(icon),
