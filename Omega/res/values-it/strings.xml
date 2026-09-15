@@ -53,7 +53,7 @@
     <string name="action_open_recents">Aperti di recente</string>
     <string name="smartspace_provider_calendar">Eventi del calendario</string>
     <string name="allow">Consenti</string>
-    <string name="title_smartspace_widget_provider">Sorgente meteo</string>
+    <string name="title_smartspace_widget_provider">%1$s. Tocca per cambiare</string>
     <string name="import_icon">Importa icona</string>
     <string name="icon_shape_bottom_right">In basso a destra</string>
     <string name="icon_shape_bottom_left">In basso a sinistra</string>
@@ -116,7 +116,7 @@
     <string name="feed_add_widget">Aggiungi widget</string>
     <string name="change_default_home">Imposta come app Home</string>
     <string name="title__restart_launcher">Riavvia</string>
-    <string name="title_feed_provider">Fornitore Notizie</string>
+    <string name="title_feed_provider">Abilita fornitore di feed</string>
     <string name="title__dev_show_debug_info">Mostra info debug</string>
     <string name="title__dev_show_Dev">Mostra nelle impostazioni</string>
     <string name="developer_options_title">Opzioni sviluppatore</string>
@@ -588,4 +588,17 @@
     <string name="title_dock_bottom_padding">Margine inferiore barra app</string>
     <string name="category_food_and_drink">Cibo e bevande</string>"&gt;
     <string name="category_photography">Fotografia</string>
+    <string name="title_smartspace_widget_enable">Abilita meteo</string>
+    <string name="weather_code_clear">Cielo sereno</string>
+    <string name="weather_code_mainly_clear">Prevalentemente sereno</string>
+    <string name="weather_code_overcast">Cielo coperto</string>
+    <string name="weather_code_partly_cloudy">Parzialmente nuvoloso</string>
+    <string name="weather_code_fog">Nebbia</string>
+    <string name="weather_code_drizzle">Pioviggine</string>
+    <string name="weather_code_rain">Pioggia</string>
+    <string name="weather_code_heavy_rain">Pioggia forte</string>
+    <string name="weather_code_snow">Neve</string>
+    <string name="weather_code_thunderstorm">Temporale</string>
+    <string name="weather_forecast_hourly">Previsioni orarie</string>
+    <string name="weather_feels_like">Percepita %1$s</string>
 </resources>
