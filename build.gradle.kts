@@ -1,37 +1,8 @@
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.api.AndroidBasePlugin
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
-
-buildscript {
-    dependencies {
-        classpath(libs.gradle)
-    }
-}
-
-val vProtobuf = "3.25.3"
-
-val FRAMEWORK_PREBUILTS_DIR = "$rootDir/prebuilt/libs"
-val addFrameworkJar = { name: String ->
-    val frameworkJar = File(FRAMEWORK_PREBUILTS_DIR, name)
-    if (!frameworkJar.exists()) {
-        throw IllegalArgumentException("Framework jar path ${frameworkJar.path} doesn't exist")
-    }
-    gradle.projectsEvaluated {
-        tasks.withType<JavaCompile>().configureEach {
-            classpath = files(frameworkJar, classpath)
-        }
-        tasks.withType<KotlinCompile>().configureEach {
-            libraries.setFrom(files(frameworkJar, libraries))
-        }
-    }
-    dependencies {
-        compileOnly(files(frameworkJar))
-    }
-}
-addFrameworkJar("framework-16.jar")
 
 plugins {
     alias(libs.plugins.android.application)
@@ -44,10 +15,15 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.gradle.toolchains) apply false
 }
+val vProtobuf = "3.25.3"
+val frameworkPrebuiltsDir = "$rootDir/prebuilt/libs"
+
+
 allprojects {
     plugins.withType<AndroidBasePlugin>().configureEach {
-        extensions.configure<BaseExtension> {
+        extensions.findByType<ApplicationExtension>()?.apply {
             buildToolsVersion = "36.1.0"
+            compileSdk = 37
 
             defaultConfig {
                 minSdk = 26
@@ -55,8 +31,8 @@ allprojects {
                 vectorDrawables.useSupportLibrary = true
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.toVersion(21)
-                targetCompatibility = JavaVersion.toVersion(21)
+                sourceCompatibility = JavaVersion.VERSION_21
+                targetCompatibility = JavaVersion.VERSION_21
             }
         }
         dependencies {
@@ -81,7 +57,7 @@ kotlin {
     jvmToolchain(21)
 }
 
-android {
+extensions.configure<ApplicationExtension> {
     namespace = "com.android.launcher3"
     compileSdk = 37
 
@@ -101,61 +77,16 @@ android {
         buildConfigField("boolean", "NOTIFICATION_DOTS_ENABLED", "true")
         buildConfigField("boolean", "WIDGET_ON_FIRST_SCREEN", "true")
 
-        val langsList: MutableSet<String> = HashSet()
+        val langsList =
+            file("res").listFiles { dir -> dir.isDirectory && dir.name.startsWith("values") }
+                //noinspection WrongGradleMethod
+                ?.map { it.name.removePrefix("values-").ifEmpty { "en" }.replace("values", "en") }
+                ?.distinct()
+                ?.sorted()
+                //noinspection WrongGradleMethod
+                ?.joinToString(",") { "\"$it\"" } ?: ""
 
-        // in /res are (almost) all languages that have a translated string is saved. this is safer and saves some time
-        fileTree("res").visit {
-            if (this.file.path.endsWith("strings.xml")
-                && this.file.canonicalFile.readText().contains("<string")
-            ) {
-                var languageCode = this.file.parentFile?.name?.replace("values-", "")
-                languageCode = if (languageCode == "values") "en" else languageCode
-                languageCode?.let {
-                    langsList.add(languageCode)
-                }
-            }
-        }
-        val langsListString = "{${langsList.sorted().joinToString(",") { "\"${it}\"" }}}"
-        buildConfigField("String[]", "DETECTED_ANDROID_LOCALES", langsListString)
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    applicationVariants.all {
-        val variant = this
-        outputs.all {
-            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                "Neo_Launcher_${variant.versionName}_${variant.buildType.name}.apk"
-        }
-        variant.resValue(
-            "string",
-            "launcher_component",
-            "${variant.applicationId}/com.neoapps.neolauncher.NeoLauncher"
-        )
-    }
-
-    buildTypes {
-        debug {
-            isMinifyEnabled = false
-            applicationIdSuffix = ".alpha"
-            signingConfig = signingConfigs.getByName("debug")
-        }
-        register("neo") {
-            isMinifyEnabled = false
-            applicationIdSuffix = ".neo"
-        }
-
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-        }
-        all {
-            isCrunchPngs = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard.flags"
-            )
-        }
+        buildConfigField("String[]", "DETECTED_ANDROID_LOCALES", "{$langsList}")
     }
 
     signingConfigs {
@@ -170,6 +101,29 @@ android {
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            applicationIdSuffix = ".alpha"
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        register("neo") {
+            isMinifyEnabled = false
+            applicationIdSuffix = ".neo"
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+        }
+        all {
+            isCrunchPngs = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard.flags"
+            )
         }
     }
 
@@ -190,8 +144,8 @@ android {
         resources.excludes.add("META-INF/versions/9/previous-compilation-data.bin") // TODO remove when issue is fixed (https://github.com/Kotlin/kotlinx.coroutines/issues/3668)
     }
 
-    flavorDimensionList.clear()
-    flavorDimensionList.addAll(listOf("app", "custom"))
+
+    flavorDimensions += listOf("app", "custom")
 
     productFlavors {
         create("aosp") {
@@ -228,6 +182,10 @@ android {
             res.directories.add("res")
             assets.directories.add("assets")
             manifest.srcFile("AndroidManifest-common.xml")
+
+            extensions.findByName("proto")?.let {
+                (it as SourceDirectorySet).srcDirs("protos", "protos_overrides")
+            }
         }
         named("aosp") {
             java.directories.addAll(listOf("src_flags"))
@@ -240,28 +198,45 @@ android {
             aidl.directories.add("Omega/aidl")
             manifest.srcFile("Omega/AndroidManifest.xml")
         }
-
-        protobuf {
-            // Configure the protoc executable
-            protoc {
-                artifact = "com.google.protobuf:protoc:$vProtobuf"
-            }
-            generateProtoTasks {
-                all().forEach { task ->
-                    task.builtins {
-                        create("java") {
-                            option("lite")
-                        }
-                    }
-                }
-            }
-        }
     }
 
     lint {
         abortOnError = false
         checkReleaseBuilds = false
         disable += listOf("MissingTranslation", "ExtraTranslation")
+    }
+}
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$vProtobuf"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.resValues.put(
+            variant.makeResValueKey("string", "launcher_component"),
+            com.android.build.api.variant.ResValue(
+                "${variant.applicationId.get()}/com.neoapps.neolauncher.NeoLauncher"
+            )
+        )
+
+        variant.outputs.forEach { output ->
+            if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
+                val buildTypeName = variant.buildType ?: "release"
+                val versionName = output.versionName.getOrElse("unknown")
+                output.outputFileName.set("Neo_Launcher_${versionName}_${buildTypeName}.apk")
+            }
+        }
     }
 }
 
@@ -277,10 +252,10 @@ dependencies {
     implementation(project(":smartspace"))
     implementation(project(":widgetpicker"))
     implementation(project(":wmshell"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/framework-16.jar"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-core-16.jar"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/SystemUI-statsd-16.jar"))
-    compileOnly(files("$FRAMEWORK_PREBUILTS_DIR/WindowManager-Shell-16.jar"))
+    compileOnly(files("$frameworkPrebuiltsDir/framework-16.jar"))
+    compileOnly(files("$frameworkPrebuiltsDir/SystemUI-core-16.jar"))
+    compileOnly(files("$frameworkPrebuiltsDir/SystemUI-statsd-16.jar"))
+    compileOnly(files("$frameworkPrebuiltsDir/WindowManager-Shell-16.jar"))
 
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.alwan)
@@ -361,9 +336,8 @@ dependencies {
     androidTestImplementation(libs.dexmaker.lib)
 }
 
-// Returns the build date in a RFC3339 compatible format. TZ is always converted to UTC
 fun getBuildDate(): String {
-    val RFC3339_LIKE = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
-    RFC3339_LIKE.timeZone = TimeZone.getTimeZone("UTC")
-    return RFC3339_LIKE.format(Date())
+    val rfc3339 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+    rfc3339.timeZone = TimeZone.getTimeZone("UTC")
+    return rfc3339.format(Date())
 }
