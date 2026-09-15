@@ -153,7 +153,7 @@
     <string name="title_enable_folders">Enable folders in drawer</string>
     <string name="title_manage_folders">Manage Folders</string>
     <string name="summary_manage_tabs">Create or edit Tabs</string>
-    <string name="summary_manage_folders">Create or edit Folders</string>
+    <string name="summary_manage_folders">Tap to create or edit folders</string>
     <string name="summary_search_hidden_apps">Show hidden shortcuts in results.</string>
     <string name="summary_all_apps_google_search">Find web results and apps</string>
     <string name="summary__drawer_hide_apps">Hide app from the app drawer</string>
