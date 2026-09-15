@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -58,7 +59,7 @@ import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.ColorItem
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.HorizontalPagerPage
-import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithRadioButton
 import com.neoapps.neolauncher.compose.components.TabItem
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.navigation.LocalPaneNavigator
@@ -263,17 +264,18 @@ fun DynamicPage(
     ) {
         val colorSize = dynamicColors.size
         itemsIndexed(dynamicColors) { index, option ->
-            SingleSelectionListItem(
+            ListItemWithRadioButton(
                 title = stringResource(id = option.displayName),
-                isSelected = isColorSelected(option.toString()),
-                endWidget = {
+                startIcon = {
                     ColorItem(
                         color = option.accentColor,
                         selected = false,
-                        modifier = Modifier.widthIn(0.dp, 36.dp),
+                        modifier = Modifier.size(36.dp),
                         onClick = { onSelectColor(option.toString()) }
                     )
                 },
+                radioButton = true,
+                selected = isColorSelected(option.toString()),
                 onClick = {
                     onSelectColor(option.toString())
                 },

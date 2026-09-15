@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.dp
 import com.neoapps.neolauncher.compose.components.BaseDialog
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.DialogPositiveButton
-import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithRadioButton
 import com.neoapps.neolauncher.compose.navigation.LocalPaneNavigator
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.TwoStatePref
@@ -307,14 +307,16 @@ fun TwoStatePrefDialogUI(
             ) {
                 val groupSize = entryPairs.size
                 items(items = entryPairs, key = { it.first }) { item ->
-                    SingleSelectionListItem(
+                    ListItemWithRadioButton(
                         title = item.second,
-                        isSelected = selected == item.first,
+                        radioButton = true,
+                        selected = selected == item.first,
                         index = entryPairs.indexOf(item),
-                        groupSize = groupSize
-                    ) {
-                        selected = item.first
-                    }
+                        groupSize = groupSize,
+                        onClick = {
+                            selected = item.first
+                        }
+                    )
                 }
             }
 

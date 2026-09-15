@@ -46,7 +46,7 @@ import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.DialogPositiveButton
-import com.neoapps.neolauncher.compose.components.MultiSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithCheckbox
 import com.neoapps.neolauncher.compose.navigation.Routes
 import com.neoapps.neolauncher.groups.category.DrawerTabs
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -112,10 +112,13 @@ fun AppTabDialogUI(
                 itemsIndexed(tabs) { index, tab ->
                     var isSelected by rememberSaveable { mutableStateOf(selectedItems[index]) }
 
-                    MultiSelectionListItem(
-                        text = tab.title,
-                        isChecked = isSelected,
-                        isEnabled = tab is DrawerTabs.CustomTab,
+                    ListItemWithCheckbox(
+                        title = tab.title,
+                        checked = isSelected,
+                        checkBox = true,
+                        enabled = tab is DrawerTabs.CustomTab,
+                        index = index,
+                        groupSize = tabs.size
                     ) {
                         isSelected = !isSelected
                         selectedItems[index] = isSelected

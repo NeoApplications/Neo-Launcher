@@ -707,7 +707,7 @@ class NeoPrefs private constructor(val context: Context) {
 
     var drawerProtectedAppsSet = StringSetPref(
         dataStore = dataStore,
-        titleId = R.string.protected_apps,
+        titleId = R.string.tap_protected_apps,
         key = PrefKey.DRAWER_PROTECTED_APPS_LIST,
         navRoute = NavRoute.Drawer.ProtectedApps(),
         defaultValue = setOf()
@@ -719,7 +719,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key1 = PrefKey.DRAWER_PROTECTED_APPS_ENABLED,
         titleId = R.string.enable_protected_apps,
-        summaryId = R.string.protected_apps,
+        summaryId = R.string.tap_protected_apps,
         defaultValue1 = false,
         navRoute = NavRoute.Drawer.ProtectedApps(),
         confirmAction = { context, newValue, successRunnable ->

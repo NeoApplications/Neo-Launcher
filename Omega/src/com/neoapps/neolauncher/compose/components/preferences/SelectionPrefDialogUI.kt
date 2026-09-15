@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,13 +48,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.DialogPositiveButton
-import com.neoapps.neolauncher.compose.components.MultiSelectionListItem
-import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithCheckbox
+import com.neoapps.neolauncher.compose.components.ListItemWithRadioButton
 import com.neoapps.neolauncher.data.IconOverrideRepository
 import com.neoapps.neolauncher.preferences.DialogPref
 import com.neoapps.neolauncher.preferences.IntSelectionPref
@@ -61,6 +63,7 @@ import com.neoapps.neolauncher.preferences.LongSelectionPref
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.StringMultiSelectionPref
 import com.neoapps.neolauncher.preferences.StringSelectionPref
+import com.neoapps.neolauncher.preferences.iconIds
 import com.neoapps.neolauncher.util.blockShadow
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
@@ -112,14 +115,16 @@ fun IntSelectionPrefDialogUI(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
                     }
-                    SingleSelectionListItem(
+                    ListItemWithRadioButton(
                         title = stringResource(id = it.second),
-                        isSelected = isSelected.value,
+                        radioButton = true,
+                        selected = isSelected.value,
                         index = entryPairs.indexOf(it),
-                        groupSize = groupSize
-                    ) {
-                        selected = it.first
-                    }
+                        groupSize = groupSize,
+                        onClick = {
+                            selected = it.first
+                        }
+                    )
                 }
             }
 
@@ -190,12 +195,16 @@ fun LongSelectionPrefDialogUI(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
                     }
-                    SingleSelectionListItem(
+                    ListItemWithRadioButton(
                         title = it.second,
-                        isSelected = isSelected.value
-                    ) {
-                        selected = it.first
-                    }
+                        radioButton = true,
+                        selected = isSelected.value,
+                        index = entryPairs.indexOf(it),
+                        groupSize = entryPairs.size,
+                        onClick = {
+                            selected = it.first
+                        }
+                    )
                 }
             }
 
@@ -259,14 +268,16 @@ fun StringSelectionPrefDialogUI(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.first)
                     }
-                    SingleSelectionListItem(
+                    ListItemWithRadioButton(
                         title = it.second,
-                        isSelected = isSelected.value,
+                        radioButton = true,
+                        selected = isSelected.value,
                         index = entryPairs.indexOf(it),
-                        groupSize = groupSize
-                    ) {
-                        selected = it.first
-                    }
+                        groupSize = groupSize,
+                        onClick = {
+                            selected = it.first
+                        }
+                    )
                 }
             }
 
@@ -334,14 +345,30 @@ fun StringMultiSelectionPrefDialogUI(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected.contains(item.first))
                     }
-
-                    MultiSelectionListItem(
-                        text = stringResource(id = item.second),
+                    val iconId = iconIds[item.first]
+                    ListItemWithCheckbox(
+                        title = stringResource(id = item.second),
                         index = index,
                         groupSize = groupSize,
-                        isChecked = isSelected.value,
-                        withIcon = pref.withIcons,
-                        iconId = item.first
+                        checked = isSelected.value,
+                        checkBox = true,
+                        startIcon = {
+                            if (iconId != null) {
+                                Icon(
+                                    painter = painterResource(id = iconId),
+                                    contentDescription = null,
+                                    tint = when {
+                                        !isSelected.value -> MaterialTheme.colorScheme.onSurface.copy(
+                                            alpha = 0.38f
+                                        )
+
+                                        isSelected.value -> MaterialTheme.colorScheme.onSecondaryContainer
+                                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                    }
+                                )
+
+                            }
+                        }
                     ) {
                         selected = if (it) selected.plus(item.first)
                         else selected.minus(item.first)

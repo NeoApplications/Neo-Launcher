@@ -47,7 +47,7 @@ import com.android.launcher3.R
 import com.android.launcher3.model.data.FolderInfo
 import com.neoapps.neolauncher.compose.components.DialogNegativeButton
 import com.neoapps.neolauncher.compose.components.DialogPositiveButton
-import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithRadioButton
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.GestureHandler
 import com.neoapps.neolauncher.preferences.NeoPrefs
@@ -117,13 +117,17 @@ fun FolderListDialogUI(
                         mutableStateOf(selected == it.javaClass.name.toString())
                     }
 
-                    SingleSelectionListItem(
+                    ListItemWithRadioButton(
                         title = it.displayName,
-                        isSelected = isSelected.value
-                    ) {
-                        selected = it.javaClass.name.toString()
-                        selectedGesture = it
-                    }
+                        radioButton = true,
+                        selected = isSelected.value,
+                        index = gestures.indexOf(it),
+                        groupSize = gestures.size,
+                        onClick = {
+                            selected = it.javaClass.name.toString()
+                            selectedGesture = it
+                        }
+                    )
                 }
             }
         }

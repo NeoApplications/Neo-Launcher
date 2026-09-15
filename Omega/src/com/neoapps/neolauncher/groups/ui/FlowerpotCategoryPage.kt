@@ -33,16 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.launcher3.R
-import com.neoapps.neolauncher.compose.components.SingleSelectionListItem
+import com.neoapps.neolauncher.compose.components.ListItemWithRadioButton
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
 import com.neoapps.neolauncher.flowerpot.Flowerpot
-import com.neoapps.neolauncher.theme.GroupItemShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,17 +78,17 @@ fun FlowerpotCategoryPage(
                     val isSelected = rememberSaveable(selected) {
                         mutableStateOf(selected == it.name)
                     }
-                    SingleSelectionListItem(
-                        modifier = Modifier
-                            .clip(GroupItemShape(index, categoriesSize - 1)),
+                    ListItemWithRadioButton(
                         title = it.displayName,
-                        isSelected = isSelected.value,
+                        radioButton = true,
+                        selected = isSelected.value,
                         index = index,
-                        groupSize = categoriesSize
-                    ) {
-                        selected = it.name
-                        onSave(selected)
-                    }
+                        groupSize = categoriesSize,
+                        onClick = {
+                            selected = it.name
+                            onSave(selected)
+                        }
+                    )
                 }
             }
         }

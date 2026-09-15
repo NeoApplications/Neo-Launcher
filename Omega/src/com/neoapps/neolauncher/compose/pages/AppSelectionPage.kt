@@ -19,7 +19,6 @@
 package com.neoapps.neolauncher.compose.pages
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,7 +40,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.stringResource
@@ -51,7 +49,6 @@ import com.neoapps.neolauncher.compose.components.ListItemWithCheckbox
 import com.neoapps.neolauncher.compose.components.OverflowMenu
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
 import com.neoapps.neolauncher.compose.components.preferences.PreferenceGroup
-import com.neoapps.neolauncher.theme.GroupItemShape
 import com.neoapps.neolauncher.util.appsState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,13 +116,6 @@ fun AppSelectionPage(
                             mutableStateOf(selected.contains(app.key.toString()))
                         }
                         ListItemWithCheckbox(
-                            modifier = Modifier
-                                .clip(GroupItemShape(index, appsSize - 1))
-                                .clickable {
-                                    selected =
-                                        if (isSelected.value) selected.minus(app.key.toString())
-                                        else selected.plus(app.key.toString())
-                                },
                             title = app.label + if (app.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
                             startIcon = {
                                 Image(

@@ -21,7 +21,6 @@ package com.neoapps.neolauncher.compose.pages
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -169,13 +168,6 @@ fun LauncherScreen(
             ) {
                 itemsIndexed(launcherItems) { index, item ->
                     ListItemWithRadioButton(
-                        modifier = Modifier
-                            .clip(
-                                GroupItemShape(index, groupSize - 1)
-                            )
-                            .clickable {
-                                onSelect(item.toString())
-                            },
                         title = item.displayName,
                         startIcon = {
                             Icon(
@@ -244,11 +236,6 @@ fun AppsScreen(
                     }
 
                     ListItemWithRadioButton(
-                        modifier = Modifier
-                            .clip(GroupItemShape(index, appsSize - 1))
-                            .clickable {
-                                onSelect(appGestureHandler.toString())
-                            },
                         title = item.label + if (item.key.user.hashCode() != 0) " \uD83D\uDCBC" else "",
                         startIcon = {
                             Image(
@@ -339,13 +326,6 @@ fun ShortcutsScreen(
                                 appName = it.label.toString()
                             }
                             ListItemWithRadioButton(
-                                modifier = Modifier
-                                    .clip(
-                                        GroupItemShape(index, groupSize - 1)
-                                    )
-                                    .clickable {
-                                        onSelect(appGestureHandler.toString())
-                                    },
                                 title = it.label.toString(),
                                 startIcon = {
                                     Image(
