@@ -258,8 +258,8 @@ fun DynamicPage(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         val colorSize = dynamicColors.size
         itemsIndexed(dynamicColors) { index, option ->
