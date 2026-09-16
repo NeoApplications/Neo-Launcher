@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,6 +29,21 @@ allprojects {
             defaultConfig {
                 minSdk = 26
                 targetSdk = 37
+                multiDexEnabled = true
+                vectorDrawables.useSupportLibrary = true
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_21
+                targetCompatibility = JavaVersion.VERSION_21
+            }
+        }
+        extensions.findByType<LibraryExtension>()?.apply {
+            buildToolsVersion = "36.1.0"
+            compileSdk = 37
+
+            defaultConfig {
+                minSdk = 26
+                multiDexEnabled = true
                 vectorDrawables.useSupportLibrary = true
             }
             compileOptions {
