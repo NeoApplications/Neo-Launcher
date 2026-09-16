@@ -69,6 +69,7 @@
     <string name="title__multiline_labels">Multiline app names</string>
     <string name="title_desktop_free_scrolling">Free Scrolling</string>
     <string name="title_desktop_cycle_scrolling">Cycle Scrolling</string>
+    <string name="title_popup_menu_open">Open Popup Menu</string>
     <string name="title_desktop_icon_popup_menu">Popup menu items</string>
     <string name="title_desktop_hide_statusbar">Hide status bar</string>
     <string name="title_desktop_text_size">Text Size</string>
@@ -470,6 +471,8 @@
     <string name="action_sleep_timeout">Sleep Using Screen Timeout</string>
     <string name="gesture_double_tap">Double tap</string>
     <string name="gesture_long_press">Touch and hold</string>
+    <string name="gesture_pinch_in">Pinch in</string>
+    <string name="gesture_pinch_out">Pinch out</string>
     <string name="gesture_swipe_up">Swipe Upwards</string>
     <string name="folder_swipe_up">Swipe up action</string>
     <string name="gesture_dock_swipe_up">Swipe upwards from dock</string>

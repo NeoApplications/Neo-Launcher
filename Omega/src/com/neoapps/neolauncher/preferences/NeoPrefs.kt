@@ -52,6 +52,7 @@ import com.neoapps.neolauncher.dash.controlprovider.MobileData
 import com.neoapps.neolauncher.dash.controlprovider.Wifi
 import com.neoapps.neolauncher.dash.dashProviderOptions
 import com.neoapps.neolauncher.gestures.BlankGestureHandler
+import com.neoapps.neolauncher.gestures.handlers.DesktopBubbleGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.NotificationsOpenGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.OpenDashGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.OpenDrawerGestureHandler
@@ -1258,7 +1259,21 @@ class NeoPrefs private constructor(val context: Context) {
         titleId = R.string.gesture_long_press,
         dataStore = dataStore,
         key = PrefKey.GESTURES_LONG_TAP,
+        defaultValue = DesktopBubbleGestureHandler(context, null).toString(),
+    )
+
+    var gesturePinchIn = GesturePref(
+        titleId = R.string.gesture_pinch_in,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_PINCH_IN,
         defaultValue = OpenOverviewGestureHandler(context, null).toString(),
+    )
+
+    var gesturePinchOut = GesturePref(
+        titleId = R.string.gesture_pinch_out,
+        dataStore = dataStore,
+        key = PrefKey.GESTURES_PINCH_OUT,
+        defaultValue = BlankGestureHandler(context, null).toString(),
     )
 
     var gestureHomePress = GesturePref(

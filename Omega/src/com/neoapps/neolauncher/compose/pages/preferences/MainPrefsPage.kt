@@ -115,6 +115,8 @@ fun MainPrefsPage() {
     val gesturesMap = listOf(
         prefs.gestureDoubleTap,
         prefs.gestureLongPress,
+        prefs.gesturePinchIn,
+        prefs.gesturePinchOut,
         prefs.gestureSwipeDown,
         prefs.gestureSwipeUp,
         prefs.gestureDockSwipeUp,

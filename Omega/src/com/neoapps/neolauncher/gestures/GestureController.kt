@@ -28,11 +28,14 @@ import com.neoapps.neolauncher.NeoLauncher
 import com.neoapps.neolauncher.gestures.gestures.DoubleTapGesture
 import com.neoapps.neolauncher.gestures.gestures.LaunchAssistantGesture
 import com.neoapps.neolauncher.gestures.gestures.LongPressGesture
+import com.neoapps.neolauncher.gestures.gestures.PinchInGesture
+import com.neoapps.neolauncher.gestures.gestures.PinchOutGesture
 import com.neoapps.neolauncher.gestures.gestures.PressBackGesture
 import com.neoapps.neolauncher.gestures.gestures.PressHomeGesture
 import com.neoapps.neolauncher.gestures.gestures.SwipeDownGesture
 import com.neoapps.neolauncher.gestures.gestures.SwipeUpDockGesture
 import com.neoapps.neolauncher.gestures.gestures.SwipeUpGesture
+import com.neoapps.neolauncher.gestures.handlers.DesktopBubbleGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.NotificationsOpenGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.OpenDashGestureHandler
 import com.neoapps.neolauncher.gestures.handlers.OpenDrawerGestureHandler
@@ -62,6 +65,8 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
     val swipeUpGesture = SwipeUpGesture(this)
     val swipeUpDockGesture = SwipeUpDockGesture(this)
     val swipeDownGesture = SwipeDownGesture(this)
+    val pinchInGesture = PinchInGesture(this)
+    val pinchOutGesture = PinchOutGesture(this)
 
     var touchDownPoint = PointF()
 
@@ -101,6 +106,14 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
 
     fun onSwipeDown() {
         triggerGesture(swipeDownGesture)
+    }
+
+    fun onPinchIn() {
+        triggerGesture(pinchInGesture, withHaptic = true)
+    }
+
+    fun onPinchOut() {
+        triggerGesture(pinchOutGesture, withHaptic = true)
     }
 
     fun onLaunchAssistant() {
@@ -199,6 +212,7 @@ class GestureController(val launcher: NeoLauncher) : TouchController {
                 NotificationsOpenGestureHandler(context, null),
                 OpenOverlayGestureHandler(context, null),
                 OpenOverviewGestureHandler(context, null),
+                DesktopBubbleGestureHandler(context, null),
                 StartGlobalSearchGestureHandler(context, null),
                 OpenSettingsGestureHandler(context, null),
             ).apply {

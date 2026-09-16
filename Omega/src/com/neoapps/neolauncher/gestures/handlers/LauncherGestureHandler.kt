@@ -93,11 +93,35 @@ class OpenSettingsGestureHandler(context: Context, config: JSONObject?) :
 }
 
 @Keep
-class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
+class DesktopBubbleGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {
 
-    override val displayName: String = context.getString(R.string.action_open_overview)
-    override val displayNameRes: Int = R.string.action_open_overview
+    override val displayName: String = context.getString(R.string.title_popup_menu_open)
+    override val displayNameRes: Int = R.string.title_popup_menu_open
+    override val icon =
+        ContextCompat.getDrawable(context, R.drawable.desktop_mode_ic_taskbar_menu_new_window)
+    override val iconResource: Intent.ShortcutIconResource by lazy {
+        Intent.ShortcutIconResource.fromContext(
+            context,
+            R.drawable.desktop_mode_ic_taskbar_menu_new_window
+        )
+    }
+    override val requiresForeground = false
+
+    override fun onGestureTrigger(controller: GestureController, view: View?) {
+        Log.d("DesktopBubbleGestureHandler", "onGestureTrigger from $view")
+        controller.launcher.showDefaultOptions(
+            controller.touchDownPoint.x,
+            controller.touchDownPoint.y
+        )
+    }
+}
+
+@Keep
+class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
+    GestureHandler(context, config) {
+    override val displayName: String = context.getString(R.string.edit_home_screen)
+    override val displayNameRes: Int = R.string.edit_home_screen
     override val icon = ContextCompat.getDrawable(context, R.drawable.ic_empty_recents)
     override val iconResource: Intent.ShortcutIconResource by lazy {
         Intent.ShortcutIconResource.fromContext(
@@ -109,17 +133,9 @@ class OpenOverviewGestureHandler(context: Context, config: JSONObject?) :
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
         Log.d("OpenOverviewGestureHandler", "onGestureTrigger from $view")
-        if (true) { // TODO add pref for showing popup menu
-            controller.launcher.showDefaultOptions(
-                controller.touchDownPoint.x,
-                controller.touchDownPoint.y
-            )
-        } else {
-            //controller.launcher.stateManager.goToState(LauncherState.OPTIONS)
-        }
+        controller.launcher.stateManager.goToState(LauncherState.EDIT_MODE)
     }
 }
-
 @Keep
 class StartAppGestureHandler(context: Context, config: JSONObject?) :
     GestureHandler(context, config) {

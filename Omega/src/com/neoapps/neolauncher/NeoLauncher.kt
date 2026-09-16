@@ -75,6 +75,7 @@ import com.android.launcher3.util.TouchController
 import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.plugins.shared.LauncherOverlayManager
 import com.neoapps.neolauncher.gestures.GestureController
+import com.neoapps.neolauncher.gestures.PinchGestureController
 import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PreferencesChangeCallback
@@ -545,6 +546,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
     override fun createTouchControllers(): Array<TouchController> {
         val list = ArrayList<TouchController>()
         list.add(dragController)
+        list.add(PinchGestureController(this))
         list.add(VerticalSwipeGestureController(this))
 
         return list.toTypedArray() + super.createTouchControllers()

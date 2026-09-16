@@ -17,15 +17,12 @@
 
 package com.neoapps.neolauncher.gestures.handlers
 
-import android.internal.perfetto.protos.Viewcapture
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.android.launcher3.R
 import com.android.launcher3.touch.OverScroll
 import com.neoapps.neolauncher.gestures.GestureController
 import com.neoapps.neolauncher.gestures.GestureHandler
-import kotlin.getValue
-
 
 class ViewSwipeUpGestureHandler(private val view: View, private val handler: GestureHandler) :
     GestureHandler(view.context, null), VerticalSwipeGestureHandler {

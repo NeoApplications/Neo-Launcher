@@ -70,6 +70,9 @@ class VerticalSwipeGestureController(private val launcher: Launcher) : TouchCont
     private var currentStart = 0f
 
     override fun onControllerInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (ev.pointerCount > 1) {
+            return false
+        }
         downTime = ev.downTime
         val isDown = ev.actionMasked == MotionEvent.ACTION_DOWN
         val overrideAppeared =
