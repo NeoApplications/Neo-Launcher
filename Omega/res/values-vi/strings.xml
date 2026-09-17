@@ -72,7 +72,6 @@
     <string name="title__sort_by_color">Theo màu sắc</string>
     <string name="title_all_apps_search">Thanh tìm kiếm ngăn kéo</string>
     <string name="title_all_apps_google_search">Tìm kiếm Global</string>
-
     <string name="summary__drawer_hide_apps">Ẩn ứng dụng khỏi ngăn ứng dụng</string>
     <string name="title_disable_suggestions_prompt">Tắt đề xuất ứng dụng</string>
     <string name="msg_disable_suggestions_prompt">Dữ liệu sử dụng sẽ bị xóa.</string>
