@@ -39,6 +39,7 @@ import com.neoapps.neolauncher.smartspace.provider.SmartspaceDataSource
 import com.neoapps.neolauncher.smartspace.showWeatherDetailsDialog
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider.Companion.dummyTarget
 import com.neoapps.neolauncher.smartspace.weather.icons.WeatherIconProvider
+import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.Permissions
 import com.neoapps.neolauncher.util.Permissions.REQUEST_PERMISSION_LOCATION_ACCESS
 import com.neoapps.neolauncher.util.Permissions.checkLocationAccess
@@ -77,7 +78,8 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     private fun getOwmHelper(): OpenWeatherMapHelper {
-        return OpenWeatherMapHelper(prefs.smartspaceWeatherApiKey.getValue().trim())
+        val apiKey = Config.getOWMApiKey()
+        return OpenWeatherMapHelper(apiKey)
     }
 
     private val iconProvider by lazy { WeatherIconProvider(context) }
@@ -148,7 +150,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
-        val apiKey = prefs.smartspaceWeatherApiKey.getValue().trim()
+        val apiKey = Config.getOWMApiKey()
         val isFahrenheit = prefs.smartspaceWeatherUnit.getValue() == "imperial" ||
                 prefs.smartspaceWeatherUnit.getValue() == "fahrenheit"
         val units = if (isFahrenheit) "imperial" else "metric"
@@ -318,8 +320,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     }
 
     override fun onFailure(throwable: Throwable?) {
-        if ((prefs.smartspaceWeatherApiKey.getValue() == context.getString(R.string.default_owm_key)
-                    && !BuildConfig.APPLICATION_ID.contains("debug"))
+        if ((Config.getOWMApiKey() == "" && !BuildConfig.APPLICATION_ID.contains("debug"))
             || throwable?.message == apiKeyError
         ) {
             Toast.makeText(context, R.string.owm_get_your_own_key, Toast.LENGTH_LONG).show()

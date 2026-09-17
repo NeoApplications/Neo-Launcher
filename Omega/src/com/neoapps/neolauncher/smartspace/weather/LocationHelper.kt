@@ -26,7 +26,7 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
-import com.neoapps.neolauncher.preferences.NeoPrefs
+import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.Permissions.checkLocationAccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -154,7 +154,7 @@ class LocationHelper(private val context: Context) {
             var url =
                 "https://geocoding-api.open-meteo.com/v1/search?name=$encodedCity&count=1&language=$lang&format=json"
             if (provider == OWMWeatherProvider::class.java.name) {
-                val apiKey = NeoPrefs.getInstance().smartspaceWeatherApiKey.getValue().trim()
+                val apiKey = Config.getOWMApiKey()
                 url =
                     "https://api.openweathermap.org/geo/1.0/direct?q=$encodedCity&limit=1&appid=$apiKey"
             }

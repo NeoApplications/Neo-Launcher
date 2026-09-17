@@ -3,6 +3,7 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Properties
 import java.util.TimeZone
 
 plugins {
@@ -92,6 +93,8 @@ extensions.configure<ApplicationExtension> {
         buildConfigField("boolean", "WIDGETS_ENABLED", "true")
         buildConfigField("boolean", "NOTIFICATION_DOTS_ENABLED", "true")
         buildConfigField("boolean", "WIDGET_ON_FIRST_SCREEN", "true")
+        buildConfigField("String", "OWM_API_KEY", getEnvProperty("OWM_API_KEY"))
+
 
         val langsList =
             file("res").listFiles { dir -> dir.isDirectory && dir.name.startsWith("values") }
@@ -236,6 +239,17 @@ protobuf {
         }
     }
 }
+
+fun getEnvProperty(key: String): String {
+    val envFile = File(rootProject.projectDir, ".env")
+    if (envFile.exists()) {
+        val properties = Properties()
+        properties.load(envFile.inputStream())
+        return properties.getProperty(key) ?: "\"\""
+    }
+    return "\"\""
+}
+
 
 androidComponents {
     onVariants { variant ->

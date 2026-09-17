@@ -32,6 +32,7 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.datastore.preferences.core.Preferences
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -300,6 +301,14 @@ class Config(val context: Context) {
                 result = true
             }
             return result
+        }
+
+        fun getOWMApiKey(): String {
+            return if (BuildConfig.APPLICATION_ID.contains("debug")) {
+                BuildConfig.OWM_API_KEY
+            } else {
+                NeoPrefs.getInstance().smartspaceWeatherApiKey.getValue().trim()
+            }
         }
     }
 }

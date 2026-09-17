@@ -1084,7 +1084,7 @@ class NeoPrefs private constructor(val context: Context) {
         dataStore = dataStore,
         key = PrefKey.WIDGETS_SMARTSPACE_WEATHER_API_KEY,
         titleId = R.string.weather_api_key,
-        defaultValue = context.getString(R.string.default_owm_key),
+        defaultValue = "",
     )
 
     var smartspaceWeatherCity = StringTextPref(
