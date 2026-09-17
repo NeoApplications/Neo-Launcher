@@ -131,7 +131,7 @@
     <plurals name="hidden_apps_count">
         <item quantity="other">%1$d Tersembunyi</item>
     </plurals>
-    <string name="protected_apps">App Terjaga</string>
+    <string name="protected_apps">Ketuk untuk membuka Apl yang dilindungi</string>
     <string name="protected_app_selected">App Terjaga (%1$d)</string>
     <string name="hide_app_selected">App Tersembunyi (%1$d)</string>
     <string name="hide_app_reset">Reset aplikasi tersembunyi</string>
@@ -247,7 +247,7 @@
     <string name="title_smartspace_date">Tampilkan Tanggal</string>
     <string name="title_smartspace_calendar">Pilih Kalender</string>
     <string name="title_smartspace_time_above">Tampilkan Jam Besar</string>
-    <string name="title_smartspace_widget_provider">Sumber cuaca</string>
+    <string name="title_smartspace_widget_provider">%1$s. Ketuk untuk mengubah</string>
     <string name="title_smartspace_weather_units">Satuan suhu</string>
     <string name="title_smartspace_event_providers">Sumber acara</string>
     <string name="category__behavior_weather">Cuaca</string>
@@ -431,7 +431,7 @@
     <string name="debug_options_title">Informasi debug</string>
     <string name="title__dev_show_Dev">Tampilkan di Pengaturan</string>
     <string name="title__dev_show_debug_info">Tampilkan info debug</string>
-    <string name="title_feed_provider">Penyedia Feed</string>
+    <string name="title_feed_provider">Aktifkan Penyedia Feed</string>
     <string name="title__restart_launcher">Mulai ulang</string>
     <string name="summary__dev_restart">Dapat membantu jika beberapa pengaturan tidak diterapkan dengan benar</string>
     <string name="change_default_home">Tetapkan sebagai Aplikasi Beranda</string>
@@ -567,4 +567,19 @@
     <string name="backup_manage_storage_permission_title">Diperlukan akses semua file</string>
     <string name="backup_manage_storage_permission_summary">Berikan akses Kelola Penyimpanan Eksternal sebelum membuat cadangan. Peluncur akan menyegarkan status ini secara otomatis saat Anda kembali dari Pengaturan.</string>
     <string name="backup_grant_storage_permission">Berikan akses penyimpanan</string>
+    <string name="category_food_and_drink">Makanan &amp; Minuman</string>"&gt;
+    <string name="category_photography">Fotografi</string>
+    <string name="title_smartspace_widget_enable">Aktifkan cuaca</string>
+    <string name="weather_code_clear">Langit cerah</string>
+    <string name="weather_code_mainly_clear">Sebagian besar cerah</string>
+    <string name="weather_code_overcast">Mendung</string>
+    <string name="weather_code_partly_cloudy">Berawan sebagian</string>
+    <string name="weather_code_fog">Kabut</string>
+    <string name="weather_code_drizzle">Gerimis</string>
+    <string name="weather_code_rain">Hujan</string>
+    <string name="weather_code_heavy_rain">Hujan lebat</string>
+    <string name="weather_code_snow">Salju</string>
+    <string name="weather_code_thunderstorm">Badai petir</string>
+    <string name="weather_feels_like">Terasa seperti %1$s</string>
+    <string name="weather_forecast_hourly">Prakiraan per jam</string>
 </resources>
