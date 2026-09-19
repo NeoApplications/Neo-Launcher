@@ -4,24 +4,26 @@ import android.app.Activity
 import android.content.Context
 import com.android.launcher3.R
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.neoapps.neolauncher.compose.navigation.Routes
+import com.neoapps.neolauncher.NeoLauncher
+import com.neoapps.neolauncher.neoApp
 import com.neoapps.neolauncher.preferences.NeoPrefs
-import com.neoapps.neolauncher.preferences.PreferenceActivity
 import com.neoapps.neolauncher.smartspace.weather.BlankWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.OWMWeatherProvider
 import com.neoapps.neolauncher.smartspace.weather.PixelWeatherProvider
-import com.neoapps.neolauncher.util.dropWhileBusy
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 
 class SmartspaceProvider private constructor(context: Context) {
     val prefs = NeoPrefs.getInstance()
+    private val scope = MainScope()
     private val currentWeather = prefs.smartspaceWeatherProvider.getStringValue()
     private val weatherProvider = when (currentWeather) {
         GoogleWeatherProvider::class.java.name -> GoogleWeatherProvider(context)
@@ -51,7 +53,7 @@ class SmartspaceProvider private constructor(context: Context) {
         .map { it.targets }
         .reduce { acc, flow -> flow.combine(acc) { a, b -> a + b } }
         .shareIn(
-            MainScope(),
+            scope,
             SharingStarted.WhileSubscribed(),
             replay = 1
         )
@@ -72,22 +74,36 @@ class SmartspaceProvider private constructor(context: Context) {
         headerAction = SmartspaceAction(
             id = "smartspaceSetupAction",
             title = context.getString(R.string.smartspace_setup_text),
-            intent = PreferenceActivity.navigateIntent(context, Routes.PREFS_WIDGETS)
+            onClick = { view ->
+                val activity = runCatching { NeoLauncher.getLauncher(view.context) }.getOrNull()
+                    ?: (view.context as? Activity)
+                    ?: context.neoApp.activityHandler.foregroundActivity
+                if (activity != null) {
+                    scope.launch {
+                        startSetup(activity)
+                    }
+                }
+            }
         ),
         score = -1,
         featureType = SmartspaceTarget.FEATURE_TIPS
     )
 
-    suspend fun startSetup(activity: Activity) { // TODO link to smartspace setup screen
-        state
-            .map { it.requiresSetup }
-            .dropWhileBusy()
-            .collect { sources ->
-                sources.forEach {
-                    it.startSetup(activity)
-                    it.onSetupDone()
-                }
+    suspend fun startSetup(activity: Activity) {
+        val sources = state.first().requiresSetup
+        sources.forEach {
+            it.startSetup(activity)
+            it.onSetupDone()
+        }
+    }
+
+    fun checkSetup() {
+        scope.launch {
+            val sources = state.first().requiresSetup
+            sources.forEach {
+                it.onSetupDone()
             }
+        }
     }
 
     companion object {
