@@ -7,13 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.provider.CalendarContract
+import android.provider.Settings
 import android.text.format.DateFormat
+import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.android.launcher3.R
-import com.neoapps.neolauncher.compose.navigation.Routes
-import com.neoapps.neolauncher.preferences.PreferenceActivity
 import com.neoapps.neolauncher.smartspace.model.SmartspaceScores
+import com.neoapps.neolauncher.util.Permissions
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import kotlinx.coroutines.delay
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
+import kotlin.time.Duration.Companion.milliseconds
 
 class CalendarEventProvider(context: Context) : SmartspaceDataSource(
     context, R.string.smartspace_provider_calendar
@@ -46,7 +49,7 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
             while (true) {
                 requiresSetup()
                 emit(calendarTarget())
-                delay(TimeUnit.MINUTES.toMillis(3))
+                delay(TimeUnit.MINUTES.toMillis(3).milliseconds)
             }
         }
     }
@@ -149,19 +152,23 @@ class CalendarEventProvider(context: Context) : SmartspaceDataSource(
     }
 
     override suspend fun startSetup(activity: Activity) {
-        val intent = PreferenceActivity.navigateIntent(activity, Routes.PREFS_WIDGETS)
-        val message = activity.getString(
-            R.string.event_provider_missing_notification_dots,
-            activity.getString(providerName)
-        )
-
-        PreferenceActivity.startBlankActivityDialog(
-            activity,
-            intent,
-            activity.getString(R.string.title_missing_notification_access),
-            message,
-            context.getString(R.string.title_change_settings),
-        )
+        val result =
+            Permissions.requestPermissionsAsync(activity, Manifest.permission.READ_CALENDAR)
+        val granted = result[Manifest.permission.READ_CALENDAR] == true
+        if (!granted && !ActivityCompat.shouldShowRequestPermissionRationale(
+                activity,
+                Manifest.permission.READ_CALENDAR
+            )
+        ) {
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", activity.packageName, null)
+                }
+                activity.startActivity(intent)
+            } catch (e: Exception) {
+                // ignore
+            }
+        }
     }
 
     data class CalendarEvent(
