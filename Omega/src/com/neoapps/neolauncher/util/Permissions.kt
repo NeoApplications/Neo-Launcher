@@ -6,9 +6,16 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Environment
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistryOwner
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.android.launcher3.Utilities
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 object Permissions {
 
@@ -16,6 +23,7 @@ object Permissions {
     const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
     const val REQUEST_PERMISSION_READ_CONTACTS = 668
     const val REQUEST_PERMISSION_WALLPAPER_ACCESS = 669
+    const val REQUEST_PERMISSION_CALENDAR_ACCESS = 670
 
     fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
         try {
@@ -41,6 +49,67 @@ object Permissions {
             activity, arrayOf(permission),
             requestCode
         )
+    }
+
+    suspend fun requestPermissionsAsync(
+        activity: Activity,
+        vararg permissions: String
+    ): Map<String, Boolean> {
+        if (permissions.all { hasPermission(activity, it) }) {
+            return permissions.associateWith { true }
+        }
+
+        if (activity is ActivityResultRegistryOwner) {
+            return suspendCancellableCoroutine { cont ->
+                val key = "req_perm_${System.currentTimeMillis()}"
+                var launcher: ActivityResultLauncher<Array<String>>? = null
+                launcher = activity.activityResultRegistry.register(
+                    key,
+                    ActivityResultContracts.RequestMultiplePermissions()
+                ) { result ->
+                    launcher?.unregister()
+                    if (cont.isActive) {
+                        cont.resume(result)
+                    }
+                }
+                launcher.launch(arrayOf(*permissions))
+                cont.invokeOnCancellation {
+                    launcher.unregister()
+                }
+            }
+        } else {
+            return suspendCancellableCoroutine { cont ->
+                val observer = object : DefaultLifecycleObserver {
+                    private var paused = false
+                    override fun onPause(owner: LifecycleOwner) {
+                        paused = true
+                    }
+
+                    override fun onResume(owner: LifecycleOwner) {
+                        if (paused) {
+                            owner.lifecycle.removeObserver(this)
+                            if (cont.isActive) {
+                                cont.resume(permissions.associateWith {
+                                    hasPermission(
+                                        activity,
+                                        it
+                                    )
+                                })
+                            }
+                        }
+                    }
+                }
+                (activity as? LifecycleOwner)?.lifecycle?.addObserver(observer)
+                cont.invokeOnCancellation {
+                    (activity as? LifecycleOwner)?.lifecycle?.removeObserver(observer)
+                }
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(*permissions),
+                    REQUEST_PERMISSION_CALENDAR_ACCESS
+                )
+            }
+        }
     }
 
     @JvmStatic

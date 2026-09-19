@@ -1,14 +1,20 @@
 package com.neoapps.neolauncher.smartspace.provider
 
+import android.app.Activity
 import android.app.Notification
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.provider.Settings
 import android.service.notification.StatusBarNotification
 import android.text.TextUtils
 import com.android.launcher3.R
 import com.android.launcher3.util.PackageUserKey
+import com.neoapps.neolauncher.compose.components.preferences.isNotificationServiceEnabled
+import com.neoapps.neolauncher.compose.navigation.Routes
 import com.neoapps.neolauncher.flowerpot.Flowerpot
 import com.neoapps.neolauncher.flowerpot.FlowerpotApps
+import com.neoapps.neolauncher.preferences.PreferenceActivity
 import com.saulhdev.smartspace.SmartspaceAction
 import com.saulhdev.smartspace.SmartspaceTarget
 import com.saulhdev.smartspace.uitemplatedata.BaseTemplateData
@@ -257,5 +263,20 @@ class NotificationUnreadProvider(context: Context) : SmartspaceDataSource(
             }
         }
         return arrayOf(title)
+    }
+
+    override suspend fun requiresSetup(): Boolean =
+        isNotificationServiceEnabled(context = context).not()
+
+    override suspend fun startSetup(activity: Activity) {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            val prefsIntent = PreferenceActivity.navigateIntent(activity, Routes.PREFS_WIDGETS)
+            activity.startActivity(prefsIntent)
+        }
     }
 }

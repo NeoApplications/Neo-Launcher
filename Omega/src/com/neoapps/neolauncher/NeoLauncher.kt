@@ -80,6 +80,7 @@ import com.neoapps.neolauncher.gestures.VerticalSwipeGestureController
 import com.neoapps.neolauncher.preferences.NeoPrefs
 import com.neoapps.neolauncher.preferences.PreferencesChangeCallback
 import com.neoapps.neolauncher.shortcuts.OmegaShortcuts
+import com.neoapps.neolauncher.smartspace.provider.SmartspaceProvider
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
 import com.neoapps.neolauncher.util.Config
@@ -499,6 +500,7 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         super.onResume()
         // lifecycle handled by the Activity/Launcher base class
         restartIfPending()
+        SmartspaceProvider.INSTANCE.get(this).checkSetup()
 
         dragLayer.viewTreeObserver.addOnDrawListener(object : ViewTreeObserver.OnDrawListener {
             private var handled = false
@@ -542,6 +544,30 @@ class NeoLauncher : Launcher(), SavedStateRegistryOwner,
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (activityResultRegistry.dispatchResult(
+                requestCode,
+                RESULT_OK,
+                Intent()
+                    .putExtra(
+                        ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSIONS,
+                        permissions
+                    )
+                    .putExtra(
+                        ActivityResultContracts.RequestMultiplePermissions.EXTRA_PERMISSION_GRANT_RESULTS,
+                        grantResults
+                    )
+            )
+        ) {
+            return
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     override fun createTouchControllers(): Array<TouchController> {
         val list = ArrayList<TouchController>()
