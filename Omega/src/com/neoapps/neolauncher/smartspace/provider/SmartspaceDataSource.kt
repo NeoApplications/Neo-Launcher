@@ -59,7 +59,7 @@ abstract class SmartspaceDataSource(
 
     open suspend fun requiresSetup(): Boolean = false
 
-    open suspend fun startSetup(activity: Activity) {} // TODO implement in the respective providers
+    open suspend fun startSetup(activity: Activity) {}
 
     suspend fun onSetupDone() {
         if (!requiresSetup()) {
