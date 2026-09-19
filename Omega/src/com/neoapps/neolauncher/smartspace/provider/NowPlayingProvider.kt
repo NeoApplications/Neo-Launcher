@@ -21,13 +21,15 @@ class NowPlayingProvider(context: Context) : SmartspaceDataSource(
     context, R.string.event_provider_now_playing
 ) {
     private val defaultIcon = Icon.createWithResource(context, R.drawable.ic_music_note)
+    private val mediaListener = MediaListener.INSTANCE[context]
 
     override val internalTargets = callbackFlow {
-        val mediaListener = MediaListener(context) {
-            trySend(listOfNotNull(getSmartspaceTarget(it)))
+        val listener: (MediaListener) -> Unit = { ml ->
+            trySend(listOfNotNull(getSmartspaceTarget(ml)))
         }
-        mediaListener.onResume()
-        awaitClose { mediaListener.onPause() }
+        mediaListener.addListener(listener)
+        trySend(listOfNotNull(getSmartspaceTarget(mediaListener)))
+        awaitClose { mediaListener.removeListener(listener) }
     }
 
     private fun getSmartspaceTarget(media: MediaListener): SmartspaceTarget? {
@@ -42,9 +44,9 @@ class NowPlayingProvider(context: Context) : SmartspaceDataSource(
             ?: sbn.getAppName(context)
         val intent = sbn.notification?.contentIntent
         return SmartspaceTarget(
-            smartspaceTargetId = "nowPlaying-${mediaInfo.hashCode()}",
+            smartspaceTargetId = "nowPlaying",
             headerAction = SmartspaceAction(
-                id = "nowPlayingAction-${mediaInfo.hashCode()}",
+                id = "nowPlayingAction",
                 icon = icon,
                 title = title,
                 subtitle = subtitle,

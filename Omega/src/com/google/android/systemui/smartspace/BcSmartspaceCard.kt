@@ -2,6 +2,8 @@ package com.google.android.systemui.smartspace
 
 import android.content.Context
 import android.media.MediaMetadata
+import android.media.session.PlaybackState
+import android.os.SystemClock
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
@@ -41,6 +43,7 @@ class BcSmartspaceCard @JvmOverloads constructor(
     private var textGroup: ViewGroup? = null
     private var secondaryCardGroup: ViewGroup? = null
     private var mediaListener: MediaListener? = null
+    private var mediaProgressListener: ((MediaListener) -> Unit)? = null
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -86,7 +89,9 @@ class BcSmartspaceCard @JvmOverloads constructor(
             }
             setSubtitle(subtitle, headerAction.contentDescription)
             if (target.featureType == SmartspaceTarget.FEATURE_MEDIA) {
-                setProgress()
+                startProgressTracking()
+            } else {
+                stopProgressTracking()
             }
             updateIconTint()
         }
@@ -176,27 +181,84 @@ class BcSmartspaceCard @JvmOverloads constructor(
         setFormattedContentDescription(subtitleTextView!!, subtitle, charSequence2)
     }
 
-    private fun setProgress() {
-        val progressBar = progressView ?: return
-        mediaListener = MediaListener(context) { ml ->
-            ml.tracking?.controller?.let {
-                val metadata = it.metadata
-                val state = it.playbackState
-                try {
-                    state?.position?.times(100)
-                        ?.div(metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0)
-                        ?.toInt()
-                } catch (e: Exception) {
-                    null
-                }?.apply {
-                    if (!progressBar.isVisible) progressBar.visibility = View.VISIBLE
-                    progressBar.progress = this
-                } ?: {
-                    if (progressBar.isVisible) progressBar.visibility = View.GONE
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            if (::target.isInitialized && target.featureType == SmartspaceTarget.FEATURE_MEDIA && isAttachedToWindow) {
+                updateProgress()
+                val ml = mediaListener ?: MediaListener.INSTANCE[context]
+                if (ml.tracking?.isPlaying == true) {
+                    postDelayed(this, 1000)
                 }
             }
         }
-        mediaListener?.onResume()
+    }
+
+    private fun startProgressTracking() {
+        val progressBar = progressView ?: return
+        val ml = mediaListener ?: MediaListener.INSTANCE[context].also { mediaListener = it }
+        if (mediaProgressListener == null) {
+            val listener: (MediaListener) -> Unit = { listenerInstance ->
+                onMediaStateChanged(listenerInstance)
+            }
+            mediaProgressListener = listener
+            ml.addListener(listener)
+        }
+        onMediaStateChanged(ml)
+    }
+
+    private fun onMediaStateChanged(ml: MediaListener) {
+        removeCallbacks(progressRunnable)
+        updateProgress()
+        if (isAttachedToWindow && ml.tracking?.isPlaying == true) {
+            postDelayed(progressRunnable, 1000)
+        }
+    }
+
+    private fun updateProgress() {
+        val progressBar = progressView ?: return
+        val ml = mediaListener ?: MediaListener.INSTANCE[context]
+        val controller = ml.tracking?.controller
+        val metadata = runCatching { controller?.metadata }.getOrNull()
+        val state = runCatching { controller?.playbackState }.getOrNull()
+
+        if (controller == null || metadata == null || state == null) {
+            if (progressBar.isVisible) progressBar.visibility = View.GONE
+            return
+        }
+
+        val duration =
+            runCatching { metadata.getLong(MediaMetadata.METADATA_KEY_DURATION) }.getOrDefault(0L)
+        if (duration <= 0) {
+            if (progressBar.isVisible) progressBar.visibility = View.GONE
+            return
+        }
+
+        var currentPos = state.position
+        if (state.state == PlaybackState.STATE_PLAYING) {
+            val updateTime = state.lastPositionUpdateTime
+            if (updateTime > 0) {
+                val timeDelta = SystemClock.elapsedRealtime() - updateTime
+                val speed = if (state.playbackSpeed > 0f) state.playbackSpeed else 1.0f
+                currentPos += (timeDelta * speed).toLong()
+            }
+        }
+        currentPos = currentPos.coerceIn(0L, duration)
+
+        val progress = ((currentPos * 100) / duration).toInt().coerceIn(0, 100)
+        if (!progressBar.isVisible) progressBar.visibility = View.VISIBLE
+        progressBar.progress = progress
+    }
+
+    private fun stopProgressTracking() {
+        removeCallbacks(progressRunnable)
+        val listener = mediaProgressListener
+        if (listener != null) {
+            mediaListener?.removeListener(listener)
+            mediaProgressListener = null
+        }
+        progressView?.let {
+            if (it.isVisible) it.visibility = View.GONE
+        }
     }
 
     private fun setFormattedContentDescription(
@@ -225,8 +287,15 @@ class BcSmartspaceCard @JvmOverloads constructor(
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (::target.isInitialized && target.featureType == SmartspaceTarget.FEATURE_MEDIA) {
+            startProgressTracking()
+        }
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mediaListener?.onPause()
+        stopProgressTracking()
     }
 }
