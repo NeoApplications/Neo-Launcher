@@ -31,6 +31,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.LaunchedEffect
@@ -42,12 +43,14 @@ import com.neoapps.neolauncher.compose.navigation.PrefsComposeView
 import com.neoapps.neolauncher.theme.OmegaAppTheme
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
+import com.neoapps.neolauncher.util.applyAccent
 import com.neoapps.neolauncher.util.prefs
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -94,6 +97,11 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
 
     override fun onThemeChanged(forceUpdate: Boolean) = recreate()
 
+    override fun onDestroy() {
+        super.onDestroy()
+        (intent.getParcelableExtra("callback") as? ResultReceiver)?.send(Activity.RESULT_OK, null)
+    }
+
     companion object {
         fun navigateIntent(context: Context, destination: String): Intent {
             val uri = "${NAV_BASE}$destination".toUri()
@@ -105,12 +113,30 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
             dialogTitle: String, dialogMessage: String,
             positiveButton: String,
         ) {
-            start(activity, targetIntent, Bundle().apply {
-                putParcelable("intent", targetIntent)
-                putString("dialogTitle", dialogTitle)
-                putString("dialogMessage", dialogMessage)
-                putString("positiveButton", positiveButton)
-            })
+            suspendCancellableCoroutine { continuation ->
+                val dialog = AlertDialog.Builder(activity)
+                    .setTitle(dialogTitle)
+                    .setMessage(dialogMessage)
+                    .setPositiveButton(positiveButton) { _, _ ->
+                        try {
+                            activity.startActivity(targetIntent)
+                        } catch (e: Exception) {
+                            // ignore
+                        }
+                        if (continuation.isActive) continuation.resume(Unit)
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        if (continuation.isActive) continuation.resume(Unit)
+                    }
+                    .setOnCancelListener {
+                        if (continuation.isActive) continuation.resume(Unit)
+                    }
+                    .show()
+                dialog.applyAccent()
+                continuation.invokeOnCancellation {
+                    dialog.dismiss()
+                }
+            }
         }
 
         suspend fun startBlankActivityForResult(
