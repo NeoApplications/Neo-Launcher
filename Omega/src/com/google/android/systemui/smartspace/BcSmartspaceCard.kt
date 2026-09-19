@@ -133,6 +133,9 @@ class BcSmartspaceCard @JvmOverloads constructor(
             else -> headerAction
         }
         BcSmartSpaceUtil.setOnClickListener(this, primaryAction, "BcSmartspaceCard")
+        titleTextView?.let {
+            BcSmartSpaceUtil.setOnClickListener(it, primaryAction, "BcSmartspaceCard")
+        }
         subtitleTextView?.let {
             BcSmartSpaceUtil.setOnClickListener(it, primaryAction, "BcSmartspaceCard")
         }
