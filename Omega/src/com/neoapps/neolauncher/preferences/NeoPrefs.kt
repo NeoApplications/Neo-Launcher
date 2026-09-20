@@ -69,7 +69,6 @@ import com.neoapps.neolauncher.smartspace.Temperature
 import com.neoapps.neolauncher.smartspace.provider.BatteryStatusProvider
 import com.neoapps.neolauncher.smartspace.provider.NowPlayingProvider
 import com.neoapps.neolauncher.smartspace.weather.GoogleWeatherProvider
-import com.neoapps.neolauncher.smartspace.weather.OWMWeatherProvider
 import com.neoapps.neolauncher.theme.AccentColorOption
 import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.CustomPreferencesMigration
@@ -1117,8 +1116,8 @@ class NeoPrefs private constructor(val context: Context) {
         key2 = PrefKey.WIDGETS_SMARTSPACE_WEATHER_PROVIDER,
         titleId = R.string.title_smartspace_widget_enable,
         summaryId = R.string.title_smartspace_widget_provider,
-        defaultValue1 = true,
-        defaultValue2 = OWMWeatherProvider::class.java.name,
+        defaultValue1 = false,
+        defaultValue2 = "none",
         entries = Config.smartspaceWeatherProviders(context).filter { it.key != "none" },
         onChange = {
             recreate()
