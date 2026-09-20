@@ -121,11 +121,12 @@ class AllAppViewPagerAdapter(
         if (predictedApps.isEmpty() && shouldShowPredictions() && appItems.isNotEmpty()) {
             try {
                 val repo = AppTrackerRepository.INSTANCE.get(context)
-                val recent = repo.getRecentApps(columnCount)
+                val recent = repo.getAllRecentApps()
                 if (recent.isNotEmpty()) {
                     val userCache = UserCache.INSTANCE.get(context)
                     val recentItems = mutableListOf<ItemInfo>()
                     for (tracker in recent) {
+                        if (recentItems.size >= columnCount) break
                         val matchingApp = appItems.firstOrNull {
                             it.componentName?.packageName == tracker.packageName &&
                                     userCache.getSerialNumberForUser(it.user) == (tracker.userSerialNumber

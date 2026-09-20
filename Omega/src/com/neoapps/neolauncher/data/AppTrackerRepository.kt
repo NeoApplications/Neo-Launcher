@@ -20,6 +20,7 @@
 package com.neoapps.neolauncher.data
 
 import android.content.Context
+import android.os.Looper
 import android.os.Process
 import android.os.UserHandle
 import com.android.launcher3.pm.UserCache
@@ -55,6 +56,10 @@ class AppTrackerRepository(private val context: Context) {
         return dao.getRecentApps(limit)
     }
 
+    fun getAllRecentApps(): List<AppTracker> {
+        return dao.getAllRecentApps()
+    }
+
     fun updateAppCount(packageName: String, user: UserHandle = Process.myUserHandle()) {
         val userSerialNumber = userCache.getSerialNumberForUser(user)
         val timestamp = System.currentTimeMillis()
@@ -68,9 +73,29 @@ class AppTrackerRepository(private val context: Context) {
         }
     }
 
-    fun deleteAppCount(packageName: String, user: UserHandle = Process.myUserHandle()) {
+    fun deleteApp(packageName: String) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            scope.launch { dao.deleteApp(packageName) }
+        } else {
+            dao.deleteApp(packageName)
+        }
+    }
+
+    fun deleteApp(packageName: String, userSerialNumber: Long) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            scope.launch { dao.deleteApp(packageName, userSerialNumber) }
+        } else {
+            dao.deleteApp(packageName, userSerialNumber)
+        }
+    }
+
+    fun deleteApp(packageName: String, user: UserHandle = Process.myUserHandle()) {
         val userSerialNumber = userCache.getSerialNumberForUser(user)
-        scope.launch { dao.deleteAppCount(packageName, userSerialNumber) }
+        deleteApp(packageName, userSerialNumber)
+    }
+
+    fun deleteAppCount(packageName: String, user: UserHandle = Process.myUserHandle()) {
+        deleteApp(packageName, user)
     }
 
     companion object {

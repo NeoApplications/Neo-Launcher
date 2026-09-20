@@ -34,8 +34,17 @@ interface AppTrackerDao {
     @Query("SELECT * FROM apptracker ORDER BY lastOpened DESC LIMIT :limit")
     fun getRecentApps(limit: Int): List<AppTracker>
 
+    @Query("SELECT * FROM apptracker ORDER BY lastOpened DESC")
+    fun getAllRecentApps(): List<AppTracker>
+
     @Query("DELETE FROM apptracker WHERE packageName = :packageName AND userSerialNumber = :userSerialNumber")
     suspend fun deleteAppCount(packageName: String, userSerialNumber: Long)
+
+    @Query("DELETE FROM apptracker WHERE packageName = :packageName AND userSerialNumber = :userSerialNumber")
+    fun deleteApp(packageName: String, userSerialNumber: Long)
+
+    @Query("DELETE FROM apptracker WHERE packageName = :packageName")
+    fun deleteApp(packageName: String)
 
     @Query("SELECT count FROM apptracker WHERE packageName = :packageName AND userSerialNumber = :userSerialNumber")
     fun getAppCount(packageName: String, userSerialNumber: Long): Int

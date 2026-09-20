@@ -209,6 +209,7 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
         if (!Flags.enableWidgetPickerRefactor()) {
             mWidgetsRecommendationState.requestPredictionUpdate();
         }
+        refreshLocalPredictions();
     }
 
     @WorkerThread
@@ -251,36 +252,74 @@ public class NeoLauncherModelDelegate extends ModelDelegate {
 
         MODEL_EXECUTOR.execute(() -> {
             AppTrackerRepository repo = AppTrackerRepository.Companion.getINSTANCE().get(mContext);
-            List<AppTracker> recentApps = repo.getRecentApps(mIDP.numAllAppsColumns);
+            List<AppTracker> recentApps = repo.getAllRecentApps();
             List<AppTarget> targets = new ArrayList<>();
             LauncherApps launcherApps = mContext.getSystemService(LauncherApps.class);
             IconCache iconCache = LauncherAppState.getInstance(mContext).getIconCache();
             Set<String> refreshedPackages = new HashSet<>();
+            int maxTargets = mIDP.numAllAppsColumns;
 
             for (AppTracker app : recentApps) {
+                if (targets.size() >= maxTargets) {
+                    break;
+                }
                 long userSerialNumber = 0L;
                 if (app.getUserSerialNumber() != null) {
                     userSerialNumber = app.getUserSerialNumber();
                 }
 
                 UserHandle user = mUserCache.getUserForSerialNumber(userSerialNumber);
-                if (user != null) {
-                    String packageUserKey = app.getPackageName() + "#" + userSerialNumber;
-                    if (refreshedPackages.add(packageUserKey)) {
-                        iconCache.updateIconsForPkg(app.getPackageName(), user);
+                if (user == null) {
+                    repo.deleteApp(app.getPackageName(), userSerialNumber);
+                    continue;
+                }
+
+                List<LauncherActivityInfo> activities = launcherApps.getActivityList(app.getPackageName(), user);
+                if (activities.isEmpty()) {
+                    repo.deleteApp(app.getPackageName(), userSerialNumber);
+                    continue;
+                }
+
+                String packageUserKey = app.getPackageName() + "#" + userSerialNumber;
+                if (refreshedPackages.add(packageUserKey)) {
+                    iconCache.updateIconsForPkg(app.getPackageName(), user);
+                }
+                LauncherActivityInfo activity = activities.get(0);
+                targets.add(new AppTarget.Builder(
+                        new AppTargetId(app.getPackageName()),
+                        activity.getComponentName().getPackageName(),
+                        user)
+                        .setClassName(activity.getComponentName().getClassName())
+                        .build());
+            }
+
+            if (targets.size() < maxTargets && mAppsList != null && !mAppsList.data.isEmpty()) {
+                for (com.android.launcher3.model.data.AppInfo info : mAppsList.data) {
+                    if (targets.size() >= maxTargets) {
+                        break;
                     }
-                    List<LauncherActivityInfo> activities = launcherApps.getActivityList(app.getPackageName(), user);
-                    if (!activities.isEmpty()) {
-                        LauncherActivityInfo activity = activities.get(0);
+                    if (info.componentName == null) {
+                        continue;
+                    }
+                    String pkg = info.componentName.getPackageName();
+                    boolean exists = false;
+                    for (AppTarget target : targets) {
+                        if (pkg.equals(target.getPackageName()) && info.user.equals(target.getUser())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
                         targets.add(new AppTarget.Builder(
-                                new AppTargetId(app.getPackageName()),
-                                activity.getComponentName().getPackageName(),
-                                user)
-                                .setClassName(activity.getComponentName().getClassName())
+                                new AppTargetId(pkg),
+                                pkg,
+                                info.user)
+                                .setClassName(info.componentName.getClassName())
                                 .build());
                     }
                 }
             }
+
             mModel.enqueueModelUpdateTask(new PredictionUpdateTask(mAllPredictionAppsState, targets));
         });
     }

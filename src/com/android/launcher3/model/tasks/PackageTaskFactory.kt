@@ -28,6 +28,7 @@ import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo.FLAG_SUPPORTS_WEB_UI
 import com.android.launcher3.util.FlagOp
 import com.android.launcher3.util.ItemInfoMatcher
+import com.neoapps.neolauncher.data.AppTrackerRepository
 
 /** Factory for creating model tasks to handle various package events */
 object PackageTaskFactory {
@@ -37,10 +38,13 @@ object PackageTaskFactory {
     /** Task to handle apps being removed */
     fun appsRemoved(user: UserHandle, packages: Set<String>) =
         ModelUpdateTask { taskController, dataModel, apps ->
+            val appTrackerRepo =
+                runCatching { AppTrackerRepository.INSTANCE[taskController.context] }.getOrNull()
             packages.forEach {
                 if (DEBUG) Log.i(TAG, "appsRemoved package=$it")
                 taskController.iconCache.removeIconsForPkg(it, user)
                 apps.removePackage(it, user)
+                appTrackerRepo?.deleteApp(it)
             }
             taskController.bindApplicationsIfNeeded()
 
@@ -63,6 +67,7 @@ object PackageTaskFactory {
             // Remove any queued items from the install queue
             ItemInstallQueue.INSTANCE[taskController.context].removeFromInstallQueue(packages, user)
             taskController.model.forceReload()
+            runCatching { taskController.model.modelDelegate.refreshLocalPredictions() }
         }
 
     /** Task to handle apps being temporarily unavailable */
