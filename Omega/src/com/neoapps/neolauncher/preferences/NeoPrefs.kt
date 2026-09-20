@@ -226,6 +226,7 @@ class NeoPrefs private constructor(val context: Context) {
         defaultValue = false,
         onChange = {
             legacyPrefs.savePreference("profile_icon_adaptify", it)
+            reloadAll()
         }
     )
 
@@ -488,7 +489,10 @@ class NeoPrefs private constructor(val context: Context) {
                 iconShape = IconShape.fromString(context, it)
             )
         },
-        onChange = { }
+        onChange = {
+            ThemeManager.INSTANCE.get(context).verifyIconState()
+            reloadGrid()
+        }
     )
 
     val desktopFolderFullScreen = BooleanPref(
@@ -1420,6 +1424,15 @@ class NeoPrefs private constructor(val context: Context) {
             .onEach { shape ->
                 val iconShape = IconShape.fromString(context, shape)
                 initializeIconShape(iconShape)
+                ThemeManager.INSTANCE.get(context).verifyIconState()
+                LauncherAppState.getInstance(context).model.reloadIfActive()
+            }
+            .launchIn(scope)
+
+        desktopFolderIconShape.get()
+            .drop(1)
+            .distinctUntilChanged()
+            .onEach {
                 ThemeManager.INSTANCE.get(context).verifyIconState()
                 LauncherAppState.getInstance(context).model.reloadIfActive()
             }

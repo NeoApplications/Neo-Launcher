@@ -46,14 +46,12 @@ import com.android.launcher3.util.UserIconInfo.Companion.TYPE_MAIN
 import com.android.launcher3.util.UserIconInfo.Companion.TYPE_WORK
 import com.android.systemui.shared.Flags.extendibleThemeManager
 import com.neoapps.neolauncher.icons.CustomAdaptiveIconDrawable
-import com.neoapps.neolauncher.icons.ExtendedBitmapDrawable.Companion.isFromIconPack
 import com.neoapps.neolauncher.icons.FixedScaleDrawable
 import com.neoapps.neolauncher.icons.IconPreferences
 import java.lang.ref.WeakReference
 import kotlin.annotation.AnnotationRetention.SOURCE
 import kotlin.math.ceil
 import kotlin.math.max
-import kotlin.math.sqrt
 
 /**
  * This class will be moved to androidx library. There shouldn't be any dependency outside this
@@ -145,8 +143,7 @@ constructor(
         if (icon == null) {
             return null
         }
-        val isFromIconPack = icon.isFromIconPack
-        val shouldWrapAdaptive = !isFromIconPack && IconPreferences(context).shouldWrapAdaptive()
+        val shouldWrapAdaptive = IconPreferences(context).shouldWrapAdaptive()
         val shrinkNonAdaptiveIcons = IconProvider.ATLEAST_OMR1 && shouldWrapAdaptive
 
         val scale: Float
@@ -215,11 +212,15 @@ constructor(
             )
         }
 
-        // Create the bitmap first
         val oldBounds = icon.bounds
-        val scale = FloatArray(1)
         var tempIcon: Drawable = icon
-        if (options.isFullBleed && icon is BitmapDrawable) {
+        val isFullBleedBitmap =
+            options.isFullBleed || (drawFullBleedIcons && icon is BitmapDrawable && icon.bitmap?.let {
+                isIconFullBleed(
+                    it
+                )
+            } == true)
+        if (isFullBleedBitmap && icon is BitmapDrawable) {
             // If the source is a full-bleed icon, create an adaptive icon by insetting this icon to
             // the extra padding
             var inset = AdaptiveIconDrawable.getExtraInsetFraction()
@@ -332,7 +333,12 @@ constructor(
         if(icon is AdaptiveIconDrawable) return icon
         else{
             val iconBackground = IconPreferences(context).getWrapperBackgroundColor(icon)
-            val scale = options?.iconScale ?: IconNormalizer(iconBitmapSize).getScale(icon)
+            val scale =
+                if (options != null && options.iconScale != ICON_VISIBLE_AREA_FACTOR) {
+                    options.iconScale
+                } else {
+                    IconNormalizer(iconBitmapSize).getScale(icon)
+                }
             val dr = CustomAdaptiveIconDrawable(
                 iconBackground.toDrawable(),
                 createScaledDrawable(icon, scale * LEGACY_ICON_SCALE))
@@ -536,13 +542,8 @@ constructor(
     companion object {
         private const val DEFAULT_WRAPPER_BACKGROUND = Color.WHITE
 
-        // Ratio of icon visible area to full icon size for a square shaped icon
-        private const val MAX_SQUARE_AREA_FACTOR = 375.0 / 576
-
         val LEGACY_ICON_SCALE =
-            sqrt(MAX_SQUARE_AREA_FACTOR).toFloat() *
-                    .7f *
-                    (1f / (1 + 2 * AdaptiveIconDrawable.getExtraInsetFraction()))
+            (1f / (1 + 2 * AdaptiveIconDrawable.getExtraInsetFraction())) * .88f
 
         const val MODE_DEFAULT: Int = 0
         const val MODE_WITH_SHADOW: Int = 1

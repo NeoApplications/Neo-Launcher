@@ -55,17 +55,17 @@ constructor(
     }
 
     private fun parseIconStateV2(oldState: IconState?): IconState {
-        val neoPrefs = NeoPrefs.getInstance()
+        val prefs = NeoPrefs.getInstance()
 
         val currentAppShape: IconShape = try {
-            IconShape.fromString(neoPrefs.profileIconShape.getValue())
+            IconShape.fromString(context, prefs.profileIconShape.getValue())
         } catch (e: Exception) {
             Log.d(TAG, "Error getting icon shape", e)
             IconShape.RoundedSquare
         }
 
         val currentFolderShape: IconShape = try {
-            IconShape.fromString(neoPrefs.desktopFolderIconShape.getValue())
+            IconShape.fromString(context, prefs.desktopFolderIconShape.getValue())
         } catch (e: Exception) {
             Log.d(TAG, "Error getting icon shape", e)
             IconShape.RoundedSquare
