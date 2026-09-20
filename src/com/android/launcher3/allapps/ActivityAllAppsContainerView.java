@@ -371,9 +371,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
         animateToSearchState(false);
         rebindAdapters(mUsingTabs);
         View categoriesBar = findViewById(R.id.categories_bar);
-        if (categoriesBar != null) categoriesBar.setVisibility(
-                prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIES ? VISIBLE : GONE
-        );
+        if (categoriesBar != null) {
+            categoriesBar.setVisibility(prefs.getDrawerLayout().getValue() == LAYOUT_CATEGORIES ? INVISIBLE : GONE);
+        }
     }
 
     /**
@@ -692,10 +692,10 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
             }
             if (workRecyclerView != null)
                 workRecyclerView.setId(R.id.apps_list_view_work);
-            if (enableExpandingPauseWorkButton()
-                    || FeatureFlags.ENABLE_EXPANDING_PAUSE_WORK_BUTTON.get()) {
-                mAH.get(AdapterHolder.WORK).mRecyclerView.addOnScrollListener(
-                        mWorkManager.newScrollListener());
+            if (prefs.getDrawerLayout().getValue() == LAYOUT_VERTICAL) {
+                if (enableExpandingPauseWorkButton() || FeatureFlags.ENABLE_EXPANDING_PAUSE_WORK_BUTTON.get()) {
+                    mAH.get(AdapterHolder.WORK).mRecyclerView.addOnScrollListener(mWorkManager.newScrollListener());
+                }
             }
             mViewPager.getPageIndicator().setActiveMarker(AdapterHolder.MAIN);
 
