@@ -43,6 +43,7 @@ import com.neoapps.neolauncher.compose.navigation.PrefsComposeView
 import com.neoapps.neolauncher.theme.OmegaAppTheme
 import com.neoapps.neolauncher.theme.ThemeManager
 import com.neoapps.neolauncher.theme.ThemeOverride
+import com.neoapps.neolauncher.util.Config
 import com.neoapps.neolauncher.util.applyAccent
 import com.neoapps.neolauncher.util.prefs
 import kotlinx.coroutines.CoroutineName
@@ -68,6 +69,9 @@ class PreferenceActivity : ComponentActivity(), ThemeManager.ThemeableActivity {
         themeOverride.applyTheme(this)
         currentTheme = themeOverride.getTheme(this)
         currentAccent = prefs.profileAccentColor.getColor()
+
+        val config = Config(this)
+        config.setAppLanguage(prefs.profileLanguage.getValue())
         setContent {
             val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
 
