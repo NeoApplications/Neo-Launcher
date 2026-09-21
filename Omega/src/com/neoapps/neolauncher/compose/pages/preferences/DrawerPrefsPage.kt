@@ -70,7 +70,7 @@ fun DrawerPrefsPage() {
         prefs.drawerIconScale,
         prefs.drawerHideLabels,
         prefs.drawerMultilineLabel,
-        //prefs.drawerLabelScale,
+        prefs.drawerLabelScale,
         prefs.drawerPopup,
     )
     val gridPrefs = remember(prefs.changePoker.collectAsState(initial = 1).value) {

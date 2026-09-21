@@ -82,7 +82,9 @@ class DeviceProfileOverrides(context: Context) {
         val numFolderColumns: Int,
 
         val iconSizeFactor: Float,
+        val iconTextSizeFactor: Float,
         val allAppsIconSizeFactor: Float,
+        val allAppsIconTextSizeFactor: Float,
 
         val enableTaskbarOnPhone: Boolean,
         val numDesktopRows: Int,
@@ -98,9 +100,22 @@ class DeviceProfileOverrides(context: Context) {
             numFolderColumns = prefs.desktopFolderColumns.getValue(),
 
             iconSizeFactor = prefs.desktopIconScale.getValue(),
+            iconTextSizeFactor = if (prefs.desktopHideAppLabels.getValue()) {
+                0f
+            } else {
+                prefs.drawerLabelScale.getValue()
+            },
             allAppsIconSizeFactor = prefs.drawerIconScale.getValue(),
 
+            allAppsIconTextSizeFactor =
+                if (prefs.drawerHideLabels.getValue()) {
+                    0f
+                } else {
+                    prefs.drawerLabelScale.getValue()
+                },
+
             enableTaskbarOnPhone = false, // TODO pref for this
+
             numDesktopRows = prefs.desktopGridRows.get(defaultGrid),
             numDesktopColumns = prefs.desktopGridColumns.get(defaultGrid),
             numHotseatIcons = prefs.dockNumIcons.get(defaultGrid),
@@ -134,6 +149,13 @@ class DeviceProfileOverrides(context: Context) {
             idp.iconSize[INDEX_TWO_PANEL_PORTRAIT] *= iconSizeFactor
             idp.iconSize[INDEX_TWO_PANEL_LANDSCAPE] *= iconSizeFactor
             idp.allAppsIconSize[INDEX_DEFAULT] *= allAppsIconSizeFactor
+
+            idp.allAppsIconTextSize[INDEX_DEFAULT] *= allAppsIconTextSizeFactor
+            idp.allAppsIconTextSize[INDEX_LANDSCAPE] *= allAppsIconTextSizeFactor
+            idp.allAppsIconTextSize[INDEX_TWO_PANEL_PORTRAIT] *= allAppsIconTextSizeFactor
+            idp.allAppsIconTextSize[INDEX_TWO_PANEL_LANDSCAPE] *= allAppsIconTextSizeFactor
+
+            idp.iconTextSize[INDEX_DEFAULT] *= iconTextSizeFactor
         }
     }
 
