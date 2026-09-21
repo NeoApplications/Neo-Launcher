@@ -57,7 +57,7 @@ abstract class GestureHandler(val context: Context, val config: JSONObject?) {
 class BlankGestureHandler(context: Context, config: JSONObject?) : GestureHandler(context, config) {
     override val displayName: String = context.getString(R.string.action_none)
     override val displayNameRes: Int = R.string.action_none
-    override val icon = ContextCompat.getDrawable(context, R.drawable.close_icon)
+    override val icon = ContextCompat.getDrawable(context, R.drawable.ic_close_work_edu)
     override fun onGestureTrigger(controller: GestureController, view: View?) {}
 }
 

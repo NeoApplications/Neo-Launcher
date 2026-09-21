@@ -168,7 +168,7 @@ fun CreateGroupBottomSheet(
                     },
                     endWidget = {
                         Icon(
-                            painter = painterResource(id = R.drawable.chevron_right),
+                            painter = painterResource(id = R.drawable.ic_arrow_right_page),
                             contentDescription = null,
                         )
                     },
@@ -211,7 +211,7 @@ fun CreateGroupBottomSheet(
                     },
                     endWidget = {
                         Icon(
-                            painter = painterResource(id = R.drawable.chevron_right),
+                            painter = painterResource(id = R.drawable.ic_arrow_right_page),
                             contentDescription = null,
                         )
                     },
