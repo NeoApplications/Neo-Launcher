@@ -97,7 +97,12 @@ extensions.configure<ApplicationExtension> {
 
 
         val langsList =
-            file("res").listFiles { dir -> dir.isDirectory && dir.name.startsWith("values") }
+            file("res").listFiles { dir ->
+                dir.isDirectory &&
+                        dir.name.startsWith("values") &&
+                        dir.listFiles()
+                            ?.any { it.isFile && it.name.endsWith("strings.xml") } == true
+            }
                 //noinspection WrongGradleMethod
                 ?.map { it.name.removePrefix("values-").ifEmpty { "en" }.replace("values", "en") }
                 ?.distinct()
