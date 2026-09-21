@@ -61,7 +61,7 @@ fun DesktopPrefsPage() {
     }
 
     val iconPrefs = listOf(
-        //prefs.desktopIconScale,
+        prefs.desktopIconScale,
         prefs.desktopHideAppLabels,
         /*prefs.desktopMultilineLabel,
         prefs.desktopLabelScale,*/
