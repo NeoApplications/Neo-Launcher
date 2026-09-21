@@ -295,6 +295,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
             defaultIconSize = mDeviceProfile.getWorkspaceIconProfile().getIconSizePx();
             setCenterVertically(mDeviceProfile.getWorkspaceIconProfile().getIconCenterVertically());
             mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
+            setLineCount(prefs.getDesktopLabelRows());
         } else if (mDisplay == DISPLAY_ALL_APPS || mDisplay == DISPLAY_PREDICTION_ROW
                 || mDisplay == DISPLAY_SEARCH_RESULT_APP_ROW) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -311,6 +312,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
                     mDeviceProfile.getFolderProfile().getChildDrawablePaddingPx());
             defaultIconSize = mDeviceProfile.getFolderProfile().getChildIconSizePx();
             mShouldShowLabel = !prefs.getDesktopHideAppLabels().getValue();
+            setLineCount(prefs.getDesktopLabelRows());
         } else if (mDisplay == DISPLAY_DRAWER_FOLDER) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mDeviceProfile.getFolderProfile().getChildTextSizePx());
@@ -367,6 +369,15 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver,
         setAccessibilityDelegate(mActivity.getAccessibilityDelegate());
         setTextAlpha(1f);
     }
+
+    public void setLineCount(int lines) {
+        setMaxLines(lines);
+        setSingleLine(lines == 1);
+        setEllipsize(TruncateAt.END);
+        // This shouldn't even be needed, what is going on?!
+        setLines(lines);
+    }
+
 
     @Override
     protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
