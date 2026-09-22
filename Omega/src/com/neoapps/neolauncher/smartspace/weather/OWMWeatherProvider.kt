@@ -62,6 +62,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
     context, R.string.weather_provider_owm
@@ -93,7 +94,7 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
         updateData()
         scope.launch {
             while (true) {
-                delay(UPDATE_INTERVAL_MILLIS)
+                delay(UPDATE_INTERVAL_MILLIS.milliseconds)
                 updateData()
             }
         }
@@ -164,15 +165,13 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                         "q=$currentCity&units=$units&lang=$lang&appid=$apiKey"
             }
 
-            Log.d("OWM", "Forecast URL: $forecastUrl")
-            val forecastReq = Request.Builder().url(forecastUrl).build()
-            client.newCall(forecastReq).execute().use { fResponse ->
-                Log.d("OWM", "Forecast response code: ${fResponse.code}")
-                if (fResponse.isSuccessful) {
-                    val bodyString = fResponse.body.string()
+            val request = Request.Builder().url(forecastUrl).build()
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val bodyString = response.body.string()
                     if (bodyString.isNotEmpty()) {
-                        val fJson = JSONObject(bodyString)
-                        val list = fJson.optJSONArray("list")
+                        val forecastObjects = JSONObject(bodyString)
+                        val list = forecastObjects.optJSONArray("list")
                         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
                         val nowSec = System.currentTimeMillis() / 1000 - 3600
 
@@ -292,7 +291,6 @@ class OWMWeatherProvider(context: Context) : SmartspaceDataSource(
                 }
             }
         } else {
-            Log.d("OWM", "Updating weather data for $city")
             getOwmHelper().getCurrentWeatherByCityName(city, this)
         }
     }
