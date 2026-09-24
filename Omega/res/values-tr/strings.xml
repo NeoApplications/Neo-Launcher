@@ -120,7 +120,6 @@
     <string name="action_open_drawer_or_recents">Son kullanılanları/uygulama çekmecesini aç</string>
     <string name="action_open_drawer">Uygulama çekmecesini aç</string>
     <string name="action_none">Hiçbir Şey Yapma</string>
-    <string name="pref_category__notifications">Bildirimler</string>
     <string name="title__notification_background">Bildirim Arka Plan Rengi</string>
     <string name="notification_custom_color">Özel renk kullan</string>
     <string name="title__notification_count">Bildirim Sayısını Göster</string>

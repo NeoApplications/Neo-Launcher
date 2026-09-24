@@ -117,7 +117,6 @@
     <string name="action_open_drawer">Åpne programskuff</string>
     <string name="action_none">Ikke gjør noe</string>
     <string name="pref_category__gestures">Håndvendinger</string>
-    <string name="pref_category__notifications">Merknader</string>
     <string name="title__notification_background">Merknadsbakgrunnsfarge</string>
     <string name="title__notification_count">Vis merkandsantall</string>
     <string name="smartspace_preferences">Innstillinger</string>

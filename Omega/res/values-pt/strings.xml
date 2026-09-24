@@ -114,7 +114,6 @@
     <string name="units_delisle">Grau Delisle</string>
     <string name="units_reaumur">ºRé</string>
     <string name="units_romer">ºRø</string>
-    <string name="pref_category__notifications">Notificações</string>
     <string name="action_open_drawer_or_recents">Abrir Recentes os Apps na Gaveta</string>
     <string name="action_open_overview">Mostrar atalhos flutuantes na área de trabalho</string>
     <string name="action_open_dash">Abrir o painel</string>

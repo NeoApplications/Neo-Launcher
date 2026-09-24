@@ -135,7 +135,6 @@
     <string name="notification_custom_color">カスタム色を使用する</string>
     <string name="title__notification_background">通知の背景色</string>
     <string name="title__gesture_swipe_down">下へスワイプ</string>
-    <string name="pref_category__notifications">通知</string>
     <string name="pref_category__gestures">ジェスチャー</string>
     <string name="action_none">なし</string>
     <string name="action_open_drawer">アプリドロワーを開く</string>

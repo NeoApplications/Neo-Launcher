@@ -246,7 +246,6 @@
     <string name="resuable_text_alarm">Alarm</string>
     <string name="onbording">Instappen</string>
     <string name="title__gesture_swipe_down">Omlaag vegen</string>
-    <string name="pref_category__notifications">Meldingen</string>
     <string name="search_provider_appsearch">App-zoeken</string>
     <string name="gesture_swipe_up">Omhoog vegen</string>
     <string name="omega_actions">Acties</string>

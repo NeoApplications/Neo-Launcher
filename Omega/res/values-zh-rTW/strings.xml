@@ -145,7 +145,6 @@
     <string name="title__folder_badge_count">顯示資料夾徽章數量</string>
     <string name="title__notification_background">通知背景顏色</string>
     <string name="title__gesture_swipe_down">向下滑動</string>
-    <string name="pref_category__notifications">通知</string>
     <string name="pref_category__gestures">手勢</string>
     <string name="pref_category__dash">儀表板</string>
     <string name="action_none">不執行任何操作</string>

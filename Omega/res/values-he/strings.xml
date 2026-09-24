@@ -10,7 +10,6 @@
     <string name="default_tab_name">לשונית חדשה</string>
     <string name="loading">טוען…</string>
     <string name="permission_iplocate">מיקום משוער</string>
-    <string name="pref_category__notifications">התראות</string>
     <string name="pref_appcategorization_style_text">סגנון</string>
     <string name="pref_category__others">אחרים</string>
     <string name="restore_failed">שחזור נכשל</string>

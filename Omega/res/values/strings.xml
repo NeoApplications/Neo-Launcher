@@ -449,7 +449,6 @@
     <string name="title__folder_badge_count">Show folder badge Count</string>
     <string name="title__notification_background">Notification Background Color</string>
     <string name="title__gesture_swipe_down">Swipe down</string>
-    <string name="pref_category__notifications">Notifications</string>
     <string name="pref_category__gestures">Gestures</string>
     <string name="pref_category__dash">Dash</string>
     <string name="action_none">Do Nothing</string>

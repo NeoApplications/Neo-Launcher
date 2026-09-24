@@ -345,7 +345,6 @@
     <string name="title__folder_badge_count">கோப்புறை ஒட்டு எண்ணிக்கையைக் காட்டு</string>
     <string name="title__notification_background">அறிவிப்பு பின்னணி நிறம்</string>
     <string name="title__gesture_swipe_down">கீழே ச்வைப் செய்யவும்</string>
-    <string name="pref_category__notifications">அறிவிப்புகள்</string>
     <string name="pref_category__gestures">சைகைகள்</string>
     <string name="pref_category__dash">கோடு</string>
     <string name="action_none">எதுவும் செய்ய வேண்டாம்</string>

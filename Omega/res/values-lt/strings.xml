@@ -86,7 +86,6 @@
     <string name="grid_size_height">Aukštis</string>
     <string name="action_none">Nieko nedaryti</string>
     <string name="pref_category__gestures">Gestai</string>
-    <string name="pref_category__notifications">Pranešimai</string>
     <string name="allow">Leisti</string>
     <string name="category__behavior_weather">Orai</string>
     <string name="title_smartspace_weather_units">Temperatūros vienetas</string>

@@ -332,7 +332,6 @@
     <string name="dt2s_admin_warning">النقر المزدوج للسبات سيتم تعطيله.</string>
     <string name="omega_actions">أجراءات</string>
     <string name="action_open_drawer_or_recents">أفتح المؤخرة\\درج التطبيقات</string>
-    <string name="pref_category__notifications">اﻷشعارات</string>
     <string name="title__gesture_swipe_down">مرر لأسفل</string>
     <string name="title__notification_background">لون خلفية الاشعارات</string>
     <string name="smartspace_provider_bridge">جسر بكسل دون جذر</string>

@@ -41,7 +41,7 @@
     <string name="delete">Borrar</string>
     <string name="developer_options_title">Opciones de Desarrollador</string>
     <string name="dismiss_drop_target_label">No mostrar</string>
-    <string name="default_folder_name">Nueva carpeta1</string>
+    <string name="default_folder_name">Nueva carpeta 1</string>
     <string name="cat_search_bar">Barra de búsqueda</string>
     <string name="summary__general_desktop">Personaliza tu escritorio</string>
     <string name="title__general_notifications">Gestos y Notificaciones</string>
@@ -135,7 +135,6 @@
     <string name="action_open_notifications">Abrir notificaciones</string>
     <string name="action_open_app_with_target">Abrir “%s”</string>
     <string name="action_open_app">Abrir aplicación</string>
-    <string name="pref_category__notifications">Notificaciones</string>
     <string name="units_kelvin">Kelvin</string>
     <string name="units_imperial">Fahrenheit</string>
     <string name="units_metric">Centígrados</string>

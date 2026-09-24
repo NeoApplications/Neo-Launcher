@@ -117,7 +117,7 @@ fun WidgetsPrefsPage() {
             }
             item {
                 PreferenceGroup(
-                    stringResource(id = R.string.pref_category__notifications),
+                    stringResource(id = R.string.event_provider_unread_notifications),
                     prefs = notificationsPrefs,
                     onPrefDialog = onPrefDialog
                 )

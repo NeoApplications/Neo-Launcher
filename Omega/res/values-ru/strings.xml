@@ -123,7 +123,6 @@
     <string name="action_open_drawer">Открыть выдвижную панель</string>
     <string name="action_none">Ничего не делать</string>
     <string name="pref_category__gestures">Жесты</string>
-    <string name="pref_category__notifications">Уведомления</string>
     <string name="title__gesture_swipe_down">Проведите вниз</string>
     <string name="title__notification_background">Цвет фона уведомлений</string>
     <string name="title__notification_count">Количество уведомлений</string>

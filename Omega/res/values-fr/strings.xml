@@ -73,7 +73,6 @@
     <string name="action_open_drawer">Ouvrir le tiroir d\'applications</string>
     <string name="action_none">Ne rien faire</string>
     <string name="pref_category__gestures">Gestes</string>
-    <string name="pref_category__notifications">Notifications</string>
     <string name="title__notification_background">Couleur d\'arrière-plan des notifications</string>
     <string name="title__folder_badge_count">Afficher le badge de notifications</string>
     <string name="title__notification_count">Afficher le nombre de notifications</string>

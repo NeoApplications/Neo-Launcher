@@ -323,7 +323,6 @@
     <string name="title__folder_badge_count">Tampilkan jumlah lencana folder</string>
     <string name="title__notification_background">Warna Latar Belakang Notifikasi</string>
     <string name="title__gesture_swipe_down">Geser ke bawah</string>
-    <string name="pref_category__notifications">Notifikasi</string>
     <string name="pref_category__gestures">Gerakan</string>
     <string name="pref_category__dash">Dash</string>
     <string name="action_none">Tidak Melakukan Apa Pun</string>

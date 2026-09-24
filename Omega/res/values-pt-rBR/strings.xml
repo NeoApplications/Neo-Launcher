@@ -222,7 +222,6 @@
     <string name="action_open_drawer">Abrir a gaveta de Apps</string>
     <string name="action_none">Fazer nada</string>
     <string name="pref_category__gestures">Gestos</string>
-    <string name="pref_category__notifications">Notificações</string>
     <string name="title__gesture_swipe_down">Deslizar pra baixo</string>
     <string name="title__notification_background">Cor de fundo da Notificação</string>
     <string name="title__folder_badge_count">Mostrar Pontos de Notificação na Pasta</string>

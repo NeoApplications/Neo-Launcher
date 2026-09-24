@@ -341,7 +341,6 @@
     <string name="title__notification_count">Prikaži broj obavijesti</string>
     <string name="title__folder_badge_count">Prikaži bedž brojača mape</string>
     <string name="title__notification_background">Boja pozadine obavijesti</string>
-    <string name="pref_category__notifications">Obavijesti</string>
     <string name="pref_category__gestures">Geste</string>
     <string name="action_open_drawer">Otvori ladicu programa</string>
     <string name="action_open_app">Otvori program</string>

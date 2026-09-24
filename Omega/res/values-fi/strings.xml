@@ -215,7 +215,6 @@
     <string name="title__folder_badge_count">Näytä kansion ilmoitusten määrä</string>
     <string name="title__notification_background">Ilmoituksen taustaväri</string>
     <string name="title__gesture_swipe_down">Pyyhkäise alas</string>
-    <string name="pref_category__notifications">Ilmoitukset</string>
     <string name="pref_category__gestures">Eleet</string>
     <string name="action_open_drawer_or_recents">Avaa viimeaikaiset/sovellusvalikko</string>
     <string name="action_open_overview">Näytä aloitusnäytön kupla</string>

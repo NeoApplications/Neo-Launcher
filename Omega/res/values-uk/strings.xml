@@ -231,7 +231,6 @@
     <string name="title_smartspace">Відображати віджет розумного простору</string>
     <string name="deny">Заборонити</string>
     <string name="title__gesture_swipe_down">Свайп донизу</string>
-    <string name="pref_category__notifications">Сповіщення</string>
     <string name="action_open_app">Відкрити застосунок</string>
     <string name="action_global_search">Запустити глобальний пошук</string>
     <string name="folder_rows">Кількість рядків у теці</string>

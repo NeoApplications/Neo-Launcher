@@ -347,7 +347,6 @@
     <string name="notification_custom_color">Egyéni szín használata</string>
     <string name="title__folder_badge_count">Mappa jelvényei számának megjelenítése</string>
     <string name="title__gesture_swipe_down">Csúsztatás lefelé</string>
-    <string name="pref_category__notifications">Értesítések</string>
     <string name="pref_category__gestures">Mozdulatok</string>
     <string name="pref_category__dash">Műszerfal</string>
     <string name="action_none">Ne tegyen semmit</string>

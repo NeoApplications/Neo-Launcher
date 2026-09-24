@@ -183,7 +183,6 @@
     <string name="title__folder_badge_count">Hiển thị số lượng huy hiệu thư mục</string>
     <string name="title__notification_background">Màu nền thông báo</string>
     <string name="title__gesture_swipe_down">Vuốt xuống</string>
-    <string name="pref_category__notifications">Thông báo</string>
     <string name="gesture_press_home">Nhấn vào nút Home</string>
     <string name="gesture_press_back">Nút quay lại</string>
     <string name="omega_actions">Hành động</string>

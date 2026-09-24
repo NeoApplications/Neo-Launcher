@@ -79,7 +79,6 @@
     <string name="units_metric">Celsjusz</string>
     <string name="units_imperial">Fahrenheit</string>
     <string name="units_kelvin">Kelvin</string>
-    <string name="pref_category__notifications">Powiadomienia</string>
     <string name="pref_category__gestures">Gesty</string>
     <string name="fonts_global_font">Czcionka</string>
     <string name="title__advanced_language">Język</string>

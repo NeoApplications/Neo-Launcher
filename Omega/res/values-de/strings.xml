@@ -184,7 +184,6 @@
     <string name="action_open_drawer">App-Übersicht öffnen</string>
     <string name="action_none">Nichts tun</string>
     <string name="pref_category__gestures">Gesten</string>
-    <string name="pref_category__notifications">Benachrichtigungen</string>
     <string name="title__gesture_swipe_down">Nach unten wischen</string>
     <string name="title__notification_background">Hintergrundfarbe für Benachrichtigungen</string>
     <string name="title__folder_badge_count">Zeige Benachrichtigungsanzahl am Ordner</string>
