@@ -382,7 +382,7 @@
     <string name="fonts_change_global_font">Modificar</string>
     <string name="summary__advanced_setting_search">Mostrar la búsqueda de configuraciones en la barra de acción</string>
     <string name="backup_error_blank_contents">El contenido no puede estar vacío</string>
-    <string name="title_feed_provider">Proveedor de relleno</string>
+    <string name="title_feed_provider">Proveedor de Feed</string>
     <string name="dash_mobile_network_summary">Muestra los parámetros de las redes del móvil</string>
     <string name="title__dev_show_debug_info">Mostrar informe de depuración</string>
     <string name="dash_bluetooth">Bluetooth</string>
