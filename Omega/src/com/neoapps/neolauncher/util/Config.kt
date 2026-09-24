@@ -304,7 +304,10 @@ class Config(val context: Context) {
         }
 
         fun getOWMApiKey(): String {
-            return if (BuildConfig.APPLICATION_ID.contains("debug")) {
+            return if (BuildConfig.APPLICATION_ID.contains("debug") || BuildConfig.APPLICATION_ID.contains(
+                    "alpha"
+                )
+            ) {
                 BuildConfig.OWM_API_KEY
             } else {
                 NeoPrefs.getInstance().smartspaceWeatherApiKey.getValue().trim()
