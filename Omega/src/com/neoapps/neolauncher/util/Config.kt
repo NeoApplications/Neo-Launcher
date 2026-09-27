@@ -89,11 +89,6 @@ class Config(val context: Context) {
     }
 
     companion object {
-        //PERMISSION FLAGS
-        const val REQUEST_PERMISSION_STORAGE_ACCESS = 666
-        const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
-        const val REQUEST_PERMISSION_READ_CONTACTS = 668
-
         const val GOOGLE_QSB = "com.google.android.googlequicksearchbox"
         const val GOOGLE_TEXT_ASSIST = "com.google.android.googlequicksearchbox.TEXT_ASSIST"
 
