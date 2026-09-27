@@ -23,7 +23,7 @@ import android.content.pm.PackageManager
 import android.service.notification.StatusBarNotification
 import com.android.launcher3.notification.NotificationListener
 import com.android.launcher3.util.MainThreadInitializedObject
-import com.neoapps.neolauncher.util.Permissions.checkPackagePermission
+import com.neoapps.neolauncher.util.Permissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
@@ -79,7 +79,7 @@ private const val EXTRA_SUBSTITUTE_APP_NAME = "android.substName"
 fun StatusBarNotification.getAppName(context: Context): CharSequence {
     val subName = notification.extras.getString(EXTRA_SUBSTITUTE_APP_NAME)
     if (subName != null) {
-        if (context.checkPackagePermission(packageName, PERM_SUBSTITUTE_APP_NAME)) {
+        if (Permissions.hasPermission(context, PERM_SUBSTITUTE_APP_NAME)) {
             return subName
         }
     }

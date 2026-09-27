@@ -3,7 +3,6 @@ package com.neoapps.neolauncher.util
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Environment
 import androidx.activity.result.ActivityResultLauncher
@@ -24,20 +23,6 @@ object Permissions {
     const val REQUEST_PERMISSION_READ_CONTACTS = 668
     const val REQUEST_PERMISSION_WALLPAPER_ACCESS = 669
     const val REQUEST_PERMISSION_CALENDAR_ACCESS = 670
-
-    fun Context.checkPackagePermission(packageName: String, permissionName: String): Boolean {
-        try {
-            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-            info.requestedPermissions!!.forEachIndexed { index, s ->
-                if (s == permissionName) {
-                    return info.requestedPermissionsFlags?.get(index)!!
-                        .hasFlag(PackageInfo.REQUESTED_PERMISSION_GRANTED)
-                }
-            }
-        } catch (_: PackageManager.NameNotFoundException) {
-        }
-        return false
-    }
 
     fun Context.checkLocationAccess(): Boolean {
         return hasPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
