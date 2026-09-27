@@ -1,4 +1,5 @@
 [versions]
+aboutLibraries = "15.2.0"
 activity = "1.13.0"
 agp = "9.2.1"
 alwan = "1.0.1"
@@ -25,6 +26,7 @@ jakarta-inject = "2.0.1"
 kotlin = "2.4.0"
 koin = "4.2.2"
 koin-ksp = "4.2.2"
+ksp = "2.3.4"
 kotlin-stdlib-jdk7 = "2.3.20"
 lifecycle = "2.11.0"
 lifecycle-ext = "2.2.0"
@@ -131,6 +133,10 @@ serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serializ
 slice-core = { group = "androidx.slice", name = "slice-core", version.ref = "slice" }
 window = { module = "androidx.window:window", version.ref = "window" }
 
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-core = { module = "com.mikepenz:aboutlibraries-compose-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 dexmaker-lib = { module = "com.google.dexmaker:dexmaker", version.ref = "dexmaker" }
 dexmaker-mockito = { module = "com.google.dexmaker:dexmaker-mockito", version.ref = "dexmaker" }
@@ -147,12 +153,13 @@ uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = 
 uiautomator-v18 = { module = "com.android.support.test.uiautomator:uiautomator-v18", version.ref = "support-uiautomator" }
 
 [plugins]
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-google-ksp = "com.google.devtools.ksp:2.3.4"
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 gradle-toolchains = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "gradle-toolchains" }

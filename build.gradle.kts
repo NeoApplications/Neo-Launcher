@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.gradle.toolchains) apply false
+    alias(libs.plugins.aboutLibraries)
 }
 val vProtobuf = "3.25.3"
 val frameworkPrebuiltsDir = "$rootDir/prebuilt/libs"
@@ -350,6 +351,10 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.serialization.json)
     implementation(libs.slice.core)
+
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.core)
+    implementation(libs.aboutlibraries.compose.m3)
 
     api(platform(libs.compose.bom))
     protobuf(files("protos/"))

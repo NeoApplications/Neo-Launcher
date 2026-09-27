@@ -42,6 +42,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +61,9 @@ import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
 import com.neoapps.neolauncher.compose.components.ActionItemPreference
 import com.neoapps.neolauncher.compose.components.ContributorRow
 import com.neoapps.neolauncher.compose.components.ViewWithActionBar
@@ -270,14 +274,18 @@ fun AcknowledgementScreen() {
     ViewWithActionBar(
         title = stringResource(R.string.title__about_acknowledgement)
     ) {
-        Column(
-            modifier = Modifier.padding(
-                top = it.calculateTopPadding() + 8.dp,
-                bottom = it.calculateBottomPadding()
-            )
-        ) {
-            ComposableWebView(url = "file:///android_asset/acknowledgement.htm")
-        }
+        val libraries by produceLibraries(R.raw.aboutlibraries)
+        LibrariesContainer(
+            libraries,
+            Modifier
+                .fillMaxSize()
+                .padding(
+                    top = it.calculateTopPadding() + 8.dp,
+                    bottom = it.calculateBottomPadding()
+                ),
+            variant = LibrariesVariant.Traditional
+        )
+
     }
 }
 
