@@ -159,7 +159,7 @@
     <string name="category__behavior_weather">Погода</string>
     <string name="title_smartspace_event_providers">Источники событий</string>
     <string name="title_smartspace_weather_units">Единица измерения температуры</string>
-    <string name="title_smartspace_widget_provider">Источник погоды</string>
+    <string name="title_smartspace_widget_provider">%1$s. Нажмите, чтобы изменить</string>
     <string name="title_smartspace_time_above">Большие часы</string>
     <string name="title_smartspace_time_24_h">24-часовой формат</string>
     <string name="title_smartspace_date">Показать дату</string>
@@ -404,7 +404,7 @@
     <string name="title_desktop_widget_corner_radius">Радиус угла виджета</string>
     <string name="title__drawer_rows">Количество строк</string>
     <string name="summary_fuzzy_search">Приблизительное соответствие для поиска приложений.</string>
-    <string name="protected_apps">Нажмите, чтобы открыть защищенные приложения</string>
+    <string name="protected_apps">Защищенные приложения</string>
     <string name="title_smartspace">Показать Смартспейс</string>
     <string name="icon_picker_load_failed">Не удалось загрузить больше иконок.</string>
     <string name="title_use_pill_qsb">Показать ярлык поиска в стиле таблетки</string>
@@ -453,7 +453,7 @@
     <string name="tab_shortcuts">Ярлыки</string>
     <string name="web_search_metager">Metager (Веб)</string>
     <string name="dash_auto_rotation_summary">Включите или выключите автоповорот.</string>
-    <string name="title_feed_provider">Поставщик ленты</string>
+    <string name="title_feed_provider">Включить поставщика ленты</string>
     <string name="dash_media_player">Аудиоплеер</string>
     <string name="dash_torch">Фонарик</string>
     <string name="tab_launcher">Лаунчер</string>
@@ -530,7 +530,7 @@
     <string name="title_enable_folders">Включить папки в выдвижной панели</string>
     <string name="title_manage_folders">Управление папками</string>
     <string name="summary_manage_tabs">Создать или изменить вкладки</string>
-    <string name="summary_manage_folders">Создать или изменить папки</string>
+    <string name="summary_manage_folders">Нажмите, чтобы создать или изменить папки</string>
     <string name="title_drawer_tabs">Горизонтальные вкладки</string>
     <string name="category_art_and_design">Дизайн</string>
     <string name="category_business_and_productivity">Продуктивность</string>
@@ -574,4 +574,21 @@
     <string name="permission_wallpaper_message">Neo Launcher нужен доступ к вашим обоям, чтобы применить эффект размытия. Без этого разрешения, эффект размытия будет недоступен.</string>
     <string name="category_food_and_drink">Еда и напитки</string>"&gt;
     <string name="category_photography">Фотография</string>
+    <string name="title_smartspace_widget_enable">Включить погоду</string>
+    <string name="weather_code_clear">Ясно</string>
+    <string name="weather_code_mainly_clear">В основном ясно</string>
+    <string name="weather_code_overcast">Облачно</string>
+    <string name="weather_code_partly_cloudy">Частично облачно</string>
+    <string name="weather_code_fog">Туман</string>
+    <string name="weather_code_drizzle">Моросящий дождь</string>
+    <string name="weather_code_rain">Дождь</string>
+    <string name="weather_code_heavy_rain">Ливень</string>
+    <string name="weather_code_snow">Снег</string>
+    <string name="weather_code_thunderstorm">Гроза</string>
+    <string name="weather_feels_like">Ощущается как %1$s</string>
+    <string name="weather_forecast_hourly">Прогноз на час</string>
+    <string name="title_popup_menu_open">Открыть всплывающее меню</string>
+    <string name="tap_protected_apps">Нажмите, чтобы открыть защищенные приложения</string>
+    <string name="gesture_pinch_in">Ущепнуть</string>
+    <string name="gesture_pinch_out">Раздвинуть</string>
 </resources>
