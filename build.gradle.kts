@@ -184,6 +184,10 @@ extensions.configure<ApplicationExtension> {
     }
 
     sourceSets {
+        named("test") {
+            java.directories.add("tests/unit/src")
+            kotlin.directories.add("tests/unit/src")
+        }
         named("main") {
             java.directories.addAll(
                 listOf(
@@ -228,6 +232,15 @@ extensions.configure<ApplicationExtension> {
         abortOnError = false
         checkReleaseBuilds = false
         disable += listOf("MissingTranslation", "ExtraTranslation")
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            val scratchDir = layout.buildDirectory.dir("unitTestScratch").get().asFile
+            it.systemProperty("java.io.tmpdir", scratchDir.absolutePath)
+            it.doFirst { scratchDir.mkdirs() }
+        }
     }
 }
 protobuf {
@@ -356,6 +369,8 @@ dependencies {
     protobuf(files("protos_overrides/"))
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.robolectric)
     androidTestImplementation(libs.dexmaker.mockito)
     androidTestImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.mockito.core)

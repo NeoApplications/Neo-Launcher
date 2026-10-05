@@ -257,6 +257,9 @@
     <string name="permdesc_write_settings">Allows the app to change the settings and
         shortcuts in home.</string>
 
+    <!-- Shown when a grid migration fails and loading stops to preserve the saved layout. -->
+    <string name="workspace_migration_failed">Couldn\'t migrate the home screen. Your saved layout has not been reset.</string>
+
     <!-- Widgets: -->
     <skip />
 

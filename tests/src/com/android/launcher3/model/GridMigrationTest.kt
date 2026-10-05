@@ -35,8 +35,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
 private val phoneContext = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -84,8 +82,6 @@ class GridMigrationTest {
     @Rule
     val setFlagsRule = SetFlagsRule(SetFlagsRule.DefaultInitValueType.DEVICE_DEFAULT)
 
-    val modelDelegate = mock<ModelDelegate>()
-
     @Before
     fun setup() {
         setFlagsRule.setFlags(true, Flags.FLAG_ONE_GRID_SPECS)
@@ -99,7 +95,6 @@ class GridMigrationTest {
             dst.dbHelper,
             src.dbHelper.readableDatabase,
             true,
-            modelDelegate,
         )
     }
 
@@ -137,12 +132,11 @@ class GridMigrationTest {
     }
 
     /**
-     * Migrate src into dst and compare to target. This method validates 4 things:
+     * Migrate src into dst and compare to target. This method validates 3 things:
      * 1. dst has the same number of items as src after the migration, meaning, none of the items
      *    were removed during the migration.
      * 2. dst is valid, meaning that none of the items overlap with each other.
      * 3. dst is equal to target to ensure we don't unintentionally change the migration logic.
-     * 4. migration notifies the complete callback.
      */
     private fun runTest(src: GridMigrationData, dst: GridMigrationData, target: GridMigrationData) {
         TestUtil.runOnExecutorSync(Executors.MODEL_EXECUTOR) {
@@ -152,7 +146,6 @@ class GridMigrationTest {
             }
             validateDb(dst)
             compare(dst, target, src)
-            verify(modelDelegate).gridMigrationComplete(src.gridState, dst.gridState)
         }
     }
 
