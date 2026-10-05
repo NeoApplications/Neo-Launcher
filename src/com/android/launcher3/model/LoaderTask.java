@@ -29,6 +29,7 @@ import static com.android.launcher3.model.data.AppsListData.FLAG_QUIET_MODE_CHAN
 import static com.android.launcher3.model.data.AppsListData.FLAG_QUIET_MODE_ENABLED;
 import static com.android.launcher3.model.data.AppsListData.FLAG_WORK_PROFILE_QUIET_MODE_ENABLED;
 import static com.android.launcher3.model.data.ItemInfoWithIcon.FLAG_INSTALL_SESSION_ACTIVE;
+import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 import static com.android.launcher3.util.Executors.MODEL_EXECUTOR;
 import static com.android.launcher3.util.LooperExecutor.CALLER_LOADER_TASK;
 import static com.android.launcher3.util.PackageManagerHelper.hasShortcutsPermission;
@@ -48,6 +49,7 @@ import android.os.Trace;
 import android.os.UserHandle;
 import android.util.Log;
 import android.util.LongSparseArray;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +60,7 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherPrefs;
+import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.backuprestore.LauncherRestoreEventLogger;
 import com.android.launcher3.dagger.ApplicationContext;
@@ -450,6 +453,12 @@ public class LoaderTask implements Runnable {
             dbController.attemptMigrateDb(restoreEventLogger, mModelDelegate);
         } catch (Exception e) {
             FileLog.e(TAG, "Failed to migrate grid", e);
+            MAIN_EXECUTOR.execute(() -> Toast.makeText(
+                    mContext, R.string.workspace_migration_failed, Toast.LENGTH_LONG).show());
+            CancellationException cancelled =
+                    new CancellationException("Workspace loading cancelled after migration failure");
+            cancelled.initCause(e);
+            throw cancelled;
         }
 
         Log.d(TAG, "loadWorkspace: loading default favorites if necessary");
