@@ -463,7 +463,7 @@
     <string name="cat_dock_search">Cassetto e barra app</string>
     <string name="title_desktop_widget_corner_radius">Raggio dell\'angolo del widget</string>
     <string name="title__drawer_rows">Numero di righe</string>
-    <string name="protected_apps">Tocca per aprire le app protette</string>
+    <string name="protected_apps">App protette</string>
     <string name="protected_app_selected">App protette (%1$d)</string>
     <string name="owm_get_your_own_key">Ottieni una chiave API su api.openweathermap.org.</string>
     <string name="contributor_role">Collaboratore</string>
@@ -571,7 +571,7 @@
     <string name="folder_icon_shape">Forma icona della cartella</string>
     <string name="title_enable_folders">Abilita cartelle nel cassetto</string>
     <string name="title_manage_folders">Gestisci cartelle</string>
-    <string name="summary_manage_folders">Crea o modifica cartelle</string>
+    <string name="summary_manage_folders">Tocca per creare o modificare cartelle</string>
     <string name="title_general_folder">Cartella</string>
     <string name="set_as_home_screen">Imposta come schermata Home</string>
     <string name="default_home_screen">Schermata Home</string>
@@ -600,4 +600,8 @@
     <string name="weather_code_thunderstorm">Temporale</string>
     <string name="weather_forecast_hourly">Previsioni orarie</string>
     <string name="weather_feels_like">Percepita %1$s</string>
+    <string name="title_popup_menu_open">Apri menu a comparsa</string>
+    <string name="tap_protected_apps">Tocca per aprire le app protette</string>
+    <string name="gesture_pinch_in">Pizzica per rimpicciolire</string>
+    <string name="gesture_pinch_out">Pizzica per allargare</string>
 </resources>
