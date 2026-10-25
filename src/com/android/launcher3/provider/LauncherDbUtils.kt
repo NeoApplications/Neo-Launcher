@@ -136,10 +136,13 @@ object LauncherDbUtils {
         if (fromDb != toDb) {
             toDb.run {
                 execSQL("ATTACH DATABASE '${fromDb.path}' AS from_db")
-                execSQL(
-                    "INSERT INTO $toTable SELECT ${LauncherSettings.Favorites.getColumns(userSerial)} FROM from_db.$fromTable"
-                )
-                execSQL("DETACH DATABASE 'from_db'")
+                try {
+                    execSQL(
+                        "INSERT INTO $toTable SELECT ${LauncherSettings.Favorites.getColumns(userSerial)} FROM from_db.$fromTable"
+                    )
+                } finally {
+                    execSQL("DETACH DATABASE 'from_db'")
+                }
             }
         } else {
             toDb.run {

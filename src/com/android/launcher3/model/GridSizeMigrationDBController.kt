@@ -115,8 +115,8 @@ object GridSizeMigrationDBController {
         idsInUse: List<Int>,
     ): Int {
         var newId = -1
-        val c =
-            helper.writableDatabase.query(
+        helper.writableDatabase
+            .query(
                 srcTableName,
                 null,
                 LauncherSettings.Favorites._ID + " = '" + (entry?.id ?: id) + "'",
@@ -125,18 +125,20 @@ object GridSizeMigrationDBController {
                 null,
                 null,
             )
-        while (c.moveToNext()) {
-            val values = ContentValues()
-            DatabaseUtils.cursorRowToContentValues(c, values)
-            entry?.updateContentValues(values)
-                ?: values.put(LauncherSettings.Favorites.CONTAINER, folderId)
-            do {
-                newId = helper.generateNewItemId()
-            } while (idsInUse.contains(newId))
-            values.put(LauncherSettings.Favorites._ID, newId)
-            helper.writableDatabase.insert(destTableName, null, values)
-        }
-        c.close()
+            .use { c ->
+                check(c.moveToFirst()) {
+                    "Missing migration entry ${entry?.id ?: id} in $srcTableName"
+                }
+                val values = ContentValues()
+                DatabaseUtils.cursorRowToContentValues(c, values)
+                entry?.updateContentValues(values)
+                    ?: values.put(LauncherSettings.Favorites.CONTAINER, folderId)
+                do {
+                    newId = helper.generateNewItemId()
+                } while (idsInUse.contains(newId))
+                values.put(LauncherSettings.Favorites._ID, newId)
+                helper.writableDatabase.insertOrThrow(destTableName, null, values)
+            }
         return newId
     }
 
