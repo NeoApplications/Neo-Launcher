@@ -1,3 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="default_folder_name">नया फोल्डर</string>
+    <string name="folder_name">फोल्डर का नाम</string>
+    <string name="hotseat_prediction_content_description">अनुमानित एप: <xliff:g id="title" example="Chrome">%1$s</xliff:g></string>
+    <string name="hotseat_tip_gaps_filled">खाली जगह में एप सुझाव जोड़ दिया गया है</string>
+    <string name="title_app_suggestions">एप सुझाव</string>
+    <string name="title__general_about">बारे में</string>
+    <string name="title__general_desktop">डेस्कटॉप</string>
+    <string name="title_general_folder">फोल्डर</string>
+    <string name="title__general_dock">डॉक</string>
+    <string name="title__general_drawer">ड्रॉअर</string>
+    <string name="title__general_theme">थीम</string>
+    <string name="title__general_smartspace">होम विजेट</string>
+    <string name="title__general_advanced">उन्नत सेटिंग्स</string>
+    <string name="title__general_notifications">जेस्चर और सूचनाएं</string>
+    <string name="title__general_profile">प्रोफाईल</string>
+    <string name="title__general_gestures_dash">जेस्चर और डैश</string>
+    <string name="title__general_search_feed">खोज और फीड</string>
+    <string name="title__general_widgets_notifications">विजेट और सूचनाएं</string>
+    <string name="summary__general_desktop">डेस्कटॉप को अनुकूलित करें</string>
+    <string name="summary__general_dock">हॉटसीट आइकन, सर्च बार</string>
+    <string name="summary__general_drawer">अपने ड्रॉअर को अनुकूलित करें</string>
+    <string name="summary__general_theme">रंग बदलें, आइकन पैक, आइकन आकार</string>
+    <string name="summary__general_search">सर्च प्रदाता, स्टाइल, आइकन</string>
+    <string name="summary__general_smartspace">दिनांक, समय, होम विजेट</string>
+    <string name="summary__general_notifications">बैज काउंट, बैज रंग, जेस्चर्स</string>
+    <string name="pref_category__interfaces">उपयोगकर्ता माध्यम (इंटरफेस)</string>
+    <string name="pref_category__features">सुविधाएं</string>
+    <string name="pref_category__inputs">जेस्चर और खोज</string>
+    <string name="pref_category__others">अन्य</string>
+    <string name="pref_category__incubating">विकासशील</string>
+    <string name="allow_rotation_blocked_desc">वर्तमान डिस्प्ले सेटिंग रोटेशन की अनुमति नहीं देता है</string>
+    <string name="title_desktop_full_width_widgets">पूर्ण चौड़ाई विजेट</string>
+    <string name="title_desktop_widget_corner_radius">वेजेट कोण त्रिज्या</string>
+    <string name="title__desktop_icon_size">आइकन आकार</string>
+    <string name="title__desktop_grid_size">ग्रिड आकार</string>
+    <string name="title__desktop_hide_icon_labels">होम स्क्रीन पर आइकन लेबल को छुपाएँ</string>
+    <string name="title_desktop_overlap_placement">अतिव्यापी विजेट की अनुमति दें</string>
+    <string name="title_desktop_lock_desktop">डेस्कटॉप लॉक करें</string>
+    <string name="title_desktop_keep_empty">खाली पेज की अनुमति दें</string>
+    <string name="title__multiline_labels">बहु-पंक्ति एप नाम</string>
+    <string name="title_desktop_free_scrolling">स्वतंत्र स्क्रॉलिंग</string>
 </resources>
